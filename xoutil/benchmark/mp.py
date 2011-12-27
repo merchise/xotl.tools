@@ -1,4 +1,7 @@
-from multiprocessing import Pool, cpu_count
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from multiprocessing import Pool, cpu_count, current_process
 from itertools import count, islice, repeat, izip
 
 def gcd(a, b):
@@ -23,11 +26,11 @@ if __name__ == '__main__':
             setattr(namespace, self.dest, int(value))
 
 
-    workers_amount = cpu_count() - 1 if cpu_count() > 1 else 1
+    workers_amount = max(cpu_count() - 1, 1)
     parser = argparse.ArgumentParser('Run several workers calculating GCD for large numbers. Uses multiprocessing to test several CPUs.')
     parser.add_argument('--show', help='Whether to print or not the gcds', action='store_true', dest='show', default=False)
     parser.add_argument('--workers', help='Number of workers. Defaults to %d.' % workers_amount, action=parse_int, dest='workers', default=workers_amount)
-    parser.add_argument('--size', help='The magnitude of the test. Represents how many cycles are processed, exactly 10^MAGNITUDE; so be nice!', action=parse_int, dest='magnitude', default=6)
+    parser.add_argument('--size', help='The magnitude of the test. Represents how many cycles are processed, exactly 10**MAGNITUDE; so be nice!', action=parse_int, dest='magnitude', default=6)
     args = parser.parse_args()
 
     pool = Pool(processes=args.workers)
