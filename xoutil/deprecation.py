@@ -39,7 +39,7 @@ def deprecated(replacement, msg='{funcname} is now deprecated and it will be rem
         if isinstance(target, type):
             def init(self, *args, **kwargs):
                 warnings.warn(msg.format(funcname=funcname, replacement=replacement))
-                return super(target, self).__init__(*args, **kwargs)
+                return target.__init__(self, *args, **kwargs)
             klass = type(target.__name__, (target,), {'__init__': init})
             return klass
         else:
