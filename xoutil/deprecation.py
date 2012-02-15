@@ -32,26 +32,33 @@ __author__ = 'manu'
 
 def deprecated(replacement, msg='{funcname} is now deprecated and it will be removed. Use {replacement} instead'):
     'Small decorator for deprecated functions'
-    def decorator(func):
+    def decorator(target):
         import warnings
         from functools import wraps
-        funcname = func.__name__
-        @wraps(func)
-        def inner(*args, **kw):
-            warnings.warn(msg.format(funcname=funcname, replacement=replacement),
-                          stacklevel=2)
-            return func(*args, **kw)
-        return inner
+        funcname = target.__name__
+        if isinstance(target, type):
+            def init(self, *args, **kwargs):
+                warnings.warn(msg.format(funcname=funcname, replacement=replacement))
+                return super(target, self).__init__(*args, **kwargs)
+            klass = type(target.__name__, (target,), {'__init__': init})
+            return klass
+        else:
+            @wraps(target)
+            def inner(*args, **kw):
+                warnings.warn(msg.format(funcname=funcname, replacement=replacement),
+                              stacklevel=2)
+                return target(*args, **kw)
+            return inner
     return decorator
 
 
 def inject_deprecated(funcnames, source, target=None):
     '''
-    Takes a sequence of function names `funcnames` which reside in the `source` 
-    module and injects them into `target` marked as deprecated. If `target` is 
+    Takes a sequence of function names `funcnames` which reside in the `source`
+    module and injects them into `target` marked as deprecated. If `target` is
     None then we inject the functions into the locals of the calling code. It's
-    expected it's a module. 
-    
+    expected it's a module.
+
     This function is provided for easing the deprecation of whole modules and
     should not be used to do otherwise.
     '''
@@ -74,4 +81,3 @@ def inject_deprecated(funcnames, source, target=None):
             import warnings
             warnings.warn('{funcname} was expected to be in {source}'.
                           format(funcname=funcname, source=source.__name__))
-
