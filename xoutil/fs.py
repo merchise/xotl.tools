@@ -76,7 +76,7 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
 def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     '''Iterate filenames recursively.'''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
-    for dirpath, _dirs, filenames in os.walk(top):
+    for dirpath, _dirs, filenames in os.walk(normalize_path(top)):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             if (regex is None) or regex.search(path):
@@ -87,7 +87,7 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
 def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     '''Itererate directories recursively'''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
-    for path, _dirs, _files in os.walk(top):
+    for path, _dirs, _files in os.walk(normalize_path(top)):
         if (regex is None) or regex.search(path):
             yield path
 
@@ -175,7 +175,7 @@ def set_stat(fname, stat_info):
 
 def listdir(path):
     try:
-        return os.listdir(path)
+        return os.listdir(normalize_path(path))
     except os.error:
         return []
 
