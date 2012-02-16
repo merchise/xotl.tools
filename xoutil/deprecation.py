@@ -63,21 +63,22 @@ def inject_deprecated(funcnames, source, target=None):
     should not be used to do otherwise.
     '''
     if not target:
-        import inspect
-        frame, filename, lineno, funcname, lines, indx = inspect.stack()[-1]
+        import sys
+        frame = sys._getframe(1)
         try:
             target_locals = frame.f_locals
         finally:
             # As recommeded to avoid memory leaks
-            del frame, filename, lineno, funcname, lines, indx
+            del frame
     else:
-        # TODO: Allow this
         pass
-    for funcname in funcnames:
-        func = getattr(source, funcname, None)
-        if func:
-            target_locals[funcname] = deprecated(source.__name__ + '.' + funcname)(func)
+    for targetname in funcnames:
+        target = getattr(source, targetname, None)
+        if target:
+            target_locals[targetname] = deprecated(source.__name__ + '.' + targetname)(target)
         else:
             import warnings
-            warnings.warn('{funcname} was expected to be in {source}'.
-                          format(funcname=funcname, source=source.__name__))
+            warnings.warn('{targetname} was expected to be in {source}'.
+                          format(targetname=targetname, source=source.__name__))
+
+
