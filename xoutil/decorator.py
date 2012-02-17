@@ -26,13 +26,15 @@
 # TODO: reconsider all this module
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print, unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division, print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
 
+import sys
 
-from functools import (update_wrapper, wraps, partial)
+from functools import wraps, partial
+
 
 curry = partial
-
 
 
 class AttributeAlias(object):
@@ -86,12 +88,14 @@ def aliases(**kwargs):
         '''
         Direct closure decorator that settle several attribute aliases.
         '''
-        assert isinstance(target, type), '"target" must be a class.' 
+        assert isinstance(target, type), '"target" must be a class.'
         for alias, field in kwargs.iteritems():
             setattr(target, alias, AttributeAlias(field))
         return target
     return inner
 
+
+# TODO: [manu] Review the third-party egg "decorator"
 def decorator(caller):
     '''
     Eases the creation of decorators with arguments::
@@ -137,6 +141,7 @@ def decorator(caller):
             return caller
     return outer_decorator
 
+
 @decorator
 def assignment_operator(func, maybe_inline=False):
     '''
@@ -159,15 +164,16 @@ def assignment_operator(func, maybe_inline=False):
         >>> b                 # doctest: +SKIP
         'bbb'
     '''
+    import inspect
+    import ast
     from types import FunctionType as function
+
     assert isinstance(func, function), '"func" must be a function.'
     @wraps(func)
     def inner(*args):
-        import inspect, ast
-        stack = inspect.stack()
-        _frame, filename, _lineno, _module, sourcecode_lines, _unk = stack[1]
+        filename, lineno, funcname, sourcecode_lines, index = inspect.getframeinfo(sys._getframe(1))
         try:
-            sourceline = sourcecode_lines[0].strip()
+            sourceline = sourcecode_lines[index].strip()
             parsed_line = ast.parse(sourceline, filename).body[0]
             assert maybe_inline or isinstance(parsed_line, ast.Assign)
             if isinstance(parsed_line, ast.Assign):
@@ -186,8 +192,9 @@ def assignment_operator(func, maybe_inline=False):
             else:
                 return func(*args)
         finally:
-            del _frame, stack # To avoid memory leaks
+            del filename, lineno, funcname, sourcecode_lines, index
     return inner
+
 
 __all__ = (b'AttributeAlias',
            b'update_wrapper',
@@ -197,7 +204,9 @@ __all__ = (b'AttributeAlias',
            b'namer',
            b'curry',
            b'aliases',
+           b'decorator',
            b'assignment_operator')
+
 
 if __name__ == '__main__':
     import doctest
