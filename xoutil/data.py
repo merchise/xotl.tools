@@ -23,15 +23,13 @@
 # MA 02110-1301, USA.
 
 
-
 '''Some useful Data Structures.'''
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print, unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division, print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
 
 from types import SliceType
-
-
 
 
 def smart_copy(source, target, full=False):
@@ -63,7 +61,7 @@ def smart_copy(source, target, full=False):
     else:
         def setvalue(key, value):
             if is_valid_identifier(key) and (full or not key.startswith('_')):
-                setattr(target, key, value) 
+                setattr(target, key, value)
     for key, value in items:
         setvalue(key, value)
 
@@ -94,7 +92,7 @@ class MappedTuple(tuple):
 
 class SmartDict(dict):
     '''A "smart" dictionary that can receive a wide variety of arguments.'''
-    
+
     def __init__(self, *args, **kwargs):
         '''
         Create a dictionary from a set of iterables (args) and keyword values (kwargs).
@@ -137,7 +135,7 @@ class SmartDict(dict):
 
 
 
-class SortedDict(SmartDict):
+class SortedSmartDict(SmartDict):
     '''
     A dictionary that keeps its keys in the order in which they're inserted.
     Creating or updating a sorted dict with more than one kwargs is
@@ -147,7 +145,7 @@ class SortedDict(SmartDict):
     # TODO: Replace this by "collections.OrderedDict" in python2.7 (DeprecationWarning)
 
     def __new__(cls, *args, **kwargs):
-        self = super(SortedDict, cls).__new__(cls, *args, **kwargs)
+        self = super(SortedSmartDict, cls).__new__(cls, *args, **kwargs)
         self._keys = []
         return self
 
@@ -161,15 +159,15 @@ class SortedDict(SmartDict):
             return '<Recursion on SortedDict with id=%s>' % id(self)
 
     def __getitem__(self, key):
-        _get = super(SortedDict, self).__getitem__
+        _get = super(SortedSmartDict, self).__getitem__
         if isinstance(key, SliceType):
             keys = self._keys.__getitem__(key)
-            return map(_get, keys) 
+            return map(_get, keys)
         else:
             return _get(key)
 
     def __setitem__(self, key, value):
-        _set = super(SortedDict, self).__setitem__
+        _set = super(SortedSmartDict, self).__setitem__
         if isinstance(key, SliceType):
             keys = self._keys.__getitem__(key)
             values = tuple(value)
@@ -183,7 +181,7 @@ class SortedDict(SmartDict):
             _set(key, value)
 
     def __delitem__(self, key):
-        _del = super(SortedDict, self).__delitem__
+        _del = super(SortedSmartDict, self).__delitem__
         if isinstance(key, SliceType):
             keys = self._keys.__getitem__(key)
             self._keys.__delitem__(key)
@@ -210,7 +208,7 @@ class SortedDict(SmartDict):
         return iter(self._keys)
 
     def values(self):
-        return map(super(SortedDict, self).__getitem__, self._keys)
+        return map(super(SortedSmartDict, self).__getitem__, self._keys)
 
     def itervalues(self):
         for key in self._keys:
@@ -218,14 +216,14 @@ class SortedDict(SmartDict):
 
     def pop(self, key, *args):
         remove = key in self
-        result = super(SortedDict, self).pop(key, *args)
+        result = super(SortedSmartDict, self).pop(key, *args)
         if remove:
             self._keys.remove(key)
         return result
 
     def popitem(self):
         if len(self._keys) == 0:    # ;)
-            return super(SortedDict, self).popitem()
+            return super(SortedSmartDict, self).popitem()
         else:
             key = self._keys[-1]
             return key, self.pop(key)
@@ -233,7 +231,7 @@ class SortedDict(SmartDict):
     def setdefault(self, key, default):
         if key not in self:
             self._keys.append(key)
-        return super(SortedDict, self).setdefault(key, default)
+        return super(SortedSmartDict, self).setdefault(key, default)
 
     def value_for_index(self, index):
         '''Returns the value of the item at the given zero-based index.'''
@@ -247,14 +245,14 @@ class SortedDict(SmartDict):
             if n < index:
                 index -= 1
         self._keys.insert(index, key)
-        super(SortedDict, self).__setitem__(key, value)
+        super(SortedSmartDict, self).__setitem__(key, value)
 
     def copy(self):
         '''Returns a copy of this object.'''
         return type(self)(self)
 
     def clear(self):
-        super(SortedDict, self).clear()
+        super(SortedSmartDict, self).clear()
         self._keys = []
 
     def _update(self, items):

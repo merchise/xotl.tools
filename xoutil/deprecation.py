@@ -38,12 +38,15 @@ DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed. ' +
               'Use {replacement} instead.')
 
 
-def deprecated(replacement, msg=DEFAULT_MSG):
+def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
     'Small decorator for deprecated functions'
     def decorator(target):
         import warnings
         from functools import wraps
-        funcname = target.__name__
+        if deprecated_module:
+            funcname = deprecated_module + '.' + target.__name__
+        else:
+            funcname = target.__name__
         if isinstance(target, (type, types.TypeType)):
             def new(*args, **kwargs):
                 warnings.warn(msg.format(funcname=funcname,
@@ -88,7 +91,8 @@ def inject_deprecated(funcnames, source, target=None):
             if isinstance(target, (type, types.FunctionType, types.LambdaType,
                                    types.ClassType, types.TypeType)):
                 replacement = source.__name__ + '.' + targetname
-                target_locals[targetname] = deprecated(replacement)(target)
+                target_locals[targetname] = deprecated(replacement,
+                                                       deprecated_module=target_locals.get('__name__', None))(target)
             else:
                 target_locals[targetname] = target
         else:
