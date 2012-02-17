@@ -27,25 +27,35 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+import types
+
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-def deprecated(replacement, msg='{funcname} is now deprecated and it will be removed. Use {replacement} instead'):
+
+DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed. ' +
+              'Use {replacement} instead.')
+
+
+def deprecated(replacement, msg=DEFAULT_MSG):
     'Small decorator for deprecated functions'
     def decorator(target):
         import warnings
         from functools import wraps
         funcname = target.__name__
-        if isinstance(target, type):
-            def init(self, *args, **kwargs):
-                warnings.warn(msg.format(funcname=funcname, replacement=replacement))
-                return target.__init__(self, *args, **kwargs)
-            klass = type(target.__name__, (target,), {'__init__': init})
+        if isinstance(target, (type, types.TypeType)):
+            def new(*args, **kwargs):
+                warnings.warn(msg.format(funcname=funcname,
+                                         replacement=replacement))
+                return target.__new__(*args, **kwargs)
+            klass = type(target.__name__, (target,), {'__new__': new})
             return klass
         else:
             @wraps(target)
             def inner(*args, **kw):
-                warnings.warn(msg.format(funcname=funcname, replacement=replacement),
+                warnings.warn(msg.format(funcname=funcname,
+                                         replacement=replacement),
                               stacklevel=2)
                 return target(*args, **kw)
             return inner
@@ -75,10 +85,14 @@ def inject_deprecated(funcnames, source, target=None):
     for targetname in funcnames:
         target = getattr(source, targetname, None)
         if target:
-            target_locals[targetname] = deprecated(source.__name__ + '.' + targetname)(target)
+            if isinstance(target, (type, types.FunctionType, types.LambdaType,
+                                   types.ClassType, types.TypeType)):
+                replacement = source.__name__ + '.' + targetname
+                target_locals[targetname] = deprecated(replacement)(target)
+            else:
+                target_locals[targetname] = target
         else:
             import warnings
             warnings.warn('{targetname} was expected to be in {source}'.
-                          format(targetname=targetname, source=source.__name__))
-
-
+                          format(targetname=targetname,
+                                 source=source.__name__))
