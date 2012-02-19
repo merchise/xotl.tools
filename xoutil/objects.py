@@ -29,7 +29,7 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
-from xoutil.typeutil import Unset, is_collection
+from xoutil.types import Unset, is_collection
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'

@@ -32,7 +32,7 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
-from xoutil.typeutil import is_scalar, Unset
+from xoutil.types import is_scalar, Unset
 
 "Several util functions for iterators"
 

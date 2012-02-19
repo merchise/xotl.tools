@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.dom.decorators
+# xoutil.pep3124
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
@@ -35,8 +35,8 @@ __version__ = '0.1.0'
 __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
 from functools import wraps
-from xotl import Unset
-from xotl.util import first
+from xoutil.types import Unset
+from xoutil.iterators import first
 from collections import OrderedDict as odict
 
 class OverloadError(Exception):
@@ -47,38 +47,38 @@ class OverloadError(Exception):
 # TODO: Make it work with methods
 class overload(object):
     '''A decorator for overloading functions.
-    
+
     This is not being designed to work with methods. This is inspired in
     the overload PEP 3124.
-    
+
     Overloading just takes care of selecting the appropriate function definition
-    from inspecting the types of the arguments. 
-    
+    from inspecting the types of the arguments.
+
     For instance, if you need to write a function that may accept either a
     string or a class as its first argument, you may split the function into two
     separate definitions like this::
-    
+
        >>> @overload(basestring)
        ... def myfunc(string, *args):
        ...     return 'basestring'
-       
+
        >>> @overload(type)
        ... def myfunc(cls, *args):
        ...     return 'type'
-       
+
     This simply creates a `myfunc` function that upon invokation will check the
     type of its first argument and execute the original matching function::
-    
+
         >>> myfunc('Just to show off')
         'basestring'
-        
+
         >>> class X(object): pass
         >>> myfunc(X)
         'type'
-        
+
     If you try to call an overloaded function and it can't find a match
     for the arguments' types, it will raise an OverloadError::
-    
+
         >>> myfunc(1.2)
         Traceback (most recent call last):
             ...

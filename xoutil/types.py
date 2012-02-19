@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.typeutil
+# xoutil.types
 #----------------------------------------------------------------------
 # Copyright (c) 2010-2011 Merchise Autrement
 # All rights reserved.
@@ -21,12 +21,12 @@ Utilities for types and the like.
 from __future__ import (division as _py3_division, print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+from xoutil.data import smart_copy
 
-from re import compile as _regex_compile
-from functools import partial
-
-from xoutil.context import Context as context
-from xoutil.data import smart_copy as copy_attrs
+_legacy = __import__(b'types', fromlist=[b'dummy'], level=0)
+GeneratorType = _legacy.GeneratorType
+smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']))
+del _legacy
 
 
 class _UnsetType(type):
@@ -107,8 +107,8 @@ def is_collection(maybe):
         >>> is_collection(a for a in xrange(100))
         True
     '''
-    import types
-    return isinstance(maybe, (tuple, xrange, list, set, frozenset, types.GeneratorType))
+    return isinstance(maybe, (tuple, xrange, list, set, frozenset,
+                              GeneratorType))
 
 
 def is_string_like(maybe):

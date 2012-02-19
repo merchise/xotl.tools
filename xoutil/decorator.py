@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.decorators
+# xoutil.decorator
 #----------------------------------------------------------------------
 # Copyright (c) 2009-2011 Merchise Autrement
 #
@@ -11,7 +11,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -40,7 +40,7 @@ curry = partial
 class AttributeAlias(object):
     '''
     Descriptor to create aliases for object attributes.
-    This descriptor is mainly to be used internally by "aliases" decorator. 
+    This descriptor is mainly to be used internally by "aliases" decorator.
     '''
 
     def __init__(self, attr_name):
@@ -73,7 +73,7 @@ def settle(**kwargs):
 
 def namer(name, **kwargs):
     '''
-    Similar to "settle", but always consider first argument as "name". 
+    Similar to "settle", but always consider first argument as "name".
     '''
     return settle(__name__=name, **kwargs)
 
@@ -99,7 +99,7 @@ def aliases(**kwargs):
 def decorator(caller):
     '''
     Eases the creation of decorators with arguments::
-    
+
         >>> @decorator
         ... def plus(target, value):
         ...    from functools import wraps
@@ -107,17 +107,17 @@ def decorator(caller):
         ...    def inner(*args):
         ...        return target(*args) + value
         ...    return inner
-        
+
         >>> @plus(value=10)
         ... def ident(val):
         ...     return val
-        
+
         >>> ident(1)
         11
-        
-    TODO: Make the decorator with default values to be callable without 
+
+    TODO: Make the decorator with default values to be callable without
     parenthesis::
-    
+
         >>> @decorator
         ... def plus2(func, value=1):
         ...    from functools import wraps
@@ -125,11 +125,11 @@ def decorator(caller):
         ...    def inner(*args):
         ...        return func(*args) + value
         ...    return inner
-        
+
         >>> @plus2
         ... def ident2(val):
         ...     return val
-        
+
         >>> ident2(1)   # doctest: +SKIP
         2
     '''
@@ -148,17 +148,17 @@ def assignment_operator(func, maybe_inline=False):
     Makes a function that receives a name, and other args to be *assignment_operator*,
     meaning that it if its used in a single assignment statement the name will
     be taken from the left part of the ``=`` operator::
-    
+
         >>> @assignment_operator()
         ... def test(name, *args):
         ...    return name * (len(args) + 1)
-        
+
         >>> test('a', 1, 2)
         'aaa'
-        
+
     (The following test fails because we can't get the source of the doctest;
     so a unit test should be provided:)
-    
+
     ::
         >>> b = test(1, 2)    # doctest: +SKIP
         >>> b                 # doctest: +SKIP

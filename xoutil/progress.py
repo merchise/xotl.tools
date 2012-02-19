@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.progress
+# xoutil.progress
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
@@ -32,18 +32,18 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 
-from xotl.util.memoize import simple_memoize
+from xoutil.memoize import simple_memoize
 
 _HELIX = '|/-\\'
 
 class Progress(object):
     '''
     Print a progress percent to the console.
-    Also the elapsed and the estimated times.   
+    Also the elapsed and the estimated times.
     '''
 
     def __init__(self, max_value=100, delta=1, first_message=None):
-        from xotl.datetime import datetime
+        from xoutil.datetime import datetime
         self.max_value = max_value
         self.delta = delta
         self.percent = self.value = 0
@@ -61,7 +61,7 @@ class Progress(object):
         percent = 100 * self.value // self.max_value
         if self.percent != percent:
             import sys
-            from xotl.datetime import strfdelta
+            from xoutil.datetime import strfdelta
             self.percent = percent
             helix = _HELIX[percent % len(_HELIX)]
             elapsed = self.start_time.now() - self.start_time

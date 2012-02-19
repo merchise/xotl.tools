@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.context
+# xoutil.context
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
@@ -11,12 +11,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#       
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#       
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -28,19 +28,22 @@
 '''
 A context manager for execution context flags.
 Use as:
-    from xotl import context
+    from xoutil import context
     with context(name):
         ...
         if context[name]:
             ...
 
-Note the difference creating the context and checking it. 
+Note the difference creating the context and checking it.
 '''
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print, unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
 
 from threading import local
+
 
 
 class LocalData(local):
@@ -85,12 +88,14 @@ class Context(object):
         self.count -= 1
         if self.count == 0:
             del _data.contexts[self.name]
-        return False 
+        return False
 
 
 
 class NullContext(object):
-    '''Singleton context to be used (returned) as default when no one is defined.'''
+    '''
+    Singleton context to be used (returned) as default when no one is defined.
+    '''
 
     instance = None
 
@@ -103,11 +108,11 @@ class NullContext(object):
         return False
 
     def __enter__(self):
-        from xotl import Unset
+        from xoutil.types import Unset
         return Unset
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return False 
+        return False
 
 
 

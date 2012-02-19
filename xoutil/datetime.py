@@ -31,7 +31,7 @@ the formatting of a date through its full "proleptic Gregorian" date range.
 Based on code submitted to comp.lang.python by Andrew Dalke, copied from
 DJango and generalized.
 
->>> xotl.datetime.date(1850, 8, 2).strftime("%Y/%m/%d was a %A")
+>>> xoutil.datetime.date(1850, 8, 2).strftime("%Y/%m/%d was a %A")
 '1850/08/02 was a Friday'
 '''
 
@@ -43,7 +43,9 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print, unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
 
 from re import compile as _regex_compile
 import time
@@ -52,7 +54,7 @@ from time import strftime as _time_strftime
 _legacy = __import__('datetime', fromlist=[b'date'], level=0)
 
 # TODO: Maybe it's better to use IoD for this case
-from xotl.data import smart_copy
+from xoutil.data import smart_copy
 smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']), full=True)
 del smart_copy
 
@@ -114,6 +116,7 @@ is_date = lambda obj: isinstance(obj, date.__base__)
 is_datetime = lambda obj: isinstance(obj, datetime.__base__)
 is_time = lambda obj: isinstance(obj, time)     # Time is not redefined
 
+
 def new_date(d):
     "Generate a safe date from a legacy datetime date object."
     return date(d.year, d.month, d.day)
@@ -149,7 +152,7 @@ def strfdelta(delta):
 
     Only two levels of values will be printed.
     '''
-    from xotl import strfnumber
+    from xoutil.string import strfnumber
     if delta.days:
         days = delta.days
         delta -= timedelta(days=days)

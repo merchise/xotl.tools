@@ -48,7 +48,7 @@ To add your own serializers, use the SERIALIZATION_MODULES setting::
 from __future__ import (division as _py3_division, print_function as _py3_print, unicode_literals as _py3_unicode)
 
 from decimal import Decimal as _Decimal
-from xoutil.typeutil import is_iterable
+from xoutil.types import is_iterable
 from xoutil.datetime import (is_datetime as _is_datetime,
                              new_datetime as _new_datetime,
                              is_date as _is_date,
@@ -58,14 +58,14 @@ from xoutil.datetime import (is_datetime as _is_datetime,
 
 _legacy = __import__(b'json', fromlist=[b'load'], level=0)
 
-from .data import smart_copy as copy_attrs
+from xoutil.data import smart_copy as copy_attrs
 copy_attrs(_legacy , __import__(__name__, fromlist=[b'_legacy']))
 del copy_attrs
 
 
 class JSONEncoder(_legacy.JSONEncoder):
     '''JSONEncoder subclass that knows how to encode date/time and decimal types.'''
-    # TODO: [med] 
+    # TODO: [med]
 
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M:%S"

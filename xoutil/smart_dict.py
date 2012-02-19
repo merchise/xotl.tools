@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.collections
+# xoutil.smart_dict
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
@@ -30,7 +30,6 @@ from __future__ import (division as _py3_division,
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-from xotl import Unset
 
 class smartdict(dict):
     '''
@@ -52,4 +51,3 @@ class smartdict(dict):
                 return self[name]
             else:
                 raise
-
