@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.util.memoize
+# xoutil.memoize
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
@@ -70,7 +70,7 @@ class simple_memoize(object):
 
     @classmethod
     def invalidate(cls, func, args):
-        from xotl import smart_getattr
+        from xoutil.objutil import smart_getattr
         func = smart_getattr('simple_memoize_orig_func', func) or func
         if (func, args) in cls.cache:
             del cls.cache[(func, args)]

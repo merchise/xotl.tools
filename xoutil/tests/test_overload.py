@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.dom.test.test_decorators
+# xoutil.tests.test_decorators
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.

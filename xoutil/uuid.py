@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.smart_dict
+# xoutil.uuidutil
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Merchise Autrement
+# Copyright (c) 2012 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 #
-# Created on Dec 13, 2011
+# Created on Feb 17, 2012
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -31,23 +31,12 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-class smartdict(dict):
+def uuid():
     '''
-    A dictionary implementation that mirrors its keys as attributes::
+    Return a "Global Unique ID" as a string.
 
-        >>> d = smartdict({'es': 'spanish'})
-        >>> d.es
-        'spanish'
-
-        >>> d['es'] = 'espanol'
-        >>> d.es
-        'espanol'
+    Overwrite this function using IoC to change the standard behavior of
+    creating this values.  
     '''
-    def __getattr__(self, name):
-        try:
-            return super(smartdict, self).__getattr__(name)
-        except AttributeError:
-            if name in self:
-                return self[name]
-            else:
-                raise
+    from uuid import uuid1
+    return '%s' % uuid1()

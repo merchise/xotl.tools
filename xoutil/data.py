@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.data
+# xoutil.data
 #----------------------------------------------------------------------
 # Copyright (c) 2009-2011 Merchise Autrement
 # All rights reserved.
@@ -29,7 +29,11 @@
 from __future__ import (division as _py3_division, print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
-from types import SliceType
+
+# Imported like this to avoid importing our own types and avoid a circular import
+_types = __import__('types', fromlist=[b'dummy'], level=0)
+SliceType = _types.SliceType
+del _types
 
 
 def smart_copy(source, target, full=False):
@@ -40,8 +44,8 @@ def smart_copy(source, target, full=False):
 
     When "target" is not a dictionary (other objects):
         * Only valid identifiers will be copied.
-        * if full is False only public values (which name not starts 
-          with '_') will be copied.  
+        * if full is False only public values (which name not starts
+          with '_') will be copied.
 
     Assumed introspections:
         * "source" is considered a dictionary when:
@@ -50,7 +54,7 @@ def smart_copy(source, target, full=False):
           isinstance(target, collections.Mapping)
     '''
     from collections import Mapping
-    from xotl.validators.identifiers import is_valid_identifier
+    from xoutil.validators.identifiers import is_valid_identifier
     if callable(getattr(source, 'iteritems', None)):
         items = source.iteritems()
     else:
@@ -99,7 +103,7 @@ class SmartDict(dict):
         Each arg can be:
           * another dictionary.
           * an iterable of (key, value) pairs.
-          * any object implementing "keys()" and "__getitem__(key)" methods.  
+          * any object implementing "keys()" and "__getitem__(key)" methods.
         '''
         super(SmartDict, self).__init__()
         self.update(*args, **kwargs)
@@ -111,7 +115,7 @@ class SmartDict(dict):
         '''
         from types import GeneratorType
         from collections import Mapping
-        from xotl import is_iterable
+        from xoutil.types import is_iterable
         for arg in args:
             if isinstance(arg, Mapping):
                 self._update(arg.items())
@@ -120,7 +124,7 @@ class SmartDict(dict):
             elif isinstance(arg, GeneratorType):
                 self._update(arg)
             elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
-                from xotl import fake_dict_iteritems
+                from xoutil.iterators import fake_dict_iteritems
                 self._update(fake_dict_iteritems(arg))
             elif is_iterable(arg):
                 self._update(iter(arg))
@@ -264,7 +268,7 @@ class SortedSmartDict(SmartDict):
 class IntSet(object):
     '''
     Like a Python 'set' but only accepting integers saving a lot of space.
-    
+
     Constructor is smart, you can give:
      * integers
      * any iterable of integers

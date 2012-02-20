@@ -29,11 +29,18 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+
+from functools import partial
+
+from xoutil.types import is_scalar, Unset
+
 "Several util functions for iterators"
 
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
 __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
+
+
 
 def first(pred, iterable, default=None):
     '''
@@ -61,3 +68,58 @@ def first(pred, iterable, default=None):
 def get_first(iterable):
     'Returns the first element of an iterable.'
     return first(lambda x: True, iterable)
+
+
+def flatten(sequence, is_scalar=is_scalar):
+    '''Flatten out a list by putting sublist entries in the main list'''
+    for item in sequence:
+        if is_scalar(item):
+            yield item
+        else:
+            for subitem in flatten(item, is_scalar):
+                yield subitem
+
+
+def get_flat_list(sequence):
+    '''Flatten out a list and return the result.'''
+    return list(flatten(sequence))
+
+
+def dict_update_new(target, source):
+    '''
+    Update values in "source" that are new (not currently present) in "target". 
+    '''
+    for key in source:
+        if key not in target:
+            target[key] = source[key]
+
+
+def fake_dict_iteritems(source):
+    '''
+    Iterate (key, value) in a source that have defined method "keys" and
+    operator "__getitem__". 
+    '''
+    for key in source.keys():
+        yield key, source[key]
+
+
+def smart_dict(defaults, *sources):
+    '''
+    Build a dictionary looking in sources for all keys defined in "defaults".
+    Each source could be a dictionary or any other object.
+    Persistence of all original objects are warranted.
+    '''
+
+    from copy import deepcopy
+    from collections import Mapping
+    res = {}
+    for key in defaults:
+        for source in sources:
+            get = source.get if isinstance(source, Mapping) else partial(getattr, source)
+            value = get(key, Unset)
+            if (value is not Unset) and (key not in res):
+                res[key] = deepcopy(value)
+        if key not in res:
+            res[key] = deepcopy(defaults[key])
+    return res
+

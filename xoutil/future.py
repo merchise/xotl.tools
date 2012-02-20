@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.util.future
+# xoutil.future
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
