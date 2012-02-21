@@ -70,13 +70,50 @@ def get_first(iterable):
     return first(lambda x: True, iterable)
 
 
-def flatten(sequence, is_scalar=is_scalar):
-    '''Flatten out a list by putting sublist entries in the main list'''
+def flatten(sequence, is_scalar=is_scalar, depth=None):
+    '''
+    Flatten out a list by putting sublist entries in the main list. It takes
+    care of everything deemed a collection (i.e, not a scalar according to the
+    callabled passed in :param:`is_scalar`)::
+    
+        >>> tuple(flatten((1, range(2, 5), xrange(5, 10)))) # doctest: +NORMALIZE_WHITESPACE
+        (1, 2, 3, 4, 5, 6, 7, 8, 9)
+        
+        >>> def fib(n):
+        ...     if n <= 1:
+        ...         return 1
+        ...     else:
+        ...         return fib(n-2) + fib(n-1)
+        
+        >>> list(flatten((range(4), (fib(n) for n in range(3))))) # doctest: +NORMALIZE_WHITESPACE
+        [0, 1, 2, 3, 1, 1, 2]
+        
+    If :param:`depth` is None the collection is flattened recursiverly until the
+    "bottom" is reached. If `depth` is an integer then the collection is 
+    flattened up to that level::
+    
+        # depth=0 means simply not to flatten.
+        >>> tuple(flatten((range(2), range(2, 4)), depth=0))     # doctest: +NORMALIZE_WHITESPACE
+        ([0, 1], [2, 3])
+        
+        # But notice that depth=0 would not "explode" internal generators:
+        >>> tuple(flatten((xrange(2), range(2, 4)), depth=0))    # doctest: +NORMALIZE_WHITESPACE
+        (xrange(2), [2, 3])
+        
+        >>> tuple(flatten((xrange(2), range(2, 4),               # doctest: +NORMALIZE_WHITESPACE
+        ...       (xrange(n) for n in range(5, 8))), depth=1))
+            (0, 1, 2, 3, xrange(5), xrange(6), xrange(7))
+
+    '''
     for item in sequence:
         if is_scalar(item):
             yield item
+        elif depth == 0:
+            yield item
         else:
-            for subitem in flatten(item, is_scalar):
+            for subitem in flatten(item, is_scalar,
+                                   depth=(depth - 1) if depth is not None
+                                                     else None):
                 yield subitem
 
 
