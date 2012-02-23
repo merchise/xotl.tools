@@ -33,8 +33,8 @@ import sys
 
 from functools import wraps, partial
 
-
 curry = partial
+
 
 
 class AttributeAlias(object):

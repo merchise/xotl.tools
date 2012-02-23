@@ -55,7 +55,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             klass = type(target.__name__, (target,), {'__new__': new})
             return klass
         else:
-            @wraps(target)
+            @wraps(target, add_signature=True)
             def inner(*args, **kw):
                 warnings.warn(msg.format(funcname=funcname,
                                          replacement=replacement),
