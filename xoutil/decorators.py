@@ -31,8 +31,9 @@ from __future__ import (division as _py3_division, print_function as _py3_print,
 
 import sys
 
-from functools import wraps, partial
-
+from deprecation import deprecated
+from functools import update_wrapper, wraps, partial
+update_wrapper = deprecated('xoutil.functools:update_wrapper')(update_wrapper)
 curry = partial
 
 
