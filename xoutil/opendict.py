@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.smart_dict
+# xoutil.opendict
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
@@ -31,21 +31,22 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-class smartdict(dict):
+class opendict(dict):
     '''
     A dictionary implementation that mirrors its keys as attributes::
 
-        >>> d = smartdict({'es': 'spanish'})
+        >>> d = opendict({'es': 'spanish'})
         >>> d.es
         'spanish'
 
         >>> d['es'] = 'espanol'
         >>> d.es
         'espanol'
+        
     '''
     def __getattr__(self, name):
         try:
-            return super(smartdict, self).__getattr__(name)
+            return super(opendict, self).__getattr__(name)
         except AttributeError:
             if name in self:
                 return self[name]
