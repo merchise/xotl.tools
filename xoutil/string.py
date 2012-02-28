@@ -27,6 +27,11 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+_legacy = __import__(b'string', fromlist=[b'dummy'], level=0)
+from xoutil.data import smart_copy as copy_attrs
+copy_attrs(_legacy , __import__(__name__, fromlist=[b'_legacy']))
+del copy_attrs
+
 from re import compile as _regex_compile
 
 from xoutil.deprecation import deprecated
@@ -59,21 +64,21 @@ def capitalize_word(value):
 def capitalize(value, title=True):
     '''
     Capitalizes value according to whether it should be title-like.
-    
-    Title-like means it will capitalize every word but the 3-letters or less 
+
+    Title-like means it will capitalize every word but the 3-letters or less
     unless its the first word::
-    
+
         >>> capitalize('a group is its own worst enemy')
         'A Group is its own Worst Enemy'
-        
+
     (This may be odd because, in the example above, own should be capitalized.)
-    
-    If value is an unicode string, it will return a unicode string; if its a 
-    bytestring, then it will return a bytestring. 
-    
+
+    If value is an unicode string, it will return a unicode string; if its a
+    bytestring, then it will return a bytestring.
+
         >>> type(capitalize(u'something')) is unicode
         True
-        
+
         >>> type(capitalize('something')) is str
         True
     '''
@@ -143,7 +148,7 @@ def parse_boolean(value):
 
     >>> parse_boolean('trUe')
     True
-    
+
     >>> parse_boolean('faLSe')
     False
     '''
