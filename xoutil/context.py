@@ -90,6 +90,8 @@ class Context(object):
             del _data.contexts[self.name]
         return False
 
+# A simple alias for Context
+context = Context
 
 
 class NullContext(object):
