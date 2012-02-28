@@ -38,5 +38,6 @@ def uuid():
     Overwrite this function using IoC to change the standard behavior of
     creating this values.  
     '''
-    from uuid import uuid1
+    _uuid = __import__('uuid', fromlist=[b'dummy'], level=0)
+    uuid1 = getattr(_uuid, 'uuid1')
     return '%s' % uuid1()
