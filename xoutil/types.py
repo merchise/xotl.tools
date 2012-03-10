@@ -18,13 +18,15 @@ Utilities for types and the like.
 '''
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
+
+import types as _legacy
+from types import GeneratorType
 
 from xoutil.data import smart_copy
-
-_legacy = __import__(b'types', fromlist=[b'dummy'], level=0)
-GeneratorType = _legacy.GeneratorType
 smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']))
 del _legacy
 

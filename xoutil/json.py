@@ -45,7 +45,10 @@ To add your own serializers, use the SERIALIZATION_MODULES setting::
 
 # TODO: consider use IoC to extend python json module
 
-from __future__ import (division as _py3_division, print_function as _py3_print, unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
 from decimal import Decimal as _Decimal
 from xoutil.types import is_iterable
@@ -56,11 +59,12 @@ from xoutil.datetime import (is_datetime as _is_datetime,
                              is_time as _is_time)
 
 
-_legacy = __import__(b'json', fromlist=[b'load'], level=0)
+import json as _legacy
+from json import load
 
-from xoutil.data import smart_copy as copy_attrs
-copy_attrs(_legacy , __import__(__name__, fromlist=[b'_legacy']))
-del copy_attrs
+from xoutil.data import smart_copy
+smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']))
+del smart_copy
 
 
 class JSONEncoder(_legacy.JSONEncoder):

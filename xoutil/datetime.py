@@ -40,18 +40,16 @@ DJango and generalized.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
-
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
 
 from re import compile as _regex_compile
 import time
 from time import strftime as _time_strftime
 
-_legacy = __import__('datetime', fromlist=[b'date'], level=0)
+
+import datetime as _legacy
 
 # TODO: Maybe it's better to use IoD for this case
 from xoutil.data import smart_copy

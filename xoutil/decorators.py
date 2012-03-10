@@ -97,6 +97,7 @@ def aliases(**kwargs):
 
 
 # TODO: [manu] Review the third-party egg "decorator"
+@deprecated('decorator.decorator', deprecated_module='xoutil.decorators')
 def decorator(caller):
     '''
     Eases the creation of decorators with arguments::

@@ -25,7 +25,9 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
+
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -38,6 +40,5 @@ def uuid():
     Overwrite this function using IoC to change the standard behavior of
     creating this values.  
     '''
-    _uuid = __import__('uuid', fromlist=[b'dummy'], level=0)
-    uuid1 = getattr(_uuid, 'uuid1')
+    from uuid import uuid1
     return '%s' % uuid1()
