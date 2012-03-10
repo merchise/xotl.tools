@@ -31,12 +31,16 @@ function for the purposes of this module.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-_legacy = __import__(b'functools', fromlist=[b'dummy'], level=0)
+import functools as _legacy
+from functools import partial, update_wrapper
+
+# The following copies all from _legacy to the current module
 from xoutil.data import smart_copy
 smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']))
 del smart_copy

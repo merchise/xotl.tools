@@ -25,9 +25,10 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
-_legacy = __import__(b'string', fromlist=[b'dummy'], level=0)
+import string as _legacy
 from xoutil.data import smart_copy as copy_attrs
 copy_attrs(_legacy , __import__(__name__, fromlist=[b'_legacy']))
 del copy_attrs
@@ -36,8 +37,11 @@ from re import compile as _regex_compile
 
 from xoutil.deprecation import deprecated
 
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
+
+
 
 def safe_strip(value):
     '''
