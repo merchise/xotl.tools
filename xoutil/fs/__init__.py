@@ -59,9 +59,12 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
 def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     '''Iterate filenames recursively.'''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
+    print(regex)
     for dirpath, _dirs, filenames in os.walk(normalize_path(top)):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
+            if 'PyWEB' in path:
+                print(path, ' is a match for ', pattern)
             if (regex is None) or regex.search(path):
                 yield path
 
