@@ -95,17 +95,20 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
         max_deep: the max deep to enter in the stack frames.
     '''
     frame = inspect.currentframe()
-    deep = 0
-    res = None
-    while (res is None) and (deep < max_deep) and (frame is not None):
-        ctx = getargvalues(frame)
-        d = {arg_name: ctx.get(arg_name)} if arg_name is not None else ctx
-        for key, value in d.iteritems():
-            if isinstance(value, obj_type):
-                res = (value, key, deep, frame)
-        frame = frame.f_back
-        deep += 1
-    return res
+    try:
+        deep = 0
+        res = None
+        while (res is None) and (deep < max_deep) and (frame is not None):
+            ctx = getargvalues(frame)
+            d = {arg_name: ctx.get(arg_name)} if arg_name is not None else ctx
+            for key, value in d.iteritems():
+                if isinstance(value, obj_type):
+                    res = (value, key, deep, frame)
+            frame = frame.f_back
+            deep += 1
+        return res
+    finally:
+        del frame # As recommended in the Python's doc to avoid memory leaks
 
 
 
