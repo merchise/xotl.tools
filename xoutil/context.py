@@ -27,13 +27,15 @@
 
 '''
 A context manager for execution context flags.
-Use as:
-    from xoutil import context
-    with context(name):
-        ...
-        if context[name]:
-            ...
 
+Use as:
+
+    >>> from xoutil import context
+    >>> with context('somename'):
+    ...     if context['somename']:
+    ...         print('In context somename')
+    In context somename
+    
 Note the difference creating the context and checking it.
 '''
 
