@@ -33,6 +33,13 @@ __author__ = 'manu'
 
 from functools import wraps
 
+
+class _sizeable(type):
+    'Simple metaclass to make simple_memoize have a __len__ method.'
+    def __len__(self):
+        return len(self.cache)
+
+
 class simple_memoize(object):
     '''
     A simple memoization decorator. It simply caches the result of pure
@@ -52,7 +59,11 @@ class simple_memoize(object):
         1
 
     Warning: Use this only for small (or fixed) time-running applications. Since
-    it may increase the memory consumption considerably.'''
+    it may increase the memory consumption considerably.
+    '''
+
+    __metaclass__ = _sizeable
+
     cache = {}
 
     def __new__(cls, func):
@@ -68,9 +79,40 @@ class simple_memoize(object):
             return func
         return inner
 
+
     @classmethod
     def invalidate(cls, func, args):
-        from xoutil.objutil import smart_getattr
+        '''
+        Invalidates the cache for the function :param:`func` with arguments
+        :param:`args`.
+
+        ::
+        
+            >>> @simple_memoize
+            ... def fib(n):
+            ...    if n <= 1:
+            ...        return 1
+            ...    else:
+            ...        return fib(n-2) + fib(n-1)
+            
+        Given this memoized function you may execute::
+        
+            >>> fib(50)
+            20365011074
+            
+        Now the size of the ``simple_memoize``'s cache is::
+        
+            >>> len(simple_memoize)
+            52
+            
+        If you invalidate some of numbers lesser than 50::
+        
+            >>> simple_memoize.invalidate(fib, (10, ))
+            >>> len(simple_memoize)
+            51
+            
+        '''
+        from xoutil.objects import smart_getattr
         func = smart_getattr('simple_memoize_orig_func', func) or func
         if (func, args) in cls.cache:
             del cls.cache[(func, args)]
