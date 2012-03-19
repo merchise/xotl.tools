@@ -36,10 +36,44 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     Normalizes string, converts to lower-case, removes non-alpha characters,
     and converts spaces to hyphens.
+    
     Parts from http://www.djangosnippets.org/snippets/369/
     
         >>> slugify(u"Manuel Vázquez Acosta")
         u'manuel-vazquez-acosta'
+        
+    If :param:`s` and :param:`entities` is True (the default) all HTML entities
+    are replaced by its equivalent character before normalization::
+    
+        >>> slugify(u"Manuel V&aacute;zquez Acosta")
+        u'manuel-vazquez-acosta'
+        
+    If :param:`entities` is False, then no HTML-entities substitution is made::
+        
+        >>> slugify(u"Manuel V&aacute;zquez Acosta", entities=False)
+        u'manuel-v-aacute-zquez-acosta'
+        
+    If :param:`decimal` is True, then all entities of the form ``&#nnnn`` where
+    `nnnn` is a decimal number deemed as a unicode codepoint, are replaced by
+    the corresponding unicode character::
+    
+        >>> slugify(u'Manuel V&#225;zquez Acosta')
+        u'manuel-vazquez-acosta'
+        
+        >>> slugify(u'Manuel V&#225;zquez Acosta', decimal=False)
+        u'manuel-v-225-zquez-acosta'
+        
+    
+    If :param:`hexadecimal` is True, then all entities of the form ``&#nnnn``
+    where `nnnn` is a hexdecimal number deemed as a unicode codepoint, are
+    replaced by the corresponding unicode character::
+    
+        >>> slugify(u'Manuel V&#x00e1;zquez Acosta')
+        u'manuel-vazquez-acosta'
+        
+        >>> slugify(u'Manuel V&#x00e1;zquez Acosta', hexadecimal=False)
+        u'manuel-v-x00e1-zquez-acosta'
+        
     '''
     import re, unicodedata
     from htmlentitydefs import name2codepoint
