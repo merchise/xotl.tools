@@ -24,11 +24,11 @@
 #
 # Created on 2011-11-08
 
+"An implementation of the @overload decorator for python 2.7"
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
-
-"An implementation of the @overload decorator for python 2.7"
 
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
@@ -139,6 +139,7 @@ class overload(object):
                 setattr(result, '__decision_tree__', __decision_tree__)
             return result
         return decorator
+
 
 if __name__ == '__main__':
     import doctest

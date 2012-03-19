@@ -118,7 +118,14 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
 
 
 def get_flat_list(sequence):
-    '''Flatten out a list and return the result.'''
+    '''
+    Flatten out a sequence as a flat list. 
+    
+    This is the same as::
+    
+        list(flatten(sequence))
+        
+    '''
     return list(flatten(sequence))
 
 
@@ -134,7 +141,7 @@ def dict_update_new(target, source):
 def fake_dict_iteritems(source):
     '''
     Iterate (key, value) in a source that have defined method "keys" and
-    operator "__getitem__". 
+    operator "__getitem__".
     '''
     for key in source.keys():
         yield key, source[key]
@@ -142,11 +149,13 @@ def fake_dict_iteritems(source):
 
 def smart_dict(defaults, *sources):
     '''
-    Build a dictionary looking in sources for all keys defined in "defaults".
+    Build a dictionary looking in sources for all keys or attributes defined in
+    "defaults".
+    
     Each source could be a dictionary or any other object.
+    
     Persistence of all original objects are warranted.
     '''
-
     from copy import deepcopy
     from collections import Mapping
     res = {}

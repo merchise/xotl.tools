@@ -23,17 +23,15 @@
 # MA 02110-1301, USA.
 
 
-'''Some useful Data Structures.'''
+'''Some useful Data Structures and data-related algorithms and functions.'''
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_absimports)
 
-
-# Imported like this to avoid importing our own types and avoid a circular import
-_types = __import__('types', fromlist=[b'dummy'], level=0)
-SliceType = _types.SliceType
-del _types
+from types import SliceType
 
 
 def smart_copy(source, target, full=False):
