@@ -14,7 +14,11 @@
 
 
 '''
-Utilities for types and the like.
+Xoutil types modules.
+
+This modules mirrors all the functions (and, in general, objects) from the
+standard library module ``types``; but it also includes several new types and
+type-related functions.
 '''
 
 
@@ -32,6 +36,7 @@ del _legacy
 
 
 class _UnsetType(type):
+    'The type of the :obj:`Unset` value.'
     def __nonzero__(self):
         return False
 
@@ -54,7 +59,10 @@ class Unset:
 
 def is_iterable(maybe):
     '''
-    Tests `maybe` to see if it is list like::
+    Returns True if `maybe` an iterable object (e.g. implements the `__iter__`
+    method:)
+    
+    ::
     
         >>> is_iterable('all strings are iterable')
         True
@@ -85,8 +93,9 @@ def is_iterable(maybe):
 
 def is_collection(maybe):
     '''
-    Test value to see if it is a tuple, a list, a set or a generator function.
-    It's False for dictionaries or strings::
+    Test `maybe` to see if it is a tuple, a list, a set or a generator function.
+    It returns False for dictionaries and strings::
+    
         >>> is_collection('all strings are iterable')
         False
         
@@ -114,7 +123,7 @@ def is_collection(maybe):
 
 
 def is_string_like(maybe):
-    '''Test value to see if it acts like a string'''
+    '''Returns True if `maybe` acts like a string'''
     try:
         maybe + ""
     except TypeError:
@@ -124,5 +133,8 @@ def is_string_like(maybe):
 
 
 def is_scalar(maybe):
-    '''Test to see value is a string, an int, or some other scalar type'''
+    '''
+    Returns True if `maybe` is a string, an int, or some other scalar type (i.e
+    not an iterable.)
+    '''
     return is_string_like(maybe) or not is_iterable(maybe)
