@@ -19,7 +19,8 @@ Definitions that will be used to declare structures that must be fixed.
 '''
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print, unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division, print_function as _py3_print, 
+                        unicode_literals as _py3_unicode)
 
 import types as _types
 

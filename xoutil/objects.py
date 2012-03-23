@@ -25,9 +25,12 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import)
+
 
 from functools import partial
+import types
 
 from xoutil.types import Unset, is_collection
 
@@ -43,6 +46,7 @@ Several utilities for objects in general.
 # These two functions can be use to always return True or False
 _true = lambda * args, **kwargs: True
 _false = lambda * args, **kwargs: False
+
 
 
 def xdir(obj, attr_filter=_true, value_filter=_true):

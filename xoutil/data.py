@@ -34,6 +34,7 @@ from __future__ import (division as _py3_division,
 from types import SliceType
 
 
+
 def smart_copy(source, target, full=False):
     '''
     Copies attributes (or keys) from "source" to "target".
