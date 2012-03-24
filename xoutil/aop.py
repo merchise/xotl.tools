@@ -39,74 +39,64 @@ __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
 
 
-from xoutil.types import Unset
 
-
-# Following attribute name is used to store method queues inner objects.
-_ATTR_REPLACED_METHODS = '::replaced-methods'
-
-
-
-def push_method(obj, name, new_function):
+def change_method(obj, new_function, name=None):
     '''
     Inject the new function as replacement of existing method.
+    Only for heap types, use wrapper in case you need for this same purpose.
     '''
-    replaced_methods = getattr(obj, _ATTR_REPLACED_METHODS, Unset)
-    if replaced_methods is Unset:
-        replaced_methods = {}
-        setattr(obj, _ATTR_REPLACED_METHODS, replaced_methods)
-    queue = replaced_methods.setdefault(name, [])
-    queue.append(getattr(obj, name, None))
-    setattr(obj, name, new_function)
+    if not name:
+        name = new_function.__name__
+    cls = obj.__class__
+    extended_class = type(cls.__name__, (cls,), {b'__module__': b'merchise-buildin'})
+    extended_class._merchise_extended = True
+    setattr(extended_class, name, new_function)
+    obj.__class__ = extended_class
+    return getattr(super(extended_class, obj), name, None)
 
 
-def pop_method(obj, name):
+
+def reset_methods(obj):
     '''
-    Pop a method from the queue and restore the previous state.
+    Remove all extension methods from an object.
     '''
-    replaced_methods = getattr(obj, _ATTR_REPLACED_METHODS, Unset)
-    if replaced_methods is not Unset:
-        queue = replaced_methods.get(name, Unset)
-        if queue is not Unset:
-            last = queue.pop()
-            if len(queue) == 0:
-                del replaced_methods[name]
-            if last is not None:
-                aux = getattr(last, 'im_class', Unset)
-                if aux != type(obj):
-                    setattr(obj, name, last)
-                else:
-                    delattr(obj, name)
-            else:
-                delattr(obj, name)
-        else:
-            raise ValueError('No "%s" injected method in this object!' % name)
-    else:
-        raise ValueError("This object hasn't injected methods!")
+    cls = obj.__class__
+    res = 0
+    while cls.__dict__.get('_merchise_extended'):
+        cls = cls.__base__
+        res += 1
+    if res > 0:
+        obj.__class__ = cls
+    return res
 
 
-def super_method(obj, name):
-    '''
-    Return the previous method in the queue or None.
-    '''
-    replaced_methods = getattr(obj, _ATTR_REPLACED_METHODS, Unset)
-    if replaced_methods is not Unset:
-        queue = replaced_methods.get(name, Unset)
-        if queue is not Unset:
-            from traceback import extract_stack
-            ss = extract_stack(limit=2)[-2]
-            print(':::::::', ss)
-            i = len(queue) - 1
-            found = None
-            while (found is None) and (i > 0):
-                m = queue[i]
-                if (m.__name__ == ss[2]) and (m.func_code.co_filename == ss[0]):
-                    found = queue[i - 1]
-                    print('======== FOUND')
-                else:
-                    i -= 1
-            return found if found is not None else queue[-1]
-        else:
-            return None
-    else:
-        return None
+
+# ============ Tests =======================
+
+class Foobar(object):
+    def test(self, arg):
+        print('=== %s' % self.calc(arg))
+
+    def calc(self, arg):
+        return 'Foobar: %s' % arg
+
+
+class FoobarX(Foobar):
+    def calc(self, arg):
+        return 'FoobarX: %s' % arg
+
+
+def wrap_test(obj, ctx):
+    _super = None
+    def test(self, arg):
+        if _super:
+            _super(arg)
+        print('Test wrapped with:', ctx)
+    _super = extend_method(obj, test)
+
+
+def wrap_calc(obj, ctx):
+    _super = None
+    def inner(self, arg):
+        return '(%s:%s)' % (_super(arg) if _super else '-', ctx)
+    _super = extend_method(obj, inner, name='calc')
