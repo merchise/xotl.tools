@@ -24,10 +24,20 @@
 # Created on Mar 23, 2012
 
 '''
-Very simple AOP implementation allowing method replacing in objects with push
-function, recover the last state with pop, reset an object to its original state
-and user a special super function inner new functions used to inject the new
-behavior.
+Very simple AOP implementation allowing method replacing in objects with change
+function, reset an object to its original state and user a special super
+function inner new functions used to inject the new behavior.
+
+Aspect-oriented programming (AOP) increase modularity by allowing the separation
+of cross-cutting concerns.
+
+An aspect can alter the behavior of the base code (the non-aspect part of a
+program) by applying advice (additional behavior) at various join-points (points
+in a program) specified in a quantification or query called a point-cut (that 
+detects whether a given join point matches).
+
+An aspect can also make structural changes to other classes, like adding members
+or parents.
 '''
 
 from __future__ import (division as _py3_division,
@@ -44,6 +54,11 @@ def change_method(obj, new_function, name=None):
     '''
     Inject the new function as replacement of existing method.
     Only for heap types, use wrapper in case you need for this same purpose.
+
+    Uper method can be captured after this by executing::
+        _super = super(obj.__class__, obj).<<method-name>>
+
+    Returns created extended class.
     '''
     if not name:
         name = new_function.__name__
@@ -52,7 +67,7 @@ def change_method(obj, new_function, name=None):
     extended_class._merchise_extended = True
     setattr(extended_class, name, new_function)
     obj.__class__ = extended_class
-    return getattr(super(extended_class, obj), name, None)
+    return extended_class
 
 
 
@@ -71,6 +86,39 @@ def reset_methods(obj):
 
 
 
+def wrapper(inner):
+    class MetaWrapper(type):
+        @staticmethod
+        def __getattr__(name):
+            return getattr(inner.__class__, name)
+        
+    class Wrapper(object):
+        __metaclass__ = MetaWrapper
+
+        @staticmethod
+        def __getattr__(name):
+            return getattr(inner, name)
+
+    res = Wrapper()
+    
+    for attr in dir(inner.__class__):
+        value = getattr(inner.__class__, attr)
+        if attr.startswith('__') and callable(value) and not isinstance(value, type):
+            def create_method(value):
+                def call(*args, **kwargs):
+                    if len(args) > 0:
+                        if args[0] is res:
+                            args = (inner,) + args[1:]
+                        if args[0] is Wrapper:
+                            args = (inner.__class__,) + args[1:]
+                    return value(*args, **kwargs)
+                return call
+            setattr(Wrapper, attr, create_method(value))
+
+    return res
+
+
+
 # ============ Tests =======================
 
 class Foobar(object):
@@ -79,6 +127,14 @@ class Foobar(object):
 
     def calc(self, arg):
         return 'Foobar: %s' % arg
+
+    @staticmethod
+    def stest(arg):
+        print('Static:', arg)
+
+    @classmethod
+    def ctest(cls, arg):
+        print('Class:', cls, arg)
 
 
 class FoobarX(Foobar):
