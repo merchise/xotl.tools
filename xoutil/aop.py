@@ -33,7 +33,7 @@ of cross-cutting concerns.
 
 An aspect can alter the behavior of the base code (the non-aspect part of a
 program) by applying advice (additional behavior) at various join-points (points
-in a program) specified in a quantification or query called a point-cut (that 
+in a program) specified in a quantification or query called a point-cut (that
 detects whether a given join point matches).
 
 An aspect can also make structural changes to other classes, like adding members
@@ -43,116 +43,117 @@ or parents.
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _py3_abs_imports)
+
+from contextlib import contextmanager
 
 __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
 
 
+def inject_methods(target, *sources, **named_functions):
+    'Injects/replaces the sources for the given target.'
+    cls = target if isinstance(target, type) else target.__class__
+    _merchise_extended = cls.__dict__.get('_merchise_extended', {'depth': 0}).copy()
+    _merchise_extended['depth'] += 1
+    attrs = {b'__doc__': cls.__doc__, b'__module__': b'merchise.builtin',
+             '_merchise_extended': _merchise_extended}
+    attrs.update(named_functions)
+    attrs.update({f.__name__: f for f in sources})
+    extended_class = type(cls.__name__, (cls, ), attrs)
+    if not isinstance(target, type):
+        try:
+            target.__class__ = extended_class
+        except:
+            class wrapper(target.__class__):
+                pass
+            target = wrapper(target)
+            target.__class__ = extended_class
+        result = target
+    else:
+        result = extended_class
+    return result
 
-def change_method(obj, new_function, name=None):
+
+@contextmanager
+def weaved(target, *sources, **named_functions):
     '''
-    Inject the new function as replacement of existing method.
-    Only for heap types, use wrapper in case you need for this same purpose.
-
-    Uper method can be captured after this by executing::
-        _super = super(obj.__class__, obj).<<method-name>>
-
-    Returns created extended class.
-    '''
-    if not name:
-        name = new_function.__name__
-    cls = obj.__class__
-    extended_class = type(cls.__name__, (cls,), {b'__module__': b'merchise-buildin'})
-    extended_class._merchise_extended = True
-    setattr(extended_class, name, new_function)
-    obj.__class__ = extended_class
-    return extended_class
-
-
-
-def reset_methods(obj):
-    '''
-    Remove all extension methods from an object.
-    '''
-    cls = obj.__class__
-    res = 0
-    while cls.__dict__.get('_merchise_extended'):
-        cls = cls.__base__
-        res += 1
-    if res > 0:
-        obj.__class__ = cls
-    return res
-
-
-
-def wrapper(inner):
-    class MetaWrapper(type):
-        @staticmethod
-        def __getattr__(name):
-            return getattr(inner.__class__, name)
-        
-    class Wrapper(object):
-        __metaclass__ = MetaWrapper
-
-        @staticmethod
-        def __getattr__(name):
-            return getattr(inner, name)
-
-    res = Wrapper()
+    Returns a context manager that weaves :param:`target` with all the
+    :param:`sources` and the :param:`named_functions` weaved into it. This
+    method yields the weaved object into the context manager, so you have
+    access to it. Upon exiting the context manager, the :param:`target` is
+    reset to it's previous state (if possible).
     
-    for attr in dir(inner.__class__):
-        value = getattr(inner.__class__, attr)
-        if attr.startswith('__') and callable(value) and not isinstance(value, type):
-            def create_method(value):
-                def call(*args, **kwargs):
-                    if len(args) > 0:
-                        if args[0] is res:
-                            args = (inner,) + args[1:]
-                        if args[0] is Wrapper:
-                            args = (inner.__class__,) + args[1:]
-                    return value(*args, **kwargs)
-                return call
-            setattr(Wrapper, attr, create_method(value))
+    For example, in the following code::
 
-    return res
+        >>> class Test(object):
+        ...    def f(self, n):
+        ...        return n
+        
+        >>> test = Test()
 
 
+    You may want to record each call to ``f`` on the ``test`` object::
 
-# ============ Tests =======================
+        >>> def f(self, n):
+        ...     print('Log this')
+        ...     return super(_ec, self).f(n) # Notice below the assignment to _ec
 
-class Foobar(object):
-    def test(self, arg):
-        print('=== %s' % self.calc(arg))
+        >>> with weaved(test, f) as test:
+        ...    _ec = test.__class__ # Needed
+        ...    test.f(10)
+        Log this
+        10
+        
+    But once you leave the context, ``test`` will stop logging::
+    
+        >>> test.f(10)
+        10
+        
+    You may nest several calls to this:
+        
+        >>> def f2(self, n):
+        ...    print('Done it')
+        ...    return super(_ec2, self).f(n)
+        
+        >>> with weaved(test, f) as test:
+        ...    _ec = test.__class__
+        ...    with weaved(test, f=f2) as test:
+        ...        _ec2 = test.__class__
+        ...        test.f(10)
+        ...    test.f(12)
+        Done it
+        Log this
+        10
+        Log this
+        12
+        
+        >>> test.f(10)
+        10
+        
+    '''
+    try:
+        result = inject_methods(target, *sources, **named_functions)
+        yield result
+    finally:
+        if result is target:
+            cls = target.__class__
+            res = 0
+            depth = 0
+            while depth == 0 and cls.__dict__.get('_merchise_extended'):
+                depth = cls.__dict__.get('_merchise_extended', {}).get('depth', 0)
+                cls = cls.__base__
+                res += 1
+            if res > 0:
+                target.__class__ = cls
 
-    def calc(self, arg):
-        return 'Foobar: %s' % arg
 
-    @staticmethod
-    def stest(arg):
-        print('Static:', arg)
-
-    @classmethod
-    def ctest(cls, arg):
-        print('Class:', cls, arg)
-
-
-class FoobarX(Foobar):
-    def calc(self, arg):
-        return 'FoobarX: %s' % arg
-
-
-def wrap_test(obj, ctx):
-    _super = None
-    def test(self, arg):
-        if _super:
-            _super(arg)
-        print('Test wrapped with:', ctx)
-    _super = extend_method(obj, test)
-
-
-def wrap_calc(obj, ctx):
-    _super = None
-    def inner(self, arg):
-        return '(%s:%s)' % (_super(arg) if _super else '-', ctx)
-    _super = extend_method(obj, inner, name='calc')
+#@contextmanager
+#def weaved_with_super(target, *sources, **named_functions):
+#    from itertools import chain
+#    weaves = {}
+#    for name, func in chain(((f.__name__, f) for f in sources), named_functions.items()):
+#        _super = func
+#        def inner(*args, **kw):
+#            return func(*args, **kw)
+#    
