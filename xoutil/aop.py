@@ -51,7 +51,7 @@ __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
 
 
-def inject_methods(target, *sources, **attrs):
+def inject_dependencies(target, *sources, **attrs):
     'Injects/replaces the sources for the given target.'
     cls = target if isinstance(target, type) else target.__class__
     _merchise_extended = cls.__dict__.get('_merchise_extended', {'depth': 0}).copy()
@@ -132,7 +132,7 @@ def weaved(target, *sources, **attrs):
         
     '''
     try:
-        result = inject_methods(target, *sources, **attrs)
+        result = inject_dependencies(target, *sources, **attrs)
         yield result
     finally:
         if result is target:
