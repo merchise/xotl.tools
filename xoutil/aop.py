@@ -51,14 +51,13 @@ __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
 
 
-def inject_methods(target, *sources, **named_functions):
+def inject_methods(target, *sources, **attrs):
     'Injects/replaces the sources for the given target.'
     cls = target if isinstance(target, type) else target.__class__
     _merchise_extended = cls.__dict__.get('_merchise_extended', {'depth': 0}).copy()
     _merchise_extended['depth'] += 1
-    attrs = {b'__doc__': cls.__doc__, b'__module__': b'merchise.builtin',
-             '_merchise_extended': _merchise_extended}
-    attrs.update(named_functions)
+    attrs.update({b'__doc__': cls.__doc__, b'__module__': b'merchise.builtin',
+                  '_merchise_extended': _merchise_extended})
     attrs.update({f.__name__: f for f in sources})
     extended_class = type(cls.__name__, (cls, ), attrs)
     if not isinstance(target, type):
@@ -76,10 +75,10 @@ def inject_methods(target, *sources, **named_functions):
 
 
 @contextmanager
-def weaved(target, *sources, **named_functions):
+def weaved(target, *sources, **attrs):
     '''
     Returns a context manager that weaves :param:`target` with all the
-    :param:`sources` and the :param:`named_functions` weaved into it. This
+    :param:`sources` and the :param:`attrs` weaved into it. This
     method yields the weaved object into the context manager, so you have
     access to it. Upon exiting the context manager, the :param:`target` is
     reset to it's previous state (if possible).
@@ -133,7 +132,7 @@ def weaved(target, *sources, **named_functions):
         
     '''
     try:
-        result = inject_methods(target, *sources, **named_functions)
+        result = inject_methods(target, *sources, **attrs)
         yield result
     finally:
         if result is target:
@@ -146,14 +145,3 @@ def weaved(target, *sources, **named_functions):
                 res += 1
             if res > 0:
                 target.__class__ = cls
-
-
-#@contextmanager
-#def weaved_with_super(target, *sources, **named_functions):
-#    from itertools import chain
-#    weaves = {}
-#    for name, func in chain(((f.__name__, f) for f in sources), named_functions.items()):
-#        _super = func
-#        def inner(*args, **kw):
-#            return func(*args, **kw)
-#    
