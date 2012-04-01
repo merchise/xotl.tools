@@ -1,9 +1,14 @@
 #!/usr/bin/env python
+import os, sys
 from setuptools import setup, find_packages
 
-version = '1.0.17'
+# Import the version from the release module
+project_name = 'xoutil'
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(_current_dir, project_name))
+from release import VERSION as version
 
-setup(name='xoutil',
+setup(name=project_name,
       version=version,
       description="Collection of usefull algorithms and other very disparate "
                   "stuff",
