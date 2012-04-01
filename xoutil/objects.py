@@ -25,9 +25,12 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import)
+
 
 from functools import partial
+import types
 
 from xoutil.types import Unset, is_collection
 
@@ -43,6 +46,7 @@ Several utilities for objects in general.
 # These two functions can be use to always return True or False
 _true = lambda * args, **kwargs: True
 _false = lambda * args, **kwargs: False
+
 
 
 def xdir(obj, attr_filter=_true, value_filter=_true):
@@ -205,6 +209,11 @@ def smart_getattr(name, *sources, **kw):
 
 
 def get_and_del_attr(obj, name, default=None):
+    '''
+    Looks for an attribute in the :param:`obj` and returns its value and removes
+    the attribute. If the attribute is not found, :param:`default` is returned
+    instead.
+    '''
     res = getattr(obj, name, Unset)
     if res is Unset:
         res = default
@@ -251,7 +260,7 @@ def nameof(target):
         >>> nameof('manuel')
         'manuel'
         
-    - The of an object with a __name__ attribute, is the value of __name__::
+    - The name of an object with a ``__name__`` attribute is its value::
     
         >>> nameof(type)
         'type'
@@ -260,7 +269,7 @@ def nameof(target):
         >>> nameof(Someclass)
         'Someclass'
         
-    - The name of any other object is the __name__ of the its type::
+    - The name of any other object is the ``__name__`` of the its type::
     
         >>> nameof([1, 2])
         'list'

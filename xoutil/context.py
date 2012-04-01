@@ -27,13 +27,15 @@
 
 '''
 A context manager for execution context flags.
-Use as:
-    from xoutil import context
-    with context(name):
-        ...
-        if context[name]:
-            ...
 
+Use as:
+
+    >>> from xoutil import context
+    >>> with context('somename'):
+    ...     if context['somename']:
+    ...         print('In context somename')
+    In context somename
+    
 Note the difference creating the context and checking it.
 '''
 
@@ -119,3 +121,22 @@ class NullContext(object):
 
 
 _null_context = NullContext()
+
+
+class SimpleClose(object):
+    '''
+    A very simple close manager that just call the argument function exiting the
+    manager.
+    '''
+    def __init__(self, close_funct, *args, **kwargs):
+        self.close_funct = close_funct
+        self.args = args
+        self.kwargs = kwargs
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close_funct(*self.args, **self.kwargs)
+        return False
+    

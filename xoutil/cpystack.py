@@ -36,10 +36,41 @@ MAX_DEEP = 15
 
 
 def getargvalues(frame):
+    '''
+    Inspects the given frame for arguments and returns a dictionary that maps
+    parameters names to arguments values. If an `*` argument was passed then the
+    key on the returning dictionary would be formatted as 
+    `<name-of-*-param>[index]`.
+    
+    For example in the function::
+    
+        >>> def autocontained(a, limit, *margs, **ks):
+        ...    import sys
+        ...    return getargvalues(sys._getframe())
+        
+        >>> autocontained(1, 12)['limit']
+        12
+        
+        >>> autocontained(1, 2, -10, -11)['margs[0]']
+        -10
+        
+    Packed arguments also works::
+    
+        >>> def nested((x, y), radius):
+        ...    import sys
+        ...    return getargvalues(sys._getframe())
+        
+        >>> nested((1, 2), 12)['y']
+        2
+    '''
+    from xoutil.types import is_collection
+    from xoutil.iterators import flatten
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
-    for key in pos:
-        res[key] = values[key]
+    for keys in pos:
+        if not is_collection(keys):
+            keys = (keys,)
+        res.update({key: values[key] for key in flatten(keys)})
     if args:
         i = 0
         for item in values[args]:
@@ -64,17 +95,20 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
         max_deep: the max deep to enter in the stack frames.
     '''
     frame = inspect.currentframe()
-    deep = 0
-    res = None
-    while (res is None) and (deep < max_deep) and (frame is not None):
-        ctx = getargvalues(frame)
-        d = {arg_name: ctx.get(arg_name)} if arg_name is not None else ctx
-        for key, value in d.iteritems():
-            if isinstance(value, obj_type):
-                res = (value, key, deep, frame)
-        frame = frame.f_back
-        deep += 1
-    return res
+    try:
+        deep = 0
+        res = None
+        while (res is None) and (deep < max_deep) and (frame is not None):
+            ctx = getargvalues(frame)
+            d = {arg_name: ctx.get(arg_name)} if arg_name is not None else ctx
+            for key, value in d.iteritems():
+                if isinstance(value, obj_type):
+                    res = (value, key, deep, frame)
+            frame = frame.f_back
+            deep += 1
+        return res
+    finally:
+        del frame # As recommended in the Python's doc to avoid memory leaks
 
 
 
