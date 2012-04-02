@@ -28,17 +28,9 @@ setup(name=project_name,
       license='GPL',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
-      package_data={
-        'xoutil': ['paste/templates/*.*',
-                   'paste/templates/**/*.*',
-                   'paste/templates/**/**/*.*']
-      },
       zip_safe=False,
       install_requires=[
       ],
       entry_points="""
-        [paste.paster_create_template]
-            merchise = xoutil.paste.template:MerchisePackageTemplate
-            merchise_with_ns = xoutil.paste.template:MerchiseNamespaceTemplate
       """,
       )
