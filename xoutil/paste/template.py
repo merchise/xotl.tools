@@ -53,6 +53,8 @@ def guess():
             if len(packages) < 3:
                 packages.insert(1, '')
             return tuple(packages)
+        else:
+            return ('', '', module)
     else:
         return default
 

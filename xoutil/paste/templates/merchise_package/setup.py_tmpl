@@ -40,8 +40,8 @@ from release import VERSION as version
 
 setup(name=project_name,
       version=version,
-      description="{{description or empty}}",
-      long_description=open(os.path.join('docs', readme.txt')).read(),
+      description="{{description or ''}}",
+      long_description=open(os.path.join('docs', 'readme.txt')).read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
