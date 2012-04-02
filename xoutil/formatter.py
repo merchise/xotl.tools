@@ -29,7 +29,8 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
 
 class DelimiterFactory(object):
@@ -108,6 +109,11 @@ class Template(object):
     A string class for supporting $-substitutions.
     It has similar interface that "string.Template" but using "eval" instead
     simple dictionary looking.
+    
+    This means that you get all the functionality provided by `string.Template`
+    (although, perhaps modified) and you get also the ability to write more
+    complex expressions. If you need repetition or other flow-control sentences
+    you should use other templating system.
     '''
 
     __metaclass__ = _TemplateClass
@@ -197,7 +203,7 @@ def count(source, chars):
 
         >>> count('Todos los nenes del mundo vamos una rueda a hacer', 'a')
         1
-        
+
         # The vowel "i" is missing
         >>> count('Todos los nenes del mundo vamos una rueda a hacer', 'aeiuo')
         4

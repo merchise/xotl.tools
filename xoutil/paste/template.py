@@ -28,29 +28,51 @@
 "A very simple template structure for Merchise packages"
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print)
+                        print_function as _py3_print,
+                        absolute_import as _py3_abs_imports)
 
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
 __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
+import sys
+import copy
 
 from paste.script.templates import Template, var
-from paste.util.template import paste_script_template_renderer
+from paste.util.template import paste_script_template_renderer 
 
-from functools import partial
+from xoutil.functools import partial
+
+def guess():
+    'Guesses the namespaces and components parts'
+    default = ('merchise', '', 'component')
+    if len(sys.argv) > 0:
+        module = sys.argv[-1]
+        if module.find('.') > -1:
+            packages = module.rsplit('.', 2)
+            if len(packages) < 3:
+                packages.insert(1, '')
+            return tuple(packages)
+    else:
+        return default
+
+def guess_namespace():
+    return guess()[0]
+
+def guess_namespace2():
+    return guess()[1]
+
+def guess_package():
+    return guess()[2]
 
 
-class MerchisePackageTemplate(Template):
-    _template_dir = 'templates/merchise_package'
-    summary = "Un paquete sencillo para Merchise"
-
+class MerchiseTemplate(Template):
     vars = [
         var('version', 'Version (like 0.1.0)', default='0.1.0'),
         var('description', 'One-line description of the package'),
         var('keywords', 'Space-separated keywords/tags'),
     ]
-
+    
     @staticmethod
     def stringify_entry_points(vars, eps=None, pad=' '*8):
         eps = vars.get('entry_points', {}) if not eps else eps
@@ -97,6 +119,36 @@ class MerchisePackageTemplate(Template):
         vars.setdefault('datetime', now)
         vars.setdefault('entry_points', {})
         vars.setdefault('stringify_entry_points',
-                        partial(MerchisePackageTemplate.stringify_entry_points,
+                        partial(MerchiseTemplate.stringify_entry_points,
                                 vars))
         return paste_script_template_renderer(contents, vars, filename)
+    
+
+class MerchisePackageTemplate(MerchiseTemplate):
+    _template_dir = 'templates/merchise_package'
+    summary = "A simple Merchise package"
+
+
+class MerchiseNamespaceTemplate(MerchiseTemplate):
+    _template_dir = 'templates/merchise_namespace'
+    summary = "A Merchise package inside a namespace"
+
+    vars = [
+        var('namespace_package', 
+            'The package namespace (like dw or merchise)', 
+            default=guess_namespace()),
+        var('package',
+            'The package name (like xopgi)', 
+            default=guess_package()),
+    ]
+    vars += copy.deepcopy(MerchiseTemplate.vars)
+
+    
+    def check_vars(self, vars, command):
+        # This is needed in order to ask for the package var
+        if (not command.options.no_interactive and
+           not hasattr(command, '_deleted_once')):
+            del vars['package']
+            command._deleted_once = True
+        return super(MerchiseNamespaceTemplate, self).check_vars(vars, command)
+    

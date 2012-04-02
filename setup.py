@@ -39,5 +39,6 @@ setup(name=project_name,
       entry_points="""
         [paste.paster_create_template]
             merchise = xoutil.paste.template:MerchisePackageTemplate
+            merchise_with_ns = xoutil.paste.template:MerchiseNamespaceTemplate
       """,
       )
