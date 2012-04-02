@@ -1,9 +1,0 @@
-Changelog
-=========
-
-{{py:header_text = "%sdev (unreleased)" % version}}
-{{py:header_line = "-" * len(header_text)}}
-{{header_text}}
-{{header_line}}
-
-- Initial release
