@@ -35,15 +35,49 @@ import unittest
 from xoutil.annotate import annotate
 
 class Test(unittest.TestCase):
-    def test_signature(self):
-        @annotate('(a: 1, b: {1: 4}, *args: list)')
+    def test_keywords(self):
+        @annotate(a=1, b={1:4}, args=list, return_annotation=tuple)
         def dummy():
             pass
         
         self.assertEqual(dummy.__annotations__.get('a', None), 1)
         self.assertEqual(dummy.__annotations__.get('b', None), {1: 4})
         self.assertEqual(dummy.__annotations__.get('args', None), list)
-        self.assertEqual(dummy.__annotations__.get('return', None), None)
+        self.assertEqual(dummy.__annotations__.get('return', None), tuple)
+
+        
+    def test_signature(self):
+        @annotate('(a: 1, b: {1: 4}, *args: list, **kwargs: dict) -> tuple')
+        def dummy():
+            pass
+        
+        self.assertEqual(dummy.__annotations__.get('a', None), 1)
+        self.assertEqual(dummy.__annotations__.get('b', None), {1: 4})
+        self.assertEqual(dummy.__annotations__.get('args', None), list)
+        self.assertEqual(dummy.__annotations__.get('kwargs', None), dict)
+        self.assertEqual(dummy.__annotations__.get('return', None), tuple)
+        
+    
+    def test_invalid_nonsense_signature(self):
+        with self.assertRaises(SyntaxError):
+            @annotate('(a, b) -> list')
+            def dummy(a, b):
+                pass
+            
+        # But the following is ok
+        @annotate('() -> list')
+        def dummy(a, b):
+            return 'Who cares about non-annotated args?'
+        
+        
+    def test_mixed_annotations(self):
+        @annotate('(a: str, b:unicode) -> bool', a=unicode, return_annotation=True)
+        def dummy():
+            pass
+        
+        self.assertIs(dummy.__annotations__.get('a'), unicode)
+        self.assertIs(dummy.__annotations__.get('b'), unicode)
+        self.assertIs(dummy.__annotations__.get('return'), True)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

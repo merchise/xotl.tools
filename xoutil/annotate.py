@@ -35,9 +35,64 @@ from __future__ import (division as _py3_division,
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
+from re import compile as _regex_compile
+from ast import parse as _ast_parse
+from xoutil.functools import partial
+_ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
 from xoutil.decorators import decorator
 from xoutil.iterators import first
+
+_SIGNATURE = _regex_compile(r'''(?ixm)
+                            \(                # Required opening for the argumens
+                            (?P<args>(.)*)
+                            \)\s*             # Required close
+                            (?:->\s*(?P<return>.+))?$
+                            ''')
+
+_ARG_SEP = _regex_compile(r'(?ixm)^\*{0,2}(?P<argname>[_\w\d]+)\s*:')
+
+def _split_signature(signature):
+    signature = signature.strip() if isinstance(signature, basestring) else ''
+    if signature:
+        matches = _SIGNATURE.match(signature)            
+        return matches.group('args'), matches.group('return')
+    else:
+        return '', None
+    
+        
+def _parse_signature(signature):
+    def _split_annotation_expression(expr):
+        match = _ARG_SEP.match(expr)
+        if not match:
+            raise SyntaxError('Invalid signature expression %r' % expr)
+        argname = match.group('argname')
+        expr = expr[match.end():].lstrip()
+        if not argname: 
+            raise SyntaxError('The signature %r is not valid' % expr)
+        try:
+            # This is a hack to help not implement an expression parser for Python
+            node = _ast_parse(expr)
+            return argname, node, ''  # We consumed the whole expression
+        except SyntaxError as error:
+            # This probably will be a:
+            #    ..., varname: expr...
+            #                ^
+            offset = error.offset
+            while offset > 0 and expr[offset] != ',':
+                offset -= 1
+            if offset > 0 and expr[offset] == ',':
+                return argname, _ast_parse(expr[:offset]), expr[offset+1:].lstrip()
+            else:
+                raise
+        
+    args, return_annotation = _split_signature(signature)
+    while args:
+        arg, expr, args = _split_annotation_expression(args)
+        code = compile(expr, '', 'eval')
+        yield arg, eval(code)
+    if return_annotation:
+        yield 'return', eval(return_annotation)
 
 @decorator
 def annotate(func, signature=None, **keyword_annotations):
@@ -47,8 +102,7 @@ def annotate(func, signature=None, **keyword_annotations):
     
     You may pass the following arguments:
     
-    - [Not yet implemented] A single string with the equivalent signature of the
-      function::
+    - A single string with the equivalent signature of the function::
     
          >>> @annotate('(a: "some argument", *args: "positional arguments") -> list')
          ... def somefunction(a, *args):
@@ -69,6 +123,9 @@ def annotate(func, signature=None, **keyword_annotations):
         also deprecated).
         
       - Specifying defaults is no supported (nor needed).
+      
+      - It makes no sense to put an argument without an annotation, so this
+        will raise an exception (SyntaxError).
       
     - Several keyword arguments with each of the annotations. Since you can't
       include the 'return' keyword argument for the annotation related with the
@@ -108,7 +165,9 @@ def annotate(func, signature=None, **keyword_annotations):
     '''
     func.__annotations__ = annotations = getattr(func, '__annotations__', {})
     if signature:
-        raise NotImplemented('Parsing signatures is not yet implemented')
+#        annotations.update({argname: value for argname, value in _parse_signature(signature)})
+        for argname, value in _parse_signature(signature):
+            annotations[argname] = value
     return_annotation_kwarg = first(lambda k: k in ('return_annotation', '_return', '__return'), keyword_annotations)
     if return_annotation_kwarg:
         annotations['return'] = keyword_annotations[return_annotation_kwarg]
