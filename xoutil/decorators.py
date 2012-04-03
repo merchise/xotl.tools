@@ -26,14 +26,14 @@
 # TODO: reconsider all this module
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division, 
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import)
 
 import sys
 
-from deprecation import deprecated
-from functools import update_wrapper, wraps, partial
-update_wrapper = deprecated('xoutil.functools:update_wrapper')(update_wrapper)
+from xoutil.functools import update_wrapper, wraps, partial
 curry = partial
 
 
@@ -134,9 +134,11 @@ def decorator(caller):
         2
     '''
     @wraps(caller)
-    def outer_decorator(target=None, **kwargs):
-        if len(kwargs) > 0:
-            return partial(caller, **kwargs)
+    def outer_decorator(*args, **kwargs):
+        if len(args) > 0 or len(kwargs) > 0:
+            def _decorator(func):
+                return partial(caller, **kwargs)(*((func, ) + args))
+            return _decorator
         else:
             return caller
     return outer_decorator

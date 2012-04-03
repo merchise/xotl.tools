@@ -1,0 +1,10 @@
+Xoutil
+======
+
+Reversed chronological order.
+
+2012-04-03. Release 1.0.21
+
+- Includes a new module :mod:`xoutil.annotate` that provides a way to place
+  Python annotations in forward-compatible way.
+  
