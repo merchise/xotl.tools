@@ -99,7 +99,19 @@ def aliases(**kwargs):
 
 def decorator(caller):
     '''
-    Eases the creation of decorators with arguments::
+    Eases the creation of decorators with arguments.Normally a decorator with
+    arguments needs three nested functions like this::
+    
+        def decorator(*decorator_arguments):
+            def real_decorator(target):
+                def inner(*args, **kwargs):
+                    pass
+                return inner
+            return real_decorator
+    
+    This :function:`decorator`_ reduces the need of the first level by
+    comprising both into a single function definition. However it does not
+    removes the need for an ``inner`` function::
 
         >>> @decorator
         ... def plus(target, value):
@@ -109,14 +121,16 @@ def decorator(caller):
         ...        return target(*args) + value
         ...    return inner
 
-        >>> @plus(value=10)
+        >>> @plus(10)
         ... def ident(val):
         ...     return val
 
         >>> ident(1)
         11
 
-    The decorator with default values may be invoked without parenthesis::
+    A decorator with default values for all its arguments (except, of course,
+    the first one which is the decorated :param:`target`_) may be invoked without
+    parenthesis::
 
         >>> @decorator
         ... def plus2(func, value=1, missing=2):
