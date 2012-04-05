@@ -3,6 +3,23 @@ Xoutil
 
 Reversed chronological order.
 
+2012-04-05. Release 1.0.22
+
+- Allows annotation's expressions to use defined local variables.  Before this
+  release the following code raised an error::
+    
+        >>> from xoutil.annotate import annotate
+        >>> x1 = 1
+        >>> @annotation('(a: x1)')
+        ... def dummy():
+        ...     pass
+        Traceback (most recent call last):
+           ...
+        NameError: global name 'x1' is not defined
+    
+- Fixes decorators to allow args-less decorators
+
+
 2012-04-03. Release 1.0.21
 
 - Includes a new module :mod:`xoutil.annotate` that provides a way to place
