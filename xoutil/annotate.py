@@ -85,14 +85,49 @@ def _parse_signature(signature):
                 return argname, _ast_parse(expr[:offset]), expr[offset+1:].lstrip()
             else:
                 raise
+            
+    class l(object):
+        def __init__(self, init={}, skip_levels=5):
+            import sys
+            # XXX: This code is very fragile, but is the "right" thing to do
+            #      in order not to leak implementation-related local variables. 
+            #      Any lower number will actually may be wrong results. For 
+            #      instance if skip_levels would be 2::
+            #
+            #          >>> args = 'args'
+            #          >>> @annotate('(a: args)')
+            #          ... def d():
+            #          ...   pass
+            #
+            #      would actually get the tuple containing the string signature
+            #      cause in is own implementation `annotate` uses an `args`
+            #      local variable::
+            #
+            #          >>> d.__annotations__
+            #          {u'a': (u'(a: args)',)}
+            #
+            self.f = sys._getframe(skip_levels)
+            self.d = dict(init)
         
+        def __getitem__(self, key):
+            from xoutil.iterators import dict_update_new
+            if key in self.d:
+                return self.d[key]
+            else:
+                while self.f and key not in self.d:
+                    dict_update_new(self.d, self.f.f_locals)
+                    self.f = self.f.f_back
+                return self.d[key]
+        
+    import ast
+    import dis
     args, return_annotation = _split_signature(signature)
     while args:
         arg, expr, args = _split_annotation_expression(args)
         code = compile(expr, '', 'eval')
-        yield arg, eval(code)
+        yield arg, eval(code, globals(), l())
     if return_annotation:
-        yield 'return', eval(return_annotation)
+        yield 'return', eval(return_annotation, globals(), l())
 
 @decorator
 def annotate(func, signature=None, **keyword_annotations):
@@ -165,9 +200,7 @@ def annotate(func, signature=None, **keyword_annotations):
     '''
     func.__annotations__ = annotations = getattr(func, '__annotations__', {})
     if signature:
-#        annotations.update({argname: value for argname, value in _parse_signature(signature)})
-        for argname, value in _parse_signature(signature):
-            annotations[argname] = value
+        annotations.update({argname: value for argname, value in _parse_signature(signature)})
     return_annotation_kwarg = first(lambda k: k in ('return_annotation', '_return', '__return'), keyword_annotations)
     if return_annotation_kwarg:
         annotations['return'] = keyword_annotations[return_annotation_kwarg]

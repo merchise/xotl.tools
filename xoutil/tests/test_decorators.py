@@ -31,7 +31,7 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 import unittest
-from xoutil.decorators import assignment_operator
+from xoutil.decorators import assignment_operator, decorator
 
 class TestAssignable(unittest.TestCase):
     def test_inline_expression(self):
@@ -66,6 +66,45 @@ class TestAssignable(unittest.TestCase):
 
         for which in (union(1, 2),):
             self.assertEqual((None, 1, 2), which)
+            
+            
+    def test_argsless_decorator(self):
+        @decorator
+        def log(func, fmt='Calling function %s'):
+            def inner(*args, **kwargs):
+                print(fmt % func.__name__)
+                return func(*args, **kwargs)
+            return inner
+    
+        @log
+        def hello(msg='Hi'):
+            print(msg)
+            
+        @log()
+        def hi(msg='Hello'):
+            print(msg)
+        
+        hi()
+        hello()
+        pass
+    
+    def test_returning_argless(self):
+        @decorator
+        def plus2(func, value=1):
+            def inner(*args):
+                return func(*args) + value
+            return inner
+
+        @plus2
+        def ident2(val):
+            return val
+        
+        @plus2()
+        def ident3(val):
+            return val
+        
+        self.assertEquals(ident2(10), 11)
+        self.assertEquals(ident3(10), 11)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

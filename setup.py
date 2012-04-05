@@ -12,7 +12,7 @@ setup(name=project_name,
       version=version,
       description="Collection of usefull algorithms and other very disparate "
                   "stuff",
-      long_description='',
+      long_description=open(os.path.join('docs', 'readme.txt')).read(),
       classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
             'Development Status :: 5 - Stable',

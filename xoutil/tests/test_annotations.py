@@ -78,6 +78,47 @@ class Test(unittest.TestCase):
         self.assertIs(dummy.__annotations__.get('a'), unicode)
         self.assertIs(dummy.__annotations__.get('b'), unicode)
         self.assertIs(dummy.__annotations__.get('return'), True)
+        
+    def test_locals_vars(self):
+        args = (1, 2)
+        def ns():
+            args = (3, 4)
+            @annotate('(a: args)')
+            def dummy():
+                pass
+            return dummy
+        
+        dummy = ns()
+        self.assertEquals(dummy.__annotations__.get('a'), (3, 4))
+        
+        @annotate('(a: args)')
+        def dummy():
+            pass
+        self.assertEquals(dummy.__annotations__.get('a'), (1, 2))
+
+    def test_closures_with_locals(self):
+        '''
+        Tests closures with locals variables.
+        
+        In Python 2.7 this behaves as we do (raises a NameError exception)::
+        
+            >>> def something():
+            ...    args = 1
+            ...    l = eval('lambda: args')
+            ...    l()
+            
+            >>> something()
+            Traceback (most recent call last):
+                ...
+            NameError: global name 'args' is not defined
+        '''
+        args = (1, 2)
+        @annotate('(a: lambda: args)')
+        def dummy():
+            pass
+
+        with self.assertRaises(NameError):
+            dummy.__annotations__.get('a', lambda: None)()
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
