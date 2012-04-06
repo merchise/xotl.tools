@@ -61,12 +61,15 @@ def first(pred, iterable, default=None):
     '''
     from itertools import dropwhile
     try:
-        return next(dropwhile(lambda x: not pred(x), iterable))
+        return next(dropwhile(lambda x: not pred(x), iter(iterable)))
     except StopIteration:
         return default
 
+
 def get_first(iterable):
     'Returns the first element of an iterable.'
+    # TODO: Check who is using this function to find out if could be replaced by
+    #       "next" and remove this one.
     return first(lambda x: True, iterable)
 
 

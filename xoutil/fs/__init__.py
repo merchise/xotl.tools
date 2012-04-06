@@ -35,6 +35,7 @@ import os
 from re import compile as _re_compile
 from .path import normalize_path, get_module_path, shorten_module_filename, shorten_user
 
+
 re_magic = _re_compile('[*?[]')
 has_magic = lambda s: re_magic.search(s) is not None
 
@@ -56,15 +57,13 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
         raise TypeError('"_get_regex()" takes at most 1 argument (%s given)' % arg_count)
 
 
+
 def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     '''Iterate filenames recursively.'''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
-    print(regex)
     for dirpath, _dirs, filenames in os.walk(normalize_path(top)):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
-            if 'PyWEB' in path:
-                print(path, ' is a match for ', pattern)
             if (regex is None) or regex.search(path):
                 yield path
 
@@ -96,6 +95,47 @@ def regex_rename(top, pattern, repl):
                 old = os.path.join(path, item)
                 new = os.path.join(path, new_file)
                 os.rename(old, new)
+
+
+
+def rename_wrong(top='.', current_encoding=None, target_encoding=None,
+                 verbose=False):
+    'Converts filenames from one encoding to another if the current is wrong.'
+    import sys
+    wrongs = []
+    if current_encoding is None:
+        current_encoding = sys.getfilesystemencoding() or 'utf-8'
+    for fn in os.listdir(top):
+        encoding = sys.getfilesystemencoding() or 'utf-8'
+        try:
+            test = fn.decode(encoding) if not isinstance(fn, unicode) else fn
+            if verbose:
+                print('>>> No problem with:', test)
+        except:
+            wrongs.append(fn)
+        if wrongs:
+            if target_encoding is None:
+                try:
+                    import chardet
+                except:
+                    chardet = None
+            else:
+                te = target_encoding
+        try:
+            if verbose:
+                print('>>> PROBLEM with:', fn)
+            if target_encoding is None:
+                dir = os.path.dirname(fn)
+                
+            else:
+                te = target_encoding
+                
+            new = fn.decode()    # Use "chardet.detect" or 'ibm857'
+            os.rename(fn, new)
+            print('*'*8, new)
+        except Exception as error:
+            pass
+
 
 
 filter_not_hidden = lambda path, stat_info: (path[0] != '.') and ('/.' not in path)
