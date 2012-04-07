@@ -37,7 +37,6 @@ update_wrapper = deprecated('xoutil.functools:update_wrapper')(update_wrapper)
 curry = partial
 
 
-
 class AttributeAlias(object):
     '''
     Descriptor to create aliases for object attributes.
@@ -58,7 +57,6 @@ class AttributeAlias(object):
         delattr(instance, self.attr_name)
 
 
-
 def settle(**kwargs):
     '''
     Return a decorator that settle different attribute values to the
@@ -71,13 +69,11 @@ def settle(**kwargs):
     return inner
 
 
-
 def namer(name, **kwargs):
     '''
     Similar to "settle", but always consider first argument as "name".
     '''
     return settle(__name__=name, **kwargs)
-
 
 
 def aliases(**kwargs):
@@ -145,9 +141,9 @@ def decorator(caller):
 @decorator
 def assignment_operator(func, maybe_inline=False):
     '''
-    Makes a function that receives a name, and other args to be *assignment_operator*,
-    meaning that it if its used in a single assignment statement the name will
-    be taken from the left part of the ``=`` operator::
+    Makes a function that receives a name, and other args to be
+    *assignment_operator*, meaning that it if its used in a single assignment
+    statement the name will be taken from the left part of the ``=`` operator::
 
         >>> @assignment_operator()
         ... def test(name, *args):
@@ -169,6 +165,7 @@ def assignment_operator(func, maybe_inline=False):
     from types import FunctionType as function
 
     assert isinstance(func, function), '"func" must be a function.'
+
     @wraps(func)
     def inner(*args):
         filename, lineno, funcname, sourcecode_lines, index = inspect.getframeinfo(sys._getframe(1))
@@ -196,6 +193,41 @@ def assignment_operator(func, maybe_inline=False):
     return inner
 
 
+def instantiate(*args, **kwargs):
+    '''
+    Some singleton classes must be instantiated as part of its declaration
+    because they represents singleton objects.
+    If a unique argument is given and it is a class, then the decorator is this
+    same function, otherwise a decorator is returned::
+
+       >>> @instantiate
+        ... class Foobar(object):
+        ...    pass
+
+    It's equivalent to declare the class and call its constructor supposedly for
+    register its unique instance.
+
+       >>> @instantiate('test', context={'x': 1})
+        ... class Foobar(object):
+        ...    def __init__(self, name, context):
+        ...        pass
+
+    The constructor is called with the arguments.
+    '''
+
+    def inner(cls):
+        cls(*args, **kwargs)
+        return cls
+
+    if len(args) == 1 and not kwargs and isinstance(args[0], type):
+        cls = args[0]
+        print('---------------->', cls)
+        cls()
+        return cls
+    else:
+        return inner
+
+
 __all__ = (b'AttributeAlias',
            b'update_wrapper',
            b'wraps',
@@ -205,7 +237,8 @@ __all__ = (b'AttributeAlias',
            b'curry',
            b'aliases',
            b'decorator',
-           b'assignment_operator')
+           b'assignment_operator',
+           b'instantiate')
 
 
 if __name__ == '__main__':
