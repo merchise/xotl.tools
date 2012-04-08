@@ -26,14 +26,15 @@
 # TODO: reconsider all this module
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division, 
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import)
 
 import sys
 
-from deprecation import deprecated
-from functools import update_wrapper, wraps, partial
-update_wrapper = deprecated('xoutil.functools:update_wrapper')(update_wrapper)
+from xoutil.functools import update_wrapper, wraps, partial
+from xoutil.types import FunctionType as function
 curry = partial
 
 
@@ -94,7 +95,19 @@ def aliases(**kwargs):
 
 def decorator(caller):
     '''
-    Eases the creation of decorators with arguments::
+    Eases the creation of decorators with arguments.Normally a decorator with
+    arguments needs three nested functions like this::
+    
+        def decorator(*decorator_arguments):
+            def real_decorator(target):
+                def inner(*args, **kwargs):
+                    pass
+                return inner
+            return real_decorator
+    
+    This :function:`decorator`_ reduces the need of the first level by
+    comprising both into a single function definition. However it does not
+    removes the need for an ``inner`` function::
 
         >>> @decorator
         ... def plus(target, value):
@@ -104,21 +117,23 @@ def decorator(caller):
         ...        return target(*args) + value
         ...    return inner
 
-        >>> @plus(value=10)
+        >>> @plus(10)
         ... def ident(val):
         ...     return val
 
         >>> ident(1)
         11
 
-    TODO: Make the decorator with default values to be callable without
+    A decorator with default values for all its arguments (except, of course,
+    the first one which is the decorated :param:`target`_) may be invoked without
     parenthesis::
 
         >>> @decorator
-        ... def plus2(func, value=1):
+        ... def plus2(func, value=1, missing=2):
         ...    from functools import wraps
         ...    @wraps(func)
         ...    def inner(*args):
+        ...        print(missing)
         ...        return func(*args) + value
         ...    return inner
 
@@ -126,13 +141,56 @@ def decorator(caller):
         ... def ident2(val):
         ...     return val
 
-        >>> ident2(1)   # doctest: +SKIP
+        >>> ident2(10)
         2
+        11
+        
+    But (if you like) you may place the parenthesis::
+    
+        >>> @plus2()
+        ... def ident3(val):
+        ...     return val
+
+        >>> ident3(10)
+        2
+        11
+    
+    However, this is not for free, you cannot pass a single positional argument
+    which type is :obj:`types.FunctionType`_::
+    
+        >>> def p():
+        ...    print('This is p!!!')
+        >>> @plus2(p)
+        ... def dummy():
+        ...    print('This is dummy')
+        Traceback (most recent call last):
+            ...
+        TypeError: p() takes no arguments (1 given)
+                
+    The workaround for this case is to use a keyword argument.
     '''
     @wraps(caller)
-    def outer_decorator(target=None, **kwargs):
-        if len(kwargs) > 0:
-            return partial(caller, **kwargs)
+    def outer_decorator(*args, **kwargs):
+        if len(args) == 1 and type(args[0]) is function:
+            # This tries to solve the case of missing () on the decorator::
+            #
+            #    @decorator
+            #    def somedec(func, *args, **kwargs)
+            #        ...
+            #
+            #    @somedec
+            #    def decorated(*args, **kwargs):
+            #        pass
+            #
+            # Notice, however, that this is not general enough, since we try
+            # to avoid inspecting the calling frame to see if the () are in 
+            # place.
+            func = args[0]
+            return partial(caller, func, **kwargs)()
+        elif len(args) > 0 or len(kwargs) > 0:
+            def _decorator(func):
+                return partial(caller, **kwargs)(*((func, ) + args))
+            return _decorator
         else:
             return caller
     return outer_decorator
