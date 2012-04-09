@@ -171,7 +171,7 @@ def decorator(caller):
     '''
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
-        if len(args) == 1 and type(args[0]) is function:
+        if len(args) == 1 and isinstance(args[0], (function, type)):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
@@ -259,16 +259,16 @@ def instantiate(*args, **kwargs):
     same function, otherwise a decorator is returned::
 
        >>> @instantiate
-        ... class Foobar(object):
-        ...    pass
+       ... class Foobar(object):
+       ...    pass
 
     It's equivalent to declare the class and call its constructor supposedly for
     register its unique instance.
 
        >>> @instantiate('test', context={'x': 1})
-        ... class Foobar(object):
-        ...    def __init__(self, name, context):
-        ...        pass
+       ... class Foobar(object):
+       ...    def __init__(self, name, context):
+       ...        pass
 
     The constructor is called with the arguments.
     '''
@@ -279,7 +279,6 @@ def instantiate(*args, **kwargs):
 
     if len(args) == 1 and not kwargs and isinstance(args[0], type):
         cls = args[0]
-        print('---------------->', cls)
         cls()
         return cls
     else:

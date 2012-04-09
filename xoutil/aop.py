@@ -70,8 +70,8 @@ def complementor(*sources, **attrs):
         from types import FunctionType, MethodType
         from xoutil.types import Unset
         for attr, value in attrs.iteritems():
-            asigned = attr in cls.__dict__
-            if asigned:
+            assigned = attr in cls.__dict__
+            if assigned:
                 ok = isinstance
                 current = getattr(cls, attr)
                 if ok(value, Mapping) and ok(current, MutableMapping):
