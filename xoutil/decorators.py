@@ -95,13 +95,13 @@ def aliases(**kwargs):
 
 def decorator(caller):
     '''
-    Eases the creation of decorators with arguments.Normally a decorator with
+    Eases the creation of decorators with arguments. Normally a decorator with
     arguments needs three nested functions like this::
     
         def decorator(*decorator_arguments):
             def real_decorator(target):
                 def inner(*args, **kwargs):
-                    pass
+                    return target(*args, **kwargs)
                 return inner
             return real_decorator
     
@@ -262,13 +262,15 @@ def instantiate(*args, **kwargs):
        ... class Foobar(object):
        ...    pass
 
-    It's equivalent to declare the class and call its constructor supposedly for
-    register its unique instance.
+    It's equivalent to declare the class and call its constructor to register
+    its deemed unique instance.
 
        >>> @instantiate('test', context={'x': 1})
        ... class Foobar(object):
        ...    def __init__(self, name, context):
-       ...        pass
+       ...        print('Initializing a Foobar instance with name={name!r} '
+       ...              'and context={context!r}'.format(**locals()))
+       Initializing a Foobar instance with name='test' and context={'x': 1}
 
     The constructor is called with the arguments.
     '''
