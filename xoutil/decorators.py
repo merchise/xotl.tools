@@ -38,7 +38,6 @@ from xoutil.types import FunctionType as function
 curry = partial
 
 
-
 class AttributeAlias(object):
     '''
     Descriptor to create aliases for object attributes.
@@ -59,7 +58,6 @@ class AttributeAlias(object):
         delattr(instance, self.attr_name)
 
 
-
 def settle(**kwargs):
     '''
     Return a decorator that settle different attribute values to the
@@ -72,13 +70,11 @@ def settle(**kwargs):
     return inner
 
 
-
 def namer(name, **kwargs):
     '''
     Similar to "settle", but always consider first argument as "name".
     '''
     return settle(__name__=name, **kwargs)
-
 
 
 def aliases(**kwargs):
@@ -99,13 +95,13 @@ def aliases(**kwargs):
 
 def decorator(caller):
     '''
-    Eases the creation of decorators with arguments.Normally a decorator with
+    Eases the creation of decorators with arguments. Normally a decorator with
     arguments needs three nested functions like this::
     
         def decorator(*decorator_arguments):
             def real_decorator(target):
                 def inner(*args, **kwargs):
-                    pass
+                    return target(*args, **kwargs)
                 return inner
             return real_decorator
     
@@ -175,7 +171,7 @@ def decorator(caller):
     '''
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
-        if len(args) == 1 and type(args[0]) is function:
+        if len(args) == 1 and not kwargs and isinstance(args[0], (function, type)):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
@@ -203,9 +199,9 @@ def decorator(caller):
 @decorator
 def assignment_operator(func, maybe_inline=False):
     '''
-    Makes a function that receives a name, and other args to be *assignment_operator*,
-    meaning that it if its used in a single assignment statement the name will
-    be taken from the left part of the ``=`` operator::
+    Makes a function that receives a name, and other args to be
+    *assignment_operator*, meaning that it if its used in a single assignment
+    statement the name will be taken from the left part of the ``=`` operator::
 
         >>> @assignment_operator()
         ... def test(name, *args):
@@ -224,9 +220,10 @@ def assignment_operator(func, maybe_inline=False):
     '''
     import inspect
     import ast
-    from types import FunctionType as function
 
-    assert isinstance(func, function), '"func" must be a function.'
+    if not isinstance(func, function):
+        raise TypeError('"func" must be a function.')
+
     @wraps(func)
     def inner(*args):
         filename, lineno, funcname, sourcecode_lines, index = inspect.getframeinfo(sys._getframe(1))
@@ -254,6 +251,38 @@ def assignment_operator(func, maybe_inline=False):
     return inner
 
 
+@decorator
+def instantiate(target, *args, **kwargs):
+    '''
+    Some singleton classes must be instantiated as part of its declaration
+    because they represents singleton objects.
+
+    Every argument, positional or keyword, is passed as such when invoking the
+    target. The following two code samples show two cases::
+
+       >>> @instantiate
+       ... class Foobar(object):
+       ...    def __init__(self):
+       ...        print('Init...')
+       Init...
+
+
+       >>> @instantiate('test', context={'x': 1})
+       ... class Foobar(object):
+       ...    def __init__(self, name, context):
+       ...        print('Initializing a Foobar instance with name={name!r} '
+       ...              'and context={context!r}'.format(**locals()))
+       Initializing a Foobar instance with name='test' and context={'x': 1}
+       
+    In all cases, Foobar remains the class, not the instance::
+    
+        >>> Foobar
+        <class 'decorators.Foobar'>
+    '''
+    target(*args, **kwargs)
+    return target
+
+
 __all__ = (b'AttributeAlias',
            b'update_wrapper',
            b'wraps',
@@ -263,7 +292,8 @@ __all__ = (b'AttributeAlias',
            b'curry',
            b'aliases',
            b'decorator',
-           b'assignment_operator')
+           b'assignment_operator',
+           b'instantiate')
 
 
 if __name__ == '__main__':

@@ -51,6 +51,55 @@ __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
 
 
+def complementor(*sources, **attrs):
+    '''
+    Returns a decorator to be applied to a class in order to add attributes in a
+    smart way:
+
+    - if the attr is a dictionary and exists in the decorated class, it's
+      updated.
+        
+    - If a list, tuple or set, the new value is appended.
+   
+    - Methods declared in the class that are replaces are renamed to
+      "_super_<name>".
+   
+    - All other values are replaces.
+    '''
+
+    def inner(cls):
+        from collections import (Mapping, MutableMapping,
+                                 MutableSequence as List,
+                                 Set)
+        from types import FunctionType, MethodType
+        from xoutil.types import Unset
+        for attr, value in attrs.iteritems():
+            assigned = attr in cls.__dict__
+            if assigned:
+                ok = isinstance
+                current = getattr(cls, attr)
+                if ok(value, Mapping) and ok(current, MutableMapping):
+                    current.update(value)
+                    value = Unset
+                elif ok(value, List) and ok(current, List):
+                    current.extend(value)
+                    value = Unset
+                elif ok(value, tuple) and ok(current, tuple):
+                    value = current + value
+                elif ok(value, Set) and ok(current, Set):
+                    value = current | value
+                elif ok(value, (FunctionType, MethodType)):
+                    setattr(cls, b'_super_%s' % attr, current)
+            if value is not Unset:
+                if isinstance(value, MethodType):
+                    value = value.im_func
+                setattr(cls, attr, value)
+        return cls
+
+    attrs.update({f.__name__: f for f in sources})
+    return inner
+
+
 def inject_dependencies(target, *sources, **attrs):
     'Injects/replaces the sources for the given target.'
     cls = target if isinstance(target, type) else target.__class__
@@ -82,13 +131,13 @@ def weaved(target, *sources, **attrs):
     method yields the weaved object into the context manager, so you have
     access to it. Upon exiting the context manager, the :param:`target` is
     reset to it's previous state (if possible).
-    
+
     For example, in the following code::
 
         >>> class Test(object):
         ...    def f(self, n):
         ...        return n
-        
+
         >>> test = Test()
 
 
@@ -96,25 +145,25 @@ def weaved(target, *sources, **attrs):
 
         >>> def f(self, n):
         ...     print('Log this')
-        ...     return super(_ec, self).f(n) # Notice below the assignment to _ec
+        ...     return super(_ec, self).f(n) # Notice the assignment to _ec
 
         >>> with weaved(test, f) as test:
         ...    _ec = test.__class__ # Needed
         ...    test.f(10)
         Log this
         10
-        
+
     But once you leave the context, ``test`` will stop logging::
-    
+
         >>> test.f(10)
         10
-        
+
     You may nest several calls to this:
-        
+
         >>> def f2(self, n):
         ...    print('Done it')
         ...    return super(_ec2, self).f(n)
-        
+
         >>> with weaved(test, f) as test:
         ...    _ec = test.__class__
         ...    with weaved(test, f=f2) as test:
@@ -126,10 +175,10 @@ def weaved(target, *sources, **attrs):
         10
         Log this
         12
-        
+
         >>> test.f(10)
         10
-        
+
     '''
     try:
         result = inject_dependencies(target, *sources, **attrs)
