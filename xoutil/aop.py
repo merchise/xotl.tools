@@ -69,7 +69,8 @@ def complementor(*sources, **attrs):
 
     def inner(cls):
         from collections import (Mapping, MutableMapping,
-                                 MutableSequence as List)
+                                 MutableSequence as List,
+                                 Set)
         from types import FunctionType, MethodType
         from xoutil.types import Unset
         for attr, value in attrs.iteritems():
@@ -85,6 +86,8 @@ def complementor(*sources, **attrs):
                     value = Unset
                 elif ok(value, tuple) and ok(current, tuple):
                     value = current + value
+                elif ok(value, Set) and ok(current, Set):
+                    value = current | value
                 elif ok(value, (FunctionType, MethodType)):
                     setattr(cls, b'_super_%s' % attr, current)
             if value is not Unset:
