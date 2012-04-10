@@ -105,6 +105,24 @@ class TestAssignable(unittest.TestCase):
         
         self.assertEquals(ident2(10), 11)
         self.assertEquals(ident3(10), 11)
+        
+        
+class RegressionTests(unittest.TestCase):
+    def test_with_kwargs(self):
+        'When passing a function as first positional argument, kwargs should be tested empty'
+        from xoutil.functools import partial
+        @decorator
+        def ditmoi(target, *args, **kwargs):
+            return partial(target, *args, **kwargs)
+        
+        def badguy(n):
+            return n
+        
+        @ditmoi(badguy, b=1)
+        def foobar(n, *args, **kw):
+            return n
+
+        self.assertEqual(badguy, foobar(1))
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

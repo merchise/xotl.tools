@@ -171,7 +171,7 @@ def decorator(caller):
     '''
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
-        if len(args) == 1 and isinstance(args[0], (function, type)):
+        if len(args) == 1 and not kwargs and isinstance(args[0], (function, type)):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
