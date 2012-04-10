@@ -95,13 +95,13 @@ def aliases(**kwargs):
 
 def decorator(caller):
     '''
-    Eases the creation of decorators with arguments.Normally a decorator with
+    Eases the creation of decorators with arguments. Normally a decorator with
     arguments needs three nested functions like this::
     
         def decorator(*decorator_arguments):
             def real_decorator(target):
                 def inner(*args, **kwargs):
-                    pass
+                    return target(*args, **kwargs)
                 return inner
             return real_decorator
     
@@ -171,7 +171,7 @@ def decorator(caller):
     '''
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
-        if len(args) == 1 and isinstance(args[0], (function, type)):
+        if len(args) == 1 and not kwargs and isinstance(args[0], (function, type)):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
@@ -220,9 +220,9 @@ def assignment_operator(func, maybe_inline=False):
     '''
     import inspect
     import ast
-    from types import FunctionType as function
 
-    assert isinstance(func, function), '"func" must be a function.'
+    if not isinstance(func, function):
+        raise TypeError('"func" must be a function.')
 
     @wraps(func)
     def inner(*args):
@@ -251,38 +251,36 @@ def assignment_operator(func, maybe_inline=False):
     return inner
 
 
-def instantiate(*args, **kwargs):
+@decorator
+def instantiate(target, *args, **kwargs):
     '''
     Some singleton classes must be instantiated as part of its declaration
     because they represents singleton objects.
-    If a unique argument is given and it is a class, then the decorator is this
-    same function, otherwise a decorator is returned::
+
+    Every argument, positional or keyword, is passed as such when invoking the
+    target. The following two code samples show two cases::
 
        >>> @instantiate
        ... class Foobar(object):
-       ...    pass
+       ...    def __init__(self):
+       ...        print('Init...')
+       Init...
 
-    It's equivalent to declare the class and call its constructor supposedly for
-    register its unique instance.
 
        >>> @instantiate('test', context={'x': 1})
        ... class Foobar(object):
        ...    def __init__(self, name, context):
-       ...        pass
-
-    The constructor is called with the arguments.
+       ...        print('Initializing a Foobar instance with name={name!r} '
+       ...              'and context={context!r}'.format(**locals()))
+       Initializing a Foobar instance with name='test' and context={'x': 1}
+       
+    In all cases, Foobar remains the class, not the instance::
+    
+        >>> Foobar
+        <class 'decorators.Foobar'>
     '''
-
-    def inner(cls):
-        cls(*args, **kwargs)
-        return cls
-
-    if len(args) == 1 and not kwargs and isinstance(args[0], type):
-        cls = args[0]
-        cls()
-        return cls
-    else:
-        return inner
+    target(*args, **kwargs)
+    return target
 
 
 __all__ = (b'AttributeAlias',
