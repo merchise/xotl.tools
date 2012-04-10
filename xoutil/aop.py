@@ -54,14 +54,17 @@ __author__ = 'Medardo Rodriguez'
 def complementor(*sources, **attrs):
     '''
     Returns a decorator to be applied to a class in order to add attributes in a
-    smart way::
+    smart way:
 
-        - if the attr is a dictionary and exists in the decorated class, it's
-          updated.
-        - If a list, tuple or set, the new value is appended.
-        - Methods declared in the class that are replaces are renamed to
-          "_super_<name>".
-        - All other values are replaces.
+    - if the attr is a dictionary and exists in the decorated class, it's
+      updated.
+        
+    - If a list, tuple or set, the new value is appended.
+   
+    - Methods declared in the class that are replaces are renamed to
+      "_super_<name>".
+   
+    - All other values are replaces.
     '''
 
     def inner(cls):
