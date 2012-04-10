@@ -220,9 +220,9 @@ def assignment_operator(func, maybe_inline=False):
     '''
     import inspect
     import ast
-    from types import FunctionType as function
 
-    assert isinstance(func, function), '"func" must be a function.'
+    if not isinstance(func, function):
+        raise TypeError('"func" must be a function.')
 
     @wraps(func)
     def inner(*args):
@@ -251,19 +251,21 @@ def assignment_operator(func, maybe_inline=False):
     return inner
 
 
-def instantiate(*args, **kwargs):
+@decorator
+def instantiate(target, *args, **kwargs):
     '''
     Some singleton classes must be instantiated as part of its declaration
     because they represents singleton objects.
-    If a unique argument is given and it is a class, then the decorator is this
-    same function, otherwise a decorator is returned::
+
+    Every argument, positional or keyword, is passed as such when invoking the
+    target. The following two code samples show two cases::
 
        >>> @instantiate
        ... class Foobar(object):
-       ...    pass
+       ...    def __init__(self):
+       ...        print('Init...')
+       Init...
 
-    It's equivalent to declare the class and call its constructor to register
-    its deemed unique instance.
 
        >>> @instantiate('test', context={'x': 1})
        ... class Foobar(object):
@@ -271,20 +273,14 @@ def instantiate(*args, **kwargs):
        ...        print('Initializing a Foobar instance with name={name!r} '
        ...              'and context={context!r}'.format(**locals()))
        Initializing a Foobar instance with name='test' and context={'x': 1}
-
-    The constructor is called with the arguments.
+       
+    In all cases, Foobar remains the class, not the instance::
+    
+        >>> Foobar
+        <class 'decorators.Foobar'>
     '''
-
-    def inner(cls):
-        cls(*args, **kwargs)
-        return cls
-
-    if len(args) == 1 and not kwargs and isinstance(args[0], type):
-        cls = args[0]
-        cls()
-        return cls
-    else:
-        return inner
+    target(*args, **kwargs)
+    return target
 
 
 __all__ = (b'AttributeAlias',
