@@ -54,24 +54,28 @@ __author__ = 'Medardo Rodriguez'
 def complementor(*sources, **attrs):
     '''
     Returns a decorator to be applied to a class in order to add attributes in a
-    smart way::
+    smart way:
 
-        - if the attr is a dictionary and exists in the decorated class, it's
-          updated.
-        - If a list, tuple or set, the new value is appended.
-        - Methods declared in the class that are replaces are renamed to
-          "_super_<name>".
-        - All other values are replaces.
+    - if the attr is a dictionary and exists in the decorated class, it's
+      updated.
+        
+    - If a list, tuple or set, the new value is appended.
+   
+    - Methods declared in the class that are replaces are renamed to
+      "_super_<name>".
+   
+    - All other values are replaces.
     '''
 
     def inner(cls):
         from collections import (Mapping, MutableMapping,
-                                 MutableSequence as List)
+                                 MutableSequence as List,
+                                 Set)
         from types import FunctionType, MethodType
         from xoutil.types import Unset
         for attr, value in attrs.iteritems():
-            asigned = attr in cls.__dict__
-            if asigned:
+            assigned = attr in cls.__dict__
+            if assigned:
                 ok = isinstance
                 current = getattr(cls, attr)
                 if ok(value, Mapping) and ok(current, MutableMapping):
@@ -82,6 +86,8 @@ def complementor(*sources, **attrs):
                     value = Unset
                 elif ok(value, tuple) and ok(current, tuple):
                     value = current + value
+                elif ok(value, Set) and ok(current, Set):
+                    value = current | value
                 elif ok(value, (FunctionType, MethodType)):
                     setattr(cls, b'_super_%s' % attr, current)
             if value is not Unset:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# untitled.py
+# xoutil.iterators
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise H8
 # All rights reserved.
@@ -25,16 +25,16 @@
 #
 # Created on 2011-11-08
 
+"Several util functions for iterators"
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
-
 
 from functools import partial
 
 from xoutil.types import is_scalar, Unset
 
-"Several util functions for iterators"
 
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
@@ -76,7 +76,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     care of everything deemed a collection (i.e, not a scalar according to the
     callabled passed in :param:`is_scalar`)::
     
-        >>> tuple(flatten((1, range(2, 5), xrange(5, 10)))) # doctest: +NORMALIZE_WHITESPACE
+        >>> tuple(flatten((1, range(2, 5), xrange(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
         
         >>> def fib(n):
@@ -85,7 +85,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         ...     else:
         ...         return fib(n-2) + fib(n-1)
         
-        >>> list(flatten((range(4), (fib(n) for n in range(3))))) # doctest: +NORMALIZE_WHITESPACE
+        >>> list(flatten((range(4), (fib(n) for n in range(3)))))
         [0, 1, 2, 3, 1, 1, 2]
         
     If :param:`depth` is None the collection is flattened recursiverly until the
@@ -93,16 +93,16 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     flattened up to that level::
     
         # depth=0 means simply not to flatten.
-        >>> tuple(flatten((range(2), range(2, 4)), depth=0))     # doctest: +NORMALIZE_WHITESPACE
+        >>> tuple(flatten((range(2), range(2, 4)), depth=0))
         ([0, 1], [2, 3])
         
         # But notice that depth=0 would not "explode" internal generators:
-        >>> tuple(flatten((xrange(2), range(2, 4)), depth=0))    # doctest: +NORMALIZE_WHITESPACE
+        >>> tuple(flatten((xrange(2), range(2, 4)), depth=0))
         (xrange(2), [2, 3])
         
-        >>> tuple(flatten((xrange(2), range(2, 4),               # doctest: +NORMALIZE_WHITESPACE
+        >>> tuple(flatten((xrange(2), range(2, 4),
         ...       (xrange(n) for n in range(5, 8))), depth=1))
-            (0, 1, 2, 3, xrange(5), xrange(6), xrange(7))
+        (0, 1, 2, 3, xrange(5), xrange(6), xrange(7))
 
     '''
     for item in sequence:
