@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.aop
+# xoutil.aop.basic
 #----------------------------------------------------------------------
 # Copyright (c) 2012 Merchise Autrement
 # All rights reserved.
