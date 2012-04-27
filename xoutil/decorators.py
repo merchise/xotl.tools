@@ -26,7 +26,7 @@
 # TODO: reconsider all this module
 
 
-from __future__ import (division as _py3_division, 
+from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
                         absolute_import)
@@ -97,14 +97,14 @@ def decorator(caller):
     '''
     Eases the creation of decorators with arguments. Normally a decorator with
     arguments needs three nested functions like this::
-    
+
         def decorator(*decorator_arguments):
             def real_decorator(target):
                 def inner(*args, **kwargs):
                     return target(*args, **kwargs)
                 return inner
             return real_decorator
-    
+
     This :function:`decorator`_ reduces the need of the first level by
     comprising both into a single function definition. However it does not
     removes the need for an ``inner`` function::
@@ -144,9 +144,9 @@ def decorator(caller):
         >>> ident2(10)
         2
         11
-        
+
     But (if you like) you may place the parenthesis::
-    
+
         >>> @plus2()
         ... def ident3(val):
         ...     return val
@@ -154,10 +154,10 @@ def decorator(caller):
         >>> ident3(10)
         2
         11
-    
+
     However, this is not for free, you cannot pass a single positional argument
     which type is :obj:`types.FunctionType`_::
-    
+
         >>> def p():
         ...    print('This is p!!!')
         >>> @plus2(p)
@@ -166,7 +166,7 @@ def decorator(caller):
         Traceback (most recent call last):
             ...
         TypeError: p() takes no arguments (1 given)
-                
+
     The workaround for this case is to use a keyword argument.
     '''
     @wraps(caller)
@@ -183,7 +183,7 @@ def decorator(caller):
             #        pass
             #
             # Notice, however, that this is not general enough, since we try
-            # to avoid inspecting the calling frame to see if the () are in 
+            # to avoid inspecting the calling frame to see if the () are in
             # place.
             func = args[0]
             return partial(caller, func, **kwargs)()
@@ -273,9 +273,9 @@ def instantiate(target, *args, **kwargs):
        ...        print('Initializing a Foobar instance with name={name!r} '
        ...              'and context={context!r}'.format(**locals()))
        Initializing a Foobar instance with name='test' and context={'x': 1}
-       
+
     In all cases, Foobar remains the class, not the instance::
-    
+
         >>> Foobar
         <class 'decorators.Foobar'>
     '''

@@ -60,10 +60,7 @@ def first(pred, iterable, default=None):
         False
     '''
     from itertools import dropwhile
-    try:
-        return next(dropwhile(lambda x: not pred(x), iterable))
-    except StopIteration:
-        return default
+    return next(dropwhile(lambda x: not pred(x), iterable), default)
 
 def get_first(iterable):
     'Returns the first element of an iterable.'
@@ -75,31 +72,31 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     Flatten out a list by putting sublist entries in the main list. It takes
     care of everything deemed a collection (i.e, not a scalar according to the
     callabled passed in :param:`is_scalar`)::
-    
+
         >>> tuple(flatten((1, range(2, 5), xrange(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
-        
+
         >>> def fib(n):
         ...     if n <= 1:
         ...         return 1
         ...     else:
         ...         return fib(n-2) + fib(n-1)
-        
+
         >>> list(flatten((range(4), (fib(n) for n in range(3)))))
         [0, 1, 2, 3, 1, 1, 2]
-        
+
     If :param:`depth` is None the collection is flattened recursiverly until the
-    "bottom" is reached. If `depth` is an integer then the collection is 
+    "bottom" is reached. If `depth` is an integer then the collection is
     flattened up to that level::
-    
+
         # depth=0 means simply not to flatten.
         >>> tuple(flatten((range(2), range(2, 4)), depth=0))
         ([0, 1], [2, 3])
-        
+
         # But notice that depth=0 would not "explode" internal generators:
         >>> tuple(flatten((xrange(2), range(2, 4)), depth=0))
         (xrange(2), [2, 3])
-        
+
         >>> tuple(flatten((xrange(2), range(2, 4),
         ...       (xrange(n) for n in range(5, 8))), depth=1))
         (0, 1, 2, 3, xrange(5), xrange(6), xrange(7))
@@ -119,19 +116,19 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
 
 def get_flat_list(sequence):
     '''
-    Flatten out a sequence as a flat list. 
-    
+    Flatten out a sequence as a flat list.
+
     This is the same as::
-    
+
         list(flatten(sequence))
-        
+
     '''
     return list(flatten(sequence))
 
 
 def dict_update_new(target, source):
     '''
-    Update values in "source" that are new (not currently present) in "target". 
+    Update values in "source" that are new (not currently present) in "target".
     '''
     for key in source:
         if key not in target:
@@ -151,9 +148,9 @@ def smart_dict(defaults, *sources):
     '''
     Build a dictionary looking in sources for all keys or attributes defined in
     "defaults".
-    
+
     Each source could be a dictionary or any other object.
-    
+
     Persistence of all original objects are warranted.
     '''
     from copy import deepcopy
