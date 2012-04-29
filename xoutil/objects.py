@@ -58,6 +58,13 @@ def xdir(obj, attr_filter=_true, value_filter=_true):
     return ((a, v) for a, v in ((a, getattr(obj, a)) for a in attrs) if value_filter(v))
 
 
+def fdir(obj, attr_filter=_true, value_filter=_true):
+    '''
+    Similar to :func:`xdir` but returns only the attr names.
+    '''
+    return (attr for attr, _v in xdir(obj, attr_filter, value_filter))
+
+
 def validate_attrs(source, target, force_equals=(), force_differents=()):
     '''
     Makes a 'comparison' of `source` and `target` by its attributes.
