@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.release
+# xoutil.tests.testbed
 #----------------------------------------------------------------------
 # Copyright (c) 2012 Merchise Autrement
 # All rights reserved.
@@ -21,12 +21,21 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 #
-# Created on 2012-04-01
+# Created on Apr 29, 2012
 
+'''
+This module simply serves the purposes of the testing weaving modules
+'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
-                        absolute_import as _py3_abs_imports)
+                        absolute_import)
+                        
+__docstring_format__ = 'rst'
+__author__ = 'manu'
 
-VERSION = '1.0.25'
+
+def echo(what):
+    return what
+

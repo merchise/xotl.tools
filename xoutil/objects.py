@@ -49,13 +49,20 @@ _false = lambda * args, **kwargs: False
 
 
 
-def xdir(obj, attr_filter=_true, value_filter=_true):
+def xdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
     '''
     Return all (attr, value) pairs from "obj" that attr_filter(attr) and
     value_filter(value) are both True.
     '''
     attrs = (attr for attr in dir(obj) if attr_filter(attr))
     return ((a, v) for a, v in ((a, getattr(obj, a)) for a in attrs) if value_filter(v))
+
+
+def fdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
+    '''
+    Similar to :func:`xdir` but returns only the attr names.
+    '''
+    return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getattr))
 
 
 def validate_attrs(source, target, force_equals=(), force_differents=()):

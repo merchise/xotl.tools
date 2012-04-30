@@ -3,6 +3,11 @@ Xoutil
 
 Reversed chronological order.
 
+2012-04-30. Release 1.0.25.
+
+- Extends the classical AOP approach to modules. Implements an extended version
+  with hooks.
+
 2012-04-27. Release 1.0.24.
 
 - Introduces a classical AOP implementation: xoutil.aop.classical.
