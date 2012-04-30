@@ -392,8 +392,14 @@ def weave(aspect, target):
     aspects to hook this method.
     '''
     from xoutil.objects import fdir
+    def _getattr(obj, name, default=None):
+        try:
+            return getattr(obj, name, default)
+        except:
+            return default
+        
     # Inject all public, non-aspect method
-    for attr in fdir(aspect, _and(_public, _not(_aspect_method))):
+    for attr in fdir(aspect, _and(_public, _not(_aspect_method)), getattr=_getattr):
         setattr(target, attr, get_staticattr(aspect, attr))
     # Weave aspect methods but keep an order scheme:
     #     afters < before < around
@@ -401,7 +407,7 @@ def weave(aspect, target):
                      not n.startswith('after_'),
                      not n.startswith('before_'),
                      not n.startswith('around_'),)
-    for attr in sorted(fdir(aspect, _aspect_method, callable), key=key):
+    for attr in sorted(fdir(aspect, _aspect_method, callable, _getattr), key=key):
         ok = lambda what: attr.startswith(what + '_')
         if ok('after'):
             _weave_after_method(target, aspect, _method_name(attr))
@@ -411,11 +417,11 @@ def weave(aspect, target):
             _weave_around_method(target, aspect, _method_name(attr))
     aspect_dict = dir(aspect)
     if '_after_' in aspect_dict:
-        for attr in fdir(target, value_filter=callable):
+        for attr in fdir(target, value_filter=callable, getattr=_getattr):
             _weave_after_method(target, aspect, attr, '_after_')
     if '_before_' in aspect_dict:
-        for attr in fdir(target, value_filter=callable):
+        for attr in fdir(target, value_filter=callable, getattr=_getattr):
             _weave_before_method(target, aspect, attr, '_before_')
     if '_around_' in aspect_dict:
-        for attr in fdir(target, value_filter=callable):
+        for attr in fdir(target, value_filter=callable, getattr=_getattr):
             _weave_around_method(target, aspect, attr, '_around_')
