@@ -39,7 +39,7 @@ from xoutil.aop.extended import weave
 class TestClassicalAOP(unittest.TestCase):
     def setUp(self):
         class LoggerAspect(object):
-            def after_echo(self, method, result, exc_value):
+            def _after_echo(self, method, result, exc_value):
                 return self, result
             
         self.logger = LoggerAspect
@@ -68,10 +68,10 @@ class TestWeaving(unittest.TestCase):
             def _before_weave(cls, target):
                 print('Weaving {target} with {aspect}'.format(target=target.__name__, aspect=cls.__name__))
                 
-            def before_echo(self, method):
+            def _before_echo(self, method):
                 print('Echoing....')
 
-            def after_echo(self, method, result, exc):
+            def _after_echo(self, method, result, exc):
                 print('...echoed')
                 if exc:
                     raise StopExceptionChain
@@ -96,7 +96,7 @@ class TestWeavingModules(unittest.TestCase):
         from xoutil.tests.testbed import echo
         
         class Dupper(object):
-            def after_echo(self, method, result, exc_value):
+            def _after_echo(self, method, result, exc_value):
                 if not exc_value:
                     return result * 2
                 
@@ -104,9 +104,9 @@ class TestWeavingModules(unittest.TestCase):
         
         self.assertEquals(20, testbed.echo(10))
         
-        # Unfortunally is quite difficult to replace standing references.
-        # Is possible, but keeping the old func_code function and replacing
-        # func_code directly, but is difficult to get right and I don't need it.
+        # Unfortunally is quite difficult to replace standing references. Is
+        # possible by keeping the old func_code function and replacing func_code
+        # directly, but is difficult to get right and I don't need it.
         self.assertEquals(10, echo(10))
 
 if __name__ == "__main__":

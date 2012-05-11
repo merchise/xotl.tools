@@ -106,7 +106,7 @@ def build_method(method, inner):
 
 
 def _weave_after_method(target, aspect, method_name,
-                        after_method_name='after_{method_name}'):
+                        after_method_name='_after_{method_name}'):
     '''
     Tries to weave an after method given by :param:`method_name` defined (by
     name convention) in :param:`aspect` into the class :param:`target`.
@@ -136,18 +136,18 @@ def _weave_after_method(target, aspect, method_name,
             ...
         ZeroDivisionError: integer division or modulo by zero
 
-    Now, let's define a simple class that defines an after_echo and weave the
+    Now, let's define a simple class that defines an _after_echo and weave the
     previous classes::
 
         >>> class Logging(object):
-        ...    def after_echo(self, method, result, exc_value):
+        ...    def _after_echo(self, method, result, exc_value):
         ...        if not exc_value:
         ...            print('Method {m} returned {result!r}'.format(m=method, result=result))
         ...        else:
         ...            print('When calling method {m}, {exc!r} was raised!'.format(m=method, exc=exc_value))
         ...        return result
         ...
-        ...    def after_superecho(self, method, result, exc_value):
+        ...    def _after_superecho(self, method, result, exc_value):
         ...        print(type(self))
         ...        return result
 
@@ -180,7 +180,7 @@ def _weave_after_method(target, aspect, method_name,
         ...    __perms__ = {'manu': {'respond': ['echo'], }, 'anon': {}}
         ...
         ...    @staticmethod
-        ...    def after_echo(self, method, result, exc_value):
+        ...    def _after_echo(self, method, result, exc_value):
         ...        if Security.current_user_mayrespond('echo'):
         ...            return result
         ...
@@ -240,7 +240,7 @@ def _weave_after_method(target, aspect, method_name,
 
 
 def _weave_before_method(target, aspect, method_name,
-                         before_method_name='before_{method_name}'):
+                         before_method_name='_before_{method_name}'):
     '''
     Tries to weave a before method given by :param:`method_name` defined (by
     name convention) in :param:`aspect` into the class :param:`target`.
@@ -333,7 +333,7 @@ def _weave_before_method(target, aspect, method_name,
 
 
 def _weave_around_method(cls, aspect, method_name,
-                          around_method_name='around_{method_name}'):
+                          around_method_name='_around_{method_name}'):
     '''
     Simply put, replaces a method by another.
 
@@ -345,7 +345,7 @@ def _weave_around_method(cls, aspect, method_name,
         ...        return what * what
 
         >>> class Logger(object):
-        ...    def around_any(self, method, *args, **kwargs):
+        ...    def _around_any(self, method, *args, **kwargs):
         ...        print('Calling {m} with {args}, {kwargs}'.format(m=method,
         ...                                                         args=args,
         ...                                                         kwargs=kwargs))
@@ -357,7 +357,7 @@ def _weave_around_method(cls, aspect, method_name,
         >>> obj.echo(10)
         10
 
-        >>> _weave_around_method(OriginalClass, Logger, 'echo', 'around_any')
+        >>> _weave_around_method(OriginalClass, Logger, 'echo', '_around_any')
 
         >>> obj.echo(10)            # doctest: +ELLIPSIS
         Calling <...> with (10,), {}
@@ -386,10 +386,10 @@ _and = lambda *preds: (lambda *args, **kwargs: all(p(*args, **kwargs) for p in p
 _or = lambda *preds: (lambda *args, **kwargs: any(p(*args, **kwargs) for p in preds))
 
 _private = lambda attr: attr.startswith('_')
-_aspect_method = lambda attr: any(attr.startswith(prefix)
-                                    for prefix in ('after_',
-                                                   'before_',
-                                                   'around_'))
+_aspect_method = lambda attr: any(attr.startswith(prefix) and attr != prefix
+                                    for prefix in ('_after_',
+                                                   '_before_',
+                                                   '_around_'))
 _public = _not(_private)
 
 
@@ -420,9 +420,9 @@ def weave(aspect, target):
     # Weave aspect methods but keep an order scheme:
     #     afters < before < around
     key = lambda n: (not callable(_getattr(aspect, n, None)),
-                     not n.startswith('after_'),
-                     not n.startswith('before_'),
-                     not n.startswith('around_'),)
+                     not n.startswith('_after_'),
+                     not n.startswith('_before_'),
+                     not n.startswith('_around_'),)
     for attr in sorted(fdir(aspect, _aspect_method, callable, getattr=__getattr),
                        key=key):
         ok = lambda what: attr.startswith(what + '_')
