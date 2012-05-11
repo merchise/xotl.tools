@@ -115,9 +115,10 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
 
 def get_first_of(source, *keys):
     '''
-    Return the first occurrence of any of the specified keys in source.
-    if source is a tuple, a list, a set, or a generator; then the keys are searched in all items inside.
-    If you need to use default values, pass a tuple with the last argument using a dictionary with them.
+    Return the first occurrence of any of the specified keys in source. if
+    source is a tuple, a list, a set, or a generator; then the keys are searched
+    in all items inside. If you need to use default values, pass a tuple with
+    the last argument using a dictionary with them.
     
     Examples:
     
