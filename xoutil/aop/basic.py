@@ -58,13 +58,48 @@ def complementor(*sources, **attrs):
 
     - if the attr is a dictionary and exists in the decorated class, it's
       updated.
-        
+
     - If a list, tuple or set, the new value is appended.
-   
+
     - Methods declared in the class that are replaces are renamed to
       "_super_<name>".
-   
+
     - All other values are replaces.
+
+    The following code tests show each case:
+
+        >>> def hacked_init(self, *args, **kw):
+        ...    print('Hacked')
+        ...    self._super___init__(*args, **kw)
+
+        >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range(5, 10), __init__=hacked_init)
+        ... class Someclass(object):
+        ...     somedict = {'a': 0}
+        ...     somelist = range(5)
+        ...
+        ...     def __init__(self, d=None, l=None):
+        ...         if d:
+        ...             self.somedict.update(d)
+        ...         if l:
+        ...             self.somelist.extend(l)
+
+
+        # It's best to do comparison with dicts since key order may not be preserved.
+        >>> Someclass.somedict == {'a': 1, 'b': 2}
+        True
+
+        >>> Someclass.somelist
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        >>> instance = Someclass(d={'c': 12}, l=(10, ))
+        Hacked
+
+        # It's best to do comparison with dicts since key order may not be preserved.
+        >>> instance.somedict == {'a': 1, 'b': 2, 'c': 12}
+        True
+
+        >>> instance.somelist
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     '''
 
     def inner(cls):
