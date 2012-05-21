@@ -3,6 +3,17 @@ Xoutil
 
 Reversed chronological order.
 
+2012-05-21. Release 1.0.26.
+
+- Changes in AOP classic. Now you have to rename after, before and around methods
+  to _after, _before and _around.
+
+  It is expected that the signature of those methods change in the future.
+
+- Introducing a default argument for :func:`xoutil.objects.get_first_of`.
+
+- Other minor additions in the code. Refactoring and the like.
+
 2012-04-30. Release 1.0.25.
 
 - Extends the classical AOP approach to modules. Implements an extended version
