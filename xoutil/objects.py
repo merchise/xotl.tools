@@ -29,9 +29,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
-from functools import partial
-import types
-
+from xoutil.functools import partial
 from xoutil.types import Unset, is_collection
 
 __docstring_format__ = 'rst'
@@ -113,7 +111,9 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     return res
 
 
-def get_first_of(source, *keys):
+# TODO: Introduce a decorator for keyword arguments only...
+# XXX: In Py 3.2 this should be changed to get_first_of(source, *keys, **, default=None)
+def get_first_of(source, *keys, **default):
     '''
     Return the first occurrence of any of the specified keys in source. if
     source is a tuple, a list, a set, or a generator; then the keys are searched
@@ -166,6 +166,13 @@ def get_first_of(source, *keys):
         
         >>> get_first_of((inst, somedict), 'foobar') is None
         True
+
+    You may pass a single keywork argument called :param:`default` with the
+    value you want to be returned if no key is found in source::
+
+        >>> none = object()        
+        >>> get_first_of((inst, somedict), 'foobar', default=none) is none
+        True
     '''
 
     def inner(source):
@@ -185,7 +192,8 @@ def get_first_of(source, *keys):
                 res = item
     else:
         res = inner(source)
-    return res if res is not Unset else None
+    default = default.setdefault('default', None)
+    return res if res is not Unset else default
 
 
 def smart_getattr(name, *sources, **kw):
