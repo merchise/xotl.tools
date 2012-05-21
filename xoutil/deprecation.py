@@ -25,9 +25,13 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
 import types
+import warnings
+
+from functools import wraps
 
 
 __docstring_format__ = 'rst'
@@ -41,8 +45,6 @@ DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed. ' +
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
     'Small decorator for deprecated functions'
     def decorator(target):
-        import warnings
-        from functools import wraps
         if deprecated_module:
             funcname = deprecated_module + '.' + target.__name__
         else:
