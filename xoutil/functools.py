@@ -38,7 +38,9 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 import functools as _legacy
-from functools import partial, update_wrapper
+#~ from functools import partial, update_wrapper
+#~ partial = _legacy.partial
+#~ update_wrapper = _legacy.update_wrapper
 
 # The following copies all from _legacy to the current module
 from xoutil.data import smart_copy
@@ -65,9 +67,9 @@ def update_wrapper(wrapper,
        updated is a tuple naming the attributes of the wrapper that
        are updated with the corresponding attribute from the wrapped
        function (defaults to functools.WRAPPER_UPDATES)
-       
+
        Fixed on xoutil:
-       
+
        Since most decorators use the *args, **kwargs idiom for arguments it is
        introduced the `add_signature` argument to prepend the signature to the
        documentation.
@@ -109,7 +111,7 @@ def wraps(wrapped,
        update_wrapper().
 
        Fixed on xoutil:
-    
+
        Since most decorators use the *args, **kwargs idiom for arguments it is
        introduced the `add_signature` argument to prepend the signature to the
        documentation.
