@@ -66,31 +66,31 @@ def fdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
 def validate_attrs(source, target, force_equals=(), force_differents=()):
     '''
     Makes a 'comparison' of `source` and `target` by its attributes.
-    
+
     This function returns True if and only if both of this tests pass:
-    
+
     - All attributes in `force_equals` are equal in `source` and `target`
     - All attributes in `force_differents` are different in `source` and `target`
-    
+
     For instance::
-    
+
         >>> class Person(object):
         ...    def __init__(self, **kwargs):
         ...        for which in kwargs:
         ...            setattr(self, which, kwargs[which])
-        
+
         >>> source = Person(**{b'name': 'Manuel', b'age': 33, b'sex': 'male'})
         >>> target = Person(**{b'name': 'Manuel', b'age': 4, b'sex': 'male'})
-        
+
         >>> validate_attrs(source, target, force_equals=(b'sex',), force_differents=(b'age',))
         True
-        
+
         >>> validate_attrs(source, target, force_equals=(b'age',))
         False
-        
-    If both `force_equals` and `force_differents` are empty it will return 
+
+    If both `force_equals` and `force_differents` are empty it will return
     True::
-        
+
         >>> validate_attrs(source, target)
         True
     '''
@@ -119,37 +119,37 @@ def get_first_of(source, *keys, **default):
     source is a tuple, a list, a set, or a generator; then the keys are searched
     in all items inside. If you need to use default values, pass a tuple with
     the last argument using a dictionary with them.
-    
+
     Examples:
-    
+
     - To search some keys (whatever is found first) from a dict::
-  
+
         >>> somedict = {"foo": "bar", "spam": "eggs"}
         >>> get_first_of(somedict, "no", "foo", "spam")
         'bar'
-        
+
     - If a key/attr is not found, None is returned::
-    
+
         >>> somedict = {"foo": "bar", "spam": "eggs"}
         >>> get_first_of(somedict, "eggs") is None
         True
-  
+
     - Objects may be sources as well::
-    
+
         >>> class Someobject(object): pass
         >>> inst = Someobject()
         >>> inst.foo = 'bar'
         >>> inst.eggs = 'spam'
         >>> get_first_of(inst, 'no', 'eggs', 'foo')
         'spam'
-        
+
         >>> get_first_of(inst, 'invalid') is None
         True
-        
+
     - You may pass several sources in a list, tuple or generator, and `get_first`
-      will try each object at a time until it finds any of the key on a object; 
+      will try each object at a time until it finds any of the key on a object;
       so any object that has one of the keys will "win"::
-    
+
         >>> somedict = {"foo": "bar", "spam": "eggs"}
         >>> class Someobject(object): pass
         >>> inst = Someobject()
@@ -157,13 +157,13 @@ def get_first_of(source, *keys, **default):
         >>> inst.eggs = 'spam'
         >>> get_first_of((somedict, inst), 'eggs')
         'spam'
-        
+
         >>> get_first_of((somedict, inst), 'foo')
         'bar'
-        
+
         >>> get_first_of((inst, somedict), 'foo')
         'bar2'
-        
+
         >>> get_first_of((inst, somedict), 'foobar') is None
         True
 
@@ -199,24 +199,24 @@ def get_first_of(source, *keys, **default):
 def smart_getattr(name, *sources, **kw):
     '''
     Gets an attr by name for the first source that has it.
-    
+
         >>> somedict = {'foo': 'bar', 'spam': 'eggs'}
         >>> class Some(object): pass
         >>> inst = Some()
         >>> inst.foo = 'bar2'
         >>> inst.eggs = 'spam'
-        
+
         >>> smart_getattr('foo', somedict, inst)
         'bar'
-        
+
         >>> smart_getattr('foo', inst, somedict)
         'bar2'
-        
+
         >>> smart_getattr('fail', somedict, inst) is Unset
         True
-        
+
     [2012-01-10] Added a keyword argument `default`::
-    
+
         >>> smart_getattr('fail', somedict, inst, default=0)
         0
     '''
@@ -247,15 +247,15 @@ def get_and_del_attr(obj, name, default=None):
 def setdefaultattr(obj, name, value):
     '''
     Sets the attribute name to value if it is not set::
-    
+
         >>> class Someclass(object): pass
         >>> inst = Someclass()
         >>> setdefaultattr(inst, 'foo', 'bar')
         'bar'
-        
+
         >>> inst.foo
         'bar'
-        
+
         >>> inst.spam = 'egg'
         >>> setdefaultattr(inst, 'spam', 'with ham')
         'egg'
@@ -269,33 +269,33 @@ def setdefaultattr(obj, name, value):
 
 def nameof(target):
     '''
-    Gets the name of an object: 
-    
+    Gets the name of an object:
+
     - The name of a string is the same string::
-    
+
         >>> nameof('manuel')
         'manuel'
-        
+
     - The name of an object with a ``__name__`` attribute is its value::
-    
+
         >>> nameof(type)
         'type'
-        
+
         >>> class Someclass: pass
         >>> nameof(Someclass)
         'Someclass'
-        
+
     - The name of any other object is the ``__name__`` of the its type::
-    
+
         >>> nameof([1, 2])
         'list'
-        
+
         >>> nameof((1, 2))
         'tuple'
-        
+
         >>> nameof({})
         'dict'
-    
+
     '''
     if isinstance(target, basestring):
         return target

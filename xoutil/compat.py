@@ -201,7 +201,7 @@ import time
 if win32 or jython:
     time_func = time.clock
 else:
-    time_func = time.time 
+    time_func = time.time
 
 if sys.version_info >= (2, 5):
     def decode_slice(slc):

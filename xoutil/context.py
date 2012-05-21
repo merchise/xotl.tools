@@ -139,4 +139,4 @@ class SimpleClose(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.close_funct(*self.args, **self.kwargs)
         return False
-    
+
