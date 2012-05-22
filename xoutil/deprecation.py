@@ -57,7 +57,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             klass = type(target.__name__, (target,), {'__new__': new})
             return klass
         else:
-            @wraps(target, add_signature=True)
+            @wraps(target)
             def inner(*args, **kw):
                 warnings.warn(msg.format(funcname=funcname,
                                          replacement=replacement),
@@ -93,12 +93,13 @@ def inject_deprecated(funcnames, source, target=None):
             if isinstance(target, (type, types.FunctionType, types.LambdaType,
                                    types.ClassType, types.TypeType)):
                 replacement = source.__name__ + '.' + targetname
+                module_name = target_locals.get('__name__', None)
                 target_locals[targetname] = deprecated(replacement,
-                                                       deprecated_module=target_locals.get('__name__', None))(target)
+                                                       DEFAULT_MSG,
+                                                       module_name)(target)
             else:
                 target_locals[targetname] = target
         else:
-            import warnings
             warnings.warn('{targetname} was expected to be in {source}'.
                           format(targetname=targetname,
                                  source=source.__name__))

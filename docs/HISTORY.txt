@@ -3,6 +3,10 @@ Xoutil
 
 Reversed chronological order.
 
+2012-05-22. Release 1.0.27.
+
+- Removes bugs that were not checked (tested) in the previous release.
+
 2012-05-21. Release 1.0.26.
 
 - Changes in AOP classic. Now you have to rename after, before and around methods
