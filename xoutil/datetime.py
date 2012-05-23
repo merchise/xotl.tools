@@ -43,18 +43,14 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+import time
 
 from re import compile as _regex_compile
-import time
 from time import strftime as _time_strftime
 
-
 import datetime as _legacy
+from datetime import *
 
-# TODO: Maybe it's better to use IoD for this case
-from xoutil.data import smart_copy
-smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']), full=True)
-del smart_copy
 
 __docstring_format__ = 'rst'
 __author__ = 'med'
