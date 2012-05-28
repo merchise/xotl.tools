@@ -42,13 +42,11 @@ def normalize_path(path):
       * eliminating double slashes
       * converting to absolute.
     '''
-    res = os.path.abspath(os.path.expanduser(path))
-    # TODO: Analyze if the resulting name must be encoded.
-#    import sys
-#    encoding = sys.getfilesystemencoding()
-#    if encoding:
-#        res = res.encode(encoding)
-    return res
+    if isinstance(path, unicode):
+        import sys
+        encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
+        path = path.encode(encoding)
+    return os.path.abspath(os.path.expanduser(path))
 
 
 def get_module_path(module_or_name):

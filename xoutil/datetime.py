@@ -43,6 +43,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+import time
 
 from re import compile as _regex_compile
 import time
@@ -50,11 +51,8 @@ from time import strftime as _time_strftime
 
 
 import datetime as _legacy
+from datetime import *
 
-# TODO: Maybe it's better to use IoD for this case
-from xoutil.data import smart_copy
-smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']), full=True)
-del smart_copy
 
 __docstring_format__ = 'rst'
 __author__ = 'med'
@@ -69,8 +67,8 @@ else:
         __doc__ = _legacy.datetime.__doc__
 
         def total_seconds(self):
-            return (self.microseconds + (self.seconds + self.days * 24 * 3600) * 10 ** 6) / 10 ** 6
-
+            return (self.microseconds + (self.seconds + self.days * 24 * 3600) *
+                                         10 ** 6) / 10 ** 6
 
 
 class date(_legacy.date):
@@ -82,8 +80,8 @@ class date(_legacy.date):
     if _NEW_TIME_DELTA:
         def __sub__(self, other):
             res = super(date, self).__sub__(other)
-            return timedelta(days=res.days, seconds=res.seconds, microseconds=res.microseconds)
-
+            return timedelta(days=res.days, seconds=res.seconds,
+                             microseconds=res.microseconds)
 
 
 class datetime(_legacy.datetime):
@@ -93,7 +91,8 @@ class datetime(_legacy.datetime):
         return strftime(self, fmt)
 
     def combine(self, date, time):
-        return datetime(date.year, date.month, date.day, time.hour, time.minute, time.second, time.microsecond, time.tzinfo)
+        return datetime(date.year, date.month, date.day, time.hour, time.minute,
+                        time.second, time.microsecond, time.tzinfo)
 
     def date(self):
         return date(self.year, self.month, self.day)
@@ -101,12 +100,14 @@ class datetime(_legacy.datetime):
     @staticmethod
     def now(tz=None):
         res = super(datetime, datetime).now(tz=tz)
-        return datetime(res.year, res.month, res.day, res.hour, res.minute, res.second, res.microsecond, res.tzinfo)
+        return datetime(res.year, res.month, res.day, res.hour, res.minute,
+                        res.second, res.microsecond, res.tzinfo)
 
     if _NEW_TIME_DELTA:
         def __sub__(self, other):
             res = super(datetime, self).__sub__(other)
-            return timedelta(days=res.days, seconds=res.seconds, microseconds=res.microseconds)
+            return timedelta(days=res.days, seconds=res.seconds,
+                             microseconds=res.microseconds)
 
 
 # FIXME: "__instancecheck__", "__subclasscheck__", module "abc"
@@ -121,7 +122,10 @@ def new_date(d):
 
 
 def new_datetime(d):
-    '''Generate a safe "datetime" from a "datetime.date" or "datetime.datetime" object.'''
+    '''
+    Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
+    object.
+    '''
     args = [d.year, d.month, d.day]
     if isinstance(d, datetime.__base__):    # legacy datetime
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
@@ -174,7 +178,6 @@ def strfdelta(delta):
             return '%s%s' % (strfnumber(seconds, '%0.3f'), _TIMEDELTA_LABELS[3])
 
 
-
 def strftime(dt, fmt):
     if dt.year >= 1900:
         return super(type(dt), dt).strftime(fmt)
@@ -195,8 +198,8 @@ def strftime(dt, fmt):
                 res = res[:site] + syear + res[site + 4:]
             return res
         else:
-            raise TypeError("strftime of dates before 1900 does not handle " + illegal_formatting.group(0))
-
+            raise TypeError("strftime of dates before 1900 does not handle " + 
+                            illegal_formatting.group(0))
 
 
 def parse_date(value=None):
@@ -207,12 +210,10 @@ def parse_date(value=None):
         return date.today()
 
 
-
 def get_month_first(ref=None):
     aux = ref or date.today()
     y, m = aux.year, aux.month
     return date(y, m, 1)
-
 
 
 def get_month_last(ref=None):
@@ -224,7 +225,6 @@ def get_month_last(ref=None):
     else:
         m += 1
     return date(y, m, 1) - timedelta(1)
-
 
 
 def is_full_month(start, end):

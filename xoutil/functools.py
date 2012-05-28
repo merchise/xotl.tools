@@ -37,16 +37,8 @@ from __future__ import (division as _py3_division,
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-import functools as _legacy
-#~ from functools import partial, update_wrapper
-#~ partial = _legacy.partial
-#~ update_wrapper = _legacy.update_wrapper
 
-# The following copies all from _legacy to the current module
-from xoutil.data import smart_copy
-smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']))
-del smart_copy
-
+from functools import *
 
 WRAPPER_ASSIGNMENTS = ('__module__', '__name__')
 WRAPPER_UPDATES = ('__dict__',)

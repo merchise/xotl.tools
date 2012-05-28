@@ -28,10 +28,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import string as _legacy
-from xoutil.data import smart_copy as copy_attrs
-copy_attrs(_legacy , __import__(__name__, fromlist=[b'_legacy']))
-del copy_attrs
+from string import *
 
 from re import compile as _regex_compile
 

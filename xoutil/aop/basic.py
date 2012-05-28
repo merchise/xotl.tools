@@ -56,7 +56,7 @@ def complementor(*sources, **attrs):
     Returns a decorator to be applied to a class in order to add attributes in a
     smart way:
 
-    - if the attr is a dictionary and exists in the decorated class, it's
+    - if the attribute is a dictionary and exists in the decorated class, it's
       updated.
 
     - If a list, tuple or set, the new value is appended.
@@ -64,7 +64,7 @@ def complementor(*sources, **attrs):
     - Methods declared in the class that are replaces are renamed to
       "_super_<name>".
 
-    - All other values are replaces.
+    - All other values are replaced.
 
     The following code tests show each case:
 
@@ -72,7 +72,8 @@ def complementor(*sources, **attrs):
         ...    print('Hacked')
         ...    self._super___init__(*args, **kw)
 
-        >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range(5, 10), __init__=hacked_init)
+        >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range(5, 10), 
+        ...               __init__=hacked_init)
         ... class Someclass(object):
         ...     somedict = {'a': 0}
         ...     somelist = range(5)
@@ -84,7 +85,8 @@ def complementor(*sources, **attrs):
         ...             self.somelist.extend(l)
 
 
-        # It's best to do comparison with dicts since key order may not be preserved.
+        # It's best to do comparison with dicts since key order may not be
+        # preserved.
         >>> Someclass.somedict == {'a': 1, 'b': 2}
         True
 
@@ -94,12 +96,24 @@ def complementor(*sources, **attrs):
         >>> instance = Someclass(d={'c': 12}, l=(10, ))
         Hacked
 
-        # It's best to do comparison with dicts since key order may not be preserved.
         >>> instance.somedict == {'a': 1, 'b': 2, 'c': 12}
         True
 
         >>> instance.somelist
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        
+    If any positional arguments :param:`sources` are given then for each of
+    them:
+    
+    - If it's not a class (an instance of `type`) and it has a `__name__`, it
+      will be updated into :param:`attrs` and treated according to the rules
+      before.
+      
+    - If it's a class all it's public non-method attributes are updated into
+      `attrs`, and all it's methods (public or private) are updated as well.
+      
+    Notice the order in which this is done: class takes precedence over other
+    kind of sources, and sources takes precedence over keyword arguments.
     '''
 
     def inner(cls):
@@ -131,7 +145,16 @@ def complementor(*sources, **attrs):
                 setattr(cls, attr, value)
         return cls
 
-    attrs.update({f.__name__: f for f in sources})
+    # TODO: [med] [manu] ¿No se debería buscar las cosas dentro de las fuentes
+    #                    si estas son clases?
+    attrs.update({f.__name__: f for f in sources 
+                  if not isinstance(f, type) and getattr(f, '__name__', False)})
+    from xoutil.objects import xdir
+    attrs.update({name: getattr(a, 'im_func', a) for f in sources 
+                        if isinstance(f, type) 
+                    for name, a in xdir(f)
+                        if not name.startswith('_') or 
+                            getattr(a, 'im_func', False)})
     return inner
 
 
@@ -142,7 +165,16 @@ def inject_dependencies(target, *sources, **attrs):
     _merchise_extended['depth'] += 1
     attrs.update({b'__doc__': cls.__doc__, b'__module__': b'merchise.builtin',
                   '_merchise_extended': _merchise_extended})
-    attrs.update({f.__name__: f for f in sources})
+    # TODO: [med] [manu] ¿No se debería buscar las cosas dentro de las fuentes
+    #                    si estas son clases?
+    attrs.update({f.__name__: f for f in sources 
+                  if not isinstance(f, type)})
+    from xoutil.objects import xdir
+    attrs.update({name: getattr(a, 'im_func', a) for f in sources 
+                        if isinstance(f, type) 
+                    for name, a in xdir(f)
+                        if not name.startswith('_') or 
+                            getattr(a, 'im_func', False)})
     extended_class = type(cls.__name__, (cls, ), attrs)
     if not isinstance(target, type):
         try:

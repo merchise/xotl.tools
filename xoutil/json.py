@@ -60,11 +60,7 @@ from xoutil.datetime import (is_datetime as _is_datetime,
 
 
 import json as _legacy
-from json import load
-
-from xoutil.data import smart_copy
-smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']))
-del smart_copy
+from json import *
 
 
 class JSONEncoder(_legacy.JSONEncoder):

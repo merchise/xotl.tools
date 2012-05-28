@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.iterators
+# untitled.py
 #----------------------------------------------------------------------
 # Copyright (c) 2011 Merchise H8
 # All rights reserved.
@@ -30,6 +30,7 @@
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
+
 
 from functools import partial
 
@@ -64,6 +65,8 @@ def first(pred, iterable, default=None):
 
 def get_first(iterable):
     'Returns the first element of an iterable.'
+    # TODO: Check who is using this function to find out if could be replaced by
+    #       "next" and remove this one.
     return first(lambda x: True, iterable)
 
 

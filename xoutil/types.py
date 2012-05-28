@@ -27,13 +27,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import types as _legacy
-from types import GeneratorType
-
-from xoutil.data import smart_copy
-smart_copy(_legacy , __import__(__name__, fromlist=[b'_legacy']))
-del _legacy
-
+from types import *
 
 class _UnsetType(type):
     'The type of the :obj:`Unset` value.'
@@ -61,25 +55,25 @@ def is_iterable(maybe):
     '''
     Returns True if `maybe` an iterable object (e.g. implements the `__iter__`
     method:)
-    
+
     ::
-    
+
         >>> is_iterable('all strings are iterable')
         True
-        
+
         # Numbers are not
         >>> is_iterable(1)
         False
-        
+
         >>> is_iterable(xrange(1))
         True
-        
+
         >>> is_iterable({})
         True
-        
+
         >>> is_iterable(tuple())
         True
-        
+
         >>> is_iterable(set())
         True
     '''
@@ -95,26 +89,26 @@ def is_collection(maybe):
     '''
     Test `maybe` to see if it is a tuple, a list, a set or a generator function.
     It returns False for dictionaries and strings::
-    
+
         >>> is_collection('all strings are iterable')
         False
-        
+
         # Numbers are not
         >>> is_collection(1)
         False
-        
+
         >>> is_collection(xrange(1))
         True
-        
+
         >>> is_collection({})
         False
-        
+
         >>> is_collection(tuple())
         True
-        
+
         >>> is_collection(set())
         True
-        
+
         >>> is_collection(a for a in xrange(100))
         True
     '''
