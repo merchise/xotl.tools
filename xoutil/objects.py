@@ -65,7 +65,7 @@ def fdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
 
 def validate_attrs(source, target, force_equals=(), force_differents=()):
     '''
-    Makes a 'comparison' of `source` and `target` by its attributes.
+    Makes a 'comparison' of `source` and `target` by its attributes (or keys).
 
     This function returns True if and only if both of this tests pass:
 
@@ -80,9 +80,10 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         ...            setattr(self, which, kwargs[which])
 
         >>> source = Person(**{b'name': 'Manuel', b'age': 33, b'sex': 'male'})
-        >>> target = Person(**{b'name': 'Manuel', b'age': 4, b'sex': 'male'})
+        >>> target = {b'name': 'Manuel', b'age': 4, b'sex': 'male'}
 
-        >>> validate_attrs(source, target, force_equals=(b'sex',), force_differents=(b'age',))
+        >>> validate_attrs(source, target, force_equals=(b'sex',), 
+        ...                force_differents=(b'age',))
         True
 
         >>> validate_attrs(source, target, force_equals=(b'age',))
@@ -94,16 +95,19 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         >>> validate_attrs(source, target)
         True
     '''
+    from collections import Mapping
     from operator import eq, ne
     res = True
     tests = ((ne, force_equals), (eq, force_differents))
     j = 0
+    get_from_source = source.get if isinstance(source, Mapping) else partial(getattr, source)
+    get_from_target = target.get if isinstance(target, Mapping) else partial(getattr, target)
     while res and  (j < len(tests)):
         fail, attrs = tests[j]
         i = 0
         while res and  (i < len(attrs)):
             attr = attrs[i]
-            if fail(getattr(source, attr), getattr(target, attr)):
+            if fail(get_from_source(attr), get_from_target(attr)):
                 res = False
             else:
                 i += 1
@@ -170,7 +174,7 @@ def get_first_of(source, *keys, **default):
     You may pass a single keywork argument called :param:`default` with the
     value you want to be returned if no key is found in source::
 
-        >>> none = object()        
+        >>> none = object()
         >>> get_first_of((inst, somedict), 'foobar', default=none) is none
         True
     '''
