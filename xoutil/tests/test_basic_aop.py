@@ -26,7 +26,7 @@
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
-                        
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
@@ -34,6 +34,7 @@ import unittest
 
 from datetime import timedelta
 from xoutil.aop import weaved
+from xoutil.aop.basic import contextualized
 
 
 def days(self):
@@ -41,12 +42,12 @@ def days(self):
 
 
 def years(self):
-    return timedelta(days=365*self)
+    return timedelta(days=365 * self)
 
 
 def months(self):
     'Regards a month with 30 days'
-    return timedelta(days=30*self)
+    return timedelta(days=30 * self)
 
 
 class Test(unittest.TestCase):
@@ -54,20 +55,20 @@ class Test(unittest.TestCase):
         class SimpleObject(object):
             def ident(self, what):
                 return what
-            
+
         self.SimpleObject = SimpleObject
-        
+
     def test_simple_substitution(self):
         def plusone(self, what):
             return super(_class, self).ident(what) + 1
-                
+
         sobj = self.SimpleObject()
         prev = sobj.ident(99)
         with weaved(sobj, ident=plusone) as sobj:
             _class = sobj.__class__
             self.assertEqual(prev + 1, sobj.ident(99))
-        
-        
+
+
     def test_nested_weaved(self):
         def plusone(self, what):
             return super(_class, self).ident(what) + 1
@@ -84,8 +85,25 @@ class Test(unittest.TestCase):
                 self.assertEqual(prev + 3, sobj.ident(99))
             self.assertEqual(prev + 1, sobj.ident(99))
         self.assertEqual(prev, sobj.ident(99))
-        
 
- 
+
+    def test_contextualizer(self):
+        from xoutil.context import context
+        class FooBazer(object):
+            def inside(self):
+                if context['in-context']:
+                    return 'in-context'
+                else:
+                    return 'KABOOM'
+
+        @contextualized(context('in-context'), FooBazer)
+        class Foobar(object):
+            def outside(self):
+                return 'not-contextualized'
+
+        foo = Foobar()
+        self.assertEqual('in-context', foo.inside())
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
