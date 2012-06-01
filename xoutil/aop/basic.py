@@ -45,10 +45,34 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from types import MethodType, FunctionType
 from contextlib import contextmanager
+
+from xoutil.objects import xdir
 
 __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
+
+
+def _update(attrs, *sources):
+    '''
+    Updates attrs from sources:
+
+    - Every source with a __name__ that is not a class is updated into attrs.
+
+    - For every source that is a class, it's public attributes and all methods
+      are updated into attrs.
+    '''
+    attrs.update({f.__name__: f for f in sources
+                  if not isinstance(f, type) and getattr(f, '__name__',
+                                                         False)})
+    attrs.update({name: getattr(a, 'im_func', a) for f in sources
+                        if isinstance(f, type)
+                    for name, a in xdir(f)
+                        if not name.startswith('_') or
+                            getattr(a, 'im_func', False)})
+    return attrs
+
 
 
 def complementor(*sources, **attrs):
@@ -115,12 +139,10 @@ def complementor(*sources, **attrs):
     Notice the order in which this is done: class takes precedence over other
     kind of sources, and sources takes precedence over keyword arguments.
     '''
-
     def inner(cls):
         from collections import (Mapping, MutableMapping,
                                  MutableSequence as List,
                                  Set)
-        from types import FunctionType, MethodType
         from xoutil.types import Unset
         for attr, value in attrs.iteritems():
             assigned = attr in cls.__dict__
@@ -145,37 +167,63 @@ def complementor(*sources, **attrs):
                 setattr(cls, attr, value)
         return cls
 
-    # TODO: [med] [manu] ¿No se debería buscar las cosas dentro de las fuentes
-    #                    si estas son clases?
-    attrs.update({f.__name__: f for f in sources 
-                  if not isinstance(f, type) and getattr(f, '__name__', False)})
-    from xoutil.objects import xdir
-    attrs.update({name: getattr(a, 'im_func', a) for f in sources 
-                        if isinstance(f, type) 
-                    for name, a in xdir(f)
-                        if not name.startswith('_') or 
-                            getattr(a, 'im_func', False)})
+    _update(attrs, *sources)
     return inner
+
+
+def contextualized(context, *sources, **attrs):
+    '''
+    Another decorator very similar to :func:`complementor`, but this wraps
+    every method injected inside the context provided by :param:`context`.
+
+        >>> from xoutil.context import context
+        >>> class FooBazer(object):
+        ...    def inside(self):
+        ...        if context['in-context']:
+        ...            print('in-context')
+        ...        else:
+        ...            print('outside-context')
+
+        >>> @contextualized(context('in-context'), FooBazer)
+        ... class Foobar(object):
+        ...    def outside(self):
+        ...        print('not-context')
+
+        >>> foo = Foobar()
+        >>> foo.inside()
+        in-context
+
+        >>> foo.outside()
+        not-context
+
+    '''
+    def wrap(method):
+        def inner(self, *args, **kwargs):
+            with context:
+                if getattr(method, 'im_self', None):
+                    return method(*args, **kwargs)
+                else:
+                    return method(self, *args, **kwargs)
+        return inner
+
+    _update(attrs, *sources)
+    wrapped_attrs = {}
+    for name, value in attrs.items():
+        if isinstance(value, (FunctionType, MethodType)):
+            wrapped_attrs[name] = wrap(value)
+    return complementor(**wrapped_attrs)
 
 
 def inject_dependencies(target, *sources, **attrs):
     'Injects/replaces the sources for the given target.'
     cls = target if isinstance(target, type) else target.__class__
-    _merchise_extended = cls.__dict__.get('_merchise_extended', {'depth': 0}).copy()
+    _merchise_extended = cls.__dict__.get('_merchise_extended',
+                                          {'depth': 0}).copy()
     _merchise_extended['depth'] += 1
     attrs.update({b'__doc__': cls.__doc__, b'__module__': b'merchise.builtin',
                   '_merchise_extended': _merchise_extended})
-    # TODO: [med] [manu] ¿No se debería buscar las cosas dentro de las fuentes
-    #                    si estas son clases?
-    attrs.update({f.__name__: f for f in sources 
-                  if not isinstance(f, type)})
-    from xoutil.objects import xdir
-    attrs.update({name: getattr(a, 'im_func', a) for f in sources 
-                        if isinstance(f, type) 
-                    for name, a in xdir(f)
-                        if not name.startswith('_') or 
-                            getattr(a, 'im_func', False)})
-    extended_class = type(cls.__name__, (cls, ), attrs)
+    _update(attrs, *sources)
+    extended_class = type(cls.__name__, (cls,), attrs)
     if not isinstance(target, type):
         try:
             target.__class__ = extended_class

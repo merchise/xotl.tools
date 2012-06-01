@@ -34,6 +34,7 @@ import unittest
 
 from datetime import timedelta
 from xoutil.aop import weaved
+from xoutil.aop.basic import contextualized
 
 
 def days(self):
@@ -84,8 +85,25 @@ class Test(unittest.TestCase):
                 self.assertEqual(prev + 3, sobj.ident(99))
             self.assertEqual(prev + 1, sobj.ident(99))
         self.assertEqual(prev, sobj.ident(99))
-        
 
- 
+
+    def test_contextualizer(self):
+        from xoutil.context import context
+        class FooBazer(object):
+            def inside(self):
+                if context['in-context']:
+                    return 'in-context'
+                else:
+                    return 'KABOOM'
+
+        @contextualized(context('in-context'), FooBazer)
+        class Foobar(object):
+            def outside(self):
+                return 'not-contextualized'
+
+        foo = Foobar()
+        self.assertEqual('in-context', foo.inside())
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
