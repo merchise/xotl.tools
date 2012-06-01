@@ -169,3 +169,36 @@ def smart_dict(defaults, *sources):
             res[key] = deepcopy(defaults[key])
     return res
 
+
+
+def slides(iterator, width=2, fill=Unset):
+    '''
+    Creates a sliding window of a given `width` over an iterable::
+
+        >>> list(slides(range(1, 11)))
+        [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
+
+    If the iterator does not yield a width-aligned number of items, the last
+    slice returned is filled with `fill`::
+
+        >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
+        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, <class '...Unset'>, <class '...Unset'>)]
+    '''
+    pos = 0
+    res = []
+    iterator = iter(iterator)
+    current = next(iterator, Unset)
+    while current is not Unset:
+        if pos < width:
+            res.append(current)
+            current = next(iterator, Unset)
+            pos = pos + 1
+        else:
+            yield tuple(res)
+            res = []
+            pos = 0
+    if res:
+        while pos < width:
+            res.append(fill)
+            pos += 1
+        yield tuple(res)
