@@ -53,8 +53,8 @@ __author__ = 'Medardo Rodriguez'
 
 def complementor(*sources, **attrs):
     '''
-    Returns a decorator to be applied to a class in order to add attributes in a
-    smart way:
+    Returns a decorator to be applied to a class in order to add attributes \
+    in a smart way:
 
     - if the attribute is a dictionary and exists in the decorated class, it's
       updated.
@@ -72,7 +72,7 @@ def complementor(*sources, **attrs):
         ...    print('Hacked')
         ...    self._super___init__(*args, **kw)
 
-        >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range(5, 10), 
+        >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range(5, 10),
         ...               __init__=hacked_init)
         ... class Someclass(object):
         ...     somedict = {'a': 0}
@@ -101,17 +101,17 @@ def complementor(*sources, **attrs):
 
         >>> instance.somelist
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        
+
     If any positional arguments :param:`sources` are given then for each of
     them:
-    
+
     - If it's not a class (an instance of `type`) and it has a `__name__`, it
       will be updated into :param:`attrs` and treated according to the rules
       before.
-      
+
     - If it's a class all it's public non-method attributes are updated into
       `attrs`, and all it's methods (public or private) are updated as well.
-      
+
     Notice the order in which this is done: class takes precedence over other
     kind of sources, and sources takes precedence over keyword arguments.
     '''
@@ -256,7 +256,8 @@ def weaved(target, *sources, **attrs):
             res = 0
             depth = 0
             while depth == 0 and cls.__dict__.get('_merchise_extended'):
-                depth = cls.__dict__.get('_merchise_extended', {}).get('depth', 0)
+                depth = cls.__dict__.get('_merchise_extended',
+                                         {}).get('depth', 0)
                 cls = cls.__base__
                 res += 1
             if res > 0:

@@ -26,7 +26,7 @@
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
-                        
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
@@ -41,12 +41,12 @@ def days(self):
 
 
 def years(self):
-    return timedelta(days=365*self)
+    return timedelta(days=365 * self)
 
 
 def months(self):
     'Regards a month with 30 days'
-    return timedelta(days=30*self)
+    return timedelta(days=30 * self)
 
 
 class Test(unittest.TestCase):
@@ -54,20 +54,20 @@ class Test(unittest.TestCase):
         class SimpleObject(object):
             def ident(self, what):
                 return what
-            
+
         self.SimpleObject = SimpleObject
-        
+
     def test_simple_substitution(self):
         def plusone(self, what):
             return super(_class, self).ident(what) + 1
-                
+
         sobj = self.SimpleObject()
         prev = sobj.ident(99)
         with weaved(sobj, ident=plusone) as sobj:
             _class = sobj.__class__
             self.assertEqual(prev + 1, sobj.ident(99))
-        
-        
+
+
     def test_nested_weaved(self):
         def plusone(self, what):
             return super(_class, self).ident(what) + 1
