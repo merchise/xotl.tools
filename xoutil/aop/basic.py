@@ -171,6 +171,7 @@ def complementor(*sources, **attrs):
     return inner
 
 
+
 def contextualized(context, *sources, **attrs):
     '''
     Another decorator very similar to :func:`complementor`, but this wraps

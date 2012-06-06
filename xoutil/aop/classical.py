@@ -74,7 +74,7 @@ def _getattr(obj, attr, default=Unset):
             print(obj, attr, repr(default))
             raise AttributeError('Object {o!r} has not attribute {a!r}'.format(o=obj, a=attr))
 
-        
+
 __getattr = partial(_getattr, default=None)
 
 
