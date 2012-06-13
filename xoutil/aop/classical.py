@@ -70,7 +70,7 @@ def _getattr(obj, attr, default=Unset):
         if default is not Unset:
             return default
         else:
-            # TODO: Write a proper message.
+            # TODO: [manu] Write a proper message.
             print(obj, attr, repr(default))
             raise AttributeError('Object {o!r} has not attribute {a!r}'.format(o=obj, a=attr))
 
