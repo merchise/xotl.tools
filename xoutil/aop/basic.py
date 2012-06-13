@@ -86,7 +86,8 @@ def complementor(*sources, **attrs):
     - If a list, tuple or set, the new value is appended.
 
     - Methods declared in the class that are replaces are renamed to
-      "_super_<name>".
+      "_super_<name>", but the docstring and names are copied to their
+      replacement.
 
     - All other values are replaced.
 
@@ -103,6 +104,7 @@ def complementor(*sources, **attrs):
         ...     somelist = range(5)
         ...
         ...     def __init__(self, d=None, l=None):
+        ...         'My docstring'
         ...         if d:
         ...             self.somedict.update(d)
         ...         if l:
@@ -125,6 +127,9 @@ def complementor(*sources, **attrs):
 
         >>> instance.somelist
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+        >>> Someclass.__init__.__doc__
+        'My docstring'
 
     If any positional arguments :param:`sources` are given then for each of
     them:
@@ -159,11 +164,16 @@ def complementor(*sources, **attrs):
                     value = current + value
                 elif ok(value, Set) and ok(current, Set):
                     value = current | value
-                elif ok(value, (FunctionType, MethodType)):
+                elif ok(value, (FunctionType, MethodType)) and current:
                     setattr(cls, b'_super_%s' % attr, current)
+            else:
+                current = None
             if value is not Unset:
                 if isinstance(value, MethodType):
                     value = value.im_func
+                if current and not getattr(value, '__doc__', False):
+                    from functools import update_wrapper
+                    update_wrapper(value, current)
                 setattr(cls, attr, value)
         return cls
 
