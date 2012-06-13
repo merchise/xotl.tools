@@ -119,8 +119,6 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     return res
 
 
-# TODO: Introduce a decorator for keyword arguments only...
-# XXX: In Py 3.2 this should be changed to get_first_of(source, *keys, **, default=None)
 def get_first_of(source, *keys, **kwargs):
     '''Return the first occurrence of any of the specified keys in
     source. if source is a tuple, a list, a set, or a generator; then
