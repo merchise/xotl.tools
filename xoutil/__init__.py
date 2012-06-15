@@ -24,7 +24,22 @@
 # @created: Mar 23, 2012
 
 '''
-doc
+.. currentmodule:: xoutil
+
+`xoutil` is a collection of disparate utilities that does not conform
+a framework for anything. `xoutil` is essentially an extension to the
+Python's standard library.
+
+But also, xoutil provides implementations of simple tools for several
+programming tasks. For instance the :py:mod:`xoutil.aop` provides two
+very basic implementations of what may be called Aspect-Oriented
+Programming (AOP), but we do not claim any affiliation to other AOP
+frameworks. In fact, we believe that Python's dynamic nature makes so
+easy the injection of code that every team would probably use it's own
+AOP mini-framework.
+
+.. note:: This list is still incomplete.
+
 '''
 
 from __future__ import (division as _py3_division,

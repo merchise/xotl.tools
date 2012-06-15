@@ -23,6 +23,12 @@
 #
 # Created on Apr 29, 2012
 
+'''
+An extension to :py:mod:`xoutil.aop.classical` that allows to hook *before* and
+*around* the :py:func:`~xoutil.aop.classical.weave` itself.
+
+'''
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
@@ -33,12 +39,15 @@ __author__ = 'manu'
 
 __all__ = (b'weave', )
 
+
 from xoutil.aop.classical import weave as classical_weave
+
+
 
 def weave(aspect, target):
     '''
-    Similar to :func:`xoutil.aop.classical.weave`_ but introduces _before_weave
-    and _around_weave hooks to weave::
+    Similar to :py:func:`xoutil.aop.classical.weave` but introduces
+    _before_weave and _around_weave hooks to the weaving process::
 
         >>> class Foobar(object):
         ...    def echo(self, what):

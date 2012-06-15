@@ -28,7 +28,7 @@ This module provides a very simple and classical way to weave 'aspect classes'
 into your own classes/modules.
 
 This "classical" approach is different from the basic approach in
-:mod:`xoutil.aop.basic`_ in that this one is meant to apply changes to the
+:py:mod:`~xoutil.aop.basic` in that this one is meant to apply changes to the
 behavior of objects that endure beyond any given context of execution. Once a
 class/module has been weaved, it will remain weaved forever.
 
@@ -108,8 +108,8 @@ def build_method(method, inner):
 def _weave_after_method(target, aspect, method_name,
                         after_method_name='_after_{method_name}'):
     '''
-    Tries to weave an after method given by :param:`method_name` defined (by
-    name convention) in :param:`aspect` into the class :param:`target`.
+    Tries to weave an after method given by `method_name` defined (by
+    name convention) in `aspect` into the class `target`.
 
     The following two classes define a single method `echo`. The second class
     may raise `ZeroDivisionError`s.
@@ -242,8 +242,8 @@ def _weave_after_method(target, aspect, method_name,
 def _weave_before_method(target, aspect, method_name,
                          before_method_name='_before_{method_name}'):
     '''
-    Tries to weave a before method given by :param:`method_name` defined (by
-    name convention) in :param:`aspect` into the class :param:`target`.
+    Tries to weave a before method given by `method_name` defined (by
+    name convention) in `aspect` into the class `target`.
 
     The following two classes define a single method `echo`. The second class
     may raise `ZeroDivisionError`s.
@@ -397,20 +397,20 @@ def weave(aspect, target):
     '''
     Weaves an aspect into `target`. The weaving takes places like this:
 
-    - First every public attribute from :param:`aspect` that is not an after
-      method, before method, or around method is injected into :param:`target`.
+    - First every public attribute from `aspect` that is not an after
+      method, before method, or around method is injected into `target`.
 
-    - Then, we weaving any after, before and arounds methods into
-      :param:`target` if there's a matching method.
+    - Then, we weave any after, before and arounds methods into
+      `target` if there's a matching method.
 
-    - Lastly, if there's a `_after_` method in :param:`aspect` it is weaved into
-      all methods of :param:`target` (even those which were injected and weaved
+    - Lastly, if there's a `_after_` method in `aspect` it is weaved into
+      all methods of `target` (even those which were injected and weaved
       previously).
 
       The same is done for `_before_` and `_around_`.
 
-    Since the introduction :mod:`xoutil.aop.meta` this method might look for a
-    `_before_weave` or a `_around_weave` method in :param:`aspect`; which allow
+    Since the introduction :py:mod:`xoutil.aop.extended` this method might look
+    for a `_before_weave` or a `_around_weave` method in `aspect`; which allow
     aspects to hook this method.
     '''
     from xoutil.objects import fdir
