@@ -65,8 +65,15 @@ def first(pred, iterable, default=None):
 
 def get_first(iterable):
     'Returns the first element of an iterable.'
-    # TODO: Check who is using this function to find out if could be replaced by
-    #       "next" and remove this one.
+    # TODO: Check who is using this function to find out if could be replaced
+    #       by "next" and remove this one.
+    #    Response: `next` does not work on simple sequences::
+    #        >>> get_first(range(10))
+    #        0
+    #        >>> next(range(10))
+    #        Traceback (...)
+    #            ...
+    #        TypeError: list object is not an iterator
     return first(lambda x: True, iterable)
 
 

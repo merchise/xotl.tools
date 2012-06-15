@@ -30,12 +30,12 @@ A context manager for execution context flags.
 
 Use as:
 
-    >>> from xoutil import context
+    >>> from xoutil.context import context
     >>> with context('somename'):
     ...     if context['somename']:
     ...         print('In context somename')
     In context somename
-    
+
 Note the difference creating the context and checking it.
 '''
 
@@ -60,6 +60,19 @@ _data = LocalData()
 class MetaContext(type):
     def __getitem__(self, name):
         return _data.contexts.get(name, _null_context)
+
+
+    def __contains__(self, name):
+        '''
+        Basic cupport for the 'A in context' idiom::
+
+            >>> from xoutil.context import context
+            >>> with context('A'):
+            ...    if 'A' in context:
+            ...        print('A')
+            A
+        '''
+        return bool(self[name])
 
 
 

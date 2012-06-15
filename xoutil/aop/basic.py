@@ -86,11 +86,12 @@ def complementor(*sources, **attrs):
     - If a list, tuple or set, the new value is appended.
 
     - Methods declared in the class that are replaces are renamed to
-      "_super_<name>".
+      "_super_<name>", but the docstring and names are copied to their
+      replacement.
 
     - All other values are replaced.
 
-    The following code tests show each case:
+    The following code tests show each case::
 
         >>> def hacked_init(self, *args, **kw):
         ...    print('Hacked')
@@ -103,11 +104,11 @@ def complementor(*sources, **attrs):
         ...     somelist = range(5)
         ...
         ...     def __init__(self, d=None, l=None):
+        ...         'My docstring'
         ...         if d:
         ...             self.somedict.update(d)
         ...         if l:
         ...             self.somelist.extend(l)
-
 
         # It's best to do comparison with dicts since key order may not be
         # preserved.
@@ -126,15 +127,19 @@ def complementor(*sources, **attrs):
         >>> instance.somelist
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-    If any positional arguments :param:`sources` are given then for each of
-    them:
+        >>> Someclass.__init__.__doc__
+        'My docstring'
 
-    - If it's not a class (an instance of `type`) and it has a `__name__`, it
-      will be updated into :param:`attrs` and treated according to the rules
-      before.
+    :param sources: If any positional arguments `sources` are given then for
+                    each of them:
 
-    - If it's a class all it's public non-method attributes are updated into
-      `attrs`, and all it's methods (public or private) are updated as well.
+                    - If it's not a class (an instance of `type`) and it has a
+                      `__name__`, it will be updated into `attrs` and treated
+                      according to the rules before.
+
+                    - If it's a class all it's public non-method attributes
+                      are updated into `attrs`, and all it's methods (public
+                      or private) are updated as well.
 
     Notice the order in which this is done: class takes precedence over other
     kind of sources, and sources takes precedence over keyword arguments.
@@ -159,11 +164,16 @@ def complementor(*sources, **attrs):
                     value = current + value
                 elif ok(value, Set) and ok(current, Set):
                     value = current | value
-                elif ok(value, (FunctionType, MethodType)):
+                elif ok(value, (FunctionType, MethodType)) and current:
                     setattr(cls, b'_super_%s' % attr, current)
+            else:
+                current = None
             if value is not Unset:
                 if isinstance(value, MethodType):
                     value = value.im_func
+                if current and not getattr(value, '__doc__', False):
+                    from functools import update_wrapper
+                    update_wrapper(value, current)
                 setattr(cls, attr, value)
         return cls
 
@@ -171,10 +181,11 @@ def complementor(*sources, **attrs):
     return inner
 
 
+
 def contextualized(context, *sources, **attrs):
     '''
     Another decorator very similar to :func:`complementor`, but this wraps
-    every method injected inside the context provided by :param:`context`.
+    every method injected inside the context provided by `context`.
 
         >>> from xoutil.context import context
         >>> class FooBazer(object):
@@ -241,11 +252,10 @@ def inject_dependencies(target, *sources, **attrs):
 @contextmanager
 def weaved(target, *sources, **attrs):
     '''
-    Returns a context manager that weaves :param:`target` with all the
-    :param:`sources` and the :param:`attrs` weaved into it. This
-    method yields the weaved object into the context manager, so you have
-    access to it. Upon exiting the context manager, the :param:`target` is
-    reset to it's previous state (if possible).
+    Returns a context manager that weaves `target` with all the `sources` and
+    the `attrs` weaved into it. This method yields the weaved object into the
+    context manager, so you have access to it. Upon exiting the context
+    manager, the `target` is reset to it's previous state (if possible).
 
     For example, in the following code::
 

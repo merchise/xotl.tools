@@ -34,7 +34,7 @@ import unittest
 
 from datetime import timedelta
 from xoutil.aop import weaved
-from xoutil.aop.basic import contextualized
+from xoutil.aop.basic import contextualized, complementor
 
 
 def days(self):
@@ -86,6 +86,37 @@ class Test(unittest.TestCase):
             self.assertEqual(prev + 1, sobj.ident(99))
         self.assertEqual(prev, sobj.ident(99))
 
+
+    def test_complementor(self):
+        def __init__(self, *args, **kw):
+            return self._super___init__(*args, **kw)
+
+        def other(self):
+            'Hacked'
+            return self._super_other()
+
+        @complementor(other, __init__,
+                      somedict={'a': 1, 'b': 2}, somelist=range(5, 10))
+        class Someclass(object):
+            somedict = {'a': 0}
+            somelist = range(5)
+
+            def __init__(self, d=None, l=None):
+                'My docstring'
+                if d:
+                    self.somedict.update(d)
+                if l:
+                    self.somelist.extend(l)
+
+            def other(self):
+                'Other docstring'
+                return self
+
+        ok = self.assertEqual
+        ok(Someclass.somedict, {'a': 1, 'b': 2})
+        ok(Someclass.somelist, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        ok(Someclass.__init__.__doc__, 'My docstring')
+        ok(Someclass.other.__doc__, 'Hacked')
 
     def test_contextualizer(self):
         from xoutil.context import context
