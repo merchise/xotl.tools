@@ -130,16 +130,16 @@ def complementor(*sources, **attrs):
         >>> Someclass.__init__.__doc__
         'My docstring'
 
-    :param *sources: If any positional arguments `sources` are given then for
-                     each of them:
+    :param sources: If any positional arguments `sources` are given then for
+                    each of them:
 
-                     - If it's not a class (an instance of `type`) and it has a
-                       `__name__`, it will be updated into `attrs` and treated
-                       according to the rules before.
+                    - If it's not a class (an instance of `type`) and it has a
+                      `__name__`, it will be updated into `attrs` and treated
+                      according to the rules before.
 
-                     - If it's a class all it's public non-method attributes
-                       are updated into `attrs`, and all it's methods (public
-                       or private) are updated as well.
+                    - If it's a class all it's public non-method attributes
+                      are updated into `attrs`, and all it's methods (public
+                      or private) are updated as well.
 
     Notice the order in which this is done: class takes precedence over other
     kind of sources, and sources takes precedence over keyword arguments.
