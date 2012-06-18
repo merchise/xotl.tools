@@ -31,7 +31,7 @@ from __future__ import (division as _py3_division,
 import unittest
 
 from xoutil.context import context
-from xotl.models.ql.proxy import proxify, UNPROXIFING_CONTEXT
+from xoutil.proxy import proxify, UNPROXIFING_CONTEXT, unboxed
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -97,12 +97,6 @@ class TestProxy(unittest.TestCase):
             self.assertEqual(y, y + 1)
 
 
-    def test_repr(self):
-        from xotl.models.ql.these import this
-        from xotl.models.ql.expressions import q
-        self.assertEqual('this.a.b.c', str(q(this.a.b.c)))
-
-
     def test_explicit_unproxification(self):
         @proxify
         class Proxified(object):
@@ -115,3 +109,19 @@ class TestProxy(unittest.TestCase):
         with context(UNPROXIFING_CONTEXT):
             target = proxy.target
         self.assertIs(foo, target)
+
+
+    def test_unboxed(self):
+        class X(object):
+            l = [1, 2, 4]
+
+        @proxify
+        class Proxified(object):
+            def __init__(self, target):
+                self.target = target
+                self.l = [1, 3]
+
+        x = X()
+        p = Proxified(x)
+        unboxed(p, 'l') << 234
+        self.assertEqual([1, 3, 234], unboxed(p).l)

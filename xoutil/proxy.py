@@ -199,6 +199,68 @@ class Proxy(object):
 
 
 
+class unboxed(object):
+    '''
+    A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also provides
+    support for "updating" a single attribute.
+    '''
+    def __init__(self, target, attr=None):
+        self.target = target
+        self.attr = attr
+
+
+    def __getattribute__(self, attr):
+        target = super(unboxed, self).__getattribute__('target')
+        with context(UNPROXIFING_CONTEXT):
+            return getattr(target, attr)
+
+
+    def __call__(self, attr):
+        '''
+        Supports the idiom ``unboxed(target)(attr) << value``.
+        '''
+        get = super(unboxed, self).__getattribute__
+        target = get('target')
+        return unboxed(target, attr)
+
+
+    def __lshift__(self, value):
+        '''
+        Supports the idiom ``unboxed(x, attrname) << value`` for updating a
+        single attribute.
+
+        - If the current value is a list, the value get appended.
+
+        - If the current value is a tuple, a new tuple ``current + (value, )``
+          is set.
+
+        - If the current value is a dict, and value is also a dict.
+
+        - Otherwise the value is set as if.
+        '''
+        from collections import Mapping
+        get = super(unboxed, self).__getattribute__
+        attr = get('attr')
+        if attr:
+            current = getattr(self, attr, Unset)
+            if current:
+                if isinstance(current, list):
+                    current.append(value)
+                    value = Unset
+                elif isinstance(current, tuple):
+                    value = current + (value, )
+                elif (isinstance(current, Mapping)
+                      and isinstance(value, Mapping)):
+                    current.update(value)
+                    value = Unset
+            if value is not Unset:
+                setattr(self, attr, value)
+        else:
+            pass
+
+
+
+
 def proxify(cls, *complementors):
     '''
     A decorator to proxify classes with :class:`Proxy`.
@@ -297,6 +359,6 @@ def proxify(cls, *complementors):
 
     '''
     if not complementors:
-        complementors = (SupportedOperations, )
+        complementors = (SupportedOperations,)
     ComplementedProxy = complementor(*complementors)(Proxy)
     return complementor(ComplementedProxy)(cls)
