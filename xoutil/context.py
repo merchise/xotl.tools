@@ -86,6 +86,7 @@ class Context(object):
             res.name = name
             res.data = data
             res.count = 0
+            res._events = []
         elif data:
             res.data.update(data)
         return res
@@ -102,8 +103,20 @@ class Context(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.count -= 1
         if self.count == 0:
+            for event in self.events:
+                event(self)
             del _data.contexts[self.name]
         return False
+
+
+    @property
+    def events(self):
+        return self._events
+
+    @events.setter
+    def events(self, value):
+        self._events = list(set(value))
+
 
 # A simple alias for Context
 context = Context
