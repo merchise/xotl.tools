@@ -66,12 +66,14 @@ class simple_memoize(object):
         Mirror: 1
         1
 
-        # The second time the result will be retrieved from cache and won't be printed
+    The second time the result will be retrieved from cache and won't be
+    printed::
+
         >>> identity(1)
         1
 
-    Warning: Use this only for small (or fixed) time-running applications. Since
-    it may increase the memory consumption considerably.
+    Warning: Use this only for small (or fixed) time-running applications.
+    Since it may increase the memory consumption considerably.
     '''
 
     __metaclass__ = _sizeable
