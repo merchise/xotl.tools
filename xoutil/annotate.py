@@ -52,6 +52,7 @@ _SIGNATURE = _regex_compile(r'''(?ixm)
 
 _ARG_SEP = _regex_compile(r'(?im)^\*{0,2}(?P<argname>[_\w\d]+)\s*:')
 
+
 def _split_signature(signature):
     signature = signature.strip() if isinstance(signature, basestring) else ''
     if signature:
@@ -71,7 +72,8 @@ def _parse_signature(signature):
         if not argname:
             raise SyntaxError('The signature %r is not valid' % expr)
         try:
-            # This is a hack to help not implement an expression parser for Python
+            # This is a hack to help not implement an expression parser for
+            # Python
             node = _ast_parse(expr)
             return argname, node, ''  # We consumed the whole expression
         except SyntaxError as error:
@@ -82,7 +84,8 @@ def _parse_signature(signature):
             while offset > 0 and expr[offset] != ',':
                 offset -= 1
             if offset > 0 and expr[offset] == ',':
-                return argname, _ast_parse(expr[:offset]), expr[offset+1:].lstrip()
+                return (argname, _ast_parse(expr[:offset]),
+                        expr[offset + 1:].lstrip())
             else:
                 raise
 
@@ -110,9 +113,9 @@ def _parse_signature(signature):
             #          {u'a': (u'(a: args)',)}
             #
             # XXX: In fact, I should check that this does not create memory
-            # references cycles with frames and stuff as noticed in the CPython
-            # documentation; notwithstading that, python's garbage collector may
-            # get rid of unreachable objects, even with loops.
+            # references cycles with frames and stuff as noticed in the
+            # CPython documentation; notwithstading that, python's garbage
+            # collector may get rid of unreachable objects, even with loops.
             self.f = sys._getframe(skip_levels)
             self.d = dict(init)
 
@@ -127,8 +130,6 @@ def _parse_signature(signature):
                     self.f = self.f.f_back
                 return self.d[key]
 
-    import ast
-    import dis
     args, return_annotation = _split_signature(signature)
     while args:
         arg, expr, args = _split_annotation_expression(args)
@@ -163,8 +164,8 @@ def annotate(func, signature=None, **keyword_annotations):
 
       - There's no support for the full python expressions.
 
-         - There's no support for nested arguments support (since this feature is
-        also deprecated).
+         - There's no support for nested arguments support (since this feature
+           is also deprecated).
 
       - Specifying defaults is no supported (nor needed).
 

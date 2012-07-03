@@ -308,6 +308,8 @@ def weaved(target, *sources, **attrs):
     try:
         result = inject_dependencies(target, *sources, **attrs)
         yield result
+    except:
+        result = None
     finally:
         if result is target:
             cls = target.__class__
