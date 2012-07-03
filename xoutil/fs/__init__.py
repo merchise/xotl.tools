@@ -298,28 +298,3 @@ def imap(func, pattern):
         res = func(item, st)
         if res is not None:
             yield res
-
-
-def organize_repo(src, dst, pattern=None):
-    '''
-    Not implemented at all.
-
-    Take a massive list of packages stored in the source (src), and organize
-    in destination folder (dst).
-
-    If the package name have the pattern "PRODUCT.NAME-VERSION.EXT, the
-    product name is used as destination folder tail, else, first letter. Both
-    path names are normalized before used.
-
-    If 'pattern' is specified, only paths fulfilling with it are processed.
-    'pattern' could be a wild-card or a regular expression.
-
-    Not implemented at all.
-    '''
-    # FIXME: This is partially implemented
-    src = normalize_path(src)
-    dst = normalize_path(dst)
-    for dirpath, _dirnames, filenames in os.walk(src):
-        for item in filenames:
-            fname = os.path.join(dirpath, item)
-            print(fname)
