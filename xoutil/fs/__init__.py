@@ -24,16 +24,21 @@
 #
 # Created on Nov 28, 2011
 
-'''File system utilities.'''
+'''
+File system utilities.
+'''
 
 
-from __future__ import (division as _py3_division, print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import)
 
 
 import os
 from re import compile as _re_compile
-from .path import normalize_path, get_module_path, shorten_module_filename, shorten_user
+from .path import (normalize_path, get_module_path, shorten_module_filename,
+                   shorten_user)
 
 
 re_magic = _re_compile('[*?[]')
@@ -43,7 +48,8 @@ has_magic = lambda s: re_magic.search(s) is not None
 def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
     from functools import reduce
     import fnmatch
-    arg_count = reduce(lambda count, p: count + (1 if p is not None else 0), (pattern, regex_pattern, shell_pattern), 0)
+    arg_count = reduce(lambda count, p: count + (1 if p is not None else 0),
+                       (pattern, regex_pattern, shell_pattern), 0)
     if arg_count == 1:
         if pattern is not None:
             if pattern.startswith('(?'):
@@ -54,12 +60,28 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
     elif arg_count == 0:
         return None
     else:
-        raise TypeError('"_get_regex()" takes at most 1 argument (%s given)' % arg_count)
+        raise TypeError('"_get_regex()" takes at most 1 argument '
+                        '(%s given)' % arg_count)
 
 
 
 def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
-    '''Iterate filenames recursively.'''
+    '''
+    Iterate filenames recursively.
+
+    :param top: The top directory for recurse into.
+    :param pattern: A pattern of the files you want to get from the iterator.
+                    It should be a string. If it starts with "(?" it will be
+                    regarded as a regular expression, otherwise a shell
+                    pattern.
+    :param regex_pattern: An *alternative* to `pattern`. This will always be
+                          regarded as a regular expression.
+    :param shell_pattern: An *alternative* to `pattern`. This should be a
+                          shell pattern.
+
+    .. warning:: It's an error to pass more than one of patterns.
+
+    '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     for dirpath, _dirs, filenames in os.walk(normalize_path(top)):
         for filename in filenames:
@@ -70,7 +92,12 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
 
 
 def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
-    '''Itererate directories recursively'''
+    '''
+    Iterate directories recursively.
+
+    The params have analagous meaning that in :func:`iter_files` and the same
+    restrictions.
+    '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     for path, _dirs, _files in os.walk(normalize_path(top)):
         if (regex is None) or regex.search(path):
@@ -81,9 +108,14 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
 def regex_rename(top, pattern, repl):
     '''
     Rename files recursively using regular expressions substitution.
-      - top: the root directory to start walking.
-      - pattern: regular expression pattern; for example "(?i)\.jpg$"
-      - repl: string to use a replacement (for example ".jpeg")
+
+    :param top: The top directory to start walking.
+
+    :param pattern: A regular expression pattern. Files whose fullname
+                    (including the path) match the expression will be renamed.
+
+    :param repl: String to use as replacement. You may use backreferences as
+                 documented in python's ``re.sub`` function.
     '''
     from re import subn as _re_subn
     if isinstance(pattern, basestring):
@@ -126,10 +158,10 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
                 print('>>> PROBLEM with:', fn)
             if target_encoding is None:
                 dir = os.path.dirname(fn)
-                
+
             else:
                 te = target_encoding
-                
+
             new = fn.decode()    # Use "chardet.detect" or 'ibm857'
             os.rename(fn, new)
             print('*'*8, new)
@@ -138,9 +170,10 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
 
 
 
-filter_not_hidden = lambda path, stat_info: (path[0] != '.') and ('/.' not in path)
-
+filter_not_hidden = lambda path, _st: (path[0] != '.') and ('/.' not in path)
 filter_false = lambda path, stat_info: False
+
+
 
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
@@ -168,6 +201,10 @@ def get_mime_filter(mime_start):
 
 
 def nice_size(size):
+    '''
+    Formats `size` to a nice human-friendly format by appending one of `Kilo`,
+    `Mega`, `Giga` and `Tera` suffix.
+    '''
     tails = ' KMGT'
     i, high = 0, len(tails) - 1
     while (size >= 1024) and (i < high):
@@ -178,7 +215,11 @@ def nice_size(size):
 
 
 def stat(path):
-    '''Return file or file system status.'''
+    '''
+    Return file or file system status.
+
+    This is the same as the function ``os.stat`` but raises no error.
+    '''
     try:
         return os.stat(path)
     except os.error:
@@ -186,7 +227,7 @@ def stat(path):
 
 
 def lstat(path):
-    '''Like stat(path), but do not follow symbolic links.'''
+    '''Like :func`stat`, but do not follow symbolic links.'''
     try:
         return os.lstat(path)
     except os.error:
@@ -200,6 +241,7 @@ def set_stat(fname, stat_info):
 
 
 def listdir(path):
+    '''Same as ``os.listdir`` but normalizes `path` and raises no error.'''
     try:
         return os.listdir(normalize_path(path))
     except os.error:
@@ -242,13 +284,15 @@ def _list(pattern):
 
 def imap(func, pattern):
     '''
-    yield func(file_0, stat_0), func(file_1, stat_1), ...
+    Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ...
 
     for each dir path, "pattern" may contain:
-      * Simple shell-style wildcards a la fnmatch.
-      * Regex if pattern starts with '(?'.
-        Expressions must be valid, as in "(?:[^.].*)$" or "(?i).*\.jpe?g$".
-        Remember add end '$' if needed.
+
+    - Simple shell-style wildcards a la fnmatch.
+
+    - Regex if pattern starts with '(?'.
+      Expressions must be valid, as in "(?:[^.].*)$" or "(?i).*\.jpe?g$".
+      Remember add end '$' if needed.
     '''
     for item, st in _list(pattern):
         res = func(item, st)
@@ -258,13 +302,18 @@ def imap(func, pattern):
 
 def organize_repo(src, dst, pattern=None):
     '''
-    Take a massive list of packages stored in the source (src), and organize in
-    destination folder (dst).
-    If the package name have the pattern "PRODUCT.NAME-VERSION.EXT, the product
-    name is used as destination folder tail, else, first letter.
-    Both path names are normalized before used.
+    Not implemented at all.
+
+    Take a massive list of packages stored in the source (src), and organize
+    in destination folder (dst).
+
+    If the package name have the pattern "PRODUCT.NAME-VERSION.EXT, the
+    product name is used as destination folder tail, else, first letter. Both
+    path names are normalized before used.
+
     If 'pattern' is specified, only paths fulfilling with it are processed.
     'pattern' could be a wild-card or a regular expression.
+
     Not implemented at all.
     '''
     # FIXME: This is partially implemented
@@ -274,4 +323,3 @@ def organize_repo(src, dst, pattern=None):
         for item in filenames:
             fname = os.path.join(dirpath, item)
             print(fname)
-

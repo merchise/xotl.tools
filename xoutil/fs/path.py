@@ -37,10 +37,11 @@ __author__ = 'manu'
 
 def normalize_path(path):
     '''
-    Normalize path:
-      * expanding '~' and '~user' constructions.
-      * eliminating double slashes
-      * converting to absolute.
+    Normalize path by:
+
+      - expanding '~' and '~user' constructions.
+      - eliminating double slashes
+      - converting to absolute.
     '''
     if isinstance(path, unicode):
         import sys
@@ -81,8 +82,9 @@ def shorten_module_filename(filename):
 
 def shorten_user(filename):
     '''
-    A filename is shortened looking for the $HOMe in his head and replacing
-    it by '~'.
+    A filename is shortened looking for the (expantion) $HOME in his head and
+    replacing it by '~'.
+
     '''
     import os.path
     home = os.path.expanduser('~')

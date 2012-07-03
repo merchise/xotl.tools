@@ -2,10 +2,13 @@
 `xoutil` file system utilities
 ==============================
 
-.. currentmodule:: xoutil.fs
-
 .. automodule:: xoutil.fs
    :members:
    :undoc-members:
 
+Contents:
 
+.. toctree::
+   :maxdepth: 1
+
+   fs/path
