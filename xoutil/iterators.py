@@ -59,14 +59,27 @@ def first(pred, iterable, default=None):
 
         >>> first(lambda x: x > 100, range(10), False)
         False
+
+    The iterable gets consumed if possible::
+
+        >>> x = (x for x in range(10))
+        >>> first(lambda x: x > 4, x)
+        5
+
+        >>> first(lambda x: x > 4, x)
+        6
+
+        >>> list(x)
+        [7, 8, 9]
     '''
-    from itertools import dropwhile
-    return next(dropwhile(lambda x: not pred(x), iterable), default)
+    return next((x for x in iterable if pred(x)), default)
+
 
 def get_first(iterable):
     'Returns the first element of an iterable.'
     # TODO: Check who is using this function to find out if could be replaced
     #       by "next" and remove this one.
+    #
     #    Response: `next` does not work on simple sequences::
     #        >>> get_first(range(10))
     #        0
@@ -79,9 +92,8 @@ def get_first(iterable):
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
     '''
-    Flatten out a list by putting sublist entries in the main list. It takes
-    care of everything deemed a collection (i.e, not a scalar according to the
-    callabled passed in :param:`is_scalar`)::
+    Flattens out a sequence. It takes care of everything deemed a collection
+    (i.e, not a scalar according to the callabled passed in `is_scalar`)::
 
         >>> tuple(flatten((1, range(2, 5), xrange(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -95,7 +107,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         >>> list(flatten((range(4), (fib(n) for n in range(3)))))
         [0, 1, 2, 3, 1, 1, 2]
 
-    If :param:`depth` is None the collection is flattened recursiverly until the
+    If `depth` is None the collection is flattened recursiverly until the
     "bottom" is reached. If `depth` is an integer then the collection is
     flattened up to that level::
 
@@ -186,7 +198,8 @@ def slides(iterator, width=2, fill=Unset):
         [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
 
     If the iterator does not yield a width-aligned number of items, the last
-    slice returned is filled with `fill`::
+    slice returned is filled with `fill` (by default
+    :class:`~xoutil.types.Unset`)::
 
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
         [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, <class '...Unset'>, <class '...Unset'>)]

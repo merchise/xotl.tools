@@ -23,6 +23,11 @@
 #
 # Created on Feb 17, 2012
 
+'''
+Several utilities for objects in general.
+
+'''
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
@@ -36,11 +41,6 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-
-'''
-Several utilities for objects in general.
-'''
-
 # These two functions can be use to always return True or False
 _true = lambda * args, **kwargs: True
 _false = lambda * args, **kwargs: False
@@ -48,9 +48,21 @@ _false = lambda * args, **kwargs: False
 
 
 def xdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
-    '''Return all ``(attr, value)`` pairs from :param:`obj` that
-    ``attr_filter(attr)`` and ``value_filter(value)`` are both
-    True.
+    '''
+    Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
+    and ``value_filter(value)`` are both True.
+
+    :param obj: The object to be instrospected.
+
+    :param attr_filter: *optional* A filter for attribute names.
+
+    :param value_filter: *optional* A filter for attribute values.
+
+    :param getattr: *optional* A function with the same signature that
+                    ``getattr`` to be used to get the values from `obj`.
+
+    If neither `attr_filter` nor `value_filter` are given, all `(attr, value)`
+    are generated.
 
     '''
     attrs = (attr for attr in dir(obj) if attr_filter(attr))
@@ -58,22 +70,23 @@ def xdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
 
 
 def fdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
-    '''Similar to :func:`xdir` but returns only the attr names.'''
+    '''
+    Similar to :func:`xdir` but yields only the attributes names.
+    '''
     return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getattr))
 
 
 def validate_attrs(source, target, force_equals=(), force_differents=()):
-    '''Makes a 'comparison' of :param:`source` and :param:`target` by
-    its attributes (or keys).
+    '''
+    Makes a 'comparison' of `source` and `target` by its attributes (or keys).
 
     This function returns True if and only if both of these tests
     pass:
 
-    - All attributes in :param:`force_equals` are equal in
-      :param:`source` and :param:`target`
+    - All attributes in `force_equals` are equal in `source` and `target`
 
-    - All attributes in :param:`force_differents` are different in
-      :param:`source` and :param:`target`
+    - All attributes in `force_differents` are different in `source` and
+      `target`
 
     For instance::
 
@@ -85,7 +98,7 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         >>> source = Person(**{b'name': 'Manuel', b'age': 33, b'sex': 'male'})
         >>> target = {b'name': 'Manuel', b'age': 4, b'sex': 'male'}
 
-        >>> validate_attrs(source, target, force_equals=(b'sex',), 
+        >>> validate_attrs(source, target, force_equals=(b'sex',),
         ...                force_differents=(b'age',))
         True
 
@@ -120,11 +133,10 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
 
 
 def get_first_of(source, *keys, **kwargs):
-    '''Return the first occurrence of any of the specified keys in
-    source. if source is a tuple, a list, a set, or a generator; then
-    the keys are searched in all items inside. If you need to use
-    default values, pass a tuple with the last argument using a
-    dictionary with them.
+    '''
+    Return the first occurrence of any of the specified keys in `source`. If
+    `source` is a tuple, a list, a set, or a generator; then the keys are
+    searched in all the items.
 
     Examples:
 
@@ -216,7 +228,7 @@ def get_first_of(source, *keys, **kwargs):
 
 
 def smart_getattr(name, *sources, **kw):
-    '''Gets an attr by name for the first source that has it::
+    '''Gets an attr by `name` for the first source that has it::
 
         >>> somedict = {'foo': 'bar', 'spam': 'eggs'}
         >>> class Some(object): pass
@@ -243,9 +255,9 @@ def smart_getattr(name, *sources, **kw):
 
 
 def get_and_del_attr(obj, name, default=None):
-    '''Looks for an attribute in the :param:`obj` and returns its
-    value and removes the attribute. If the attribute is not found,
-    :param:`default` is returned instead.
+    '''
+    Looks for an attribute in the `obj` and returns its value and removes the
+    attribute. If the attribute is not found, `default` is returned instead.
 
     '''
     res = getattr(obj, name, Unset)
@@ -322,3 +334,8 @@ def nameof(target):
         if not hasattr(target, '__name__'):
             target = type(target)
         return target.__name__
+
+
+__all__ = (b'xdir', b'fdir', b'validate_attrs', b'get_first_of',
+           b'smart_getattr', b'get_and_del_attr', b'setdefaultattr',
+           b'nameof')

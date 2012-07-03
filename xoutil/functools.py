@@ -24,9 +24,9 @@
 # Created on Feb 22, 2012
 
 '''
-The `functools` module is for higher-order functions: functions that act on or
-return other functions. In general, any callable object can be treated as a
-function for the purposes of this module.
+Extensions to the `functools` module from the Python's standard library.
+
+You may use this module as drop-in replacement of `functools`.
 '''
 
 from __future__ import (division as _py3_division,
@@ -62,9 +62,9 @@ def update_wrapper(wrapper,
 
        Fixed on xoutil:
 
-       Since most decorators use the *args, **kwargs idiom for arguments it is
-       introduced the `add_signature` argument to prepend the signature to the
-       documentation.
+       Since most decorators use the `*args`, `**kwargs` idiom for arguments
+       it is introduced the `add_signature` argument to prepend the signature
+       to the documentation.
     """
     from inspect import getargspec
     result = _update_wrapper(wrapper, wrapped, assigned, updated)
@@ -104,9 +104,9 @@ def wraps(wrapped,
 
        Fixed on xoutil:
 
-       Since most decorators use the *args, **kwargs idiom for arguments it is
-       introduced the `add_signature` argument to prepend the signature to the
-       documentation.
+       Since most decorators use the `*args`, `**kwargs` idiom for arguments
+       it is introduced the `add_signature` argument to prepend the signature
+       to the documentation.
     """
     return partial(update_wrapper, wrapped=wrapped,
                    assigned=assigned, updated=updated,

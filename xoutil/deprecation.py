@@ -43,7 +43,15 @@ DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed. ' +
 
 
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
-    'Small decorator for deprecated functions'
+    '''Small decorator for deprecated functions.
+
+    Usage::
+
+        @deprecate(new_function)
+        def deprecated_function(...):
+            ...
+
+    '''
     def decorator(target):
         if deprecated_module:
             funcname = deprecated_module + '.' + target.__name__

@@ -24,21 +24,9 @@
 #
 # Created on Mar 9, 2011
 
-
 '''
 A context manager for execution context flags.
-
-Use as:
-
-    >>> from xoutil.context import context
-    >>> with context('somename'):
-    ...     if context['somename']:
-    ...         print('In context somename')
-    In context somename
-
-Note the difference creating the context and checking it.
 '''
-
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -77,6 +65,22 @@ class MetaContext(type):
 
 
 class Context(object):
+    '''
+    A context manager for execution context flags.
+
+    Use as::
+
+        >>> from xoutil.context import context
+        >>> with context('somename'):
+        ...     if context['somename']:
+        ...         print('In context somename')
+        In context somename
+
+    Note the difference creating the context and checking it: for entering a
+    context you should use `context(name)` for testing whether some piece of
+    code is being executed inside a context you should use `context[name]`;
+    you may also use the syntax `name in context`.
+    '''
     __metaclass__ = MetaContext
 
     def __new__(cls, name, **data):
@@ -105,7 +109,6 @@ class Context(object):
             del _data.contexts[self.name]
         return False
 
-# A simple alias for Context
 context = Context
 
 

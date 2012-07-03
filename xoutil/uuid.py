@@ -36,9 +36,6 @@ __author__ = 'manu'
 def uuid():
     '''
     Return a "Global Unique ID" as a string.
-
-    Overwrite this function using IoC to change the standard behavior of
-    creating this values.  
     '''
     from uuid import uuid1
     return '%s' % uuid1()

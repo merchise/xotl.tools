@@ -35,8 +35,8 @@ from collections import defaultdict as py_defaultdict
 
 class defaultdict(py_defaultdict):
     '''
-    A hack for defaultdict that passes the key and a copy of self as a plain
-    dict (to avoid infinity recursion) to the callable.
+    A hack for ``collections.defaultdict`` that passes the key and a copy of
+    self as a plain dict (to avoid infinity recursion) to the callable.
 
     Examples::
 
@@ -49,7 +49,7 @@ class defaultdict(py_defaultdict):
         >>> d['abc']
         1
 
-    Since the second parameter is actually a dict-copy, you may (unwisely) to
+    Since the second parameter is actually a dict-copy, you may (naively) do
     the following::
 
         >>> d = defaultdict(lambda k, d: d[k])
@@ -59,9 +59,9 @@ class defaultdict(py_defaultdict):
         KeyError: 'abc'
 
 
-    You may use this as a drop-in replacement for collections.defaultdict::
+    You may use this class as a drop-in replacement for
+    ``collections.defaultdict``::
 
-        # collections.defaultdict passes no arguments to the default_factory callable
         >>> d = defaultdict(lambda: 1)
         >>> d['abc']
         1
