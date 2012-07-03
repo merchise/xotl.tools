@@ -13,8 +13,7 @@ Welcome to xoutil's documentation!
    :maxdepth: 3
    :glob:
    
-
-   modules/*
+   xoutil/*
 
 
 Indices and tables
