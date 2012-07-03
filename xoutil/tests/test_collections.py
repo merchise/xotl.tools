@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.opendict
+# xoutil.tests.test_collections
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Merchise Autrement
+# Copyright (c) 2012 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -21,19 +21,31 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 #
-# Created on Dec 13, 2011
+# Created on Jul 3, 2012
+
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _absolute_import)
 
+import unittest
 
-from xoutil import collections
-from xoutil.deprecation import inject_deprecated
+from xoutil.collections import defaultdict
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-__all__ = (b'opendict',)
-inject_deprecated(__all__, collections)
+
+class TestCollections(unittest.TestCase):
+    def test_defaultdict(self):
+        d = defaultdict(lambda key, d: 'a')
+        self.assertEqual('a', d['abc'])
+        d['abc'] = 1
+        self.assertEqual(1, d['abc'])
+
+
+if __name__ == "__main__":
+    #import sys;sys.argv = ['', 'Test.testName']
+    unittest.main(verbosity=2)
