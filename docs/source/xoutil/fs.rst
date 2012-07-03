@@ -1,6 +1,5 @@
-==============================
-`xoutil` file system utilities
-==============================
+:mod:`~xoutil.fs` - file system utilities
+=========================================
 
 .. automodule:: xoutil.fs
    :members:
