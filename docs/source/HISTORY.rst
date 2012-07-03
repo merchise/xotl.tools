@@ -6,11 +6,7 @@ Reversed chronological order.
 
 2012-06-15. Release 1.0.30
 
-- Introduces a new module :py:mod:`xoutil.proxy`:
-
-  .. autosummary:: xoutil.proxy
-
-     proxify
+- Introduces a new module :py:mod:`xoutil.proxy`.
 
 - Starts working on the sphinx documentation so that we move to 1.1 release we
   a decent documentation.
