@@ -73,8 +73,11 @@ class simple_memoize(object):
         >>> identity(1)
         1
 
-    Warning: Use this only for small (or fixed) time-running applications.
-    Since it may increase the memory consumption considerably.
+    .. warning:: Use this only for small (or fixed) time-running applications.
+                 Since it may increase the memory consumption considerably.
+
+                 In a future release we will provide a fixed-sized (LRU-based)
+                 cache by back-porting `functools.lru_cache` from Python 3.2.
     '''
 
     __metaclass__ = _sizeable
@@ -98,8 +101,8 @@ class simple_memoize(object):
     @classmethod
     def invalidate(cls, func, args):
         '''
-        Invalidates the cache for the function :param:`func` with arguments
-        :param:`args`.
+        Invalidates the cache for the function `func` with arguments
+        `args`.
 
         ::
 
