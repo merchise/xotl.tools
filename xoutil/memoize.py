@@ -37,12 +37,11 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
+from xoutil.deprecation import deprecated
+from xoutil.functools import lru_cache, wraps
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
-
-
-
-from functools import wraps
 
 
 
@@ -52,7 +51,7 @@ class _sizeable(type):
         return len(self.cache)
 
 
-
+@deprecated(lru_cache)
 class simple_memoize(object):
     '''
     A simple memoization decorator. It simply caches the result of pure
@@ -78,6 +77,8 @@ class simple_memoize(object):
 
                  In a future release we will provide a fixed-sized (LRU-based)
                  cache by back-porting `functools.lru_cache` from Python 3.2.
+
+    *Deprecated* since 1.1.0 in favor of :func:`xoutil.functools.lru_cache`.
     '''
 
     __metaclass__ = _sizeable
