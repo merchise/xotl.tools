@@ -1,4 +1,4 @@
-:mod:`~xoutil.aop.extended` - Extended AOP
+:mod:`xoutil.aop.extended` - Extended AOP
 ==========================================
 
 .. automodule:: xoutil.aop.extended
