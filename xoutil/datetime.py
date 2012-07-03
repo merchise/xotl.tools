@@ -24,15 +24,17 @@
 # Created on Feb 15, 2012
 
 '''
-Python's "datetime strftime" doesn't handle dates previous to 1900.
-This module define classes to override "date" and "datetime" to support
-the formatting of a date through its full "proleptic Gregorian" date range.
+Extends the standard `datetime` module.
+
+- Python's ``datetime.strftime`` doesn't handle dates previous to 1900.
+  This module define classes to override `date` and `datetime` to support the
+  formatting of a date through its full proleptic Gregorian date range.
 
 Based on code submitted to comp.lang.python by Andrew Dalke, copied from
-DJango and generalized.
+Django and generalized.
 
->>> xoutil.datetime.date(1850, 8, 2).strftime("%Y/%m/%d was a %A")
-'1850/08/02 was a Friday'
+You may use this module as a drop-in replacement of the standard library
+`datetime` module.
 '''
 
 # TODO: consider use IoC to extend python datetime module
@@ -46,7 +48,6 @@ from __future__ import (division as _py3_division,
 import time
 
 from re import compile as _regex_compile
-import time
 from time import strftime as _time_strftime
 
 
