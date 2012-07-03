@@ -30,8 +30,6 @@ This module allows you to create proxy classes. A proxy instance should have a
 `target` attribute that refers to the proxied object. And the proxy class
 should have a `behaves` attributes that contains a sequence of new-style
 classes that complements the behaviour of wrapped objects.
-
-Refer to the documentation of :py:func:`proxify` for examples.
 '''
 
 from __future__ import (division as _py3_division,
@@ -57,8 +55,11 @@ __all__ = (b'SUPPORTED_OPERATIONS', b'proxify')
 
 
 class UNPROXIFING_CONTEXT(object):
-    '''Context to mark a special case in which you don't want to proxy
-    to the target object.
+    '''
+    Mark for an :mod:`execution context <xoutil.context>` in which you don't
+    want to proxy to the target's attributes. When in this context all
+    attribute access will return the proxy's own attributes instead of
+    target's ones.
 
     '''
 
@@ -144,7 +145,7 @@ SupportedOperations = type(b'SupportedOperations', (object,),
 
 class Proxy(object):
     '''
-    A complementor for a "behavior" defined in query expressions or a target \
+    A complementor for a "behavior" defined in query expressions or a target
     object.
     '''
     def __getattribute__(self, attr):
@@ -199,6 +200,68 @@ class Proxy(object):
 
 
 
+class unboxed(object):
+    '''
+    A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also provides
+    support for "updating" a single attribute.
+    '''
+    def __init__(self, target, attr=None):
+        self.target = target
+        self.attr = attr
+
+
+    def __getattribute__(self, attr):
+        target = super(unboxed, self).__getattribute__('target')
+        with context(UNPROXIFING_CONTEXT):
+            return getattr(target, attr)
+
+
+    def __call__(self, attr):
+        '''
+        Supports the idiom ``unboxed(target)(attr) << value``.
+        '''
+        get = super(unboxed, self).__getattribute__
+        target = get('target')
+        return unboxed(target, attr)
+
+
+    def __lshift__(self, value):
+        '''
+        Supports the idiom ``unboxed(x, attrname) << value`` for updating a
+        single attribute.
+
+        - If the current value is a list, the value get appended.
+
+        - If the current value is a tuple, a new tuple ``current + (value, )``
+          is set.
+
+        - If the current value is a dict, and value is also a dict.
+
+        - Otherwise the value is set as if.
+        '''
+        from collections import Mapping
+        get = super(unboxed, self).__getattribute__
+        attr = get('attr')
+        if attr:
+            current = getattr(self, attr, Unset)
+            if current:
+                if isinstance(current, list):
+                    current.append(value)
+                    value = Unset
+                elif isinstance(current, tuple):
+                    value = current + (value, )
+                elif (isinstance(current, Mapping)
+                      and isinstance(value, Mapping)):
+                    current.update(value)
+                    value = Unset
+            if value is not Unset:
+                setattr(self, attr, value)
+        else:
+            pass
+
+
+
+
 def proxify(cls, *complementors):
     '''
     A decorator to proxify classes with :class:`Proxy`.
@@ -231,9 +294,9 @@ def proxify(cls, *complementors):
         >>> r = y.hi()  # doctest: +ELLIPSIS
         Hacked <...>
 
-        >>> r + 1 is 1 + r
-        I'm adding <class 'proxy.Proxified'>
-        I'm adding <class 'proxy.Proxified'>
+        >>> r + 1 is 1 + r  # doctest: +ELLIPSIS
+        I'm adding <class '...Proxified'>
+        I'm adding <class '...Proxified'>
         True
 
     But notice that if neither the proxied object or it's behaviours implement
@@ -248,18 +311,18 @@ def proxify(cls, *complementors):
     operations, for which we provide a fallback implementation if none is
     provided.
 
-    .. warning: Notice that behaviours classes must not assume that `self` is
-                the proxied object but the proxy itself. That's needed for the
-                illusion of "added" behaviours to be consistent. If we make
-                `self` the proxied object then all the added behaviour we'll be
-                lost inside the method call.
+    .. warning:: Notice that behaviors classes must not assume that `self` is
+                 the proxied object but the proxy itself. That's needed for
+                 the illusion of "added" behaviors to be consistent. If we
+                 make `self` the proxied object then all the added behavior
+                 we'll be lost inside the method call.
 
-                If you need to access the proxied object directly use the
-                attribute 'target' of the proxy object (i.e: ``self.target``);
-                we treat that attribute specially.
+                 If you need to access the proxied object directly use the
+                 attribute 'target' of the proxy object (i.e:
+                 ``self.target``); we treat that attribute specially.
 
-                To the same accord, the fallback implementations of `__eq__`
-                and `__ne__` also work at the proxy level. So if we do::
+                 To the same accord, the fallback implementations of `__eq__`
+                 and `__ne__` also work at the proxy level. So if we do::
 
                     >>> class UnproxifingAddition(object):
                     ...    def __add__(self, other):
@@ -271,32 +334,35 @@ def proxify(cls, *complementors):
                     ...    def __init__(self, target):
                     ...        self.target = target
 
-                Now the addition would remove the proxy and the equality test
-                will fail::
+                 Now the addition would remove the proxy and the equality test
+                 will fail::
 
                     >>> x = Foobar()
                     >>> y = Proxified(x)
                     >>> y == y + 1
                     False
 
-                But be warned! If the proxied object has an attribute `target`
-                it will shadow the proxy's::
+                 But be warned! If the proxied object has an attribute
+                 `target` it will shadow the proxy's::
 
                     >>> x.target = 'oops'
                     >>> y.target == 'oops'
                     True
 
-                If you need to access any attribute of the proxy and not the
-                proxied object without fear of being shadow, use the
-                :class:`UNPROXIFING_CONTEXT` context like this::
+                 If you need to access any attribute of the proxy and not the
+                 proxied object without fear of being shadowed, use the
+                 :class:`UNPROXIFING_CONTEXT` context like this::
 
                     >>> from xoutil.context import context
                     >>> with context(UNPROXIFING_CONTEXT):
-                    ...     # access the proxy attributes
-                    ...     pass
+                    ...     y.target is x
+                    True
+
+                    >>> y.target is x
+                    False
 
     '''
     if not complementors:
-        complementors = (SupportedOperations, )
+        complementors = (SupportedOperations,)
     ComplementedProxy = complementor(*complementors)(Proxy)
     return complementor(ComplementedProxy)(cls)

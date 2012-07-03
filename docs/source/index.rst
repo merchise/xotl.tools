@@ -9,12 +9,16 @@ Welcome to xoutil's documentation!
 .. automodule:: xoutil
    :members:
 
-.. toctree::
-   :maxdepth: 3
-   :glob:
-   
 
-   modules/*
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   xoutil/*
+   others
+   HISTORY
 
 
 Indices and tables

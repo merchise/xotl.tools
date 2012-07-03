@@ -107,13 +107,18 @@ class _TemplateClass(type):
 class Template(object):
     '''
     A string class for supporting $-substitutions.
-    It has similar interface that "string.Template" but using "eval" instead
+
+    It has similar interface that `string.Template` but using "eval" instead
     simple dictionary looking.
-    
+
     This means that you get all the functionality provided by `string.Template`
     (although, perhaps modified) and you get also the ability to write more
-    complex expressions. If you need repetition or other flow-control sentences
-    you should use other templating system.
+    complex expressions.
+
+    If you need repetition or other flow-control sentences you should use
+    other templating system.
+
+    TODO: [med] Properly document with examples.
     '''
 
     __metaclass__ = _TemplateClass

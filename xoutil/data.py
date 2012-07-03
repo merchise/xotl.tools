@@ -37,25 +37,31 @@ from types import SliceType
 
 def smart_copy(source, target, full=False):
     '''
-    Copies attributes (or keys) from "source" to "target".
+    Copies attributes (or keys) from `source` to `target`.
 
-    Names starting with an '_' will not be copied unless "full" is True.
+    Names starting with an '_' will not be copied unless `full` is True.
 
-    When "target" is not a dictionary (other objects):
-        * Only valid identifiers will be copied.
-        * if full is False only public values (which name not starts
-          with '_') will be copied.
+    When `target` is not a dictionary (other objects):
+
+    - Only valid identifiers will be copied.
+
+    - If `full` is False only public values (which name does not starts with
+      '_') will be copied.
 
     Assumed introspections:
-        * "source" is considered a dictionary when:
-          callable(getattr(source, 'iteritems', None))
-        * "target" is considered a dictionary when:
-          isinstance(target, collections.Mapping)
+
+    - `source` is considered a dictionary when it has a method
+      called ``iteritem`` or ``items``.
+
+    - `target` is considered a dictionary when: ``isinstance(target,
+      collections.Mapping)`` is True.
     '''
     from collections import Mapping
     from xoutil.validators.identifiers import is_valid_identifier
     if callable(getattr(source, 'iteritems', None)):
         items = source.iteritems()
+    elif callable(getattr(source, 'items', None)):
+        items = source.items()
     else:
         items = ((name, getattr(source, name)) for name in dir(source))
     if isinstance(target, Mapping):
@@ -71,6 +77,11 @@ def smart_copy(source, target, full=False):
 
 
 class MappedTuple(tuple):
+    '''
+    An implementation of a named tuple.
+
+    Deprecated since the introduction of namedtuple in Python 2.6
+    '''
     def __new__(cls, key_attr='key', sequence=()):
         self = super(MappedTuple, cls).__new__(cls, sequence)
         self.mapping = {getattr(item, key_attr): i for i, item in enumerate(sequence)}
@@ -94,23 +105,25 @@ class MappedTuple(tuple):
 
 
 class SmartDict(dict):
-    '''A "smart" dictionary that can receive a wide variety of arguments.'''
+    '''
+    A "smart" dictionary that can receive a wide variety of arguments.
+
+    Creates a dictionary from a set of iterables (args) and keyword values
+    (kwargs). Each arg can be:
+
+    - another dictionary.
+    - an iterable of (key, value) pairs.
+    - any object implementing "keys()" and "__getitem__(key)" methods.
+    '''
 
     def __init__(self, *args, **kwargs):
-        '''
-        Create a dictionary from a set of iterables (args) and keyword values (kwargs).
-        Each arg can be:
-          * another dictionary.
-          * an iterable of (key, value) pairs.
-          * any object implementing "keys()" and "__getitem__(key)" methods.
-        '''
         super(SmartDict, self).__init__()
         self.update(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         '''
-        Update this dict from a set of iterables (args) and keyword values (kwargs).
-        See the constructor doc for more info.
+        Update this dict from a set of iterables `args` and keyword values
+        `kwargs`.
         '''
         from types import GeneratorType
         from collections import Mapping
@@ -141,9 +154,19 @@ class SmartDict(dict):
 class SortedSmartDict(SmartDict):
     '''
     A dictionary that keeps its keys in the order in which they're inserted.
+
     Creating or updating a sorted dict with more than one kwargs is
     counterproductive because the order of this kind of argument is not kept
-    by python, any way you can use it once a time <<d.update(x=1)>>
+    by python, any way you can use it once a time like in ``d.update(x=1)``.
+
+    .. warning:: Currently this uses :class:`SmartDict` as base, it's has
+                 being proposed that we should use the
+                 ``collections.OrderedDict`` from the standard library.
+
+                 But since the :meth:`SmartDict.update` is not equivalent to
+                 the ``update`` of dictionaries, and this module has no
+                 tests, we're defering such a change for a release post
+                 |release|.
     '''
     # TODO: Replace this by "collections.OrderedDict" in python2.7 (DeprecationWarning)
 

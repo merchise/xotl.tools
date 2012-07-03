@@ -27,53 +27,12 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+from xoutil import collections
+from xoutil.deprecation import inject_deprecated
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-from collections import defaultdict as py_defaultdict
 
-
-class defaultdict(py_defaultdict):
-    '''
-    A hack for defaultdict that passes the key and a copy of self as a plain
-    dict (to avoid infinity recursion) to the callable.
-
-    Examples::
-
-        >>> from xoutil.default_dict import defaultdict
-        >>> d = defaultdict(lambda key, d: 'a')
-        >>> d['abc']
-        'a'
-
-        >>> d['abc'] = 1
-        >>> d['abc']
-        1
-
-    Since the second parameter is actually a dict-copy, you may (unwisely) to
-    the following::
-
-        >>> d = defaultdict(lambda k, d: d[k])
-        >>> d['abc']
-        Traceback (most recent call last):
-            ...
-        KeyError: 'abc'
-
-
-    You may use this as a drop-in replacement for collections.defaultdict::
-
-        # collections.defaultdict passes no arguments to the default_factory callable
-        >>> d = defaultdict(lambda: 1)
-        >>> d['abc']
-        1
-    '''
-    def __missing__(self, key):
-        if self.default_factory is not None:
-            try:
-                return self.default_factory(key, dict(self))
-            except TypeError:
-                # This is the error when the arguments are not expected.
-                return super(defaultdict, self).__missing__(key)
-        else:
-            raise KeyError(key)
-
-
+__all__ = (b'defaultdict',)
+inject_deprecated(__all__, collections)

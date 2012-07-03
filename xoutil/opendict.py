@@ -27,28 +27,13 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+
+from xoutil import collections
+from xoutil.deprecation import inject_deprecated
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-class opendict(dict):
-    '''
-    A dictionary implementation that mirrors its keys as attributes::
-
-        >>> d = opendict({'es': 'spanish'})
-        >>> d.es
-        'spanish'
-
-        >>> d['es'] = 'espanol'
-        >>> d.es
-        'espanol'
-        
-    '''
-    def __getattr__(self, name):
-        try:
-            return super(opendict, self).__getattr__(name)
-        except AttributeError:
-            if name in self:
-                return self[name]
-            else:
-                raise
+__all__ = (b'opendict',)
+inject_deprecated(__all__, collections)

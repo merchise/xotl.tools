@@ -38,8 +38,15 @@ _HELIX = '|/-\\'
 
 class Progress(object):
     '''
-    Print a progress percent to the console.
-    Also the elapsed and the estimated times.
+    Print a progress percent to the console. Also the elapsed and the
+    estimated times.
+
+    To signal an increment in progress just call the instance and (optionally)
+    pass a message like in::
+
+        progress = Progress(10)
+        for i in range(10):
+            progress()
     '''
 
     def __init__(self, max_value=100, delta=1, first_message=None):

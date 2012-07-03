@@ -23,15 +23,26 @@
 #
 # Created on Dec 21, 2011
 
+
+'''
+Provides a simple_memoize decorator to cache functions results.
+
+.. autoclass:: simple_memoize
+   :members:
+
+'''
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_import)
+
+from xoutil.deprecation import deprecated
+from xoutil.functools import lru_cache, wraps
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-
-from functools import wraps
 
 
 class _sizeable(type):
@@ -40,6 +51,7 @@ class _sizeable(type):
         return len(self.cache)
 
 
+@deprecated(lru_cache)
 class simple_memoize(object):
     '''
     A simple memoization decorator. It simply caches the result of pure
@@ -54,12 +66,19 @@ class simple_memoize(object):
         Mirror: 1
         1
 
-        # The second time the result will be retrieved from cache and won't be printed
+    The second time the result will be retrieved from cache and won't be
+    printed::
+
         >>> identity(1)
         1
 
-    Warning: Use this only for small (or fixed) time-running applications. Since
-    it may increase the memory consumption considerably.
+    .. warning:: Use this only for small (or fixed) time-running applications.
+                 Since it may increase the memory consumption considerably.
+
+                 In a future release we will provide a fixed-sized (LRU-based)
+                 cache by back-porting `functools.lru_cache` from Python 3.2.
+
+    *Deprecated* since 1.1.0 in favor of :func:`xoutil.functools.lru_cache`.
     '''
 
     __metaclass__ = _sizeable
@@ -83,34 +102,34 @@ class simple_memoize(object):
     @classmethod
     def invalidate(cls, func, args):
         '''
-        Invalidates the cache for the function :param:`func` with arguments
-        :param:`args`.
+        Invalidates the cache for the function `func` with arguments
+        `args`.
 
         ::
-        
+
             >>> @simple_memoize
             ... def fib(n):
             ...    if n <= 1:
             ...        return 1
             ...    else:
             ...        return fib(n-2) + fib(n-1)
-            
+
         Given this memoized function you may execute::
-        
+
             >>> fib(50)
             20365011074
-            
+
         Now the size of the ``simple_memoize``'s cache is::
-        
+
             >>> len(simple_memoize)
             52
-            
+
         If you invalidate some of numbers lesser than 50::
-        
+
             >>> simple_memoize.invalidate(fib, (10, ))
             >>> len(simple_memoize)
             51
-            
+
         '''
         from xoutil.objects import smart_getattr
         func = smart_getattr('simple_memoize_orig_func', func) or func

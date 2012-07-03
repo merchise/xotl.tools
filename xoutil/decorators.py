@@ -33,15 +33,16 @@ from __future__ import (division as _py3_division,
 
 import sys
 
-from xoutil.functools import update_wrapper, wraps, partial
-from xoutil.types import FunctionType as function
-curry = partial
+from functools import wraps, partial
+from types import FunctionType as function
 
 
 class AttributeAlias(object):
     '''
     Descriptor to create aliases for object attributes.
-    This descriptor is mainly to be used internally by "aliases" decorator.
+
+    This descriptor is mainly to be used internally by :func:`aliases`
+    decorator.
     '''
 
     def __init__(self, attr_name):
@@ -60,8 +61,15 @@ class AttributeAlias(object):
 
 def settle(**kwargs):
     '''
-    Return a decorator that settle different attribute values to the
-    decorated target (function or class).
+    Returns a decorator that sets different attribute values to the decorated
+    target (function or class)::
+
+        >>> @settle(name='Name')
+        ... class Person(object):
+        ...    pass
+
+        >>> Person.name
+        'Name'
     '''
     def inner(target):
         for key, value in kwargs.iteritems():
@@ -72,15 +80,26 @@ def settle(**kwargs):
 
 def namer(name, **kwargs):
     '''
-    Similar to "settle", but always consider first argument as "name".
+    Similar to :func:`settle`, but always consider first argument as *the
+    name* (i.e, assigned to `__name__`)::
+
+        >>> @namer('Identity', custom=1)
+        ... class I(object):
+        ...    pass
+
+        >>> I.__name__
+        'Identity'
+
+        >>> I.custom
+        1
     '''
     return settle(__name__=name, **kwargs)
 
 
 def aliases(**kwargs):
     '''
-    In a class, create an "AttributeAlias" descriptor for each definition
-    as keyword argument (alias=existing_attribute).
+    In a class, create an :class:`AttributeAlias` descriptor for each
+    definition as keyword argument (alias=existing_attribute).
     '''
     def inner(target):
         '''
@@ -105,9 +124,9 @@ def decorator(caller):
                 return inner
             return real_decorator
 
-    This :function:`decorator`_ reduces the need of the first level by
-    comprising both into a single function definition. However it does not
-    removes the need for an ``inner`` function::
+    This decorator reduces the need of the first level by comprising both into
+    a single function definition. However it does not removes the need for an
+    ``inner`` function::
 
         >>> @decorator
         ... def plus(target, value):
@@ -125,8 +144,8 @@ def decorator(caller):
         11
 
     A decorator with default values for all its arguments (except, of course,
-    the first one which is the decorated :param:`target`_) may be invoked without
-    parenthesis::
+    the first one which is the decorated :param:`target`_) may be invoked
+    without parenthesis::
 
         >>> @decorator
         ... def plus2(func, value=1, missing=2):
@@ -156,10 +175,11 @@ def decorator(caller):
         11
 
     However, this is not for free, you cannot pass a single positional argument
-    which type is :obj:`types.FunctionType`_::
+    which type is a function::
 
         >>> def p():
         ...    print('This is p!!!')
+
         >>> @plus2(p)
         ... def dummy():
         ...    print('This is dummy')
@@ -171,7 +191,8 @@ def decorator(caller):
     '''
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
-        if len(args) == 1 and not kwargs and isinstance(args[0], (function, type)):
+        if len(args) == 1 and not kwargs and isinstance(args[0],
+                                                        (function, type)):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
@@ -199,24 +220,16 @@ def decorator(caller):
 @decorator
 def assignment_operator(func, maybe_inline=False):
     '''
-    Makes a function that receives a name, and other args to be
-    *assignment_operator*, meaning that it if its used in a single assignment
-    statement the name will be taken from the left part of the ``=`` operator::
+    Makes a function that receives a name, and other args to get its first
+    argument (the name) from an assigment operation, meaning that it if its
+    used in a single assignment statement the name will be taken from the left
+    part of the ``=`` operator.
 
-        >>> @assignment_operator()
-        ... def test(name, *args):
-        ...    return name * (len(args) + 1)
+    .. warning:: This function is dependant of CPython's implementation of the
+                 language and won't probably work on other implementations.
+                 Use only you don't care about portability, but use sparingly
+                 (in case you change your mind about portability).
 
-        >>> test('a', 1, 2)
-        'aaa'
-
-    (The following test fails because we can't get the source of the doctest;
-    so a unit test should be provided:)
-
-    ::
-        >>> b = test(1, 2)    # doctest: +SKIP
-        >>> b                 # doctest: +SKIP
-        'bbb'
     '''
     import inspect
     import ast
@@ -276,24 +289,21 @@ def instantiate(target, *args, **kwargs):
 
     In all cases, Foobar remains the class, not the instance::
 
-        >>> Foobar
-        <class 'decorators.Foobar'>
+        >>> Foobar  # doctest: +ELLIPSIS
+        <class '...Foobar'>
     '''
     target(*args, **kwargs)
     return target
 
 
-__all__ = (b'AttributeAlias',
-           b'update_wrapper',
-           b'wraps',
-           b'partial',
+__all__ = (
            b'settle',
            b'namer',
-           b'curry',
            b'aliases',
            b'decorator',
-           b'assignment_operator',
-           b'instantiate')
+           b'instantiate',
+           b'AttributeAlias',
+           b'assignment_operator')
 
 
 if __name__ == '__main__':

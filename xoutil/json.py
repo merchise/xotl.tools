@@ -27,19 +27,13 @@
 
 
 '''
-Interfaces for serializing objects.
+Extensions to the `json` standard library module.
 
-Usage::
-    from xotl.serializers import serialize, deserialize
-    json = serialize("json", iterator, lambda item: {'pk': item.pk, 'name': item.name})
-    items = tuple(deserialize("json", json))
+It just adds the ability to encode/decode datetimes. But you should use the
+JSONEncoder yourself.
 
-To add your own serializers, use the SERIALIZATION_MODULES setting::
 
-    SERIALIZATION_MODULES = {
-        "csv" : "path.to.csv.serializer",
-        "txt" : "path.to.txt.serializer",
-    }
+You may use this module as drop-in replacement to Python's `json`.
 
 '''
 
@@ -64,8 +58,15 @@ from json import *
 
 
 class JSONEncoder(_legacy.JSONEncoder):
-    '''JSONEncoder subclass that knows how to encode date/time and decimal types.'''
-    # TODO: [med]
+    __doc__ = (_legacy.JSONEncoder.__doc__ +
+    '''
+
+    Datetimes
+    ---------
+
+    We also support `datetime` values, which are translated to strings using
+    ISO format.
+    ''')
 
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M:%S"

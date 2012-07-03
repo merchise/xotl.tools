@@ -14,8 +14,6 @@
 
 
 '''
-Xoutil types modules.
-
 This modules mirrors all the functions (and, in general, objects) from the
 standard library module ``types``; but it also includes several new types and
 type-related functions.
@@ -27,8 +25,13 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+import types as _legacy
 from types import *
 
+
+
+__all__ = (b'Unset', b'is_iterable', b'is_collection',
+           b'is_scalar', b'is_string_like')
 
 
 class _UnsetType(type):
@@ -40,10 +43,11 @@ class _UnsetType(type):
 
 class Unset:
     '''
-    To be used as default value to be sure none is returned in scenarios
-    where "None" could be a valid value.
+    To be used as default value to be sure none is returned in scenarios where
+    `None` could be a valid value.
 
-    For example:
+    For example::
+
         >>> getattr('', '__doc__', Unset) is Unset
         False
     '''

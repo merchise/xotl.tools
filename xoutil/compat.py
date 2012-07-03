@@ -4,13 +4,18 @@
 # util/compat.py
 #----------------
 #
-# ============================ Original copyright notice ============================ 
+# ============================ Original copyright notice ============================
 # Copyright (C) 2005-2011 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 """Handle Python version/platform incompatibilities."""
+
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
 import sys
 
@@ -26,10 +31,10 @@ import __builtin__
 #    * __metaclass__
 #    * "m.im_class" is "m.__self__.__class__"
 #    * many "types.*" are removed: types.ClassType = type
-#    * "StandardError" removed 
+#    * "StandardError" removed
 #    * xrange
 #    * "long" integrated with "int"
-#    * The StringIO and cStringIO modules are gone. Instead, import the io 
+#    * The StringIO and cStringIO modules are gone. Instead, import the io
 #      module and use io.StringIO or io.BytesIO for text and data respectively.
 #    * "exec" is a function
 #    * Integer literals no longer support a trailing l or L.
@@ -77,28 +82,6 @@ else:
     except ImportError:
         import pickle
 
-try:
-    from functools import update_wrapper
-except ImportError:
-    def update_wrapper(wrapper, wrapped,
-                       assigned=('__doc__', '__module__', '__name__'),
-                       updated=('__dict__',)):
-        for attr in assigned:
-            setattr(wrapper, attr, getattr(wrapped, attr))
-        for attr in updated:
-            getattr(wrapper, attr).update(getattr(wrapped, attr, ()))
-        return wrapper
-
-try:
-    from functools import partial
-except ImportError:
-    def partial(func, *args, **keywords):
-        def newfunc(*fargs, **fkeywords):
-            newkeywords = keywords.copy()
-            newkeywords.update(fkeywords)
-            return func(*(args + fargs), **newkeywords)
-        return newfunc
-
 if py3k:
     from inspect import getfullargspec as inspect_getfullargspec
 else:
@@ -112,7 +95,7 @@ if py3k:
     def cmp(a, b):
         return (a > b) - (a < b)
 
-    # Remove this import, always use it directly 
+    # Remove this import, always use it directly
     from functools import reduce
 else:
     callable = __builtin__.callable
