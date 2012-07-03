@@ -289,8 +289,8 @@ def instantiate(target, *args, **kwargs):
 
     In all cases, Foobar remains the class, not the instance::
 
-        >>> Foobar
-        <class 'decorators.Foobar'>
+        >>> Foobar  # doctest: +ELLIPSIS
+        <class '...Foobar'>
     '''
     target(*args, **kwargs)
     return target

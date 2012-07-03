@@ -294,9 +294,9 @@ def proxify(cls, *complementors):
         >>> r = y.hi()  # doctest: +ELLIPSIS
         Hacked <...>
 
-        >>> r + 1 is 1 + r
-        I'm adding <class 'proxy.Proxified'>
-        I'm adding <class 'proxy.Proxified'>
+        >>> r + 1 is 1 + r  # doctest: +ELLIPSIS
+        I'm adding <class '...Proxified'>
+        I'm adding <class '...Proxified'>
         True
 
     But notice that if neither the proxied object or it's behaviours implement

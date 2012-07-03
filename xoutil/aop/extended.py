@@ -68,8 +68,8 @@ def weave(aspect, target):
         ...            if not exc:
         ...                return result * 2
 
-        >>> weave(FooAspect, Foobar)
-        Weaving <class 'extended.Foobar'>
+        >>> weave(FooAspect, Foobar)    # doctest: +ELLIPSIS
+        Weaving <class '...Foobar'>
         ... with a nested!
 
         >>> f = Foobar()
