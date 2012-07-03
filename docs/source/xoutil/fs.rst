@@ -4,7 +4,6 @@
 
 .. automodule:: xoutil.fs
    :members:
-   :undoc-members:
 
 Contents:
 
