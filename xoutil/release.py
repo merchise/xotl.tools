@@ -29,4 +29,4 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
