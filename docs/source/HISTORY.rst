@@ -7,6 +7,13 @@ Reversed chronological order.
 1.1 series
 ----------
 
+2012-07-06. Release 1.1.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Improves deprecation warnings by pointing to the real calling filename
+- Removes all internal use of simple_memoize since it's deprecated. We now use
+  :func:`~xoutil.functools.lru_cache`.
+
 2012-07-03. Release 1.1.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
