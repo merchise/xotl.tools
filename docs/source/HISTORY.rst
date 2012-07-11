@@ -7,6 +7,16 @@ Reversed chronological order.
 1.1 series
 ----------
 
+2012-07-11. Release 1.1.2
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Fixes all copyrights notices and chooses MIT as the license model for xoutil 
+  releases.
+  
+- All releases from now on will be publicly available at github_.
+  
+.. _github: https://github.com/merchise-autrement/xoutil/
+
 2012-07-06. Release 1.1.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

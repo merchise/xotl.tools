@@ -20,7 +20,7 @@ Contents:
    others
    HISTORY
    CONTRIBUTORS
-   LICENCE
+   LICENSE
 
 
 Indices and tables
