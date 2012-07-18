@@ -19,6 +19,8 @@ Contents:
    xoutil/*
    others
    HISTORY
+   CONTRIBUTORS
+   LICENSE
 
 
 Indices and tables

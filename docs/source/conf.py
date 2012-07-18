@@ -54,9 +54,9 @@ project = u'xoutil'
 
 year = datetime.datetime.now().year
 if year > 2012:
-    copyright = u'2012-{year}, Merchise Autrement'.format(year=year)
+    copyright = u'2012-{year}, Medardo Rodríguez'.format(year=year)
 else:
-    copyright = u'2012, Merchise Autrement'
+    copyright = u'2012, Medardo Rodríguez'
 
 
 # The version info for the project you're documenting, acts as replacement for
