@@ -109,6 +109,10 @@ class Template(object):
     other templating system.
 
     TODO: [med] Properly document with examples.
+
+        >>> tpl = Template(u'${?1 + 1} is 2')
+        >>> tpl()
+        u'2 is 2'
     '''
 
     __metaclass__ = _TemplateClass
