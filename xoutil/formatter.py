@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.formatter
 #----------------------------------------------------------------------
-# Copyright (c) 2009-2011 Merchise Autrement
+# Copyright (c) 2009-2011 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez

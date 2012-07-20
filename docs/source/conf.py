@@ -201,7 +201,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'xoutil.tex', u'xoutil Documentation',
-   u'Merchise Autrement', 'manual'),
+   u'Medardo Rodríguez', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -231,7 +231,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'xoutil', u'xoutil Documentation',
-     [u'Merchise Autrement'], 1)
+     [u'Medardo Rodríguez'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -245,7 +245,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'xoutil', u'xoutil Documentation',
-   u'Merchise Autrement', 'xoutil', 'One line description of project.',
+   u'Medardo Rodríguez', 'xoutil', 'One line description of project.',
    'Miscellaneous'),
 ]
 
