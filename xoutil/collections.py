@@ -13,7 +13,7 @@
 #
 # @created: Jul 3, 2012
 #
-# Contributors from Merchise Autrement:
+# Contributors from Medardo Rodríguez:
 #    - Manuel Vázquez Acosta <manu@merchise.org>
 #    - Medardo Rodriguez <med@merchise.org>
 
