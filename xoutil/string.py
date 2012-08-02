@@ -39,6 +39,50 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
+_REGEX_NORMALIZE_STR = _regex_compile(b'(\S+)\s*')
+
+
+def safe_join(separator, iterable, encoding='utf-8',
+              force_separator_type=False):
+    '''
+    Similar to "join" method in str objects `separator.join(iterable)` but
+    return "unicode" or "str" depending on type of "separator" and each item
+    in  "iterable".
+
+    Return a string which is the concatenation of the strings in the
+    "iterable" with "separator" as intermediate between elements.
+
+    "encoding" is used in case of error to concatenate str + unicode.
+
+    "force_separator_type" only apply on error contexts.
+
+    This function must be deprecated in Python 3.
+    '''
+    try:
+        sep_is_unicode = isinstance(separator, unicode)
+    except NameError:
+        return separator.join(iterable)    # Python 3 doesn't have unicode type
+    empty = True
+    for item in iterable:
+        if empty:
+            res = item
+            empty = False
+        else:
+            for tail in (separator, item):
+                try:
+                    res += tail
+                except:
+                    _errors = 'replace'
+                    if sep_is_unicode or not force_separator_type:
+                        transf = lambda s: s.decode(encoding, _errors) \
+                                               if isinstance(s, str) else s
+                    else:
+                        transf = lambda s: s.encode(encoding, _errors) \
+                                              if isinstance(s, unicode) else s
+                        res = transf(res)
+                    res += transf(tail)
+    return res if not empty else type(separator)()
+
 
 def safe_strip(value):
     '''
@@ -121,16 +165,12 @@ def normalize_title(value):
     return capitalize(normalize_unicode(value), True)
 
 
-
-_REGEX_NORMALIZE_STR = _regex_compile(b'(\S+)\s*')
-
 def normalize_str(value):
     matches = _REGEX_NORMALIZE_STR.findall(value)
     names = []
     for match in matches:
         names.append(match.capitalize() if len(match) >= 3 else match.lower())
     return ' '.join(names)
-
 
 
 def strfnumber(number, format='%0.2f'):
@@ -183,3 +223,87 @@ def normalize_to_str(value, encoding='utf-8'):
         return value.encode(encoding)
 
 as_str = deprecated('xoutil.stringutil.normalize_to_str')(normalize_to_str)
+
+
+class SafeFormatter(Formatter):
+    '''
+    Similar to original Formatter but allowing several extensions::
+        - Configure initial mappings as constructor parameters.
+        - Use "eval" function for keys not validated in standards ways.
+        - Use safe instead standard join for return formated value.
+
+    You can try for example::
+        >>> f = SafeFormatter(x=1, y=2})
+        >>> print(f.format('CWD: "{cwd}"; "x+1": {x+1}.', cwd=b'~/tmp/foóbar'))
+        CWD: "~/tmp/foóbar"; "x+1": 2.
+    '''
+
+    def __init__(self, *mappings, **kwargs):
+        '''
+        Initialize the formatter with several mapping objects.
+        '''
+        super(SafeFormatter, self).__init__()
+        self.mapping = {}
+        for mapping in mappings:
+            self.mapping.update(mapping)
+        self.mapping.update(kwargs)
+
+    def get_value(self, key, args, kwargs):
+        '''
+        Use additional mappings and "eval" function.
+        '''
+        try:
+            return super(SafeFormatter, self).get_value(key, args, kwargs)
+        except:
+            pass
+        try:
+            return self.mapping[key]
+        except:
+            pass
+        try:
+            _vars = self.mapping.copy()
+            _vars.update(kwargs)
+            _vars.setdefault('args', args)
+            return eval(key, _vars)
+        except:
+            return '<ERROR in key "%s">' % key
+
+    def _vformat(self, format_string, args, kwargs, used_args,
+                 recursion_depth):
+        '''
+        Mostly copied from original but use safe instead standard join.
+        '''
+        if recursion_depth < 0:
+            raise ValueError('Max string recursion exceeded')
+        result = []
+        for literal_text, field_name, format_spec, conversion in \
+                                                    self.parse(format_string):
+            # output the literal text
+            if literal_text:
+                result.append(literal_text)
+            # if there's a field, output it
+            if field_name is not None:
+                # this is some markup, find the object and do the formatting
+                # given the field_name, find the object it references and the
+                # argument it came from
+                obj, arg_used = self.get_field(field_name, args, kwargs)
+                used_args.add(arg_used)
+                # do any conversion on the resulting object
+                obj = self.convert_field(obj, conversion)
+                # expand the format spec, if needed
+                format_spec = self._vformat(format_spec, args, kwargs,
+                                            used_args, recursion_depth-1)
+                # format the object and append to the result
+                result.append(self.format_field(obj, format_spec))
+        return safe_join('', result)
+
+    def format_field(self, value, format_spec):
+        '''
+        If standard "format" fails, use safe decoding.
+        '''
+        try:
+            return format(value, format_spec)
+        except:
+            transf = lambda s: s.decode('utf-8', 'replace') \
+                                               if isinstance(s, str) else s
+            return format(transf(value), transf(format_spec))
