@@ -173,14 +173,13 @@ def normalize_str(value):
     return ' '.join(names)
 
 
-def strfnumber(number, format='%0.2f'):
-    res = format % number
+def strfnumber(number, format_spec='%0.2f'):
+    res = format_spec % number
     if '.' in res:
         res = res.rstrip('0')
         if res.endswith('.'):
             res = res[:-1]
     return res
-
 
 
 def parse_boolean(value):
@@ -196,7 +195,8 @@ def parse_boolean(value):
     if isinstance(value, basestring):
         value = value.strip()
         if value:
-            return bool(int(value)) if value.isdigit() else (value.lower() != 'false')
+            return bool(int(value)) if value.isdigit() \
+                                            else (value.lower() != 'false')
         else:
             return False
     else:
