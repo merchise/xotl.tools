@@ -33,6 +33,7 @@ from string import *
 from re import compile as _regex_compile
 
 from xoutil.deprecation import deprecated
+from xoutil.types import Unset
 
 
 __docstring_format__ = 'rst'
@@ -238,15 +239,16 @@ class SafeFormatter(Formatter):
         CWD: "~/tmp/foóbar"; "x+1": 2.
     '''
 
+    USE_EVAL = True
+
     def __init__(self, *mappings, **kwargs):
         '''
         Initialize the formatter with several mapping objects.
         '''
         super(SafeFormatter, self).__init__()
-        self.mapping = {}
         for mapping in mappings:
-            self.mapping.update(mapping)
-        self.mapping.update(kwargs)
+            kwargs.update(mapping)
+        self.mapping = kwargs
 
     def get_value(self, key, args, kwargs):
         '''
@@ -256,17 +258,17 @@ class SafeFormatter(Formatter):
             return super(SafeFormatter, self).get_value(key, args, kwargs)
         except:
             pass
+        mapping = self._get_mapping()
         try:
-            return self.mapping[key]
+            return mapping[key]
         except:
             pass
-        try:
-            _vars = self.mapping.copy()
-            _vars.update(kwargs)
-            _vars.setdefault('args', args)
-            return eval(key, _vars)
-        except:
-            return '<ERROR in key "%s">' % key
+        if self.USE_EVAL:
+            try:
+                return eval(key, mapping, kwargs)
+            except:
+                pass
+        return '<ERROR: `%s`?>' % key
 
     def _vformat(self, format_string, args, kwargs, used_args,
                  recursion_depth):
@@ -307,3 +309,9 @@ class SafeFormatter(Formatter):
             transf = lambda s: s.decode('utf-8', 'replace') \
                                                if isinstance(s, str) else s
             return format(transf(value), transf(format_spec))
+
+    def _get_mapping(self):
+        '''
+        Redefine this in order to include dynamic mappings.
+        '''
+        return self.mapping
