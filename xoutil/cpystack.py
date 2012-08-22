@@ -134,6 +134,8 @@ def iter_frames(max_deep=MAX_DEEP):
     Returns tuples with the following::
 
         (deep, filename, line_no, start_line).
+
+    .. versionadded:: 1.1.3
     '''
     frame = inspect.currentframe()
     try:

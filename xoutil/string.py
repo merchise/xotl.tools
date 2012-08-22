@@ -37,6 +37,8 @@ def safe_decode(s, encoding=None):
     '''
     Similar to str "decode" method returning unicode.
     Decodes "s" using the codec registered for "encoding".
+
+    .. versionadded:: 1.1.3
     '''
     if isinstance(s, unicode):
         return s
@@ -54,6 +56,8 @@ def safe_encode(u, encoding=None):
     '''
     Similar to unicode "encode" method returning srt.
     Encodes "u" using the codec registered for "encoding".
+
+    .. versionadded:: 1.1.3
     '''
     if isinstance(u, str):
         return u
@@ -82,6 +86,8 @@ def safe_join(separator, iterable, encoding='utf-8',
     "force_separator_type" only apply on error contexts.
 
     This function must be deprecated in Python 3.
+
+    .. versionadded:: 1.1.3
     '''
     try:
         sep_is_unicode = isinstance(separator, unicode)
@@ -109,6 +115,8 @@ def safe_join(separator, iterable, encoding='utf-8',
 def safe_strip(value):
     '''
     Removes the leading and trailing space-chars from value if it's a string.
+
+    .. versionadded:: 1.1.3
     '''
     return value.strip() if isinstance(value, basestring) else value
 
@@ -260,6 +268,8 @@ class SafeFormatter(Formatter):
         >>> f = SafeFormatter(x=1, y=2)
         >>> print(f.format('CWD: "{cwd}"; "x+1": {x+1}.', cwd=b'~/tmp/foóbar'))
         CWD: "~/tmp/foóbar"; "x+1": 2.
+
+    .. versionadded:: 1.1.3
     '''
 
     USE_EVAL = True
