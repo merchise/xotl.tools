@@ -108,7 +108,7 @@ def safe_join(separator, iterable, encoding='utf-8',
 
 def safe_strip(value):
     '''
-    Removes the leading and trailing space-chars from value if string
+    Removes the leading and trailing space-chars from value if it's a string.
     '''
     return value.strip() if isinstance(value, basestring) else value
 
