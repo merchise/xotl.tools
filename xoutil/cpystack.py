@@ -147,7 +147,7 @@ def iter_frames(max_deep=MAX_DEEP):
         deep = 0
         while (deep < max_deep) and (frame is not None):
             yield (deep, frame.f_code.co_filename, frame.f_lineno,
-                   frame.f_code.co_firstlineno)
+                   frame.f_code.co_firstlineno, frame.f_locals)
             frame = frame.f_back
             deep += 1
     finally:
