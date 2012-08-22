@@ -3,23 +3,15 @@
 #----------------------------------------------------------------------
 # xoutil.stringutil
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License (GPL) as published by the
-# Free Software Foundation;  either version 2  of  the  License, or (at
-# your option) any later version.
+# Author: Medardo Rodríguez
+# Contributors: see CONTRIBUTORS and HISTORY file
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-# MA 02110-1301, USA.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created on Feb 17, 2012
 
@@ -203,14 +195,13 @@ def normalize_str(value):
     return ' '.join(names)
 
 
-def strfnumber(number, format='%0.2f'):
-    res = format % number
+def strfnumber(number, format_spec='%0.2f'):
+    res = format_spec % number
     if '.' in res:
         res = res.rstrip('0')
         if res.endswith('.'):
             res = res[:-1]
     return res
-
 
 
 def parse_boolean(value):
@@ -226,7 +217,8 @@ def parse_boolean(value):
     if isinstance(value, basestring):
         value = value.strip()
         if value:
-            return bool(int(value)) if value.isdigit() else (value.lower() != 'false')
+            return bool(int(value)) if value.isdigit() \
+                                            else (value.lower() != 'false')
         else:
             return False
     else:

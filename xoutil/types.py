@@ -6,11 +6,11 @@
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
+# Contributors: see CONTRIBUTORS and HISTORY file
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License (GPL) as published by the
-# Free Software Foundation;  either version 2  of  the  License, or (at
-# your option) any later version.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 
 
 '''
@@ -29,7 +29,6 @@ import types as _legacy
 from types import *
 
 
-
 __all__ = (b'Unset', b'is_iterable', b'is_collection',
            b'is_scalar', b'is_string_like')
 
@@ -38,7 +37,6 @@ class _UnsetType(type):
     'The type of the :obj:`Unset` value.'
     def __nonzero__(self):
         return False
-
 
 
 class Unset:
@@ -55,7 +53,6 @@ class Unset:
 
     def __new__(cls, *args, **kwargs):
         raise TypeError("cannot create 'Unset' instances")
-
 
 
 def is_iterable(maybe):
@@ -94,7 +91,8 @@ def is_iterable(maybe):
 
 def is_collection(maybe):
     '''
-    Test `maybe` to see if it is a tuple, a list, a set or a generator function.
+    Test `maybe` to see if it is a tuple, a list, a set or a generator
+    function.
     It returns False for dictionaries and strings::
 
         >>> is_collection('all strings are iterable')
