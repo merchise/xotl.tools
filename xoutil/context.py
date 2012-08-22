@@ -15,9 +15,21 @@
 # Created on Mar 9, 2011
 #
 
+
 '''
 A context manager for execution context flags.
+
+Use as:
+
+    >>> from xoutil.context import context
+    >>> with context('somename'):
+    ...     if context['somename']:
+    ...         print('In context somename')
+    In context somename
+
+Note the difference creating the context and checking it.
 '''
+
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -81,6 +93,7 @@ class Context(object):
             res.name = name
             res.data = data
             res.count = 0
+            res._events = []
         elif data:
             res.data.update(data)
         return res
@@ -97,9 +110,22 @@ class Context(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.count -= 1
         if self.count == 0:
+            for event in self.events:
+                event(self)
             del _data.contexts[self.name]
         return False
 
+
+    @property
+    def events(self):
+        return self._events
+
+    @events.setter
+    def events(self, value):
+        self._events = list(set(value))
+
+
+# A simple alias for Context
 context = Context
 
 
