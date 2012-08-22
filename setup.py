@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 import os, sys
 from setuptools import setup, find_packages
 
@@ -22,7 +23,7 @@ setup(name=project_name,
             'Programming Language :: Python',
         ],
       keywords='',
-      author='Merchise Autrement',
+      author='Medardo Rodríguez',
       author_email='merchise.h8@gmail.com',
       url='http://www.merchise.org/',
       license='GPL',

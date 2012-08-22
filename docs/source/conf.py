@@ -64,7 +64,19 @@ else:
 # built documents.
 #
 # The short X.Y version.
-from xoutil.release import VERSION
+try:
+    from xoutil.release import VERSION
+except ImportError:
+    def up(path, level=1):
+        result = path
+        while level:
+            result = os.path.dirname(result)
+            level -= 1
+        return result
+    _current_dir = os.path.dirname(os.path.abspath(__file__))
+    _project_dir = os.path.abspath(os.path.join(up(_current_dir, 2)))
+    sys.path.append(_project_dir)
+    from xoutil.release import VERSION
 version = VERSION[:VERSION.rfind('.')]
 # The full version, including alpha/beta/rc tags.
 release = VERSION
@@ -201,7 +213,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'xoutil.tex', u'xoutil Documentation',
-   u'Merchise Autrement', 'manual'),
+   u'Medardo Rodríguez', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -231,7 +243,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'xoutil', u'xoutil Documentation',
-     [u'Merchise Autrement'], 1)
+     [u'Medardo Rodríguez'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -245,7 +257,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'xoutil', u'xoutil Documentation',
-   u'Merchise Autrement', 'xoutil', 'One line description of project.',
+   u'Medardo Rodríguez', 'xoutil', 'One line description of project.',
    'Miscellaneous'),
 ]
 
