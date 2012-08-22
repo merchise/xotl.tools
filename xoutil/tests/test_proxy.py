@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xotl.models.ql.tests.test_expressions
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
