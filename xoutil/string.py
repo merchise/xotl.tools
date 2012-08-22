@@ -249,13 +249,15 @@ as_str = deprecated('xoutil.stringutil.normalize_to_str')(normalize_to_str)
 
 class SafeFormatter(Formatter):
     '''
-    Similar to original Formatter but allowing several extensions::
-        - Configure initial mappings as constructor parameters.
-        - Use "eval" function for keys not validated in standards ways.
-        - Use safe instead standard join for return formated value.
+    Similar to original Formatter but allowing several extensions:
+
+    - Configure initial mappings as constructor parameters.
+    - Use "eval" function for keys not validated in standards ways.
+    - Use safe instead standard join for return formated value.
 
     You can try for example::
-        >>> f = SafeFormatter(x=1, y=2})
+
+        >>> f = SafeFormatter(x=1, y=2)
         >>> print(f.format('CWD: "{cwd}"; "x+1": {x+1}.', cwd=b'~/tmp/foóbar'))
         CWD: "~/tmp/foóbar"; "x+1": 2.
     '''
