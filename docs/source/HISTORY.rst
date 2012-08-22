@@ -7,6 +7,18 @@ Reversed chronological order.
 1.1 series
 ----------
 
+2012-08-22. Release 1.1.3
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Adds function :func:`xoutil.fs.rmdirs` that removes empty dirs.
+
+- Adds functions :func:`xoutil.string.safe_join`,
+  :func:`xoutil.string.safe_encode`, :func:`xoutil.string.safe_decode`,
+  and :func:`xoutil.string.safe_strip`; and the class
+  :class:`xoutil.string.SafeFormatter`.
+
+- Adds function :func:`xoutil.cpystack.iter_frames`.
+
 2012-07-11. Release 1.1.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
