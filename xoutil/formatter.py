@@ -117,7 +117,6 @@ class Template(object):
     If you need repetition or other flow-control sentences you should use
     other templating system.
 
-
     If you enclose and expression within ``${?...}`` it will be evaluated as a
     python expression. Simple variables are allowed just with ``$var`` or
     ``${var}``::
