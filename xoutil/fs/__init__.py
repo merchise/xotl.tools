@@ -104,7 +104,8 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
             yield path
 
 
-def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None, exclude=None, confirm=None):
+def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
+           exclude=None, confirm=None):
     '''
     Removes all empty dirs at `top`.
 
@@ -202,7 +203,6 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
                 print('>>> PROBLEM with:', fn)
             if target_encoding is None:
                 dir = os.path.dirname(fn)
-
             else:
                 te = target_encoding
 
