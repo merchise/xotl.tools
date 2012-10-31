@@ -105,6 +105,7 @@ def aliases(**kwargs):
     return inner
 
 
+
 def decorator(caller):
     '''
     Eases the creation of decorators with arguments. Normally a decorator with
