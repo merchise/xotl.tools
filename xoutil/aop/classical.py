@@ -93,6 +93,7 @@ def bind_method(method, *args, **kwargs):
         args = args[1:]
         bound_method = types.MethodType(method.im_func, self, type(self))
     else:
+        # TODO: This fails with staticmethod called with self.
         self = None
         bound_method = method
     return self, bound_method, args, kwargs
@@ -395,7 +396,8 @@ _aspect_method = lambda attr: any(attr.startswith(prefix) and attr != prefix
                                     for prefix in ('_after_',
                                                    '_before_',
                                                    '_around_'))
-_public = _not(_private)
+#_public = _not(_private)
+_public = lambda attr: not attr.startswith('_')
 
 
 def weave(aspect, target):
@@ -409,8 +411,8 @@ def weave(aspect, target):
       `target` if there's a matching method.
 
     - Lastly, if there's a `_after_` method in `aspect` it is weaved into
-      all methods of `target` (even those which were injected and weaved
-      previously).
+      all *public* methods of `target` (even those which were injected and
+      weaved previously).
 
       The same is done for `_before_` and `_around_`.
 
@@ -438,12 +440,14 @@ def weave(aspect, target):
         elif ok('around'):
             _weave_around_method(target, aspect, _method_name(attr))
     aspect_dict = dir(aspect)
+    method = lambda maybe: isinstance(maybe, (types.MethodType,
+                                              types.FunctionType))
     if '_after_' in aspect_dict:
-        for attr in fdir(target, value_filter=callable, getattr=__getattr):
+        for attr in fdir(target, attr_filter=_public, value_filter=method, getattr=__getattr):
             _weave_after_method(target, aspect, attr, '_after_')
     if '_before_' in aspect_dict:
-        for attr in fdir(target, value_filter=callable, getattr=__getattr):
+        for attr in fdir(target, attr_filter=_public, value_filter=method, getattr=__getattr):
             _weave_before_method(target, aspect, attr, '_before_')
     if '_around_' in aspect_dict:
-        for attr in fdir(target, value_filter=callable, getattr=__getattr):
+        for attr in fdir(target, attr_filter=_public, value_filter=method, getattr=__getattr):
             _weave_around_method(target, aspect, attr, '_around_')
