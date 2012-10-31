@@ -28,6 +28,35 @@ Use as:
     In context somename
 
 Note the difference creating the context and checking it.
+
+If zope.interface is installed, then you may ask for interfaces in context::
+
+   >>> from zope.interface import Interface, implementer
+   >>> class IFoo(Interface):
+   ...    pass
+
+   >>> class IBar(IFoo):
+   ...    pass
+
+   >>> @implementer(IBar)
+   ... class Bar(object):
+   ...    pass
+
+   >>> bar = Bar()
+   >>> ham = Bar()
+
+   >>> with context(bar):
+   ...    if context[IFoo]:
+   ...        print('IFoo')
+   IFoo
+
+Notice that the context is *not* the name::
+
+    >>> with context(bar) as ctx:
+    ...    if bar is not ctx:
+    ...        print('bar not ctx')
+    bar not ctx
+
 '''
 
 
@@ -37,12 +66,20 @@ from __future__ import (division as _py3_division,
 
 from threading import local
 
+from xoutil.collections import OrderedDict
+from xoutil.compat import iteritems_
+
+try:
+    from zope.interface import Interface
+except ImportError:
+    Interface = None
+
 
 
 class LocalData(local):
     def __init__(self):
         super(LocalData, self).__init__()
-        self.contexts = {}
+        self.contexts = OrderedDict()
 
 _data = LocalData()
 
@@ -50,7 +87,21 @@ _data = LocalData()
 
 class MetaContext(type):
     def __getitem__(self, name):
-        return _data.contexts.get(name, _null_context)
+        result = _data.contexts.get(name, None)
+        if result:
+            return result
+        elif Interface and not result and type(name) is type(Interface):
+            candidates = list((len(type(which).mro()), context)
+                               for which, context in iteritems_(_data.contexts)
+                               if name.providedBy(which))
+            if candidates:
+                # Returns the most specific and last
+                candidates.sort(key=lambda (depth, cls): depth, reverse=True)
+                return candidates[0][-1]
+            else:
+                return _null_context
+        else:
+            return _null_context
 
 
     def __contains__(self, name):
