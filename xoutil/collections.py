@@ -107,7 +107,7 @@ class opendict(dict):
 if not _py32:
     # From this point below: Copyright (c) 2001-2012, Python Software
     # Foundation; All rights reserved.
-    
+
     import sys as _sys
     from weakref import proxy as _proxy
     from xoutil.reprlib import recursive_repr as _recursive_repr
