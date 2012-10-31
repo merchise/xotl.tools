@@ -35,6 +35,7 @@ from __future__ import (division as _py3_division,
 import types
 from functools import wraps, partial
 
+from xoutil.compat import inspect_getfullargspec
 from xoutil.types import Unset
 
 
@@ -47,6 +48,16 @@ __all__ = (b'StopExceptionChain', 'weave')
 
 class StopExceptionChain(Exception):
     pass
+
+
+
+def _filter_args_byspec(method, *args, **kwargs):
+    spec = inspect_getfullargspec(method)
+    if not spec.varargs:
+        args = ()
+    if not spec.keywords:
+        kwargs = {}
+    return (args, kwargs)
 
 
 
@@ -63,7 +74,6 @@ def _getattr(obj, attr, default=Unset):
             return default
         else:
             # TODO: [manu] Write a proper message.
-            print(obj, attr, repr(default))
             raise AttributeError('Object {o!r} has not attribute {a!r}'.format(o=obj, a=attr))
 
 
@@ -315,7 +325,10 @@ def _weave_before_method(target, aspect, method_name,
     @wraps(method)
     def inner(*args, **kwargs):
         self, bound_method, args, kwargs = bind_method(method, *args, **kwargs)
-        result = before_method(self, method)
+        before_args, before_kwargs = _filter_args_byspec(before_method,
+                                                         *args,
+                                                         **kwargs)
+        result = before_method(self, method, *before_args, **before_kwargs)
         # We don't need to pass self to a bound method
         return bound_method(*args, **kwargs) or result
 
