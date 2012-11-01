@@ -56,7 +56,7 @@ def weave(aspect, target):
         ...        def _before_weave(self, target):
         ...            print('... with a nested!')
         ...
-        ...        def after_echo(self, method, result, exc):
+        ...        def _after_echo(self, method, result, exc):
         ...            if not exc:
         ...                return result * 2
 

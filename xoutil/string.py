@@ -52,6 +52,7 @@ def safe_decode(s, encoding=None):
             return str(s).decode(encoding, 'replace')
 
 
+
 def safe_encode(u, encoding=None):
     '''
     Similar to unicode "encode" method returning srt.
@@ -69,6 +70,7 @@ def safe_encode(u, encoding=None):
             encoding = encoding or sys.stdin.encoding\
                                 or sys.getdefaultencoding()
             return unicode(u).encode(encoding, 'replace')
+
 
 
 def safe_join(separator, iterable, encoding='utf-8',
@@ -112,6 +114,7 @@ def safe_join(separator, iterable, encoding='utf-8',
     return res if not empty else type(separator)()
 
 
+
 def safe_strip(value):
     '''
     Removes the leading and trailing space-chars from value if it's a string.
@@ -134,6 +137,7 @@ def capitalize_word(value):
     if value and value[0].islower():
         value = value[0].upper() + value[1:]
     return value
+
 
 
 def capitalize(value, title=True):
@@ -171,6 +175,7 @@ def capitalize(value, title=True):
         return empty
 
 
+
 def normalize_unicode(value):
     # FIXME: i18n
     if (value is None) or (value is b''):
@@ -187,12 +192,15 @@ def normalize_unicode(value):
         return value
 
 
+
 def normalize_name(value):
     return capitalize(normalize_unicode(value))
 
 
+
 def normalize_title(value):
     return capitalize(normalize_unicode(value), True)
+
 
 
 def normalize_str(value):
@@ -203,6 +211,7 @@ def normalize_str(value):
     return ' '.join(names)
 
 
+
 def strfnumber(number, format_spec='%0.2f'):
     res = format_spec % number
     if '.' in res:
@@ -210,6 +219,7 @@ def strfnumber(number, format_spec='%0.2f'):
         if res.endswith('.'):
             res = res[:-1]
     return res
+
 
 
 def parse_boolean(value):
@@ -233,6 +243,7 @@ def parse_boolean(value):
         return bool(value)
 
 
+
 def parse_url_int(value, default=None):
     '''
     Parse an integer URL argument. Some operations treat simple arguments
@@ -246,6 +257,7 @@ def parse_url_int(value, default=None):
         return default
 
 
+
 def normalize_to_str(value, encoding='utf-8'):
     if type(value) is str:
         return value
@@ -253,6 +265,7 @@ def normalize_to_str(value, encoding='utf-8'):
         return value.encode(encoding)
 
 as_str = deprecated('xoutil.stringutil.normalize_to_str')(normalize_to_str)
+
 
 
 class SafeFormatter(Formatter):
@@ -266,8 +279,9 @@ class SafeFormatter(Formatter):
     You can try for example::
 
         >>> f = SafeFormatter(x=1, y=2)
-        >>> print(f.format('CWD: "{cwd}"; "x+1": {x+1}.', cwd=b'~/tmp/foóbar'))
-        CWD: "~/tmp/foóbar"; "x+1": 2.
+        >>> print(f.format('CWD: "{cwd}"; "x+d["x"]": {x+d["x"]}.',
+        ...                cwd=b'~/tmp/foóbar', d=dict(x=1)))
+        CWD: "~/tmp/foóbar"; "x+d["x"]": 2.
 
     .. versionadded:: 1.1.3
     '''
@@ -277,8 +291,10 @@ class SafeFormatter(Formatter):
     def __init__(self, *mappings, **kwargs):
         '''
         Initialize the formatter with several mapping objects.
+
         All mappings are considered at this level as "with permanent values",
         if dynamic mapping update is desired, redefine "_get_mapping" method.
+
         For use a list of dynamic mappings to evaluate each one separately use
         "_get_dynamic_mappings" returning any iterable; this last feature will
         never use the "eval" option.
@@ -287,6 +303,7 @@ class SafeFormatter(Formatter):
         for mapping in mappings:
             kwargs.update(mapping)
         self.mapping = kwargs
+
 
     def get_value(self, key, args, kwargs):
         '''
@@ -310,6 +327,7 @@ class SafeFormatter(Formatter):
             if key in dmap:
                 return dmap[key]
         return '<ERROR: `%s`?>' % key
+
 
     def _vformat(self, format_string, args, kwargs, used_args,
                  recursion_depth):
@@ -341,6 +359,7 @@ class SafeFormatter(Formatter):
         res = safe_join('', result)
         return res
 
+
     def format_field(self, value, format_spec):
         '''
         If standard "format" fails, use safe decoding.
@@ -353,11 +372,13 @@ class SafeFormatter(Formatter):
         format_spec = safe_decode(format_spec)
         return format(value, format_spec)
 
+
     def _get_mapping(self):
         '''
         Redefine this in order to include dynamic mappings.
         '''
         return self.mapping
+
 
     def _get_dynamic_mappings(self):
         return ()
