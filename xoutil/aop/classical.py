@@ -244,7 +244,8 @@ def _weave_after_method(target, aspect, method_name,
             else:
                 exc_value = None
             try:
-                result = after_method(self, method, result, exc_value)
+                after_args, after_kw = _filter_args_byspec(after_method, *args, **kwargs)
+                result = after_method(self, method, result, exc_value, *after_args, **after_kw)
                 if exc_value:
                     raise exc_value
                 else:
