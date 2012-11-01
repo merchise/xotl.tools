@@ -29,7 +29,8 @@ Use as:
 
 Note the difference creating the context and checking it.
 
-If zope.interface is installed, then you may ask for interfaces in context::
+If module `zope.interface` is installed, then you may ask for
+interfaces in context::
 
    >>> from zope.interface import Interface, implementer
    >>> class IFoo(Interface):
@@ -50,7 +51,7 @@ If zope.interface is installed, then you may ask for interfaces in context::
    ...        print('IFoo')
    IFoo
 
-Notice that the context is *not* the name::
+Notice that the context object is *not* the name::
 
     >>> with context(bar) as ctx:
     ...    if bar is not ctx:

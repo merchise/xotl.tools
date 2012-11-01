@@ -3,9 +3,29 @@ Changelog
 
 Reversed chronological order.
 
-
 1.1 series
 ----------
+
+2012-11-01. Release 1.1.4
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Introduces :func:`xoutil.compat.iteritems_`,
+  :func:`xoutil.compat.iterkeys_`
+  and :func:`xoutil.compat.itervalues_`.
+
+- :mod:`execution context <xoutil.context>` are now aware of
+  `zope.interface` interfaces; so that you may ask for a context name
+  implementing a given interface, instead of the name itself.
+
+- Improves xoutil.formatter documentation.
+
+- Several fixes to xoutil.aop.classical. It has sudden backwards
+  incompatible changes.
+
+- `before` and `after` methods may use the `*args, **kwargs` idiom
+  to get the passed arguments of the weaved method.
+
+- Several minor fixes: Invalid warning about Unset not in xoutil.types
 
 2012-08-22. Release 1.1.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,7 +78,6 @@ Reversed chronological order.
 
 1.0 series
 ----------
-
 
 2012-06-15. Release 1.0.30
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
