@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 import os, sys
 from setuptools import setup, find_packages
 
@@ -15,17 +16,17 @@ setup(name=project_name,
       long_description=open(os.path.join('docs', 'readme.txt')).read(),
       classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-            'Development Status :: 5 - Stable',
+            'Development Status :: 5 - Production/Stable',
             'Intended Audience :: Developers',
-            'License :: GPL',
+            'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
             'Operating System :: OS Independent',
             'Programming Language :: Python',
         ],
       keywords='',
-      author='Merchise Autrement',
+      author='Medardo Rodríguez',
       author_email='merchise.h8@gmail.com',
       url='http://www.merchise.org/',
-      license='GPL',
+      license='GPLv3+',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=False,

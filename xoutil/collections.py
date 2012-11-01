@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # xoutil.collections
-#----------------------------------------------------------------------
-# Copyright 2012 Merchise Autrement for the defaultdict and opendict
-# implementations. The implementation of OrderedDict is the copyright of the
-# Python Software Foundation.
+# ----------------------------------------------------------------------
+# Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
+# implementations.
 #
-# This file is distributed under the terms of the Python Software Foundation
-# Licence for Python 3.2; and, at your option, under the terms of the LICENCE
-# distributed with this package.
+# The implementation of OrderedDict is the copyright of the Python
+# Software Foundation.
+#
+# This file is distributed under the terms of the LICENCE distributed
+# with this package.
 #
 # @created: Jul 3, 2012
 #
-# Contributors from Merchise Autrement:
+# Contributors from Medardo Rodríguez:
 #    - Manuel Vázquez Acosta <manu@merchise.org>
 #    - Medardo Rodriguez <med@merchise.org>
 
@@ -104,6 +105,9 @@ class opendict(dict):
                 raise
 
 if not _py32:
+    # From this point below: Copyright (c) 2001-2012, Python Software
+    # Foundation; All rights reserved.
+
     import sys as _sys
     from weakref import proxy as _proxy
     from xoutil.reprlib import recursive_repr as _recursive_repr

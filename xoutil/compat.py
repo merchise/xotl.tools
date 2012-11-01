@@ -216,3 +216,20 @@ else:
         return g
 
 import decimal
+
+
+if py3k: # pragma: no cover
+    def iteritems_(d):
+        return d.items()
+    def itervalues_(d):
+        return d.values()
+    def iterkeys_(d):
+        return d.keys()
+else:
+    def iteritems_(d):
+        return d.iteritems()
+    def itervalues_(d):
+        return d.itervalues()
+    def iterkeys_(d):
+        return d.iterkeys()
+

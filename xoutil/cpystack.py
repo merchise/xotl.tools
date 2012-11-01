@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.cpystack
 #----------------------------------------------------------------------
-# Copyright (c) 2009-2011 Merchise Autrement
+# Copyright (c) 2009-2011 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -30,28 +30,28 @@ MAX_DEEP = 15
 def getargvalues(frame):
     '''
     Inspects the given frame for arguments and returns a dictionary that maps
-    parameters names to arguments values. If an `*` argument was passed then the
-    key on the returning dictionary would be formatted as 
+    parameters names to arguments values. If an `*` argument was passed then
+    the key on the returning dictionary would be formatted as
     `<name-of-*-param>[index]`.
-    
+
     For example in the function::
-    
+
         >>> def autocontained(a, limit, *margs, **ks):
         ...    import sys
         ...    return getargvalues(sys._getframe())
-        
+
         >>> autocontained(1, 12)['limit']
         12
-        
+
         >>> autocontained(1, 2, -10, -11)['margs[0]']
         -10
-        
+
     Packed arguments also works::
-    
+
         >>> def nested((x, y), radius):
         ...    import sys
         ...    return getargvalues(sys._getframe())
-        
+
         >>> nested((1, 2), 12)['y']
         2
     '''
@@ -78,7 +78,7 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
     Find an object of the given type through all arguments in stack frames.
     Returns a tuple with the following values:
     (arg-value, arg-name, deep, frame).
-    When no object is found 
+    When no object is found
     None is returned.
 
     Arguments:
@@ -100,15 +100,13 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
             deep += 1
         return res
     finally:
-        del frame # As recommended in the Python's doc to avoid memory leaks
-
+        del frame   # As recommended in the Python's doc to avoid memory leaks
 
 
 def object_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
     finder = object_info_finder(obj_type, arg_name, max_deep)
     info = finder()
     return info[0] if info else None
-
 
 
 def track_value(value, max_deep=MAX_DEEP):
@@ -129,7 +127,27 @@ def track_value(value, max_deep=MAX_DEEP):
     return res
 
 
+def iter_frames(max_deep=MAX_DEEP):
+    '''
+    Iterates through all stack frames.
+
+    Returns tuples with the following::
+
+        (deep, filename, line_no, start_line).
+
+    .. versionadded:: 1.1.3
+    '''
+    frame = inspect.currentframe()
+    try:
+        deep = 0
+        while (deep < max_deep) and (frame is not None):
+            yield (deep, frame.f_code.co_filename, frame.f_lineno,
+                   frame.f_code.co_firstlineno, frame.f_locals)
+            frame = frame.f_back
+            deep += 1
+    finally:
+        del frame   # As recommended in the Python's doc to avoid memory leaks
+
 
 __all__ = (b'MAX_DEEP', b'getargvalues', b'object_info_finder',
-           b'object_finder', b'track_value')
-
+           b'object_finder', b'track_value', b'iter_frames')

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.tests.testbed
+# xoutil.tests.test_context
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) 2012 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -21,21 +21,53 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 #
-# Created on Apr 29, 2012
+# Created on Oct 30, 2012
 
-'''
-This module simply serves the purposes of the testing weaving modules
-'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _absolute_import)
+
+from zope.interface import Interface, implementer
+
+from xoutil.context import context
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
+import unittest
 
-def echo(what):
-    return what
 
+class TestInterfacedContexts(unittest.TestCase):
+    def test_interfaces(self):
+        class IFoo(Interface):
+            pass
+
+        class IBar(IFoo):
+            pass
+
+        @implementer(IFoo)
+        class Foo(object):
+            pass
+
+        @implementer(IBar)
+        class Bar(object):
+            pass
+
+        foo = Foo()
+        bar = Bar()
+
+        with context(foo) as ctx_foo:
+            self.assertFalse(context[IBar])
+            self.assertTrue(context[IFoo])
+            with context(bar) as ctx_bar:
+                self.assertIs(context[IFoo], context[IBar])
+                self.assertIs(ctx_bar, context[IFoo])
+                self.assertIsNot(ctx_foo, ctx_bar)
+            self.assertIs(ctx_foo, context[IFoo])
+
+
+if __name__ == "__main__":
+    #import sys;sys.argv = ['', 'Test.testName']
+    unittest.main(verbosity=2)

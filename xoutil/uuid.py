@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.uuidutil
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Contributors: see CONTRIBUTORS and HISTORY file

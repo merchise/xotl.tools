@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.basic
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -69,7 +69,7 @@ def _update(attrs, *sources):
 
 def complementor(*sources, **attrs):
     '''
-    Returns a decorator to be applied to a class in order to add attributes \
+    Returns a decorator to be applied to a class in order to add attributes
     in a smart way:
 
     - if the attribute is a dictionary and exists in the decorated class, it's
@@ -77,7 +77,7 @@ def complementor(*sources, **attrs):
 
     - If a list, tuple or set, the new value is appended.
 
-    - Methods declared in the class that are replaces are renamed to
+    - Methods declared in the class that are replacements are renamed to
       "_super_<name>", but the docstring and names are copied to their
       replacement.
 

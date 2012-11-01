@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.decorator
 #----------------------------------------------------------------------
-# Copyright (c) 2009-2011 Merchise Autrement
+# Copyright (c) 2009-2011 Medardo Rodríguez
 #
 # Author: Medardo Rodriguez
 # Contributors: see CONTRIBUTORS and HISTORY file
@@ -103,6 +103,7 @@ def aliases(**kwargs):
             setattr(target, alias, AttributeAlias(field))
         return target
     return inner
+
 
 
 def decorator(caller):

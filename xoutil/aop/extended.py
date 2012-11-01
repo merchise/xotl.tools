@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.extended
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Manuel Vázquez Acosta
@@ -56,7 +56,7 @@ def weave(aspect, target):
         ...        def _before_weave(self, target):
         ...            print('... with a nested!')
         ...
-        ...        def after_echo(self, method, result, exc):
+        ...        def _after_echo(self, method, result, exc):
         ...            if not exc:
         ...                return result * 2
 

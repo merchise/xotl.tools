@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.deprecation
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Manuel Vázquez Acosta
@@ -93,8 +93,10 @@ def inject_deprecated(funcnames, source, target=None):
     else:
         pass
     for targetname in funcnames:
-        target = getattr(source, targetname, None)
-        if target:
+        unset = object()  # Can't use xoutil.types.Unset since Unset itself
+                          # is deprecated in xotl (version 2)
+        target = getattr(source, targetname, unset)
+        if target is not unset:
             if isinstance(target, (type, types.FunctionType, types.LambdaType,
                                    types.ClassType, types.TypeType)):
                 replacement = source.__name__ + '.' + targetname

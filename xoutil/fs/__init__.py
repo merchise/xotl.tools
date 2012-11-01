@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.fs
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Merchise Autrement
+# Copyright (c) 2011 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -102,6 +102,52 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     for path, _dirs, _files in os.walk(normalize_path(top)):
         if (regex is None) or regex.search(path):
             yield path
+
+
+def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None, exclude=None, confirm=None):
+    '''
+    Removes all empty dirs at `top`.
+
+    :param top: The top directory to recurse into.
+
+    :param pattern: A pattern of the dirs you want to remove.
+                    It should be a string. If it starts with "(?" it will be
+                    regarded as a regular expression, otherwise a shell
+                    pattern.
+
+    :param exclude: A pattern of the dirs you DON'T want to remove.
+                    It should be a string. If it starts with "(?" it will be
+                    regarded as a regular expression, otherwise a shell
+                    pattern. This is a simple commodity to have you not
+                    to negate complex patterns.
+
+    :param regex_pattern: An *alternative* to `pattern`. This will always be
+                          regarded as a regular expression.
+
+    :param shell_pattern: An *alternative* to `pattern`. This should be a
+                          shell pattern.
+
+    :param confirm: A callable that accepts a single argument, which is
+                    the path of the directory to be deleted. `confirm`
+                    should return True to allow the directory to be
+                    deleted. If `confirm` is None, then all matched dirs
+                    are deleted.
+
+    .. note:: In order to avoid common mistakes we won't attempt to
+              remove mount points.
+
+    .. versionadded:: 1.1.3
+    '''
+    regex = _get_regex(pattern, regex_pattern, shell_pattern)
+    exclude = _get_regex(exclude)
+    if confirm is None:
+        confirm = lambda _: True
+    for path, _dirs, _files in os.walk(normalize_path(top)):
+        if ((regex is None or regex.search(path)) and
+            (exclude is None or not exclude.search(path)) and
+            not _dirs and not _files and confirm(path) and
+            not os.path.ismount(path)):
+            os.rmdir(path)
 
 
 
