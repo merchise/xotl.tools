@@ -24,6 +24,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 from re import compile as _regex_compile
+from ..compat import str_base
 
 
 __all__ = (b'is_valid_identifier', b'is_valid_full_identifier',
@@ -33,19 +34,22 @@ __all__ = (b'is_valid_identifier', b'is_valid_full_identifier',
 
 _IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')
 
+
 def is_valid_identifier(name):
-    return isinstance(name, basestring) and (_IDENTIFIER_REGEX.match(name) is not None)
+    return isinstance(name, str_base) and _IDENTIFIER_REGEX.match(name)
 
 
 
 _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 
+
 def is_valid_full_identifier(name):
-    return isinstance(name, basestring) and (_FULL_IDENTIFIER_REGEX.match(name) is not None)
+    return isinstance(name, str_base) and _FULL_IDENTIFIER_REGEX.match(name)
 
 
 
 _SLUG_REGEX = _regex_compile('(?i)^[\w]+([-][\w]+)*$')
 
+
 def is_valid_slug(slug):
-    return isinstance(slug, basestring) and (_SLUG_REGEX.match(slug) is not None)
+    return isinstance(slug, str_base) and _SLUG_REGEX.match(slug)

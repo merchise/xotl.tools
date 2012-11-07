@@ -39,6 +39,7 @@ import os
 from re import compile as _rcompile
 from .path import (normalize_path, get_module_path, shorten_module_filename,
                    shorten_user)
+from ..compat import str_base
 
 
 re_magic = _rcompile('[*?[]')
@@ -110,7 +111,7 @@ def iter_dict_files(top='.', regex=None, wrong=None):
 
     '''
     if regex:
-        if isinstance(regex, basestring):
+        if isinstance(regex, str_base):
             regex = _rcompile(regex)
     else:
         regex = _REGEX_DEFAULT_ALLFILES
@@ -196,7 +197,7 @@ def regex_rename(top, pattern, repl):
                  documented in python's ``re.sub`` function.
     '''
     from re import subn as _re_subn
-    if isinstance(pattern, basestring):
+    if isinstance(pattern, str_base):
         pattern = _rcompile(pattern)
     for path, _dirs, files in os.walk(top):
         for item in files:
@@ -218,7 +219,7 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
     for fn in os.listdir(top):
         encoding = sys.getfilesystemencoding() or 'utf-8'
         try:
-            test = fn.decode(encoding) if not isinstance(fn, unicode) else fn
+            test = fn.decode(encoding) if isinstance(fn, bytes) else fn
             if verbose:
                 print('>>> No problem with:', test)
         except:
@@ -253,7 +254,7 @@ filter_false = lambda path, stat_info: False
 
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
-    if isinstance(regex, basestring):
+    if isinstance(regex, str_base):
         regex = _rcompile(regex)
     def _filter(path, stat_info):
         return regex.match(os.path.basename(path)) is not None
