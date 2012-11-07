@@ -71,6 +71,7 @@ def safe_decode(s, encoding=None):
 
     Returning type depend on python version; if 2.x is `unicode` if 3.x `str`.
 
+    .. versionadded:: 1.1.3
     '''
     if isinstance(s, _unicode):
         return s
@@ -90,6 +91,7 @@ def safe_encode(u, encoding=None):
 
     Returning type is always `bytes`; but in python 2.x is also `str`.
 
+    .. versionadded:: 1.1.3
     '''
     if isinstance(u, bytes):
         return u
@@ -110,6 +112,13 @@ def safe_join(separator, iterable, encoding=None):
 
     `encoding` is used in case of error to concatenate bytes + unicode.
 
+    "encoding" is used in case of error to concatenate str + unicode.
+
+    "force_separator_type" only apply on error contexts.
+
+    This function must be deprecated in Python 3.
+
+    .. versionadded:: 1.1.3
     '''
     try:
         return separator.join(iterable)
@@ -296,15 +305,19 @@ as_str = _deprecated('xoutil.string.normalize_to_str')(normalize_to_str)
 
 class SafeFormatter(Formatter):
     '''
-    Similar to original Formatter but allowing several extensions::
-        - Configure initial mappings as constructor parameters.
-        - Use "eval" function for keys not validated in standards ways.
-        - Use safe instead standard join for return formated value.
+    Similar to original Formatter but allowing several extensions:
+
+    - Configure initial mappings as constructor parameters.
+    - Use "eval" function for keys not validated in standards ways.
+    - Use safe instead standard join for return formated value.
 
     You can try for example::
+
         >>> f = SafeFormatter(x=1, y=2)
         >>> print(f.format('CWD: "{cwd}"; "x+1": {x+1}.', cwd=b'~/tmp/foóbar'))
         CWD: "~/tmp/foóbar"; "x+1": 2.
+
+    .. versionadded:: 1.1.3
     '''
 
     USE_EVAL = True

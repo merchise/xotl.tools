@@ -129,10 +129,13 @@ def track_value(value, max_deep=MAX_DEEP):
 
 def iter_frames(max_deep=MAX_DEEP):
     '''
-    Iterate through all stack frames.
+    Iterates through all stack frames.
 
-    Returns tuples with the following values:
+    Returns tuples with the following::
+
         (deep, filename, line_no, start_line).
+
+    .. versionadded:: 1.1.3
     '''
     frame = inspect.currentframe()
     try:

@@ -170,6 +170,8 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
 
     .. note:: In order to avoid common mistakes we won't attempt to
               remove mount points.
+
+    .. versionadded:: 1.1.3
     '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     exclude = _get_regex(exclude)
