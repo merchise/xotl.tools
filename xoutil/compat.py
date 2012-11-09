@@ -1,14 +1,17 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-#----------------
-# util/compat.py
-#----------------
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------
+# xoutil.compat
+#----------------------------------------------------------------------
+# Copyright (c) 2012 Merchise Autrement
+# All rights reserved.
 #
-# ============================ Original copyright notice ====================
-# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors <see AUTHORS
-# file>
+# @author: Medardo Rodriguez
 #
-# This module is part of SQLAlchemy and is released under
+# ============================ Original copyright notice ===================
+# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
+#
+# This module is based on part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 # ============================ Original copyright notice ===================
 
@@ -20,10 +23,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 import sys
-
-# Py2K
-import __builtin__
-# end Py2K
 
 # TODO: Changes in Python 3
 #    * remove "iteritems", "itervalues", "iterkeys" for dict
@@ -55,6 +54,17 @@ py3k = getattr(sys, 'py3kwarning', False) or sys.version_info >= (3, 0)
 jython = sys.platform.startswith('java')
 pypy = hasattr(sys, 'pypy_version_info')
 win32 = sys.platform.startswith('win')
+
+if py3k:
+    str_base = str
+    str_types = (str, )
+    _unicode = str
+    ext_str_types = (bytes, str)
+else:
+    str_base = basestring
+    str_types = (str, unicode)
+    _unicode = unicode
+    ext_str_types = (str, unicode)
 
 if py3k:
     set_types = set
@@ -100,9 +110,7 @@ if py3k:
     # Remove this import, always use it directly
     from functools import reduce
 else:
-    callable = __builtin__.callable
-    cmp = __builtin__.cmp
-    reduce = __builtin__.reduce
+    from __builtin__ import callable, cmp, reduce
 
 try:
     from collections import defaultdict
@@ -174,6 +182,7 @@ try:
 except ImportError:
     import md5
     _md5 = md5.new
+
 
 def md5_hex(x):
     # Py3K

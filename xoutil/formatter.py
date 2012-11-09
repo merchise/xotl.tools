@@ -22,6 +22,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from .compat import str_base
+
 
 
 class DelimiterFactory(object):
@@ -48,8 +50,7 @@ class MapFactory(BaseFactory):
 
 class PyFactory(BaseFactory):
     def __init__(self, owner, key, start, end):
-        super(PyFactory, self).__init__(owner,
-                                        compile(key, '', 'eval'),
+        super(PyFactory, self).__init__(owner, compile(key, '', 'eval'),
                                         start, end)
 
 
@@ -164,7 +165,7 @@ class Template(object):
         kwargs.update(mapping)    # Don't modify mapping if given
         res = self.template.__class__()
         for item in self.items:
-            if isinstance(item, basestring):
+            if isinstance(item, str_base):
                 res += item
             else:
                 res += item(kwargs)
@@ -185,7 +186,7 @@ class Template(object):
         kwargs.update(mapping)    # Don't modify mapping if given
         res = self.template.__class__()
         for item in self.items:
-            if isinstance(item, basestring):
+            if isinstance(item, str_base):
                 res += item
             else:
                 if item._unsafe:
@@ -199,7 +200,8 @@ class Template(object):
 
 
     def _append(self, item):
-        if isinstance(item, basestring) and self.items and isinstance(self.items[-1], basestring):
+        if (isinstance(item, str_base) and
+                self.items and isinstance(self.items[-1], str_base)):
             self.items[-1] += item
         else:
             self.items.append(item)

@@ -20,6 +20,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 import os
+from ..compat import str_base
 
 
 __docstring_format__ = 'rst'
@@ -35,16 +36,20 @@ def normalize_path(path):
       - eliminating double slashes
       - converting to absolute.
     '''
-    if isinstance(path, unicode):
+    if not isinstance(path, str):
         import sys
         encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
-        path = path.encode(encoding)
+        if isinstance(path, bytes):     # Python 3
+            path = path.decode(encoding)
+        else:
+            path = path.encode(encoding)
     return os.path.abspath(os.path.expanduser(path))
 
 
-def get_module_path(module_or_name):
+def get_module_path(module):
     # TODO: [med] Standardize this
-    mod = __import__(module_or_name) if isinstance(module_or_name, basestring) else module_or_name
+    
+    mod = __import__(module) if isinstance(module, str_base) else module
     path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
     return os.path.abspath(os.path.dirname(path).decode('utf-8'))
 

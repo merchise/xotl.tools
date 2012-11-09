@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.fs
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Medardo Rodríguez
+# Copyright (c) 2011 Merchise Autrement
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -36,12 +36,13 @@ from __future__ import (division as _py3_division,
 
 
 import os
-from re import compile as _re_compile
+from re import compile as _rcompile
 from .path import (normalize_path, get_module_path, shorten_module_filename,
                    shorten_user)
+from ..compat import str_base
 
 
-re_magic = _re_compile('[*?[]')
+re_magic = _rcompile('[*?[]')
 has_magic = lambda s: re_magic.search(s) is not None
 
 
@@ -52,17 +53,16 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
                        (pattern, regex_pattern, shell_pattern), 0)
     if arg_count == 1:
         if pattern is not None:
-            if pattern.startswith('(?'):
+            if pattern.startswith('(?') or pattern.startswith('^(?'):
                 regex_pattern = pattern
             else:
                 shell_pattern = pattern
-        return _re_compile(regex_pattern or fnmatch.translate(shell_pattern))
+        return _rcompile(regex_pattern or fnmatch.translate(shell_pattern))
     elif arg_count == 0:
         return None
     else:
         raise TypeError('"_get_regex()" takes at most 1 argument '
                         '(%s given)' % arg_count)
-
 
 
 def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
@@ -91,6 +91,40 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
 
 
 
+# ------------------------------ iter_dict_files ------------------------------
+_REGEX_PYTHON_PACKAGE = _rcompile(r'^(?P<dir>.+(?=/)/)?'
+                                  r'(?P<packagename>[^/_-]+?)'
+                                  r'([-_][Vv]?(?P<version>\d+([.-_]\w+)*))?'
+                                  r'(?P<ext>[.](tar[.](gz|bz2)|zip|egg|tgz))$')
+_REGEX_DEFAULT_ALLFILES = _rcompile(r'^(?P<dir>.+(?=/)/)?'
+                                    r'(?P<filename>[^/]+?)'
+                                    r'([.](?P<ext>[^.]+))?$')
+
+
+def iter_dict_files(top='.', regex=None, wrong=None):
+    '''
+    Iterate filenames recursively.
+
+    :param top: The top directory for recurse into.
+    :param regex: Regular expression with group definitions to match.
+    :param wrong: A key to store full name of not matching files.
+
+    '''
+    if regex:
+        if isinstance(regex, str_base):
+            regex = _rcompile(regex)
+    else:
+        regex = _REGEX_DEFAULT_ALLFILES
+    for dirpath, _dirs, filenames in os.walk(normalize_path(top)):
+        for filename in filenames:
+            path = os.path.join(dirpath, filename)
+            match = regex.match(path)
+            if match:
+                yield match.groupdict()
+            elif wrong is not None:
+                yield {wrong: path}
+
+
 def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     '''
     Iterate directories recursively.
@@ -104,7 +138,8 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
             yield path
 
 
-def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None, exclude=None, confirm=None):
+def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
+           exclude=None, confirm=None):
     '''
     Removes all empty dirs at `top`.
 
@@ -164,8 +199,8 @@ def regex_rename(top, pattern, repl):
                  documented in python's ``re.sub`` function.
     '''
     from re import subn as _re_subn
-    if isinstance(pattern, basestring):
-        pattern = _re_compile(pattern)
+    if isinstance(pattern, str_base):
+        pattern = _rcompile(pattern)
     for path, _dirs, files in os.walk(top):
         for item in files:
             new_file, count = _re_subn(pattern, repl, item)
@@ -186,7 +221,7 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
     for fn in os.listdir(top):
         encoding = sys.getfilesystemencoding() or 'utf-8'
         try:
-            test = fn.decode(encoding) if not isinstance(fn, unicode) else fn
+            test = fn.decode(encoding) if isinstance(fn, bytes) else fn
             if verbose:
                 print('>>> No problem with:', test)
         except:
@@ -204,14 +239,12 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
                 print('>>> PROBLEM with:', fn)
             if target_encoding is None:
                 dir = os.path.dirname(fn)
-
             else:
                 te = target_encoding
-
             new = fn.decode()    # Use "chardet.detect" or 'ibm857'
             os.rename(fn, new)
             print('*'*8, new)
-        except Exception as error:
+        except Exception:
             pass
 
 
@@ -223,8 +256,8 @@ filter_false = lambda path, stat_info: False
 
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
-    if isinstance(regex, basestring):
-        regex = _re_compile(regex)
+    if isinstance(regex, str_base):
+        regex = _rcompile(regex)
     def _filter(path, stat_info):
         return regex.match(os.path.basename(path)) is not None
     return _filter
@@ -322,10 +355,11 @@ def _list(pattern):
                     items = ((dirname, st),)
             for item in items:
                 yield item
-    else:
-        for item in _list_one(pattern) if pattern else (('', lstat(os.curdir)),):
+    elif pattern:
+        for item in _list_one(pattern):
             yield item
-
+    else:
+        yield ('', lstat(os.curdir))
 
 
 def imap(func, pattern):

@@ -28,6 +28,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil.functools import partial
 from xoutil.types import Unset, is_collection
+from xoutil.compat import str_base
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -320,7 +321,7 @@ def nameof(target):
         'dict'
 
     '''
-    if isinstance(target, basestring):
+    if isinstance(target, str_base):
         return target
     else:
         if not hasattr(target, '__name__'):
