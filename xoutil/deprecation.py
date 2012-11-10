@@ -24,6 +24,7 @@ import types
 import warnings
 
 from functools import wraps
+from xoutil.compat import class_types as _class_types
 
 
 __docstring_format__ = 'rst'
@@ -53,7 +54,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             repl_name = replacement.__module__ + '.' + replacement.__name__
         else:
             repl_name = replacement
-        if isinstance(target, (type, types.TypeType)):
+        if isinstance(target, _class_types):
             def new(*args, **kwargs):
                 warnings.warn(msg.format(funcname=funcname,
                                          replacement=repl_name),
