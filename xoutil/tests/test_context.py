@@ -67,6 +67,23 @@ class TestInterfacedContexts(unittest.TestCase):
                 self.assertIsNot(ctx_foo, ctx_bar)
             self.assertIs(ctx_foo, context[IFoo])
 
+    def test_single_interface(self):
+        class IFoo(Interface):
+            pass
+
+        @implementer(IFoo)
+        class Foo(object):
+            pass
+
+        foo1 = Foo()
+        foo2 = Foo()
+
+        with context(foo1) as ctx_foo:
+            self.assertTrue(context[IFoo])
+            with context(foo2) as ctx_foo2:
+                self.assertIs(context[IFoo], ctx_foo2)
+                self.assertIsNot(ctx_foo, ctx_foo2)
+            self.assertIs(ctx_foo, context[IFoo])
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
