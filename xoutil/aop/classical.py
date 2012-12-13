@@ -111,7 +111,6 @@ def bind_method(method, *args, **kwargs):
     return self, bound_method, args, kwargs
 
 
-
 def build_method(method, inner):
     if isinstance(method, types.MethodType):
         return types.MethodType(inner, method.im_self, method.im_class)
@@ -119,7 +118,6 @@ def build_method(method, inner):
         # This means is either a simple function inside a module
         # or is staticmethod.
         return inner
-
 
 
 def _weave_after_method(target, aspect, method_name,

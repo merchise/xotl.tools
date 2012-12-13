@@ -76,14 +76,12 @@ except ImportError:
     Interface = None
 
 
-
 class LocalData(local):
     def __init__(self):
         super(LocalData, self).__init__()
         self.contexts = OrderedDict()
 
 _data = LocalData()
-
 
 
 class MetaContext(type):
@@ -104,7 +102,6 @@ class MetaContext(type):
         else:
             return _null_context
 
-
     def __contains__(self, name):
         '''
         Basic cupport for the 'A in context' idiom::
@@ -116,7 +113,6 @@ class MetaContext(type):
             A
         '''
         return bool(self[name])
-
 
 
 class Context(object):
@@ -167,7 +163,6 @@ class Context(object):
             del _data.contexts[self.name]
         return False
 
-
     @property
     def events(self):
         return self._events
@@ -202,7 +197,6 @@ class NullContext(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         return False
-
 
 
 _null_context = NullContext()
