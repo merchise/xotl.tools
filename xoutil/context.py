@@ -176,6 +176,9 @@ class Context(object):
     def events(self, value):
         self._events = list(set(value))
 
+    def setdefault(self, key, value):
+        return self.data.setdefault(key, value)
+
 
 # A simple alias for Context
 context = Context
