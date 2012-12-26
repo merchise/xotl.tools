@@ -20,6 +20,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 import os
+from os.path import (abspath, expanduser, dirname, sep, join)
 from ..compat import str_base
 
 
@@ -43,15 +44,14 @@ def normalize_path(path):
             path = path.decode(encoding)
         else:
             path = path.encode(encoding)
-    return os.path.abspath(os.path.expanduser(path))
+    return abspath(expanduser(path))
 
 
 def get_module_path(module):
     # TODO: [med] Standardize this
-    
     mod = __import__(module) if isinstance(module, str_base) else module
     path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
-    return os.path.abspath(os.path.dirname(path).decode('utf-8'))
+    return abspath(dirname(path).decode('utf-8'))
 
 
 
@@ -60,19 +60,19 @@ def shorten_module_filename(filename):
     A filename, normally a module o package name, is shortened looking
     his head in all python path.
     '''
-    import sys, os.path
+    import sys
     path = sys.path[:]
     path.sort(lambda x, y: len(y) - len(x))
     for item in path:
         if item and filename.startswith(item):
             filename = filename[len(item):]
-            if filename.startswith(os.path.sep):
-                filename = filename[len(os.path.sep):]
+            if filename.startswith(sep):
+                filename = filename[len(sep):]
     for item in ('__init__.py', '__init__.pyc'):
         if filename.endswith(item):
             filename = filename[:-len(item)]
-            if filename.endswith(os.path.sep):
-                filename = filename[:-len(os.path.sep)]
+            if filename.endswith(sep):
+                filename = filename[:-len(sep)]
     return shorten_user(filename)
 
 
@@ -83,10 +83,9 @@ def shorten_user(filename):
     replacing it by '~'.
 
     '''
-    import os.path
-    home = os.path.expanduser('~')
+    home = expanduser('~')
     if filename.startswith(home):
-        filename = os.path.join('~', filename[len(home):])
+        filename = join('~', filename[len(home):])
     return filename
 
 
