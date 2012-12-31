@@ -34,9 +34,31 @@ __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
 
 
-def first(pred, iterable, default=None):
+
+def obtain(predicate, iterable, default=None):
     '''
-    Returns the first element of an iterable that matches pred.
+    Returns the first non null value, calculated as predicate(item), each one
+    from an 'iterable'.
+
+    Example::
+
+        >>> d = ({'n': 'Ana', 'phone':'12-34'}, {'n': 'Med', 'phone':'56-78'})
+        >>> predicate = lambda x: x['phone'] if x['n'] == 'Med' else False
+        >>> obtain(predicate, d)
+        '56-78'
+
+    If nothing matches the default is returned::
+
+        >>> predicate = lambda x: x['phone'] if x['n'] == 'Manu' else False
+        >>> obtain(predicate, d, False)
+        False
+    '''
+    return next((j for j in (predicate(i) for i in iterable) if j), default)
+
+
+def first(predicate, iterable, default=None):
+    '''
+    Returns the first element of an iterable that matches 'predicate'.
 
     Examples::
 
@@ -63,10 +85,10 @@ def first(pred, iterable, default=None):
         >>> list(x)
         [7, 8, 9]
     '''
-    return next((x for x in iterable if pred(x)), default)
+    return next((x for x in iterable if predicate(x)), default)
 
 
-def get_first(iterable):
+def get_first(iterable, default=None):
     'Returns the first element of an iterable.'
     # TODO: Check who is using this function to find out if could be replaced
     #       by "next" and remove this one.
@@ -78,7 +100,26 @@ def get_first(iterable):
     #        Traceback (...)
     #            ...
     #        TypeError: list object is not an iterator
-    return first(lambda x: True, iterable)
+    return first(lambda x: True, iterable, default=default)
+
+
+def coalesce(*args):
+    '''
+    Returns the first of its arguments that is logically not null.
+
+    None is returned only if all arguments are False. It is often used to
+    substitute a default value for null values when data is retrieved for
+    display, for example:
+
+        coalesce(description, short_description, '(none)')
+
+    'coalesce' only evaluates the arguments that are needed to determine the
+    result; that is, arguments to the right of the first non-null argument
+    are not evaluated.
+
+    This function is based in one of same name of PostgreSQL.
+    '''
+    return next((x for x in args if x), default=None)
 
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
@@ -170,8 +211,8 @@ def smart_dict(defaults, *sources):
     from collections import Mapping
     res = {}
     for key in defaults:
-        for source in sources:
-            get = source.get if isinstance(source, Mapping) else partial(getattr, source)
+        for s in sources:
+            get = s.get if isinstance(s, Mapping) else partial(getattr, s)
             value = get(key, Unset)
             if (value is not Unset) and (key not in res):
                 res[key] = deepcopy(value)

@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.objutil
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) 2012 Merchise Autrement
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -26,9 +26,11 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
-from xoutil.functools import partial
+from collections import Mapping
+from functools import partial
 from xoutil.types import Unset, is_collection
 from xoutil.compat import str_base
+
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -40,7 +42,11 @@ _false = lambda * args, **kwargs: False
 
 
 
-def xdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
+def smart_get(obj):
+    return obj.get if isinstance(obj, Mapping) else partial(getattr, obj)
+
+
+def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     '''
     Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
@@ -51,22 +57,28 @@ def xdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
 
     :param value_filter: *optional* A filter for attribute values.
 
-    :param getattr: *optional* A function with the same signature that
+    :param getter: *optional* A function with the same signature that
                     ``getattr`` to be used to get the values from `obj`.
 
     If neither `attr_filter` nor `value_filter` are given, all `(attr, value)`
     are generated.
 
     '''
-    attrs = (attr for attr in dir(obj) if attr_filter(attr))
-    return ((a, v) for a, v in ((a, getattr(obj, a)) for a in attrs) if value_filter(v))
+    getter = getter or getattr
+    attrs = dir(obj)
+    if attr_filter:
+        attrs = (attr for attr in attrs if attr_filter(attr))
+    res = ((a, getter(obj, a)) for a in attrs)
+    if value_filter:
+        res = ((a, v) for a, v in all if value_filter(v))
+    return res
 
 
-def fdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
+def fdir(obj, attr_filter=None, value_filter=None, getter=None):
     '''
     Similar to :func:`xdir` but yields only the attributes names.
     '''
-    return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getattr))
+    return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getter))
 
 
 def validate_attrs(source, target, force_equals=(), force_differents=()):
@@ -105,13 +117,14 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         True
 
     '''
-    from collections import Mapping
     from operator import eq, ne
+
+
     res = True
     tests = ((ne, force_equals), (eq, force_differents))
     j = 0
-    get_from_source = source.get if isinstance(source, Mapping) else partial(getattr, source)
-    get_from_target = target.get if isinstance(target, Mapping) else partial(getattr, target)
+    get_from_source = smart_get(source)
+    get_from_target = smart_get(target)
     while res and  (j < len(tests)):
         fail, attrs = tests[j]
         i = 0
@@ -186,22 +199,10 @@ def get_first_of(source, *keys, **kwargs):
         >>> get_first_of((inst, somedict), 'foobar', default=none) is none
         True
 
-    By default, we use :func:`getattr` to get attributes from objects,
-    you may customize this by providing a keyword argument `getattr`
-    with the function you want to use to get attributes from the
-    object. This function must have the same signature of
-    :func:`getattr`::
-
-        >>> f = lambda o, a, default=None: 1
-        >>> get_first_of((inst, somedict), 'foobar', getattr=f)
-        1
-
     '''
 
     def inner(source):
-        from collections import Mapping
-        getattribute = kwargs.get('getattr', getattr)
-        get = source.get if isinstance(source, Mapping) else partial(getattribute, source)
+        get = smart_get(source)
         res, i = Unset, 0
         while (res is Unset) and (i < len(keys)):
             res = get(keys[i], Unset)
@@ -211,16 +212,15 @@ def get_first_of(source, *keys, **kwargs):
     if is_collection(source):
         from itertools import imap, takewhile
         res = Unset
-        for item in takewhile(lambda item: (res is Unset), imap(inner, source)):
+        for item in takewhile(lambda _: res is Unset, imap(inner, source)):
             if item is not Unset:
                 res = item
     else:
         res = inner(source)
-    default = kwargs.setdefault('default', None)
-    return res if res is not Unset else default
+    return res if res is not Unset else kwargs.get('default', None)
 
 
-def smart_getattr(name, *sources, **kw):
+def smart_getattr(name, *sources, **kwargs):
     '''Gets an attr by `name` for the first source that has it::
 
         >>> somedict = {'foo': 'bar', 'spam': 'eggs'}
@@ -243,8 +243,8 @@ def smart_getattr(name, *sources, **kw):
 
     '''
     from xoutil.iterators import dict_update_new
-    dict_update_new(kw, {'default': Unset})
-    return get_first_of(sources, name, **kw)
+    dict_update_new(kwargs, {'default': Unset})
+    return get_first_of(sources, name, **kwargs)
 
 
 def get_and_del_attr(obj, name, default=None):
@@ -329,6 +329,51 @@ def nameof(target):
         return target.__name__
 
 
-__all__ = (b'xdir', b'fdir', b'validate_attrs', b'get_first_of',
-           b'smart_getattr', b'get_and_del_attr', b'setdefaultattr',
-           b'nameof')
+def full_nameof(target):
+    '''Gets the full name of an object:
+
+    - The name of a string is the same string::
+
+        >>> full_nameof('manuel')
+        'manuel'
+
+    - The name of an object with a ``__name__`` attribute is its
+      value::
+
+        >>> full_nameof(type)
+        'type'
+
+        >>> class Someclass: pass
+        >>> full_nameof(Someclass)
+        'xoutil.objects.Someclass'
+
+    - The name of any other object is the ``__name__`` of the its
+      type::
+
+        >>> full_nameof([1, 2])
+        'list'
+
+        >>> full_nameof((1, 2))
+        'tuple'
+
+        >>> full_nameof({})
+        'dict'
+
+    '''
+    if isinstance(target, str_base):
+        return target
+    else:
+        if not hasattr(target, '__name__'):
+            target = type(target)
+        res = target.__name__
+        mod = getattr(target, '__module__', '__')
+        if not mod.startswith('__'):
+            res = '.'.join((mod, res))
+        return res
+
+
+
+__all__ = [str(item)
+             for item in ('xdir', 'fdir', 'validate_attrs', 'get_first_of',
+                          'smart_getattr', 'get_and_del_attr',
+                          'setdefaultattr', 'nameof', 'full_nameof')]

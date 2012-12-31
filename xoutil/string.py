@@ -297,6 +297,7 @@ def force_str(value, encoding=None):
 
 
 def normalize_to_str(value, encoding='utf-8'):
+    # FIXME: Wrong in Py3, with some similar to `force_str` would be enough
     if type(value) is bytes:
         return value
     elif type(value) is _unicode:

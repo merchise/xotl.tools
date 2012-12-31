@@ -201,6 +201,7 @@ def decorator(caller):
             # to avoid inspecting the calling frame to see if the () are in
             # place.
             func = args[0]
+            # TODO: [med] I don't understand why `**kwargs` if empty
             return partial(caller, func, **kwargs)()
         elif len(args) > 0 or len(kwargs) > 0:
             def _decorator(func):
@@ -290,8 +291,7 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
-__all__ = (
-           b'settle',
+__all__ = (b'settle',
            b'namer',
            b'aliases',
            b'decorator',

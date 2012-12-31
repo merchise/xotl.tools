@@ -253,7 +253,6 @@ filter_not_hidden = lambda path, _st: (path[0] != '.') and ('/.' not in path)
 filter_false = lambda path, stat_info: False
 
 
-
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
     if isinstance(regex, str_base):
@@ -317,6 +316,15 @@ def set_stat(fname, stat_info):
     os.chmod(fname, stat_info.st_mode)
     os.chown(fname, stat_info.st_uid, stat_info.st_gid)
     os.utime(fname, (stat_info.st_atime, stat_info.st_mtime))
+
+
+def read_file(path):
+    '''Read a full file content and return an string.'''
+    try:
+        with open(path, 'r') as f:
+            return f.read()
+    except:
+        return ''
 
 
 def listdir(path):
