@@ -32,10 +32,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
               'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
-              'sphinx.ext.coverage',
-              'sphinx.ext.pngmath',
-              'sphinx.ext.ifconfig',
-              'sphinx.ext.viewcode']
+              'sphinx.ext.coverage']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -279,4 +276,3 @@ intersphinx_mapping = {
 intersphins_cache_limit = 60
 
 autosummary_generate = True
-
