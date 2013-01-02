@@ -24,18 +24,26 @@ from __future__ import (division as _py3_division,
 
 
 from functools import partial
-
 from xoutil.types import is_scalar, Unset
-
+from xoutil.deprecation import deprecated
 
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
 __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
 
-
+@deprecated('next',
+            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
+            'function.')
 def first(pred, iterable, default=None):
     '''
+    .. warning::
+
+       .. deprecated:: 1.1.6
+
+       Use the `next` function. Since this function is just the same
+       as ``next((which for which in iterable if pred(which)), default)``.
+
     Returns the first element of an iterable that matches pred.
 
     Examples::
@@ -66,8 +74,19 @@ def first(pred, iterable, default=None):
     return next((x for x in iterable if pred(x)), default)
 
 
+@deprecated('next',
+            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
+            'function.')
 def get_first(iterable):
-    'Returns the first element of an iterable.'
+    '''Returns the first element of an iterable.
+
+    .. warning::
+
+       .. deprecated:: 1.1.6
+
+       Use the `next` function, since this function is just the same
+       as ``next((which for which in iterable), default)``.
+    '''
     # TODO: Check who is using this function to find out if could be replaced
     #       by "next" and remove this one.
     #
@@ -98,7 +117,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         >>> list(flatten((range(4), (fib(n) for n in range(3)))))
         [0, 1, 2, 3, 1, 1, 2]
 
-    If `depth` is None the collection is flattened recursiverly until the
+    If `depth` is None the collection is flattened recursively until the
     "bottom" is reached. If `depth` is an integer then the collection is
     flattened up to that level::
 
@@ -178,7 +197,6 @@ def smart_dict(defaults, *sources):
         if key not in res:
             res[key] = deepcopy(defaults[key])
     return res
-
 
 
 def slides(iterator, width=2, fill=Unset):
