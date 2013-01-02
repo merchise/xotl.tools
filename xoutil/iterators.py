@@ -231,3 +231,66 @@ def slides(iterator, width=2, fill=Unset):
             res.append(fill)
             pos += 1
         yield tuple(res)
+
+
+def first_n(iterable, n=1, fill=Unset, return_tuple=False):
+    '''Take the first `n` items from iterable. If there are less than `n` items
+    in the iterator and `fill` is Unset, a StopIteration exception is raised.
+
+    If `return_tuple` is True, then returns the collected items as tuple.
+
+    :param iterable: An iterable from which the first `n` items should be
+                     collected.
+
+    :param n: The number of items to collect
+    :type n: int
+
+    :param fill: The filling pattern to use. It may be:
+
+                 - an iterable (i.e has an __iter__ method), in which case
+                   `first_n` fills the last items by cycling over `fill`.
+
+                 - anything else is used as the filling item.
+
+    :param return_tuple: Indicates whether to return the collected items
+                         as a tuple. By default a list is returned.
+
+    :returns: The first `n` items from `iterable`, probably with a filling
+              pattern at the end.
+    :rtype: `list` or `tuple`
+
+    Examples::
+
+        >>> first_n(range(10), 3)
+        [0, 1, 2]
+
+        >>> first_n(range(2), 4)
+        Traceback (most recent call last):
+            ...
+        StopIteration
+
+        >>> first_n(range(2), 4, fill=2)
+        [0, 1, 2, 2]
+
+        >>> first_n(range(2), 6, fill=(1, 2), return_tuple=True)
+        (0, 1, 1, 2, 1, 2)
+
+    .. versionadded: 1.1.6
+    '''
+    if fill is not Unset:
+        from itertools import cycle, repeat, chain
+        if getattr(fill, '__iter__', False):
+            fill = cycle(fill)
+        else:
+            fill = repeat(fill)
+        seq = chain(iterable, fill)
+    else:
+        seq = iter(iterable)
+    result = []
+    while n > 0:
+        result.append(next(seq))
+        n -= 1
+    if return_tuple:
+        return tuple(result)
+    else:
+        return result
