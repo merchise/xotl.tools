@@ -45,7 +45,8 @@ from re import compile as _regex_compile
 
 from xoutil.deprecation import deprecated as _deprecated
 from xoutil.compat import (str_base as _str_base, _unicode,
-                           ext_str_types as _ext_str_types)
+                           ext_str_types as _ext_str_types,
+                           py3k as _py3k)
 
 
 __docstring_format__ = 'rst'
@@ -64,8 +65,7 @@ def force_encoding(encoding=None):
 
 
 def safe_decode(s, encoding=None):
-    '''
-    Similar to bytes `decode` method returning unicode.
+    '''Similar to bytes `decode` method returning unicode.
 
     Decodes `s` using the given `encoding`, or determining one from the system.
 
@@ -84,8 +84,7 @@ def safe_decode(s, encoding=None):
 
 
 def safe_encode(u, encoding=None):
-    '''
-    Similar to unicode `encode` method returning bytes.
+    '''Similar to unicode `encode` method returning bytes.
 
     Encodes `u` using the given `encoding`, or determining one from the system.
 
@@ -104,21 +103,19 @@ def safe_encode(u, encoding=None):
 
 
 def safe_join(separator, iterable, encoding=None):
-    '''
-    Similar to `join` method in string objects `separator.join(iterable)`, a
+    '''Similar to `join` method in string objects `separator.join(iterable)`, a
     string which is the concatenation of the strings in the `iterable` with
     `separator` as intermediate between elements. Return unicode or bytes
     depending on type of `separator` and each item in `iterable`.
 
     `encoding` is used in case of error to concatenate bytes + unicode.
 
-    "encoding" is used in case of error to concatenate str + unicode.
-
-    "force_separator_type" only apply on error contexts.
+    `force_separator_type` only apply on error contexts.
 
     This function must be deprecated in Python 3.
 
     .. versionadded:: 1.1.3
+
     '''
     try:
         return separator.join(iterable)
@@ -138,6 +135,13 @@ def safe_join(separator, iterable, encoding=None):
                     res = (safe_decode(res, encoding) +
                            safe_decode(item, encoding))
     return res if not empty else type(separator)()
+
+
+# Makes explicit the deprecation warning for py3k.
+if _py3k:
+    safe_join = _deprecated('builtin join method of str',
+                            'safe_join is deprecated for Python 3. Use '
+                            'builtin join method of str.')(safe_join)
 
 
 def safe_strip(value):

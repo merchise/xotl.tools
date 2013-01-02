@@ -58,13 +58,16 @@ win32 = sys.platform.startswith('win')
 if py3k:
     str_base = str
     str_types = (str, )
-    _unicode = str
+    u = _unicode = str
     ext_str_types = (bytes, str)
+    class_types = type
 else:
     str_base = basestring
     str_types = (str, unicode)
     _unicode = unicode
     ext_str_types = (str, unicode)
+    from types import TypeType
+    class_types = (type, TypeType)
 
 if py3k:
     set_types = set

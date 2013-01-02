@@ -24,6 +24,7 @@ import types
 import warnings
 
 from functools import wraps
+from xoutil.compat import class_types as _class_types
 
 
 __docstring_format__ = 'rst'
@@ -43,6 +44,23 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
         def deprecated_function(...):
             ...
 
+    .. note::
+
+       There's a package `zope.deferredimport` that has a `deprecated` function
+       that injects same implementations of some object into a module, with
+       a deprecation warning.
+
+       The main difference is that we don't require the same implementation
+       and/or interface. We may deprecate a feature to be removed by another
+       that has not the same interface.
+
+       For instance :class:`xoutil.memoize.simple_memoize` decorator is
+       deprecated in favor of :func:`xoutil.functools.lru_cache` but they
+       don't share the same interface.
+
+       However `zope.deferredimport` allows also for deferred imports (without
+       deprecation), and are very useful if you need to keep names for other
+       stuff around without loading them until they are used.
     '''
     def decorator(target):
         if deprecated_module:
@@ -53,7 +71,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             repl_name = replacement.__module__ + '.' + replacement.__name__
         else:
             repl_name = replacement
-        if isinstance(target, (type, types.TypeType)):
+        if isinstance(target, _class_types):
             def new(*args, **kwargs):
                 warnings.warn(msg.format(funcname=funcname,
                                          replacement=repl_name),
@@ -88,13 +106,12 @@ def inject_deprecated(funcnames, source, target=None):
         try:
             target_locals = frame.f_locals
         finally:
-            # As recommeded to avoid memory leaks
+            # As recommended to avoid memory leaks
             del frame
     else:
         pass
     for targetname in funcnames:
-        unset = object()  # Can't use xoutil.types.Unset since Unset itself
-                          # is deprecated in xotl (version 2)
+        unset = object()
         target = getattr(source, targetname, unset)
         if target is not unset:
             if isinstance(target, (type, types.FunctionType, types.LambdaType,

@@ -67,7 +67,8 @@ def smart_copy(source, target, full=False):
         setvalue(key, value)
 
 
-@deprecated('collections.namedtuple')
+# TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un ciclo infinito
+# @deprecated('collections.namedtuple')
 class MappedTuple(tuple):
     '''
     An implementation of a named tuple.
@@ -75,6 +76,8 @@ class MappedTuple(tuple):
     Deprecated since the introduction of namedtuple in Python 2.6
     '''
     def __new__(cls, key_attr='key', sequence=()):
+        import warnings
+        warnings.warn('MappedTuple is deprecated, you should use collections.namedtuple', stacklevel=1)
         self = super(MappedTuple, cls).__new__(cls, sequence)
         self.mapping = {getattr(item, key_attr): i
                           for i, item in enumerate(sequence)}
