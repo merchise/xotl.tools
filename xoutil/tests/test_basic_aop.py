@@ -68,7 +68,6 @@ class Test(unittest.TestCase):
             _class = sobj.__class__
             self.assertEqual(prev + 1, sobj.ident(99))
 
-
     def test_nested_weaved(self):
         def plusone(self, what):
             return super(_class, self).ident(what) + 1
@@ -85,7 +84,6 @@ class Test(unittest.TestCase):
                 self.assertEqual(prev + 3, sobj.ident(99))
             self.assertEqual(prev + 1, sobj.ident(99))
         self.assertEqual(prev, sobj.ident(99))
-
 
     def test_complementor(self):
         def __init__(self, *args, **kw):
@@ -120,6 +118,7 @@ class Test(unittest.TestCase):
 
     def test_contextualizer(self):
         from xoutil.context import context
+
         class FooBazer(object):
             def inside(self):
                 if context['in-context']:
