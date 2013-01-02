@@ -38,7 +38,6 @@ from __future__ import (division as _py3_division,
 from threading import local
 
 
-
 class LocalData(local):
     def __init__(self):
         super(LocalData, self).__init__()
@@ -50,7 +49,6 @@ _data = LocalData()
 class MetaContext(type):
     def __getitem__(self, name):
         return _data.contexts.get(name, _null_context)
-
 
     def __contains__(self, name):
         '''

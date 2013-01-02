@@ -13,8 +13,6 @@
 # package.
 #
 
-
-
 '''Utilities to inspect the CPython's stack.'''
 
 from __future__ import (division as _py3_division,

@@ -12,8 +12,6 @@
 # package.
 #
 
-
-
 '''Some usefull decorators.'''
 
 # TODO: reconsider all this module
@@ -103,7 +101,6 @@ def aliases(**kwargs):
             setattr(target, alias, AttributeAlias(field))
         return target
     return inner
-
 
 
 def decorator(caller):

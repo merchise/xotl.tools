@@ -16,7 +16,6 @@ from xoutil.compat import py32
 __all__ = ["Repr", "repr", "recursive_repr"]
 
 
-
 if py32:
     from reprlib import Repr, repr, recursive_repr
 else:
@@ -48,7 +47,8 @@ else:
             wrapper.__module__ = getattr(user_function, '__module__')
             wrapper.__doc__ = getattr(user_function, '__doc__')
             wrapper.__name__ = getattr(user_function, '__name__')
-            wrapper.__annotations__ = getattr(user_function, '__annotations__', {})
+            wrapper.__annotations__ = getattr(user_function,
+                                              '__annotations__', {})
             return wrapper
 
         return decorating_function
@@ -89,9 +89,11 @@ else:
                 newlevel = level - 1
                 repr1 = self.repr1
                 pieces = [repr1(elem, newlevel) for elem in islice(x, maxiter)]
-                if n > maxiter:  pieces.append('...')
+                if n > maxiter:
+                    pieces.append('...')
                 s = ', '.join(pieces)
-                if n == 1 and trail:  right = trail + right
+                if n == 1 and trail:
+                    right = trail + right
             return '%s%s%s' % (left, s, right)
 
         def repr_tuple(self, x, level):
@@ -141,7 +143,7 @@ else:
             return s
 
         def repr_int(self, x, level):
-            s = builtins.repr(x) # XXX Hope this isn't too slow...
+            s = builtins.repr(x)  # XXX Hope this isn't too slow...
             if len(s) > self.maxlong:
                 i = max(0, (self.maxlong-3)//2)
                 j = max(0, self.maxlong-3-i)
@@ -161,7 +163,6 @@ else:
                 s = s[:i] + '...' + s[len(s)-j:]
             return s
 
-
     def _possibly_sorted(x):
         # Since not all sequences of items can be sorted and comparison
         # functions may raise arbitrary exceptions, return an unsorted
@@ -173,4 +174,3 @@ else:
 
     aRepr = Repr()
     repr = aRepr.repr
-

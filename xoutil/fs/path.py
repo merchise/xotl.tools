@@ -4,10 +4,8 @@
 # xoutil.fs.path
 #----------------------------------------------------------------------
 # Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # All rights reserved.
-#
-# Author: Medardo Rodríguez
-# Contributors: see CONTRIBUTORS and HISTORY file
 #
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
@@ -27,10 +25,8 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-
 def normalize_path(path):
-    '''
-    Normalize path by:
+    '''Normalizes path by:
 
       - expanding '~' and '~user' constructions.
       - eliminating double slashes
@@ -48,17 +44,14 @@ def normalize_path(path):
 
 def get_module_path(module):
     # TODO: [med] Standardize this
-    
     mod = __import__(module) if isinstance(module, str_base) else module
     path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
     return os.path.abspath(os.path.dirname(path).decode('utf-8'))
 
 
-
 def shorten_module_filename(filename):
-    '''
-    A filename, normally a module o package name, is shortened looking
-    his head in all python path.
+    '''A filename, normally a module o package name, is shortened looking his 
+    head in all python path.
     '''
     import sys, os.path
     path = sys.path[:]
@@ -76,10 +69,9 @@ def shorten_module_filename(filename):
     return shorten_user(filename)
 
 
-
 def shorten_user(filename):
     '''
-    A filename is shortened looking for the (expantion) $HOME in his head and
+    A filename is shortened looking for the (expansion) $HOME in his head and
     replacing it by '~'.
 
     '''
@@ -88,7 +80,6 @@ def shorten_user(filename):
     if filename.startswith(home):
         filename = os.path.join('~', filename[len(home):])
     return filename
-
 
 
 __all__ = ('normalize_path', 'get_module_path', 'shorten_module_filename',

@@ -37,7 +37,6 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-
 class TestCollections(unittest.TestCase):
     def test_defaultdict(self):
         d = defaultdict(lambda key, d: 'a')

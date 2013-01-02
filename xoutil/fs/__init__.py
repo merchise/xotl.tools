@@ -2,25 +2,12 @@
 #----------------------------------------------------------------------
 # xoutil.fs
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Merchise Autrement
+# Copyright (c) 2011-2013 Merchise Autrement and Contributors
 # All rights reserved.
 #
-# Author: Medardo Rodriguez
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-# MA 02110-1301, USA.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created on Nov 28, 2011
 
@@ -90,12 +77,12 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
                 yield path
 
 
-
 # ------------------------------ iter_dict_files ------------------------------
 _REGEX_PYTHON_PACKAGE = _rcompile(r'^(?P<dir>.+(?=/)/)?'
                                   r'(?P<packagename>[^/_-]+?)'
                                   r'([-_][Vv]?(?P<version>\d+([.-_]\w+)*))?'
                                   r'(?P<ext>[.](tar[.](gz|bz2)|zip|egg|tgz))$')
+
 _REGEX_DEFAULT_ALLFILES = _rcompile(r'^(?P<dir>.+(?=/)/)?'
                                     r'(?P<filename>[^/]+?)'
                                     r'([.](?P<ext>[^.]+))?$')
@@ -108,6 +95,8 @@ def iter_dict_files(top='.', regex=None, wrong=None):
     :param top: The top directory for recurse into.
     :param regex: Regular expression with group definitions to match.
     :param wrong: A key to store full name of not matching files.
+
+    .. versionadded:: 1.1.6
 
     '''
     if regex:
@@ -185,7 +174,6 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
             os.rmdir(path)
 
 
-
 def regex_rename(top, pattern, repl):
     '''
     Rename files recursively using regular expressions substitution.
@@ -210,10 +198,10 @@ def regex_rename(top, pattern, repl):
                 os.rename(old, new)
 
 
-
 def rename_wrong(top='.', current_encoding=None, target_encoding=None,
                  verbose=False):
-    'Converts filenames from one encoding to another if the current is wrong.'
+    '''Converts filenames from one encoding to another if the current is wrong.
+    '''
     import sys
     wrongs = []
     if current_encoding is None:
@@ -248,10 +236,8 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
             pass
 
 
-
 filter_not_hidden = lambda path, _st: (path[0] != '.') and ('/.' not in path)
 filter_false = lambda path, stat_info: False
-
 
 
 def get_regex_filter(regex):
@@ -364,15 +350,15 @@ def _list(pattern):
 
 def imap(func, pattern):
     '''
-    Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ...
+    Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ... for each dir
+    path. The `pattern` may contain:
 
-    for each dir path, "pattern" may contain:
+    - Simple shell-style wild-cards à la `fnmatch`.
 
-    - Simple shell-style wildcards a la fnmatch.
+    - Regex if pattern starts with '(?'. Expressions must be valid, as
+      in "(?:[^.].*)$" or "(?i).*\.jpe?g$". Remember to add the end mark '$'
+      if needed.
 
-    - Regex if pattern starts with '(?'.
-      Expressions must be valid, as in "(?:[^.].*)$" or "(?i).*\.jpe?g$".
-      Remember add end '$' if needed.
     '''
     for item, st in _list(pattern):
         res = func(item, st)

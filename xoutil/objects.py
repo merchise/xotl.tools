@@ -39,7 +39,6 @@ _true = lambda * args, **kwargs: True
 _false = lambda * args, **kwargs: False
 
 
-
 def xdir(obj, attr_filter=_true, value_filter=_true, getattr=getattr):
     '''
     Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
