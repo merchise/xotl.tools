@@ -36,8 +36,6 @@ from types import MethodType
 from xoutil.context import context
 from xoutil.aop import complementor
 from xoutil.types import Unset
-from xoutil.iterators import first
-
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -155,7 +153,7 @@ class Proxy(object):
             behaves = ()
         valid_wrapper = lambda b: isinstance(getattr(b, attr, None),
                                              types.MethodType)
-        wrapper = first(valid_wrapper, (b for b in behaves))
+        wrapper = next((b for b in behaves if valid_wrapper(b)), None)
         if wrapper:
             result = getattr(wrapper, attr)
             if getattr(result, 'im_func', None):
