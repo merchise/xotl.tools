@@ -80,11 +80,14 @@ def safe_decode(s, encoding=None):
     if isinstance(s, _unicode):
         return s
     else:
+        encoding = force_encoding(encoding)
         try:
-            return _unicode(s)
+            # In Python 3 str(b'm') returns the string "b'm'" and not just "m",
+            # this fixes this.
+            return _unicode(s, encoding, 'replace')
         except:
-            encoding = force_encoding(encoding)
-            return bytes(s).decode(encoding, 'replace')
+            # For numbers and other stuff.
+            return _unicode(s)
 
 
 def safe_encode(u, encoding=None):
@@ -100,10 +103,13 @@ def safe_encode(u, encoding=None):
     if isinstance(u, bytes):
         return u
     else:
+        encoding = force_encoding(encoding)
         try:
-            return bytes(u)
+            if isinstance(u, base_str_):
+                return bytes(u)
+            else:
+                return _unicode(u).encode(encoding, 'replace')
         except:
-            encoding = force_encoding(encoding)
             return _unicode(u).encode(encoding, 'replace')
 
 
