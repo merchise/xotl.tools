@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.extended
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013 Medardo Rodríguez
+# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Manuel Vázquez Acosta

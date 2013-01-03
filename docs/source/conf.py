@@ -51,7 +51,7 @@ project = u'xoutil'
 
 year = datetime.datetime.now().year
 if year > 2012:
-    copyright = u'2012-{year}, Medardo Rodríguez'.format(year=year)
+    copyright = u'2012-{year}, Merchise Autrement and Contributors'.format(year=year)
 else:
     copyright = u'2012, Medardo Rodríguez'
 

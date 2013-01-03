@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
 
 from multiprocessing import Pool, cpu_count
 from itertools import count, islice, repeat, izip

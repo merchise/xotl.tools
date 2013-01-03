@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.string
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -60,7 +60,7 @@ def force_encoding(encoding=None):
     '''Validate an encoding value; if None use ``sys.stdin.encoding`` or
     ``sys.getdefaultencoding()``; else return the same value.
 
-    .. versionadded:: 1.1.6
+    .. versionadded:: 1.2.0
     '''
     # TODO: Maybe use only `sys.getdefaultencoding()`
     import sys
@@ -120,7 +120,7 @@ def safe_join(separator, iterable, encoding=None):
 
     .. versionadded:: 1.1.3
 
-    .. warning:: The `force_separator_type` was removed in version 1.1.6.
+    .. warning:: The `force_separator_type` was removed in version 1.2.0.
 
     '''
     try:
@@ -308,7 +308,7 @@ def force_str(value, encoding=None):
                      The default is to use the same default as
                      :func:`safe_encode` or :func:`safe_decode`.
 
-    .. versionadded:: 1.1.6
+    .. versionadded:: 1.2.0
 
     '''
     if isinstance(value, str):
@@ -321,6 +321,9 @@ def force_str(value, encoding=None):
 
 @_deprecated(force_str)
 def normalize_to_str(value, encoding='utf-8'):
+    '''
+    .. warning:: Deprecated since 1.2.0
+    '''
     if type(value) is bytes:
         return value
     elif type(value) is _unicode:

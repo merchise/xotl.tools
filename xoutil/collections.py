@@ -2,11 +2,11 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
-# implementations.
-#
 # Copyright 2013 Merchise Autrement and Contributors for the defaultdict and
 # opendict implementations.
+#
+# Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
+# implementations.
 #
 # The implementation of OrderedDict is the copyright of the Python
 # Software Foundation.

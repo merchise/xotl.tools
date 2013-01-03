@@ -3,23 +3,15 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_decorators
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Medardo Rodríguez
+# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License (GPL) as published by the
-# Free Software Foundation;  either version 2  of  the  License, or (at
-# your option) any later version.
+# Contributors: see CONTRIBUTORS and HISTORY file
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-# MA 02110-1301, USA.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created on Nov 18, 2011
 
@@ -66,8 +58,8 @@ class TestAssignable(unittest.TestCase):
 
         for which in (union(1, 2),):
             self.assertEqual((None, 1, 2), which)
-            
-            
+
+
     def test_argsless_decorator(self):
         @decorator
         def log(func, fmt='Calling function %s'):
@@ -75,19 +67,19 @@ class TestAssignable(unittest.TestCase):
                 print(fmt % func.__name__)
                 return func(*args, **kwargs)
             return inner
-    
+
         @log
         def hello(msg='Hi'):
             print(msg)
-            
+
         @log()
         def hi(msg='Hello'):
             print(msg)
-        
+
         hi()
         hello()
         pass
-    
+
     def test_returning_argless(self):
         @decorator
         def plus2(func, value=1):
@@ -98,15 +90,15 @@ class TestAssignable(unittest.TestCase):
         @plus2
         def ident2(val):
             return val
-        
+
         @plus2()
         def ident3(val):
             return val
-        
+
         self.assertEquals(ident2(10), 11)
         self.assertEquals(ident3(10), 11)
-        
-        
+
+
 class RegressionTests(unittest.TestCase):
     def test_with_kwargs(self):
         'When passing a function as first positional argument, kwargs should be tested empty'
@@ -114,10 +106,10 @@ class RegressionTests(unittest.TestCase):
         @decorator
         def ditmoi(target, *args, **kwargs):
             return partial(target, *args, **kwargs)
-        
+
         def badguy(n):
             return n
-        
+
         @ditmoi(badguy, b=1)
         def foobar(n, *args, **kw):
             return n

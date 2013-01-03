@@ -3,8 +3,8 @@
 #----------------------------------------------------------------------
 # xoutil.fs.path
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Medardo Rodríguez
 # Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -50,7 +50,7 @@ def get_module_path(module):
 
 
 def shorten_module_filename(filename):
-    '''A filename, normally a module o package name, is shortened looking his 
+    '''A filename, normally a module o package name, is shortened looking his
     head in all python path.
     '''
     import sys, os.path
