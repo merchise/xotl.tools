@@ -78,7 +78,8 @@ class MappedTuple(tuple):
         import warnings
         warnings.warn('MappedTuple is deprecated, you should use collections.namedtuple', stacklevel=1)
         self = super(MappedTuple, cls).__new__(cls, sequence)
-        self.mapping = {getattr(item, key_attr): i for i, item in enumerate(sequence)}
+        self.mapping = {getattr(item, key_attr): i
+                          for i, item in enumerate(sequence)}
         return self
 
     def __getitem__(self, key):
@@ -160,7 +161,7 @@ class SortedSmartDict(SmartDict):
                  tests, we're defering such a change for a release post
                  |release|.
     '''
-    # TODO: Replace this by "collections.OrderedDict" in python2.7 (DeprecationWarning)
+    # TODO: Deprecate this by "collections.OrderedDict" in python2.7
 
     def __new__(cls, *args, **kwargs):
         self = super(SortedSmartDict, cls).__new__(cls, *args, **kwargs)
@@ -170,7 +171,8 @@ class SortedSmartDict(SmartDict):
     def __repr__(self):
         if not hasattr(self, '_recursion'):
             self._recursion = True
-            res = '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in self.iteritems()])
+            res = '{%s}' % ', '.join(['%r: %r' % (k, v)
+                                        for k, v in self.iteritems()])
             del self._recursion
             return res
         else:

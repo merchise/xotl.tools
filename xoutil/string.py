@@ -21,20 +21,17 @@ additions.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
 Python 3.x treats strings differently, `bytes` and `_unicode` will be used
-instead with the following conventions:
+instead with the following conventions::
 
-- In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str')
-  are both string types inheriting form `basestring`.
+    - In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str')
+      are both string types inheriting form `basestring`.
+      `_unicode` is synonym of `unicode`.
 
-  `_unicode` is synonym of `unicode`.
-
-- In Python 3.x `str` is always unicode but `unicode` and `basestring`
-  types doesn't exists. `bytes` type can be used as an array of one byte
-  each item.
-
-  `_unicode` is synonym of `str`.
-
-  Many methods are readjusted to these conditions.
+    - In Python 3.x `str` is always unicode but `unicode` and `basestring`
+      types doesn't exists. `bytes` type can be used as an array of one byte
+      each item.
+      `_unicode` is synonym of `str`.
+      Many methods are readjusted to these conditions.
 
 '''
 
@@ -56,15 +53,17 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
+
 def force_encoding(encoding=None):
-    '''Validate an encoding value; if None use ``sys.stdin.encoding`` or
-    ``sys.getdefaultencoding()``; else return the same value.
+    '''
+    Validate an encoding value; if None use `locale.getlocale()[1]`; else
+    return the same value.
 
     .. versionadded:: 1.2.0
     '''
     # TODO: Maybe use only `sys.getdefaultencoding()`
-    import sys
-    return encoding or sys.stdin.encoding or sys.getdefaultencoding()
+    import locale
+    return encoding or locale.getlocale()[1]
 
 
 def safe_decode(s, encoding=None):
@@ -114,11 +113,10 @@ def safe_encode(u, encoding=None):
 
 
 def safe_join(separator, iterable, encoding=None):
-    '''Similar to `join` method in string objects
-    `separator.join(iterable)`, a string which is the concatenation
-    of the strings in the `iterable` with `separator` as intermediate
-    between elements. Return unicode or bytes depending on type of
-    `separator` and each item in `iterable`.
+    '''Similar to `join` method in string objects `separator.join(iterable)`, a
+    string which is the concatenation of the strings in the `iterable` with
+    `separator` as intermediate between elements. Return unicode or bytes
+    depending on type of `separator` and each item in `iterable`.
 
     `encoding` is used in case of error to concatenate bytes + unicode.
 
@@ -325,11 +323,8 @@ def force_str(value, encoding=None):
         return safe_decode(value, encoding)
 
 
-@_deprecated(force_str)
 def normalize_to_str(value, encoding='utf-8'):
-    '''
-    .. warning:: Deprecated since 1.2.0
-    '''
+    # FIXME: Wrong in Py3, with some similar to `force_str` would be enough
     if type(value) is bytes:
         return value
     elif type(value) is _unicode:
@@ -337,11 +332,12 @@ def normalize_to_str(value, encoding='utf-8'):
 
 
 class SafeFormatter(Formatter):
-    '''Similar to original Formatter but allowing several extensions:
+    '''
+    Similar to original Formatter but allowing several extensions:
 
-    - Configure initial mappings as constructor parameters.  Use
-    - "eval" function for keys not validated in standards ways.  Use
-    - safe instead standard join for return formated value.
+    - Configure initial mappings as constructor parameters.
+    - Use "eval" function for keys not validated in standards ways.
+    - Use safe instead standard join for return formated value.
 
     You can try for example::
 
@@ -357,11 +353,11 @@ class SafeFormatter(Formatter):
     USE_EVAL = True
 
     def __init__(self, *mappings, **kwargs):
-        '''Initialize the formatter with several mapping objects.
+        '''
+        Initialize the formatter with several mapping objects.
 
-        All mappings are considered at this level as "with permanent
-        values", if dynamic mapping update is desired, redefine
-        "_get_mapping" method.
+        All mappings are considered at this level as "with permanent values",
+        if dynamic mapping update is desired, redefine "_get_mapping" method.
 
         For use a list of dynamic mappings to evaluate each one separately use
         "_get_dynamic_mappings" returning any iterable; this last feature will

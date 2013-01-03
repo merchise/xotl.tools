@@ -70,8 +70,10 @@ class InvalidFactory(object):
             line = len(lines)
         else:
             col = line = 1
-        raise ValueError('Invalid place-holder in string: '
-                         'line "%d", col "%d"' % (line, col))
+        msg = ('Invalid place-holder in string: '
+               'line "%d", col "%d"') % (line, col)
+        raise ValueError(msg)
+
 
 
 class _TemplateClass(type):
@@ -93,7 +95,7 @@ class _TemplateClass(type):
             factories[kind] = factory
             alters.append(wrapper % ('(?P<%s>%s)' % (kind, pattern)))
         rexp = r'(?P<delimiter>%s)(?:%s)' % (re.escape(cls.delimiter),
-                                             b'|'.join(alters))
+                                             '|'.join(alters))
         cls.pattern = re.compile(rexp, re.IGNORECASE | re.VERBOSE)
         cls.factories = factories
 

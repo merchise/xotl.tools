@@ -306,6 +306,15 @@ def set_stat(fname, stat_info):
     os.utime(fname, (stat_info.st_atime, stat_info.st_mtime))
 
 
+def read_file(path):
+    '''Read a full file content and return an string.'''
+    try:
+        with open(path, 'r') as f:
+            return f.read()
+    except:
+        return ''
+
+
 def listdir(path):
     '''Same as ``os.listdir`` but normalizes `path` and raises no error.'''
     try:

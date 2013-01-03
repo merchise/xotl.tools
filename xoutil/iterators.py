@@ -25,18 +25,41 @@ from __future__ import (division as _py3_division,
 
 
 from functools import partial
+
 from xoutil.types import is_scalar, Unset
-from xoutil.deprecation import deprecated
+
 
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
 __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
 
+
+def obtain(predicate, iterable, default=None):
+    '''
+    Returns the first non null value, calculated as predicate(item), each one
+    from an 'iterable'.
+
+    Example::
+
+        >>> d = ({'n': 'Ana', 'phone':'12-34'}, {'n': 'Med', 'phone':'56-78'})
+        >>> predicate = lambda x: x['phone'] if x['n'] == 'Med' else False
+        >>> obtain(predicate, d)
+        '56-78'
+
+    If nothing matches the default is returned::
+
+        >>> predicate = lambda x: x['phone'] if x['n'] == 'Manu' else False
+        >>> obtain(predicate, d, False)
+        False
+    '''
+    return next((j for j in (predicate(i) for i in iterable) if j), default)
+
+
 @deprecated('next',
             'Deprecated since 1.1.6. Use the built-in `{replacement}` '
             'function.')
-def first(pred, iterable, default=None):
+def first(predicate, iterable, default=None):
     '''
     .. warning::
 
@@ -45,7 +68,7 @@ def first(pred, iterable, default=None):
        Use the `next` function. Since this function is just the same
        as ``next((which for which in iterable if pred(which)), default)``.
 
-    Returns the first element of an iterable that matches pred.
+    Returns the first element of an iterable that matches 'predicate'.
 
     Examples::
 
@@ -78,7 +101,7 @@ def first(pred, iterable, default=None):
 @deprecated('next',
             'Deprecated since 1.1.6. Use the built-in `{replacement}` '
             'function.')
-def get_first(iterable):
+def get_first(iterable, default=None):
     '''Returns the first element of an iterable.
 
     .. warning::
@@ -98,7 +121,26 @@ def get_first(iterable):
     #        Traceback (...)
     #            ...
     #        TypeError: list object is not an iterator
-    return first(lambda x: True, iterable)
+    return first(lambda x: True, iterable, default=default)
+
+
+def coalesce(*args):
+    '''
+    Returns the first of its arguments that is logically not null.
+
+    None is returned only if all arguments are False. It is often used to
+    substitute a default value for null values when data is retrieved for
+    display, for example:
+
+        coalesce(description, short_description, '(none)')
+
+    'coalesce' only evaluates the arguments that are needed to determine the
+    result; that is, arguments to the right of the first non-null argument
+    are not evaluated.
+
+    This function is based in one of same name of PostgreSQL.
+    '''
+    return next((x for x in args if x), default=None)
 
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
@@ -118,7 +160,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         >>> list(flatten((range(4), (fib(n) for n in range(3)))))
         [0, 1, 2, 3, 1, 1, 2]
 
-    If `depth` is None the collection is flattened recursively until the
+    If `depth` is None the collection is flattened recursiverly until the
     "bottom" is reached. If `depth` is an integer then the collection is
     flattened up to that level::
 
@@ -190,8 +232,8 @@ def smart_dict(defaults, *sources):
     from collections import Mapping
     res = {}
     for key in defaults:
-        for source in sources:
-            get = source.get if isinstance(source, Mapping) else partial(getattr, source)
+        for s in sources:
+            get = s.get if isinstance(s, Mapping) else partial(getattr, s)
             value = get(key, Unset)
             if (value is not Unset) and (key not in res):
                 res[key] = deepcopy(value)

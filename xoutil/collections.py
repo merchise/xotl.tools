@@ -96,14 +96,10 @@ class opendict(dict):
         'espanol'
 
     '''
-    def __getattr__(self, name):
-        try:
-            return super(opendict, self).__getattr__(name)
-        except AttributeError:
-            if name in self:
-                return self[name]
-            else:
-                raise
+    def __init__(self, *args, **kwargs):
+        super(opendict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
 
 if not _py32:
     # From this point below: Copyright (c) 2001-2013, Python Software
