@@ -26,6 +26,7 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
+from xoutil.deprecation import deprecated
 from xoutil.types import is_scalar, Unset
 
 
