@@ -56,12 +56,12 @@ __author__ = 'manu'
 
 def force_encoding(encoding=None):
     '''
-    Validate an encoding value; if None use `sys.stdin.encoding or
-    sys.getdefaultencoding(); else return the same value.
+    Validate an encoding value; if None use `locale.getlocale()[1]`; else
+    return the same value.
     '''
     # TODO: Maybe use only `sys.getdefaultencoding()`
-    import sys
-    return encoding or sys.stdin.encoding or sys.getdefaultencoding()
+    import locale
+    return encoding or locale.getlocale()[1]
 
 
 def safe_decode(s, encoding=None):

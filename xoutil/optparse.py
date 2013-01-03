@@ -50,7 +50,6 @@ or with an argument.
 For example, both are valids:
     testapp --backup
     testapp --backup=~/temp
-
 '''
 
 from __future__ import (absolute_import as _py3_absolute,
@@ -64,26 +63,58 @@ __author__ = 'med'
 __version__ = '0.9.0'
 
 
-from optparse import *
+import optparse as _pm
+
+SUPPRESS_HELP = _pm.SUPPRESS_HELP
+SUPPRESS_USAGE = _pm.SUPPRESS_USAGE
+Values = _pm.Values
+OptionContainer = _pm.OptionContainer
+OptionGroup = _pm.OptionGroup
+HelpFormatter = _pm.HelpFormatter
+IndentedHelpFormatter = _pm.IndentedHelpFormatter
+TitledHelpFormatter = _pm.TitledHelpFormatter
+OptParseError = _pm.OptParseError
+OptionError = _pm.OptionError
+OptionConflictError = _pm.OptionConflictError
+OptionValueError = _pm.OptionValueError
+BadOptionError = _pm.BadOptionError
+
+AmbiguousOptionError = _pm.AmbiguousOptionError
+check_choice = _pm.check_choice
+isbasestring = _pm.isbasestring
+NO_DEFAULT = _pm.NO_DEFAULT
+check_builtin = _pm.check_builtin
+
+__all__ = getattr(_pm, '__all__', [])
 
 
-_OptionParser = OptionParser
+
+class Option(_pm.Option, object):
+    TYPES = _pm.Option.TYPES + ('optional',)
 
 
-class OptionParser(_OptionParser):
+make_option = Option
+
+
+class Values(_pm.Values, object):
+    def __getattr__(self, name):
+        return getattr(self.__dict__, name)
+
+
+class OptionParser(_pm.OptionParser, object):
     def __init__(self, usage=None, option_list=None, option_class=Option,
                  version=None, conflict_handler='error', description=None,
                  formatter=None, add_help_option=True, prog=None,
                  epilog=None):
-        if 'optional' not in Option.TYPES:
-            Option.TYPES += ('optional',)
-        _OptionParser.__init__(self, usage=usage, option_list=option_list,
-                               option_class=option_class, version=version,
-                               conflict_handler=conflict_handler,
-                               description=description,
-                               formatter=formatter,
-                               add_help_option=add_help_option,
-                               prog=prog, epilog=epilog)
+        super(OptionParser, self).__init__(usage=usage,
+                                           option_list=option_list,
+                                           option_class=option_class,
+                                           version=version,
+                                           conflict_handler=conflict_handler,
+                                           description=description,
+                                           formatter=formatter,
+                                           add_help_option=add_help_option,
+                                           prog=prog, epilog=epilog)
 
     def _process_long_opt(self, rargs, values):
         arg = rargs[0]
@@ -97,12 +128,22 @@ class OptionParser(_OptionParser):
             rargs.pop(0)
             option.process(opt, value, values, self)
         else:
-            _OptionParser._process_long_opt(self, rargs, values)
+            super(OptionParser, self)._process_long_opt(rargs, values)
+
+    def get_default_values(self):
+        '''Patch to use new 'Values' class.'''
+        if not self.process_default_values:
+            return Values(self.defaults)
+        else:
+            defaults = self.defaults.copy()
+            for option in self._get_all_options():
+                default = defaults.get(option.dest)
+                if isbasestring(default):
+                    opt_str = option.get_opt_string()
+                    defaults[option.dest] = option.check_value(opt_str, default)
+            return Values(defaults)
 
 
 
-__all__ = ['Option', 'make_option', 'SUPPRESS_HELP', 'SUPPRESS_USAGE',
-           'Values', 'OptionContainer', 'OptionGroup', 'OptionParser',
-           'HelpFormatter', 'IndentedHelpFormatter', 'TitledHelpFormatter',
-           'OptParseError', 'OptionError', 'OptionConflictError',
-           'OptionValueError', 'BadOptionError']
+# take out auxiliary module variable
+del _pm

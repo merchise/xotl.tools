@@ -23,7 +23,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from .compat import str_base
-
+from docutils import frontend
 
 
 class DelimiterFactory(object):
@@ -53,7 +53,6 @@ class PyFactory(BaseFactory):
         super(PyFactory, self).__init__(owner, compile(key, '', 'eval'),
                                         start, end)
 
-
     def __call__(self, mapping):
         return unicode(eval(self.key, mapping))
 
@@ -75,7 +74,9 @@ class InvalidFactory(object):
             line = len(lines)
         else:
             col = line = 1
-        raise ValueError('Invalid place-holder in string: line "%d", col "%d"' % (line, col))
+        msg = ('Invalid place-holder in string: '
+               'line "%d", col "%d"') % (line, col)
+        raise ValueError(msg)
 
 
 
@@ -98,7 +99,8 @@ class _TemplateClass(type):
         for kind, pattern, wrapper, factory in cls._alters:
             factories[kind] = factory
             alters.append(wrapper % ('(?P<%s>%s)' % (kind, pattern)))
-        rexp = r'(?P<delimiter>%s)(?:%s)' % (re.escape(cls.delimiter), b'|'.join(alters))
+        rexp = r'(?P<delimiter>%s)(?:%s)' % (re.escape(cls.delimiter),
+                                             '|'.join(alters))
         cls.pattern = re.compile(rexp, re.IGNORECASE | re.VERBOSE)
         cls.factories = factories
 
