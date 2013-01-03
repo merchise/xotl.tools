@@ -56,11 +56,11 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-
 def force_encoding(encoding=None):
     '''Validate an encoding value; if None use ``sys.stdin.encoding`` or
     ``sys.getdefaultencoding()``; else return the same value.
 
+    .. versionadded:: 1.1.6
     '''
     # TODO: Maybe use only `sys.getdefaultencoding()`
     import sys
@@ -116,11 +116,11 @@ def safe_join(separator, iterable, encoding=None):
 
     `encoding` is used in case of error to concatenate bytes + unicode.
 
-    `force_separator_type` only apply on error contexts.
-
     This function must be deprecated in Python 3.
 
     .. versionadded:: 1.1.3
+
+    .. warning:: The `force_separator_type` was removed in version 1.1.6.
 
     '''
     try:
@@ -301,6 +301,15 @@ def force_str(value, encoding=None):
     '''Force to string, the type is different in Python 2 or 3 (bytes or
     unicode).
 
+    :param value: The value to convert to `str`.
+    :param encoding: The encoding which should be used if either encoding
+                     or decoding should be performed on `value`.
+
+                     The default is to use the same default as
+                     :func:`safe_encode` or :func:`safe_decode`.
+
+    .. versionadded:: 1.1.6
+
     '''
     if isinstance(value, str):
         return value
@@ -310,13 +319,12 @@ def force_str(value, encoding=None):
         return safe_decode(value, encoding)
 
 
+@_deprecated(force_str)
 def normalize_to_str(value, encoding='utf-8'):
     if type(value) is bytes:
         return value
     elif type(value) is _unicode:
         return value.encode(encoding)
-
-as_str = _deprecated('xoutil.string.normalize_to_str')(normalize_to_str)
 
 
 class SafeFormatter(Formatter):
