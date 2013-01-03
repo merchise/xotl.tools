@@ -22,7 +22,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 
-
 def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     Normalizes string, converts to lower-case, removes non-alpha characters,
@@ -93,7 +92,6 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     #remove redundant -
     s = re.sub('-{2,}', '-', s).strip('-')
     return s
-
 
 
 __all__ = (b'slugify',)
