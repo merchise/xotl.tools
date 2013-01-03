@@ -3,27 +3,63 @@ Changelog
 
 Reversed chronological order.
 
+1.2 series
+----------
+
+2013-01-04. Release 1.2.0
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the first of the 1.2.0 series. It's been given a bump in the minor
+version number because we've removed some deprecated functions and/or modules.
+
+- Several enhancements to :mod:`xoutil.string` to make it work on Python 2.7
+  and Python 3.2.
+
+  Deprecates :func:`xoutil.string.normalize_to_str` in favor of the newly
+  created :func:`xoutil.string.force_str`.
+
+- Fixes in :mod:`xoutil.aop.extended`. Added parameters in
+  :func:`xoutil.aop.classical.weave`.
+
+- Introduces :func:`xoutil.iterators.first_n` and deprecates
+  :func:`xoutil.iterators.first` and :func:`xoutil.iterators.get_first`.
+
+- Removes the `zope.interface` awareness from :mod:`xoutil.context` since it
+  contained a very hard to catch bug. Furthermore, this was included to help
+  the implementation of `xotl.ql`, and it's no longer used there.
+
+  This breaks version control policy since it was not deprecated beforehand,
+  but we feel it's needed to avoid spreading this bug.
+
+- Removed long-standing deprecated modules :mod:`xoutil.default_dict`,
+  :mod:`xoutil.memoize` and :mod:`xoutil.opendict`.
+
+- Fixes bug in :func:`xoutil.datetime.strfdelta`. It used to show things like
+  '1h 62min'.
+
+- Introduces :data:`xoutil.compat.class_type` that holds class types for Python
+  2 or Python 3.
+
 1.1 series
 ----------
 
 2012-11-01. Release 1.1.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Introduces :func:`xoutil.compat.iteritems_`,
-  :func:`xoutil.compat.iterkeys_`
+- Introduces :func:`xoutil.compat.iteritems_`, :func:`xoutil.compat.iterkeys_`
   and :func:`xoutil.compat.itervalues_`.
 
-- :mod:`execution context <xoutil.context>` are now aware of
-  `zope.interface` interfaces; so that you may ask for a context name
-  implementing a given interface, instead of the name itself.
+- :mod:`execution context <xoutil.context>` are now aware of `zope.interface`
+  interfaces; so that you may ask for a context name implementing a given
+  interface, instead of the name itself.
 
 - Improves xoutil.formatter documentation.
 
-- Several fixes to xoutil.aop.classical. It has sudden backwards
+- Several fixes to :mod:`xoutil.aop.classical`. It has sudden backwards
   incompatible changes.
 
-- `before` and `after` methods may use the `*args, **kwargs` idiom
-  to get the passed arguments of the weaved method.
+- `before` and `after` methods may use the `*args, **kwargs` idiom to get the
+  passed arguments of the weaved method.
 
 - Several minor fixes: Invalid warning about Unset not in xoutil.types
 
@@ -159,4 +195,3 @@ Reversed chronological order.
 
 - Includes a new module :mod:`xoutil.annotate` that provides a way to place
   Python annotations in forward-compatible way.
-
