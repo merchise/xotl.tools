@@ -450,7 +450,7 @@ def weave(aspect, target, *ignored):
     ignored = tuple(flatten(ignored))
     # Inject all public, non-aspect method
     for attr in fdir(aspect, _and(_public, _not(_aspect_method)),
-                     getattr=__getattr):
+                     getter=__getattr):
         setattr(target, attr, get_staticattr(aspect, attr))
     # Weave aspect methods but keep an order scheme:
     #     afters < before < around
@@ -459,7 +459,7 @@ def weave(aspect, target, *ignored):
                      not n.startswith('_before_'),
                      not n.startswith('_around_'),)
     for attr in sorted(fdir(aspect, _aspect_method, callable,
-                            getattr=__getattr),
+                            getter=__getattr),
                        key=key):
         ok = lambda what: (attr.startswith('_' + what + '_') and
                            attr not in ignored)
@@ -474,13 +474,13 @@ def weave(aspect, target, *ignored):
                                               types.FunctionType))
     if '_after_' in aspect_dict:
         for attr in fdir(target, attr_filter=_public, value_filter=method,
-                         getattr=__getattr):
+                         getter=__getattr):
             _weave_after_method(target, aspect, attr, '_after_')
     if '_before_' in aspect_dict:
         for attr in fdir(target, attr_filter=_public, value_filter=method,
-                         getattr=__getattr):
+                         getter=__getattr):
             _weave_before_method(target, aspect, attr, '_before_')
     if '_around_' in aspect_dict:
         for attr in fdir(target, attr_filter=_public, value_filter=method,
-                         getattr=__getattr):
+                         getter=__getattr):
             _weave_around_method(target, aspect, attr, '_around_')
