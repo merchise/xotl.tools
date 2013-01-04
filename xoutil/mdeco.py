@@ -1,9 +1,17 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
 # xoutil.mdeco
 #----------------------------------------------------------------------
 #
-# Parts
+# Copyright (c) 2012, 2013 Merchise Autrement and contributors for the
+# decorator function.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the terms of the LICENCE attached in the distribution package.
+#
+# Created on 2013-01-03
+#
 
 '''Decorator-making facilities.
 
@@ -11,7 +19,8 @@ This module provides a signature-keeping version of the
 :func:`xoutil.decorators.decorator`, which is now deprecated in favor of this
 module's version.
 
-We scinded decorator-making facilities from decorators per se, to allow the
+
+We scinded the decorator-making facilities from decorators per se to allow the
 module :mod:`xoutil.deprecation` to be used by decorators and at the same time,
 implement the decorator :func:`~xoutil.deprecation.deprecated` more easily.
 
@@ -26,25 +35,23 @@ Original copyright and license notices from decorator package:
 
     All rights reserved.
 
-    Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    Redistributions in bytecode form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in
-    the documentation and/or other materials provided with the
-    distribution.
+    Redistributions of source code must retain the above copyright notice, this
+    list of conditions and the following disclaimer.  Redistributions in
+    bytecode form must reproduce the above copyright notice, this list of
+    conditions and the following disclaimer in the documentation and/or other
+    materials provided with the distribution.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-    HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-    TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
-    USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
-    DAMAGE.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
 
 '''
 
@@ -60,7 +67,6 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-from xoutil.string import force_str as b
 from xoutil.compat import inspect_getfullargspec as getfullargspec
 from xoutil.compat import str_base as _str_base
 
@@ -171,9 +177,8 @@ class FunctionMaker(object):
         if any.
         """
         if isinstance(obj, _str_base): # "name(signature)"
-            from xoutil.string import force_str as b
-            obj = b(obj)
-            name, rest = obj.strip().split(b('('), 1)
+            obj = str(obj)
+            name, rest = obj.strip().split(str('('), 1)
             signature = rest[:-1] #strip a right parens
             func = None
         else: # a function
@@ -221,7 +226,6 @@ def flat_decorator(caller, func=None):
             evaldict, undecorated=caller, __wrapped__=caller,
             doc=caller.__doc__, module=caller.__module__)
 # -- End of decorators package
-
 
 def decorator(caller):
     '''
@@ -300,6 +304,7 @@ def decorator(caller):
 
     The workaround for this case is to use a keyword argument.
     '''
+    @wraps(caller)
     def outer_decorator(*args, **kwargs):
         if (len(args) == 1 and not kwargs and
             isinstance(args[0], (function, type))):
@@ -328,5 +333,5 @@ def decorator(caller):
             return caller
     return outer_decorator
 
-
-__all__ = tuple(str(which) for which in ('decorator', 'FunctionMaker'))
+__all__ = tuple(str(which) for which in ('decorator', 'FunctionMaker',
+                                         'flat_decorator'))

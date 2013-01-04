@@ -12,8 +12,10 @@ version number because we've removed some deprecated functions and/or modules.
   co.
 
 - Extracts decorator-making facilities from :mod:`xoutil.decorators` into
-  :mod:`xoutil.mdeco`. The decorator-making decorator
-  :func:`xoutil.mdeco.decorator` returns a signature-keeping decorator.
+  :mod:`xoutil.mdeco`.
+
+  .. The decorator-making decorator
+  .. :func:`xoutil.mdeco.decorator` returns a signature-keeping decorator.
 
 - Fixes in :mod:`xoutil.aop.extended`. Added parameters in
   :func:`xoutil.aop.classical.weave`.
