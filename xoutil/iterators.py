@@ -87,6 +87,7 @@ def first(predicate, iterable, default=None):
     The iterable gets consumed if possible::
 
         >>> x = (x for x in range(10))
+
         >>> first(lambda x: x > 4, x)
         5
 
@@ -96,7 +97,7 @@ def first(predicate, iterable, default=None):
         >>> list(x)
         [7, 8, 9]
     '''
-    return next((x for x in iterable if pred(x)), default)
+    return next((x for x in iterable if predicate(x)), default)
 
 
 @deprecated('next',
