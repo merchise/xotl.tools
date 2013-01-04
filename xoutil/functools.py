@@ -51,17 +51,21 @@ if not py32:
         # Users should only access the lru_cache through its public API:
         #       cache_info, cache_clear, and f.__wrapped__
         # The internals of the lru_cache are encapsulated for thread safety and
-        # to allow the implementation to change (including a possible C version).
+        # to allow the implementation to change (including a possible C
+        # version).
 
         def decorating_function(user_function,
                     tuple=tuple, sorted=sorted, len=len, KeyError=KeyError):
 
             _cache_info = [0, 0]
-            kwd_mark = (object(),)          # separates positional and keyword args
-            lock = Lock()                   # needed because OrderedDict isn't threadsafe
+            # separates positional and keyword args
+            kwd_mark = (object(),)
+            # needed because OrderedDict isn't threadsafe
+            lock = Lock()
 
             if maxsize is None:
-                cache = dict()              # simple cache without ordering or size limit
+                # simple cache without ordering or size limit
+                cache = {}
 
                 @wraps(user_function)
                 def wrapper(*args, **kwds):

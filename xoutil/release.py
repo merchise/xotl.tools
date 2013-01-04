@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.release
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -18,4 +19,4 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.1.4'
+VERSION = '1.2.0'

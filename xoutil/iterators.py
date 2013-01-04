@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # untitled.py
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -25,6 +26,7 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
+from xoutil.deprecation import deprecated
 from xoutil.types import is_scalar, Unset
 
 
@@ -34,9 +36,40 @@ __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
 
 
-def first(pred, iterable, default=None):
+def obtain(predicate, iterable, default=None):
     '''
-    Returns the first element of an iterable that matches pred.
+    Returns the first non null value, calculated as predicate(item), each one
+    from an 'iterable'.
+
+    Example::
+
+        >>> d = ({'n': 'Ana', 'phone':'12-34'}, {'n': 'Med', 'phone':'56-78'})
+        >>> predicate = lambda x: x['phone'] if x['n'] == 'Med' else False
+        >>> obtain(predicate, d)
+        '56-78'
+
+    If nothing matches the default is returned::
+
+        >>> predicate = lambda x: x['phone'] if x['n'] == 'Manu' else False
+        >>> obtain(predicate, d, False)
+        False
+    '''
+    return next((j for j in (predicate(i) for i in iterable) if j), default)
+
+
+@deprecated('next',
+            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
+            'function.')
+def first(predicate, iterable, default=None):
+    '''
+    .. warning::
+
+       .. deprecated:: 1.1.6
+
+       Use the `next` function. Since this function is just the same
+       as ``next((which for which in iterable if pred(which)), default)``.
+
+    Returns the first element of an iterable that matches 'predicate'.
 
     Examples::
 
@@ -54,6 +87,7 @@ def first(pred, iterable, default=None):
     The iterable gets consumed if possible::
 
         >>> x = (x for x in range(10))
+
         >>> first(lambda x: x > 4, x)
         5
 
@@ -63,11 +97,22 @@ def first(pred, iterable, default=None):
         >>> list(x)
         [7, 8, 9]
     '''
-    return next((x for x in iterable if pred(x)), default)
+    return next((x for x in iterable if predicate(x)), default)
 
 
-def get_first(iterable):
-    'Returns the first element of an iterable.'
+@deprecated('next',
+            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
+            'function.')
+def get_first(iterable, default=None):
+    '''Returns the first element of an iterable.
+
+    .. warning::
+
+       .. deprecated:: 1.1.6
+
+       Use the `next` function, since this function is just the same
+       as ``next((which for which in iterable), default)``.
+    '''
     # TODO: Check who is using this function to find out if could be replaced
     #       by "next" and remove this one.
     #
@@ -78,7 +123,32 @@ def get_first(iterable):
     #        Traceback (...)
     #            ...
     #        TypeError: list object is not an iterator
-    return first(lambda x: True, iterable)
+    return first(lambda x: True, iterable, default=default)
+
+
+def coalesce(*args):
+    '''Returns the first of its arguments that is logically not null.
+
+    None is returned only if all arguments are False. It is often used to
+    substitute a default value for null values when data is retrieved for
+    display, for example::
+
+        coalesce(description, short_description, '(none)')
+
+    `coalesce` only evaluates the arguments that are needed to determine the
+    result; that is, arguments to the right of the first non-null argument are
+    not evaluated.
+
+    This function is based in one of same name of PostgreSQL.
+
+    '''
+    # TODO: [med] Since args is defined `*args` all args are evaluated despite
+    # the documentation. Probably the intended meaning of coalesce is
+    # equivalent to::
+    #
+    #    def coalesce(iterable):
+    #        return next((x for x in iterable if x), None)
+    return next((x for x in args if x), None)
 
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
@@ -170,15 +240,14 @@ def smart_dict(defaults, *sources):
     from collections import Mapping
     res = {}
     for key in defaults:
-        for source in sources:
-            get = source.get if isinstance(source, Mapping) else partial(getattr, source)
+        for s in sources:
+            get = s.get if isinstance(s, Mapping) else partial(getattr, s)
             value = get(key, Unset)
             if (value is not Unset) and (key not in res):
                 res[key] = deepcopy(value)
         if key not in res:
             res[key] = deepcopy(defaults[key])
     return res
-
 
 
 def slides(iterator, width=2, fill=Unset):
@@ -213,3 +282,66 @@ def slides(iterator, width=2, fill=Unset):
             res.append(fill)
             pos += 1
         yield tuple(res)
+
+
+def first_n(iterable, n=1, fill=Unset, return_tuple=False):
+    '''Take the first `n` items from iterable. If there are less than `n` items
+    in the iterator and `fill` is Unset, a StopIteration exception is raised.
+
+    If `return_tuple` is True, then returns the collected items as tuple.
+
+    :param iterable: An iterable from which the first `n` items should be
+                     collected.
+
+    :param n: The number of items to collect
+    :type n: int
+
+    :param fill: The filling pattern to use. It may be:
+
+                 - an iterable (i.e has an __iter__ method), in which case
+                   `first_n` fills the last items by cycling over `fill`.
+
+                 - anything else is used as the filling item.
+
+    :param return_tuple: Indicates whether to return the collected items
+                         as a tuple. By default a list is returned.
+
+    :returns: The first `n` items from `iterable`, probably with a filling
+              pattern at the end.
+    :rtype: `list` or `tuple`
+
+    Examples::
+
+        >>> first_n(range(10), 3)
+        [0, 1, 2]
+
+        >>> first_n(range(2), 4)
+        Traceback (most recent call last):
+            ...
+        StopIteration
+
+        >>> first_n(range(2), 4, fill=2)
+        [0, 1, 2, 2]
+
+        >>> first_n(range(2), 6, fill=(1, 2), return_tuple=True)
+        (0, 1, 1, 2, 1, 2)
+
+    .. versionadded: 1.1.6
+    '''
+    if fill is not Unset:
+        from itertools import cycle, repeat, chain
+        if getattr(fill, '__iter__', False):
+            fill = cycle(fill)
+        else:
+            fill = repeat(fill)
+        seq = chain(iterable, fill)
+    else:
+        seq = iter(iterable)
+    result = []
+    while n > 0:
+        result.append(next(seq))
+        n -= 1
+    if return_tuple:
+        return tuple(result)
+    else:
+        return result

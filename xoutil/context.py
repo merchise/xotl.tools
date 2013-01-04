@@ -2,6 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.context
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -28,36 +29,6 @@ Use as:
     In context somename
 
 Note the difference creating the context and checking it.
-
-If module `zope.interface` is installed, then you may ask for
-interfaces in context::
-
-   >>> from zope.interface import Interface, implementer
-   >>> class IFoo(Interface):
-   ...    pass
-
-   >>> class IBar(IFoo):
-   ...    pass
-
-   >>> @implementer(IBar)
-   ... class Bar(object):
-   ...    pass
-
-   >>> bar = Bar()
-   >>> ham = Bar()
-
-   >>> with context(bar):
-   ...    if context[IFoo]:
-   ...        print('IFoo')
-   IFoo
-
-Notice that the context object is *not* the name::
-
-    >>> with context(bar) as ctx:
-    ...    if bar is not ctx:
-    ...        print('bar not ctx')
-    bar not ctx
-
 '''
 
 
@@ -67,43 +38,18 @@ from __future__ import (division as _py3_division,
 
 from threading import local
 
-from xoutil.collections import OrderedDict
-from xoutil.compat import iteritems_
-
-try:
-    from zope.interface import Interface
-except ImportError:
-    Interface = None
-
-
 
 class LocalData(local):
     def __init__(self):
         super(LocalData, self).__init__()
-        self.contexts = OrderedDict()
+        self.contexts = {}
 
 _data = LocalData()
 
 
-
 class MetaContext(type):
     def __getitem__(self, name):
-        result = _data.contexts.get(name, None)
-        if result:
-            return result
-        elif Interface and not result and type(name) is type(Interface):
-            candidates = list((len(type(which).mro()), context)
-                               for which, context in iteritems_(_data.contexts)
-                               if name.providedBy(which))
-            if candidates:
-                # Returns the most specific and last
-                candidates.sort(key=lambda (depth, cls): depth, reverse=True)
-                return candidates[0][-1]
-            else:
-                return _null_context
-        else:
-            return _null_context
-
+        return _data.contexts.get(name, _null_context)
 
     def __contains__(self, name):
         '''
@@ -116,7 +62,6 @@ class MetaContext(type):
             A
         '''
         return bool(self[name])
-
 
 
 class Context(object):
@@ -167,7 +112,6 @@ class Context(object):
             del _data.contexts[self.name]
         return False
 
-
     @property
     def events(self):
         return self._events
@@ -175,6 +119,9 @@ class Context(object):
     @events.setter
     def events(self, value):
         self._events = list(set(value))
+
+    def setdefault(self, key, value):
+        return self.data.setdefault(key, value)
 
 
 # A simple alias for Context
@@ -202,7 +149,6 @@ class NullContext(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         return False
-
 
 
 _null_context = NullContext()

@@ -2,3 +2,4 @@
 ===================================================
 
 .. automodule:: xoutil.datetime
+   :members:

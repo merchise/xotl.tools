@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.extended
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Manuel Vázquez Acosta
@@ -15,8 +15,7 @@
 #
 # Created on Apr 29, 2012
 
-'''
-An extension to :mod:`xoutil.aop.classical` that allows to hook *before* and
+'''An extension to :mod:`xoutil.aop.classical` that allows to hook *before* and
 *around* the :func:`~xoutil.aop.classical.weave` itself.
 
 '''
@@ -26,19 +25,16 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
+from xoutil.aop.classical import weave as classical_weave
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 __all__ = (b'weave', )
 
 
-from xoutil.aop.classical import weave as classical_weave
-
-
-
 def weave(aspect, target):
-    '''
-    Similar to :py:func:`xoutil.aop.classical.weave` but introduces
+    '''Similar to :py:func:`xoutil.aop.classical.weave` but introduces
     _before_weave and _around_weave hooks to the weaving process::
 
         >>> class Foobar(object):
@@ -78,4 +74,5 @@ def weave(aspect, target):
     if around_weave:
         return around_weave(weave, aspect, target)
     else:
-        return classical_weave(aspect, target)
+        return classical_weave(aspect, target,
+                               '_before_weave', '_around_weave')

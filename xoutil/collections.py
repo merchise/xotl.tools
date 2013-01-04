@@ -2,6 +2,9 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
+# Copyright 2013 Merchise Autrement and Contributors for the defaultdict and
+# opendict implementations.
+#
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
 # implementations.
 #
@@ -18,8 +21,7 @@
 #    - Medardo Rodriguez <med@merchise.org>
 
 
-'''
-Extensions to Python's ``collections`` module.
+'''Extensions to Python's ``collections`` module.
 
 You may use it as drop-in replacement of ``collections``. Although we don't
 document all items here. Refer to :mod:`collections <py:collections>`
@@ -34,13 +36,12 @@ from __future__ import (division as _py3_division,
 
 from collections import *
 
+from xoutil.compat import defaultdict as _defaultdict
 from xoutil.compat import py32 as _py32
 
 
-
-class defaultdict(defaultdict):
-    '''
-    A hack for ``collections.defaultdict`` that passes the key and a copy of
+class defaultdict(_defaultdict):
+    '''A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
 
     Examples::
@@ -70,6 +71,7 @@ class defaultdict(defaultdict):
         >>> d = defaultdict(lambda: 1)
         >>> d['abc']
         1
+
     '''
     def __missing__(self, key):
         if self.default_factory is not None:
@@ -83,8 +85,7 @@ class defaultdict(defaultdict):
 
 
 class opendict(dict):
-    '''
-    A dictionary implementation that mirrors its keys as attributes::
+    '''A dictionary implementation that mirrors its keys as attributes::
 
         >>> d = opendict({'es': 'spanish'})
         >>> d.es
@@ -95,17 +96,13 @@ class opendict(dict):
         'espanol'
 
     '''
-    def __getattr__(self, name):
-        try:
-            return super(opendict, self).__getattr__(name)
-        except AttributeError:
-            if name in self:
-                return self[name]
-            else:
-                raise
+    def __init__(self, *args, **kwargs):
+        super(opendict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
 
 if not _py32:
-    # From this point below: Copyright (c) 2001-2012, Python Software
+    # From this point below: Copyright (c) 2001-2013, Python Software
     # Foundation; All rights reserved.
 
     import sys as _sys
@@ -119,22 +116,23 @@ if not _py32:
 
     class OrderedDict(dict):
         'Dictionary that remembers insertion order'
-        # An inherited dict maps keys to values.
-        # The inherited dict provides __getitem__, __len__, __contains__, and get.
-        # The remaining methods are order-aware.
-        # Big-O running times for all methods are the same as regular dictionaries.
+        # An inherited dict maps keys to values. The inherited dict provides
+        # __getitem__, __len__, __contains__, and get. The remaining methods
+        # are order-aware. Big-O running times for all methods are the same as
+        # regular dictionaries.
 
-        # The internal self.__map dict maps keys to links in a doubly linked list.
-        # The circular doubly linked list starts and ends with a sentinel element.
-        # The sentinel element never gets deleted (this simplifies the algorithm).
-        # The sentinel is in self.__hardroot with a weakref proxy in self.__root.
-        # The prev links are weakref proxies (to prevent circular references).
-        # Individual links are kept alive by the hard reference in self.__map.
-        # Those hard references disappear when a key is deleted from an OrderedDict.
+        # The internal self.__map dict maps keys to links in a doubly linked
+        # list. The circular doubly linked list starts and ends with a sentinel
+        # element. The sentinel element never gets deleted (this simplifies the
+        # algorithm). The sentinel is in self.__hardroot with a weakref proxy
+        # in self.__root. The prev links are weakref proxies (to prevent
+        # circular references). Individual links are kept alive by the hard
+        # reference in self.__map. Those hard references disappear when a key
+        # is deleted from an OrderedDict.
 
         def __init__(self, *args, **kwds):
-            '''Initialize an ordered dictionary.  The signature is the same as
-            regular dictionaries, but keyword arguments are not recommended because
+            '''Initialize an ordered dictionary. The signature is the same as regular
+            dictionaries, but keyword arguments are not recommended because
             their insertion order is arbitrary.
 
             '''
@@ -149,11 +147,12 @@ if not _py32:
                 self.__map = {}
             self.__update(*args, **kwds)
 
-        def __setitem__(self, key, value,
-                        dict_setitem=dict.__setitem__, proxy=_proxy, Link=_Link):
+        def __setitem__(self, key, value, dict_setitem=dict.__setitem__,
+                        proxy=_proxy, Link=_Link):
             'od.__setitem__(i, y) <==> od[i]=y'
-            # Setting a new item creates a new link at the end of the linked list,
-            # and the inherited dictionary is updated with the new key/value pair.
+            # Setting a new item creates a new link at the end of the linked
+            # list, and the inherited dictionary is updated with the new
+            # key/value pair.
             if key not in self:
                 self.__map[key] = link = Link()
                 root = self.__root
@@ -165,8 +164,9 @@ if not _py32:
 
         def __delitem__(self, key, dict_delitem=dict.__delitem__):
             'od.__delitem__(y) <==> del od[y]'
-            # Deleting an existing item uses self.__map to find the link which gets
-            # removed by updating the links in the predecessor and successor nodes.
+            # Deleting an existing item uses self.__map to find the link which
+            # gets removed by updating the links in the predecessor and
+            # successor nodes.
             dict_delitem(self, key)
             link = self.__map.pop(key)
             link_prev = link.prev
@@ -201,7 +201,9 @@ if not _py32:
 
         def popitem(self, last=True):
             '''od.popitem() -> (k, v), return and remove a (key, value) pair.
-            Pairs are returned in LIFO order if last is true or FIFO order if false.
+
+            Pairs are returned in LIFO order if last is true or FIFO order if
+            false.
 
             '''
             if not self:
@@ -225,8 +227,8 @@ if not _py32:
         def move_to_end(self, key, last=True):
             '''Move an existing element to the end (or beginning if last==False).
 
-            Raises KeyError if the element does not exist.
-            When last=True, acts like a fast version of self[key]=self.pop(key).
+            Raises KeyError if the element does not exist.  When last=True, acts
+            like a fast version of self[key]=self.pop(key).
 
             '''
             link = self.__map[key]
@@ -264,9 +266,10 @@ if not _py32:
         __marker = object()
 
         def pop(self, key, default=__marker):
-            '''od.pop(k[,d]) -> v, remove specified key and return the corresponding
-            value.  If key is not found, d is returned if given, otherwise KeyError
-            is raised.
+            '''od.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+
+            If key is not found, d is returned if given, otherwise KeyError is
+            raised.
 
             '''
             if key in self:
@@ -307,8 +310,8 @@ if not _py32:
 
         @classmethod
         def fromkeys(cls, iterable, value=None):
-            '''OD.fromkeys(S[, v]) -> New ordered dictionary with keys from S.
-            If not specified, the value defaults to None.
+            '''OD.fromkeys(S[, v]) -> New ordered dictionary with keys from S.  If not
+            specified, the value defaults to None.
 
             '''
             self = cls()
@@ -317,8 +320,8 @@ if not _py32:
             return self
 
         def __eq__(self, other):
-            '''od.__eq__(y) <==> od==y.  Comparison to another OD is order-sensitive
-            while comparison to a regular mapping is order-insensitive.
+            '''od.__eq__(y) <==> od==y.  Comparison to another OD is order-sensitive while
+            comparison to a regular mapping is order-insensitive.
 
             '''
             if isinstance(other, OrderedDict):

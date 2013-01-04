@@ -3,11 +3,9 @@
 #----------------------------------------------------------------------
 # xoutil.fs.path
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
-#
-# Author: Medardo Rodríguez
-# Contributors: see CONTRIBUTORS and HISTORY file
 #
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
@@ -19,15 +17,48 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
-import os
+import sys
+from os.path import (abspath, expanduser, dirname, sep, normpath,
+                     join as _orig_join)
 
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
+# TODO: import all in "from os.path import *"
 
-def normalize_path(path):
+
+def fix_encoding(name, encoding=None):
+    '''
+    Fix encoding of a file system resource name.
+    '''
+    if not isinstance(name, str):
+        if not encoding:
+            encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
+        fixer = name.decode if isinstance(name, bytes) else name.encode
+        return fixer(encoding)
+    else:
+        return name
+
+
+def join(base, *extras):
+    '''
+    Join two or more pathname components, inserting '/' as needed.
+    If any component is an absolute path, all previous path components
+    will be discarded.
+
+    Normalize path (after join parts), eliminating double slashes, etc.'''
+    try:
+        path = _orig_join(base, *extras)
+    except:
+        base = fix_encoding(base)
+        extras = [fix_encoding(extra) for extra in extras]
+        path = _orig_join(base, *extras)
+    return normpath(path)
+
+
+def normalize_path(base, *extras):
     '''
     Normalize path by:
 
@@ -35,18 +66,20 @@ def normalize_path(path):
       - eliminating double slashes
       - converting to absolute.
     '''
-    if isinstance(path, unicode):
-        import sys
-        encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
-        path = path.encode(encoding)
-    return os.path.abspath(os.path.expanduser(path))
+    # FIXME: [med] Redundant "path" in name "xoutil.fs.path.normalize_path"
+    try:
+        path = _orig_join(base, *extras)
+    except:
+        path = join(base, *extras)
+    return abspath(expanduser(path))
 
 
-def get_module_path(module_or_name):
+def get_module_path(module):
     # TODO: [med] Standardize this
-    mod = __import__(module_or_name) if isinstance(module_or_name, basestring) else module_or_name
+    from ..compat import str_base
+    mod = __import__(module) if isinstance(module, str_base) else module
     path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
-    return os.path.abspath(os.path.dirname(path).decode('utf-8'))
+    return abspath(dirname(path).decode('utf-8'))
 
 
 
@@ -55,21 +88,19 @@ def shorten_module_filename(filename):
     A filename, normally a module o package name, is shortened looking
     his head in all python path.
     '''
-    import sys, os.path
     path = sys.path[:]
     path.sort(lambda x, y: len(y) - len(x))
     for item in path:
         if item and filename.startswith(item):
             filename = filename[len(item):]
-            if filename.startswith(os.path.sep):
-                filename = filename[len(os.path.sep):]
+            if filename.startswith(sep):
+                filename = filename[len(sep):]
     for item in ('__init__.py', '__init__.pyc'):
         if filename.endswith(item):
             filename = filename[:-len(item)]
-            if filename.endswith(os.path.sep):
-                filename = filename[:-len(os.path.sep)]
+            if filename.endswith(sep):
+                filename = filename[:-len(sep)]
     return shorten_user(filename)
-
 
 
 def shorten_user(filename):
@@ -78,13 +109,13 @@ def shorten_user(filename):
     replacing it by '~'.
 
     '''
-    import os.path
-    home = os.path.expanduser('~')
+    home = expanduser('~')
     if filename.startswith(home):
-        filename = os.path.join('~', filename[len(home):])
+        filename = _orig_join('~', filename[len(home):])
     return filename
 
 
 
-__all__ = ('normalize_path', 'get_module_path', 'shorten_module_filename',
-           'shorten_user',)
+__all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
+           'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+           'shorten_module_filename', 'shorten_user',)

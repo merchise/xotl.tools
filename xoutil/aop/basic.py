@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.basic
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
