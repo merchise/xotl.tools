@@ -30,12 +30,17 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
+from xoutil.mdeco import decorator as _decorator
 from xoutil.deprecation import deprecated
 
-from xoutil.string import force_str as b
-from xoutil.compat import inspect_getfullargspec as getfullargspec
-from xoutil.compat import str_base as _str_base
 
+@wraps(_decorator)
+def decorator(caller):
+    import warnings
+    msg = ('xoutil.decorators.decorator has being moved to xoutil.mdeco.decorator, and '
+           'it will be removed from this module in the future.')
+    warnings.warn(msg, stacklevel=2)
+    return _decorator(caller)
 
 class AttributeAlias(object):
     '''
@@ -112,281 +117,7 @@ def aliases(**kwargs):
     return inner
 
 
-# Signature-keeping decorator stuff.
-#
-# The following is extracted from the decorator version 3.3.2 package and is
-# copyright of its owner as stated below:
-#
-# Copyright (c) 2005-2011, Michele Simionato
-#
-
-DEF = re.compile('\s*def\s*([_\w][_\w\d]*)\s*\(')
-
-# basic functionality
-class FunctionMaker(object):
-    """
-    An object with the ability to create functions with a given signature.
-    It has attributes name, doc, module, signature, defaults, dict and
-    methods update and make.
-    """
-    def __init__(self, func=None, name=None, signature=None,
-                 defaults=None, doc=None, module=None, funcdict=None):
-        self.shortsignature = signature
-        if func:
-            # func can be a class or a callable, but not an instance method
-            self.name = func.__name__
-            if self.name == '<lambda>': # small hack for lambda functions
-                self.name = '_lambda_'
-            self.doc = func.__doc__
-            self.module = func.__module__
-            if inspect.isfunction(func):
-                argspec = getfullargspec(func)
-                for a in ('args', 'varargs', 'varkw', 'defaults', 'kwonlyargs',
-                          'kwonlydefaults', 'annotations'):
-                    setattr(self, a, getattr(argspec, a, None))
-                for i, arg in enumerate(self.args):
-                    setattr(self, 'arg%d' % i, arg)
-                self.signature = inspect.formatargspec(
-                    formatvalue=lambda val: "", *argspec)[1:-1]
-                allargs = list(self.args)
-                if self.varargs:
-                    allargs.append('*' + self.varargs)
-                if self.varkw:
-                    allargs.append('**' + self.varkw)
-                try:
-                    self.shortsignature = ', '.join(allargs)
-                except TypeError: # exotic signature, valid only in Python 2.X
-                    self.shortsignature = self.signature
-                self.dict = func.__dict__.copy()
-        # func=None happens when decorating a caller
-        if name:
-            self.name = name
-        if signature is not None:
-            self.signature = signature
-        if defaults:
-            self.defaults = defaults
-        if doc:
-            self.doc = doc
-        if module:
-            self.module = module
-        if funcdict:
-            self.dict = funcdict
-        # check existence required attributes
-        assert hasattr(self, 'name')
-        if not hasattr(self, 'signature'):
-            raise TypeError('You are decorating a non function: %s' % func)
-
-    def update(self, func, **kw):
-        "Update the signature of func with the data in self"
-        func.__name__ = self.name
-        func.__doc__ = getattr(self, 'doc', None)
-        func.__dict__ = getattr(self, 'dict', {})
-        func.func_defaults = getattr(self, 'defaults', ())
-        func.__kwdefaults__ = getattr(self, 'kwonlydefaults', None)
-        callermodule = sys._getframe(3).f_globals.get('__name__', '?')
-        func.__module__ = getattr(self, 'module', callermodule)
-        func.__dict__.update(kw)
-
-    def make(self, src_templ, evaldict=None, addsource=False, **attrs):
-        "Make a new function from a given template and update the signature"
-        src = src_templ % vars(self) # expand name and signature
-        evaldict = evaldict or {}
-        mo = DEF.match(src)
-        if mo is None:
-            raise SyntaxError('not a valid function template\n%s' % src)
-        name = mo.group(1) # extract the function name
-        names = set([name] + [arg.strip(' *') for arg in
-                             self.shortsignature.split(',')])
-        for n in names:
-            if n in ('_func_', '_call_'):
-                raise NameError('%s is overridden in\n%s' % (n, src))
-        if not src.endswith('\n'): # add a newline just for safety
-            src += '\n' # this is needed in old versions of Python
-        try:
-            code = compile(src, '<string>', 'single')
-            # print >> sys.stderr, 'Compiling %s' % src
-            exec code in evaldict
-        except:
-            print >> sys.stderr, 'Error in generated code:'
-            print >> sys.stderr, src
-            raise
-        func = evaldict[name]
-        if addsource:
-            attrs['__source__'] = src
-        self.update(func, **attrs)
-        return func
-
-    @classmethod
-    def create(cls, obj, body, evaldict, defaults=None,
-               doc=None, module=None, addsource=True, **attrs):
-        """
-        Create a function from the strings name, signature and body.
-        evaldict is the evaluation dictionary. If addsource is true an attribute
-        __source__ is added to the result. The attributes attrs are added,
-        if any.
-        """
-        if isinstance(obj, _str_base): # "name(signature)"
-            from xoutil.string import force_str as b
-            obj = b(obj)
-            name, rest = obj.strip().split(b('('), 1)
-            signature = rest[:-1] #strip a right parens
-            func = None
-        else: # a function
-            name = None
-            signature = None
-            func = obj
-        self = cls(func, name, signature, defaults, doc, module)
-        ibody = '\n'.join('    ' + line for line in body.splitlines())
-        return self.make('def %(name)s(%(signature)s):\n' + ibody,
-                        evaldict, addsource, **attrs)
-
-
-def signature_keeping_decorator(caller, func=None):
-    """
-    Creates a signature keeping decorator.
-
-    ``decorator(caller)`` converts a caller function into a decorator.
-
-    ``decorator(caller, func)`` decorates a function using a caller.
-    """
-    if func is not None: # returns a decorated function
-        evaldict = func.func_globals.copy()
-        evaldict['_call_'] = caller
-        evaldict['_func_'] = func
-        return FunctionMaker.create(
-            func, "return _call_(_func_, %(shortsignature)s)",
-            evaldict, undecorated=func, __wrapped__=func)
-    else: # returns a decorator
-        if isinstance(caller, partial):
-            return partial(decorator, caller)
-        # otherwise assume caller is a function
-        try:
-            first = inspect.getargspec(caller)[0][0] # first arg
-            deco_sign = '%s(%s)' % (caller.__name__, first)
-            deco_body = 'return signature_keeping_decorator(_call_, %s)' % first
-        except IndexError:
-            deco_sign = '%s()' % caller.__name__
-            deco_body = 'return _call_'
-        evaldict = caller.func_globals.copy()
-        evaldict['_call_'] = caller
-        evaldict['signature_keeping_decorator'] = evaldict['decorator'] = signature_keeping_decorator
-        return FunctionMaker.create(
-            deco_sign,
-            deco_body,
-            evaldict, undecorated=caller, __wrapped__=caller,
-            doc=caller.__doc__, module=caller.__module__)
-# -- End of decorators package
-
-
-# TODO: Make this decorator signature-keeping!
-def decorator(caller):
-    '''
-    Eases the creation of decorators with arguments. Normally a decorator with
-    arguments needs three nested functions like this::
-
-        def decorator(*decorator_arguments):
-            def real_decorator(target):
-                def inner(*args, **kwargs):
-                    return target(*args, **kwargs)
-                return inner
-            return real_decorator
-
-    This decorator reduces the need of the first level by comprising both into
-    a single function definition. However it does not removes the need for an
-    ``inner`` function::
-
-        >>> @decorator
-        ... def plus(target, value):
-        ...    from functools import wraps
-        ...    @wraps(target)
-        ...    def inner(*args):
-        ...        return target(*args) + value
-        ...    return inner
-
-        >>> @plus(10)
-        ... def ident(val):
-        ...     return val
-
-        >>> ident(1)
-        11
-
-    A decorator with default values for all its arguments (except, of course,
-    the first one which is the decorated :param:`target`_) may be invoked
-    without parenthesis::
-
-        >>> @decorator
-        ... def plus2(func, value=1, missing=2):
-        ...    from functools import wraps
-        ...    @wraps(func)
-        ...    def inner(*args):
-        ...        print(missing)
-        ...        return func(*args) + value
-        ...    return inner
-
-        >>> @plus2
-        ... def ident2(val):
-        ...     return val
-
-        >>> ident2(10)
-        2
-        11
-
-    But (if you like) you may place the parenthesis::
-
-        >>> @plus2()
-        ... def ident3(val):
-        ...     return val
-
-        >>> ident3(10)
-        2
-        11
-
-    However, this is not for free, you cannot pass a single positional argument
-    which type is a function::
-
-        >>> def p():
-        ...    print('This is p!!!')
-
-        >>> @plus2(p)
-        ... def dummy():
-        ...    print('This is dummy')
-        Traceback (most recent call last):
-            ...
-        TypeError: p() takes no arguments (1 given)
-
-    The workaround for this case is to use a keyword argument.
-    '''
-    @wraps(caller)
-    def outer_decorator(*args, **kwargs):
-        if (len(args) == 1 and not kwargs and
-            isinstance(args[0], (function, type))):
-            # This tries to solve the case of missing () on the decorator::
-            #
-            #    @decorator
-            #    def somedec(func, *args, **kwargs)
-            #        ...
-            #
-            #    @somedec
-            #    def decorated(*args, **kwargs):
-            #        pass
-            #
-            # Notice, however, that this is not general enough, since we try
-            # to avoid inspecting the calling frame to see if the () are in
-            # place.
-            func = args[0]
-            # XXX: [manu] Since kwargs is empty the partial `partial(caller,
-            # func, **kwargs)()` that was here is not needed.
-            return caller(func)
-        elif len(args) > 0 or len(kwargs) > 0:
-            def _decorator(func):
-                return partial(caller, **kwargs)(*((func, ) + args))
-            return _decorator
-        else:
-            return caller
-    return outer_decorator
-
-
-@decorator
+@_decorator
 def assignment_operator(func, maybe_inline=False):
     '''
     Makes a function that receives a name, and other args to get its first
@@ -433,7 +164,7 @@ def assignment_operator(func, maybe_inline=False):
     return inner
 
 
-@decorator
+@_decorator
 def instantiate(target, *args, **kwargs):
     '''
     Some singleton classes must be instantiated as part of its declaration

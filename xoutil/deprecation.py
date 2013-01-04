@@ -23,7 +23,6 @@ import warnings
 from functools import wraps
 from xoutil.compat import class_types as _class_types
 
-
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
@@ -31,8 +30,8 @@ __author__ = 'manu'
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed. ' +
               'Use {replacement} instead.')
 
-# XXX: Don't make deprecated depends upon anything more than compat. Since this
-# is meant to be used by all others xoutil modules.
+# XXX: Don't make deprecated depends upon anything more than compat and
+# decorator.py. Since this is meant to be used by all others xoutil modules.
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
     '''Small decorator for deprecated functions.
 
