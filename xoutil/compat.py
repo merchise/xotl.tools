@@ -2,14 +2,9 @@
 #----------------------------------------------------------------------
 # xoutil.compat
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
-# All rights reserved.
-#
-# @author: Medardo Rodriguez
 #
 # ============================ Original copyright notice ===================
 # Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
-# <see AUTHORS file>
 #
 # This module is based on part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php

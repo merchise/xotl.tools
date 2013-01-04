@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.datetime
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -146,6 +147,15 @@ def strfdelta(delta):
     Format a timedelta using a smart pretty algorithm.
 
     Only two levels of values will be printed.
+
+    ::
+
+        >>> def t(h, m):
+        ...     return timedelta(hours=h, minutes=m)
+
+        >>> strfdelta(t(4, 56))
+        u'4h 56m'
+
     '''
     from xoutil.string import strfnumber
     if delta.days:

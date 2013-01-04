@@ -3,7 +3,8 @@
 #----------------------------------------------------------------------
 # xoutil.objutil
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -30,7 +31,6 @@ from collections import Mapping
 from functools import partial
 from xoutil.types import Unset, is_collection
 from xoutil.compat import str_base
-
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -70,7 +70,7 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None):
         attrs = (attr for attr in attrs if attr_filter(attr))
     res = ((a, getter(obj, a)) for a in attrs)
     if value_filter:
-        res = ((a, v) for a, v in all if value_filter(v))
+        res = ((a, v) for a, v in res if value_filter(v))
     return res
 
 
@@ -118,8 +118,6 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
 
     '''
     from operator import eq, ne
-
-
     res = True
     tests = ((ne, force_equals), (eq, force_differents))
     j = 0

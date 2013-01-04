@@ -2,6 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.validators.identifiers
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -31,7 +32,6 @@ __all__ = (b'is_valid_identifier', b'is_valid_full_identifier',
            b'is_valid_slug')
 
 
-
 _IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')
 
 
@@ -39,13 +39,11 @@ def is_valid_identifier(name):
     return isinstance(name, str_base) and _IDENTIFIER_REGEX.match(name)
 
 
-
 _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 
 
 def is_valid_full_identifier(name):
     return isinstance(name, str_base) and _FULL_IDENTIFIER_REGEX.match(name)
-
 
 
 _SLUG_REGEX = _regex_compile('(?i)^[\w]+([-][\w]+)*$')

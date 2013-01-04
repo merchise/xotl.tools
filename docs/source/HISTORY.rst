@@ -3,27 +3,35 @@ Changelog
 
 Reversed chronological order.
 
+1.2 series
+----------
+
+2013-01-04. Release 1.2.0
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/changes-1.2.0.rst
+
+
 1.1 series
 ----------
 
 2012-11-01. Release 1.1.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Introduces :func:`xoutil.compat.iteritems_`,
-  :func:`xoutil.compat.iterkeys_`
+- Introduces :func:`xoutil.compat.iteritems_`, :func:`xoutil.compat.iterkeys_`
   and :func:`xoutil.compat.itervalues_`.
 
-- :mod:`execution context <xoutil.context>` are now aware of
-  `zope.interface` interfaces; so that you may ask for a context name
-  implementing a given interface, instead of the name itself.
+- :mod:`execution context <xoutil.context>` are now aware of `zope.interface`
+  interfaces; so that you may ask for a context name implementing a given
+  interface, instead of the name itself.
 
 - Improves xoutil.formatter documentation.
 
-- Several fixes to xoutil.aop.classical. It has sudden backwards
+- Several fixes to :mod:`xoutil.aop.classical`. It has sudden backwards
   incompatible changes.
 
-- `before` and `after` methods may use the `*args, **kwargs` idiom
-  to get the passed arguments of the weaved method.
+- `before` and `after` methods may use the `*args, **kwargs` idiom to get the
+  passed arguments of the weaved method.
 
 - Several minor fixes: Invalid warning about Unset not in xoutil.types
 
@@ -159,4 +167,3 @@ Reversed chronological order.
 
 - Includes a new module :mod:`xoutil.annotate` that provides a way to place
   Python annotations in forward-compatible way.
-

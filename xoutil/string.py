@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.string
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -58,6 +58,8 @@ def force_encoding(encoding=None):
     '''
     Validate an encoding value; if None use `locale.getlocale()[1]`; else
     return the same value.
+
+    .. versionadded:: 1.2.0
     '''
     # TODO: Maybe use only `sys.getdefaultencoding()`
     import locale
@@ -72,15 +74,19 @@ def safe_decode(s, encoding=None):
     Returning type depend on python version; if 2.x is `unicode` if 3.x `str`.
 
     .. versionadded:: 1.1.3
+
     '''
     if isinstance(s, _unicode):
         return s
     else:
+        encoding = force_encoding(encoding)
         try:
-            return _unicode(s)
+            # In Python 3 str(b'm') returns the string "b'm'" and not just "m",
+            # this fixes this.
+            return _unicode(s, encoding, 'replace')
         except:
-            encoding = force_encoding(encoding)
-            return bytes(s).decode(encoding, 'replace')
+            # For numbers and other stuff.
+            return _unicode(s)
 
 
 def safe_encode(u, encoding=None):
@@ -91,14 +97,18 @@ def safe_encode(u, encoding=None):
     Returning type is always `bytes`; but in python 2.x is also `str`.
 
     .. versionadded:: 1.1.3
+
     '''
     if isinstance(u, bytes):
         return u
     else:
+        encoding = force_encoding(encoding)
         try:
-            return bytes(u)
+            if isinstance(u, base_str_):
+                return bytes(u)
+            else:
+                return _unicode(u).encode(encoding, 'replace')
         except:
-            encoding = force_encoding(encoding)
             return _unicode(u).encode(encoding, 'replace')
 
 
@@ -110,11 +120,11 @@ def safe_join(separator, iterable, encoding=None):
 
     `encoding` is used in case of error to concatenate bytes + unicode.
 
-    `force_separator_type` only apply on error contexts.
-
     This function must be deprecated in Python 3.
 
     .. versionadded:: 1.1.3
+
+    .. warning:: The `force_separator_type` was removed in version 1.2.0.
 
     '''
     try:
@@ -145,25 +155,27 @@ if _py3k:
 
 
 def safe_strip(value):
-    '''
-    Removes the leading and tailing space-chars from `value` if string, else
+    '''Removes the leading and tailing space-chars from `value` if string, else
     return `value` unchanged.
 
     .. versionadded:: 1.1.3
+
     '''
     return value.strip() if isinstance(value, _ext_str_types) else value
 
 
 def cut_prefix(value, prefix):
-    '''
-    Removes the leading `prefix` if exists, else return `value` unchanged.
+    '''Removes the leading `prefix` if exists, else return `value`
+    unchanged.
+
     '''
     return value[len(prefix):] if value.startswith(prefix) else value
 
 
 def cut_suffix(value, suffix):
-    '''
-    Removes the tailing `suffix` if exists, else return `value` unchanged.
+    '''Removes the tailing `suffix` if exists, else return `value`
+    unchanged.
+
     '''
     return value[:-len(suffix)] if value.endswith(suffix) else value
 
@@ -177,8 +189,7 @@ def capitalize_word(value):
 
 
 def capitalize(value, title=True):
-    '''
-    Capitalizes value according to whether it should be title-like.
+    '''Capitalizes value according to whether it should be title-like.
 
     Title-like means it will capitalize every word but the 3-letters or less
     unless its the first word::
@@ -195,6 +206,7 @@ def capitalize(value, title=True):
 
         >>> type(capitalize('something')) is str
         True
+
     '''
     space, empty = (' ', '') if isinstance(value, _unicode) else (b' ', b'')
     words = value.split() if value else None
@@ -249,14 +261,15 @@ def strfnumber(number, format_spec='%0.2f'):
 
 
 def parse_boolean(value):
-    '''
-    Parse a boolean from any value given a special treatment to strings.
+    '''Parse a boolean from any value given a special treatment to
+    strings.
 
     >>> parse_boolean('trUe')
     True
 
     >>> parse_boolean('faLSe')
     False
+
     '''
     if isinstance(value, _str_base):
         value = value.strip()
@@ -276,9 +289,9 @@ def parse_boolean(value):
 
 
 def parse_url_int(value, default=None):
-    '''
-    Parse an integer URL argument. Some operations treat simple arguments
-    as a list of one element.
+    '''Parse an integer URL argument. Some operations treat simple
+    arguments as a list of one element.
+
     '''
     if isinstance(value, (list, tuple, set)) and len(value) > 0:
         value = value[0]
@@ -289,8 +302,18 @@ def parse_url_int(value, default=None):
 
 
 def force_str(value, encoding=None):
-    '''
-    Force to string, the type is different in Python 2 or 3 (bytes or unicode).
+    '''Force to string, the type is different in Python 2 or 3 (bytes or
+    unicode).
+
+    :param value: The value to convert to `str`.
+    :param encoding: The encoding which should be used if either encoding
+                     or decoding should be performed on `value`.
+
+                     The default is to use the same default as
+                     :func:`safe_encode` or :func:`safe_decode`.
+
+    .. versionadded:: 1.2.0
+
     '''
     if isinstance(value, str):
         return value
@@ -306,8 +329,6 @@ def normalize_to_str(value, encoding='utf-8'):
         return value
     elif type(value) is _unicode:
         return value.encode(encoding)
-
-as_str = _deprecated('xoutil.string.normalize_to_str')(normalize_to_str)
 
 
 class SafeFormatter(Formatter):
@@ -326,6 +347,7 @@ class SafeFormatter(Formatter):
         CWD: "~/tmp/foóbar"; "x+d["x"]": 2.
 
     .. versionadded:: 1.1.3
+
     '''
 
     USE_EVAL = True
@@ -340,6 +362,7 @@ class SafeFormatter(Formatter):
         For use a list of dynamic mappings to evaluate each one separately use
         "_get_dynamic_mappings" returning any iterable; this last feature will
         never use the "eval" option.
+
         '''
         super(SafeFormatter, self).__init__()
         for mapping in mappings:
@@ -347,8 +370,8 @@ class SafeFormatter(Formatter):
         self.mapping = kwargs
 
     def get_value(self, key, args, kwargs):
-        '''
-        Use additional mappings, "eval" function and dynamic mappings.
+        '''Use additional mappings, "eval" function and dynamic mappings.
+
         '''
         try:
             return super(SafeFormatter, self).get_value(key, args, kwargs)
@@ -371,9 +394,7 @@ class SafeFormatter(Formatter):
 
     def _vformat(self, format_string, args, kwargs, used_args,
                  recursion_depth):
-        '''
-        Mostly copied from original but use safe instead standard join.
-        '''
+        '''Mostly copied from original but use safe instead standard join.'''
         if recursion_depth < 0:
             raise ValueError('Max string recursion exceeded')
         result = []
@@ -400,9 +421,7 @@ class SafeFormatter(Formatter):
         return res
 
     def format_field(self, value, format_spec):
-        '''
-        If standard "format" fails, use safe decoding.
-        '''
+        '''If standard "format" fails, use safe decoding.'''
         try:
             return format(value, format_spec)
         except:
@@ -412,9 +431,7 @@ class SafeFormatter(Formatter):
         return format(value, format_spec)
 
     def _get_mapping(self):
-        '''
-        Redefine this in order to include dynamic mappings.
-        '''
+        '''Redefine this in order to include dynamic mappings.'''
         return self.mapping
 
     def _get_dynamic_mappings(self):

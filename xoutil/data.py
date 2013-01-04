@@ -2,7 +2,8 @@
 #----------------------------------------------------------------------
 # xoutil.data
 #----------------------------------------------------------------------
-# Copyright (c) 2009-2011 Medardo Rodríguez
+# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2009-2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -11,8 +12,6 @@
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
-
-
 
 '''Some useful Data Structures and data-related algorithms and functions.'''
 
@@ -23,8 +22,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_absimports)
 
 from types import SliceType
-from xoutil.deprecation import deprecated
-
 
 
 def smart_copy(source, target, full=False):
@@ -67,8 +64,10 @@ def smart_copy(source, target, full=False):
         setvalue(key, value)
 
 
-# TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un ciclo infinito
-# @deprecated('collections.namedtuple')
+# TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un
+# ciclo infinito
+
+#@deprecated('collections.namedtuple')
 class MappedTuple(tuple):
     '''
     An implementation of a named tuple.
@@ -97,7 +96,6 @@ class MappedTuple(tuple):
             return super(MappedTuple, self).__getitem__(key)
         else:
             return default
-
 
 
 class SmartDict(dict):
@@ -144,7 +142,6 @@ class SmartDict(dict):
     def _update(self, items):
         '''For legacy compatibility.'''
         super(SmartDict, self).update(items)
-
 
 
 class SortedSmartDict(SmartDict):
@@ -281,7 +278,6 @@ class SortedSmartDict(SmartDict):
     def _update(self, items):
         for key, value in items:
             self[key] = value
-
 
 
 class IntSet(object):

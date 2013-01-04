@@ -3,23 +3,16 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_classical_aop
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License (GPL) as published by the
-# Free Software Foundation;  either version 2  of  the  License, or (at
-# your option) any later version.
+# Author: Manuel Vázquez Acosta
+# Contributors: see CONTRIBUTORS and HISTORY file
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-# MA 02110-1301, USA.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created on Apr 29, 2012
 
@@ -37,8 +30,6 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-
-
 class TestClassicalAOP(unittest.TestCase):
     def setUp(self):
         class LoggerAspect(object):
@@ -46,7 +37,6 @@ class TestClassicalAOP(unittest.TestCase):
                 return self, result
 
         self.logger = LoggerAspect
-
 
     def test_after_methods_for_classmethods(self):
         class GoodClass(object):
@@ -61,8 +51,7 @@ class TestClassicalAOP(unittest.TestCase):
         self.assertEqual((GoodClass, 10), good_instance.echo(10))
 
 
-
-class TestWeaving(unittest.TestCase):
+class TestExtendedWeaving(unittest.TestCase):
     def test_whole_weaving(self):
         class Foobar(object):
             def echo(self, what):
@@ -90,7 +79,6 @@ class TestWeaving(unittest.TestCase):
         self.assertEquals(10, f.echo(10))
 
 
-
 class TestWeavingModules(unittest.TestCase):
     def setUp(self):
         from xoutil.tests import testbed
@@ -108,11 +96,11 @@ class TestWeavingModules(unittest.TestCase):
         weave(Dupper, self.testbed)
 
         self.assertEquals(20, testbed.echo(10))
-        # Unfortunally is quite difficult to replace standing references. Is
-        # possible by keeping the old func_code function and replacing func_code
-        # directly, but is difficult to get right and I don't need it.
+        # Unfortunately is quite difficult to replace standing references. Is
+        # possible by keeping the old func_code function and replacing
+        # func_code directly, but is difficult to get right and I don't need
+        # it.
         self.assertEquals(10, echo(10))
-
 
 
 if __name__ == "__main__":

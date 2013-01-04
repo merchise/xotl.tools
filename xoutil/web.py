@@ -2,7 +2,8 @@
 #----------------------------------------------------------------------
 # xotl.http
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Medardo Rodríguez
+# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -20,7 +21,6 @@
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
-
 
 
 def slugify(s, entities=True, decimal=True, hexadecimal=True):
@@ -93,7 +93,6 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     #remove redundant -
     s = re.sub('-{2,}', '-', s).strip('-')
     return s
-
 
 
 __all__ = (b'slugify',)

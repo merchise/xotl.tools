@@ -32,10 +32,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
               'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
-              'sphinx.ext.coverage',
-              'sphinx.ext.pngmath',
-              'sphinx.ext.ifconfig',
-              'sphinx.ext.viewcode']
+              'sphinx.ext.coverage']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -54,7 +51,7 @@ project = u'xoutil'
 
 year = datetime.datetime.now().year
 if year > 2012:
-    copyright = u'2012-{year}, Medardo Rodríguez'.format(year=year)
+    copyright = u'2012-{year}, Merchise Autrement and Contributors'.format(year=year)
 else:
     copyright = u'2012, Medardo Rodríguez'
 
@@ -279,4 +276,3 @@ intersphinx_mapping = {
 intersphins_cache_limit = 60
 
 autosummary_generate = True
-

@@ -1,4 +1,28 @@
-# Includes ignores that should not be in /etc/gitignore
+# Python + Eclipse
+*.pyc
+*.pyo
+*.*~
+*.*~*
+.project
+.pydevproject
+.settings/
+
 build/
 dist/
 
+# Python Coverage files generate by nose
+.coverage
+
+# Ditz stuff
+.ditz-config
+
+# Git cacharra
+*.orig
+
+# Paquetes .egg-info
+*.egg-info/
+
+# Python Rope for Emacs
+.ropeproject/
+*#
+#*

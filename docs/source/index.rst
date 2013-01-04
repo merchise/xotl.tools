@@ -10,7 +10,13 @@ Welcome to xoutil's documentation!
    :members:
 
 
+What's new in this version
+--------------------------
+
+.. include:: history/changes-1.2.0.rst
+
 Contents:
+---------
 
 .. toctree::
    :maxdepth: 2
@@ -28,4 +34,3 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`search`
-

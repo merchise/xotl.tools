@@ -3,11 +3,8 @@
 #----------------------------------------------------------------------
 # xoutil.deprecation
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
 # All rights reserved.
-#
-# Author: Manuel Vázquez Acosta
-# Contributors: see CONTRIBUTORS and HISTORY file
 #
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
@@ -26,7 +23,6 @@ import warnings
 from functools import wraps
 from xoutil.compat import class_types as _class_types
 
-
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
@@ -34,7 +30,8 @@ __author__ = 'manu'
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed. ' +
               'Use {replacement} instead.')
 
-
+# XXX: Don't make deprecated depends upon anything more than compat and
+# decorator.py. Since this is meant to be used by all others xoutil modules.
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
     '''Small decorator for deprecated functions.
 

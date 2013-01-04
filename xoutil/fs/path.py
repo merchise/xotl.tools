@@ -3,11 +3,9 @@
 #----------------------------------------------------------------------
 # xoutil.fs.path
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
-#
-# Author: Medardo Rodríguez
-# Contributors: see CONTRIBUTORS and HISTORY file
 #
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
@@ -103,7 +101,6 @@ def shorten_module_filename(filename):
             if filename.endswith(sep):
                 filename = filename[:-len(sep)]
     return shorten_user(filename)
-
 
 
 def shorten_user(filename):

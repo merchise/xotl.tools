@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xotl.models.ql.proxy
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -35,15 +36,12 @@ from types import MethodType
 from xoutil.context import context
 from xoutil.aop import complementor
 from xoutil.types import Unset
-from xoutil.iterators import first
-
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
 __all__ = (b'SUPPORTED_OPERATIONS', b'proxify')
-
 
 
 class UNPROXIFING_CONTEXT(object):
@@ -56,10 +54,8 @@ class UNPROXIFING_CONTEXT(object):
     '''
 
 
-
 SUPPORTED_UNARY_OPERATIONS = (b'__pos__', b'__abs__', b'__neg__',
                               b'__invert__',)
-
 
 
 SUPPORTED_BINARY_LOGICAL_OPERATIONS = (b'__and__', b'__or__', b'__xor__',
@@ -96,7 +92,6 @@ SUPPORTED_OPERATIONS = (SUPPORTED_UNARY_OPERATIONS +
                         SUPPORTED_BINARY_OPERATIONS)
 
 
-
 def build_self_operator(method_name):
     def method(self):
         with context(UNPROXIFING_CONTEXT):
@@ -107,7 +102,6 @@ def build_self_operator(method_name):
             return getattr(self, method_name)()
     method.__name__ = method_name
     return method
-
 
 
 def build_binary_operator(method_name):
@@ -122,7 +116,6 @@ def build_binary_operator(method_name):
     return method
 
 
-
 _supported_methods = {mname: build_self_operator(mname)
                         for mname in SUPPORTED_UNARY_OPERATIONS}
 _supported_methods.update({mname: build_binary_operator(mname)
@@ -132,7 +125,6 @@ _supported_methods.update({mname: build_binary_operator(mname)
 
 SupportedOperations = type(b'SupportedOperations', (object,),
                            _supported_methods)
-
 
 
 class Proxy(object):
@@ -161,7 +153,7 @@ class Proxy(object):
             behaves = ()
         valid_wrapper = lambda b: isinstance(getattr(b, attr, None),
                                              types.MethodType)
-        wrapper = first(valid_wrapper, (b for b in behaves))
+        wrapper = next((b for b in behaves if valid_wrapper(b)), None)
         if wrapper:
             result = getattr(wrapper, attr)
             if getattr(result, 'im_func', None):
@@ -191,7 +183,6 @@ class Proxy(object):
                 return result
 
 
-
 class unboxed(object):
     '''
     A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also provides
@@ -201,12 +192,10 @@ class unboxed(object):
         self.target = target
         self.attr = attr
 
-
     def __getattribute__(self, attr):
         target = super(unboxed, self).__getattribute__('target')
         with context(UNPROXIFING_CONTEXT):
             return getattr(target, attr)
-
 
     def __call__(self, attr):
         '''
@@ -215,7 +204,6 @@ class unboxed(object):
         get = super(unboxed, self).__getattribute__
         target = get('target')
         return unboxed(target, attr)
-
 
     def __lshift__(self, value):
         '''
@@ -250,8 +238,6 @@ class unboxed(object):
                 setattr(self, attr, value)
         else:
             pass
-
-
 
 
 def proxify(cls, *complementors):
@@ -291,7 +277,7 @@ def proxify(cls, *complementors):
         I'm adding <class '...Proxified'>
         True
 
-    But notice that if neither the proxied object or it's behaviours implement
+    But notice that if neither the proxied object or it's behaviors implement
     a method, an AttributeError exception is raised::
 
         >>> r < 1                                # doctest: +ELLIPSIS
@@ -304,14 +290,14 @@ def proxify(cls, *complementors):
     provided.
 
     .. warning:: Notice that behaviors classes must not assume that `self` is
-                 the proxied object but the proxy itself. That's needed for
-                 the illusion of "added" behaviors to be consistent. If we
-                 make `self` the proxied object then all the added behavior
+                 the proxy object instead of the "bare" object itself. That's
+                 needed for the illusion of "added" behaviors to be consistent.
+                 If we make `self` the bare object then all the added behavior
                  we'll be lost inside the method call.
 
-                 If you need to access the proxied object directly use the
-                 attribute 'target' of the proxy object (i.e:
-                 ``self.target``); we treat that attribute specially.
+                 If you need to access the bare object directly use the
+                 attribute 'target' of the proxy object (i.e: ``self.target``);
+                 we treat that attribute specially.
 
                  To the same accord, the fallback implementations of `__eq__`
                  and `__ne__` also work at the proxy level. So if we do::
