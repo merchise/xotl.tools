@@ -15,23 +15,23 @@
 #
 # Created on Feb 17, 2012
 
-'''
-Expose all original `string` module functionalities, with some general
+'''Expose all original `string` module functionalities, with some general
 additions.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
 Python 3.x treats strings differently, `bytes` and `_unicode` will be used
-instead with the following conventions::
+instead with the following conventions:
 
-    - In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str')
-      are both string types inheriting form `basestring`.
-      `_unicode` is synonym of `unicode`.
+- In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str') are
+  both string types inheriting form `basestring`.  `_unicode` is synonym of
+  `unicode`.
 
-    - In Python 3.x `str` is always unicode but `unicode` and `basestring`
-      types doesn't exists. `bytes` type can be used as an array of one byte
-      each item.
-      `_unicode` is synonym of `str`.
-      Many methods are readjusted to these conditions.
+- In Python 3.x `str` is always unicode but `unicode` and `basestring` types
+  doesn't exists. `bytes` type can be used as an array of one byte each item.
+
+  `_unicode` is synonym of `str`.
+
+  Many methods are readjusted to these conditions.
 
 '''
 
@@ -197,15 +197,8 @@ def capitalize(value, title=True):
         >>> capitalize('a group is its own worst enemy')
         'A Group is its own Worst Enemy'
 
-    (This may be odd because, in the example above, own should be capitalized.)
-
-    Return bytes or unicode depending on type of `value`.
-
-        >>> type(capitalize(u'something')) is _unicode
-        True
-
-        >>> type(capitalize('something')) is str
-        True
+    (This may be odd because, in the example above, "own" should be
+    capitalized.)
 
     '''
     space, empty = (' ', '') if isinstance(value, _unicode) else (b' ', b'')
