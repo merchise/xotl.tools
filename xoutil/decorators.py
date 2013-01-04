@@ -13,7 +13,7 @@
 # package.
 #
 
-'''Some usefull decorators.'''
+'''Some useful decorators.'''
 
 # TODO: reconsider all this module
 
@@ -24,14 +24,11 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 import sys
-import re
-import inspect
 
-from functools import wraps, partial
+from functools import wraps
 from types import FunctionType as function
 
 from xoutil.mdeco import decorator as _decorator
-from xoutil.deprecation import deprecated
 
 
 @wraps(_decorator)
@@ -121,11 +118,11 @@ def aliases(**kwargs):
 def assignment_operator(func, maybe_inline=False):
     '''
     Makes a function that receives a name, and other args to get its first
-    argument (the name) from an assigment operation, meaning that it if its
+    argument (the name) from an assignment operation, meaning that it if its
     used in a single assignment statement the name will be taken from the left
     part of the ``=`` operator.
 
-    .. warning:: This function is dependant of CPython's implementation of the
+    .. warning:: This function is dependent of CPython's implementation of the
                  language and won't probably work on other implementations.
                  Use only you don't care about portability, but use sparingly
                  (in case you change your mind about portability).
@@ -139,10 +136,11 @@ def assignment_operator(func, maybe_inline=False):
 
     @wraps(func)
     def inner(*args):
-        filename, lineno, funcname, sourcecode_lines, index = inspect.getframeinfo(sys._getframe(1))
+        frame_info = inspect.getframeinfo(sys._getframe(1))
+        fname, lineno, funcname, lines, index = frame_info
         try:
-            sourceline = sourcecode_lines[index].strip()
-            parsed_line = ast.parse(sourceline, filename).body[0]
+            sourceline = lines[index].strip()
+            parsed_line = ast.parse(sourceline, fname).body[0]
             assert maybe_inline or isinstance(parsed_line, ast.Assign)
             if isinstance(parsed_line, ast.Assign):
                 assert len(parsed_line.targets) == 1
@@ -160,7 +158,7 @@ def assignment_operator(func, maybe_inline=False):
             else:
                 return func(*args)
         finally:
-            del filename, lineno, funcname, sourcecode_lines, index
+            del fname, lineno, funcname, lines, index
     return inner
 
 

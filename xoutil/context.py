@@ -20,7 +20,7 @@
 '''
 A context manager for execution context flags.
 
-Use as:
+Use as::
 
     >>> from xoutil.context import context
     >>> with context('somename'):
@@ -29,6 +29,7 @@ Use as:
     In context somename
 
 Note the difference creating the context and checking it.
+
 '''
 
 
@@ -53,13 +54,14 @@ class MetaContext(type):
 
     def __contains__(self, name):
         '''
-        Basic cupport for the 'A in context' idiom::
+        Basic support for the 'A in context' idiom::
 
             >>> from xoutil.context import context
             >>> with context('A'):
             ...    if 'A' in context:
             ...        print('A')
             A
+
         '''
         return bool(self[name])
 
@@ -80,6 +82,7 @@ class Context(object):
     context you should use `context(name)` for testing whether some piece of
     code is being executed inside a context you should use `context[name]`;
     you may also use the syntax `name in context`.
+
     '''
     __metaclass__ = MetaContext
 
@@ -129,8 +132,9 @@ context = Context
 
 
 class NullContext(object):
-    '''
-    Singleton context to be used (returned) as default when no one is defined.
+    '''Singleton context to be used (returned) as default when no one is
+    defined.
+
     '''
 
     instance = None
@@ -155,9 +159,9 @@ _null_context = NullContext()
 
 
 class SimpleClose(object):
-    '''
-    A very simple close manager that just call the argument function exiting
+    '''A very simple close manager that just call the argument function exiting
     the manager.
+
     '''
     def __init__(self, close_funct, *args, **kwargs):
         self.close_funct = close_funct

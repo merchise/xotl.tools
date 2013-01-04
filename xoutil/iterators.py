@@ -16,7 +16,7 @@
 #
 # Created on 2011-11-08
 
-"Several util functions for iterators"
+'''Several util functions for iterators'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
