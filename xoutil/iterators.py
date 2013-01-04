@@ -127,22 +127,28 @@ def get_first(iterable, default=None):
 
 
 def coalesce(*args):
-    '''
-    Returns the first of its arguments that is logically not null.
+    '''Returns the first of its arguments that is logically not null.
 
     None is returned only if all arguments are False. It is often used to
     substitute a default value for null values when data is retrieved for
-    display, for example:
+    display, for example::
 
         coalesce(description, short_description, '(none)')
 
-    'coalesce' only evaluates the arguments that are needed to determine the
-    result; that is, arguments to the right of the first non-null argument
-    are not evaluated.
+    `coalesce` only evaluates the arguments that are needed to determine the
+    result; that is, arguments to the right of the first non-null argument are
+    not evaluated.
 
     This function is based in one of same name of PostgreSQL.
+
     '''
-    return next((x for x in args if x), default=None)
+    # TODO: [med] Since args is defined `*args` all args are evaluated despite
+    # the documentation. Probably the intended meaning of coalesce is
+    # equivalent to::
+    #
+    #    def coalesce(iterable):
+    #        return next((x for x in iterable if x), None)
+    return next((x for x in args if x), None)
 
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
