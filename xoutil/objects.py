@@ -70,7 +70,7 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None):
         attrs = (attr for attr in attrs if attr_filter(attr))
     res = ((a, getter(obj, a)) for a in attrs)
     if value_filter:
-        res = ((a, v) for a, v in all if value_filter(v))
+        res = ((a, v) for a, v in res if value_filter(v))
     return res
 
 
