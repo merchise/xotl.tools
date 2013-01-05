@@ -40,7 +40,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from string import *
 from re import compile as _regex_compile
 
 from xoutil.deprecation import deprecated as _deprecated
@@ -53,6 +52,59 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
+# All originale string members
+import string as _pm
+
+Formatter = _pm.Formatter
+Template = _pm.Template
+ascii_letters = _pm.ascii_letters
+ascii_lowercase = _pm.ascii_lowercase
+ascii_uppercase = _pm.ascii_uppercase
+atof = _pm.atof
+atof_error = _pm.atof_error
+atoi = _pm.atoi
+atoi_error = _pm.atoi_error
+atol = _pm.atol
+atol_error = _pm.atol_error
+capitalize = _pm.capitalize
+capwords = _pm.capwords
+center = _pm.center
+count = _pm.count
+digits = _pm.digits
+expandtabs = _pm.expandtabs
+find = _pm.find
+hexdigits = _pm.hexdigits
+index = _pm.index
+index_error = _pm.index_error
+join = _pm.join
+joinfields = _pm.joinfields
+letters = _pm.letters
+ljust = _pm.ljust
+lower = _pm.lower
+lowercase = _pm.lowercase
+lstrip = _pm.lstrip
+maketrans = _pm.maketrans
+octdigits = _pm.octdigits
+printable = _pm.printable
+punctuation = _pm.punctuation
+replace = _pm.replace
+rfind = _pm.rfind
+rindex = _pm.rindex
+rjust = _pm.rjust
+rsplit = _pm.rsplit
+rstrip = _pm.rstrip
+split = _pm.split
+splitfields = _pm.splitfields
+strip = _pm.strip
+swapcase = _pm.swapcase
+translate = _pm.translate
+upper = _pm.upper
+uppercase = _pm.uppercase
+whitespace = _pm.whitespace
+zfill = _pm.zfill
+
+del _pm
+
 
 def force_encoding(encoding=None):
     '''
@@ -63,7 +115,7 @@ def force_encoding(encoding=None):
     '''
     # TODO: Maybe use only `sys.getdefaultencoding()`
     import locale
-    return encoding or locale.getlocale()[1]
+    return encoding or locale.getpreferredencoding() or 'UTF-8'
 
 
 def safe_decode(s, encoding=None):
