@@ -193,7 +193,7 @@ ACTION_BACKUP = 4
 
 def get_options():
     from argparse import ArgumentParser, Action
-    from xoutil.argparse import store_also
+    from xoutil.config.argparse import store_also
 
     class TestAction(Action):
         def __init__(self, *args, **kwargs):

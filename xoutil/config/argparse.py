@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.optparse
+# xoutil.config.optparse
 #----------------------------------------------------------------------
 # Copyright (c) 2012 Merchise Autrement
 # All rights reserved.
