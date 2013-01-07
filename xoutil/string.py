@@ -316,7 +316,11 @@ def force_str(value, encoding=None):
         return safe_decode(value, encoding)
 
 
+@_deprecated(force_str)
 def normalize_to_str(value, encoding='utf-8'):
+    '''
+    .. warning:: Deprecated since 1.2.0
+    '''
     # FIXME: Wrong in Py3, with some similar to `force_str` would be enough
     if type(value) is bytes:
         return value
