@@ -56,6 +56,7 @@ if py3k:
     u = _unicode = str
     ext_str_types = (bytes, str)
     class_types = type
+    integer = long = int
 else:
     str_base = basestring
     str_types = (str, unicode)
@@ -63,6 +64,7 @@ else:
     ext_str_types = (str, unicode)
     from types import TypeType
     class_types = (type, TypeType)
+    integer = long
 
 if py3k:
     set_types = set
