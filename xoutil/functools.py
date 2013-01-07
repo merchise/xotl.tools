@@ -27,6 +27,71 @@ from functools import *
 from xoutil.compat import py32
 
 
+class ctuple(tuple):
+    '''Simple tuple marker for :func:`compose`.'''
+
+
+def compose(*funcs, **kwargs):
+    '''Returns a function that is the composition of `funcs`.
+
+    By default `compose` behaves like mathematical function composition: this
+    is to say that ``compose(f1, ... fn)`` is equivalent to ``lambda _x:
+    fn(...(f1(_x))...)``.
+
+    If any "intermediate" function returns a :class:`ctuple` is expanded as
+    several positional arguments to the next function.
+
+    :param math: Indicates if `compose` should behave like mathematical
+                 function composition: last function in `funcs` is applied
+                 last. If False, then the last function in `func` is applied
+                 first.
+
+    Example::
+
+        >>> import operator
+        >>> compose(operator.mul, operator.neg)(3, 4)
+        -12
+
+        >>> compose(operator.neg, operator.mul, math=False)(3, 4)
+        -12
+
+        >>> operator.neg(operator.mul(3, 4))
+        -12
+    '''
+    math = kwargs.get('math', True)
+    if not math:
+        funcs = list(reversed(funcs))
+    def _inner(*args):
+        f, functions = funcs[0], funcs[1:]
+        result = f(*args)
+        for f in functions:
+            if isinstance(result, ctuple):
+                result = f(*result)
+            else:
+                result = f(result)
+        return result
+    return _inner
+
+
+# The real signature should be (*funcs, times)
+def pow_(*args):
+    '''Returns the "power" composition of several functions.
+
+    Examples::
+
+       >>> import operator
+       >>> f = pow_(partial(operator.mul, 3), 3)
+       >>> f(23) == 3*(3*(3*23))
+       True
+    '''
+    funcs, times = args[:-1], args[-1]
+    if len(funcs) > 1:
+        base = (compose(funcs), )
+    else:
+        base = (funcs[0], )
+    return compose(*(base * times))
+
+
 if not py32:
     from threading import Lock
     from xoutil.collections import _CacheInfo, OrderedDict
