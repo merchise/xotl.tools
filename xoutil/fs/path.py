@@ -21,12 +21,30 @@ import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
+from xoutil.functools import pow_
+from xoutil.string import names
+
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
 # TODO: import all in "from os.path import *"
+
+up = lambda fn, l: pow_(dirname, l)(normalize_path(fn))
+up.__doc__ = """Applies `l` times the function `os.path.dirname` to `fn`.
+
+`fn` is normalized before proceeding (but not tested to exists).
+
+Example::
+
+    >>> up('~/tmp/a/b/c/d', 3)  # doctest: +ELLIPSIS
+    '.../tmp/a'
+
+    # It does not matter if `/` is at the end
+    >>> up('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
+    '.../tmp/a'
+"""
 
 
 def fix_encoding(name, encoding=None):
@@ -82,7 +100,6 @@ def get_module_path(module):
     return abspath(dirname(path).decode('utf-8'))
 
 
-
 def shorten_module_filename(filename):
     '''
     A filename, normally a module o package name, is shortened looking
@@ -105,7 +122,7 @@ def shorten_module_filename(filename):
 
 def shorten_user(filename):
     '''
-    A filename is shortened looking for the (expantion) $HOME in his head and
+    A filename is shortened looking for the (expansion) $HOME in his head and
     replacing it by '~'.
 
     '''
@@ -115,7 +132,6 @@ def shorten_user(filename):
     return filename
 
 
-
-__all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
-           'fix_encoding', 'join', 'normalize_path', 'get_module_path',
-           'shorten_module_filename', 'shorten_user',)
+__all__ = names('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
+                'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+                'shorten_module_filename', 'shorten_user', 'up')
