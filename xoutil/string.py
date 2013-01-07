@@ -328,6 +328,15 @@ def normalize_to_str(value, encoding='utf-8'):
         return value.encode(encoding)
 
 
+def names(*strings):
+    '''Returns all `strings` as a tuple of type-valid identifiers.
+
+    This helps compatibility between Python 2 and 3 for those modules
+    where you have `unicode_literals` from ``__future__`` in Python 2.
+    '''
+    return tuple(str(name) for name in strings)
+
+
 class SafeFormatter(Formatter):
     '''
     Similar to original Formatter but allowing several extensions:
