@@ -31,18 +31,20 @@ __author__ = 'manu'
 
 # TODO: import all in "from os.path import *"
 
-up = lambda fn, l: pow_(dirname, l)(normalize_path(fn))
-up.__doc__ = """Applies `l` times the function `os.path.dirname` to `fn`.
+rtrim = lambda path, n: pow_(dirname, n)(normalize_path(path))
+rtrim.__doc__ = """Trims the last `n` components of the pathname `path`.
 
-`fn` is normalized before proceeding (but not tested to exists).
+This basically applies `n` times the function `os.path.dirname` to `path`.
+
+`path` is normalized before proceeding (but not tested to exists).
 
 Example::
 
-    >>> up('~/tmp/a/b/c/d', 3)  # doctest: +ELLIPSIS
+    >>> rtrim('~/tmp/a/b/c/d', 3)  # doctest: +ELLIPSIS
     '.../tmp/a'
 
     # It does not matter if `/` is at the end
-    >>> up('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
+    >>> rtrim('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
     '.../tmp/a'
 """
 
@@ -134,4 +136,4 @@ def shorten_user(filename):
 
 __all__ = names('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
                 'fix_encoding', 'join', 'normalize_path', 'get_module_path',
-                'shorten_module_filename', 'shorten_user', 'up')
+                'shorten_module_filename', 'shorten_user', 'rtrim')

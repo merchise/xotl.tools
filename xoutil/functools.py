@@ -83,6 +83,11 @@ def pow_(*args):
        >>> f = pow_(partial(operator.mul, 3), 3)
        >>> f(23) == 3*(3*(3*23))
        True
+
+       >>> pow_()
+       Traceback (most recent call last):
+       ...
+       TypeError: Last argument of `pow_` must be int
     '''
     try:
         funcs, times = args[:-1], args[-1]
