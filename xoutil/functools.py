@@ -24,7 +24,7 @@ from __future__ import (division as _py3_division,
 
 
 from functools import *
-from xoutil.compat import py32
+from xoutil.compat import py32, callable
 
 
 class ctuple(tuple):
@@ -84,7 +84,15 @@ def pow_(*args):
        >>> f(23) == 3*(3*(3*23))
        True
     '''
-    funcs, times = args[:-1], args[-1]
+    try:
+        funcs, times = args[:-1], args[-1]
+    except IndexError:
+        msg = "Function `pow_` requires at least two arguments"
+        raise TypeError(msg)
+    if any(not callable(func) for func in funcs):
+        raise TypeError('First arguments of `pow_` must be callables')
+    if not isinstance(times, int):
+        raise TypeError('Last argument of `pow_` must be int')
     if len(funcs) > 1:
         base = (compose(funcs), )
     else:
