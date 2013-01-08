@@ -58,13 +58,13 @@ def obtain(predicate, iterable, default=None):
 
 
 @deprecated('next',
-            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
-            'function.')
+            'Function `first` is deprecated since 1.2.0. Use the built-in '
+            '`{replacement}` function.')
 def first(predicate, iterable, default=None):
     '''
     .. warning::
 
-       .. deprecated:: 1.1.6
+       .. deprecated:: 1.2.0
 
        Use the `next` function. Since this function is just the same
        as ``next((which for which in iterable if pred(which)), default)``.
@@ -101,14 +101,14 @@ def first(predicate, iterable, default=None):
 
 
 @deprecated('next',
-            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
-            'function.')
+            'Function `get_first` is deprecated since 1.2.0. Use the built-in'
+            '`{replacement}` function.')
 def get_first(iterable, default=None):
     '''Returns the first element of an iterable.
 
     .. warning::
 
-       .. deprecated:: 1.1.6
+       .. deprecated:: 1.2.0
 
        Use the `next` function, since this function is just the same
        as ``next((which for which in iterable), default)``.
@@ -326,7 +326,7 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=False):
         >>> first_n(range(2), 6, fill=(1, 2), return_tuple=True)
         (0, 1, 1, 2, 1, 2)
 
-    .. versionadded: 1.1.6
+    .. versionadded: 1.2.0
     '''
     if fill is not Unset:
         from itertools import cycle, repeat, chain
