@@ -265,6 +265,23 @@ def get_and_del_attr(obj, name, default=None):
     return res
 
 
+class lazy(object):
+    '''Marks a value as a lazily evaluated value. See
+    :func:`setdefaultattr`.
+
+    '''
+    def __init__(self, value):
+        self.value = value
+
+    def __call__(self):
+        from xoutil.compat import callable
+        res = self.value
+        if callable(res):
+            return res()
+        else:
+            return res
+
+
 def setdefaultattr(obj, name, value):
     '''Sets the attribute name to value if it is not set::
 
@@ -280,9 +297,27 @@ def setdefaultattr(obj, name, value):
         >>> setdefaultattr(inst, 'spam', 'with ham')
         'egg'
 
+    (`New in version 1.2.1`). If you want the value to be lazily evaluated you
+    may provide a lazy-lambda::
+
+        >>> inst = Someclass()
+        >>> inst.a = 1
+        >>> def setting_a():
+        ...    print('Evaluating!')
+        ...    return 'a'
+
+        >>> setdefaultattr(inst, 'a', lazy(setting_a))
+        1
+
+        >>> setdefaultattr(inst, 'ab', lazy(setting_a))
+        Evaluating!
+        'a'
+
     '''
     res = getattr(obj, name, Unset)
     if res is Unset:
+        if isinstance(value, lazy):
+            value = value()
         setattr(obj, name, value)
         res = value
     return res
