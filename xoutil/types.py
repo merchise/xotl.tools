@@ -40,7 +40,7 @@ class _UnsetType(type):
         return False
 
     def __repr__(self):
-        return 'Unset'
+        return self.__name__
     __str__ = __repr__
 
 
