@@ -342,8 +342,8 @@ def full_nameof(target):
         'type'
 
         >>> class Someclass: pass
-        >>> full_nameof(Someclass)
-        'xoutil.objects.Someclass'
+        >>> full_nameof(Someclass) == 'xoutil.objects.Someclass'
+        True
 
     - The name of any other object is the ``__name__`` of the its
       type::
