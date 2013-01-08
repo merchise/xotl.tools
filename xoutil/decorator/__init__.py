@@ -24,14 +24,11 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 import sys
-import re
-import inspect
 
-from functools import wraps, partial
+from functools import wraps
 from types import FunctionType as function
 
 from .meta import decorator as _decorator
-from xoutil.deprecation import deprecated
 
 
 @wraps(_decorator)
