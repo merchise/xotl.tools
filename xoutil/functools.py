@@ -84,16 +84,18 @@ def pow_(*args):
        >>> f(23) == 3*(3*(3*23))
        True
 
-       >>> pow_()
+       >>> pow_(operator.neg)
        Traceback (most recent call last):
        ...
-       TypeError: Last argument of `pow_` must be int
+       TypeError: Function `pow_` requires at least two arguments
     '''
     try:
         funcs, times = args[:-1], args[-1]
     except IndexError:
         msg = "Function `pow_` requires at least two arguments"
         raise TypeError(msg)
+    if not funcs:
+        raise TypeError('Function `pow_` requires at least two arguments')
     if any(not callable(func) for func in funcs):
         raise TypeError('First arguments of `pow_` must be callables')
     if not isinstance(times, int):
