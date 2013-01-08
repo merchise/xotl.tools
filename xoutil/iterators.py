@@ -262,7 +262,7 @@ def slides(iterator, width=2, fill=Unset):
     :class:`~xoutil.types.Unset`)::
 
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
-        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, <class '...Unset'>, <class '...Unset'>)]
+        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, Unset, Unset)]
     '''
     pos = 0
     res = []

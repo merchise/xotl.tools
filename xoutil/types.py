@@ -39,6 +39,10 @@ class _UnsetType(type):
     def __nonzero__(self):
         return False
 
+    def __repr__(self):
+        return 'Unset'
+    __str__ = __repr__
+
 
 class Unset:
     '''
