@@ -194,6 +194,79 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
+#
+# The following is extracted from the SQLAlchemy project's codebase, merit and
+# copyright was to SQLAlchemy authors::
+#
+# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+#
+# This module is part of SQLAlchemy and is released under the MIT License:
+# http://www.opensource.org/licenses/mit-license.php
+#
+class memoized_property(object):
+    """A read-only @property that is only evaluated once.
+
+    This is extracted from the SQLAlchemy project's codebase, merit and
+    copyright was to SQLAlchemy authors::
+
+      Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+
+      This module is part of SQLAlchemy and is released under the MIT License:
+      http://www.opensource.org/licenses/mit-license.php
+
+    """
+    def __init__(self, fget, doc=None):
+        self.fget = fget
+        self.__doc__ = doc or fget.__doc__
+        self.__name__ = fget.__name__
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        obj.__dict__[self.__name__] = result = self.fget(obj)
+        return result
+
+
+class memoized_instancemethod(object):
+    """Decorate a method memoize its return value.
+
+    Best applied to no-arg methods: memoization is not sensitive to
+    argument values, and will always return the same value even when
+    called with different arguments.
+
+    This is extracted from the SQLAlchemy project's codebase, merit and
+    copyright was to SQLAlchemy authors::
+
+      Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+
+      This module is part of SQLAlchemy and is released under the MIT License:
+      http://www.opensource.org/licenses/mit-license.php
+
+    """
+    def __init__(self, fget, doc=None):
+        self.fget = fget
+        self.__doc__ = doc or fget.__doc__
+        self.__name__ = fget.__name__
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        def oneshot(*args, **kw):
+            result = self.fget(obj, *args, **kw)
+            memo = lambda *a, **kw: result
+            memo.__name__ = self.__name__
+            memo.__doc__ = self.__doc__
+            obj.__dict__[self.__name__] = memo
+            return result
+        oneshot.__name__ = self.__name__
+        oneshot.__doc__ = self.__doc__
+        return oneshot
+
+
+def reset_memoized(instance, name):
+    instance.__dict__.pop(name, None)
+
+
 __all__ = (str('settle'),
            str('namer'),
            str('aliases'),
@@ -202,7 +275,10 @@ __all__ = (str('settle'),
            str('AttributeAlias'),
            str('assignment_operator'),
            str('FunctionMaker'),
-           str('signature_keeping_decorator'))
+           str('signature_keeping_decorator'),
+           str('memoized_property'),
+           str('memoized_instancemethod'),
+           str('reset_memoized'))
 
 
 if __name__ == '__main__':
