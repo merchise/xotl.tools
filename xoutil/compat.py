@@ -94,6 +94,14 @@ else:
     except ImportError:
         import pickle
 
+
+if py3k:
+    import configparser
+else:
+    import ConfigParser as configparser
+    ConfigParser = configparser
+
+
 if py3k:
     from inspect import getfullargspec as inspect_getfullargspec
 else:
