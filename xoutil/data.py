@@ -2,7 +2,8 @@
 #----------------------------------------------------------------------
 # xoutil.data
 #----------------------------------------------------------------------
-# Copyright (c) 2009-2011 Medardo Rodríguez
+# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2009-2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -11,8 +12,6 @@
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
-
-
 
 '''Some useful Data Structures and data-related algorithms and functions.'''
 
@@ -23,8 +22,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_absimports)
 
 from types import SliceType
-from xoutil.deprecation import deprecated
-
 
 
 def smart_copy(source, target, full=False):
@@ -67,7 +64,10 @@ def smart_copy(source, target, full=False):
         setvalue(key, value)
 
 
-@deprecated('collections.namedtuple')
+# TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un
+# ciclo infinito
+
+#@deprecated('collections.namedtuple')
 class MappedTuple(tuple):
     '''
     An implementation of a named tuple.
@@ -75,8 +75,11 @@ class MappedTuple(tuple):
     Deprecated since the introduction of namedtuple in Python 2.6
     '''
     def __new__(cls, key_attr='key', sequence=()):
+        import warnings
+        warnings.warn('MappedTuple is deprecated, you should use collections.namedtuple', stacklevel=1)
         self = super(MappedTuple, cls).__new__(cls, sequence)
-        self.mapping = {getattr(item, key_attr): i for i, item in enumerate(sequence)}
+        self.mapping = {getattr(item, key_attr): i
+                          for i, item in enumerate(sequence)}
         return self
 
     def __getitem__(self, key):
@@ -93,7 +96,6 @@ class MappedTuple(tuple):
             return super(MappedTuple, self).__getitem__(key)
         else:
             return default
-
 
 
 class SmartDict(dict):
@@ -142,7 +144,6 @@ class SmartDict(dict):
         super(SmartDict, self).update(items)
 
 
-
 class SortedSmartDict(SmartDict):
     '''
     A dictionary that keeps its keys in the order in which they're inserted.
@@ -160,7 +161,7 @@ class SortedSmartDict(SmartDict):
                  tests, we're defering such a change for a release post
                  |release|.
     '''
-    # TODO: Replace this by "collections.OrderedDict" in python2.7 (DeprecationWarning)
+    # TODO: Deprecate this by "collections.OrderedDict" in python2.7
 
     def __new__(cls, *args, **kwargs):
         self = super(SortedSmartDict, cls).__new__(cls, *args, **kwargs)
@@ -170,7 +171,8 @@ class SortedSmartDict(SmartDict):
     def __repr__(self):
         if not hasattr(self, '_recursion'):
             self._recursion = True
-            res = '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in self.iteritems()])
+            res = '{%s}' % ', '.join(['%r: %r' % (k, v)
+                                        for k, v in self.iteritems()])
             del self._recursion
             return res
         else:
@@ -276,7 +278,6 @@ class SortedSmartDict(SmartDict):
     def _update(self, items):
         for key, value in items:
             self[key] = value
-
 
 
 class IntSet(object):

@@ -2,7 +2,8 @@
 #----------------------------------------------------------------------
 # xoutil.types
 #----------------------------------------------------------------------
-# Copyright (c) 2010-2011 Medardo Rodríguez
+# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2010-2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -38,21 +39,36 @@ class _UnsetType(type):
     def __nonzero__(self):
         return False
 
+    def __repr__(self):
+        return self.__name__
+    __str__ = __repr__
 
-class Unset:
-    '''
-    To be used as default value to be sure none is returned in scenarios where
-    `None` could be a valid value.
+
+class classobject(object):
+    def __new__(cls, *args, **kwargs):
+        raise TypeError("cannot create '{0}' instances".format(cls.__name__))
+
+
+class Unset(classobject):
+    '''To be used as default value to be sure none is returned in scenarios
+    where `None` could be a valid value.
 
     For example::
 
         >>> getattr('', '__doc__', Unset) is Unset
         False
+
     '''
     __metaclass__ = _UnsetType
 
-    def __new__(cls, *args, **kwargs):
-        raise TypeError("cannot create 'Unset' instances")
+
+class ignored(classobject):
+    '''To be used in arguments that are currently ignored cause they are being
+    deprecated. The only valid reason to use `ignored` is to signal ignored
+    arguments in method's/function's signature.
+
+    '''
+    __metaclass__ = _UnsetType
 
 
 def is_iterable(maybe):

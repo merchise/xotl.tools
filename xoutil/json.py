@@ -2,7 +2,8 @@
 #----------------------------------------------------------------------
 # xoutil.json
 #----------------------------------------------------------------------
-# Copyright (c) 2011 Medardo Rodríguez
+# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -14,10 +15,7 @@
 #
 # Created on Jul 1, 2011
 
-
-
-'''
-Extensions to the `json` standard library module.
+'''Extensions to the `json` standard library module.
 
 It just adds the ability to encode/decode datetimes. But you should use the
 JSONEncoder yourself.
@@ -50,7 +48,6 @@ from json import *
 class JSONEncoder(_legacy.JSONEncoder):
     __doc__ = (_legacy.JSONEncoder.__doc__ +
     '''
-
     Datetimes:
 
     We also support `datetime` values, which are translated to strings using
@@ -59,7 +56,6 @@ class JSONEncoder(_legacy.JSONEncoder):
 
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M:%S"
-
 
     def default(self, o):
         if _is_datetime(o):

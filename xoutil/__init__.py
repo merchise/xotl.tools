@@ -2,6 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil
 #----------------------------------------------------------------------
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #

@@ -1,14 +1,12 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-#----------------
-# util/compat.py
-#----------------
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------
+# xoutil.compat
+#----------------------------------------------------------------------
 #
-# ============================ Original copyright notice ====================
-# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors <see AUTHORS
-# file>
+# ============================ Original copyright notice ===================
+# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
 #
-# This module is part of SQLAlchemy and is released under
+# This module is based on part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 # ============================ Original copyright notice ===================
 
@@ -20,10 +18,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 import sys
-
-# Py2K
-import __builtin__
-# end Py2K
 
 # TODO: Changes in Python 3
 #    * remove "iteritems", "itervalues", "iterkeys" for dict
@@ -57,6 +51,22 @@ pypy = hasattr(sys, 'pypy_version_info')
 win32 = sys.platform.startswith('win')
 
 if py3k:
+    str_base = str
+    str_types = (str, )
+    u = _unicode = str
+    ext_str_types = (bytes, str)
+    class_types = type
+    integer = long = int
+else:
+    str_base = basestring
+    str_types = (str, unicode)
+    _unicode = unicode
+    ext_str_types = (str, unicode)
+    from types import TypeType
+    class_types = (type, TypeType)
+    integer = long
+
+if py3k:
     set_types = set
 elif sys.version_info < (2, 6):
     import sets
@@ -84,6 +94,14 @@ else:
     except ImportError:
         import pickle
 
+
+if py3k:
+    import configparser
+else:
+    import ConfigParser as configparser
+    ConfigParser = configparser
+
+
 if py3k:
     from inspect import getfullargspec as inspect_getfullargspec
 else:
@@ -100,9 +118,7 @@ if py3k:
     # Remove this import, always use it directly
     from functools import reduce
 else:
-    callable = __builtin__.callable
-    cmp = __builtin__.cmp
-    reduce = __builtin__.reduce
+    from __builtin__ import callable, cmp, reduce
 
 try:
     from collections import defaultdict
@@ -174,6 +190,7 @@ try:
 except ImportError:
     import md5
     _md5 = md5.new
+
 
 def md5_hex(x):
     # Py3K

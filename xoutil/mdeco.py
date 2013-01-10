@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.decorators
+# xoutil.mdeco
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement
 # All rights reserved.
@@ -11,21 +11,16 @@
 #
 # Created on 7 janv. 2013
 
-
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
-                        absolute_import as _py3_abs_imports)
+                        absolute_import as _py3_abs_import)
 
-from xoutil.string import names
-from xoutil import decorator
-from xoutil.deprecation import inject_deprecated
+from xoutil.decorator import meta
+from .deprecation import inject_deprecated
 
-__all__ = names('AttributeAlias',
-                'settle',
-                'namer',
-                'aliases',
-                'instantiate',
-                'assignment_operator',)
 
-inject_deprecated(__all__, decorator)
+__all__ = tuple(str(name) for name in ('decorator', 'FunctionMaker',
+                                       'flat_decorator'))
+
+inject_deprecated(__all__, meta)

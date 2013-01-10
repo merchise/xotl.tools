@@ -2,4 +2,8 @@
 ===================================================================================
 
 .. automodule:: xoutil.functools
-   :members:
+   :members: compose, lru_cache
+
+.. autofunction:: pow_(*funcs, times)
+
+.. autoclass:: ctuple

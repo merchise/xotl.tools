@@ -1,17 +1,20 @@
 Copyright and Licence
 =====================
 
-|copyright|
+Copyright (c) 2012 Medardo Rodríguez.
+
+Copyright (c) 2013 Merchise Autrement and Contributors.
 
 This software is released under terms similar to the Python Software
 Foundation (PSF) licence for Python 3.2 as stated :ref:`below
 <merchise-license-psf>`.
 
-Three modules inside this package are backports from Python 3.2.3's standard 
+Three modules inside this package are backports from Python 3.2.3's standard
 library and the PSF retains the copyright.
 
 .. |project| replace:: xoutil
-.. |copyright| replace:: Copyright (c) 2012 Medardo Rodríguez
+
+.. |copyright| replace:: Copyright (c) 2013 Merchise Autrement and Contributors
 
 .. _merchise-license-psf:
 
