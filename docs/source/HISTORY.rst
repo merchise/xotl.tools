@@ -6,6 +6,12 @@ Reversed chronological order.
 1.2 series
 ----------
 
+Release 1.2.1 (yet be released)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/changes-1.2.1.rst
+
+
 2013-01-04. Release 1.2.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
