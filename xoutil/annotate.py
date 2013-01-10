@@ -37,7 +37,9 @@ __author__ = 'manu'
 
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
+from xoutil.compat import str_base as _str_base
 from xoutil.functools import partial
+
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
 from xoutil.decorator.meta import decorator
@@ -54,7 +56,9 @@ _ARG_SEP = _regex_compile(r'(?im)^\*{0,2}(?P<argname>[_\w\d]+)\s*:')
 
 
 def _split_signature(signature):
-    signature = signature.strip() if isinstance(signature, basestring) else ''
+    signature = (signature.strip()
+                 if isinstance(signature, _str_base)
+                 else '')
     if signature:
         matches = _SIGNATURE.match(signature)
         return matches.group('args'), matches.group('return')
@@ -225,7 +229,9 @@ def annotate(func, signature=None, **keyword_annotations):
     func.__annotations__ = annotations = getattr(func, '__annotations__', {})
     if signature:
         annotations.update({argname: value for argname, value in _parse_signature(signature)})
-    return_annotation_kwarg = first(lambda k: k in ('return_annotation', '_return', '__return'), keyword_annotations)
+    return_annotation_kwarg = next((k for k in keyword_annotations if
+                                    k in ('return_annotation', '_return',
+                                          '__return')), None)
     if return_annotation_kwarg:
         annotations['return'] = keyword_annotations[return_annotation_kwarg]
         del keyword_annotations[return_annotation_kwarg]
