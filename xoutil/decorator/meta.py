@@ -86,7 +86,7 @@ class FunctionMaker(object):
         if func:
             # func can be a class or a callable, but not an instance method
             self.name = func.__name__
-            if self.name == '<lambda>': # small hack for lambda functions
+            if self.name == '<lambda>':  # small hack for lambda functions
                 self.name = '_lambda_'
             self.doc = func.__doc__
             self.module = func.__module__
@@ -106,7 +106,8 @@ class FunctionMaker(object):
                     allargs.append('**' + self.varkw)
                 try:
                     self.shortsignature = ', '.join(allargs)
-                except TypeError: # exotic signature, valid only in Python 2.X
+                except TypeError:
+                    # exotic signature, valid only in Python 2.X
                     self.shortsignature = self.signature
                 self.dict = func.__dict__.copy()
         # func=None happens when decorating a caller
@@ -156,7 +157,7 @@ class FunctionMaker(object):
         try:
             code = compile(src, '<string>', 'single')
             # print >> sys.stderr, 'Compiling %s' % src
-            exec code in evaldict
+            eval(code, evaldict, evaldict)
         except:
             print >> sys.stderr, 'Error in generated code:'
             print >> sys.stderr, src
