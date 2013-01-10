@@ -250,6 +250,18 @@ def get_and_del_attr(obj, name, default=None):
     Looks for an attribute in the `obj` and returns its value and removes the
     attribute. If the attribute is not found, `default` is returned instead.
 
+    Examples::
+
+        >>> class Foo(object):
+        ...   a = 1
+        >>> foo = Foo()
+        >>> foo.a = 2
+        >>> get_and_del_attr(foo, 'a')
+        2
+        >>> get_and_del_attr(foo, 'a')
+        1
+        >>> get_and_del_attr(foo, 'a') is None
+        True
     '''
     res = getattr(obj, name, Unset)
     if res is Unset:
