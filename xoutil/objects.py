@@ -45,6 +45,12 @@ _false = lambda * args, **kwargs: False
 def smart_get(obj):
     return obj.get if isinstance(obj, Mapping) else partial(getattr, obj)
 
+def smart_get_and_del(obj, **kwargs):
+    if isinstance(obj, Mapping):
+        return partial(get_and_del_key, obj, **kwargs)
+    else:
+        return partial(get_and_del_attr, obj, **kwargs)
+
 
 def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     '''
@@ -198,7 +204,6 @@ def get_first_of(source, *keys, **kwargs):
         True
 
     '''
-
     def inner(source):
         get = smart_get(source)
         res, i = Unset, 0
@@ -213,6 +218,58 @@ def get_first_of(source, *keys, **kwargs):
         for item in takewhile(lambda _: res is Unset, imap(inner, source)):
             if item is not Unset:
                 res = item
+    else:
+        res = inner(source)
+    return res if res is not Unset else kwargs.get('default', None)
+
+
+def get_and_del_first_of(source, *keys, **kwargs):
+    '''Similar to :func:`get_first_of` but uses either :func:`get_and_del_attr`
+    or :func:`get_and_del_key` to get and del the first key.
+
+    Examples::
+
+        >>> somedict = dict(bar='bar-dict', eggs='eggs-dict')
+
+        >>> class Foo(object): pass
+        >>> foo = Foo()
+        >>> foo.bar = 'bar-obj'
+        >>> foo.eggs = 'eggs-obj'
+
+        >>> get_and_del_first_of((somedict, foo), 'eggs')
+        'eggs-dict'
+
+        >>> get_and_del_first_of((somedict, foo), 'eggs')
+        'eggs-obj'
+
+        >>> get_and_del_first_of((somedict, foo), 'eggs') is None
+        True
+
+        >>> get_and_del_first_of((foo, somedict), 'bar')
+        'bar-obj'
+
+        >>> get_and_del_first_of((foo, somedict), 'bar')
+        'bar-dict'
+
+        >>> get_and_del_first_of((foo, somedict), 'bar') is None
+        True
+
+    '''
+    def inner(source):
+        get = smart_get_and_del(source)
+        res, i = Unset, 0
+        while (res is Unset) and (i < len(keys)):
+            res = get(keys[i], Unset)
+            i += 1
+        return res
+
+    if is_collection(source):
+        res = Unset
+        source = iter(source)
+        probe = next(source, None)
+        while res is Unset and probe:
+            res = inner(probe)
+            probe = next(source, None)
     else:
         res = inner(source)
     return res if res is not Unset else kwargs.get('default', None)
