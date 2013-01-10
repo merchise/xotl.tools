@@ -29,10 +29,11 @@ from __future__ import (division as _py3_division,
 import types as _legacy
 from types import *
 
+from xoutil.compat import xrange_
 
-__all__ = (b'Unset', b'is_iterable', b'is_collection',
-           b'is_scalar', b'is_string_like')
 
+__all__ = tuple(str(x) for x in ('Unset', 'is_iterable', 'is_collection',
+                                 'is_scalar', 'is_string_like'))
 
 class _UnsetType(type):
     'The type of the :obj:`Unset` value.'
@@ -85,7 +86,7 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> is_iterable(xrange(1))
+        >>> is_iterable(xrange_(1))
         True
 
         >>> is_iterable({})
@@ -118,7 +119,7 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> is_collection(xrange(1))
+        >>> is_collection(xrange_(1))
         True
 
         >>> is_collection({})
@@ -130,10 +131,10 @@ def is_collection(maybe):
         >>> is_collection(set())
         True
 
-        >>> is_collection(a for a in xrange(100))
+        >>> is_collection(a for a in xrange_(100))
         True
     '''
-    return isinstance(maybe, (tuple, xrange, list, set, frozenset,
+    return isinstance(maybe, (tuple, xrange_, list, set, frozenset,
                               GeneratorType))
 
 
