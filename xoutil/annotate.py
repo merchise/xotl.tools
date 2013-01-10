@@ -123,16 +123,22 @@ def _parse_signature(signature):
         def __getitem__(self, key):
             from xoutil.types import Unset
             from xoutil.iterators import dict_update_new
+            from xoutil.compat import py3k
             d = self.d
             res = d.get(key, Unset)
             if res is Unset:
                 f = self.f
-                f_globals = f.f_globals
+                f_globals = f.f_globals if f else None
+                if py3k:
+                    # In Py3 (at least Python 3.2) builtins are not directly
+                    # in f_globals but inside a __builtins__ key.
+                    builtins = f_globals.get('__builtins__', {})
+                    dict_update_new(f_globals, builtins)
                 while f and res is Unset:
                     dict_update_new(d, f.f_locals)
                     res = d.get(key, Unset)
                     f = self.f = f.f_back
-                if res is Unset:
+                if res is Unset and f_globals:
                     dict_update_new(d, f_globals)
                     res = d.get(key, Unset)
             if res:

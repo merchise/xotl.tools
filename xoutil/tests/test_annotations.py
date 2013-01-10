@@ -35,9 +35,10 @@ import unittest
 from xoutil.annotate import annotate
 from xoutil.compat import class_types
 
+
 class Test(unittest.TestCase):
     def test_keywords(self):
-        @annotate(a=1, b={1:4}, args=list, return_annotation=tuple)
+        @annotate(a=1, b={1: 4}, args=list, return_annotation=tuple)
         def dummy():
             pass
 
