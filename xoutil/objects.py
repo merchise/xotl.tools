@@ -277,6 +277,30 @@ def get_and_del_attr(obj, name, default=None):
     return res
 
 
+def get_and_del_key(d, key, default=None):
+    '''Looks for a key in the dict `d` and returns its value and removes the
+    key. If the attribute is not found, `default` is returned instead.
+
+    Examples::
+
+        >>> foo = dict(a=1)
+        >>> get_and_del_key(foo, 'a')
+        1
+        >>> get_and_del_key(foo, 'a') is None
+        True
+
+    '''
+    res = d.get(key, Unset)
+    if res is Unset:
+        res = default
+    else:
+        try:
+            del d[key]
+        except IndexError:
+            pass
+    return res
+
+
 class lazy(object):
     '''Marks a value as a lazily evaluated value. See
     :func:`setdefaultattr`.
