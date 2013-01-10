@@ -40,7 +40,7 @@ from ast import parse as _ast_parse
 from xoutil.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
-from xoutil.decorators import decorator
+from xoutil.decorator.meta import decorator
 from xoutil.iterators import first
 
 _SIGNATURE = _regex_compile(r'''(?ixm)
