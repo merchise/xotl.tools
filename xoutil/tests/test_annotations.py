@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_annotations
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012, 2013 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -33,7 +33,7 @@ __author__ = 'manu'
 
 import unittest
 from xoutil.annotate import annotate
-from xoutil.compat import _unicode
+from xoutil.compat import class_types
 
 class Test(unittest.TestCase):
     def test_keywords(self):
@@ -65,11 +65,12 @@ class Test(unittest.TestCase):
 
         # But the following is ok
         @annotate('() -> list')
-        def dummy(a, b):
+        def dummy2(a, b):
             return 'Who cares about non-annotated args?'
 
-
     def test_mixed_annotations(self):
+        from xoutil.compat import _unicode
+
         @annotate('(a: str, b:_unicode) -> bool', a=_unicode, return_annotation=True)
         def dummy():
             pass
@@ -94,6 +95,12 @@ class Test(unittest.TestCase):
         def dummy():
             pass
         self.assertEquals(dummy.__annotations__.get('a'), (1, 2))
+
+    def test_globals(self):
+        @annotate('(a: class_types)')
+        def dummy():
+            pass
+        self.assertEquals(dummy.__annotations__['a'], class_types)
 
     def test_closures_with_locals(self):
         '''

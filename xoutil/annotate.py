@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.annotate
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012, 2013 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -23,9 +23,7 @@
 #
 # Created on Apr 3, 2012
 
-'''
-Provides a forward-compatible (PEP 3107) annotations.
-'''
+'''Provides Python 3k forward-compatible (:pep:`3107`) annotations.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -43,7 +41,6 @@ from xoutil.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
 from xoutil.decorator.meta import decorator
-from xoutil.iterators import first
 
 _SIGNATURE = _regex_compile(r'''(?ixm)
                             \(                # Required opening for the argumens
@@ -123,31 +120,42 @@ def _parse_signature(signature):
             self.f = sys._getframe(skip_levels)
             self.d = dict(init)
 
-
         def __getitem__(self, key):
+            from xoutil.types import Unset
             from xoutil.iterators import dict_update_new
-            if key in self.d:
-                return self.d[key]
+            d = self.d
+            res = d.get(key, Unset)
+            if res is Unset:
+                f = self.f
+                f_globals = f.f_globals
+                while f and res is Unset:
+                    dict_update_new(d, f.f_locals)
+                    res = d.get(key, Unset)
+                    f = self.f = f.f_back
+                if res is Unset:
+                    dict_update_new(d, f_globals)
+                    res = d.get(key, Unset)
+            if res:
+                return res
             else:
-                while self.f and key not in self.d:
-                    dict_update_new(self.d, self.f.f_locals)
-                    self.f = self.f.f_back
-                return self.d[key]
+                raise KeyError
 
     args, return_annotation = _split_signature(signature)
     while args:
         arg, expr, args = _split_annotation_expression(args)
         code = compile(expr, '', 'eval')
-        yield arg, eval(code, globals(), l())
+        # Don't put our globals but, just calling-frames globals
+        yield arg, eval(code, None, l())
     if return_annotation:
         yield 'return', eval(return_annotation, globals(), l())
 
 
 @decorator
 def annotate(func, signature=None, **keyword_annotations):
-    '''
-    Annotates a function with a forward-compatible internal form (i.e, injects
-    a `__annotations__` mapping to the function.)
+    '''Annotates a function with a Python 3k forward-compatible
+    ``__annotations__`` mapping.
+
+    See :pep:`3107` for more details about annotations.
 
     You may pass the following arguments:
 
@@ -166,22 +174,22 @@ def annotate(func, signature=None, **keyword_annotations):
       In this case there are several limitations (and deviations) from the PEP
       3107 text:
 
-      - There's no support for the full python expressions.
+      - There's no support for the full syntax of Python 2 expressions; in
+        particular nested arguments are not supported since they are
+        deprecated.
 
-         - There's no support for nested arguments support (since this feature
-           is also deprecated).
+      - Specifying defaults is no supported (nor needed). Defaults are placed
+        in the signature of the function.
 
-      - Specifying defaults is no supported (nor needed).
+      - In the string it makes no sense to put an argument without an
+        annotation, so this will raise an exception (SyntaxError).
 
-      - It makes no sense to put an argument without an annotation, so this
-        will raise an exception (SyntaxError).
-
-    - Several keyword arguments with each of the annotations. Since you can't
-      include the 'return' keyword argument for the annotation related with the
-      return of the function, we provide several alternatives: if any of the
-      following keywords arguments is provided (tested in the given order):
-      'return_annotation', '_return', '__return'; then it will be considered the
-      'return' annotation, the rest will be regarded as other annotations.
+    - Several keyword arguments with annotations. Since you can't include the
+      'return' keyword argument for the annotation related with the return of
+      the function, we provide several alternatives: if any of the following
+      keywords arguments is provided (tested in the given order):
+      'return_annotation', '_return', '__return'; then it will be considered
+      the 'return' annotation, the rest will be regarded as other annotations.
 
       The previous example would be like this::
 
@@ -206,9 +214,6 @@ def annotate(func, signature=None, **keyword_annotations):
           ... def otherfunction():
           ...    pass
 
-          >>> otherfunction.__annotations__.get('return') is list
-          False
-
           >>> otherfunction.__annotations__.get('return') is tuple
           True
 
@@ -226,14 +231,14 @@ def annotate(func, signature=None, **keyword_annotations):
           >>> somewhat.__annotations__.get('a')     # doctest: +ELLIPSIS
           <class '...ISomething'>
           '''
+    from xoutil.objects import get_and_del_first_of
     func.__annotations__ = annotations = getattr(func, '__annotations__', {})
     if signature:
-        annotations.update({argname: value for argname, value in _parse_signature(signature)})
-    return_annotation_kwarg = next((k for k in keyword_annotations if
-                                    k in ('return_annotation', '_return',
-                                          '__return')), None)
+        annotations.update({argname: value
+                            for argname, value in _parse_signature(signature)})
+    probes = ('return_annotation', '_return', '__return')
+    return_annotation_kwarg = get_and_del_first_of(keyword_annotations, *probes)
     if return_annotation_kwarg:
-        annotations['return'] = keyword_annotations[return_annotation_kwarg]
-        del keyword_annotations[return_annotation_kwarg]
+        annotations['return'] = return_annotation_kwarg
     annotations.update(keyword_annotations)
     return func
