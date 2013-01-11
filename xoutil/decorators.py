@@ -34,10 +34,12 @@ from xoutil.mdeco import decorator as _decorator
 @wraps(_decorator)
 def decorator(caller):
     import warnings
-    msg = ('xoutil.decorators.decorator has being moved to xoutil.mdeco.decorator, and '
-           'it will be removed from this module in the future.')
-    warnings.warn(msg, stacklevel=2)
+    warnings.warn('xoutil.decorators.decorator has being moved to '
+                  '``xoutil.mdeco.decorator``, and it will be removed from '
+                  'this module in the future.',
+                  stacklevel=2)
     return _decorator(caller)
+
 
 class AttributeAlias(object):
     '''
@@ -62,16 +64,24 @@ class AttributeAlias(object):
 
 
 def settle(**kwargs):
-    '''
-    Returns a decorator that sets different attribute values to the decorated
-    target (function or class)::
+    '''Returns a decorator that sets different attribute values to the
+    decorated target (function or class)::
 
         >>> @settle(name='Name')
         ... class Person(object):
-        ...    pass
+        ...    @settle(foobar='Foobar', custom=1)
+        ...    def method(self):
+        ...        pass
 
         >>> Person.name
         'Name'
+
+        >>> Person.method.foobar
+        'Foobar'
+
+        >>> Person.method.custom
+        1
+
     '''
     def inner(target):
         for key, value in kwargs.iteritems():
@@ -81,8 +91,7 @@ def settle(**kwargs):
 
 
 def namer(name, **kwargs):
-    '''
-    Similar to :func:`settle`, but always consider first argument as *the
+    '''Similar to :func:`settle`, but always consider first argument as *the
     name* (i.e, assigned to `__name__`)::
 
         >>> @namer('Identity', custom=1)

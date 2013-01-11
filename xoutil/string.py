@@ -52,7 +52,7 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-# All originale string members
+# All original string members
 import string as _pm
 
 Formatter = _pm.Formatter
@@ -272,6 +272,22 @@ def capitalize(value, title=True):
         return space.join(words)
     else:
         return empty
+
+
+def normalize_str_collection(items):
+    '''Normalize a collection expecting ``str`` members.
+
+     This is mostly intended for incompatibilities using Python 3 ``unicode``
+     strings in Python 2 by importing ``__future__.unicode_literals``. Type and
+     module names are expected to be ``str`` (not ``unicode`` as declared with
+     normal literal string in this context).
+    '''
+    if not _py3k:
+        std_types = (tuple, set, frozenset)
+        rt = type(items) if isinstance(items, std_types) else list
+        return rt(str(item) for item in items)
+    else:
+        return items
 
 
 def normalize_unicode(value):

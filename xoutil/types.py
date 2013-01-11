@@ -26,12 +26,10 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+
 import types as _legacy
 from types import *
 
-
-__all__ = (b'Unset', b'is_iterable', b'is_collection',
-           b'is_scalar', b'is_string_like')
 
 
 class _UnsetType(type):
@@ -138,3 +136,8 @@ def is_scalar(maybe):
     not an iterable.)
     '''
     return is_string_like(maybe) or not is_iterable(maybe)
+
+
+
+__all__ = [str(name) for name in ('Unset', 'is_iterable', 'is_collection',
+                                  'is_scalar', 'is_string_like')]
