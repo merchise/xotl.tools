@@ -37,7 +37,6 @@ __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
-
 def get_config(program=None, config_path=None, **defaults):
     '''Reads the `program` configuration options by traversing all folders in
     `config_path` looking for configuration files and updating options to be
