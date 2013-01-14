@@ -84,8 +84,8 @@ def settle(**kwargs):
 
     '''
     def inner(target):
-        for key, value in kwargs.iteritems():
-            setattr(target, key, value)
+        for key in kwargs:
+            setattr(target, key, kwargs[key])
         return target
     return inner
 
@@ -103,14 +103,15 @@ def namer(name, **kwargs):
 
         >>> I.custom
         1
+
     '''
     return settle(__name__=name, **kwargs)
 
 
 def aliases(**kwargs):
-    '''
-    In a class, create an :class:`AttributeAlias` descriptor for each
+    '''In a class, create an :class:`AttributeAlias` descriptor for each
     definition as keyword argument (alias=existing_attribute).
+
     '''
     def inner(target):
         '''
@@ -125,8 +126,7 @@ def aliases(**kwargs):
 
 @_decorator
 def assignment_operator(func, maybe_inline=False):
-    '''
-    Makes a function that receives a name, and other args to get its first
+    '''Makes a function that receives a name, and other args to get its first
     argument (the name) from an assignment operation, meaning that it if its
     used in a single assignment statement the name will be taken from the left
     part of the ``=`` operator.
@@ -203,15 +203,9 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
-__all__ = (str('settle'),
-           str('namer'),
-           str('aliases'),
-           str('decorator'),
-           str('instantiate'),
-           str('AttributeAlias'),
-           str('assignment_operator'),
-           str('FunctionMaker'),
-           str('signature_keeping_decorator'))
+__all__ = (str(name) for name in ('settle', 'namer', 'aliases', 'decorator',
+              'instantiate', 'AttributeAlias', 'assignment_operator',
+              'FunctionMaker', 'signature_keeping_decorator'))
 
 
 if __name__ == '__main__':

@@ -34,7 +34,15 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _absolute_import)
 
-from collections import *
+
+from xoutil.modules import copy_members as _copy_python_module_members
+_pm = _copy_python_module_members()
+
+namedtuple = _pm.namedtuple
+MutableMapping = _pm.MutableMapping
+
+del _pm, _copy_python_module_members
+
 
 from xoutil.compat import defaultdict as _defaultdict
 from xoutil.compat import py32 as _py32
@@ -131,13 +139,16 @@ if not _py32:
         # is deleted from an OrderedDict.
 
         def __init__(self, *args, **kwds):
-            '''Initialize an ordered dictionary. The signature is the same as regular
-            dictionaries, but keyword arguments are not recommended because
-            their insertion order is arbitrary.
+            '''Initialize an ordered dictionary.
+
+            The signature is the same as regular dictionaries, but keyword
+            arguments are not recommended because their insertion order is
+            arbitrary.
 
             '''
             if len(args) > 1:
-                raise TypeError('expected at most 1 arguments, got %d' % len(args))
+                raise TypeError('expected at most 1 arguments, got %d' %
+                                len(args))
             try:
                 self.__root
             except AttributeError:
@@ -225,10 +236,12 @@ if not _py32:
             return key, value
 
         def move_to_end(self, key, last=True):
-            '''Move an existing element to the end (or beginning if last==False).
+            '''Move an existing element to the end (or beginning if
+            ``last==False``).
 
-            Raises KeyError if the element does not exist.  When last=True, acts
-            like a fast version of self[key]=self.pop(key).
+            Raises KeyError if the element does not exist. When
+            ``last==True``, acts like a fast version of
+            ``self[key]=self.pop(key)``.
 
             '''
             link = self.__map[key]
@@ -250,11 +263,11 @@ if not _py32:
 
         def __sizeof__(self):
             sizeof = _sys.getsizeof
-            n = len(self) + 1                       # number of links including root
-            size = sizeof(self.__dict__)            # instance dictionary
-            size += sizeof(self.__map) * 2          # internal dict and inherited dict
-            size += sizeof(self.__hardroot) * n     # link objects
-            size += sizeof(self.__root) * n         # proxy objects
+            n = len(self) + 1                      # links including root
+            size = sizeof(self.__dict__)           # instance dictionary
+            size += sizeof(self.__map) * 2         # internal & inherited dicts
+            size += sizeof(self.__hardroot) * n    # link objects
+            size += sizeof(self.__root) * n        # proxy objects
             return size
 
         update = __update = MutableMapping.update
@@ -266,7 +279,8 @@ if not _py32:
         __marker = object()
 
         def pop(self, key, default=__marker):
-            '''od.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+            '''od.pop(k[,d]) -> v, remove specified key and return the
+            corresponding value.
 
             If key is not found, d is returned if given, otherwise KeyError is
             raised.
@@ -281,7 +295,8 @@ if not _py32:
             return default
 
         def setdefault(self, key, default=None):
-            'od.setdefault(k[,d]) -> od.get(k,d), also set od[k]=d if k not in od'
+            '''``od.setdefault(k[, d])`` -> ``od.get(k, d)`` also set
+            ``od[k] = d if k not in od``'''
             if key in self:
                 return self[key]
             self[key] = default
@@ -310,8 +325,8 @@ if not _py32:
 
         @classmethod
         def fromkeys(cls, iterable, value=None):
-            '''OD.fromkeys(S[, v]) -> New ordered dictionary with keys from S.  If not
-            specified, the value defaults to None.
+            '''``OD.fromkeys(S[, v])`` -> New ordered dictionary with keys from
+            `S`. If not specified, the value defaults to None.
 
             '''
             self = cls()
@@ -320,8 +335,9 @@ if not _py32:
             return self
 
         def __eq__(self, other):
-            '''od.__eq__(y) <==> od==y.  Comparison to another OD is order-sensitive while
-            comparison to a regular mapping is order-insensitive.
+            '''``od.__eq__(y) <==> od==y``.  Comparison to another OD is
+            order-sensitive while comparison to a regular mapping is
+            order-insensitive.
 
             '''
             if isinstance(other, OrderedDict):

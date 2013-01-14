@@ -126,31 +126,6 @@ def get_first(iterable, default=None):
     return first(lambda x: True, iterable, default=default)
 
 
-def coalesce(*args):
-    '''Returns the first of its arguments that is logically not null.
-
-    None is returned only if all arguments are False. It is often used to
-    substitute a default value for null values when data is retrieved for
-    display, for example::
-
-        coalesce(description, short_description, '(none)')
-
-    `coalesce` only evaluates the arguments that are needed to determine the
-    result; that is, arguments to the right of the first non-null argument are
-    not evaluated.
-
-    This function is based in one of same name of PostgreSQL.
-
-    '''
-    # TODO: [med] Since args is defined `*args` all args are evaluated despite
-    # the documentation. Probably the intended meaning of coalesce is
-    # equivalent to::
-    #
-    #    def coalesce(iterable):
-    #        return next((x for x in iterable if x), None)
-    return next((x for x in args if x), None)
-
-
 def flatten(sequence, is_scalar=is_scalar, depth=None):
     '''
     Flattens out a sequence. It takes care of everything deemed a collection
@@ -228,16 +203,18 @@ def fake_dict_iteritems(source):
 
 
 def smart_dict(defaults, *sources):
-    '''
-    Build a dictionary looking in sources for all keys or attributes defined in
-    "defaults".
+    '''Build a dictionary looking in `sources` for all keys or attributes
+    defined in `defaults`.
 
-    Each source could be a dictionary or any other object.
+    Each item in `sources` could be a dictionary or any other Python object.
+
+    If `defaults` is not a dictionary, `None` is used as default value.
 
     Persistence of all original objects are warranted.
     '''
     from copy import deepcopy
     from collections import Mapping
+    is_mapping = isinstance(defaults, Mapping)
     res = {}
     for key in defaults:
         for s in sources:
@@ -246,7 +223,8 @@ def smart_dict(defaults, *sources):
             if (value is not Unset) and (key not in res):
                 res[key] = deepcopy(value)
         if key not in res:
-            res[key] = deepcopy(defaults[key])
+            res[key] = deepcopy(defaults[key]) if is_mapping else None
+        Unset
     return res
 
 

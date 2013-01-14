@@ -15,13 +15,12 @@
 #
 # Created on Feb 17, 2012
 
-'''
-Expose all original `string` module functionalities, with some general
+'''Expose all original `string` module functionalities, with some general
 additions.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
 Python 3.x treats strings differently, `bytes` and `_unicode` will be used
-instead with the following conventions::
+instead with the following conventions:
 
     - In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str')
       are both string types inheriting form `basestring`.
@@ -52,58 +51,13 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-# All original string members
-import string as _pm
+from xoutil.modules import copy_members as _copy_python_module_members
+_pm = _copy_python_module_members()
 
-Formatter = _pm.Formatter
-Template = _pm.Template
-ascii_letters = _pm.ascii_letters
-ascii_lowercase = _pm.ascii_lowercase
-ascii_uppercase = _pm.ascii_uppercase
-atof = _pm.atof
-atof_error = _pm.atof_error
-atoi = _pm.atoi
-atoi_error = _pm.atoi_error
-atol = _pm.atol
-atol_error = _pm.atol_error
-capitalize = _pm.capitalize
-capwords = _pm.capwords
-center = _pm.center
-count = _pm.count
-digits = _pm.digits
-expandtabs = _pm.expandtabs
-find = _pm.find
-hexdigits = _pm.hexdigits
-index = _pm.index
-index_error = _pm.index_error
-join = _pm.join
-joinfields = _pm.joinfields
-letters = _pm.letters
-ljust = _pm.ljust
-lower = _pm.lower
-lowercase = _pm.lowercase
-lstrip = _pm.lstrip
-maketrans = _pm.maketrans
-octdigits = _pm.octdigits
-printable = _pm.printable
-punctuation = _pm.punctuation
-replace = _pm.replace
-rfind = _pm.rfind
-rindex = _pm.rindex
-rjust = _pm.rjust
-rsplit = _pm.rsplit
-rstrip = _pm.rstrip
-split = _pm.split
-splitfields = _pm.splitfields
-strip = _pm.strip
-swapcase = _pm.swapcase
-translate = _pm.translate
-upper = _pm.upper
-uppercase = _pm.uppercase
-whitespace = _pm.whitespace
-zfill = _pm.zfill
+Formatter = _pm.Formatter     # Redundant but needed to avoid IDE errors
 
-del _pm
+del _copy_python_module_members, _pm
+
 
 
 def force_encoding(encoding=None):
@@ -156,7 +110,7 @@ def safe_encode(u, encoding=None):
     else:
         encoding = force_encoding(encoding)
         try:
-            if isinstance(u, base_str_):
+            if isinstance(u, _str_base):
                 return bytes(u)
             else:
                 return _unicode(u).encode(encoding, 'replace')

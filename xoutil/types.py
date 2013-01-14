@@ -27,31 +27,34 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-import types as _legacy
-from types import *
+from xoutil.modules import copy_members as _copy_python_module_members
+_copy_python_module_members()
+del _copy_python_module_members
 
 
-
-class _UnsetType(type):
-    'The type of the :obj:`Unset` value.'
-    def __nonzero__(self):
-        return False
-
-
-class Unset:
-    '''
-    To be used as default value to be sure none is returned in scenarios where
-    `None` could be a valid value.
+class UnsetType(object):
+    '''The unique instance `Unset` is to be used as default value to be sure
+    none is returned in scenarios where `None` could be a valid value.
 
     For example::
 
         >>> getattr('', '__doc__', Unset) is Unset
         False
-    '''
-    __metaclass__ = _UnsetType
 
-    def __new__(cls, *args, **kwargs):
-        raise TypeError("cannot create 'Unset' instances")
+    '''
+    __slots__ = ()
+
+    def __new__(cls, **kwargs):
+        if kwargs.get('__singleton__', None) is UnsetType:
+            return super(UnsetType, cls).__new__(cls)
+        else:
+            raise TypeError("cannot create 'UnsetType' instances")
+
+    def __nonzero__(self):
+        return False
+
+
+Unset = UnsetType(__singleton__=UnsetType)
 
 
 def is_iterable(maybe):

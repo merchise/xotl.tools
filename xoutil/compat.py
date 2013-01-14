@@ -97,18 +97,29 @@ if py3k:
 else:
     from inspect import getargspec as inspect_getfullargspec
 
-if py3k:
-    # they're bringing it back in 3.2.  brilliant !
-    def callable(fn):
-        return hasattr(fn, '__call__')
 
+try:
+    # Removed in Python 3 and brought back in 3.2.  brilliant!
+    callable
+except:
+    def callable(obj):
+        '''callable(object) -> bool
+
+        Return whether the object is callable (i.e., some kind of function).
+        Note that classes are callable, as are instances of classes with a
+        __call__() method.
+
+        '''
+        return hasattr(obj, '__call__')
+
+if py3k:
     def cmp(a, b):
         return (a > b) - (a < b)
 
     # Remove this import, always use it directly
     from functools import reduce
 else:
-    from __builtin__ import callable, cmp, reduce
+    from __builtin__ import cmp, reduce
 
 try:
     from collections import defaultdict
@@ -155,21 +166,20 @@ class _probe(dict):
         return 1
 
 try:
-    try:
-        _probe()['missing']
-        py25_dict = dict
-    except KeyError:
-        class py25_dict(dict):
-            def __getitem__(self, key):
+    _probe()['missing']
+    py25_dict = dict
+except KeyError:
+    class py25_dict(dict):
+        def __getitem__(self, key):
+            try:
+                return dict.__getitem__(self, key)
+            except KeyError:
                 try:
-                    return dict.__getitem__(self, key)
-                except KeyError:
-                    try:
-                        missing = self.__missing__
-                    except AttributeError:
-                        raise KeyError(key)
-                    else:
-                        return missing(key)
+                    missing = self.__missing__
+                except AttributeError:
+                    raise KeyError(key)
+                else:
+                    return missing(key)
 finally:
     del _probe
 
@@ -222,10 +232,10 @@ else:
             return obj
         return g
 
-import decimal
+import decimal  # TODO: Why 'decimal' is here?
 
 
-if py3k: # pragma: no cover
+if py3k:    # pragma: no cover
     def iteritems_(d):
         return d.items()
     def itervalues_(d):
@@ -240,3 +250,7 @@ else:
     def iterkeys_(d):
         return d.iterkeys()
 
+try:
+    import ConfigParser as configparser
+except:
+    import configparser     # Name changed in Python3

@@ -32,6 +32,11 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from xoutil.modules import copy_members as _copy_python_module_members
+_pm = _copy_python_module_members()
+
+load = _pm.load
+
 from decimal import Decimal as _Decimal
 from xoutil.types import is_iterable
 from xoutil.datetime import (is_datetime as _is_datetime,
@@ -41,12 +46,8 @@ from xoutil.datetime import (is_datetime as _is_datetime,
                              is_time as _is_time)
 
 
-import json as _legacy
-from json import *
-
-
-class JSONEncoder(_legacy.JSONEncoder):
-    __doc__ = (_legacy.JSONEncoder.__doc__ +
+class JSONEncoder(_pm.JSONEncoder):
+    __doc__ = (_pm.JSONEncoder.__doc__ +
     '''
     Datetimes:
 
@@ -78,4 +79,6 @@ def file_load(filename):
         return load(f)
 
 
-__all__ = tuple(_legacy.__all__) + (b'file_load',)
+__all__ = tuple(_pm.__all__) + (str('file_load'),)
+
+del _pm
