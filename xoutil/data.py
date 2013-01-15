@@ -21,32 +21,10 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_absimports)
 
+# TODO: [med] Create an package for PEP-246 (Object Adaptation).
+#       See `zope.interface` and Go4's "Chain Of Responsibility" pattern.
+#       Migrate all "(force|adapt)_.*" into this protocol.
 
-def sync(source, target, keys=None):
-    '''Copies attributes, or (key, value) items, from `source` to `target`.
-
-    :param source: The object or mapping to extract source items.
-
-    :param target: The object or mapping to settle destination items.
-
-    Names starting with an '_' will not be copied unless `full` is True.
-
-    When `target` is not a dictionary (other Python objects):
-
-        - Only valid identifiers will be copied.
-
-        - If `full` is False only public values (which name does not starts
-          with '_') will be copied.
-
-    Assumed introspections:
-
-        - `source` is considered a dictionary when it has a method called
-          ``iteritem`` or ``items``.
-
-        - `target` is considered a dictionary when: ``isinstance(target,
-          collections.Mapping)`` is True.
-
-    '''
 
 def smart_copy(source, target, full=False):
     '''Copies attributes (or keys) from `source` to `target`.
@@ -86,6 +64,21 @@ def smart_copy(source, target, full=False):
                 setattr(target, key, value)
     for key, value in items:
         setvalue(key, value)
+
+
+def adapt_exception(value, **kwargs):
+    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception)``.'''
+    isi, issc, ebc = isinstance, issubclass, Exception
+    if isi(value, ebc) or issc(value, ebc):
+        return value
+    elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
+        from xoutil.compat import str_base
+        iss = lambda s: isinstance(s, str_base)
+        ecls = value[0]
+        args = ((x.format(**kwargs) if iss(x) else x) for x in value[1:])
+        return ecls(*args)
+    else:
+        return None
 
 
 # TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un

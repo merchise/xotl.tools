@@ -194,14 +194,14 @@ def dict_update_new(target, source):
 
 
 def fake_dict_iteritems(source):
-    '''
-    Iterate (key, value) in a source that have defined method "keys" and
+    '''Iterate (key, value) in a source that have defined method "keys" and
     operator "__getitem__".
     '''
     for key in source.keys():
         yield key, source[key]
 
 
+# TODO: [manu] Probably this must go to 'xoutil.data', is not an iterator
 def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
@@ -223,8 +223,14 @@ def smart_dict(defaults, *sources):
             if (value is not Unset) and (key not in res):
                 res[key] = deepcopy(value)
         if key not in res:
-            res[key] = deepcopy(defaults[key]) if is_mapping else None
-        Unset
+            if isinstance(defaults, Mapping):
+                from xoutil.data import adapt_exception
+                value = defaults[key]
+                error = adapt_exception(value, key=key)
+                if not error:
+                    res[key] = deepcopy(defaults[key]) if is_mapping else None
+                else:
+                    raise error
     return res
 
 
