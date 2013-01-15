@@ -100,7 +100,7 @@ def build_self_operator(method_name):
             return _super()
         else:
             return getattr(self, method_name)()
-    method.__name__ = method_name
+    method.__name__ = str(method_name)
     return method
 
 
@@ -112,7 +112,7 @@ def build_binary_operator(method_name):
             return _super(other)
         else:
             return getattr(self, method_name)(other)
-    method.__name__ = method_name
+    method.__name__ = str(method_name)
     return method
 
 
@@ -123,7 +123,7 @@ _supported_methods.update({mname: build_binary_operator(mname)
 _supported_methods.update({mname: build_binary_operator(mname)
                            for mname in SUPPORTED_BINARY_LOGICAL_OPERATIONS})
 
-SupportedOperations = type(b'SupportedOperations', (object,),
+SupportedOperations = type(str('SupportedOperations'), (object,),
                            _supported_methods)
 
 
