@@ -6,3 +6,6 @@
 
 - Introduces module :mod:`xoutil.decorator.compat` that enables constructions
   that are interoperable in Python 2 and Python 3.
+
+- Introduces :func:`xoutil.iterators.izip` since it was removed from Python
+  3k's standard library.

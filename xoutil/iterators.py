@@ -26,6 +26,7 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
+from xoutil.compat import py3k as _py3k
 from xoutil.deprecation import deprecated
 from xoutil.types import is_scalar, Unset, ignored
 
@@ -340,3 +341,23 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
     while n > 0:
         yield next(seq)
         n -= 1
+
+
+try:
+    from itertools import izip
+except ImportError:
+    def izip(*iterables):
+        '''izip(iter1 [,iter2 [...]]) –> izip object
+
+        Return a izip object whose .next() method returns a tuple where the
+        i-th element comes from the i-th iterable argument. The .next() method
+        continues until the shortest iterable in the argument sequence is
+        exhausted and then it raises StopIteration. Works like the zip()
+        function but consumes less memory by returning an iterator instead of a
+        list.
+
+        '''
+        iterators = map(iter, iterables)
+        while iterators:
+            yield tuple(map(next, iterators))
+

@@ -3,3 +3,5 @@
 
 .. automodule:: xoutil.iterators
    :members:
+
+.. autofunction:: xoutil.iterators.izip
