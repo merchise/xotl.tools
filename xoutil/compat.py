@@ -55,7 +55,7 @@ if py3k:
     str_types = (str, )
     u = _unicode = str
     ext_str_types = (bytes, str)
-    class_types = type
+    class_types = (type, )
     integer = long = int
     xrange_ = range
 else:
