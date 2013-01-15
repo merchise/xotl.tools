@@ -31,13 +31,12 @@ Use as:
 Note the difference creating the context and checking it.
 '''
 
-
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
 from threading import local
-
+from xoutil.decorator.compat import metaclass
 
 class LocalData(local):
     def __init__(self):
@@ -64,9 +63,9 @@ class MetaContext(type):
         return bool(self[name])
 
 
+@metaclass(MetaContext)
 class Context(object):
-    '''
-    A context manager for execution context flags.
+    '''A context manager for execution context flags.
 
     Use as::
 
@@ -80,9 +79,8 @@ class Context(object):
     context you should use `context(name)` for testing whether some piece of
     code is being executed inside a context you should use `context[name]`;
     you may also use the syntax `name in context`.
-    '''
-    __metaclass__ = MetaContext
 
+    '''
     def __new__(cls, name, **data):
         res = cls[name]
         if res is _null_context:
@@ -92,8 +90,20 @@ class Context(object):
             res.count = 0
             res._events = []
         elif data:
+            # TODO: [med] This makes the data available back to upper context
+            # nesting::
+            #
+            #    >>> with context('A', b=1) as context_A:
+            #    ...   with context('A', b=2):
+            #    ...       pass
+            #    ...   print(context_A.data['b'])
+            #    2
+            #
             res.data.update(data)
         return res
+
+    def __init__(self, name, **data):
+        pass
 
     def __nonzero__(self):
         return self.count
