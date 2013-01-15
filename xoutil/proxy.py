@@ -116,11 +116,11 @@ def build_binary_operator(method_name):
     return method
 
 
-_supported_methods = {mname: build_self_operator(mname)
+_supported_methods = {str(mname): build_self_operator(mname)
                         for mname in SUPPORTED_UNARY_OPERATIONS}
-_supported_methods.update({mname: build_binary_operator(mname)
+_supported_methods.update({str(mname): build_binary_operator(mname)
                            for mname in SUPPORTED_BINARY_ARITH_OPERATIONS})
-_supported_methods.update({mname: build_binary_operator(mname)
+_supported_methods.update({str(mname): build_binary_operator(mname)
                            for mname in SUPPORTED_BINARY_LOGICAL_OPERATIONS})
 
 SupportedOperations = type(str('SupportedOperations'), (object,),
