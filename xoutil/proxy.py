@@ -16,13 +16,13 @@
 #
 # Created on May 28, 2012
 
-'''
-An object proxy utility.
+'''An object proxy utility.
 
 This module allows you to create proxy classes. A proxy instance should have a
 `target` attribute that refers to the proxied object. And the proxy class
 should have a `behaves` attributes that contains a sequence of new-style
 classes that complements the behaviour of wrapped objects.
+
 '''
 
 from __future__ import (division as _py3_division,
@@ -46,45 +46,42 @@ __all__ = _names('SUPPORTED_OPERATIONS', 'proxify')
 
 
 class UNPROXIFING_CONTEXT(object):
-    '''
-    Mark for an :mod:`execution context <xoutil.context>` in which you don't
+    '''Mark for an :mod:`execution context <xoutil.context>` in which you don't
     want to proxy to the target's attributes. When in this context all
-    attribute access will return the proxy's own attributes instead of
-    target's ones.
+    attribute access will return the proxy's own attributes instead of target's
+    ones.
 
     '''
 
 
-SUPPORTED_UNARY_OPERATIONS = (b'__pos__', b'__abs__', b'__neg__',
-                              b'__invert__',)
+SUPPORTED_UNARY_OPERATIONS = _names('__pos__', '__abs__', '__neg__',
+                                    '__invert__',)
 
 
-SUPPORTED_BINARY_LOGICAL_OPERATIONS = (b'__and__', b'__or__', b'__xor__',
-                                       b'__lt__', b'__le__', b'__gt__',
-                                       b'__ge__', b'__eq__', b'__ne__',
-
-                                       b'__rand__', b'__ror__', b'__rxor__',
-                                       b'__iand__', b'__ior__', b'__ixor__',)
-
-
-SUPPORTED_BINARY_ARITH_OPERATIONS = (b'__add__', b'__sub__', b'__mul__',
-                                     b'__div__', b'__mod__', b'__pow__',
-                                     b'__truediv__', b'__floordiv__',
-                                     b'__lshift__', b'__rshift__',
-
-                                     b'__radd__', b'__rsub__', b'__rmul__',
-                                     b'__rdiv__', b'__rmod__', b'__rpow__',
-                                     b'__rtruediv__', b'__rfloordiv__',
-                                     b'__rlshift__', b'__rrshift__',
-
-                                     b'__iadd__', b'__isub__', b'__imul__',
-                                     b'__idiv__', b'__imod__', b'__ipow__',
-                                     b'__itruediv__', b'__ifloordiv__',
-                                     b'__ilshift__', b'__irshift__',
-                                     )
+SUPPORTED_BINARY_LOGICAL_OPERATIONS = _names('__and__', '__or__', '__xor__',
+                                             '__lt__', '__le__', '__gt__',
+                                             '__ge__', '__eq__', '__ne__',
+                                             '__rand__', '__ror__', '__rxor__',
+                                             '__iand__', '__ior__', '__ixor__',)
 
 
-SUPPORTED_BINARY_OPERATIONS = (b'__contains__',)
+SUPPORTED_BINARY_ARITH_OPERATIONS = _names('__add__', '__sub__', '__mul__',
+                                           '__div__', '__mod__', '__pow__',
+                                           '__truediv__', '__floordiv__',
+                                           '__lshift__', '__rshift__',
+
+                                           '__radd__', '__rsub__', '__rmul__',
+                                           '__rdiv__', '__rmod__', '__rpow__',
+                                           '__rtruediv__', '__rfloordiv__',
+                                           '__rlshift__', '__rrshift__',
+
+                                           '__iadd__', '__isub__', '__imul__',
+                                           '__idiv__', '__imod__', '__ipow__',
+                                           '__itruediv__', '__ifloordiv__',
+                                           '__ilshift__', '__irshift__',)
+
+
+SUPPORTED_BINARY_OPERATIONS = _names('__contains__',)
 
 
 SUPPORTED_OPERATIONS = (SUPPORTED_UNARY_OPERATIONS +
