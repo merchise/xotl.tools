@@ -17,10 +17,10 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from xoutil.decorator import meta
+from xoutil.string import names as _names
 from .deprecation import inject_deprecated
 
 
-__all__ = tuple(str(name) for name in ('decorator', 'FunctionMaker',
-                                       'flat_decorator'))
+__all__ = _names('decorator', 'FunctionMaker', 'flat_decorator')
 
 inject_deprecated(__all__, meta)

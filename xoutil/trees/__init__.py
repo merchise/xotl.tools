@@ -51,6 +51,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+from xoutil.string import names as _names
+
 class Tree(object):
     pass
 
@@ -69,4 +71,4 @@ class Node(object):
         return self.NAME_SEPARATOR.join(name_list)
 
 
-__all__ = (b'Tree', b'Node')
+__all__ = _names('Tree', 'Node')

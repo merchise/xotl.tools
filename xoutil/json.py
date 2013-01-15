@@ -78,4 +78,4 @@ def file_load(filename):
         return load(f)
 
 
-__all__ = tuple(_legacy.__all__) + (b'file_load',)
+__all__ = tuple(_legacy.__all__) + (str('file_load'),)

@@ -30,10 +30,10 @@ import types as _legacy
 from types import *
 
 from xoutil.compat import xrange_
+from xoutil.string import names as _names
 
-
-__all__ = tuple(str(x) for x in ('Unset', 'is_iterable', 'is_collection',
-                                 'is_scalar', 'is_string_like'))
+__all__ = _names('Unset', 'is_iterable', 'is_collection', 'is_scalar',
+                 'is_string_like')
 
 class _UnsetType(type):
     'The type of the :obj:`Unset` value.'

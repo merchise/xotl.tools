@@ -22,6 +22,8 @@ from __future__ import (division as _py3_division,
 
 import inspect
 
+from xoutil.string import names as _names
+
 
 MAX_DEEP = 15
 
@@ -148,5 +150,5 @@ def iter_frames(max_deep=MAX_DEEP):
         del frame   # As recommended in the Python's doc to avoid memory leaks
 
 
-__all__ = (b'MAX_DEEP', b'getargvalues', b'object_info_finder',
-           b'object_finder', b'track_value', b'iter_frames')
+__all__ = _names('MAX_DEEP', 'getargvalues', 'object_info_finder',
+                 'object_finder', 'track_value', 'iter_frames')

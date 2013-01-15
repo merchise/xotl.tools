@@ -29,8 +29,10 @@ from __future__ import (division as _py3_division,
 
 from collections import Mapping
 from functools import partial
+
 from xoutil.types import Unset, is_collection
 from xoutil.compat import str_base
+from xoutil.string import names as _names
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -39,7 +41,6 @@ __author__ = 'manu'
 # These two functions can be use to always return True or False
 _true = lambda * args, **kwargs: True
 _false = lambda * args, **kwargs: False
-
 
 
 def smart_get(obj):
@@ -498,8 +499,6 @@ def full_nameof(target):
         return res
 
 
-
-__all__ = [str(item)
-             for item in ('xdir', 'fdir', 'validate_attrs', 'get_first_of',
-                          'smart_getattr', 'get_and_del_attr',
-                          'setdefaultattr', 'nameof', 'full_nameof')]
+__all__ = _names('xdir', 'fdir', 'validate_attrs', 'get_first_of',
+                 'smart_getattr', 'get_and_del_attr',
+                 'setdefaultattr', 'nameof', 'full_nameof')

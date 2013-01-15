@@ -36,12 +36,13 @@ from types import MethodType
 from xoutil.context import context
 from xoutil.aop import complementor
 from xoutil.types import Unset
+from xoutil.string import names as _names
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-__all__ = (b'SUPPORTED_OPERATIONS', b'proxify')
+__all__ = _names('SUPPORTED_OPERATIONS', 'proxify')
 
 
 class UNPROXIFING_CONTEXT(object):
