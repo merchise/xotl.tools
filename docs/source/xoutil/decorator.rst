@@ -11,3 +11,4 @@ Contents:
 
    decorator/meta
    decorator/development
+   decorator/compat

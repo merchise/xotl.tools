@@ -3,3 +3,6 @@
 
 - Introduces module :mod:`xoutil.subprocess` and function
   :func:`xoutil.subprocess.call_and_check_output`.
+
+- Introduces module :mod:`xoutil.decorator.compat` that enables constructions
+  that are interoperable in Python 2 and Python 3.
