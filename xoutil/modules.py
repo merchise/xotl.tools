@@ -43,12 +43,27 @@ __author__ = 'med'
 
 
 
-def force_module(ref):
-    '''Load a module from a string or return module if already created.'''
+def force_module(ref=None):
+    '''Load a module from a string or return module if already created.
+
+    If `ref` is not specified (or integer) calling module is assumed looking
+    in the stack.
+
+    .. impl-detail::
+
+       Function used to inspect the stack is not guaranteed to exist in all
+       implementations of Python.
+
+    '''
     from types import ModuleType
     if isinstance(ref, ModuleType):
         return ref
     else:
+        if ref is None:
+            ref = 1
+        if isinstance(ref, int):
+            import sys
+            ref = sys._getframe(ref).f_globals['__name__']
         if not isinstance(ref, str):
             if isinstance(ref, bytes):
                 ref = ref.decode()  # Python 3.x
@@ -82,10 +97,7 @@ def copy_members(source=None, target=None):
        implementations of Python.
 
     '''
-    if target is None:
-        import sys
-        target = sys._getframe(1).f_globals['__name__']
-    target = force_module(target)
+    target = force_module(target or 2)
     if source is None:
         source = target.__name__.rsplit('.')[-1]
         if source == target.__name__:
