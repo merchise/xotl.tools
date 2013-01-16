@@ -22,15 +22,16 @@ In this module `str` and `unicode` types are not used because Python 2.x and
 Python 3.x treats strings differently, `bytes` and `_unicode` will be used
 instead with the following conventions:
 
-    - In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str')
-      are both string types inheriting form `basestring`.
-      `_unicode` is synonym of `unicode`.
+- In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str') are
+  both string types inheriting form `basestring`.  `_unicode` is synonym of
+  `unicode`.
 
-    - In Python 3.x `str` is always unicode but `unicode` and `basestring`
-      types doesn't exists. `bytes` type can be used as an array of one byte
-      each item.
-      `_unicode` is synonym of `str`.
-      Many methods are readjusted to these conditions.
+- In Python 3.x `str` is always unicode but `unicode` and `basestring` types
+  doesn't exists. `bytes` type can be used as an array of one byte each item.
+
+  `_unicode` is synonym of `str`.
+
+  Many methods are readjusted to these conditions.
 
 '''
 
@@ -46,17 +47,15 @@ from xoutil.compat import (str_base as _str_base, _unicode,
                            ext_str_types as _ext_str_types,
                            py3k as _py3k)
 
-
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
-
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 
 Formatter = _pm.Formatter     # Redundant but needed to avoid IDE errors
 
 del _copy_python_module_members, _pm
+
+__docstring_format__ = 'rst'
+__author__ = 'manu'
 
 
 
@@ -345,12 +344,25 @@ def force_str(value, encoding=None):
         return safe_decode(value, encoding)
 
 
+@_deprecated(force_str)
 def normalize_to_str(value, encoding='utf-8'):
+    '''
+    .. warning:: Deprecated since 1.2.0
+    '''
     # FIXME: Wrong in Py3, with some similar to `force_str` would be enough
     if type(value) is bytes:
         return value
     elif type(value) is _unicode:
         return value.encode(encoding)
+
+
+def names(*strings):
+    '''Returns all `strings` as a tuple of type-valid identifiers.
+
+    This helps compatibility between Python 2 and 3 for those modules
+    where you have `unicode_literals` from ``__future__`` in Python 2.
+    '''
+    return tuple(str(name) for name in strings)
 
 
 class SafeFormatter(Formatter):

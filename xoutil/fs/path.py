@@ -21,12 +21,32 @@ import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
+from xoutil.functools import pow_
+from xoutil.string import names as _names
+
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
 # TODO: import all in "from os.path import *"
+
+rtrim = lambda path, n: pow_(dirname, n)(normalize_path(path))
+rtrim.__doc__ = """Trims the last `n` components of the pathname `path`.
+
+This basically applies `n` times the function `os.path.dirname` to `path`.
+
+`path` is normalized before proceeding (but not tested to exists).
+
+Example::
+
+    >>> rtrim('~/tmp/a/b/c/d', 3)  # doctest: +ELLIPSIS
+    '.../tmp/a'
+
+    # It does not matter if `/` is at the end
+    >>> rtrim('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
+    '.../tmp/a'
+"""
 
 
 def fix_encoding(name, encoding=None):
@@ -120,7 +140,6 @@ def shorten_user(filename):
     return filename
 
 
-
-__all__ = (str(name) for name in ('abspath', 'expanduser', 'dirname', 'sep',
-             'normpath', 'fix_encoding', 'join', 'normalize_path',
-             'get_module_path', 'shorten_module_filename', 'shorten_user'))
+__all__ = _names('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
+                 'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+                 'shorten_module_filename', 'shorten_user', 'rtrim')

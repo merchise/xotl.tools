@@ -95,4 +95,4 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     return s
 
 
-__all__ = (b'slugify',)
+__all__ = (str('slugify'),)

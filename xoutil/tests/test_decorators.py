@@ -23,7 +23,9 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 import unittest
-from xoutil.decorators import assignment_operator, decorator
+from xoutil.decorator import assignment_operator
+from xoutil.decorator.meta import decorator
+
 
 class TestAssignable(unittest.TestCase):
     def test_inline_expression(self):

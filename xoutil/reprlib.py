@@ -11,9 +11,10 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil.compat import py32
+from xoutil.string import names as _names
 
 
-__all__ = ["Repr", "repr", "recursive_repr"]
+__all__ = _names("Repr", "repr", "recursive_repr")
 
 
 if py32:

@@ -55,7 +55,9 @@ if py3k:
     str_types = (str, )
     u = _unicode = str
     ext_str_types = (bytes, str)
-    class_types = type
+    class_types = (type, )
+    integer = long = int
+    xrange_ = range
 else:
     str_base = basestring
     str_types = (str, unicode)
@@ -63,6 +65,8 @@ else:
     ext_str_types = (str, unicode)
     from types import TypeType
     class_types = (type, TypeType)
+    integer = long
+    xrange_ = xrange
 
 if py3k:
     set_types = set
@@ -92,6 +96,14 @@ else:
     except ImportError:
         import pickle
 
+
+if py3k:
+    import configparser
+else:
+    import ConfigParser as configparser
+    ConfigParser = configparser
+
+
 if py3k:
     from inspect import getfullargspec as inspect_getfullargspec
 else:
@@ -100,7 +112,7 @@ else:
 
 try:
     # Removed in Python 3 and brought back in 3.2.  brilliant!
-    callable
+    callable = __builtin__.callable
 except:
     def callable(obj):
         '''callable(object) -> bool

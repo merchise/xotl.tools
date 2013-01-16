@@ -26,10 +26,12 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-
 from xoutil.modules import copy_members as _copy_python_module_members
 _copy_python_module_members()
 del _copy_python_module_members
+
+from xoutil.compat import xrange_
+from xoutil.string import names as _names
 
 
 class UnsetType(object):
@@ -42,19 +44,30 @@ class UnsetType(object):
         False
 
     '''
-    __slots__ = ()
+    __slots__ = (str('name'), )
 
-    def __new__(cls, **kwargs):
+    def __new__(cls, name, **kwargs):
         if kwargs.get('__singleton__', None) is UnsetType:
-            return super(UnsetType, cls).__new__(cls)
+            result = super(UnsetType, cls).__new__(cls)
+            result.name = name
+            return result
         else:
             raise TypeError("cannot create 'UnsetType' instances")
 
     def __nonzero__(self):
         return False
 
+    def __repr__(self):
+        return self.name
+    __str__ = __repr__
 
-Unset = UnsetType(__singleton__=UnsetType)
+
+Unset = UnsetType('Unset', __singleton__=UnsetType)
+
+#: To be used in arguments that are currently ignored cause they are being
+#: deprecated. The only valid reason to use `ignored` is to signal ignored
+#: arguments in method's/function's signature.
+ignored = UnsetType('ignored', __singleton__=UnsetType)
 
 
 def is_iterable(maybe):
@@ -71,7 +84,7 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> is_iterable(xrange(1))
+        >>> is_iterable(xrange_(1))
         True
 
         >>> is_iterable({})
@@ -104,7 +117,7 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> is_collection(xrange(1))
+        >>> is_collection(xrange_(1))
         True
 
         >>> is_collection({})
@@ -116,10 +129,10 @@ def is_collection(maybe):
         >>> is_collection(set())
         True
 
-        >>> is_collection(a for a in xrange(100))
+        >>> is_collection(a for a in xrange_(100))
         True
     '''
-    return isinstance(maybe, (tuple, xrange, list, set, frozenset,
+    return isinstance(maybe, (tuple, xrange_, list, set, frozenset,
                               GeneratorType))
 
 
@@ -142,5 +155,5 @@ def is_scalar(maybe):
 
 
 
-__all__ = [str(name) for name in ('Unset', 'is_iterable', 'is_collection',
-                                  'is_scalar', 'is_string_like')]
+__all__ = _names('Unset', 'ignored', 'is_iterable', 'is_collection',
+                 'is_scalar', 'is_string_like')

@@ -53,7 +53,8 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
                         '(%s given)' % arg_count)
 
 
-def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
+def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
+               followlinks=False):
     '''
     Iterate filenames recursively.
 
@@ -62,16 +63,23 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
                     It should be a string. If it starts with "(?" it will be
                     regarded as a regular expression, otherwise a shell
                     pattern.
+
     :param regex_pattern: An *alternative* to `pattern`. This will always be
                           regarded as a regular expression.
+
     :param shell_pattern: An *alternative* to `pattern`. This should be a
                           shell pattern.
 
-    .. warning:: It's an error to pass more than one of patterns.
+    :param followlinks: The same meaning that in `os.walk`.
+
+                        .. versionadded:: 1.2.1
+
+    .. warning:: It's an error to pass more than pattern argument.
 
     '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
-    for dirpath, _dirs, filenames in os.walk(normalize_path(top)):
+    for dirpath, _dirs, filenames in os.walk(normalize_path(top),
+                                             followlinks=followlinks):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             if (regex is None) or regex.search(path):
@@ -89,15 +97,18 @@ _REGEX_DEFAULT_ALLFILES = _rcompile(r'^(?P<dir>.+(?=/)/)?'
                                     r'([.](?P<ext>[^.]+))?$')
 
 
-def iter_dict_files(top='.', regex=None, wrong=None):
+def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
     '''
     Iterate filenames recursively.
 
     :param top: The top directory for recurse into.
     :param regex: Regular expression with group definitions to match.
     :param wrong: A key to store full name of not matching files.
+    :param followlinks: The same meaning that in `os.walk`.
 
-    .. versionadded:: 1.1.6
+                        .. versionadded:: 1.2.1
+
+    .. versionadded:: 1.2.0
 
     '''
     if regex:
@@ -105,7 +116,8 @@ def iter_dict_files(top='.', regex=None, wrong=None):
             regex = _rcompile(regex)
     else:
         regex = _REGEX_DEFAULT_ALLFILES
-    for dirpath, _dirs, filenames in os.walk(normalize_path(top)):
+    for dirpath, _dirs, filenames in os.walk(normalize_path(top),
+                                             followlinks=followlinks):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             match = regex.match(path)

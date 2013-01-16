@@ -26,8 +26,9 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
+from xoutil.compat import py3k as _py3k
 from xoutil.deprecation import deprecated
-from xoutil.types import is_scalar, Unset
+from xoutil.types import is_scalar, Unset, ignored
 
 
 __docstring_format__ = 'rst'
@@ -58,13 +59,13 @@ def obtain(predicate, iterable, default=None):
 
 
 @deprecated('next',
-            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
-            'function.')
+            'Function `first` is deprecated since 1.2.0. Use the built-in '
+            '`{replacement}` function.')
 def first(predicate, iterable, default=None):
     '''
     .. warning::
 
-       .. deprecated:: 1.1.6
+       .. deprecated:: 1.2.0
 
        Use the `next` function. Since this function is just the same
        as ``next((which for which in iterable if pred(which)), default)``.
@@ -101,14 +102,14 @@ def first(predicate, iterable, default=None):
 
 
 @deprecated('next',
-            'Deprecated since 1.1.6. Use the built-in `{replacement}` '
-            'function.')
+            'Function `get_first` is deprecated since 1.2.0. Use the built-in'
+            '`{replacement}` function.')
 def get_first(iterable, default=None):
     '''Returns the first element of an iterable.
 
     .. warning::
 
-       .. deprecated:: 1.1.6
+       .. deprecated:: 1.2.0
 
        Use the `next` function, since this function is just the same
        as ``next((which for which in iterable), default)``.
@@ -246,7 +247,7 @@ def slides(iterator, width=2, fill=Unset):
     :class:`~xoutil.types.Unset`)::
 
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
-        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, <class '...Unset'>, <class '...Unset'>)]
+        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, Unset, Unset)]
     '''
     pos = 0
     res = []
@@ -268,11 +269,10 @@ def slides(iterator, width=2, fill=Unset):
         yield tuple(res)
 
 
-def first_n(iterable, n=1, fill=Unset, return_tuple=False):
+def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
     '''Take the first `n` items from iterable. If there are less than `n` items
-    in the iterator and `fill` is Unset, a StopIteration exception is raised.
-
-    If `return_tuple` is True, then returns the collected items as tuple.
+    in the iterator and `fill` is :class:`~xoutil.types.Unset`, a
+    StopIteration exception is raised.
 
     :param iterable: An iterable from which the first `n` items should be
                      collected.
@@ -287,30 +287,31 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=False):
 
                  - anything else is used as the filling item.
 
-    :param return_tuple: Indicates whether to return the collected items
-                         as a tuple. By default a list is returned.
-
     :returns: The first `n` items from `iterable`, probably with a filling
               pattern at the end.
-    :rtype: `list` or `tuple`
+    :rtype: generator object
+
+    .. warning:: The `return_tuple` parameter is now deprecated and is
+                 ignored.
 
     Examples::
 
-        >>> first_n(range(10), 3)
+        >>> list(first_n(range(10), 3))
         [0, 1, 2]
 
-        >>> first_n(range(2), 4)
-        Traceback (most recent call last):
-            ...
-        StopIteration
+        # You won't see the StopIteration cause list uses it to complete the
+        # list.
+        >>> list(first_n(range(2), 4))
+        [0, 1]
 
-        >>> first_n(range(2), 4, fill=2)
+        >>> list(first_n(range(2), 4, fill=2))
         [0, 1, 2, 2]
 
-        >>> first_n(range(2), 6, fill=(1, 2), return_tuple=True)
+        >>> tuple(first_n(range(2), 6, fill=(1, 2)))
         (0, 1, 1, 2, 1, 2)
 
-    .. versionadded: 1.1.6
+    .. versionadded: 1.2.0
+
     '''
     if fill is not Unset:
         from itertools import cycle, repeat, chain
@@ -321,11 +322,26 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=False):
         seq = chain(iterable, fill)
     else:
         seq = iter(iterable)
-    result = []
     while n > 0:
-        result.append(next(seq))
+        yield next(seq)
         n -= 1
-    if return_tuple:
-        return tuple(result)
-    else:
-        return result
+
+
+try:
+    from itertools import izip
+except ImportError:
+    def izip(*iterables):
+        '''izip(iter1 [,iter2 [...]]) –> izip object
+
+        Return a izip object whose .next() method returns a tuple where the
+        i-th element comes from the i-th iterable argument. The .next() method
+        continues until the shortest iterable in the argument sequence is
+        exhausted and then it raises StopIteration. Works like the zip()
+        function but consumes less memory by returning an iterator instead of a
+        list.
+
+        '''
+        iterators = map(iter, iterables)
+        while iterators:
+            yield tuple(map(next, iterators))
+

@@ -55,14 +55,14 @@ def _update(attrs, *sources):
     - For every source that is a class, it's public attributes and all methods
       are updated into attrs.
     '''
-    attrs.update({f.__name__: f for f in sources
-                  if not isinstance(f, type) and getattr(f, '__name__',
-                                                         False)})
-    attrs.update({name: getattr(a, 'im_func', a) for f in sources
-                        if isinstance(f, type)
-                    for name, a in xdir(f)
-                        if not name.startswith('_') or
-                            getattr(a, 'im_func', False)})
+    from xoutil.compat import class_types
+    attrs.update({str(f.__name__): f for f in sources
+                  if not isinstance(f, class_types) and getattr(f, '__name__', False)})
+
+    attrs.update({str(name): getattr(a, 'im_func', a)
+                  for f in sources if isinstance(f, class_types)
+                  for name, a in xdir(f)
+                  if not name.startswith('_') or getattr(a, 'im_func', False)})
     return attrs
 
 
@@ -141,7 +141,9 @@ def complementor(*sources, **attrs):
                                  MutableSequence as List,
                                  Set)
         from xoutil.types import Unset
-        for attr, value in attrs.iteritems():
+        from xoutil.compat import iteritems_
+        for attr, value in iteritems_(attrs):
+            attr = str(attr)
             assigned = attr in cls.__dict__
             if assigned:
                 ok = isinstance

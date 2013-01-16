@@ -27,9 +27,10 @@ from __future__ import (division as _py3_division,
 from re import compile as _regex_compile
 from ..compat import str_base
 
+from xoutil.string import names as _names
 
-__all__ = (b'is_valid_identifier', b'is_valid_full_identifier',
-           b'is_valid_slug')
+__all__ = _names('is_valid_identifier', 'is_valid_full_identifier',
+                 'is_valid_slug')
 
 
 _IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')

@@ -54,7 +54,7 @@ class defaultdict(_defaultdict):
 
     Examples::
 
-        >>> from xoutil.default_dict import defaultdict
+        >>> from xoutil.collections import defaultdict
         >>> d = defaultdict(lambda key, d: 'a')
         >>> d['abc']
         'a'
