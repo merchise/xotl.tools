@@ -128,8 +128,7 @@ def get_first(iterable, default=None):
 
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
-    '''
-    Flattens out a sequence. It takes care of everything deemed a collection
+    '''Flattens out a sequence. It takes care of everything deemed a collection
     (i.e, not a scalar according to the callabled passed in `is_scalar`)::
 
         >>> tuple(flatten((1, range(2, 5), xrange(5, 10))))
@@ -146,19 +145,26 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
 
     If `depth` is None the collection is flattened recursiverly until the
     "bottom" is reached. If `depth` is an integer then the collection is
-    flattened up to that level::
+    flattened up to that level.
 
-        # depth=0 means simply not to flatten.
-        >>> tuple(flatten((range(2), range(2, 4)), depth=0))
+    `depth=0` means not to flatten.
+
+    Nested iterators are not "exploded" if under the stated `depth`.
+
+    Examples::
+
+        >>> from xoutil.compat import xrange_, range_
+
+        >>> tuple(flatten((range_(2), range_(2, 4)), depth=0))
         ([0, 1], [2, 3])
 
-        # But notice that depth=0 would not "explode" internal generators:
-        >>> tuple(flatten((xrange(2), range(2, 4)), depth=0))
-        (xrange(2), [2, 3])
+        >>> tuple(flatten((xrange_(2), range_(2, 4)), depth=0))  # doctest: +ELLIPSIS
+        (...range(2), [2, 3])
 
-        >>> tuple(flatten((xrange(2), range(2, 4),
-        ...       (xrange(n) for n in range(5, 8))), depth=1))
-        (0, 1, 2, 3, xrange(5), xrange(6), xrange(7))
+        >>> tuple(flatten((xrange_(2), range_(2, 4),
+        ...       (xrange_(n) for n in range_(5, 8))), depth=1))  # doctest: +ELLIPSIS
+        (0, 1, 2, 3, ...range(5), ...range(6), ...range(7))
+
 
     '''
     for item in sequence:
