@@ -58,6 +58,7 @@ if py3k:
     class_types = (type, )
     integer = long = int
     xrange_ = range
+    range_ = lambda *args: list(xrange_(*args))
 else:
     str_base = basestring
     str_types = (str, unicode)
@@ -67,6 +68,7 @@ else:
     class_types = (type, TypeType)
     integer = long
     xrange_ = xrange
+    range_ = range
 
 if py3k:
     set_types = set
@@ -126,7 +128,6 @@ else:
         from builtins import callable
     except ImportError:
         from __builtin__ import callable
-    from __builtin__ import callable
 
 
 if py3k:
