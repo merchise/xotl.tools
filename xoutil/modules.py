@@ -42,6 +42,26 @@ __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
+
+def force_module(ref):
+    '''Load a module from a string or return module if already created.'''
+    from types import ModuleType
+    if isinstance(ref, ModuleType):
+        return ref
+    else:
+        if not isinstance(ref, str):
+            if isinstance(ref, bytes):
+                ref = ref.decode()  # Python 3.x
+            else:
+                try:
+                    ref = ref.encode()  # Python 2.x
+                except:
+                    msg = ("invalid type '%s' for module name '%s'" %
+                            (type(ref), ref))
+                    raise TypeError(msg)
+        return __import__(ref, fromlist=[ref], level=0)
+
+
 def copy_members(source=None, target=None):
     '''Copy module members from `source` to `target`.
 
@@ -62,20 +82,16 @@ def copy_members(source=None, target=None):
        implementations of Python.
 
     '''
-    import sys
-    ModuleType = type(sys)
-    import_module = lambda name: __import__(name, fromlist=[name], level=0)
     if target is None:
+        import sys
         target = sys._getframe(1).f_globals['__name__']
-    if not isinstance(target, ModuleType):
-        target = import_module(str(target))
+    target = force_module(target)
     if source is None:
         source = target.__name__.rsplit('.')[-1]
         if source == target.__name__:
             msg = '"source" and "target" modules must be different.'
             raise ValueError(msg)
-    if not isinstance(source, ModuleType):
-        source = import_module(str(source))
+    source = force_module(source)
     for attr in dir(source):
         if not attr.startswith('__'):
             setattr(target, attr, getattr(source, attr))
