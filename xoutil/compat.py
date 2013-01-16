@@ -122,6 +122,10 @@ if py3k and not py32:
         return hasattr(obj, '__call__')
 else:
     # Removed in Python 3 and brought back in 3.2.  brilliant!
+    try:
+        from builtins import callable
+    except ImportError:
+        from __builtin__ import callable
     from __builtin__ import callable
 
 
