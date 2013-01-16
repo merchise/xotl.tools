@@ -110,10 +110,7 @@ else:
     from inspect import getargspec as inspect_getfullargspec
 
 
-try:
-    # Removed in Python 3 and brought back in 3.2.  brilliant!
-    callable = __builtin__.callable
-except:
+if py3k and not py32:
     def callable(obj):
         '''callable(object) -> bool
 
@@ -123,6 +120,10 @@ except:
 
         '''
         return hasattr(obj, '__call__')
+else:
+    # Removed in Python 3 and brought back in 3.2.  brilliant!
+    from __builtin__ import callable
+
 
 if py3k:
     def cmp(a, b):
