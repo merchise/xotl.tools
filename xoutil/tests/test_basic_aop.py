@@ -86,7 +86,21 @@ class Test(unittest.TestCase):
             'Hacked'
             return self._super_other()
 
-        @complementor(other, __init__,
+        class Complementor(object):
+            somelist = range_(10, 20)
+
+            def other2(self):
+                return 'other'
+
+            @classmethod
+            def clmethod(cls):
+                return cls
+
+            @staticmethod
+            def stmethod():
+                return 1
+
+        @complementor(other, __init__, Complementor,
                       somedict={'a': 1, 'b': 2}, somelist=range_(5, 10))
         class Someclass(object):
             somedict = {'a': 0}
@@ -105,9 +119,13 @@ class Test(unittest.TestCase):
 
         ok = self.assertEqual
         ok(Someclass.somedict, {'a': 1, 'b': 2})
-        ok(Someclass.somelist, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        ok(Someclass.somelist, range_(5) + range_(10, 20))
         ok(Someclass.__init__.__doc__, 'My docstring')
         ok(Someclass.other.__doc__, 'Hacked')
+        inst = Someclass()
+        ok(inst.other2(), 'other')
+        ok(Someclass.stmethod(), 1)
+        ok(Someclass.clmethod(), Someclass)
 
     def test_contextualizer(self):
         from xoutil.context import context
