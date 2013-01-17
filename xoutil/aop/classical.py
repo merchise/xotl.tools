@@ -71,7 +71,10 @@ def _filter_args_byspec(method, *args, **kwargs):
     # kwonlydefaults.
     #
     # TODO: [manu] Support the full Python 3.2 syntax and Python 2.7 as well.
-    keywords = get_first_of(spec, 'keywords', 'varkw')
+    #
+    # XXX: [manu] Since spec is a named tuple, it must be enclosed in an outer
+    # tuple.
+    keywords = get_first_of((spec, ), 'keywords', 'varkw')
     if not keywords:
         kwargs = {}
     return (args, kwargs)
