@@ -153,6 +153,7 @@ class NullContext(object):
 
     def __nonzero__(self):
         return False
+    __bool__ = __nonzero__
 
     def __enter__(self):
         from xoutil.types import Unset
