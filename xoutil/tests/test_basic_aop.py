@@ -27,6 +27,7 @@ import unittest
 from datetime import timedelta
 from xoutil.aop import weaved
 from xoutil.aop.basic import contextualized, complementor
+from xoutil.compat import range_
 
 
 def days(self):
@@ -86,10 +87,10 @@ class Test(unittest.TestCase):
             return self._super_other()
 
         @complementor(other, __init__,
-                      somedict={'a': 1, 'b': 2}, somelist=range(5, 10))
+                      somedict={'a': 1, 'b': 2}, somelist=range_(5, 10))
         class Someclass(object):
             somedict = {'a': 0}
-            somelist = range(5)
+            somelist = range_(5)
 
             def __init__(self, d=None, l=None):
                 'My docstring'
