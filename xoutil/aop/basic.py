@@ -159,7 +159,7 @@ def complementor(*sources, **attrs):
                 elif ok(value, Set) and ok(current, Set):
                     value = current | value
                 elif ok(value, (FunctionType, MethodType)) and current:
-                    setattr(cls, b'_super_%s' % attr, current)
+                    setattr(cls, str('_super_%s') % attr, current)
             else:
                 current = None
             if value is not Unset:
