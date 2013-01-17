@@ -62,10 +62,17 @@ class StopExceptionChain(Exception):
 
 
 def _filter_args_byspec(method, *args, **kwargs):
+    from xoutil.objects import get_first_of
     spec = inspect_getfullargspec(method)
     if not spec.varargs:
         args = ()
-    if not spec.keywords:
+    # XXX: [manu] In Python 3.2, the FullArgsSpec named tuple does not have a
+    # keywords attribute, but a varkw and both kwonlyargs and
+    # kwonlydefaults.
+    #
+    # TODO: [manu] Support the full Python 3.2 syntax and Python 2.7 as well.
+    keywords = get_first_of(spec, 'keywords', 'varkw')
+    if not keywords:
         kwargs = {}
     return (args, kwargs)
 
