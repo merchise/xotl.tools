@@ -8,3 +8,5 @@
 .. autofunction:: xoutil.iterators.flatten(sequence, is_scalar=xoutil.types.is_scalar, depth=None)
 
 .. autofunction:: xoutil.iterators.izip
+
+.. autofunction:: xoutil.iterators.imap
