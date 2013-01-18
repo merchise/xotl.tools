@@ -57,8 +57,9 @@ if py3k:
     ext_str_types = (bytes, str)
     class_types = (type, )
     integer = long = int
-    xrange_ = range
-    range_ = lambda *args: list(xrange_(*args))
+    from builtins import range as xrange
+    xrange_ = xrange
+    range_ = range = lambda *args: list(xrange(*args))
 else:
     str_base = basestring
     str_types = (str, unicode)
@@ -67,6 +68,7 @@ else:
     from types import TypeType
     class_types = (type, TypeType)
     integer = long
+    from __builtin__ import xrange, range
     xrange_ = xrange
     range_ = range
 
@@ -87,7 +89,6 @@ else:
     else:
         import sets
         warnings.filters.remove(ignore)
-
     set_types = set, sets.Set
 
 if py3k:
@@ -273,27 +274,20 @@ try:
 except:
     import configparser     # Name changed in Python3
 
+try:
+    from future_builtins import zip
+except ImportError:
+    from builtins import zip
+izip = zip
 
 try:
-    from itertools import izip
+    from future_builtins import map
 except ImportError:
-    def izip(*iterables):
-        '''izip(iter1 [,iter2 [...]]) –> izip object
-
-        Return a izip object whose .next() method returns a tuple where the
-        i-th element comes from the i-th iterable argument. The .next() method
-        continues until the shortest iterable in the argument sequence is
-        exhausted and then it raises StopIteration. Works like the zip()
-        function but consumes less memory by returning an iterator instead of a
-        list.
-
-        '''
-        iterators = map(iter, iterables)
-        while iterators:
-            yield tuple(map(next, iterators))
-
+    from builtins import map
+imap = map
 
 try:
-    from itertools import imap
+    from itertools import izip_longest as zip_longest
 except ImportError:
-    imap = map
+    from itertools import zip_longest
+izip_longest = zip_longest
