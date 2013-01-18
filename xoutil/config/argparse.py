@@ -25,7 +25,7 @@
 
 '''Extensible 'argparse' module with some utilities.
 
-  * function 'super_store' return an action closure that execute normal
+  * function 'store_also' return an action closure that execute normal
     behavior of 'store' action and also execute other arguments actions with
     values passed as keyword arguments.
 
