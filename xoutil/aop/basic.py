@@ -55,16 +55,19 @@ def _update(attrs, *sources):
     - For every source that is a class, it's public attributes and all methods
       are updated into attrs.
     '''
-    from xoutil.compat import class_types
+    from xoutil.compat import class_types, iteritems_
     attrs.update({str(f.__name__): f for f in sources
                   if not isinstance(f, class_types) and getattr(f, '__name__', False)})
 
-    attrs.update({str(name): getattr(a, 'im_func', a)
-                  for f in sources if isinstance(f, class_types)
-                  for name, a in xdir(f)
-                  if not name.startswith('_') or getattr(a, 'im_func', False)})
+    attrs.update({str(name): member
+                  for cls in sources if isinstance(cls, class_types)
+                  # XXX: [manu] Use cls.__dict__ instead of xdir(cls) since
+                  # getattr(cls, attr) would not yield the classmethod and
+                  # staticmethod wrappers.
+                  for name, member in iteritems_(cls.__dict__)
+                  if not name.startswith('_') or
+                     isinstance(member, FunctionType)})
     return attrs
-
 
 
 def complementor(*sources, **attrs):
@@ -147,7 +150,11 @@ def complementor(*sources, **attrs):
             assigned = attr in cls.__dict__
             if assigned:
                 ok = isinstance
-                current = getattr(cls, attr)
+                # XXX: [manu] In order to be Python 2 and 3 compatible is best
+                # to get things from the class' dictionary, then current would
+                # be a function for methods, a classmethod for classmethods and
+                # a staticmethod for staticmethods.
+                current = cls.__dict__.get(attr, None)
                 if ok(value, Mapping) and ok(current, MutableMapping):
                     current.update(value)
                     value = Unset
@@ -158,13 +165,11 @@ def complementor(*sources, **attrs):
                     value = current + value
                 elif ok(value, Set) and ok(current, Set):
                     value = current | value
-                elif ok(value, (FunctionType, MethodType)) and current:
-                    setattr(cls, b'_super_%s' % attr, current)
+                elif ok(value, (FunctionType, classmethod, staticmethod)) and current:
+                    setattr(cls, str('_super_%s') % attr, current)
             else:
                 current = None
             if value is not Unset:
-                if isinstance(value, MethodType):
-                    value = value.im_func
                 if current and not getattr(value, '__doc__', False):
                     from functools import update_wrapper
                     update_wrapper(value, current)

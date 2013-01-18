@@ -154,7 +154,7 @@ if not py32:
                 @wraps(user_function)
                 def wrapper(*args, **kwds):
                     #~ nonlocal hits, misses
-                    hits, misses = _cache_info
+                    hits, misses = tuple(_cache_info)
                     key = args
                     if kwds:
                         key += kwd_mark + tuple(sorted(kwds.items()))
@@ -180,7 +180,7 @@ if not py32:
                 @wraps(user_function)
                 def wrapper(*args, **kwds):
                     #~ nonlocal hits, misses
-                    hits, misses = _cache_info
+                    hits, misses = tuple(_cache_info)
                     key = args
                     if kwds:
                         key += kwd_mark + tuple(sorted(kwds.items()))
@@ -198,10 +198,10 @@ if not py32:
                     with lock:
                         cache[key] = result     # record recent use of this key
                         misses += 1
+                        _cache_info[0] = hits
+                        _cache_info[1] = misses
                         if len(cache) > maxsize:
                             cache_popitem(0)    # purge least recently used
-                    _cache_info[0] = hits
-                    _cache_info[1] = misses
                     return result
 
             def cache_info():

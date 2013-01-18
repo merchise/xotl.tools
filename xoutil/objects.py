@@ -214,7 +214,8 @@ def get_first_of(source, *keys, **kwargs):
         return res
 
     if is_collection(source):
-        from itertools import imap, takewhile
+        from xoutil.iterators import imap
+        from itertools import takewhile
         res = Unset
         for item in takewhile(lambda _: res is Unset, imap(inner, source)):
             if item is not Unset:

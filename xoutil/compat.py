@@ -57,7 +57,9 @@ if py3k:
     ext_str_types = (bytes, str)
     class_types = (type, )
     integer = long = int
-    xrange_ = range
+    from builtins import range as xrange
+    xrange_ = xrange
+    range_ = range = lambda *args: list(xrange(*args))
 else:
     str_base = basestring
     str_types = (str, unicode)
@@ -66,7 +68,9 @@ else:
     from types import TypeType
     class_types = (type, TypeType)
     integer = long
+    from __builtin__ import xrange, range
     xrange_ = xrange
+    range_ = range
 
 if py3k:
     set_types = set
@@ -85,7 +89,6 @@ else:
     else:
         import sets
         warnings.filters.remove(ignore)
-
     set_types = set, sets.Set
 
 if py3k:
@@ -122,7 +125,10 @@ if py3k and not py32:
         return hasattr(obj, '__call__')
 else:
     # Removed in Python 3 and brought back in 3.2.  brilliant!
-    from __builtin__ import callable
+    try:
+        from builtins import callable
+    except ImportError:
+        from __builtin__ import callable
 
 
 if py3k:
@@ -267,3 +273,21 @@ try:
     import ConfigParser as configparser
 except:
     import configparser     # Name changed in Python3
+
+try:
+    from future_builtins import zip
+except ImportError:
+    from builtins import zip
+izip = zip
+
+try:
+    from future_builtins import map
+except ImportError:
+    from builtins import map
+imap = map
+
+try:
+    from itertools import izip_longest as zip_longest
+except ImportError:
+    from itertools import zip_longest
+izip_longest = zip_longest
