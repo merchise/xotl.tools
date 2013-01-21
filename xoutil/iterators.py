@@ -335,4 +335,6 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
 
 
 # Compatible izip and imap
-from xoutil.compat import izip, imap
+from xoutil.compat import zip, map
+izip = zip
+imap = map
