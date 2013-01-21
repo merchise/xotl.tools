@@ -74,6 +74,31 @@ ignored = UnsetType('ignored', __singleton__=UnsetType)
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
+class mro_dict(object):
+    '''An utility class that behaves like a read-only dict to query the
+    attributes in the mro chain of a class (or object).
+
+    '''
+    def __init__(self, target):
+        t = target if hasattr(target, 'mro') else type(target)
+        self._target_mro = t.mro()
+
+    def __getitem__(self, name):
+        return self.get(name)
+
+    def get(self, name, default=Unset):
+        from xoutil.objects import get_first_of
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        result = get_first_of(probes, name, default=Unset)
+        if result is Unset:
+            if default is Unset:
+                raise KeyError(name)
+            else:
+                return default
+        else:
+            return result
+
+
 def is_iterable(maybe):
     '''
     Returns True if `maybe` an iterable object (e.g. implements the `__iter__`
