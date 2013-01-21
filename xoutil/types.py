@@ -70,6 +70,10 @@ Unset = UnsetType('Unset', __singleton__=UnsetType)
 ignored = UnsetType('ignored', __singleton__=UnsetType)
 
 
+#: The type of methods that are builtin in Python.
+WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
+
+
 def is_iterable(maybe):
     '''
     Returns True if `maybe` an iterable object (e.g. implements the `__iter__`
