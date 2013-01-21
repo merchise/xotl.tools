@@ -377,7 +377,7 @@ class SafeFormatter(Formatter):
 
         >>> f = SafeFormatter(x=1, y=2)
         >>> print(f.format('CWD: "{cwd}"; "x+d["x"]": {x+d["x"]}.',
-        ...                cwd=b'~/tmp/foóbar', d=dict(x=1)))
+        ...                cwd=str('~/tmp/foóbar'), d=dict(x=1)))
         CWD: "~/tmp/foóbar"; "x+d["x"]": 2.
 
     .. versionadded:: 1.1.3
