@@ -183,6 +183,64 @@ def is_scalar(maybe):
     return is_string_like(maybe) or not is_iterable(maybe)
 
 
+def is_staticmethod(desc, name=Unset):
+    '''Returns true if a `method` is a static method.
+
+    This function takes the same arguments as :func:`is_classmethod`.
+
+    '''
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, staticmethod)
+
+
+def is_classmethod(desc, name=Unset):
+    '''Returns true if a `method` is a class method.
+
+    :param desc: This may be the method descriptor or the class that holds the
+                 method, in the second case you must provide the `name` of the
+                 method.
+
+                 .. note::
+
+                    Notice that in the first case what is needed is the
+                    **method descriptor**, i.e, taken from the class'
+                    `__dict__` attribute. If instead you pass something like
+                    ``cls.methodname``, this method will return False whilst
+                    :func:`is_instancemethod` will return True.
+
+    :param name: The name of the method, if the first argument is the class.
+
+    '''
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, classmethod)
+
+
+def is_instancemethod(desc, name=Unset):
+    '''Returns true if a given `method` is neither a static method nor a class
+    method.
+
+    This function takes the same arguments as :func:`is_classmethod`.
+
+    '''
+    from types import FunctionType
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, FunctionType)
+
+
+def is_slotwrapper(desc, name=Unset):
+    '''Returns True if a given `method` is a slot wrapper (i.e. a method that
+    is builtin in the `object` base class).
+
+    This function takes the same arguments as :func:`is_classmethod`.
+
+    '''
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, SlotWrapperType)
+
 
 __all__ = _names('Unset', 'ignored', 'is_iterable', 'is_collection',
                  'is_scalar', 'is_string_like')
