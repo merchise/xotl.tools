@@ -42,7 +42,6 @@ __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
-
 def force_module(ref=None):
     '''Load a module from a string or return module if already created.
 

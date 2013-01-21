@@ -147,9 +147,9 @@ def is_string_like(maybe):
 
 
 def is_scalar(maybe):
-    '''
-    Returns True if `maybe` is a string, an int, or some other scalar type (i.e
-    not an iterable.)
+    '''Returns True if `maybe` is a string, an int, or some other scalar type
+    (i.e not an iterable.)
+
     '''
     return is_string_like(maybe) or not is_iterable(maybe)
 
