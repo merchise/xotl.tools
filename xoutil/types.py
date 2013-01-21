@@ -74,6 +74,10 @@ ignored = UnsetType('ignored', __singleton__=UnsetType)
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
+#: A compatible Py2 and Py3k DictProxyType
+DictProxyType = type(object.__dict__)
+
+
 class mro_dict(object):
     '''An utility class that behaves like a read-only dict to query the
     attributes in the mro chain of a class (or object).
