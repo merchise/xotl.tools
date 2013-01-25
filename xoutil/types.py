@@ -75,14 +75,15 @@ ignored = UnsetType('ignored', __singleton__=UnsetType)
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
-#: A compatible Py2 and Py3k DictProxyType
+#: A compatible Py2 and Py3k DictProxyType, since it does not exists in Py3k.
 DictProxyType = type(object.__dict__)
 
 
 class mro_dict(object):
     '''An utility class that behaves like a read-only dict to query the
-    attributes in the mro chain of a class (or object).
+    attributes in the mro chain of a class (or an object's class).
 
+    Currently it only supports `get` and `__getitem__`.
     '''
     def __init__(self, target):
         t = target if hasattr(target, 'mro') else type(target)
@@ -247,5 +248,13 @@ def is_slotwrapper(desc, name=Unset):
     return isinstance(desc, SlotWrapperType)
 
 
+def is_module(maybe):
+    '''Returns True if `maybe` is a module.'''
+    from types import ModuleType
+    return isinstance(maybe, ModuleType)
+
+
 __all__ = _names('Unset', 'ignored', 'is_iterable', 'is_collection',
-                 'is_scalar', 'is_string_like')
+                 'is_scalar', 'is_string_like', 'is_module', 'is_classmethod',
+                 'is_staticmethod', 'is_instancemethod', 'is_slotwrapper',
+                 'DictProxyType', 'SlotWrapperType', 'mro_dict')
