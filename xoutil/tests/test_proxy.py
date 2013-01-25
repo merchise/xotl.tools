@@ -75,7 +75,6 @@ class TestProxy(unittest.TestCase):
         with self.assertRaises(AttributeError):
             _q = r / 1
 
-
     def test_unproxifing_addition(self):
         @proxify
         class Proxified(object):
@@ -85,9 +84,7 @@ class TestProxy(unittest.TestCase):
 
         x1 = Foobar()
         y = Proxified(x1)
-        with self.assertRaises(AssertionError):
-            self.assertEqual(y, y + 1)
-
+        self.assertEqual(x1, y + 1)
 
     def test_explicit_unproxification(self):
         @proxify
@@ -101,7 +98,6 @@ class TestProxy(unittest.TestCase):
         with context(UNPROXIFING_CONTEXT):
             target = proxy.target
         self.assertIs(foo, target)
-
 
     def test_unboxed(self):
         class X(object):
