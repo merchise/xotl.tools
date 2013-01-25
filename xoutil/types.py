@@ -56,6 +56,7 @@ class UnsetType(object):
 
     def __nonzero__(self):
         return False
+    __bool__ = __nonzero__
 
     def __repr__(self):
         return self.name
