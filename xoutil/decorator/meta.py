@@ -173,16 +173,17 @@ class FunctionMaker(object):
                doc=None, module=None, addsource=True, **attrs):
         """
         Create a function from the strings name, signature and body.
-        evaldict is the evaluation dictionary. If addsource is true an attribute
-        __source__ is added to the result. The attributes attrs are added,
+        "evaldict" is the evaluation dictionary. If addsource is true an
+        attribute __source__ is added to the result. The attributes attrs are
+        added,
         if any.
         """
-        if isinstance(obj, _str_base): # "name(signature)"
+        if isinstance(obj, _str_base):  # "name(signature)"
             obj = str(obj)
             name, rest = obj.strip().split(str('('), 1)
-            signature = rest[:-1] #strip a right parens
+            signature = rest[:-1]   # strip a right parens
             func = None
-        else: # a function
+        else:   # a function
             name = None
             signature = None
             func = obj
@@ -200,19 +201,19 @@ def flat_decorator(caller, func=None):
 
     ``decorator(caller, func)`` decorates a function using a caller.
     """
-    if func is not None: # returns a decorated function
+    if func is not None:    # returns a decorated function
         evaldict = func.func_globals.copy()
         evaldict['_call_'] = caller
         evaldict['_func_'] = func
         return FunctionMaker.create(
             func, "return _call_(_func_, %(shortsignature)s)",
             evaldict, undecorated=func, __wrapped__=func)
-    else: # returns a decorator
+    else:   # returns a decorator
         if isinstance(caller, partial):
             return partial(decorator, caller)
         # otherwise assume caller is a function
         try:
-            first = inspect.getargspec(caller)[0][0] # first arg
+            first = inspect.getargspec(caller)[0][0]    # first arg
             deco_sign = '%s(%s)' % (caller.__name__, first)
             deco_body = 'return flat_decorator(_call_, %s)' % first
         except IndexError:
@@ -228,10 +229,10 @@ def flat_decorator(caller, func=None):
             doc=caller.__doc__, module=caller.__module__)
 # -- End of decorators package
 
+
 def decorator(caller):
-    '''
-    Eases the creation of decorators with arguments. Normally a decorator with
-    arguments needs three nested functions like this::
+    '''Eases the creation of decorators with arguments. Normally a decorator
+    with arguments needs three nested functions like this::
 
         def decorator(*decorator_arguments):
             def real_decorator(target):
