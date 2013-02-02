@@ -18,8 +18,6 @@ from __future__ import (division as _py3_division,
 
 import warnings
 
-from zope.interface import Interface
-
 from xoutil.compat import class_types as _class_types
 from xoutil.objects import full_nameof
 from .meta import decorator as _decorator
@@ -34,6 +32,10 @@ def unstable(target, msg=None):
     if msg is None:
         msg = 'The {0} `{1}` is declared unstable. It may change in the future or be removed.'
     def _unstable(*args, **kwargs):
+        try:
+            from zope.interface import Interface
+        except ImportError:
+            from xoutil.types import Unset as Interface
         if isinstance(target, type(Interface)):
             objtype = 'interface'
         elif isinstance(target, _class_types):
