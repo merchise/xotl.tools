@@ -288,7 +288,7 @@ def proxify(cls, *complementors):
         >>> r < 1                                # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        AttributeError: '...' object has no attribute '__lt__'
+        AttributeError: __lt__
 
     The only exceptions for the above rule are `__eq__` and `__ne__`
     operations, for which we provide a fallback implementation if none is
