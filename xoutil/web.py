@@ -30,40 +30,40 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
 
     Parts from http://www.djangosnippets.org/snippets/369/
 
-        >>> slugify(u"Manuel Vázquez Acosta")
-        u'manuel-vazquez-acosta'
+        >>> slugify(str("Manuel Vázquez Acosta"))
+        'manuel-vazquez-acosta'
 
     If `s` and `entities` is True (the default) all HTML entities
     are replaced by its equivalent character before normalization::
 
-        >>> slugify(u"Manuel V&aacute;zquez Acosta")
-        u'manuel-vazquez-acosta'
+        >>> slugify(str("Manuel V&aacute;zquez Acosta"))
+        'manuel-vazquez-acosta'
 
     If `entities` is False, then no HTML-entities substitution is made::
 
-        >>> slugify(u"Manuel V&aacute;zquez Acosta", entities=False)
-        u'manuel-v-aacute-zquez-acosta'
+        >>> slugify(str("Manuel V&aacute;zquez Acosta"), entities=False)
+        'manuel-v-aacute-zquez-acosta'
 
     If `decimal` is True, then all entities of the form ``&#nnnn`` where
     `nnnn` is a decimal number deemed as a unicode codepoint, are replaced by
     the corresponding unicode character::
 
-        >>> slugify(u'Manuel V&#225;zquez Acosta')
-        u'manuel-vazquez-acosta'
+        >>> slugify(str('Manuel V&#225;zquez Acosta'))
+        'manuel-vazquez-acosta'
 
-        >>> slugify(u'Manuel V&#225;zquez Acosta', decimal=False)
-        u'manuel-v-225-zquez-acosta'
+        >>> slugify(str('Manuel V&#225;zquez Acosta'), decimal=False)
+        'manuel-v-225-zquez-acosta'
 
 
     If `hexadecimal` is True, then all entities of the form ``&#nnnn`` where
     `nnnn` is a hexdecimal number deemed as a unicode codepoint, are replaced
     by the corresponding unicode character::
 
-        >>> slugify(u'Manuel V&#x00e1;zquez Acosta')
-        u'manuel-vazquez-acosta'
+        >>> slugify(str('Manuel V&#x00e1;zquez Acosta'))
+        'manuel-vazquez-acosta'
 
-        >>> slugify(u'Manuel V&#x00e1;zquez Acosta', hexadecimal=False)
-        u'manuel-v-x00e1-zquez-acosta'
+        >>> slugify(str('Manuel V&#x00e1;zquez Acosta'), hexadecimal=False)
+        'manuel-v-x00e1-zquez-acosta'
 
     '''
     import re
@@ -73,25 +73,26 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     if not isinstance(s, _unicode):
         s = safe_decode(s)  # "smart_unicode" in orginal
     if entities:
-        s = re.sub('&(%s);' % '|'.join(name2codepoint),
+        s = re.sub(str('&(%s);') % str('|').join(name2codepoint),
                    lambda m: unichr(name2codepoint[m.group(1)]), s)
     if decimal:
         try:
-            s = re.sub('&#(\d+);', lambda m: unichr(int(m.group(1))), s)
+            s = re.sub(str('&#(\d+);'), lambda m: unichr(int(m.group(1))), s)
         except:
             pass
     if hexadecimal:
         try:
-            s = re.sub('&#x([\da-fA-F]+);',
+            s = re.sub(str('&#x([\da-fA-F]+);'),
                        lambda m: unichr(int(m.group(1), 16)), s)
         except:
             pass
     #translate
     s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore')
     #replace unwanted characters
-    s = re.sub(r'[^-_a-z0-9]+', '-', s.lower())
+    minus = str('-')
+    s = re.sub(str(r'[^-_a-z0-9]+'), minus, s.lower())
     #remove redundant -
-    s = re.sub('-{2,}', '-', s).strip('-')
+    s = re.sub(str('-{2,}'), minus, s).strip(minus)
     return s
 
 
