@@ -68,7 +68,12 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     import re
     import unicodedata
-    from htmlentitydefs import name2codepoint
+    try:
+        from htmlentitydefs import name2codepoint
+    except ImportError:
+        # Py3k: The htmlentitydefs module has been renamed to html.entities in
+        # Python 3
+        from html.entities import name2codepoint
     from xoutil.string import _unicode, safe_decode
     if not isinstance(s, _unicode):
         s = safe_decode(s)  # "smart_unicode" in orginal
