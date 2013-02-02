@@ -96,7 +96,7 @@ def _parse_signature(signature):
             #      implementation `annotate` uses an `args` local variable::
             #
             #          >>> d.__annotations__
-            #          {u'a': (u'(a: args)',)}
+            #          {'a': ('(a: args)',)}
             #
             # XXX: In fact, I should check that this does not create memory
             # references cycles with frames and stuff as noticed in the

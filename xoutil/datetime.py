@@ -154,17 +154,18 @@ def strfdelta(delta):
         ...     return timedelta(hours=h, minutes=m)
 
         >>> strfdelta(t(4, 56))
-        u'4h 56m'
+        '4h 56m'
 
     '''
     from xoutil.string import strfnumber
+    ss, sss = str('%s%s'), str(' %s%s')
     if delta.days:
         days = delta.days
         delta -= timedelta(days=days)
         hours = delta.total_seconds() / 60 / 60
-        res = '%s%s' % (days, _TD_LABELS[0])
+        res = ss % (days, _TD_LABELS[0])
         if hours >= 0.01:
-            res += ' %s%s' % (strfnumber(hours), _TD_LABELS[1])
+            res += sss % (strfnumber(hours), _TD_LABELS[1])
     else:
         seconds = delta.total_seconds()
         if seconds > 60:
@@ -172,17 +173,17 @@ def strfdelta(delta):
             if minutes > 60:
                 hours = int(minutes / 60)
                 minutes -= hours * 60
-                res = '%s%s' % (hours, _TD_LABELS[1])
+                res = ss % (hours, _TD_LABELS[1])
                 if minutes >= 0.01:
-                    res += ' %s%s' % (strfnumber(minutes), _TD_LABELS[2])
+                    res += sss % (strfnumber(minutes), _TD_LABELS[2])
             else:
                 minutes = int(minutes)
                 seconds -= 60 * minutes
-                res = '%s%s' % (minutes, _TD_LABELS[2])
+                res = ss % (minutes, _TD_LABELS[2])
                 if seconds >= 0.01:
-                    res += ' %s%s' % (strfnumber(seconds), _TD_LABELS[3])
+                    res += sss % (strfnumber(seconds), _TD_LABELS[3])
         else:
-            res = '%s%s' % (strfnumber(seconds, '%0.3f'), _TD_LABELS[3])
+            res = ss % (strfnumber(seconds, '%0.3f'), _TD_LABELS[3])
     return res
 
 
