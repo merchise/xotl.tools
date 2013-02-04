@@ -131,7 +131,8 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     '''Flattens out a sequence. It takes care of everything deemed a collection
     (i.e, not a scalar according to the callabled passed in `is_scalar`)::
 
-        >>> tuple(flatten((1, range(2, 5), xrange(5, 10))))
+        >>> from xoutil.compat import range_, xrange_
+        >>> tuple(flatten((1, range_(2, 5), xrange_(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
 
         >>> def fib(n):
@@ -158,13 +159,15 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         >>> tuple(flatten((range_(2), range_(2, 4)), depth=0))
         ([0, 1], [2, 3])
 
+        # In the following doctest we use `...range(...X)` because the string
+        # repr of range differs in Py2 and Py3k.
+
         >>> tuple(flatten((xrange_(2), range_(2, 4)), depth=0))  # doctest: +ELLIPSIS
-        (...range(2), [2, 3])
+        (...range(...2), [2, 3])
 
         >>> tuple(flatten((xrange_(2), range_(2, 4),
         ...       (xrange_(n) for n in range_(5, 8))), depth=1))  # doctest: +ELLIPSIS
-        (0, 1, 2, 3, ...range(5), ...range(6), ...range(7))
-
+        (0, 1, 2, 3, ...range(...5), ...range(...6), ...range(...7))
 
     '''
     for item in sequence:

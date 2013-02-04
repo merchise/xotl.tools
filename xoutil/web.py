@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.http
+# xotl.web
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
@@ -68,6 +68,7 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     import re
     import unicodedata
+    from xoutil.compat import chr as unichr
     try:
         from htmlentitydefs import name2codepoint
     except ImportError:

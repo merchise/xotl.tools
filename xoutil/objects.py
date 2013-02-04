@@ -111,14 +111,14 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         ...        for which in kwargs:
         ...            setattr(self, which, kwargs[which])
 
-        >>> source = Person(**{b'name': 'Manuel', b'age': 33, b'sex': 'male'})
-        >>> target = {b'name': 'Manuel', b'age': 4, b'sex': 'male'}
+        >>> source = Person(**{str('name'): 'Manuel', str('age'): 33, str('sex'): 'male'})
+        >>> target = {'name': 'Manuel', 'age': 4, 'sex': 'male'}
 
-        >>> validate_attrs(source, target, force_equals=(b'sex',),
-        ...                force_differents=(b'age',))
+        >>> validate_attrs(source, target, force_equals=('sex',),
+        ...                force_differents=('age',))
         True
 
-        >>> validate_attrs(source, target, force_equals=(b'age',))
+        >>> validate_attrs(source, target, force_equals=('age',))
         False
 
     If both `force_equals` and `force_differents` are empty it will
