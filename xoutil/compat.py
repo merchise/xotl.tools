@@ -291,3 +291,9 @@ try:
 except ImportError:
     from itertools import zip_longest
 izip_longest = zip_longest
+
+
+if py3k:
+    from builtins import chr
+else:
+    from __builtin__ import unichr as chr

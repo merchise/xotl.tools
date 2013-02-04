@@ -23,13 +23,7 @@
 #
 # Created on 13 janv. 2013
 
-'''Module utilities.
-
-It's common in `xoutil` package to extend Python modules with the same name,
-for example `xoutil.datetime` has all public members of Python's `datetime`.
-:func:`copy_members` can be used to copy all members from the original module
-to the extended one.
-
+'''Modules utilities.
 '''
 
 from __future__ import (division as _py3_division,
@@ -37,10 +31,10 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
+from types import ModuleType as _ModuleType
 
 __docstring_format__ = 'rst'
 __author__ = 'med'
-
 
 
 def force_module(ref=None):
@@ -80,6 +74,11 @@ def force_module(ref=None):
 def copy_members(source=None, target=None):
     '''Copy module members from `source` to `target`.
 
+    It's common in `xoutil` package to extend Python modules with the same
+    name, for example `xoutil.datetime` has all public members of Python's
+    `datetime`.  :func:`copy_members` can be used to copy all members from the
+    original module to the extended one.
+
     :param source: string with source module name or module itself.
 
         If not given, is assumed as the last module part name of `target`.
@@ -108,3 +107,83 @@ def copy_members(source=None, target=None):
         if not attr.startswith('__'):
             setattr(target, attr, getattr(source, attr))
     return source
+
+
+class _CustomModuleBase(_ModuleType):
+    pass
+
+
+def customize(module, **kwargs):
+    '''Replaces a `module` by a custom one.
+
+    Injects all kwargs into the newly created module's class. This allows to
+    have module into which we may have properties or other type of descriptors.
+
+    :returns: A tuple of ``(module, customized, class)`` with the module in the
+              first place, `customized` will be True only if the module was
+              created (i.e :func:`customize` is idempotent), and the third item
+              will be the class of the module (the first item).
+
+    '''
+    if not isinstance(module, _CustomModuleBase):
+        import sys
+        from xoutil.decorator.compat import metaclass
+
+        class CustomModuleType(type):
+            def __new__(cls, name, bases, attrs):
+                # TODO: Take all attrs from `module` to avoid the double call
+                # in __getattr__.
+                attrs.update(kwargs)
+                return super(CustomModuleType, cls).__new__(cls, name, bases, attrs)
+
+        @metaclass(CustomModuleType)
+        class CustomModule(_CustomModuleBase):
+            def __getattr__(self, attr):
+                return getattr(module, attr)
+
+        sys.modules[module.__name__] = result = CustomModule(module.__name__)
+        return result, True, CustomModule
+    else:
+        return module, False, type(module)
+
+
+def modulemethod(func):
+    '''Defines a module-level method.
+
+    Simply a module-level method, will always receive a first argument `self`
+    with the module object.
+
+    '''
+    import sys
+    from functools import wraps
+    self = sys.modules[func.__module__]
+    @wraps(func)
+    def inner(*args, **kwargs):
+        return func(self, *args, **kwargs)
+    return inner
+
+
+def moduleproperty(getter, setter=None, deleter=None, doc=None):
+    '''Creates a module-level property.
+
+    The module of the `getter` is replaced by a custom implementation of the
+    module, and the property is injected to the class.
+
+    '''
+    import sys
+    module = sys.modules[getter.__module__]
+    module, created, cls = customize(module)
+    class prop(property):
+        def setter(self, func):
+            result = super(prop, self).setter(func)
+            setattr(cls, func.__name__, result)
+            return result
+
+        def deleter(self, func):
+            result = super(prop, self).deleter(func)
+            setattr(cls, func.__name__, result)
+            return result
+
+    result = prop(getter, setter, deleter, doc)
+    setattr(cls, getter.__name__, result)
+    return result

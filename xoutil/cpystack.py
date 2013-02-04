@@ -29,8 +29,7 @@ MAX_DEEP = 15
 
 
 def getargvalues(frame):
-    '''
-    Inspects the given frame for arguments and returns a dictionary that maps
+    '''Inspects the given frame for arguments and returns a dictionary that maps
     parameters names to arguments values. If an `*` argument was passed then
     the key on the returning dictionary would be formatted as
     `<name-of-*-param>[index]`.
@@ -47,7 +46,7 @@ def getargvalues(frame):
         >>> autocontained(1, 2, -10, -11)['margs[0]']
         -10
 
-    Packed arguments also works::
+    In Python 2, packed arguments also works::
 
         >>> def nested((x, y), radius):
         ...    import sys
@@ -55,6 +54,7 @@ def getargvalues(frame):
 
         >>> nested((1, 2), 12)['y']
         2
+
     '''
     from xoutil.types import is_collection
     from xoutil.iterators import flatten

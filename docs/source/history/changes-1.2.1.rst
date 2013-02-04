@@ -16,7 +16,8 @@
 - Introduced module :mod:`xoutil.decorator.compat` that enables constructions
   that are interoperable in Python 2 and Python 3.
 
-- Introduced :func:`xoutil.iterators.izip`, :func:`xoutil.iterators.imap` since
-  they were removed from Python 3k standard library.
+- Introduced :func:`xoutil.iterators.zip`, :func:`xoutil.iterators.izip`,
+  :func:`xoutil.iterators.map`, and :func:`xoutil.iterators.imap`.
+
 
 ..  LocalWords:  xoutil

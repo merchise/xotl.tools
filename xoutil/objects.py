@@ -16,18 +16,13 @@
 #
 # Created on Feb 17, 2012
 
-'''
-Several utilities for objects in general.
-
-'''
+'''Several utilities for objects in general.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-
-from collections import Mapping
 from functools import partial
 
 from xoutil.types import Unset, is_collection
@@ -44,9 +39,21 @@ _false = lambda * args, **kwargs: False
 
 
 def smart_get(obj):
-    return obj.get if isinstance(obj, Mapping) else partial(getattr, obj)
+    '''Returns a getter for `obj`. If obj is Mapping, it returns the ``.get()``
+    method bound to the object `obj`. Otherwise it returns a partial of
+    `getattr` on `obj`.
+
+    '''
+    from collections import Mapping
+    from xoutil.types import DictProxyType
+    return obj.get if isinstance(obj, (DictProxyType, Mapping)) else partial(getattr, obj)
 
 def smart_get_and_del(obj, **kwargs):
+    '''Returns a function that get and deletes either a key or an attribute of
+    obj depending on the type of `obj`.
+
+    '''
+    from collections import Mapping
     if isinstance(obj, Mapping):
         return partial(get_and_del_key, obj, **kwargs)
     else:
@@ -54,8 +61,7 @@ def smart_get_and_del(obj, **kwargs):
 
 
 def xdir(obj, attr_filter=None, value_filter=None, getter=None):
-    '''
-    Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
+    '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
 
     :param obj: The object to be instrospected.
@@ -82,15 +88,13 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None):
 
 
 def fdir(obj, attr_filter=None, value_filter=None, getter=None):
-    '''
-    Similar to :func:`xdir` but yields only the attributes names.
-    '''
+    '''Similar to :func:`xdir` but yields only the attributes names.'''
     return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getter))
 
 
 def validate_attrs(source, target, force_equals=(), force_differents=()):
-    '''
-    Makes a 'comparison' of `source` and `target` by its attributes (or keys).
+    '''Makes a 'comparison' of `source` and `target` by its attributes (or
+    keys).
 
     This function returns True if and only if both of these tests
     pass:
@@ -107,14 +111,14 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         ...        for which in kwargs:
         ...            setattr(self, which, kwargs[which])
 
-        >>> source = Person(**{b'name': 'Manuel', b'age': 33, b'sex': 'male'})
-        >>> target = {b'name': 'Manuel', b'age': 4, b'sex': 'male'}
+        >>> source = Person(**{str('name'): 'Manuel', str('age'): 33, str('sex'): 'male'})
+        >>> target = {'name': 'Manuel', 'age': 4, 'sex': 'male'}
 
-        >>> validate_attrs(source, target, force_equals=(b'sex',),
-        ...                force_differents=(b'age',))
+        >>> validate_attrs(source, target, force_equals=('sex',),
+        ...                force_differents=('age',))
         True
 
-        >>> validate_attrs(source, target, force_equals=(b'age',))
+        >>> validate_attrs(source, target, force_equals=('age',))
         False
 
     If both `force_equals` and `force_differents` are empty it will
@@ -144,8 +148,7 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
 
 
 def get_first_of(source, *keys, **kwargs):
-    '''
-    Return the first occurrence of any of the specified keys in `source`. If
+    '''Return the first occurrence of any of the specified keys in `source`. If
     `source` is a tuple, a list, a set, or a generator; then the keys are
     searched in all the items.
 
@@ -214,10 +217,10 @@ def get_first_of(source, *keys, **kwargs):
         return res
 
     if is_collection(source):
-        from xoutil.iterators import imap
+        from xoutil.compat import map
         from itertools import takewhile
         res = Unset
-        for item in takewhile(lambda _: res is Unset, imap(inner, source)):
+        for item in takewhile(lambda _: res is Unset, map(inner, source)):
             if item is not Unset:
                 res = item
     else:
@@ -305,9 +308,9 @@ def smart_getattr(name, *sources, **kwargs):
 
 
 def get_and_del_attr(obj, name, default=None):
-    '''
-    Looks for an attribute in the `obj` and returns its value and removes the
-    attribute. If the attribute is not found, `default` is returned instead.
+    '''Looks for an attribute in the `obj` and returns its value and removes
+    the attribute. If the attribute is not found, `default` is returned
+    instead.
 
     Examples::
 
@@ -321,6 +324,7 @@ def get_and_del_attr(obj, name, default=None):
         1
         >>> get_and_del_attr(foo, 'a') is None
         True
+
     '''
     res = getattr(obj, name, Unset)
     if res is Unset:

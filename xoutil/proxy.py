@@ -21,7 +21,7 @@
 This module allows you to create proxy classes. A proxy instance should have a
 `target` attribute that refers to the proxied object. And the proxy class
 should have a `behaves` attributes that contains a sequence of new-style
-classes that complements the behaviour of wrapped objects.
+classes that complements the behavior of wrapped objects.
 
 '''
 
@@ -30,8 +30,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-
-from types import MethodType
 
 from xoutil.context import context
 from xoutil.aop import complementor
@@ -125,13 +123,29 @@ SupportedOperations = type(str('SupportedOperations'), (object,),
                            _supported_methods)
 
 
+def _mro_getattr(obj, attr, default=Unset):
+    '''Gets the attr from obj's MRO'''
+    from xoutil.types import mro_dict
+    unset = object()
+    res = mro_dict(obj).get(attr, unset)
+    if res is unset:
+        if default is Unset:
+            raise AttributeError(attr)
+        else:
+            return default
+    else:
+        return res
+
+
 class Proxy(object):
     '''
     A complementor for a "behavior" defined in query expressions or a target
     object.
     '''
     def __getattribute__(self, attr):
-        import types
+        from functools import partial
+        from xoutil.types import is_instancemethod
+
         def get(name, default=Unset):
             _get = super(type(self), self).__getattribute__
             try:
@@ -149,34 +163,27 @@ class Proxy(object):
         behaves = get('behaves')
         if not behaves:
             behaves = ()
-        valid_wrapper = lambda b: isinstance(getattr(b, attr, None),
-                                             types.MethodType)
+        valid_wrapper = lambda b: is_instancemethod(b, attr)
         wrapper = next((b for b in behaves if valid_wrapper(b)), None)
         if wrapper:
-            result = getattr(wrapper, attr)
-            if getattr(result, 'im_func', None):
-                func = result.im_func
-                return MethodType(func, self, type(self))
-            else:
-                return result
+            result = _mro_getattr(wrapper, attr)
+            return partial(result, self)
         else:
             unset = object()
             result = getattr(target, attr, unset)
             # Treat __eq__ and __ne__ specially.
             if result is unset:
                 if attr == '__eq__':
-                    return MethodType(lambda s, o: s is o, self, type(self))
+                    return partial(lambda s, o: s is o, self)
                 elif attr == '__ne__':
-                    return MethodType(lambda s, o: s is not o,
-                                      self,
-                                      type(self))
+                    return partial(lambda s, o: s is not o, self)
                 elif attr == '__deepcopy__':
                     return get('__deepcopy__')
                 elif attr == 'target':
-                    # Allow behaviours to access target attr.
+                    # Allow behaviors to access target attr.
                     return target
                 else:
-                    return getattr(target, attr)
+                    raise AttributeError(attr)
             else:
                 return result
 
@@ -281,7 +288,7 @@ def proxify(cls, *complementors):
         >>> r < 1                                # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        AttributeError: '...' object has no attribute '__lt__'
+        AttributeError: __lt__
 
     The only exceptions for the above rule are `__eq__` and `__ne__`
     operations, for which we provide a fallback implementation if none is

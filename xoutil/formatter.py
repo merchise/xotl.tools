@@ -118,19 +118,19 @@ class Template(object):
     python expression. Simple variables are allowed just with ``$var`` or
     ``${var}``::
 
-        >>> tpl = Template(u'${?1 + 1} is 2, and ${?x + x} is $x + ${x}')
+        >>> tpl = Template(str('${?1 + 1} is 2, and ${?x + x} is $x + ${x}'))
         >>> tpl % dict(x=4)
-        u'2 is 2, and 8 is 4 + 4'
+        '2 is 2, and 8 is 4 + 4'
 
     The mapping may be given by calling the template::
 
         >>> tpl(x=5)
-        u'2 is 2, and 10 is 5 + 5'
+        '2 is 2, and 10 is 5 + 5'
     '''
 
     __metaclass__ = _TemplateClass
 
-    delimiter = '$'
+    delimiter = str('$')
 
     def __init__(self, template):
         self.template = template
@@ -152,7 +152,7 @@ class Template(object):
                 valid = False
 
     def __str__(self):
-        return '%s(%s)' % (self.__class__.__name__, self.template)
+        return str('%s(%s)') % (self.__class__.__name__, self.template)
 
     def __call__(self, mapping={}, **kwargs):
         # TODO: Don't update if object
@@ -186,7 +186,7 @@ class Template(object):
                     try:
                         res += item(kwargs)
                     except:
-                        res += ''    # item.match
+                        res += str('')    # item.match
         return res
 
     def _append(self, item):
