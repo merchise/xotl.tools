@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.config.optparse
 #----------------------------------------------------------------------
-# Copyright (c) 2012 Merchise Autrement
+# Copyright (c) 2012, 2013 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -25,9 +25,9 @@
 
 '''Extensible 'argparse' module with some utilities.
 
-  * function 'store_also' return an action closure that execute normal
-    behavior of 'store' action and also execute other arguments actions with
-    values passed as keyword arguments.
+* function 'store_also' return an action closure that execute normal
+  behavior of 'store' action and also execute other arguments actions with
+  values passed as keyword arguments.
 
 '''
 
