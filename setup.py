@@ -8,6 +8,12 @@ project_name = 'xoutil'
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(_current_dir, project_name))
 from release import VERSION as version
+from release import RELEASE_TAG
+
+if RELEASE_TAG and RELEASE_TAG not in ('stable', 'final'):
+    dev_classifier = 'Development Status :: 4 - Beta'
+else:
+    dev_classifier = 'Development Status :: 5 - Production/Stable'
 
 setup(name=project_name,
       version=version,
@@ -16,7 +22,7 @@ setup(name=project_name,
       long_description=open(os.path.join('docs', 'readme.txt')).read(),
       classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-            'Development Status :: 5 - Production/Stable',
+            dev_classifier,
             'Intended Audience :: Developers',
             'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
             'Operating System :: OS Independent',
