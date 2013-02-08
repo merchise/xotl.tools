@@ -20,3 +20,25 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 VERSION = '1.2.1'
+
+def dev_tag():
+    result = ''
+    import os
+    fn = os.path.abspath(os.path.join(__file__, '..', '..', 'setup.cfg'))
+    if os.path.exists(fn):
+        try:
+            import configparser
+        except:
+            import ConfigParser as configparser
+        parser = configparser.SafeConfigParser()
+        parser.read([fn])
+        print(parser.sections())
+        try:
+            res = parser.get(str('egg_info'), str('tag_build'))
+        except:
+            res = None
+        if res:
+            result = res
+    return result
+
+RELEASE_TAG = dev_tag()
