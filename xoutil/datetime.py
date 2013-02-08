@@ -153,8 +153,8 @@ def strfdelta(delta):
         >>> def t(h, m):
         ...     return timedelta(hours=h, minutes=m)
 
-        >>> strfdelta(t(4, 56))
-        '4h 56m'
+        >>> strfdelta(t(4, 56)) == '4h 56m'
+        True
 
     '''
     from xoutil.string import strfnumber

@@ -206,10 +206,10 @@ def capitalize(value, title=True):
 
     Return bytes or unicode depending on type of `value`.
 
-        >>> type(capitalize(u'something')) is _unicode
+        >>> type(capitalize(_unicode('something'))) is _unicode
         True
 
-        >>> type(capitalize('something')) is str
+        >>> type(capitalize(str('something'))) is str
         True
 
     '''

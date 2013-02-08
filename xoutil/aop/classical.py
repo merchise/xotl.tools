@@ -153,17 +153,17 @@ def _weave_after_method(target, aspect, method_name,
 
         >>> class BadClass(object):
         ...    def echo(self, what):
-        ...        return (what+1)/what
+        ...        return (what+1)//what
 
         >>> good_instance = GoodClass()
         >>> good_instance.echo(0)
         0
 
         >>> bad_instance = BadClass()
-        >>> bad_instance.echo(0)
+        >>> bad_instance.echo(0)               # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ZeroDivisionError: integer division or modulo by zero
+        ZeroDivisionError: ...
 
     Now, let's define a simple class that defines an _after_echo and weave the
     previous classes::
@@ -200,8 +200,8 @@ def _weave_after_method(target, aspect, method_name,
         ZeroDivisionError: integer division or modulo by zero
 
         # Class methods remains classmethods
-        >>> good_instance.superecho(0)
-        <type 'type'>
+        >>> good_instance.superecho(0)  # doctest: +ELLIPSIS
+        <...'type'>
         0
 
     You may define another 'aspect' elsewhere an weave it on top::
@@ -297,17 +297,17 @@ def _weave_before_method(target, aspect, method_name,
 
         >>> class BadClass(object):
         ...    def echo(self, what):
-        ...        return (what+1)/what
+        ...        return (what+1)//what
 
         >>> good_instance = GoodClass()
         >>> good_instance.echo(0)
         0
 
         >>> bad_instance = BadClass()
-        >>> bad_instance.echo(0)
+        >>> bad_instance.echo(0)    # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ZeroDivisionError: integer division or modulo by zero
+        ZeroDivisionError: ...
 
     The following class defines a Security aspect that allows the execution of
     methods by user::
@@ -408,7 +408,7 @@ def _weave_around_method(cls, aspect, method_name,
         >>> _weave_around_method(OriginalClass, Logger, 'echo', '_around_any')
 
         >>> obj.echo(10)            # doctest: +ELLIPSIS
-        Calling <...> with (10,), {}
+        Calling ... with (10,), {}
         ... and 10 was returned
         100
 
