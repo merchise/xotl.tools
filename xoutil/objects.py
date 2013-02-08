@@ -492,6 +492,7 @@ def full_nameof(target):
         'dict'
 
     '''
+    from xoutil.compat import py3k
     if isinstance(target, str_base):
         return target
     else:
@@ -499,7 +500,7 @@ def full_nameof(target):
             target = type(target)
         res = target.__name__
         mod = getattr(target, '__module__', '__')
-        if not mod.startswith('__'):
+        if not mod.startswith('__') and (not py3k or mod != 'builtins'):
             res = '.'.join((mod, res))
         return res
 
