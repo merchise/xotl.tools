@@ -54,9 +54,8 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
 
 
 def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
-               followlinks=False):
-    '''
-    Iterate filenames recursively.
+               followlinks=False, maxdepth=None):
+    '''Iterate filenames recursively.
 
     :param top: The top directory for recurse into.
     :param pattern: A pattern of the files you want to get from the iterator.
@@ -74,16 +73,27 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
 
                         .. versionadded:: 1.2.1
 
+    :param maxdepth: Only files above this level will be yielded. If None, no
+                     limit is placed.
+
+                     .. versionadded: 1.2.1
+
     .. warning:: It's an error to pass more than pattern argument.
 
     '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
+    depth = 0
     for dirpath, _dirs, filenames in os.walk(normalize_path(top),
+                                             topdown=True,
                                              followlinks=followlinks):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             if (regex is None) or regex.search(path):
                 yield path
+        if maxdepth is not None:
+           depth += 1
+           if depth >= maxdepth:
+               _dirs[:] = []
 
 
 # ------------------------------ iter_dict_files ------------------------------
