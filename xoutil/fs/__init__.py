@@ -76,7 +76,7 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
     :param maxdepth: Only files above this level will be yielded. If None, no
                      limit is placed.
 
-                     .. versionadded: 1.2.1
+                     .. versionadded:: 1.2.1
 
     .. warning:: It's an error to pass more than pattern argument.
 
@@ -289,11 +289,11 @@ def get_mime_filter(mime_start):
 
 
 def nice_size(size):
+    '''Formats `size` to a nice human-friendly format by appending one of
+    `Kilo`, `Mega`, `Giga` and `Tera` suffix.
+
     '''
-    Formats `size` to a nice human-friendly format by appending one of `Kilo`,
-    `Mega`, `Giga` and `Tera` suffix.
-    '''
-    tails = ' KMGT'
+    tails = ' KMGTPE'
     i, high = 0, len(tails) - 1
     while (size >= 1024) and (i < high):
         size /= 1024
@@ -315,7 +315,7 @@ def stat(path):
 
 
 def lstat(path):
-    '''Like :func`stat`, but do not follow symbolic links.'''
+    '''Same as `os.lstat`, but raises no error.'''
     try:
         return os.lstat(path)
     except os.error:
