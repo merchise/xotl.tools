@@ -32,7 +32,6 @@ def dev_tag():
             import ConfigParser as configparser
         parser = configparser.SafeConfigParser()
         parser.read([fn])
-        print(parser.sections())
         try:
             res = parser.get(str('egg_info'), str('tag_build'))
         except:
