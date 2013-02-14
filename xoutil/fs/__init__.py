@@ -152,8 +152,7 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
 
 def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
            exclude=None, confirm=None):
-    '''
-    Removes all empty dirs at `top`.
+    '''Removes all empty dirs at `top`.
 
     :param top: The top directory to recurse into.
 
@@ -162,11 +161,11 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
                     regarded as a regular expression, otherwise a shell
                     pattern.
 
-    :param exclude: A pattern of the dirs you DON'T want to remove.
-                    It should be a string. If it starts with "(?" it will be
-                    regarded as a regular expression, otherwise a shell
-                    pattern. This is a simple commodity to have you not
-                    to negate complex patterns.
+    :param exclude: A pattern of the dirs you DON'T want to remove.  It should
+                    be a string. If it starts with "(?" it will be regarded as
+                    a regular expression, otherwise a shell pattern. This is a
+                    simple commodity to have you not to negate complex
+                    patterns.
 
     :param regex_pattern: An *alternative* to `pattern`. This will always be
                           regarded as a regular expression.
@@ -184,6 +183,7 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
               remove mount points.
 
     .. versionadded:: 1.1.3
+
     '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     exclude = _get_regex(exclude)
@@ -197,9 +197,8 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
             os.rmdir(path)
 
 
-def regex_rename(top, pattern, repl):
-    '''
-    Rename files recursively using regular expressions substitution.
+def regex_rename(top, pattern, repl, maxdepth=None):
+    '''Rename files recursively using regular expressions substitution.
 
     :param top: The top directory to start walking.
 
@@ -208,10 +207,16 @@ def regex_rename(top, pattern, repl):
 
     :param repl: String to use as replacement. You may use backreferences as
                  documented in python's ``re.sub`` function.
+
+    :param maxdepth: Only walk files up to this level. If None, walk all files.
+
+       .. versionadded:: 1.2.1
+
     '''
     from re import subn as _re_subn
     if isinstance(pattern, str_base):
         pattern = _rcompile(pattern)
+    depth = 0
     for path, _dirs, files in os.walk(top):
         for item in files:
             new_file, count = _re_subn(pattern, repl, item)
@@ -219,6 +224,10 @@ def regex_rename(top, pattern, repl):
                 old = os.path.join(path, item)
                 new = os.path.join(path, new_file)
                 os.rename(old, new)
+        if maxdepth is not None:
+            depth += 1
+            if depth >= maxdepth:
+                _dirs[:] = []
 
 
 def rename_wrong(top='.', current_encoding=None, target_encoding=None,
