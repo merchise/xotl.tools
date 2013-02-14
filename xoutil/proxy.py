@@ -138,9 +138,9 @@ def _mro_getattr(obj, attr, default=Unset):
 
 
 class Proxy(object):
-    '''
-    A complementor for a "behavior" defined in query expressions or a target
+    '''A complementor for a "behavior" defined in query expressions or a target
     object.
+
     '''
     def __getattribute__(self, attr):
         from functools import partial
@@ -189,9 +189,9 @@ class Proxy(object):
 
 
 class unboxed(object):
-    '''
-    A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also provides
-    support for "updating" a single attribute.
+    '''A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also
+    provides support for "updating" a single attribute.
+
     '''
     def __init__(self, target, attr=None):
         self.target = target
@@ -211,18 +211,19 @@ class unboxed(object):
         return unboxed(target, attr)
 
     def __lshift__(self, value):
-        '''
-        Supports the idiom ``unboxed(x, attrname) << value`` for updating a
+        '''Supports the idiom ``unboxed(x, attrname) << value`` for updating a
         single attribute.
 
-        - If the current value is a list, the value get appended.
+        - If the current value is a list the value get appended.
 
         - If the current value is a tuple, a new tuple ``current + (value, )``
           is set.
 
-        - If the current value is a dict, and value is also a dict.
+        - If the current value is a dict and value is also a dict, the current
+          value is updated with `value` like in: ``current.update(value)``.
 
         - Otherwise the value is set as if.
+
         '''
         from collections import Mapping
         get = super(unboxed, self).__getattribute__
@@ -297,55 +298,56 @@ def proxify(cls, *complementors):
     operations, for which we provide a fallback implementation if none is
     provided.
 
-    .. warning:: Notice that behaviors classes must not assume that `self` is
-                 the proxy object instead of the "bare" object itself. That's
-                 needed for the illusion of "added" behaviors to be consistent.
-                 If we make `self` the bare object then all the added behavior
-                 we'll be lost inside the method call.
+    Notice that behaviors classes must not assume that `self` is the proxy
+    object instead of the "bare" object itself. That's needed for the illusion
+    of "added" behaviors to be consistent.  If we make `self` the bare object
+    then all the added behavior we'll be lost inside the method call.
 
-                 If you need to access the bare object directly use the
-                 attribute 'target' of the proxy object (i.e: ``self.target``);
-                 we treat that attribute specially.
+    If you need to access the bare object directly use the attribute `target`
+    of the proxy object (i.e: ``self.target``); we treat that attribute
+    specially.
 
-                 To the same accord, the fallback implementations of `__eq__`
-                 and `__ne__` also work at the proxy level. So if we do::
+    To the same accord, the fallback implementations of `__eq__` and `__ne__`
+    also work at the proxy level. So if we do::
 
-                    >>> class UnproxifingAddition(object):
-                    ...    def __add__(self, other):
-                    ...        return self.target
+        >>> class UnproxifingAddition(object):
+        ...    def __add__(self, other):
+        ...        return self.target
 
-                    >>> @proxify
-                    ... class Proxified(object):
-                    ...    behaves = [UnproxifingAddition]
-                    ...    def __init__(self, target):
-                    ...        self.target = target
+        >>> @proxify
+        ... class Proxified(object):
+        ...    behaves = [UnproxifingAddition]
+        ...    def __init__(self, target):
+        ...        self.target = target
 
-                 Now the addition would remove the proxy and the equality test
-                 will fail::
+    Now the addition would remove the proxy and the equality test
+    will fail::
 
-                    >>> x = Foobar()
-                    >>> y = Proxified(x)
-                    >>> y is (y + 1)
-                    False
+        >>> x = Foobar()
+        >>> y = Proxified(x)
+        >>> y is (y + 1)
+        False
 
-                 But be warned! If the proxied object has an attribute
-                 `target` it will shadow the proxy's::
+    .. warning::
 
-                    >>> x.target = 'oops'
-                    >>> y.target == 'oops'
-                    True
+       But be warned! If the proxied object has an attribute `target` it will
+       shadow the proxy::
 
-                 If you need to access any attribute of the proxy and not the
-                 proxied object without fear of being shadowed, use the
-                 :class:`UNPROXIFING_CONTEXT` context like this::
+            >>> x.target = 'oops'
+            >>> y.target == 'oops'
+            True
 
-                    >>> from xoutil.context import context
-                    >>> with context(UNPROXIFING_CONTEXT):
-                    ...     y.target is x
-                    True
+       If you need to access any attribute of the proxy and not the proxied
+       object without fear of being shadowed, use the
+       :class:`UNPROXIFING_CONTEXT` context like this::
 
-                    >>> y.target is x
-                    False
+            >>> from xoutil.context import context
+            >>> with context(UNPROXIFING_CONTEXT):
+            ...     y.target is x
+            True
+
+            >>> y.target is x
+            False
 
     '''
     if not complementors:
