@@ -28,21 +28,42 @@ __date__   = "Tue Jan  8 09:14:05 2013"
 
 @_decorator
 def unstable(target, msg=None):
-    '''Declares that a method, class or interface is unstable.'''
+    '''Declares that a method, class or interface is unstable.
+
+    This has the side-effect of issuing a warning the first time the `target`
+    is invoked.
+
+    The `msg` parameter, if given, should be string that contains, at most, two
+    replacement fields (``{0}{1}``). The first replacement field will be the
+    type of `target` (interface, class or function) and the second matches
+    `target's` full name.
+
+    '''
+    print(target)
     if msg is None:
         msg = 'The {0} `{1}` is declared unstable. It may change in the future or be removed.'
-    def _unstable(*args, **kwargs):
-        try:
-            from zope.interface import Interface
-        except ImportError:
-            from xoutil.types import Unset as Interface
-        if isinstance(target, type(Interface)):
-            objtype = 'interface'
-        elif isinstance(target, _class_types):
-            objtype = 'class'
-        else:
-            objtype = 'function or method'
-        message = msg.format(objtype, full_nameof(target))
-        warnings.warn(message, stacklevel=2)
-        return target(*args, **kwargs)
-    return _unstable
+    try:
+        from zope.interface import Interface
+    except ImportError:
+        from xoutil.types import Unset as Interface
+    if isinstance(target, type(Interface)):
+        objtype = 'interface'
+    elif isinstance(target, _class_types):
+        objtype = 'class'
+    else:
+        objtype = 'function or method'
+    message = msg.format(objtype, full_nameof(target))
+    if isinstance(target, _class_types) or issubclass(target, Interface):
+        class meta(type(target)):
+            pass
+        def new(*args, **kwargs):
+            warnings.warn(message, stacklevel=2)
+            return target.__new__(*args, **kwargs)
+        klass = meta(target.__name__, (target,), {'__new__': new})
+        return klass
+    else:
+        def _unstable(*args, **kwargs):
+            message = msg.format(objtype, full_nameof(target))
+            warnings.warn(message, stacklevel=2)
+            return target(*args, **kwargs)
+        return _unstable

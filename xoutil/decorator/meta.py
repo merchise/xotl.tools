@@ -308,8 +308,12 @@ def decorator(caller):
     '''
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
+        try:
+            from zope.interface import Interface
+        except ImportError:
+            from xoutil.types import ignored as Interface
         if (len(args) == 1 and not kwargs and
-            isinstance(args[0], (function, type))):
+            (isinstance(args[0], (function, type)) or issubclass(args[0], Interface))):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
