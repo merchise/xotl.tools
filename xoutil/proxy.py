@@ -246,8 +246,7 @@ class unboxed(object):
 
 
 def proxify(cls, *complementors):
-    '''
-    A decorator to proxify classes with :class:`Proxy`.
+    '''A decorator to proxify classes with :class:`Proxy`.
 
     Usage::
 
@@ -282,13 +281,17 @@ def proxify(cls, *complementors):
         I'm adding <class '...Proxified'>
         True
 
-    But notice that if neither the proxied object or it's behaviors implement
-    a method, an AttributeError exception is raised::
+    But notice that if neither the proxied object or it's behaviors implement a
+    method, a exception is raised::
 
-        >>> r < 1                                # doctest: +ELLIPSIS
+        >>> r < 1                                # doctest: +SKIP
         Traceback (most recent call last):
             ...
-        AttributeError: __lt__
+        AttributeError: ...
+
+    .. note::
+
+       In Python 3 it will be a TypeError.
 
     The only exceptions for the above rule are `__eq__` and `__ne__`
     operations, for which we provide a fallback implementation if none is
