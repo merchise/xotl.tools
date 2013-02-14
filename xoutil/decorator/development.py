@@ -54,7 +54,8 @@ def unstable(target, msg=None):
     else:
         objtype = 'function or method'
     message = msg.format(objtype, full_nameof(target))
-    if isinstance(target, _class_types) or issubclass(target, Interface):
+    if isinstance(target, _class_types) or issubclass(type(target),
+                                                      type(Interface)):
         class meta(type(target)):
             pass
         def new(*args, **kwargs):

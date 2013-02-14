@@ -313,7 +313,8 @@ def decorator(caller):
         except ImportError:
             from xoutil.types import ignored as Interface
         if (len(args) == 1 and not kwargs and
-            (isinstance(args[0], (function, type)) or issubclass(args[0], Interface))):
+            (isinstance(args[0], (function, type)) or
+             issubclass(type(args[0]), type(Interface)))):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
