@@ -325,7 +325,7 @@ def proxify(cls, *complementors):
 
                     >>> x = Foobar()
                     >>> y = Proxified(x)
-                    >>> y == y + 1
+                    >>> y is (y + 1)
                     False
 
                  But be warned! If the proxied object has an attribute
