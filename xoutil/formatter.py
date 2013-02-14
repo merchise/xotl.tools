@@ -24,6 +24,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from .compat import str_base
+from .decorator.compat import metaclass
 
 
 class DelimiterFactory(object):
@@ -42,7 +43,8 @@ class BaseFactory(object):
 
 class MapFactory(BaseFactory):
     def __call__(self, mapping):
-        return unicode(mapping[self.key])
+        from xoutil.compat import _unicode
+        return _unicode(mapping[self.key])
 
 
 class PyFactory(BaseFactory):
@@ -51,7 +53,8 @@ class PyFactory(BaseFactory):
                                         start, end)
 
     def __call__(self, mapping):
-        return unicode(eval(self.key, mapping))
+        from xoutil.compat import _unicode
+        return _unicode(eval(self.key, mapping))
 
 
 class InvalidFactory(object):
@@ -100,6 +103,7 @@ class _TemplateClass(type):
         cls.factories = factories
 
 
+@metaclass(_TemplateClass)
 class Template(object):
     '''
     A string class for supporting $-substitutions.
@@ -118,19 +122,19 @@ class Template(object):
     python expression. Simple variables are allowed just with ``$var`` or
     ``${var}``::
 
-        >>> tpl = Template(u'${?1 + 1} is 2, and ${?x + x} is $x + ${x}')
-        >>> tpl % dict(x=4)
-        u'2 is 2, and 8 is 4 + 4'
+        >>> tpl = Template(str('${?1 + 1} is 2, and ${?x + x} is $x + ${x}'))
+        >>> (tpl % dict(x=4)) == '2 is 2, and 8 is 4 + 4'
+        True
 
     The mapping may be given by calling the template::
 
-        >>> tpl(x=5)
-        u'2 is 2, and 10 is 5 + 5'
+        >>> tpl(x=5) == '2 is 2, and 10 is 5 + 5'
+        True
     '''
 
     __metaclass__ = _TemplateClass
 
-    delimiter = '$'
+    delimiter = str('$')
 
     def __init__(self, template):
         self.template = template
@@ -152,7 +156,7 @@ class Template(object):
                 valid = False
 
     def __str__(self):
-        return '%s(%s)' % (self.__class__.__name__, self.template)
+        return str('%s(%s)') % (self.__class__.__name__, self.template)
 
     def __call__(self, mapping={}, **kwargs):
         # TODO: Don't update if object
@@ -186,7 +190,7 @@ class Template(object):
                     try:
                         res += item(kwargs)
                     except:
-                        res += ''    # item.match
+                        res += str('')    # item.match
         return res
 
     def _append(self, item):
@@ -198,6 +202,8 @@ class Template(object):
 
     def _GetFactory(self, token):
         keys = self.factories.keys()
+        if not isinstance(keys, list):
+            keys = list(keys)
         i, count = 0, len(keys)
         res = None
         while not res and (i < count):

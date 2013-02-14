@@ -21,6 +21,9 @@ import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
+from xoutil.functools import pow_
+from xoutil.string import names as _names
+
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -28,14 +31,34 @@ __author__ = 'manu'
 
 # TODO: import all in "from os.path import *"
 
+rtrim = lambda path, n: pow_(dirname, n)(normalize_path(path))
+rtrim.__doc__ = """Trims the last `n` components of the pathname `path`.
+
+This basically applies `n` times the function `os.path.dirname` to `path`.
+
+`path` is normalized before proceeding (but not tested to exists).
+
+Example::
+
+    >>> rtrim('~/tmp/a/b/c/d', 3)  # doctest: +ELLIPSIS
+    '.../tmp/a'
+
+    # It does not matter if `/` is at the end
+    >>> rtrim('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
+    '.../tmp/a'
+"""
+
 
 def fix_encoding(name, encoding=None):
-    '''
-    Fix encoding of a file system resource name.
+    '''Fix encoding of a file system resource name.
+
+    `encoding` is ignored if `name` is already a `str`.
+
     '''
     if not isinstance(name, str):
         if not encoding:
-            encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
+            from xoutil.string import force_encoding
+            encoding = force_encoding(sys.getfilesystemencoding())
         fixer = name.decode if isinstance(name, bytes) else name.encode
         return fixer(encoding)
     else:
@@ -43,12 +66,14 @@ def fix_encoding(name, encoding=None):
 
 
 def join(base, *extras):
-    '''
-    Join two or more pathname components, inserting '/' as needed.
+    '''Join two or more pathname components, inserting '/' as needed.
+
     If any component is an absolute path, all previous path components
     will be discarded.
 
-    Normalize path (after join parts), eliminating double slashes, etc.'''
+    Normalize path (after join parts), eliminating double slashes, etc.
+
+    '''
     try:
         path = _orig_join(base, *extras)
     except:
@@ -59,12 +84,12 @@ def join(base, *extras):
 
 
 def normalize_path(base, *extras):
-    '''
-    Normalize path by:
+    '''Normalize path by:
 
       - expanding '~' and '~user' constructions.
       - eliminating double slashes
       - converting to absolute.
+
     '''
     # FIXME: [med] Redundant "path" in name "xoutil.fs.path.normalize_path"
     try:
@@ -74,6 +99,7 @@ def normalize_path(base, *extras):
     return abspath(expanduser(path))
 
 
+# TODO: [manu] move to "xoutil.modules" and deprecate here
 def get_module_path(module):
     # TODO: [med] Standardize this
     from ..compat import str_base
@@ -84,9 +110,9 @@ def get_module_path(module):
 
 
 def shorten_module_filename(filename):
-    '''
-    A filename, normally a module o package name, is shortened looking
-    his head in all python path.
+    '''A filename, normally a module o package name, is shortened looking his
+    head in all python path.
+
     '''
     path = sys.path[:]
     path.sort(lambda x, y: len(y) - len(x))
@@ -104,9 +130,8 @@ def shorten_module_filename(filename):
 
 
 def shorten_user(filename):
-    '''
-    A filename is shortened looking for the (expantion) $HOME in his head and
-    replacing it by '~'.
+    '''A filename is shortened looking for the (expantion) $HOME in his head
+    and replacing it by '~'.
 
     '''
     home = expanduser('~')
@@ -115,7 +140,6 @@ def shorten_user(filename):
     return filename
 
 
-
-__all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
-           'fix_encoding', 'join', 'normalize_path', 'get_module_path',
-           'shorten_module_filename', 'shorten_user',)
+__all__ = _names('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
+                 'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+                 'shorten_module_filename', 'shorten_user', 'rtrim')

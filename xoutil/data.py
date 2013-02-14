@@ -21,29 +21,31 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_absimports)
 
-from types import SliceType
+# TODO: [med] Create an package for PEP-246 (Object Adaptation).
+#       See `zope.interface` and Go4's "Chain Of Responsibility" pattern.
+#       Migrate all "(force|adapt)_.*" into this protocol.
 
 
 def smart_copy(source, target, full=False):
-    '''
-    Copies attributes (or keys) from `source` to `target`.
+    '''Copies attributes (or keys) from `source` to `target`.
 
     Names starting with an '_' will not be copied unless `full` is True.
 
-    When `target` is not a dictionary (other objects):
+    When `target` is not a dictionary (other Python objects):
 
-    - Only valid identifiers will be copied.
+        - Only valid identifiers will be copied.
 
-    - If `full` is False only public values (which name does not starts with
-      '_') will be copied.
+        - If `full` is False only public values (which name does not starts
+          with '_') will be copied.
 
     Assumed introspections:
 
-    - `source` is considered a dictionary when it has a method
-      called ``iteritem`` or ``items``.
+        - `source` is considered a dictionary when it has a method called
+          ``iteritem`` or ``items``.
 
-    - `target` is considered a dictionary when: ``isinstance(target,
-      collections.Mapping)`` is True.
+        - `target` is considered a dictionary when: ``isinstance(target,
+          collections.Mapping)`` is True.
+
     '''
     from collections import Mapping
     from xoutil.validators.identifiers import is_valid_identifier
@@ -64,19 +66,35 @@ def smart_copy(source, target, full=False):
         setvalue(key, value)
 
 
+def adapt_exception(value, **kwargs):
+    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception)``.'''
+    isi, issc, ebc = isinstance, issubclass, Exception
+    if isi(value, ebc) or issc(value, ebc):
+        return value
+    elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
+        from xoutil.compat import str_base
+        iss = lambda s: isinstance(s, str_base)
+        ecls = value[0]
+        args = ((x.format(**kwargs) if iss(x) else x) for x in value[1:])
+        return ecls(*args)
+    else:
+        return None
+
+
 # TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un
 # ciclo infinito
 
 #@deprecated('collections.namedtuple')
 class MappedTuple(tuple):
-    '''
-    An implementation of a named tuple.
+    '''An implementation of a named tuple.
 
     Deprecated since the introduction of namedtuple in Python 2.6
+
     '''
     def __new__(cls, key_attr='key', sequence=()):
         import warnings
-        warnings.warn('MappedTuple is deprecated, you should use collections.namedtuple', stacklevel=1)
+        warnings.warn('MappedTuple is deprecated, you should use '
+                      'collections.namedtuple', stacklevel=1)
         self = super(MappedTuple, cls).__new__(cls, sequence)
         self.mapping = {getattr(item, key_attr): i
                           for i, item in enumerate(sequence)}
@@ -99,15 +117,17 @@ class MappedTuple(tuple):
 
 
 class SmartDict(dict):
-    '''
-    A "smart" dictionary that can receive a wide variety of arguments.
+    '''A "smart" dictionary that can receive a wide variety of arguments.
 
-    Creates a dictionary from a set of iterables (args) and keyword values
+    Creates a dictionary from a set of iterable arguments and keyword values
     (kwargs). Each arg can be:
 
-    - another dictionary.
-    - an iterable of (key, value) pairs.
-    - any object implementing "keys()" and "__getitem__(key)" methods.
+        - another dictionary.
+
+        - an iterable of (key, value) pairs.
+
+        - any object implementing "keys()" and "__getitem__(key)" methods.
+
     '''
 
     def __init__(self, *args, **kwargs):
@@ -115,8 +135,7 @@ class SmartDict(dict):
         self.update(*args, **kwargs)
 
     def update(self, *args, **kwargs):
-        '''
-        Update this dict from a set of iterables `args` and keyword values
+        '''Update this dict from a set of iterables `args` and keyword values
         `kwargs`.
         '''
         from types import GeneratorType
@@ -135,7 +154,9 @@ class SmartDict(dict):
             elif is_iterable(arg):
                 self._update(iter(arg))
             else:
-                raise TypeError('cannot convert dictionary update sequence element "%s" to a (key, value) pair iterator' % arg)
+                msg = ('cannot convert dictionary update sequence element '
+                       '"%s" to a (key, value) pair iterator') % arg
+                raise TypeError(msg)
         if kwargs:
             self.update(kwargs)
 
@@ -145,8 +166,7 @@ class SmartDict(dict):
 
 
 class SortedSmartDict(SmartDict):
-    '''
-    A dictionary that keeps its keys in the order in which they're inserted.
+    '''A dictionary that keeps its keys in the order in which they're inserted.
 
     Creating or updating a sorted dict with more than one kwargs is
     counterproductive because the order of this kind of argument is not kept
@@ -160,6 +180,7 @@ class SortedSmartDict(SmartDict):
                  the ``update`` of dictionaries, and this module has no
                  tests, we're defering such a change for a release post
                  |release|.
+
     '''
     # TODO: Deprecate this by "collections.OrderedDict" in python2.7
 
@@ -180,7 +201,7 @@ class SortedSmartDict(SmartDict):
 
     def __getitem__(self, key):
         _get = super(SortedSmartDict, self).__getitem__
-        if isinstance(key, SliceType):
+        if isinstance(key, slice):
             keys = self._keys.__getitem__(key)
             return map(_get, keys)
         else:
@@ -188,13 +209,15 @@ class SortedSmartDict(SmartDict):
 
     def __setitem__(self, key, value):
         _set = super(SortedSmartDict, self).__setitem__
-        if isinstance(key, SliceType):
+        if isinstance(key, slice):
             keys = self._keys.__getitem__(key)
             values = tuple(value)
             if len(keys) == len(values):
                 self._update(zip(keys, values))
             else:
-                raise ValueError('trying to replace a slice of "%s" items with "%s" values.' % (len(keys), len(values)))
+                msg = ('trying to replace a slice of "%s" items with "%s" '
+                       'values.') % (len(keys), len(values))
+                raise ValueError(msg)
         else:
             if key not in self:
                 self._keys.append(key)
@@ -202,7 +225,7 @@ class SortedSmartDict(SmartDict):
 
     def __delitem__(self, key):
         _del = super(SortedSmartDict, self).__delitem__
-        if isinstance(key, SliceType):
+        if isinstance(key, slice):
             keys = self._keys.__getitem__(key)
             self._keys.__delitem__(key)
         else:
@@ -258,7 +281,7 @@ class SortedSmartDict(SmartDict):
         return self[self._keys[index]]
 
     def insert(self, index, key, value):
-        '''Inserts the key, value pair before the item with the given index.'''
+        '''Inserts (key, value) pair before the item with the given index.'''
         if key in self:
             n = self._keys.index(key)
             del self._keys[n]
@@ -281,8 +304,7 @@ class SortedSmartDict(SmartDict):
 
 
 class IntSet(object):
-    '''
-    Like a Python 'set' but only accepting integers saving a lot of space.
+    '''Like a Python 'set' but only accepting integers saving a lot of space.
 
     Constructor is smart, you can give:
      * integers

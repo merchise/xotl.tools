@@ -16,8 +16,7 @@
 # Created: Mar 23, 2012
 #
 
-'''
-`xoutil` is a collection of disparate utilities that does not conform
+'''`xoutil` is a collection of disparate utilities that does not conform
 a framework for anything. `xoutil` is essentially an extension to the
 Python's standard library.
 
@@ -36,9 +35,5 @@ useful to implement components that have two different interfaces according to
 the context in which they are invoked. In this regard, contexts are a thin
 (but very idiomatic) alternative to some of the design patterns found
 elsewhere.
-'''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import as _absolute_import)
+'''

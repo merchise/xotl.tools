@@ -16,8 +16,7 @@
 #
 # Created on Feb 15, 2012
 
-'''
-Extends the standard `datetime` module.
+'''Extends the standard `datetime` module.
 
 - Python's ``datetime.strftime`` doesn't handle dates previous to 1900.
   This module define classes to override `date` and `datetime` to support the
@@ -28,6 +27,7 @@ Django and generalized.
 
 You may use this module as a drop-in replacement of the standard library
 `datetime` module.
+
 '''
 
 # TODO: consider use IoC to extend python datetime module
@@ -38,35 +38,34 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import time
+from xoutil.modules import copy_members as _copy_python_module_members
+_pm = _copy_python_module_members()
+
+time = _pm.time
 
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
-
-
-import datetime as _legacy
-from datetime import *
 
 
 __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
-if hasattr(_legacy.timedelta, 'total_seconds'):
+if hasattr(_pm.timedelta, 'total_seconds'):
     _NEW_TIME_DELTA = False
-    timedelta = _legacy.timedelta
 else:
     _NEW_TIME_DELTA = True
-    class timedelta(_legacy.timedelta):
-        __doc__ = _legacy.datetime.__doc__
+
+    class timedelta(_pm.timedelta):
+        __doc__ = _pm.timedelta.__doc__
 
         def total_seconds(self):
-            return (self.microseconds + (self.seconds + self.days * 24 * 3600) *
-                                         10 ** 6) / 10 ** 6
+            return (self.microseconds +
+                    (self.seconds + self.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
 
-class date(_legacy.date):
-    __doc__ = _legacy.date.__doc__
+class date(_pm.date):
+    __doc__ = _pm.date.__doc__
 
     def strftime(self, fmt):
         return strftime(self, fmt)
@@ -78,15 +77,16 @@ class date(_legacy.date):
                              microseconds=res.microseconds)
 
 
-class datetime(_legacy.datetime):
-    __doc__ = _legacy.datetime.__doc__
+class datetime(_pm.datetime):
+    __doc__ = _pm.datetime.__doc__
 
     def strftime(self, fmt):
         return strftime(self, fmt)
 
     def combine(self, date, time):
-        return datetime(date.year, date.month, date.day, time.hour, time.minute,
-                        time.second, time.microsecond, time.tzinfo)
+        return datetime(date.year, date.month, date.day, time.hour,
+                        time.minute, time.second, time.microsecond,
+                        time.tzinfo)
 
     def date(self):
         return date(self.year, self.month, self.day)
@@ -107,18 +107,18 @@ class datetime(_legacy.datetime):
 # FIXME: "__instancecheck__", "__subclasscheck__", module "abc"
 is_date = lambda obj: isinstance(obj, date.__base__)
 is_datetime = lambda obj: isinstance(obj, datetime.__base__)
-is_time = lambda obj: isinstance(obj, time)     # Time is not redefined
+is_time = lambda obj: isinstance(obj, time)
 
 
 def new_date(d):
-    "Generate a safe date from a legacy datetime date object."
+    '''Generate a safe date from a legacy datetime date object.'''
     return date(d.year, d.month, d.day)
 
 
 def new_datetime(d):
-    '''
-    Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
+    '''Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
     object.
+
     '''
     args = [d.year, d.month, d.day]
     if isinstance(d, datetime.__base__):    # legacy datetime
@@ -131,16 +131,16 @@ def new_datetime(d):
 # Allowed if there's an even number of "%"s because they are escaped.
 _illegal_formatting = _regex_compile(br"((^|[^%])(%%)*%[sy])")
 
+
 def _year_find_all(fmt, year, no_year_tuple):
     text = _time_strftime(fmt, (year,) + no_year_tuple)
     regex = _regex_compile(str(year))
-    res = set() # TODO: return {match.start() match in regex.finditer(text)}
-    for match in regex.finditer(text):
-        res.add(match.start())
-    return res
+    return {match.start() for match in regex.finditer(text)}
 
 
-_TIMEDELTA_LABELS = b'dhms'    # days, hours, minutes, seconds
+
+_TD_LABELS = 'dhms'    # days, hours, minutes, seconds
+
 
 def strfdelta(delta):
     '''
@@ -153,17 +153,19 @@ def strfdelta(delta):
         >>> def t(h, m):
         ...     return timedelta(hours=h, minutes=m)
 
-        >>> strfdelta(t(4, 56))
-        u'4h 56m'
+        >>> strfdelta(t(4, 56)) == '4h 56m'
+        True
 
     '''
     from xoutil.string import strfnumber
+    ss, sss = str('%s%s'), str(' %s%s')
     if delta.days:
         days = delta.days
         delta -= timedelta(days=days)
         hours = delta.total_seconds() / 60 / 60
-        res = '%s%s' % (days, _TIMEDELTA_LABELS[0])
-        return res if hours < 0.01 else res + (' %s%s' % (strfnumber(hours), _TIMEDELTA_LABELS[1]))
+        res = ss % (days, _TD_LABELS[0])
+        if hours >= 0.01:
+            res += sss % (strfnumber(hours), _TD_LABELS[1])
     else:
         seconds = delta.total_seconds()
         if seconds > 60:
@@ -171,15 +173,18 @@ def strfdelta(delta):
             if minutes > 60:
                 hours = int(minutes / 60)
                 minutes -= hours * 60
-                res = '%s%s' % (hours, _TIMEDELTA_LABELS[1])
-                return res if minutes < 0.01 else res + (' %s%s' % (strfnumber(minutes), _TIMEDELTA_LABELS[2]))
+                res = ss % (hours, _TD_LABELS[1])
+                if minutes >= 0.01:
+                    res += sss % (strfnumber(minutes), _TD_LABELS[2])
             else:
                 minutes = int(minutes)
                 seconds -= 60 * minutes
-                res = '%s%s' % (minutes, _TIMEDELTA_LABELS[2])
-                return res if seconds < 0.01 else res + (' %s%s' % (strfnumber(seconds), _TIMEDELTA_LABELS[3]))
+                res = ss % (minutes, _TD_LABELS[2])
+                if seconds >= 0.01:
+                    res += sss % (strfnumber(seconds), _TD_LABELS[3])
         else:
-            return '%s%s' % (strfnumber(seconds, '%0.3f'), _TIMEDELTA_LABELS[3])
+            res = ss % (strfnumber(seconds, '%0.3f'), _TD_LABELS[3])
+    return res
 
 
 def strftime(dt, fmt):
@@ -189,10 +194,11 @@ def strftime(dt, fmt):
         illegal_formatting = _illegal_formatting.search(fmt)
         if illegal_formatting is None:
             year = dt.year
-            # For every non-leap year century, advance by 6 years to get into the 28-year repeat cycle
+            # For every non-leap year century, advance by 6 years to get into
+            # the 28-year repeat cycle
             delta = 2000 - year
             year += 6 * (delta // 100 + delta // 400)
-            year += ((2000 - year) // 28) * 28    # Move to around the year 2000
+            year += ((2000 - year) // 28) * 28   # Move to around the year 2000
             no_year_tuple = dt.timetuple()[1:]
             sites = _year_find_all(fmt, year, no_year_tuple)
             sites &= _year_find_all(fmt, year + 28, no_year_tuple)
@@ -202,8 +208,9 @@ def strftime(dt, fmt):
                 res = res[:site] + syear + res[site + 4:]
             return res
         else:
-            raise TypeError("strftime of dates before 1900 does not handle " +
-                            illegal_formatting.group(0))
+            msg = ('strftime of dates before 1900 does not handle'
+                   ' %s') % illegal_formatting.group(0)
+            raise TypeError(msg)
 
 
 def parse_date(value=None):
@@ -234,7 +241,8 @@ def get_month_last(ref=None):
 def is_full_month(start, end):
     sd, sm, sy = start.day, start.month, start.year
     em, ey = end.month, end.year
-    return (sd == 1) and (sm == em) and (sy == ey) and (em != (end + timedelta(1)).month)
+    return ((sd == 1) and (sm == em) and (sy == ey) and
+            (em != (end + timedelta(1)).month))
 
 
-del _legacy
+del _pm, _copy_python_module_members

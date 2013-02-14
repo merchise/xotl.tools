@@ -26,34 +26,83 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import types as _legacy
-from types import *
+from xoutil.modules import copy_members as _copy_python_module_members
+_copy_python_module_members()
+del _copy_python_module_members
+
+from xoutil.compat import xrange_
+from xoutil.string import names as _names
 
 
-__all__ = (b'Unset', b'is_iterable', b'is_collection',
-           b'is_scalar', b'is_string_like')
-
-
-class _UnsetType(type):
-    'The type of the :obj:`Unset` value.'
-    def __nonzero__(self):
-        return False
-
-
-class Unset:
-    '''
-    To be used as default value to be sure none is returned in scenarios where
-    `None` could be a valid value.
+class UnsetType(object):
+    '''The unique instance `Unset` is to be used as default value to be sure
+    none is returned in scenarios where `None` could be a valid value.
 
     For example::
 
         >>> getattr('', '__doc__', Unset) is Unset
         False
-    '''
-    __metaclass__ = _UnsetType
 
-    def __new__(cls, *args, **kwargs):
-        raise TypeError("cannot create 'Unset' instances")
+    '''
+    __slots__ = (str('name'), )
+
+    def __new__(cls, name, **kwargs):
+        if kwargs.get('__singleton__', None) is UnsetType:
+            result = super(UnsetType, cls).__new__(cls)
+            result.name = name
+            return result
+        else:
+            raise TypeError("cannot create 'UnsetType' instances")
+
+    def __nonzero__(self):
+        return False
+    __bool__ = __nonzero__
+
+    def __repr__(self):
+        return self.name
+    __str__ = __repr__
+
+
+Unset = UnsetType('Unset', __singleton__=UnsetType)
+
+#: To be used in arguments that are currently ignored cause they are being
+#: deprecated. The only valid reason to use `ignored` is to signal ignored
+#: arguments in method's/function's signature.
+ignored = UnsetType('ignored', __singleton__=UnsetType)
+
+
+#: The type of methods that are builtin in Python.
+WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
+
+
+#: A compatible Py2 and Py3k DictProxyType, since it does not exists in Py3k.
+DictProxyType = type(object.__dict__)
+
+
+class mro_dict(object):
+    '''An utility class that behaves like a read-only dict to query the
+    attributes in the mro chain of a class (or an object's class).
+
+    Currently it only supports `get` and `__getitem__`.
+    '''
+    def __init__(self, target):
+        t = target if hasattr(target, 'mro') else type(target)
+        self._target_mro = t.mro()
+
+    def __getitem__(self, name):
+        return self.get(name)
+
+    def get(self, name, default=Unset):
+        from xoutil.objects import get_first_of
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        result = get_first_of(probes, name, default=Unset)
+        if result is Unset:
+            if default is Unset:
+                raise KeyError(name)
+            else:
+                return default
+        else:
+            return result
 
 
 def is_iterable(maybe):
@@ -70,7 +119,7 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> is_iterable(xrange(1))
+        >>> is_iterable(xrange_(1))
         True
 
         >>> is_iterable({})
@@ -103,7 +152,7 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> is_collection(xrange(1))
+        >>> is_collection(xrange_(1))
         True
 
         >>> is_collection({})
@@ -115,10 +164,10 @@ def is_collection(maybe):
         >>> is_collection(set())
         True
 
-        >>> is_collection(a for a in xrange(100))
+        >>> is_collection(a for a in xrange_(100))
         True
     '''
-    return isinstance(maybe, (tuple, xrange, list, set, frozenset,
+    return isinstance(maybe, (tuple, xrange_, list, set, frozenset,
                               GeneratorType))
 
 
@@ -133,8 +182,79 @@ def is_string_like(maybe):
 
 
 def is_scalar(maybe):
-    '''
-    Returns True if `maybe` is a string, an int, or some other scalar type (i.e
-    not an iterable.)
+    '''Returns True if `maybe` is a string, an int, or some other scalar type
+    (i.e not an iterable.)
+
     '''
     return is_string_like(maybe) or not is_iterable(maybe)
+
+
+def is_staticmethod(desc, name=Unset):
+    '''Returns true if a `method` is a static method.
+
+    This function takes the same arguments as :func:`is_classmethod`.
+
+    '''
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, staticmethod)
+
+
+def is_classmethod(desc, name=Unset):
+    '''Returns true if a `method` is a class method.
+
+    :param desc: This may be the method descriptor or the class that holds the
+                 method, in the second case you must provide the `name` of the
+                 method.
+
+                 .. note::
+
+                    Notice that in the first case what is needed is the
+                    **method descriptor**, i.e, taken from the class'
+                    `__dict__` attribute. If instead you pass something like
+                    ``cls.methodname``, this method will return False whilst
+                    :func:`is_instancemethod` will return True.
+
+    :param name: The name of the method, if the first argument is the class.
+
+    '''
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, classmethod)
+
+
+def is_instancemethod(desc, name=Unset):
+    '''Returns true if a given `method` is neither a static method nor a class
+    method.
+
+    This function takes the same arguments as :func:`is_classmethod`.
+
+    '''
+    from types import FunctionType
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, FunctionType)
+
+
+def is_slotwrapper(desc, name=Unset):
+    '''Returns True if a given `method` is a slot wrapper (i.e. a method that
+    is builtin in the `object` base class).
+
+    This function takes the same arguments as :func:`is_classmethod`.
+
+    '''
+    if name:
+        desc = mro_dict(desc).get(name, None)
+    return isinstance(desc, SlotWrapperType)
+
+
+def is_module(maybe):
+    '''Returns True if `maybe` is a module.'''
+    from types import ModuleType
+    return isinstance(maybe, ModuleType)
+
+
+__all__ = _names('Unset', 'ignored', 'is_iterable', 'is_collection',
+                 'is_scalar', 'is_string_like', 'is_module', 'is_classmethod',
+                 'is_staticmethod', 'is_instancemethod', 'is_slotwrapper',
+                 'DictProxyType', 'SlotWrapperType', 'mro_dict')

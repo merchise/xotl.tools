@@ -111,8 +111,7 @@ def inject_deprecated(funcnames, source, target=None):
         unset = object()
         target = getattr(source, targetname, unset)
         if target is not unset:
-            if isinstance(target, (type, types.FunctionType, types.LambdaType,
-                                   types.ClassType, types.TypeType)):
+            if isinstance(target, (types.FunctionType, types.LambdaType) + _class_types):
                 replacement = source.__name__ + '.' + targetname
                 module_name = target_locals.get('__name__', None)
                 target_locals[targetname] = deprecated(replacement,

@@ -22,13 +22,15 @@ from __future__ import (division as _py3_division,
 
 import inspect
 
+from xoutil.string import names as _names
+from xoutil.compat import py3k as _py3k
+
 
 MAX_DEEP = 15
 
 
 def getargvalues(frame):
-    '''
-    Inspects the given frame for arguments and returns a dictionary that maps
+    '''Inspects the given frame for arguments and returns a dictionary that maps
     parameters names to arguments values. If an `*` argument was passed then
     the key on the returning dictionary would be formatted as
     `<name-of-*-param>[index]`.
@@ -45,14 +47,6 @@ def getargvalues(frame):
         >>> autocontained(1, 2, -10, -11)['margs[0]']
         -10
 
-    Packed arguments also works::
-
-        >>> def nested((x, y), radius):
-        ...    import sys
-        ...    return getargvalues(sys._getframe())
-
-        >>> nested((1, 2), 12)['y']
-        2
     '''
     from xoutil.types import is_collection
     from xoutil.iterators import flatten
@@ -70,6 +64,19 @@ def getargvalues(frame):
     if kwds:
         res.update(values[kwds])
     return res
+
+if not _py3k:
+    getargvalues.__doc__ += """
+    In Python 2.7, packed arguments also works::
+
+        >>> def nested((x, y), radius):
+        ...    import sys
+        ...    return getargvalues(sys._getframe())
+
+        >>> nested((1, 2), 12)['y']
+        2
+
+    """
 
 
 def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
@@ -148,5 +155,5 @@ def iter_frames(max_deep=MAX_DEEP):
         del frame   # As recommended in the Python's doc to avoid memory leaks
 
 
-__all__ = (b'MAX_DEEP', b'getargvalues', b'object_info_finder',
-           b'object_finder', b'track_value', b'iter_frames')
+__all__ = _names('MAX_DEEP', 'getargvalues', 'object_info_finder',
+                 'object_finder', 'track_value', 'iter_frames')

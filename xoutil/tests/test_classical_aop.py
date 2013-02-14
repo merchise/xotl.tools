@@ -96,11 +96,15 @@ class TestWeavingModules(unittest.TestCase):
         weave(Dupper, self.testbed)
 
         self.assertEquals(20, testbed.echo(10))
+
         # Unfortunately is quite difficult to replace standing references. Is
         # possible by keeping the old func_code function and replacing
         # func_code directly, but is difficult to get right and I don't need
         # it.
         self.assertEquals(10, echo(10))
+
+        # After the test, since other may require normal echo behavior, let's restore it
+        testbed.echo = echo
 
 
 if __name__ == "__main__":

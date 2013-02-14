@@ -11,8 +11,7 @@
 #
 # Created on Feb 22, 2012
 
-'''
-Extensions to the `functools` module from the Python's standard library.
+'''Extensions to the `functools` module from the Python's standard library.
 
 You may use this module as drop-in replacement of `functools`.
 '''
@@ -23,8 +22,93 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-from functools import *
-from xoutil.compat import py32
+from xoutil.modules import copy_members as _copy_python_module_members
+_pm = _copy_python_module_members()
+
+wraps = _pm.wraps
+del _pm, _copy_python_module_members
+
+from xoutil.compat import py32, callable
+
+
+class ctuple(tuple):
+    '''Simple tuple marker for :func:`compose`.'''
+
+
+def compose(*funcs, **kwargs):
+    '''Returns a function that is the composition of `funcs`.
+
+    By default `compose` behaves like mathematical function composition: this
+    is to say that ``compose(f1, ... fn)`` is equivalent to ``lambda _x:
+    fn(...(f1(_x))...)``.
+
+    If any "intermediate" function returns a :class:`ctuple` is expanded as
+    several positional arguments to the next function.
+
+    :param math: Indicates if `compose` should behave like mathematical
+                 function composition: last function in `funcs` is applied
+                 last. If False, then the last function in `func` is applied
+                 first.
+
+    Example::
+
+        >>> import operator
+        >>> compose(operator.mul, operator.neg)(3, 4)
+        -12
+
+        >>> compose(operator.neg, operator.mul, math=False)(3, 4)
+        -12
+
+        >>> operator.neg(operator.mul(3, 4))
+        -12
+    '''
+    math = kwargs.get('math', True)
+    if not math:
+        funcs = list(reversed(funcs))
+    def _inner(*args):
+        f, functions = funcs[0], funcs[1:]
+        result = f(*args)
+        for f in functions:
+            if isinstance(result, ctuple):
+                result = f(*result)
+            else:
+                result = f(result)
+        return result
+    return _inner
+
+
+# The real signature should be (*funcs, times)
+def pow_(*args):
+    '''Returns the "power" composition of several functions.
+
+    Examples::
+
+       >>> import operator
+       >>> f = pow_(partial(operator.mul, 3), 3)
+       >>> f(23) == 3*(3*(3*23))
+       True
+
+       >>> pow_(operator.neg)
+       Traceback (most recent call last):
+       ...
+       TypeError: Function `pow_` requires at least two arguments
+    '''
+    try:
+        funcs, times = args[:-1], args[-1]
+    except IndexError:
+        msg = "Function `pow_` requires at least two arguments"
+        raise TypeError(msg)
+    if not funcs:
+        raise TypeError('Function `pow_` requires at least two arguments')
+    if any(not callable(func) for func in funcs):
+        raise TypeError('First arguments of `pow_` must be callables')
+    if not isinstance(times, int):
+        raise TypeError('Last argument of `pow_` must be int')
+    if len(funcs) > 1:
+        base = (compose(funcs), )
+    else:
+        base = (funcs[0], )
+    return compose(*(base * times))
 
 
 if not py32:
@@ -34,7 +118,7 @@ if not py32:
     # Back-ported lru_cache from py32. But take note that if running with at
     # least py32 we will use Python's version, so don't mess with internals.
     def lru_cache(maxsize=100):
-        """Least-recently-used cache decorator.
+        '''Least-recently-used cache decorator.
 
         If *maxsize* is set to None, the LRU features are disabled and the
         cache can grow without bound.
@@ -47,7 +131,7 @@ if not py32:
 
         See:  http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used
 
-        """
+        '''
         # Users should only access the lru_cache through its public API:
         #       cache_info, cache_clear, and f.__wrapped__
         # The internals of the lru_cache are encapsulated for thread safety and
@@ -70,7 +154,7 @@ if not py32:
                 @wraps(user_function)
                 def wrapper(*args, **kwds):
                     #~ nonlocal hits, misses
-                    hits, misses = _cache_info
+                    hits, misses = tuple(_cache_info)
                     key = args
                     if kwds:
                         key += kwd_mark + tuple(sorted(kwds.items()))
@@ -89,14 +173,14 @@ if not py32:
                     _cache_info[1] = misses
                     return result
             else:
-                cache = OrderedDict()           # ordered least recent to most recent
+                cache = OrderedDict()     # ordered least recent to most recent
                 cache_popitem = cache.popitem
                 cache_renew = cache.move_to_end
 
                 @wraps(user_function)
                 def wrapper(*args, **kwds):
                     #~ nonlocal hits, misses
-                    hits, misses = _cache_info
+                    hits, misses = tuple(_cache_info)
                     key = args
                     if kwds:
                         key += kwd_mark + tuple(sorted(kwds.items()))
@@ -114,19 +198,20 @@ if not py32:
                     with lock:
                         cache[key] = result     # record recent use of this key
                         misses += 1
+                        _cache_info[0] = hits
+                        _cache_info[1] = misses
                         if len(cache) > maxsize:
-                            cache_popitem(0)    # purge least recently used cache entry
-                    _cache_info[0] = hits
-                    _cache_info[1] = misses
+                            cache_popitem(0)    # purge least recently used
                     return result
 
             def cache_info():
-                """Report cache statistics"""
+                '''Report cache statistics'''
                 with lock:
-                    return _CacheInfo(_cache_info[0], _cache_info[1], maxsize, len(cache))
+                    return _CacheInfo(_cache_info[0], _cache_info[1], maxsize,
+                                      len(cache))
 
             def cache_clear():
-                """Clear the cache and cache statistics"""
+                '''Clear the cache and cache statistics'''
                 #~ nonlocal hits, misses
                 with lock:
                     cache.clear()

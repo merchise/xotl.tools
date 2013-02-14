@@ -2,4 +2,7 @@
 =====================================================
 
 .. automodule:: xoutil.proxy
-   :members: proxify, UNPROXIFING_CONTEXT, unboxed
+   :members: proxify, UNPROXIFING_CONTEXT
+
+.. autoclass:: unboxed
+   :members: __lshift__
