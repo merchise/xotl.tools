@@ -34,14 +34,15 @@ def unstable(target, msg=None):
     is invoked.
 
     The `msg` parameter, if given, should be string that contains, at most, two
-    replacement fields (``{0}{1}``). The first replacement field will be the
-    type of `target` (interface, class or function) and the second matches
-    `target's` full name.
+    positional replacement fields ({0} and {1}). The first replacement field
+    will be the type of `target` (interface, class or function) and the second
+    matches `target's` full name.
 
     '''
     print(target)
     if msg is None:
-        msg = 'The {0} `{1}` is declared unstable. It may change in the future or be removed.'
+        msg = ('The {0} `{1}` is declared unstable. '
+               'It may change in the future or be removed.')
     try:
         from zope.interface import Interface
     except ImportError:
