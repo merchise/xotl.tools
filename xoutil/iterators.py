@@ -135,39 +135,21 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         >>> tuple(flatten((1, range_(2, 5), xrange_(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
 
-        >>> def fib(n):
-        ...     if n <= 1:
-        ...         return 1
-        ...     else:
-        ...         return fib(n-2) + fib(n-1)
-
-        >>> list(flatten((range(4), (fib(n) for n in range(3)))))
-        [0, 1, 2, 3, 1, 1, 2]
-
     If `depth` is None the collection is flattened recursiverly until the
     "bottom" is reached. If `depth` is an integer then the collection is
-    flattened up to that level.
-
-    `depth=0` means not to flatten.
-
-    Nested iterators are not "exploded" if under the stated `depth`.
-
-    Examples::
+    flattened up to that level. `depth=0` means not to flatten. Nested
+    iterators are not "exploded" if under the stated `depth`::
 
         >>> from xoutil.compat import xrange_, range_
 
-        >>> tuple(flatten((range_(2), range_(2, 4)), depth=0))
-        ([0, 1], [2, 3])
-
-        # In the following doctest we use `...range(...X)` because the string
+        # In the following doctest we use ``...range(...X)`` because the string
         # repr of range differs in Py2 and Py3k.
+
+        >>> tuple(flatten((range_(2), xrange_(2, 4)), depth=0))  # doctest: +ELLIPSIS
+        ([0, 1], ...range(2, 4))
 
         >>> tuple(flatten((xrange_(2), range_(2, 4)), depth=0))  # doctest: +ELLIPSIS
         (...range(...2), [2, 3])
-
-        >>> tuple(flatten((xrange_(2), range_(2, 4),
-        ...       (xrange_(n) for n in range_(5, 8))), depth=1))  # doctest: +ELLIPSIS
-        (0, 1, 2, 3, ...range(...5), ...range(...6), ...range(...7))
 
     '''
     for item in sequence:
