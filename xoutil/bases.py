@@ -33,6 +33,10 @@ class BaseConvertor(object):
     '''
     @classmethod
     def inttobase(cls, num):
+        '''Converts an integer to a base representation using the class' table
+        and mask attributes.
+
+        '''
         mask = cls.mask
         bl = mask.bit_length()
         table = cls.table
@@ -49,6 +53,10 @@ class BaseConvertor(object):
 
     @classmethod
     def basetoint(cls, istr):
+        '''Converts a base representation to a integer using the class' table
+        and mask attributes.
+
+        '''
         mask = cls.mask
         bl = mask.bit_length()
         table = cls.table
