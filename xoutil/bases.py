@@ -60,8 +60,9 @@ class BaseConvertor(object):
         mask = cls.mask
         bl = mask.bit_length()
         table = cls.table
-        assert mask and table
         istr = istr.lstrip('0')
+        if cls.case_insensitive:
+            istr = istr.lower()
         if istr == '':
             return 0
         result = 0
@@ -74,6 +75,9 @@ class BaseConvertor(object):
 class B32(BaseConvertor):
     '''Handles base-32 convertions.
 
+    In base 32, each 5-bits chunks are represented by a single "digit". Digits
+    comprises all 0..9 and a..w.
+
         >>> B32.inttobase(32) == '10'
         True
 
@@ -83,13 +87,17 @@ class B32(BaseConvertor):
     '''
     table = '0123456789abcdefghijklmnoprstuvw'
     mask = 0b11111
+    case_insensitive = True
 
 
 class B64(BaseConvertor):
-    '''Handles Ref-Base-64 convertions.
+    '''Handles [a kind of] base 64 convertions.
 
-    This is not standard base64, but a reference-friendly base 64 to help the
-    use case of generating a short reference.
+    This **is not standard base64**, but a reference-friendly base 64 to help
+    the use case of generating a short reference.
+
+    In base 64, each 6-bits chunks are represented by a single "digit". Digits
+    comprises all 0..9, a..z, A..Z and the four symbols: `()[]`.
 
         >>> B64.inttobase(64) == '10'
         True
@@ -97,6 +105,17 @@ class B64(BaseConvertor):
         >>> B64.basetoint('10')
         64
 
+   .. warning::
+
+      In this base, letters **are** case sensitive::
+
+          >>> B64.basetoint('a')
+          10
+
+          >>> B64.basetoint('A')
+          35
+
     '''
     table = '0123456789abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUVWXZ()[]'
     mask = 0b111111
+    case_insensitive = False
