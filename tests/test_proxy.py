@@ -113,3 +113,9 @@ class TestProxy(unittest.TestCase):
         p = Proxified(x)
         unboxed(p, 'l') << 234
         self.assertEqual([1, 3, 234], unboxed(p).l)
+        self.assertEqual(x.l, p.l)
+        self.assertIs(x.l, p.l)
+
+        unboxed(p, 'unassigned') << 1
+        self.assertEqual(1, unboxed(p).unassigned)
+        self.assertFalse(hasattr(x, 'unassigned'))
