@@ -160,7 +160,7 @@ class Proxy(object):
         if context[UNPROXIFING_CONTEXT] and not attr.startswith('_super_'):
             return get(attr)
         target = get('target')
-        behaves = get('behaves')
+        behaves = get('behaves', None)
         if not behaves:
             behaves = ()
         valid_wrapper = lambda b: is_instancemethod(b, attr)
