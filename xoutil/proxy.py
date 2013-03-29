@@ -193,22 +193,22 @@ class unboxed(object):
     provides support for "updating" a single attribute.
 
     '''
-    def __init__(self, target, attr=None):
-        self.target = target
+    def __init__(self, proxy, attr=None):
+        self.proxy = proxy
         self.attr = attr
 
     def __getattribute__(self, attr):
-        target = super(unboxed, self).__getattribute__('target')
+        proxy = super(unboxed, self).__getattribute__('proxy')
         with context(UNPROXIFING_CONTEXT):
-            return getattr(target, attr)
+            return getattr(proxy, attr)
 
     def __call__(self, attr):
         '''
-        Supports the idiom ``unboxed(target)(attr) << value``.
+        Supports the idiom ``unboxed(proxy)(attr) << value``.
         '''
         get = super(unboxed, self).__getattribute__
-        target = get('target')
-        return unboxed(target, attr)
+        proxy = get('proxy')
+        return unboxed(proxy, attr)
 
     def __lshift__(self, value):
         '''Supports the idiom ``unboxed(x, attrname) << value`` for updating a
@@ -227,6 +227,7 @@ class unboxed(object):
         '''
         from collections import Mapping
         get = super(unboxed, self).__getattribute__
+        proxy = super(unboxed, self).__getattribute__('proxy')
         attr = get('attr')
         if attr:
             current = getattr(self, attr, Unset)
@@ -241,7 +242,8 @@ class unboxed(object):
                     current.update(value)
                     value = Unset
             if value is not Unset:
-                setattr(self, attr, value)
+                with context(UNPROXIFING_CONTEXT):
+                    setattr(proxy, attr, value)
         else:
             pass
 
