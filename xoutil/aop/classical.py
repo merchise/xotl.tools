@@ -109,11 +109,16 @@ def bind_method(method, *args, **kwargs):
     if is_instancemethod(method):
         self = args[0]
         args = args[1:]
-        bound_method = partial(method, self)
+        bound_method = _wraps(method)(lambda *args, **kwargs: method(self,
+                                                                    *args,
+                                                                    **kwargs))
     elif is_classmethod(method):
         self = args[0]
         args = args[1:]
-        bound_method = partial(method.__func__, self)
+        bound_method = _wraps(method.__func__)(lambda *a, **kw:
+                                               method.__func__(self,
+                                                               *a,
+                                                               **kw))
     else:
         try:
             assert is_staticmethod(method)
