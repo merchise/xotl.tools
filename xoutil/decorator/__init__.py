@@ -197,7 +197,7 @@ def instantiate(target, *args, **kwargs):
 
 #
 # The following is extracted from the SQLAlchemy project's codebase, merit and
-# copyright was to SQLAlchemy authors::
+# copyright goes to SQLAlchemy authors::
 #
 # Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
 #
@@ -208,7 +208,7 @@ class memoized_property(object):
     """A read-only @property that is only evaluated once.
 
     This is extracted from the SQLAlchemy project's codebase, merit and
-    copyright was to SQLAlchemy authors::
+    copyright goes to SQLAlchemy authors::
 
       Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
 
@@ -236,7 +236,7 @@ class memoized_instancemethod(object):
     called with different arguments.
 
     This is extracted from the SQLAlchemy project's codebase, merit and
-    copyright was to SQLAlchemy authors::
+    copyright goes to SQLAlchemy authors::
 
       Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
 
