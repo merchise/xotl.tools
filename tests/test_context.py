@@ -73,6 +73,11 @@ def test_stacking_of_data_does_not_leak():
     except (IndexError, KeyError):
         pass
 
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main(verbosity=2)
+def test_data_is_an_opendict():
+    c1 = object()
+    with context(c1, a=1, b=1) as cc1:
+        with context(c1, a=2) as cc2:
+            assert cc2 is cc1
+            assert cc2.data.a == 2
+            assert cc2.data.b == 1 # Given by the upper enclosing level
+        assert cc1.data.a == 1

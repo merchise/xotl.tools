@@ -136,6 +136,8 @@ class Context(object):
                 self._dicts[-1][name] = value
             def __iter__(self):
                 return iter(self._dicts[-1])
+            def __getattr__(self, name):
+                return self[name]
         return stackeddict(self._data)
 
     def setdefault(self, key, value):
