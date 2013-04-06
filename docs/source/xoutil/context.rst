@@ -3,4 +3,3 @@
 
 .. automodule:: xoutil.context
    :members: context, Context
-

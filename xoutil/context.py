@@ -20,16 +20,6 @@
 '''
 A context manager for execution context flags.
 
-Use as::
-
-    >>> from xoutil.context import context
-    >>> with context('somename'):
-    ...     if context['somename']:
-    ...         print('In context somename')
-    In context somename
-
-Note the difference creating the context and checking it.
-
 '''
 
 
@@ -82,6 +72,9 @@ class Context(object):
     context you should use `context(name)` for testing whether some piece of
     code is being executed inside a context you should use `context[name]`;
     you may also use the syntax `name in context`.
+
+    If you pass keyword argument, those will be accesible by the :attr:`data`
+    of the context object.
 
     '''
     def __new__(cls, name, **data):
