@@ -49,6 +49,30 @@ class TestContext(unittest.TestCase):
             self.assertIsNot(None, context[CONTEXT1])
         self.assertEquals(False, bool(context[CONTEXT1]))
 
+
+def test_stacking_of_data_does_not_leak():
+    c1 = object()
+    with context(c1, a=1, b=1) as cc1:
+        assert cc1.data['a'] == 1
+        with context(c1, a=2) as cc2:
+            assert cc2 is cc1
+            assert cc2.data['a'] == 2
+            assert cc2.data['b'] == 1 # Given by the upper enclosing level
+
+            # Let's change it for this level
+            cc2.data['b'] = 'jailed!'
+            assert cc2.data['b'] == 'jailed!'
+
+        # But in the upper level both a and b stay the same
+        assert cc1.data['a'] == 1
+        assert cc1.data['b'] == 1
+
+    try:
+        assert cc1.data['a'] == 1
+        assert False
+    except (IndexError, KeyError):
+        pass
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main(verbosity=2)

@@ -89,20 +89,11 @@ class Context(object):
         if res is _null_context:
             res = super(Context, cls).__new__(cls)
             res.name = name
-            res.data = data
+            res._data = [data]
             res.count = 0
             res._events = []
-        elif data:
-            # TODO: [med] This makes the data available back to upper context
-            # nesting::
-            #
-            #    >>> with context('A', b=1) as context_A:
-            #    ...   with context('A', b=2):
-            #    ...       pass
-            #    ...   print(context_A.data['b'])
-            #    2
-            #
-            res.data.update(data)
+        else:
+            res._data.append(data)
         return res
 
     def __nonzero__(self):
@@ -116,6 +107,8 @@ class Context(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.count -= 1
+        ctx = _data.contexts[self.name]
+        ctx._data.pop(-1)
         if self.count == 0:
             for event in self.events:
                 event(self)
@@ -128,7 +121,29 @@ class Context(object):
 
     @events.setter
     def events(self, value):
-        self._events = list(set(value))
+        self._events = list(value)
+
+
+    @property
+    def data(self):
+        # TODO: Make this a proper collection
+        class stackeddict(object):
+            def __init__(self, dicts):
+                self._dicts = dicts
+            def __getitem__(self, which):
+                from xoutil.objects import get_first_of
+                unset = object()
+                res = get_first_of(list(reversed(self._dicts)),
+                                   which, default=unset)
+                if res is not unset:
+                    return res
+                else:
+                    raise KeyError(which)
+            def __setitem__(self, name, value):
+                self._dicts[-1][name] = value
+            def __iter__(self):
+                return iter(self._dicts[-1])
+        return stackeddict(self._data)
 
     def setdefault(self, key, value):
         return self.data.setdefault(key, value)
