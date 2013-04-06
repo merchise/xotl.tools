@@ -116,7 +116,6 @@ class Context(object):
     def events(self, value):
         self._events = list(value)
 
-
     @property
     def data(self):
         # TODO: Make this a proper collection
@@ -138,6 +137,11 @@ class Context(object):
                 return iter(self._dicts[-1])
             def __getattr__(self, name):
                 return self[name]
+            def __setattr__(self, name, value):
+                if not name.startswith('_'):
+                    self[name] = value
+                else:
+                    super(stackeddict, self).__setattr__(name, value)
         return stackeddict(self._data)
 
     def setdefault(self, key, value):

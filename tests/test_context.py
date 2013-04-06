@@ -80,4 +80,6 @@ def test_data_is_an_opendict():
             assert cc2 is cc1
             assert cc2.data.a == 2
             assert cc2.data.b == 1 # Given by the upper enclosing level
+            cc2.data.b = 'jaile!d'
         assert cc1.data.a == 1
+        assert cc1.data['b'] == 1
