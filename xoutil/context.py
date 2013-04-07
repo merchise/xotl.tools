@@ -172,6 +172,10 @@ class NullContext(object):
             cls.instance = super(NullContext, cls).__new__(cls)
         return cls.instance
 
+    @property
+    def data(self):
+        return {}
+
     def __nonzero__(self):
         return False
     __bool__ = __nonzero__
