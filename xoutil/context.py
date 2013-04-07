@@ -122,15 +122,22 @@ class Context(object):
         class stackeddict(object):
             def __init__(self, dicts):
                 self._dicts = dicts
-            def __getitem__(self, which):
+            def get(self, name, default=None):
                 from xoutil.objects import get_first_of
                 unset = object()
                 res = get_first_of(list(reversed(self._dicts)),
-                                   which, default=unset)
+                                   name, default=unset)
                 if res is not unset:
                     return res
                 else:
-                    raise KeyError(which)
+                    return default
+            def __getitem__(self, name):
+                unset = object()
+                res = self.get(name)
+                if res is not unset:
+                    return res
+                else:
+                    raise KeyError(name)
             def __setitem__(self, name, value):
                 self._dicts[-1][name] = value
             def __iter__(self):
