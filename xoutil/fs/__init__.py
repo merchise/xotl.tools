@@ -215,6 +215,8 @@ def rename_wrong(top='.', current_encoding=None, target_encoding=None,
                  verbose=False):
     '''Converts filenames from one encoding to another if the current is wrong.
     '''
+    # FIXME: Not finished
+    raise NotImplementedError
     import sys
     wrongs = []
     if current_encoding is None:
