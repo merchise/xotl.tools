@@ -2,8 +2,8 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2013 Merchise Autrement and Contributors for the defaultdict and
-# opendict implementations.
+# Copyright 2013 Merchise Autrement and Contributors for the
+# defaultdict and opendict implementations.
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
 # implementations.
@@ -23,9 +23,9 @@
 
 '''Extensions to Python's ``collections`` module.
 
-You may use it as drop-in replacement of ``collections``. Although we don't
-document all items here. Refer to :mod:`collections <py:collections>`
-documentation.
+You may use it as drop-in replacement of ``collections``. Although we
+don't document all items here. Refer to :mod:`collections
+<py:collections>` documentation.
 
 '''
 
