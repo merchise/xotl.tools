@@ -40,6 +40,7 @@ from __future__ import (division as _py3_division,
 from threading import local
 from xoutil.decorator.compat import metaclass
 
+
 class LocalData(local):
     def __init__(self):
         super(LocalData, self).__init__()
@@ -83,16 +84,41 @@ class Context(object):
     code is being executed inside a context you should use `context[name]`;
     you may also use the syntax `name in context`.
 
+    When an existing context is entering, the former one is reused.
+    Nevertheless, the data stored in each context is local to each level.
+
+    For example::
+
+        >>> with context('A', b=1) as a1:
+        ...   with context('A', b=2) as a2:
+        ...       pass
+        ...   print(a1['b'])
+        1
+
+    For data access, mapping interface is provided for all context. If a data
+    slot is deleted at some level, upper level is used to read values. Each
+    new written value is stored in current level without affecting upper
+    levels.
+
+    For example::
+
+        >>> with context('A', b=1) as a1:
+        ...   with context('A', b=2) as a2:
+        ...       del a2['b']
+        ...       print(a2['b'])
+        1
+
     '''
     def __new__(cls, name, **data):
         res = cls[name]
-        if res is _null_context:
+        if not res:     # if res is _null_context:
             res = super(Context, cls).__new__(cls)
             res.name = name
-            res.data = data
             res.count = 0
+            res._data_index = {}
+            # TODO: Redefine all event management
             res._events = []
-        elif data:
+        # elif data:
             # TODO: [med] This makes the data available back to upper context
             # nesting::
             #
@@ -102,7 +128,7 @@ class Context(object):
             #    ...   print(context_A.data['b'])
             #    2
             #
-            res.data.update(data)
+        res._data_index[res.count + 1] = data   # Data in the next level
         return res
 
     def __nonzero__(self):
