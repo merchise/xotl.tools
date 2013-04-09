@@ -3,3 +3,5 @@
 
 .. automodule:: xoutil.types
    :members:
+
+.. autodata:: Unset

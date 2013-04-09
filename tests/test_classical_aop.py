@@ -81,12 +81,12 @@ class TestExtendedWeaving(unittest.TestCase):
 
 class TestWeavingModules(unittest.TestCase):
     def setUp(self):
-        from xoutil.tests import testbed
+        import testbed
         self.testbed = testbed
 
     def test_weaving(self):
-        from xoutil.tests import testbed
-        from xoutil.tests.testbed import echo
+        import testbed
+        from testbed import echo
 
         class Dupper(object):
             def _after_echo(self, method, result, exc_value):

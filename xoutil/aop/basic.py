@@ -92,11 +92,12 @@ def complementor(*sources, **attrs):
         ...    print('Hacked')
         ...    self._super___init__(*args, **kw)
 
-        >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range(5, 10),
+        >>> from xoutil.compat import range_
+        >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range_(5, 10),
         ...               __init__=hacked_init)
         ... class Someclass(object):
         ...     somedict = {'a': 0}
-        ...     somelist = range(5)
+        ...     somelist = range_(5)
         ...
         ...     def __init__(self, d=None, l=None):
         ...         'My docstring'

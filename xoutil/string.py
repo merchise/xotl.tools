@@ -15,7 +15,7 @@
 #
 # Created on Feb 17, 2012
 
-'''Expose all original `string` module functionalities, with some general
+'''Exposes all original `string` module functionalities, with some general
 additions.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
@@ -60,11 +60,11 @@ __author__ = 'manu'
 
 
 def force_encoding(encoding=None):
-    '''
-    Validate an encoding value; if None use `locale.getlocale()[1]`; else
+    '''Validates an encoding value; if None use `locale.getlocale()[1]`; else
     return the same value.
 
     .. versionadded:: 1.2.0
+
     '''
     # TODO: Maybe use only `sys.getdefaultencoding()`
     import locale
@@ -110,6 +110,7 @@ def safe_encode(u, encoding=None):
         encoding = force_encoding(encoding)
         try:
             if isinstance(u, _str_base):
+                # In Python 2.x bytes does not allows an encoding argument.
                 return bytes(u)
             else:
                 return _unicode(u).encode(encoding, 'replace')
@@ -206,10 +207,10 @@ def capitalize(value, title=True):
 
     Return bytes or unicode depending on type of `value`.
 
-        >>> type(capitalize(u'something')) is _unicode
+        >>> type(capitalize(_unicode('something'))) is _unicode
         True
 
-        >>> type(capitalize('something')) is str
+        >>> type(capitalize(str('something'))) is str
         True
 
     '''

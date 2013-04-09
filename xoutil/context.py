@@ -20,16 +20,6 @@
 '''
 A context manager for execution context flags.
 
-Use as::
-
-    >>> from xoutil.context import context
-    >>> with context('somename'):
-    ...     if context['somename']:
-    ...         print('In context somename')
-    In context somename
-
-Note the difference creating the context and checking it.
-
 '''
 
 
@@ -154,7 +144,42 @@ class Context(object):
 
     @events.setter
     def events(self, value):
-        self._events = list(set(value))
+        self._events = list(value)
+
+    @property
+    def data(self):
+        # TODO: Make this a proper collection
+        class stackeddict(object):
+            def __init__(self, dicts):
+                self._dicts = dicts
+            def get(self, name, default=None):
+                from xoutil.objects import get_first_of
+                unset = object()
+                res = get_first_of(list(reversed(self._dicts)),
+                                   name, default=unset)
+                if res is not unset:
+                    return res
+                else:
+                    return default
+            def __getitem__(self, name):
+                unset = object()
+                res = self.get(name)
+                if res is not unset:
+                    return res
+                else:
+                    raise KeyError(name)
+            def __setitem__(self, name, value):
+                self._dicts[-1][name] = value
+            def __iter__(self):
+                return iter(self._dicts[-1])
+            def __getattr__(self, name):
+                return self[name]
+            def __setattr__(self, name, value):
+                if not name.startswith('_'):
+                    self[name] = value
+                else:
+                    super(stackeddict, self).__setattr__(name, value)
+        return stackeddict(self._data)
 
     def setdefault(self, key, value):
         return self.data.setdefault(key, value)
@@ -176,6 +201,10 @@ class NullContext(object):
         if cls.instance is None:
             cls.instance = super(NullContext, cls).__new__(cls)
         return cls.instance
+
+    @property
+    def data(self):
+        return {}
 
     def __nonzero__(self):
         return False

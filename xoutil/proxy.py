@@ -138,9 +138,9 @@ def _mro_getattr(obj, attr, default=Unset):
 
 
 class Proxy(object):
-    '''
-    A complementor for a "behavior" defined in query expressions or a target
+    '''A complementor for a "behavior" defined in query expressions or a target
     object.
+
     '''
     def __getattribute__(self, attr):
         from functools import partial
@@ -160,7 +160,7 @@ class Proxy(object):
         if context[UNPROXIFING_CONTEXT] and not attr.startswith('_super_'):
             return get(attr)
         target = get('target')
-        behaves = get('behaves')
+        behaves = get('behaves', None)
         if not behaves:
             behaves = ()
         valid_wrapper = lambda b: is_instancemethod(b, attr)
@@ -189,43 +189,45 @@ class Proxy(object):
 
 
 class unboxed(object):
+    '''A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also
+    provides support for "updating" a single attribute.
+
     '''
-    A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also provides
-    support for "updating" a single attribute.
-    '''
-    def __init__(self, target, attr=None):
-        self.target = target
+    def __init__(self, proxy, attr=None):
+        self.proxy = proxy
         self.attr = attr
 
     def __getattribute__(self, attr):
-        target = super(unboxed, self).__getattribute__('target')
+        proxy = super(unboxed, self).__getattribute__('proxy')
         with context(UNPROXIFING_CONTEXT):
-            return getattr(target, attr)
+            return getattr(proxy, attr)
 
     def __call__(self, attr):
         '''
-        Supports the idiom ``unboxed(target)(attr) << value``.
+        Supports the idiom ``unboxed(proxy)(attr) << value``.
         '''
         get = super(unboxed, self).__getattribute__
-        target = get('target')
-        return unboxed(target, attr)
+        proxy = get('proxy')
+        return unboxed(proxy, attr)
 
     def __lshift__(self, value):
-        '''
-        Supports the idiom ``unboxed(x, attrname) << value`` for updating a
+        '''Supports the idiom ``unboxed(x, attrname) << value`` for updating a
         single attribute.
 
-        - If the current value is a list, the value get appended.
+        - If the current value is a list the value get appended.
 
         - If the current value is a tuple, a new tuple ``current + (value, )``
           is set.
 
-        - If the current value is a dict, and value is also a dict.
+        - If the current value is a dict and value is also a dict, the current
+          value is updated with `value` like in: ``current.update(value)``.
 
         - Otherwise the value is set as if.
+
         '''
         from collections import Mapping
         get = super(unboxed, self).__getattribute__
+        proxy = super(unboxed, self).__getattribute__('proxy')
         attr = get('attr')
         if attr:
             current = getattr(self, attr, Unset)
@@ -240,14 +242,14 @@ class unboxed(object):
                     current.update(value)
                     value = Unset
             if value is not Unset:
-                setattr(self, attr, value)
+                with context(UNPROXIFING_CONTEXT):
+                    setattr(proxy, attr, value)
         else:
             pass
 
 
 def proxify(cls, *complementors):
-    '''
-    A decorator to proxify classes with :class:`Proxy`.
+    '''A decorator to proxify classes with :class:`Proxy`.
 
     Usage::
 
@@ -282,67 +284,72 @@ def proxify(cls, *complementors):
         I'm adding <class '...Proxified'>
         True
 
-    But notice that if neither the proxied object or it's behaviors implement
-    a method, an AttributeError exception is raised::
+    But notice that if neither the proxied object or it's behaviors implement a
+    method, a exception is raised::
 
-        >>> r < 1                                # doctest: +ELLIPSIS
+        >>> r < 1                                # doctest: +SKIP
         Traceback (most recent call last):
             ...
-        AttributeError: __lt__
+        AttributeError: ...
+
+    .. note::
+
+       In Python 3 it will be a TypeError.
 
     The only exceptions for the above rule are `__eq__` and `__ne__`
     operations, for which we provide a fallback implementation if none is
     provided.
 
-    .. warning:: Notice that behaviors classes must not assume that `self` is
-                 the proxy object instead of the "bare" object itself. That's
-                 needed for the illusion of "added" behaviors to be consistent.
-                 If we make `self` the bare object then all the added behavior
-                 we'll be lost inside the method call.
+    Notice that behaviors classes must not assume that `self` is the proxy
+    object instead of the "bare" object itself. That's needed for the illusion
+    of "added" behaviors to be consistent.  If we make `self` the bare object
+    then all the added behavior we'll be lost inside the method call.
 
-                 If you need to access the bare object directly use the
-                 attribute 'target' of the proxy object (i.e: ``self.target``);
-                 we treat that attribute specially.
+    If you need to access the bare object directly use the attribute `target`
+    of the proxy object (i.e: ``self.target``); we treat that attribute
+    specially.
 
-                 To the same accord, the fallback implementations of `__eq__`
-                 and `__ne__` also work at the proxy level. So if we do::
+    To the same accord, the fallback implementations of `__eq__` and `__ne__`
+    also work at the proxy level. So if we do::
 
-                    >>> class UnproxifingAddition(object):
-                    ...    def __add__(self, other):
-                    ...        return self.target
+        >>> class UnproxifingAddition(object):
+        ...    def __add__(self, other):
+        ...        return self.target
 
-                    >>> @proxify
-                    ... class Proxified(object):
-                    ...    behaves = [UnproxifingAddition]
-                    ...    def __init__(self, target):
-                    ...        self.target = target
+        >>> @proxify
+        ... class Proxified(object):
+        ...    behaves = [UnproxifingAddition]
+        ...    def __init__(self, target):
+        ...        self.target = target
 
-                 Now the addition would remove the proxy and the equality test
-                 will fail::
+    Now the addition would remove the proxy and the equality test
+    will fail::
 
-                    >>> x = Foobar()
-                    >>> y = Proxified(x)
-                    >>> y == y + 1
-                    False
+        >>> x = Foobar()
+        >>> y = Proxified(x)
+        >>> y is (y + 1)
+        False
 
-                 But be warned! If the proxied object has an attribute
-                 `target` it will shadow the proxy's::
+    .. warning::
 
-                    >>> x.target = 'oops'
-                    >>> y.target == 'oops'
-                    True
+       But be warned! If the proxied object has an attribute `target` it will
+       shadow the proxy::
 
-                 If you need to access any attribute of the proxy and not the
-                 proxied object without fear of being shadowed, use the
-                 :class:`UNPROXIFING_CONTEXT` context like this::
+            >>> x.target = 'oops'
+            >>> y.target == 'oops'
+            True
 
-                    >>> from xoutil.context import context
-                    >>> with context(UNPROXIFING_CONTEXT):
-                    ...     y.target is x
-                    True
+       If you need to access any attribute of the proxy and not the proxied
+       object without fear of being shadowed, use the
+       :class:`UNPROXIFING_CONTEXT` context like this::
 
-                    >>> y.target is x
-                    False
+            >>> from xoutil.context import context
+            >>> with context(UNPROXIFING_CONTEXT):
+            ...     y.target is x
+            True
+
+            >>> y.target is x
+            False
 
     '''
     if not complementors:

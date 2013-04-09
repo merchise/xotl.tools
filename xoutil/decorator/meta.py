@@ -261,7 +261,7 @@ def decorator(caller):
         11
 
     A decorator with default values for all its arguments (except, of course,
-    the first one which is the decorated :param:`target`_) may be invoked
+    the first one which is the decorated `target`) may be invoked
     without parenthesis::
 
         >>> @decorator
@@ -308,8 +308,13 @@ def decorator(caller):
     '''
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
+        try:
+            from zope.interface import Interface
+        except ImportError:
+            from xoutil.types import ignored as Interface
         if (len(args) == 1 and not kwargs and
-            isinstance(args[0], (function, type))):
+            (isinstance(args[0], (function, type)) or
+             issubclass(type(args[0]), type(Interface)))):
             # This tries to solve the case of missing () on the decorator::
             #
             #    @decorator
@@ -324,8 +329,6 @@ def decorator(caller):
             # to avoid inspecting the calling frame to see if the () are in
             # place.
             func = args[0]
-            # XXX: [manu] Since kwargs is empty the partial `partial(caller,
-            # func, **kwargs)()` that was here is not needed.
             return caller(func)
         elif len(args) > 0 or len(kwargs) > 0:
             def _decorator(func):

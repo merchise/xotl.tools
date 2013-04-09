@@ -1,4 +1,4 @@
-- Loaded for improvements for Python 3k compatibility: Several modules were
+- Loads of improvements for Python 3k compatibility: Several modules were
   fixed or adapted to work on both Python 2.7 and Python 3.2. They include (but
   we might have forgotten some):
 

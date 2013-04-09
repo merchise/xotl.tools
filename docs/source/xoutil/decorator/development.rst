@@ -3,5 +3,5 @@
 ============================================================================
 
 .. automodule:: xoutil.decorator.development
-   :members:
 
+.. autofunction:: unstable(target, msg=None)

@@ -27,14 +27,14 @@ __date__   = "Mon Jan 28 19:32:00 2013"
 
 class TestModulesCustomization(unittest.TestCase):
     def setUp(self):
-        from xoutil.tests import testbed
+        import testbed
         self.testbed = testbed
 
     def tearDown(self):
         sys.modules[self.testbed.__name__] = self.testbed
 
     def test_echo(self):
-        from xoutil.tests import testbed
+        import testbed
         module, created, klass = customize(testbed)
         self.assertTrue(created)
         self.assertEqual(10, module.echo(10))
@@ -44,7 +44,7 @@ class TestModulesCustomization(unittest.TestCase):
         def this(self):
             return self
 
-        from xoutil.tests import testbed
+        import testbed
         module, created, klass = customize(testbed, this=this)
         self.assertTrue(created)
         self.assertEqual(module, module.this)
@@ -63,7 +63,7 @@ class TestModuleDecorators(unittest.TestCase):
 
 
     def test_moduleproperties(self):
-        from xoutil.tests import customizetestbed as m
+        import customizetestbed as m
         self.assertIs(m, m.this)
         self.assertIs(None, m.store)
         m.store = (1, 2)
