@@ -25,7 +25,9 @@ A context manager for execution context flags.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_import)
+
 
 from threading import local
 from xoutil.decorator.compat import metaclass
@@ -40,6 +42,12 @@ _data = LocalData()
 
 
 class MetaContext(type):
+    def __len__(self):
+        return len(_data.contexts)
+
+    def __iter__(self):
+        return iter(_data.contexts)
+
     def __getitem__(self, name):
         return _data.contexts.get(name, _null_context)
 
@@ -148,6 +156,7 @@ class Context(object):
 
     @property
     def data(self):
+        # FIXME: remove
         # TODO: Make this a proper collection
         class stackeddict(object):
             def __init__(self, dicts):
@@ -202,17 +211,21 @@ class NullContext(object):
             cls.instance = super(NullContext, cls).__new__(cls)
         return cls.instance
 
-    @property
-    def data(self):
-        return {}
+    def __len__(self):
+        return 0
+
+    def __iter__(self):
+        return ()
+
+    def __getitem__(self, key):
+        raise KeyError(key)
 
     def __nonzero__(self):
         return False
     __bool__ = __nonzero__
 
     def __enter__(self):
-        from xoutil.types import Unset
-        return Unset
+        return _null_context
 
     def __exit__(self, exc_type, exc_value, traceback):
         return False
@@ -221,19 +234,10 @@ class NullContext(object):
 _null_context = NullContext()
 
 
-class SimpleClose(object):
-    '''A very simple close manager that just call the argument function exiting
-    the manager.
+from collections import Mapping, MutableMapping
 
-    '''
-    def __init__(self, close_funct, *args, **kwargs):
-        self.close_funct = close_funct
-        self.args = args
-        self.kwargs = kwargs
+Mapping.register(MetaContext)
+Mapping.register(NullContext)
+MutableMapping.register(Context)
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close_funct(*self.args, **self.kwargs)
-        return False
+del Mapping, MutableMapping

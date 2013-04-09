@@ -20,7 +20,7 @@ import unittest
 from xoutil.context import context
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Tue Jan 15 12:17:01 2013"
+__date__  = "Tue Jan 15 12:17:01 2013"
 
 
 class TestContext(unittest.TestCase):
@@ -53,33 +53,34 @@ class TestContext(unittest.TestCase):
 def test_stacking_of_data_does_not_leak():
     c1 = object()
     with context(c1, a=1, b=1) as cc1:
-        assert cc1.data['a'] == 1
+        assert cc1['a'] == 1
         with context(c1, a=2) as cc2:
             assert cc2 is cc1
-            assert cc2.data['a'] == 2
-            assert cc2.data['b'] == 1 # Given by the upper enclosing level
+            assert cc2['a'] == 2
+            assert cc2['b'] == 1   # Given by the upper enclosing level
 
             # Let's change it for this level
-            cc2.data['b'] = 'jailed!'
-            assert cc2.data['b'] == 'jailed!'
+            cc2['b'] = 'jailed!'
+            assert cc2['b'] == 'jailed!'
 
         # But in the upper level both a and b stay the same
-        assert cc1.data['a'] == 1
-        assert cc1.data['b'] == 1
+        assert cc1['a'] == 1
+        assert cc1['b'] == 1
 
     try:
-        assert cc1.data['a'] == 1
+        assert cc1['a'] == 1
         assert False
     except (IndexError, KeyError):
         pass
+
 
 def test_data_is_an_opendict():
     c1 = object()
     with context(c1, a=1, b=1) as cc1:
         with context(c1, a=2) as cc2:
             assert cc2 is cc1
-            assert cc2.data.a == 2
-            assert cc2.data.b == 1 # Given by the upper enclosing level
-            cc2.data.b = 'jaile!d'
-        assert cc1.data.a == 1
-        assert cc1.data['b'] == 1
+            assert cc2.a == 2
+            assert cc2.b == 1   # Given by the upper enclosing level
+            cc2.b = 'jaile!d'
+        assert cc1.a == 1
+        assert cc1['b'] == 1

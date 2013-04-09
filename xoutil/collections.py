@@ -109,6 +109,55 @@ class opendict(dict):
         self.__dict__ = self
 
 
+class OpenDictMixin(object):
+    '''A dictionary mixin implementation that expose its keys as attributes::
+
+        >>> class MyOpenDict(dict, OpenDictMixin):
+        ...     pass
+        >>> d = MyOpenDict({'es': 'spanish'})
+        >>> d.es
+        'spanish'
+
+        >>> d['es'] = 'espanol'
+        >>> d.es
+        'espanol'
+
+    '''
+    def __getattr__(self, name):
+        return self[name]
+
+    def __setattr__(self, name, value):
+        _super = super(OpenDictMixin, self)
+        slots = getattr(type(self), '__slots__', None)
+        if slots is None:
+            base = _super.__dict__
+        else:
+            base = set((slots,) if isinstance(slots, str) else slots)
+        if name in base:
+            _super.__setattr__(name, value)
+        else:
+            self[name] = value
+
+    def __delattr__(self, name):
+        _super = super(OpenDictMixin, self)
+        slots = getattr(type(self), '__slots__', None)
+        if slots is None:
+            d = _super.__dict__
+            if name in d:
+                del d[name]
+            else:
+                del self[name]
+        else:
+            if isinstance(slots, str):
+                slots = (slots,)
+            slots = set(slots)
+            if name in slots:
+                msg = "'%s' object can't delete slots attribute '%s'"
+                raise AttributeError(msg % (type(self), name))
+            else:
+                del self[name]
+
+
 if not _py32:
     # From this point below: Copyright (c) 2001-2013, Python Software
     # Foundation; All rights reserved.
@@ -344,3 +393,109 @@ if not _py32:
                 return len(self) == len(other) and \
                        all(p == q for p, q in zip(self.items(), other.items()))
             return dict.__eq__(self, other)
+
+
+
+class StackedDict(MutableMapping, OpenDictMixin):
+    '''A multi-level mapping.
+
+    A level is entered by using `with` Python statement, or literally calling
+    public methods `enter` and `exit`.
+
+    `levels` propery returns the actual number of levels.
+    If literal exit method is executed, last chunk of data is returned.
+
+    For example::
+
+        >>> with StackedDict(data=1) as sd:
+        ...     with sd:    # Entering in level 2
+        ...         sd.data = 'Only in level "2".'
+        ...         del a2.data
+        ...     print(a2['b'])
+        1
+
+    '''
+
+    __slots__ = set(('_data', '_level'))
+
+    def __init__(self, *args, **kwargs):
+        # Each data item is stored as {key: {level: value, ...}}
+        self._data = {}
+        self._level = 1
+        for arg in args:
+            self.update(arg)
+        self.update(**kwargs)
+
+    def pprint(self, stream=None, indent=1, width=80, depth=None):
+        if stream is None:
+            import sys
+            stream = sys.stdout
+        stream.write('{')
+        start = True
+        for key in self:
+            if start:
+                start = False
+            else:
+                stream.write(', ')
+            stream.write('%s: ' % key)
+            value = self[key]
+            if isinstance(value, StackedDict):
+                value.pprint(stream=stream, indent=indent, width=width,
+                             depth=depth-1 if depth else depth)
+            else:
+                from pprint import pprint
+                pprint(value, stream=stream, indent=indent, width=width,
+                       depth=depth-1 if depth else depth)
+        stream.write('}')
+
+    def __str__(self):
+        from StringIO import StringIO
+        stream = StringIO()
+        self.pprint(stream)
+        return stream.getvalue()
+
+    def __repr__(self):
+        return '%s(%s)' % (type(self).__name__, str(self))
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __getitem__(self, key):
+        from xoutil.types import Unset
+        item = self._data[key]
+        level = self._level
+        res = Unset
+        while not res and (level > 0):
+            if level in item:
+                res = item[level]
+            else:
+                level -= 1
+        return res
+
+    def __setitem__(self, key, value):
+        from xoutil.types import Unset
+        d = self._data
+        level = self._level
+        item = d.get(key, Unset)
+        if item is Unset:
+            d[key] = {level: value}
+        else:
+            item[level] = value
+
+    def __delitem__(self, key):
+        from xoutil.types import Unset
+        d = self._data
+        level = self._level
+        item = d.get(key, Unset)
+        if item is not Unset:
+            if level in item:
+                del item[level]
+                if not item:
+                    del d[key]
+            else:
+                raise KeyError("'%s' is not in this level (%s)" % (key, level))
+        else:
+            raise KeyError("'%s'" % key)
