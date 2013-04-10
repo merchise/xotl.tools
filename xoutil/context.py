@@ -239,6 +239,9 @@ class NullContext(object):
     def __exit__(self, exc_type, exc_value, traceback):
         return False
 
+    def get(self, name, default=None):
+        return default
+
 
 _null_context = NullContext()
 
