@@ -104,9 +104,8 @@ class opendict(dict):
         'espanol'
 
     '''
-    def __init__(self, *args, **kwargs):
-        super(opendict, self).__init__(*args, **kwargs)
-        self.__dict__ = self
+    def __getattr__(self, name):
+        return self[name]
 
 
 class OpenDictMixin(object):
