@@ -107,6 +107,15 @@ class Context(StackedDict):
         ...       print(a2['b'])
         1
 
+    It is an error to *reuse* a context directly like in::
+
+        >>> with context('A', b=1) as a1:   # doctest: +ELLIPSIS
+        ...   with a1:
+        ...       pass
+        Traceback (most recent call last):
+          ...
+        RuntimeError: Entering the same context level twice! ...
+
     '''
     __slots__ = ('name', 'count', '_events')
 
@@ -133,7 +142,8 @@ class Context(StackedDict):
         if self.count == 0:
             _data.contexts[self.name] = self
         self.count += 1
-        assert self.count == self.level
+        if self.count != self.level:
+            raise RuntimeError('Entering the same context level twice! -- cl(%d, %d)' % (self.count, self.level))
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):

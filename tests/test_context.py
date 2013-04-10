@@ -84,3 +84,15 @@ def test_data_is_an_opendict():
             cc2.b = 'jaile!d'
         assert cc1.a == 1
         assert cc1['b'] == 1
+
+
+def test_reusing_raises():
+    with context('a') as a:
+        try:
+            with a:
+                pass
+            assert False, 'It should have raised a RuntimeError'
+        except RuntimeError:
+            pass
+        except:
+            assert False, 'It should have raised a RuntimeError'
