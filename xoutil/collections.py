@@ -109,7 +109,7 @@ class opendict(dict):
 
 
 class OpenDictMixin(object):
-    '''A dictionary mixin implementation that expose its keys as attributes::
+    '''A mixin for mappings implementation that expose keys as attributes::
 
         >>> class MyOpenDict(dict, OpenDictMixin):
         ...     pass
@@ -120,6 +120,13 @@ class OpenDictMixin(object):
         >>> d['es'] = 'espanol'
         >>> d.es
         'espanol'
+
+    When setting or deleting an attribute, the attribute name is regarded as
+    key in the mapping if neither of the following condition holds:
+
+    - The name is a `slot`.
+
+    - The object has a ``__dict__`` attribute and the name is key there.
 
     '''
     def __getattr__(self, name):
@@ -386,14 +393,21 @@ if not _py32:
 class StackedDict(MutableMapping, OpenDictMixin):
     '''A multi-level mapping.
 
-    A level is entered by using `with` Python statement, or literally calling
-    public methods `enter` and `exit`.
+    A level is entered by using the :meth:`push` and is leaved by calling
+    :meth:`pop`.
 
-    `levels` propery returns the actual number of levels.
-    If literal exit method is executed, last chunk of data is returned.
+    The property :attr:`level` returns the actual number of levels.
+
+    When accessing keys they are searched from the lastest level "upwards", if
+    such a key does not exists in any level a KeyError is raised.
+
+    Deleting a key only works in the *current level*; if it's not defined there
+    a KeyError is raised. This means that you can't delete keys from the upper
+    levels without :func:`popping <pop>`.
+
+    Setting the value for key, sets it in the current level.
 
     '''
-
     __slots__ = set(('_data', '_level'))
 
     def __init__(self):
@@ -406,15 +420,28 @@ class StackedDict(MutableMapping, OpenDictMixin):
         return self._level
 
     def push(self, *args, **kwargs):
+        '''Pushes a whole new level to the stacked dict.
+
+        :param args: Several mappings from which the new level will be
+                     initialled filled.
+
+        :param kwargs: Values to fill the new level.
+        '''
         self._level += 1
         for arg in args:
             self.update(arg)
         self.update(**kwargs)
 
     def pop(self):
+        '''Pops the last pushed level and returns the whole level.
+
+        If there are no levels in the stacked dict, a TypeError is raised.
+
+        '''
         from xoutil.types import Unset
         level = self._level
-        assert level > 0
+        if level <= 0:
+            raise TypeError('Cannot pop from StackedDict without any levels')
         self._level = level - 1
         d = self._data
         res = {}
