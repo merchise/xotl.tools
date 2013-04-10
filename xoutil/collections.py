@@ -127,36 +127,24 @@ class OpenDictMixin(object):
         return self[name]
 
     def __setattr__(self, name, value):
+        from xoutil.types import MemberDescriptorType
         _super = super(OpenDictMixin, self)
-        slots = getattr(type(self), '__slots__', None)
-        if slots is None:
-            base = _super.__dict__
-        else:
-            base = set((slots,) if isinstance(slots, str) else slots)
-        if name in base:
+        slot = getattr(type(self), name, None)
+        super_dict = getattr(_super, '__dict__', {})
+        if isinstance(slot, MemberDescriptorType) or name in super_dict:
             _super.__setattr__(name, value)
         else:
             self[name] = value
 
     def __delattr__(self, name):
+        from xoutil.types import MemberDescriptorType
         _super = super(OpenDictMixin, self)
-        slots = getattr(type(self), '__slots__', None)
-        if slots is None:
-            d = _super.__dict__
-            if name in d:
-                del d[name]
-            else:
-                del self[name]
+        slot = getattr(type(self), name, None)
+        super_dict = getattr(_super, '__dict__', {})
+        if isinstance(slot, MemberDescriptorType) or name in super_dict:
+            _super.__delattr__(name)
         else:
-            if isinstance(slots, str):
-                slots = (slots,)
-            slots = set(slots)
-            if name in slots:
-                msg = "'%s' object can't delete slots attribute '%s'"
-                raise AttributeError(msg % (type(self), name))
-            else:
-                del self[name]
-
+            del self[name]
 
 if not _py32:
     # From this point below: Copyright (c) 2001-2013, Python Software
