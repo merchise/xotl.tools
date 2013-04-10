@@ -410,8 +410,14 @@ class StackedDict(MutableMapping, OpenDictMixin):
         >>> with StackedDict(data=1) as sd:
         ...     with sd:    # Entering in level 2
         ...         sd.data = 'Only in level "2".'
-        ...         del a2.data
-        ...     print(a2['b'])
+        ...         print(sd.data)
+        ...         del sd.data
+        ...         print(sd.data)   # From upper level
+        ...     print(sd.get('b', 'There is no b'))
+        ...     print(sd['data'])
+        Only in level "2".
+        1
+        There is no b
         1
 
     '''
@@ -421,10 +427,39 @@ class StackedDict(MutableMapping, OpenDictMixin):
     def __init__(self, *args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
         self._data = {}
-        self._level = 1
+        self._level = 0
+        self.push(*args, **kwargs)
+
+    @property
+    def level(self):
+        return self._level
+
+    def push(self, *args, **kwargs):
+        self._level += 1
         for arg in args:
             self.update(arg)
         self.update(**kwargs)
+
+    def pop(self):
+        level = self._level
+        assert level > 0
+        self._level = level - 1
+        d = self._data
+        res = {}
+        for key in d:
+            items = d[key]
+            if level in items:
+                res[key] =  items[level]
+                del items[level]
+        return res
+
+    def __enter__(self):
+        self.push()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.pop()
+        return False
 
     def pprint(self, stream=None, indent=1, width=80, depth=None):
         if stream is None:
@@ -468,11 +503,12 @@ class StackedDict(MutableMapping, OpenDictMixin):
         item = self._data[key]
         level = self._level
         res = Unset
-        while not res and (level > 0):
-            if level in item:
-                res = item[level]
-            else:
+        while res is Unset and (level > 0):
+            res = item.get(level, Unset)
+            if res is Unset:
                 level -= 1
+        if res is Unset:
+            raise KeyError(key)
         return res
 
     def __setitem__(self, key, value):
