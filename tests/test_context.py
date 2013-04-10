@@ -51,7 +51,7 @@ class TestContext(unittest.TestCase):
 
 
 def test_stacking_of_data_does_not_leak():
-    c1 = object()
+    c1 = 'CONTEXT-1'
     with context(c1, a=1, b=1) as cc1:
         assert cc1['a'] == 1
         with context(c1, a=2) as cc2:

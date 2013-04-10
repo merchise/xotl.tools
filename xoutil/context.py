@@ -31,6 +31,7 @@ from __future__ import (division as _py3_division,
 
 from threading import local
 from xoutil.decorator.compat import metaclass
+from xoutil.collections import StackedDict
 
 
 class LocalData(local):
@@ -41,7 +42,7 @@ class LocalData(local):
 _data = LocalData()
 
 
-class MetaContext(type):
+class MetaContext(type(StackedDict)):
     def __len__(self):
         return len(_data.contexts)
 
@@ -64,9 +65,8 @@ class MetaContext(type):
         '''
         return bool(self[name])
 
-
 @metaclass(MetaContext)
-class Context(object):
+class Context(StackedDict):
     '''A context manager for execution context flags.
 
     Use as::
@@ -89,14 +89,15 @@ class Context(object):
 
         >>> with context('A', b=1) as a1:
         ...   with context('A', b=2) as a2:
-        ...       pass
+        ...       print(a2['b'])
         ...   print(a1['b'])
+        2
         1
 
-    For data access, mapping interface is provided for all context. If a data
-    slot is deleted at some level, upper level is used to read values. Each
-    new written value is stored in current level without affecting upper
-    levels.
+    For data access, a mapping interface is provided for all contexts. If a
+    data slot is deleted at some level, upper level is used to read
+    values. Each new written value is stored in current level without affecting
+    upper levels.
 
     For example::
 
@@ -107,35 +108,32 @@ class Context(object):
         1
 
     '''
+    __slots__ = ('name', 'count', '_events')
+
     def __new__(cls, name, **data):
         res = cls[name]
         if not res:     # if res is _null_context:
             res = super(Context, cls).__new__(cls)
             res.name = name
             res.count = 0
-            res._data_index = {}
             # TODO: Redefine all event management
             res._events = []
-        # elif data:
-            # TODO: [med] This makes the data available back to upper context
-            # nesting::
-            #
-            #    >>> with context('A', b=1) as context_A:
-            #    ...   with context('A', b=2):
-            #    ...       pass
-            #    ...   print(context_A.data['b'])
-            #    2
-            #
-        res._data_index[res.count + 1] = data   # Data in the next level
+            super(Context, res).__init__()
+        res.push(**data)
         return res
 
+    def __init__(self, name, **data):
+        pass
+
     def __nonzero__(self):
-        return self.count
+        return bool(self.count)
+    __bool__ = __nonzero__
 
     def __enter__(self):
         if self.count == 0:
             _data.contexts[self.name] = self
         self.count += 1
+        assert self.count == self.level
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -144,6 +142,7 @@ class Context(object):
             for event in self.events:
                 event(self)
             del _data.contexts[self.name]
+        super(Context, self).pop()
         return False
 
     @property
@@ -154,44 +153,44 @@ class Context(object):
     def events(self, value):
         self._events = list(value)
 
-    @property
-    def data(self):
-        # FIXME: remove
-        # TODO: Make this a proper collection
-        class stackeddict(object):
-            def __init__(self, dicts):
-                self._dicts = dicts
-            def get(self, name, default=None):
-                from xoutil.objects import get_first_of
-                unset = object()
-                res = get_first_of(list(reversed(self._dicts)),
-                                   name, default=unset)
-                if res is not unset:
-                    return res
-                else:
-                    return default
-            def __getitem__(self, name):
-                unset = object()
-                res = self.get(name)
-                if res is not unset:
-                    return res
-                else:
-                    raise KeyError(name)
-            def __setitem__(self, name, value):
-                self._dicts[-1][name] = value
-            def __iter__(self):
-                return iter(self._dicts[-1])
-            def __getattr__(self, name):
-                return self[name]
-            def __setattr__(self, name, value):
-                if not name.startswith('_'):
-                    self[name] = value
-                else:
-                    super(stackeddict, self).__setattr__(name, value)
-        return stackeddict(self._data)
+    # @property
+    # def data(self):
+    #     # FIXME: remove
+    #     # TODO: Make this a proper collection
+    #     class stackeddict(object):
+    #         def __init__(self, dicts):
+    #             self._dicts = dicts
+    #         def get(self, name, default=None):
+    #             from xoutil.objects import get_first_of
+    #             unset = object()
+    #             res = get_first_of(list(reversed(self._dicts)),
+    #                                name, default=unset)
+    #             if res is not unset:
+    #                 return res
+    #             else:
+    #                 return default
+    #         def __getitem__(self, name):
+    #             unset = object()
+    #             res = self.get(name)
+    #             if res is not unset:
+    #                 return res
+    #             else:
+    #                 raise KeyError(name)
+    #         def __setitem__(self, name, value):
+    #             self._dicts[-1][name] = value
+    #         def __iter__(self):
+    #             return iter(self._dicts[-1])
+    #         def __getattr__(self, name):
+    #             return self[name]
+    #         def __setattr__(self, name, value):
+    #             if not name.startswith('_'):
+    #                 self[name] = value
+    #             else:
+    #                 super(stackeddict, self).__setattr__(name, value)
+    #     return stackeddict(self._data)
 
-    def setdefault(self, key, value):
-        return self.data.setdefault(key, value)
+    # def setdefault(self, key, value):
+    #     return self.data.setdefault(key, value)
 
 
 # A simple alias for Context
