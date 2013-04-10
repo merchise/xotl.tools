@@ -95,13 +95,15 @@ class defaultdict(_defaultdict):
 class opendict(dict):
     '''A dictionary implementation that mirrors its keys as attributes::
 
-        >>> d = opendict({'es': 'spanish'})
-        >>> d.es
-        'spanish'
+         >>> d = opendict({'es': 'spanish'})
+         >>> d.es
+         'spanish'
 
-        >>> d['es'] = 'espanol'
-        >>> d.es
-        'espanol'
+         >>> d['es'] = 'espanol'
+         >>> d.es
+         'espanol'
+
+    Setting attributes *does not* makes them keys.
 
     '''
     def __getattr__(self, name):
