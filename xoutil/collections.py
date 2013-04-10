@@ -2,8 +2,8 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2013 Merchise Autrement and Contributors for the defaultdict and
-# opendict implementations.
+# Copyright 2013 Merchise Autrement and Contributors for the
+# defaultdict and opendict implementations.
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
 # implementations.
@@ -23,9 +23,9 @@
 
 '''Extensions to Python's ``collections`` module.
 
-You may use it as drop-in replacement of ``collections``. Although we don't
-document all items here. Refer to :mod:`collections <py:collections>`
-documentation.
+You may use it as drop-in replacement of ``collections``. Although we
+don't document all items here. Refer to :mod:`collections
+<py:collections>` documentation.
 
 '''
 
@@ -95,7 +95,27 @@ class defaultdict(_defaultdict):
 class opendict(dict):
     '''A dictionary implementation that mirrors its keys as attributes::
 
-        >>> d = opendict({'es': 'spanish'})
+         >>> d = opendict({'es': 'spanish'})
+         >>> d.es
+         'spanish'
+
+         >>> d['es'] = 'espanol'
+         >>> d.es
+         'espanol'
+
+    Setting attributes *does not* makes them keys.
+
+    '''
+    def __getattr__(self, name):
+        return self[name]
+
+
+class OpenDictMixin(object):
+    '''A mixin for mappings implementation that expose keys as attributes::
+
+        >>> class MyOpenDict(dict, OpenDictMixin):
+        ...     pass
+        >>> d = MyOpenDict({'es': 'spanish'})
         >>> d.es
         'spanish'
 
@@ -103,11 +123,36 @@ class opendict(dict):
         >>> d.es
         'espanol'
 
-    '''
-    def __init__(self, *args, **kwargs):
-        super(opendict, self).__init__(*args, **kwargs)
-        self.__dict__ = self
+    When setting or deleting an attribute, the attribute name is regarded as
+    key in the mapping if neither of the following condition holds:
 
+    - The name is a `slot`.
+
+    - The object has a ``__dict__`` attribute and the name is key there.
+
+    '''
+    def __getattr__(self, name):
+        return self[name]
+
+    def __setattr__(self, name, value):
+        from xoutil.types import MemberDescriptorType
+        _super = super(OpenDictMixin, self)
+        slot = getattr(type(self), name, None)
+        super_dict = getattr(_super, '__dict__', {})
+        if isinstance(slot, MemberDescriptorType) or name in super_dict:
+            _super.__setattr__(name, value)
+        else:
+            self[name] = value
+
+    def __delattr__(self, name):
+        from xoutil.types import MemberDescriptorType
+        _super = super(OpenDictMixin, self)
+        slot = getattr(type(self), name, None)
+        super_dict = getattr(_super, '__dict__', {})
+        if isinstance(slot, MemberDescriptorType) or name in super_dict:
+            _super.__delattr__(name)
+        else:
+            del self[name]
 
 if not _py32:
     # From this point below: Copyright (c) 2001-2013, Python Software
@@ -344,3 +389,142 @@ if not _py32:
                 return len(self) == len(other) and \
                        all(p == q for p, q in zip(self.items(), other.items()))
             return dict.__eq__(self, other)
+
+
+
+class StackedDict(MutableMapping, OpenDictMixin):
+    '''A multi-level mapping.
+
+    A level is entered by using the :meth:`push` and is leaved by calling
+    :meth:`pop`.
+
+    The property :attr:`level` returns the actual number of levels.
+
+    When accessing keys they are searched from the lastest level "upwards", if
+    such a key does not exists in any level a KeyError is raised.
+
+    Deleting a key only works in the *current level*; if it's not defined there
+    a KeyError is raised. This means that you can't delete keys from the upper
+    levels without :func:`popping <pop>`.
+
+    Setting the value for key, sets it in the current level.
+
+    '''
+    __slots__ = set(('_data', '_level'))
+
+    def __init__(self):
+        # Each data item is stored as {key: {level: value, ...}}
+        self._data = {}
+        self._level = 0
+
+    @property
+    def level(self):
+        return self._level
+
+    def push(self, *args, **kwargs):
+        '''Pushes a whole new level to the stacked dict.
+
+        :param args: Several mappings from which the new level will be
+                     initialled filled.
+
+        :param kwargs: Values to fill the new level.
+        '''
+        self._level += 1
+        for arg in args:
+            self.update(arg)
+        self.update(**kwargs)
+
+    def pop(self):
+        '''Pops the last pushed level and returns the whole level.
+
+        If there are no levels in the stacked dict, a TypeError is raised.
+
+        '''
+        from xoutil.types import Unset
+        level = self._level
+        if level <= 0:
+            raise TypeError('Cannot pop from StackedDict without any levels')
+        self._level = level - 1
+        d = self._data
+        res = {}
+        for key in d:
+            items = d[key]
+            value = items.pop(level, Unset)
+            if value is not Unset:
+                res[key] = value
+        return res
+
+    def pprint(self, stream=None, indent=1, width=80, depth=None):
+        if stream is None:
+            import sys
+            stream = sys.stdout
+        stream.write('{')
+        start = True
+        for key in self:
+            if start:
+                start = False
+            else:
+                stream.write(', ')
+            stream.write('%s: ' % key)
+            value = self[key]
+            if isinstance(value, StackedDict):
+                value.pprint(stream=stream, indent=indent, width=width,
+                             depth=depth-1 if depth else depth)
+            else:
+                from pprint import pprint
+                pprint(value, stream=stream, indent=indent, width=width,
+                       depth=depth-1 if depth else depth)
+        stream.write('}')
+
+    def __str__(self):
+        from StringIO import StringIO
+        stream = StringIO()
+        self.pprint(stream)
+        return stream.getvalue()
+
+    def __repr__(self):
+        return '%s(%s)' % (type(self).__name__, str(self))
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __getitem__(self, key):
+        from xoutil.types import Unset
+        item = self._data[key]
+        level = self._level
+        res = Unset
+        while res is Unset and (level > 0):
+            res = item.get(level, Unset)
+            if res is Unset:
+                level -= 1
+        if res is Unset:
+            raise KeyError(key)
+        return res
+
+    def __setitem__(self, key, value):
+        from xoutil.types import Unset
+        d = self._data
+        level = self._level
+        item = d.get(key, Unset)
+        if item is Unset:
+            d[key] = {level: value}
+        else:
+            item[level] = value
+
+    def __delitem__(self, key):
+        from xoutil.types import Unset
+        d = self._data
+        level = self._level
+        item = d.get(key, Unset)
+        if item is not Unset:
+            if level in item:
+                del item[level]
+                if not item:
+                    del d[key]
+            else:
+                raise KeyError("'%s' is not in this level (%s)" % (key, level))
+        else:
+            raise KeyError("'%s'" % key)
