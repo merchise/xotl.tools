@@ -393,30 +393,14 @@ class StackedDict(MutableMapping, OpenDictMixin):
     `levels` propery returns the actual number of levels.
     If literal exit method is executed, last chunk of data is returned.
 
-    For example::
-
-        >>> with StackedDict(data=1) as sd:
-        ...     with sd:    # Entering in level 2
-        ...         sd.data = 'Only in level "2".'
-        ...         print(sd.data)
-        ...         del sd.data
-        ...         print(sd.data)   # From upper level
-        ...     print(sd.get('b', 'There is no b'))
-        ...     print(sd['data'])
-        Only in level "2".
-        1
-        There is no b
-        1
-
     '''
 
     __slots__ = set(('_data', '_level'))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         # Each data item is stored as {key: {level: value, ...}}
         self._data = {}
         self._level = 0
-        self.push(*args, **kwargs)
 
     @property
     def level(self):
@@ -429,6 +413,7 @@ class StackedDict(MutableMapping, OpenDictMixin):
         self.update(**kwargs)
 
     def pop(self):
+        from xoutil.types import Unset
         level = self._level
         assert level > 0
         self._level = level - 1
@@ -436,18 +421,10 @@ class StackedDict(MutableMapping, OpenDictMixin):
         res = {}
         for key in d:
             items = d[key]
-            if level in items:
-                res[key] =  items[level]
-                del items[level]
+            value = items.pop(level, Unset)
+            if value is not Unset:
+                res[key] = value
         return res
-
-    def __enter__(self):
-        self.push()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.pop()
-        return False
 
     def pprint(self, stream=None, indent=1, width=80, depth=None):
         if stream is None:
