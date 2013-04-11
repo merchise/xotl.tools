@@ -433,6 +433,7 @@ class StackedDict(MutableMapping, OpenDictMixin):
         for arg in args:
             self.update(arg)
         self.update(**kwargs)
+        return self._level
 
     def pop(self):
         '''Pops the last pushed level and returns the whole level.
