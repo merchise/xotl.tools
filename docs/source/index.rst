@@ -13,7 +13,7 @@ Welcome to xoutil's documentation!
 What's new in this version
 --------------------------
 
-.. include:: history/changes-1.2.4.rst
+.. include:: history/changes-1.3.0.rst
 
 Contents:
 ---------
