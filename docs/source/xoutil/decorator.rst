@@ -7,7 +7,7 @@ This module contains several useful decorators, for several purposed. Also it
 severs as a namespace for other well-defined types of decorators.
 
 Top-level decorators
-====================
+--------------------
 
 .. autoclass:: AttributeAlias
    :members:
@@ -28,7 +28,7 @@ Top-level decorators
 
 
 Sub packages
-============
+------------
 
 .. toctree::
    :maxdepth: 1
