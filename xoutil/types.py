@@ -31,6 +31,7 @@ _copy_python_module_members()
 del _copy_python_module_members
 
 from xoutil.compat import xrange_
+from xoutil.compat import pypy as _pypy
 from xoutil.string import names as _names
 
 
@@ -77,6 +78,11 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 #: A compatible Py2 and Py3k DictProxyType, since it does not exists in Py3k.
 DictProxyType = type(object.__dict__)
+
+if _pypy:
+    class _foo(object): __slots__ = 'bar'
+
+    MemberDescriptorType = type(_foo.bar)
 
 
 class mro_dict(object):
