@@ -21,6 +21,9 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_absimports)
 
+import xoutil.collections
+from xoutil.deprecation import deprecated
+
 # TODO: [med] Create an package for PEP-246 (Object Adaptation).
 #       See `zope.interface` and Go4's "Chain Of Responsibility" pattern.
 #       Migrate all "(force|adapt)_.*" into this protocol.
@@ -84,7 +87,7 @@ def adapt_exception(value, **kwargs):
 # TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un
 # ciclo infinito
 
-#@deprecated('collections.namedtuple')
+# @deprecated('collections.namedtuple')
 class MappedTuple(tuple):
     '''An implementation of a named tuple.
 
@@ -115,192 +118,26 @@ class MappedTuple(tuple):
         else:
             return default
 
+@deprecated(xoutil.collections.SmartDict)
+class SmartDict(xoutil.collections.SmartDict):
+    '''A smart dict that extends the `update` method to accept several args.
 
-class SmartDict(dict):
-    '''A "smart" dictionary that can receive a wide variety of arguments.
+    .. warning:: Deprecated, moved to :class:`xoutil.collections.SmartDict`.
 
-    Creates a dictionary from a set of iterable arguments and keyword values
-    (kwargs). Each arg can be:
-
-        - another dictionary.
-
-        - an iterable of (key, value) pairs.
-
-        - any object implementing "keys()" and "__getitem__(key)" methods.
+                 Deprecated since 1.3.1
 
     '''
 
-    def __init__(self, *args, **kwargs):
-        super(SmartDict, self).__init__()
-        self.update(*args, **kwargs)
+@deprecated(xoutil.collections.OrderedSmartDict)
+class SortedSmartDict(xoutil.collections.OrderedSmartDict):
+    '''An ordered SmartDict.
 
-    def update(self, *args, **kwargs):
-        '''Update this dict from a set of iterables `args` and keyword values
-        `kwargs`.
-        '''
-        from types import GeneratorType
-        from collections import Mapping
-        from xoutil.types import is_iterable
-        for arg in args:
-            if isinstance(arg, Mapping):
-                self._update(arg.items())
-            elif isinstance(arg, (tuple, list)):
-                self._update(arg)
-            elif isinstance(arg, GeneratorType):
-                self._update(arg)
-            elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
-                from xoutil.iterators import fake_dict_iteritems
-                self._update(fake_dict_iteritems(arg))
-            elif is_iterable(arg):
-                self._update(iter(arg))
-            else:
-                msg = ('cannot convert dictionary update sequence element '
-                       '"%s" to a (key, value) pair iterator') % arg
-                raise TypeError(msg)
-        if kwargs:
-            self.update(kwargs)
+    .. warning:: Deprecated, moved to
+                :class:`xoutil.collections.OrderedSmartDict`.
 
-    def _update(self, items):
-        '''For legacy compatibility.'''
-        super(SmartDict, self).update(items)
-
-
-class SortedSmartDict(SmartDict):
-    '''A dictionary that keeps its keys in the order in which they're inserted.
-
-    Creating or updating a sorted dict with more than one kwargs is
-    counterproductive because the order of this kind of argument is not kept
-    by python, any way you can use it once a time like in ``d.update(x=1)``.
-
-    .. warning:: Currently this uses :class:`SmartDict` as base, it's has
-                 being proposed that we should use the
-                 ``collections.OrderedDict`` from the standard library.
-
-                 But since the :meth:`SmartDict.update` is not equivalent to
-                 the ``update`` of dictionaries, and this module has no
-                 tests, we're defering such a change for a release post
-                 |release|.
+                 Deprecated since 1.3.1
 
     '''
-    # TODO: Deprecate this by "collections.OrderedDict" in python2.7
-
-    def __new__(cls, *args, **kwargs):
-        self = super(SortedSmartDict, cls).__new__(cls, *args, **kwargs)
-        self._keys = []
-        return self
-
-    def __repr__(self):
-        if not hasattr(self, '_recursion'):
-            self._recursion = True
-            res = '{%s}' % ', '.join(['%r: %r' % (k, v)
-                                        for k, v in self.iteritems()])
-            del self._recursion
-            return res
-        else:
-            return '<Recursion on SortedDict with id=%s>' % id(self)
-
-    def __getitem__(self, key):
-        _get = super(SortedSmartDict, self).__getitem__
-        if isinstance(key, slice):
-            keys = self._keys.__getitem__(key)
-            return map(_get, keys)
-        else:
-            return _get(key)
-
-    def __setitem__(self, key, value):
-        _set = super(SortedSmartDict, self).__setitem__
-        if isinstance(key, slice):
-            keys = self._keys.__getitem__(key)
-            values = tuple(value)
-            if len(keys) == len(values):
-                self._update(zip(keys, values))
-            else:
-                msg = ('trying to replace a slice of "%s" items with "%s" '
-                       'values.') % (len(keys), len(values))
-                raise ValueError(msg)
-        else:
-            if key not in self:
-                self._keys.append(key)
-            _set(key, value)
-
-    def __delitem__(self, key):
-        _del = super(SortedSmartDict, self).__delitem__
-        if isinstance(key, slice):
-            keys = self._keys.__getitem__(key)
-            self._keys.__delitem__(key)
-        else:
-            keys = (key,)
-            self._keys.remove(key)
-        for key in keys:
-            _del(key)
-
-    def __iter__(self):
-        return iter(self._keys)
-
-    def items(self):
-        return self.items()
-
-    def iteritems(self):
-        for key in self._keys:
-            yield key, self[key]
-
-    def keys(self):
-        return self._keys[:]
-
-    def iterkeys(self):
-        return iter(self._keys)
-
-    def values(self):
-        return map(super(SortedSmartDict, self).__getitem__, self._keys)
-
-    def itervalues(self):
-        for key in self._keys:
-            yield self[key]
-
-    def pop(self, key, *args):
-        remove = key in self
-        result = super(SortedSmartDict, self).pop(key, *args)
-        if remove:
-            self._keys.remove(key)
-        return result
-
-    def popitem(self):
-        if len(self._keys) == 0:    # ;)
-            return super(SortedSmartDict, self).popitem()
-        else:
-            key = self._keys[-1]
-            return key, self.pop(key)
-
-    def setdefault(self, key, default):
-        if key not in self:
-            self._keys.append(key)
-        return super(SortedSmartDict, self).setdefault(key, default)
-
-    def value_for_index(self, index):
-        '''Returns the value of the item at the given zero-based index.'''
-        return self[self._keys[index]]
-
-    def insert(self, index, key, value):
-        '''Inserts (key, value) pair before the item with the given index.'''
-        if key in self:
-            n = self._keys.index(key)
-            del self._keys[n]
-            if n < index:
-                index -= 1
-        self._keys.insert(index, key)
-        super(SortedSmartDict, self).__setitem__(key, value)
-
-    def copy(self):
-        '''Returns a copy of this object.'''
-        return type(self)(self)
-
-    def clear(self):
-        super(SortedSmartDict, self).clear()
-        self._keys = []
-
-    def _update(self, items):
-        for key, value in items:
-            self[key] = value
 
 
 class IntSet(object):

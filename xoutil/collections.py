@@ -154,6 +154,57 @@ class OpenDictMixin(object):
         else:
             del self[name]
 
+
+class SmartDictMixin(object):
+    '''A mixin that extends the `update` method of dicts.
+
+    '''
+    def update(self, *args, **kwargs):
+        '''Update this dict from a set of iterables `args` and keyword values
+        `kwargs`.
+
+        Each positional argument could be:
+
+        - another dictionary.
+        - an iterable of (key, value) pairs.
+        - any object implementing "keys()" and "__getitem__(key)" methods.
+
+        '''
+        from types import GeneratorType
+        from collections import Mapping
+        from xoutil.types import is_iterable
+        for arg in args:
+            if isinstance(arg, (Mapping, tuple, list, GeneratorType)):
+                self._update(arg)
+            elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
+                from xoutil.iterators import fake_dict_iteritems
+                self._update(fake_dict_iteritems(arg))
+            elif is_iterable(arg):
+                self._update(iter(arg))
+            else:
+                msg = ('cannot convert dictionary update sequence element '
+                       '"%s" to a (key, value) pair iterator') % arg
+                raise TypeError(msg)
+        if kwargs:
+            self.update(kwargs)
+
+    def _update(self, items):
+        '''For legacy compatibility.'''
+        super(SmartDictMixin, self).update(items)
+
+
+class SmartDict(SmartDictMixin, dict):
+    '''A "smart" dictionary that can receive a wide variety of arguments.
+
+    See :meth:`SmartDictMixin.update`.
+
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super(SmartDict, self).__init__()
+        self.update(*args, **kwargs)
+
+
 if not _py32:
     # From this point below: Copyright (c) 2001-2013, Python Software
     # Foundation; All rights reserved.
@@ -392,7 +443,7 @@ if not _py32:
 
 
 
-class StackedDict(MutableMapping, OpenDictMixin):
+class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     '''A multi-level mapping.
 
     A level is entered by using the :meth:`push` and is leaved by calling
@@ -412,10 +463,11 @@ class StackedDict(MutableMapping, OpenDictMixin):
     '''
     __slots__ = set(('_data', '_level'))
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
         self._data = {}
         self._level = 0
+        self.update(*args, **kwargs)
 
     @property
     def level(self):
@@ -430,9 +482,7 @@ class StackedDict(MutableMapping, OpenDictMixin):
         :param kwargs: Values to fill the new level.
         '''
         self._level += 1
-        for arg in args:
-            self.update(arg)
-        self.update(**kwargs)
+        self.update(*args, **kwargs)
         return self._level
 
     def pop(self):
@@ -497,7 +547,7 @@ class StackedDict(MutableMapping, OpenDictMixin):
         item = self._data[key]
         level = self._level
         res = Unset
-        while res is Unset and (level > 0):
+        while res is Unset and (level >= 0):
             res = item.get(level, Unset)
             if res is Unset:
                 level -= 1
@@ -529,3 +579,24 @@ class StackedDict(MutableMapping, OpenDictMixin):
                 raise KeyError("'%s' is not in this level (%s)" % (key, level))
         else:
             raise KeyError("'%s'" % key)
+
+
+class OrderedSmartDict(SmartDictMixin, OrderedDict):
+    '''A combination of the the OrderedDict with the
+    :class:`SmartDictMixin`.
+
+    .. warning:: Initializing with kwargs does not ensure any initial ordering,
+                 since Python's keyword dict is not ordered. Use a list/tuple
+                 of pairs instead.
+
+    '''
+    def __init__(self, *args, **kwds):
+        '''Initialize an ordered dictionary.
+
+        The signature is the same as regular dictionaries, but keyword
+        arguments are not recommended because their insertion order is
+        arbitrary.
+
+        '''
+        super(OrderedSmartDict, self).__init__()
+        self.update(*args, **kwds)
