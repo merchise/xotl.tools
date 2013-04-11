@@ -10,7 +10,7 @@ sys.path.append(os.path.join(_current_dir, project_name))
 from release import VERSION as version
 from release import RELEASE_TAG
 
-if RELEASE_TAG and RELEASE_TAG not in ('stable', 'final'):
+if RELEASE_TAG != '':
     dev_classifier = 'Development Status :: 4 - Beta'
 else:
     dev_classifier = 'Development Status :: 5 - Production/Stable'

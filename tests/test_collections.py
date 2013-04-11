@@ -22,6 +22,14 @@ from __future__ import (division as _py3_division,
                         absolute_import as _absolute_import)
 
 import unittest
+try:
+    import pytest
+except:
+    class pytest(object):
+        class _mark(object):
+            def __getattr__(self, attr):
+                return lambda *a, **kw: (lambda f: f)
+        mark = _mark()
 
 from xoutil.collections import defaultdict
 
@@ -35,6 +43,32 @@ class TestCollections(unittest.TestCase):
         self.assertEqual('a', d['abc'])
         d['abc'] = 1
         self.assertEqual(1, d['abc'])
+
+
+@pytest.mark.xfail(str("sys.version.find('PyPy') != -1"))
+def test_stacked_dict():
+    from xoutil.collections import StackedDict
+    sd = StackedDict()
+    sd.push(a=1, b=2, c=10)
+    assert sd.level == 1
+    sd.push(b=4, c=5)
+    assert sd.level == 2
+    assert sd['b'] == 4
+    assert sd['a'] == 1
+    assert sd['c'] == 5
+    assert len(sd) == 3
+    del sd['c']
+    try:
+        del sd['c']
+        assert False, 'Should have raise KeyError'
+    except KeyError:
+        pass
+    except:
+        assert False, 'Should have raise KeyError'
+    assert sd.pop() == {'b': 4}
+    assert sd['b'] == 2
+    assert sd['a'] == 1
+    assert len(sd) == 3
 
 
 if __name__ == "__main__":

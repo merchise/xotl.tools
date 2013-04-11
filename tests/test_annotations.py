@@ -19,102 +19,111 @@ from __future__ import (division as _py3_division,
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-import unittest
+import pytest
+
 from xoutil.annotate import annotate
 from xoutil.compat import class_types
 
 
-class Test(unittest.TestCase):
-    def test_keywords(self):
-        @annotate(a=1, b={1: 4}, args=list, return_annotation=tuple)
-        def dummy():
+def test_keywords():
+    @annotate(a=1, b={1: 4}, args=list, return_annotation=tuple)
+    def dummy():
+        pass
+
+    assert dummy.__annotations__.get('a', None) == 1
+    assert dummy.__annotations__.get('b', None) == {1: 4}
+    assert dummy.__annotations__.get('args', None) == list
+    assert dummy.__annotations__.get('return', None) == tuple
+
+
+def test_signature():
+    @annotate('(a: 1, b: {1: 4}, *args: list, **kwargs: dict) -> tuple')
+    def dummy():
+        pass
+
+    assert dummy.__annotations__.get('a', None) == 1
+    assert dummy.__annotations__.get('b', None) == {1: 4}
+    assert dummy.__annotations__.get('args', None) == list
+    assert dummy.__annotations__.get('return', None) == tuple
+    assert dummy.__annotations__.get('kwargs', None) == dict
+    assert dummy.__annotations__.get('return', None) == tuple
+
+
+def test_invalid_nonsense_signature():
+    with pytest.raises(SyntaxError):
+        @annotate('(a, b) -> list')
+        def dummy(a, b):
             pass
 
-        self.assertEqual(dummy.__annotations__.get('a', None), 1)
-        self.assertEqual(dummy.__annotations__.get('b', None), {1: 4})
-        self.assertEqual(dummy.__annotations__.get('args', None), list)
-        self.assertEqual(dummy.__annotations__.get('return', None), tuple)
+    # But the following is ok
+    @annotate('() -> list')
+    def dummy2(a, b):
+        return 'Who cares about non-annotated args?'
 
-    def test_signature(self):
-        @annotate('(a: 1, b: {1: 4}, *args: list, **kwargs: dict) -> tuple')
-        def dummy():
-            pass
 
-        self.assertEqual(dummy.__annotations__.get('a', None), 1)
-        self.assertEqual(dummy.__annotations__.get('b', None), {1: 4})
-        self.assertEqual(dummy.__annotations__.get('args', None), list)
-        self.assertEqual(dummy.__annotations__.get('kwargs', None), dict)
-        self.assertEqual(dummy.__annotations__.get('return', None), tuple)
+def test_mixed_annotations():
+    from xoutil.compat import _unicode
 
-    def test_invalid_nonsense_signature(self):
-        with self.assertRaises(SyntaxError):
-            @annotate('(a, b) -> list')
-            def dummy(a, b):
-                pass
+    @annotate('(a: str, b:_unicode) -> bool', a=_unicode, return_annotation=True)
+    def dummy():
+        pass
 
-        # But the following is ok
-        @annotate('() -> list')
-        def dummy2(a, b):
-            return 'Who cares about non-annotated args?'
+    assert dummy.__annotations__.get('a') is _unicode
+    assert dummy.__annotations__.get('b') is _unicode
+    assert dummy.__annotations__.get('return') is True
 
-    def test_mixed_annotations(self):
-        from xoutil.compat import _unicode
 
-        @annotate('(a: str, b:_unicode) -> bool', a=_unicode, return_annotation=True)
-        def dummy():
-            pass
-
-        self.assertIs(dummy.__annotations__.get('a'), _unicode)
-        self.assertIs(dummy.__annotations__.get('b'), _unicode)
-        self.assertIs(dummy.__annotations__.get('return'), True)
-
-    def test_locals_vars(self):
-        args = (1, 2)
-        def ns():
-            args = (3, 4)
-            @annotate('(a: args)')
-            def dummy():
-                pass
-            return dummy
-
-        dummy = ns()
-        self.assertEquals(dummy.__annotations__.get('a'), (3, 4))
-
+# It seems that playing with locals in frames in PyPy is not good-citizen
+# behavior and some of these tests causes pytest to abort (not just fail).
+@pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
+def test_locals_vars():
+    args = (1, 2)
+    def ns():
+        args = (3, 4)
         @annotate('(a: args)')
         def dummy():
             pass
-        self.assertEquals(dummy.__annotations__.get('a'), (1, 2))
+        return dummy
 
-    def test_globals(self):
-        @annotate('(a: class_types)')
-        def dummy():
-            pass
-        self.assertEquals(dummy.__annotations__['a'], class_types)
+    dummy = ns()
+    assert dummy.__annotations__.get('a') == (3, 4)
 
-    def test_closures_with_locals(self):
-        '''
-        Tests closures with locals variables.
+    @annotate('(a: args)')
+    def dummy():
+        pass
+    assert dummy.__annotations__.get('a') == (1, 2)
 
-        In Python 2.7 this behaves as we do (raises a NameError exception)::
 
-            >>> def something():
-            ...    args = 1
-            ...    l = eval('lambda: args')
-            ...    l()
+@pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
+def test_globals():
+    @annotate('(a: class_types)')
+    def dummy():
+        pass
+    assert dummy.__annotations__['a'] == class_types
 
-            >>> something()
-            Traceback (most recent call last):
-                ...
-            NameError: global name 'args' is not defined
-        '''
-        args = (1, 2)
-        @annotate('(a: lambda: args)')
-        def dummy():
-            pass
 
-        with self.assertRaises(NameError):
-            dummy.__annotations__.get('a', lambda: None)()
+@pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
+def test_closures_with_locals():
+    '''
+    Tests closures with locals variables.
 
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main(verbosity=2)
+    In Python 2.7 this behaves as we do (raises a NameError exception)::
+
+        >>> def something():
+        ...    args = 1
+        ...    l = eval('lambda: args')
+        ...    l()
+
+        >>> something()
+        Traceback (most recent call last):
+            ...
+        NameError: global name 'args' is not defined
+    '''
+    args = (1, 2)
+    @annotate('(a: lambda: args)')
+    def dummy():
+        pass
+
+    with pytest.raises(NameError):
+        dummy.__annotations__.get('a', lambda: None)()
+        assert False, 'It should have raised a NameError'

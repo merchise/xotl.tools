@@ -20,25 +20,19 @@
 '''
 A context manager for execution context flags.
 
-Use as::
-
-    >>> from xoutil.context import context
-    >>> with context('somename'):
-    ...     if context['somename']:
-    ...         print('In context somename')
-    In context somename
-
-Note the difference creating the context and checking it.
-
 '''
 
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_import)
+
 
 from threading import local
 from xoutil.decorator.compat import metaclass
+from xoutil.collections import StackedDict
+
 
 class LocalData(local):
     def __init__(self):
@@ -48,7 +42,13 @@ class LocalData(local):
 _data = LocalData()
 
 
-class MetaContext(type):
+class MetaContext(type(StackedDict)):
+    def __len__(self):
+        return len(_data.contexts)
+
+    def __iter__(self):
+        return iter(_data.contexts)
+
     def __getitem__(self, name):
         return _data.contexts.get(name, _null_context)
 
@@ -65,9 +65,8 @@ class MetaContext(type):
         '''
         return bool(self[name])
 
-
 @metaclass(MetaContext)
-class Context(object):
+class Context(StackedDict):
     '''A context manager for execution context flags.
 
     Use as::
@@ -83,35 +82,68 @@ class Context(object):
     code is being executed inside a context you should use `context[name]`;
     you may also use the syntax `name in context`.
 
+    When an existing context is entering, the former one is reused.
+    Nevertheless, the data stored in each context is local to each level.
+
+    For example::
+
+        >>> with context('A', b=1) as a1:
+        ...   with context('A', b=2) as a2:
+        ...       print(a2['b'])
+        ...   print(a1['b'])
+        2
+        1
+
+    For data access, a mapping interface is provided for all contexts. If a
+    data slot is deleted at some level, upper level is used to read
+    values. Each new written value is stored in current level without affecting
+    upper levels.
+
+    For example::
+
+        >>> with context('A', b=1) as a1:
+        ...   with context('A', b=2) as a2:
+        ...       del a2['b']
+        ...       print(a2['b'])
+        1
+
+    It is an error to *reuse* a context directly like in::
+
+        >>> with context('A', b=1) as a1:   # doctest: +ELLIPSIS
+        ...   with a1:
+        ...       pass
+        Traceback (most recent call last):
+          ...
+        RuntimeError: Entering the same context level twice! ...
+
     '''
+    __slots__ = ('name', 'count', '_events')
+
     def __new__(cls, name, **data):
         res = cls[name]
-        if res is _null_context:
+        if not res:     # if res is _null_context:
             res = super(Context, cls).__new__(cls)
             res.name = name
-            res.data = data
             res.count = 0
+            # TODO: Redefine all event management
             res._events = []
-        elif data:
-            # TODO: [med] This makes the data available back to upper context
-            # nesting::
-            #
-            #    >>> with context('A', b=1) as context_A:
-            #    ...   with context('A', b=2):
-            #    ...       pass
-            #    ...   print(context_A.data['b'])
-            #    2
-            #
-            res.data.update(data)
+            super(Context, res).__init__()
+        res.push(**data)
         return res
 
+    def __init__(self, name, **data):
+        pass
+
     def __nonzero__(self):
-        return self.count
+        return bool(self.count)
+    __bool__ = __nonzero__
 
     def __enter__(self):
         if self.count == 0:
             _data.contexts[self.name] = self
         self.count += 1
+        if self.count != self.level:
+            raise RuntimeError('Entering the same context level twice! -- cl(%d, %d)' % (self.count, self.level))
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -120,6 +152,7 @@ class Context(object):
             for event in self.events:
                 event(self)
             del _data.contexts[self.name]
+        super(Context, self).pop()
         return False
 
     @property
@@ -128,10 +161,7 @@ class Context(object):
 
     @events.setter
     def events(self, value):
-        self._events = list(set(value))
-
-    def setdefault(self, key, value):
-        return self.data.setdefault(key, value)
+        self._events = list(value)
 
 
 # A simple alias for Context
@@ -151,34 +181,36 @@ class NullContext(object):
             cls.instance = super(NullContext, cls).__new__(cls)
         return cls.instance
 
+    def __len__(self):
+        return 0
+
+    def __iter__(self):
+        return ()
+
+    def __getitem__(self, key):
+        raise KeyError(key)
+
     def __nonzero__(self):
         return False
     __bool__ = __nonzero__
 
     def __enter__(self):
-        from xoutil.types import Unset
-        return Unset
+        return _null_context
 
     def __exit__(self, exc_type, exc_value, traceback):
         return False
+
+    def get(self, name, default=None):
+        return default
 
 
 _null_context = NullContext()
 
 
-class SimpleClose(object):
-    '''A very simple close manager that just call the argument function exiting
-    the manager.
+from collections import Mapping, MutableMapping
 
-    '''
-    def __init__(self, close_funct, *args, **kwargs):
-        self.close_funct = close_funct
-        self.args = args
-        self.kwargs = kwargs
+Mapping.register(MetaContext)
+Mapping.register(NullContext)
+MutableMapping.register(Context)
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close_funct(*self.args, **self.kwargs)
-        return False
+del Mapping, MutableMapping

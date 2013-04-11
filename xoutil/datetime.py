@@ -245,4 +245,25 @@ def is_full_month(start, end):
             (em != (end + timedelta(1)).month))
 
 
+
+class flextime(timedelta):
+    @classmethod
+    def parse_simple_timeformat(cls, which):
+        if 'h' in which:
+            hour, rest = which.split('h')
+        else:
+            hour, rest = 0, which
+        return int(hour), int(rest), 0
+
+    def __new__(cls, *args, **kwargs):
+        first = None
+        if args:
+            first, rest = args[0], args[1:]
+        if first and not rest and not kwargs:
+            hour, minutes, seconds = cls.parse_simple_timeformat(first)
+            return super(flextime, cls).__new__(cls, hours=hour, minutes=minutes, seconds=seconds)
+        else:
+            return super(flextime, cls).__new__(cls, *args, **kwargs)
+
+
 del _pm, _copy_python_module_members

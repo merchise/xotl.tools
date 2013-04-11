@@ -1,13 +1,27 @@
 Changelog
 =========
+1.3 series
+----------
 
-Reversed chronological order.
+.. include:: history/changes-1.3.0.rst
 
 1.2 series
 ----------
 
-Release 1.2.1 (yet be released)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2013-04-03. Release 1.2.3
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/changes-1.2.3.rst
+
+
+2013-03-25. Release 1.2.2
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/changes-1.2.2.rst
+
+
+2013-02-14. Release 1.2.1
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/changes-1.2.1.rst
 

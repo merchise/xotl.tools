@@ -39,6 +39,8 @@ import sys
 #    * except type, var is not longer supported
 #    * "__nonzero__" -> "__bool__"
 
+# TODO: Make compatible all libraries and applications with Python 2.7
+
 try:
     import threading
 except ImportError:
