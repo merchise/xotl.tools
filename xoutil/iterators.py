@@ -260,10 +260,11 @@ def slides(iterator, width=2, fill=Unset):
         yield tuple(res)
 
 
-def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
-    '''Take the first `n` items from iterable. If there are less than `n` items
-    in the iterator and `fill` is :class:`~xoutil.types.Unset`, a
-    StopIteration exception is raised.
+def first_n(iterable, n=1, fill=Unset):
+    '''Takes the first `n` items from iterable.
+
+    If there are less than `n` items in the iterator and `fill` is
+    :class:`~xoutil.types.Unset`, a StopIteration exception is raised.
 
     :param iterable: An iterable from which the first `n` items should be
                      collected.
@@ -281,9 +282,6 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
     :returns: The first `n` items from `iterable`, probably with a filling
               pattern at the end.
     :rtype: generator object
-
-    .. warning:: The `return_tuple` parameter is now deprecated and is
-                 ignored.
 
     Examples::
 
