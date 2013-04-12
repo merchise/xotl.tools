@@ -37,10 +37,34 @@ __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
 
 
-def obtain(predicate, iterable, default=None):
+def first_non_null(iterable, default=None):
+    '''Returns the first value from iterable which is non-null.
+
+    This is roughly the same as::
+
+         next((x for x in iter(iterable) if x), default)
+
+    .. versionadded:: 1.3.1
     '''
-    Returns the first non null value, calculated as predicate(item), each one
-    from an 'iterable'.
+    return next((x for x in iter(iterable) if x), default)
+
+
+@deprecated('first_non_null(map(predicate, iterable), default)',
+            'Function `obtain` is deprecated since 1.3.1. Use the combo '
+            '{replacement} instead.')
+def obtain(predicate, iterable, default=None):
+    '''Returns the first non-null value, calculated as predicate(item), each
+    one from an 'iterable'.
+
+    This is roughly the same as::
+
+         first_non_null(map(predicate, iterable), default)
+
+    .. warning::
+
+       *Deprecated since 1.3.1*. The name `obtain` is too general to convey the
+       meaning of the function, using :func:`first_non_null` is deemed more
+       clear.
 
     Example::
 
@@ -54,77 +78,10 @@ def obtain(predicate, iterable, default=None):
         >>> predicate = lambda x: x['phone'] if x['n'] == 'Manu' else False
         >>> obtain(predicate, d, False)
         False
+
     '''
-    return next((j for j in (predicate(i) for i in iterable) if j), default)
-
-
-@deprecated('next',
-            'Function `first` is deprecated since 1.2.0. Use the built-in '
-            '`{replacement}` function.')
-def first(predicate, iterable, default=None):
-    '''
-    .. warning::
-
-       .. deprecated:: 1.2.0
-
-       Use the `next` function. Since this function is just the same
-       as ``next((which for which in iterable if pred(which)), default)``.
-
-    Returns the first element of an iterable that matches 'predicate'.
-
-    Examples::
-
-        >>> first(lambda x: x > 4, range(10))
-        5
-
-        >>> first(lambda x: x < 4, range(10))
-        0
-
-    If nothing matches the default is returned::
-
-        >>> first(lambda x: x > 100, range(10), False)
-        False
-
-    The iterable gets consumed if possible::
-
-        >>> x = (x for x in range(10))
-
-        >>> first(lambda x: x > 4, x)
-        5
-
-        >>> first(lambda x: x > 4, x)
-        6
-
-        >>> list(x)
-        [7, 8, 9]
-    '''
-    return next((x for x in iterable if predicate(x)), default)
-
-
-@deprecated('next',
-            'Function `get_first` is deprecated since 1.2.0. Use the built-in'
-            '`{replacement}` function.')
-def get_first(iterable, default=None):
-    '''Returns the first element of an iterable.
-
-    .. warning::
-
-       .. deprecated:: 1.2.0
-
-       Use the `next` function, since this function is just the same
-       as ``next((which for which in iterable), default)``.
-    '''
-    # TODO: Check who is using this function to find out if could be replaced
-    #       by "next" and remove this one.
-    #
-    #    Response: `next` does not work on simple sequences::
-    #        >>> get_first(range(10))
-    #        0
-    #        >>> next(range(10))
-    #        Traceback (...)
-    #            ...
-    #        TypeError: list object is not an iterator
-    return first(lambda x: True, iterable, default=default)
+    from xoutil.compat import map
+    return first_non_null(map(predicate, iterable), default)
 
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
@@ -193,7 +150,8 @@ def fake_dict_iteritems(source):
         yield key, source[key]
 
 
-# TODO: [manu] Probably this must go to 'xoutil.data', is not an iterator
+# TODO: [manu] Discuss with med. Docstring does not match behavior! Only used
+# in xoonko and xopgi (on my machine). See also adapt_exception.
 def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
