@@ -56,7 +56,16 @@ def test_metaclass_decorator_with_slots():
 
     @metaclass(Meta)
     class Ok(object):
-        pass
+        @classmethod
+        def clmethod(cls):
+            return cls
+
+        @staticmethod
+        def stmethod(echo):
+            return echo
+
+        def echo(self, echo):
+            return self, echo
 
     assert isinstance(Base.attr, MemberDescriptorType)
     assert isinstance(Base, Meta)
@@ -71,3 +80,8 @@ def test_metaclass_decorator_with_slots():
         pass
     except:
         assert False, 'Should have raised AttributeError'
+
+    ok = Ok()
+    assert ok.stmethod(ok) == ok
+    assert ok.clmethod() == Ok
+    assert ok.echo(1) == (ok, 1)
