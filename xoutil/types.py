@@ -26,6 +26,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from collections import Mapping
+
 from xoutil.modules import copy_members as _copy_python_module_members
 _copy_python_module_members()
 del _copy_python_module_members
@@ -73,6 +75,8 @@ ignored = UnsetType('ignored', __singleton__=UnsetType)
 
 
 #: The type of methods that are builtin in Python.
+#:
+#: This is roughly the type of the ``object.__getattribute__`` method.
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
@@ -81,40 +85,43 @@ DictProxyType = type(object.__dict__)
 
 if _pypy:
     class _foo(object): __slots__ = 'bar'
-
     MemberDescriptorType = type(_foo.bar)
 
 
-class mro_dict(object):
+class mro_dict(Mapping):
     '''An utility class that behaves like a read-only dict to query the
-    attributes in the mro chain of a class (or an object's class).
+    attributes in the MRO chain of a `target` class (or an object's class).
 
-    Currently it only supports `get` and `__getitem__`.
     '''
     def __init__(self, target):
         t = target if hasattr(target, 'mro') else type(target)
         self._target_mro = t.mro()
 
     def __getitem__(self, name):
-        return self.get(name)
-
-    def get(self, name, default=Unset):
         from xoutil.objects import get_first_of
         probes = tuple(c.__dict__ for c in self._target_mro)
         result = get_first_of(probes, name, default=Unset)
-        if result is Unset:
-            if default is Unset:
-                raise KeyError(name)
-            else:
-                return default
-        else:
+        if result is not Unset:
             return result
+        else:
+            raise KeyError(name)
+
+    def __iter__(self):
+        res = []
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        for probe in probes:
+            for key in probe:
+                if key not in res:
+                    res.append(key)
+                    yield key
+
+    def __len__(self):
+        return sum(1 for _ in self)
 
 
 def is_iterable(maybe):
-    '''
-    Returns True if `maybe` an iterable object (e.g. implements the `__iter__`
-    method:)
+    '''Returns True if `maybe` is an iterable object (e.g. implements the
+    `__iter__` method):
 
     ::
 
@@ -136,6 +143,7 @@ def is_iterable(maybe):
 
         >>> is_iterable(set())
         True
+
     '''
     try:
         iter(maybe)
