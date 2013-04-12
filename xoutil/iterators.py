@@ -299,7 +299,7 @@ def first_n(iterable, n=1, fill=Unset):
         >>> tuple(first_n(range(2), 6, fill=(1, 2)))
         (0, 1, 1, 2, 1, 2)
 
-    .. versionadded: 1.2.0
+    .. versionadded:: 1.2.0
 
     '''
     if fill is not Unset:
