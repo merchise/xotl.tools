@@ -85,7 +85,7 @@ class SmartDict(xoutil.collections.SmartDict):
 
     .. warning:: Deprecated, moved to :class:`xoutil.collections.SmartDict`.
 
-                 Deprecated since 1.3.1
+                 Deprecated since 1.4.0
 
     '''
 
@@ -96,6 +96,6 @@ class SortedSmartDict(xoutil.collections.OrderedSmartDict):
     .. warning:: Deprecated, moved to
                 :class:`xoutil.collections.OrderedSmartDict`.
 
-                 Deprecated since 1.3.1
+                 Deprecated since 1.4.0
 
     '''

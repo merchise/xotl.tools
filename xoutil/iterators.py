@@ -44,13 +44,13 @@ def first_non_null(iterable, default=None):
 
          next((x for x in iter(iterable) if x), default)
 
-    .. versionadded:: 1.3.1
+    .. versionadded:: 1.4.0
     '''
     return next((x for x in iter(iterable) if x), default)
 
 
 @deprecated('first_non_null(map(predicate, iterable), default)',
-            'Function `obtain` is deprecated since 1.3.1. Use the combo '
+            'Function `obtain` is deprecated since 1.4.0. Use the combo '
             '{replacement} instead.')
 def obtain(predicate, iterable, default=None):
     '''Returns the first non-null value, calculated as predicate(item), each
@@ -62,7 +62,7 @@ def obtain(predicate, iterable, default=None):
 
     .. warning::
 
-       *Deprecated since 1.3.1*. The name `obtain` is too general to convey the
+       *Deprecated since 1.4.0*. The name `obtain` is too general to convey the
        meaning of the function, using :func:`first_non_null` is deemed more
        clear.
 
@@ -122,7 +122,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
 
 
 @deprecated('list(flatten(..))',
-            'Function `get_flat_list` is deprecated since 1.3.1. Use the combo '
+            'Function `get_flat_list` is deprecated since 1.4.0. Use the combo '
             '{replacement} instead.')
 def get_flat_list(sequence):
     '''Flatten out a sequence as a flat list.
@@ -133,7 +133,7 @@ def get_flat_list(sequence):
 
     .. warning::
 
-       *Deprecated since 1.3.1*. Just use the proposed equivalent combo.
+       *Deprecated since 1.4.0*. Just use the proposed equivalent combo.
 
     '''
     return list(flatten(sequence))
@@ -203,7 +203,7 @@ def slides(iterator, width=2, fill=Unset):
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
         [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, Unset, Unset)]
 
-    .. versionadded:: 1.3.1 If the `fill` argument is a collection is cycled
+    .. versionadded:: 1.4.0 If the `fill` argument is a collection is cycled
                       over to get the filling, just like in :func:`first_n`.
 
     '''
@@ -251,7 +251,7 @@ def first_n(iterable, n=1, fill=Unset):
                  - a collection, in which case `first_n` fills the last items
                    by cycling over `fill`.
 
-                   .. versionadded:: 1.3.1 The notion of collection uses
+                   .. versionadded:: 1.4.0 The notion of collection uses
                                      :class:`xoutil.types.is_collection`
                                      instead of probing for the ``__iter__``
                                      method.
