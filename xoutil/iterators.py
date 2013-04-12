@@ -283,22 +283,6 @@ def first_n(iterable, n=1, fill=Unset):
               pattern at the end.
     :rtype: generator object
 
-    Examples::
-
-        >>> list(first_n(range(10), 3))
-        [0, 1, 2]
-
-        # You won't see the StopIteration cause list uses it to complete the
-        # list.
-        >>> list(first_n(range(2), 4))
-        [0, 1]
-
-        >>> list(first_n(range(2), 4, fill=2))
-        [0, 1, 2, 2]
-
-        >>> tuple(first_n(range(2), 6, fill=(1, 2)))
-        (0, 1, 1, 2, 1, 2)
-
     .. versionadded:: 1.2.0
 
     '''
