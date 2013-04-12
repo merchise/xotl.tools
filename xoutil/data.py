@@ -24,11 +24,6 @@ from __future__ import (division as _py3_division,
 import xoutil.collections
 from xoutil.deprecation import deprecated
 
-# TODO: [med] Create an package for PEP-246 (Object Adaptation).
-#       See `zope.interface` and Go4's "Chain Of Responsibility" pattern.
-#       Migrate all "(force|adapt)_.*" into this protocol.
-
-
 def smart_copy(source, target, full=False):
     '''Copies attributes (or keys) from `source` to `target`.
 
@@ -84,40 +79,6 @@ def adapt_exception(value, **kwargs):
         return None
 
 
-# TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un
-# ciclo infinito
-
-# @deprecated('collections.namedtuple')
-class MappedTuple(tuple):
-    '''An implementation of a named tuple.
-
-    Deprecated since the introduction of namedtuple in Python 2.6
-
-    '''
-    def __new__(cls, key_attr='key', sequence=()):
-        import warnings
-        warnings.warn('MappedTuple is deprecated, you should use '
-                      'collections.namedtuple', stacklevel=1)
-        self = super(MappedTuple, cls).__new__(cls, sequence)
-        self.mapping = {getattr(item, key_attr): i
-                          for i, item in enumerate(sequence)}
-        return self
-
-    def __getitem__(self, key):
-        from numbers import Integral
-        if not isinstance(key, Integral):
-            key = self.mapping[key]
-        return super(MappedTuple, self).__getitem__(key)
-
-    def get(self, key, default=None):
-        from numbers import Integral
-        if not isinstance(key, Integral):
-            key = self.mapping.get(key, None)
-        if (key is not None) and (key >= 0) and (key < len(self)):
-            return super(MappedTuple, self).__getitem__(key)
-        else:
-            return default
-
 @deprecated(xoutil.collections.SmartDict)
 class SmartDict(xoutil.collections.SmartDict):
     '''A smart dict that extends the `update` method to accept several args.
@@ -138,23 +99,3 @@ class SortedSmartDict(xoutil.collections.OrderedSmartDict):
                  Deprecated since 1.3.1
 
     '''
-
-
-class IntSet(object):
-    '''Like a Python 'set' but only accepting integers saving a lot of space.
-
-    Constructor is smart, you can give:
-     * integers
-     * any iterable of integers
-     * strings using the pattern ''. For example:
-       - '1..5, 6, 10-20'
-
-    Not yet implemented.
-    '''
-
-    def __init__(self, *args):
-        '''
-        Not yet implemented.
-        '''
-        # TODO: Implement this
-        raise NotImplementedError
