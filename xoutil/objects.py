@@ -505,6 +505,53 @@ def full_nameof(target):
         return res
 
 
+def copy_class(cls, meta=None, ignores=None):
+    '''Copies a class (object) definition.
+
+    :param meta: If None, the `type(cls)` of the class is used to build the new
+                 class, otherwise this must be a *proper* metaclass.
+
+
+    :param ignores: A (sequence of) string, glob-pattern, or regexp for
+                    attributes names that should not be copied to new class.
+
+                    If the strings begins with "(?" it will be considered a
+                    regular expression string representation, if not and it
+                    contains any wild-char it will be considered a
+                    glob-pattern, otherwise if the fullname of the ignored
+                    attribute.
+
+                    If any ignored is not a string it sould be an object with a
+                    `match(attr)` method that must return a non-null value if
+                    the the `attr` should be ignored.
+
+    .. versionadded:: 1.4.0
+
+    '''
+    from xoutil.fs import _get_regex
+    from xoutil.compat import iteritems_, str_base
+    from xoutil.types import MemberDescriptorType
+    if not meta:
+        meta = type(cls)
+    if isinstance(ignores, str_base):
+        ignores = (ignores, )
+        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i) for i in ignores)
+        ignored = lambda name: any(ignore.match(name) for ignore in ignores)
+    else:
+        ignored = None
+    attrs = {name: value
+             for name, value in iteritems_(cls.__dict__)
+             if name not in ('__class__', '__mro__', '__name__', '__doc__',
+                             '__weakref__')
+             # Must remove member descriptors, otherwise the old's class
+             # descriptor will override those that must be created here.
+             if not isinstance(value, MemberDescriptorType)
+             if ignored is None or not ignored(name)}
+    result = meta(cls.__name__, cls.__bases__, attrs)
+    result.__doc__ = cls.__doc__
+    return result
+
+
 __all__ = _names('xdir', 'fdir', 'validate_attrs', 'get_first_of',
                  'smart_getattr', 'get_and_del_attr',
                  'setdefaultattr', 'nameof', 'full_nameof')
