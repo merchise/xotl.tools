@@ -544,15 +544,13 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
         ignored = None
     attrs = {name: value
              for name, value in iteritems_(cls.__dict__)
-             if name not in ('__class__', '__mro__', '__name__', '__doc__',
-                             '__weakref__')
+             if name not in ('__class__', '__mro__', '__name__', '__weakref__')
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
              if not isinstance(value, MemberDescriptorType)
              if ignored is None or not ignored(name)}
     attrs.update(new_attrs)
     result = meta(cls.__name__, cls.__bases__, attrs)
-    result.__doc__ = cls.__doc__
     return result
 
 
