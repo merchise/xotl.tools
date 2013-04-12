@@ -26,55 +26,22 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from collections import Mapping
-
 from xoutil.modules import copy_members as _copy_python_module_members
-_copy_python_module_members()
-del _copy_python_module_members
+
+_pm = _copy_python_module_members()
+GeneratorType = _pm.GeneratorType
+
+del _pm, _copy_python_module_members
 
 from xoutil.compat import xrange_
 from xoutil.compat import pypy as _pypy
 from xoutil.string import names as _names
+from xoutil._values import UnsetType, Unset, Ignored as ignored
+from xoutil.deprecation import deprecated
 
 
-class UnsetType(object):
-    '''The unique instance `Unset` is to be used as default value to be sure
-    `None` is returned in scenarios where `None` could be a valid value.
-
-    For example::
-
-        >>> class X(object):
-        ...      attr = None
-
-        >>> getattr(X(), 'attr', Unset) is Unset
-        False
-
-    '''
-    __slots__ = (str('name'), )
-
-    def __new__(cls, name, **kwargs):
-        if kwargs.get('__singleton__', None) is UnsetType:
-            result = super(UnsetType, cls).__new__(cls)
-            result.name = name
-            return result
-        else:
-            raise TypeError("cannot create 'UnsetType' instances")
-
-    def __nonzero__(self):
-        return False
-    __bool__ = __nonzero__
-
-    def __repr__(self):
-        return self.name
-    __str__ = __repr__
-
-
-Unset = UnsetType('Unset', __singleton__=UnsetType)
-
-#: To be used in arguments that are currently ignored cause they are being
-#: deprecated. The only valid reason to use `ignored` is to signal ignored
-#: arguments in method's/function's signature.
-ignored = UnsetType('ignored', __singleton__=UnsetType)
+from xoutil.collections import mro_dict as _mro_dict
+mro_dict = deprecated(_mro_dict)(_mro_dict)
 
 
 #: The type of methods that are builtin in Python.
@@ -89,38 +56,6 @@ DictProxyType = type(object.__dict__)
 if _pypy:
     class _foo(object): __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
-
-
-class mro_dict(Mapping):
-    '''An utility class that behaves like a read-only dict to query the
-    attributes in the MRO chain of a `target` class (or an object's class).
-
-    '''
-    def __init__(self, target):
-        t = target if hasattr(target, 'mro') else type(target)
-        self._target_mro = t.mro()
-
-    def __getitem__(self, name):
-        from xoutil.objects import get_first_of
-        probes = tuple(c.__dict__ for c in self._target_mro)
-        result = get_first_of(probes, name, default=Unset)
-        if result is not Unset:
-            return result
-        else:
-            raise KeyError(name)
-
-    def __iter__(self):
-        res = []
-        probes = tuple(c.__dict__ for c in self._target_mro)
-        for probe in probes:
-            for key in probe:
-                if key not in res:
-                    res.append(key)
-                    yield key
-
-    def __len__(self):
-        return sum(1 for _ in self)
-
 
 def is_iterable(maybe):
     '''Returns True if `maybe` is an iterable object (e.g. implements the
@@ -212,6 +147,7 @@ def is_staticmethod(desc, name=Unset):
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
+    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, staticmethod)
@@ -235,6 +171,7 @@ def is_classmethod(desc, name=Unset):
     :param name: The name of the method, if the first argument is the class.
 
     '''
+    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, classmethod)
@@ -248,6 +185,7 @@ def is_instancemethod(desc, name=Unset):
 
     '''
     from types import FunctionType
+    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, FunctionType)
@@ -260,6 +198,7 @@ def is_slotwrapper(desc, name=Unset):
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
+    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, SlotWrapperType)
@@ -271,7 +210,17 @@ def is_module(maybe):
     return isinstance(maybe, ModuleType)
 
 
-__all__ = _names('Unset', 'ignored', 'is_iterable', 'is_collection',
-                 'is_scalar', 'is_string_like', 'is_module', 'is_classmethod',
-                 'is_staticmethod', 'is_instancemethod', 'is_slotwrapper',
-                 'DictProxyType', 'SlotWrapperType', 'mro_dict')
+class Required(object):
+    '''A type for required fields in scenarios where a default is not
+    possible.
+
+    '''
+    def __init__(self, *args, **kwargs):
+        pass
+
+
+__all__ = _names('UnsetType', 'Unset', 'ignored', 'is_iterable',
+                 'is_collection', 'is_scalar', 'is_string_like', 'is_module',
+                 'is_classmethod', 'is_staticmethod', 'is_instancemethod',
+                 'is_slotwrapper', 'DictProxyType', 'SlotWrapperType',
+                 'mro_dict', 'Required')

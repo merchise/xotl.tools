@@ -40,6 +40,7 @@ _pm = _copy_python_module_members()
 
 namedtuple = _pm.namedtuple
 MutableMapping = _pm.MutableMapping
+Mapping = _pm.Mapping
 
 del _pm, _copy_python_module_members
 
@@ -600,3 +601,36 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         '''
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)
+
+
+
+class mro_dict(Mapping):
+    '''An utility class that behaves like a read-only dict to query the
+    attributes in the MRO chain of a `target` class (or an object's class).
+
+    '''
+    def __init__(self, target):
+        t = target if hasattr(target, 'mro') else type(target)
+        self._target_mro = t.mro()
+
+    def __getitem__(self, name):
+        from xoutil import Unset
+        from xoutil.objects import get_first_of
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        result = get_first_of(probes, name, default=Unset)
+        if result is not Unset:
+            return result
+        else:
+            raise KeyError(name)
+
+    def __iter__(self):
+        res = []
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        for probe in probes:
+            for key in probe:
+                if key not in res:
+                    res.append(key)
+                    yield key
+
+    def __len__(self):
+        return sum(1 for _ in self)

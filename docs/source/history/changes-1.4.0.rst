@@ -1,3 +1,5 @@
+- Refactors :mod:`xoutil.types` as explained in :ref:`types-140-refactor`.
+
 - Moves SmartDict and SortedSmartDict from :mod:`xoutil.data` to
   :mod:`xoutil.collections`.
 
