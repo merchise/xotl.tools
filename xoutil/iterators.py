@@ -121,13 +121,19 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
                 yield subitem
 
 
+@deprecated('list(flatten(..))',
+            'Function `get_flat_list` is deprecated since 1.3.1. Use the combo '
+            '{replacement} instead.')
 def get_flat_list(sequence):
-    '''
-    Flatten out a sequence as a flat list.
+    '''Flatten out a sequence as a flat list.
 
     This is the same as::
 
         list(flatten(sequence))
+
+    .. warning::
+
+       *Deprecated since 1.3.1*. Just use the proposed equivalent combo.
 
     '''
     return list(flatten(sequence))
@@ -257,9 +263,7 @@ def first_n(iterable, n=1, fill=Unset):
         yield next(seq)
         n -= 1
 
-
-
 # Compatible izip and imap
 from xoutil.compat import zip, map
-izip = zip
-imap = map
+izip = deprecated(zip)(zip)
+imap = deprecated(map)(map)
