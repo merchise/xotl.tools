@@ -39,11 +39,14 @@ from xoutil.string import names as _names
 
 class UnsetType(object):
     '''The unique instance `Unset` is to be used as default value to be sure
-    none is returned in scenarios where `None` could be a valid value.
+    `None` is returned in scenarios where `None` could be a valid value.
 
     For example::
 
-        >>> getattr('', '__doc__', Unset) is Unset
+        >>> class X(object):
+        ...      attr = None
+
+        >>> getattr(X(), 'attr', Unset) is Unset
         False
 
     '''
