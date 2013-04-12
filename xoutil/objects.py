@@ -516,14 +516,15 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
                     attributes names that should not be copied to new class.
 
                     If the strings begins with "(?" it will be considered a
-                    regular expression string representation, if not and it
-                    contains any wild-char it will be considered a
-                    glob-pattern, otherwise if the fullname of the ignored
+                    regular expression string representation, if it does not
+                    but it contains any wild-char it will be considered a
+                    glob-pattern, otherwise is the exact name of the ignored
                     attribute.
 
-                    If any ignored is not a string it sould be an object with a
-                    `match(attr)` method that must return a non-null value if
-                    the the `attr` should be ignored.
+                    Any ignored that is not a string **must** be an object with
+                    a `match(attr)` method that must return a non-null value if
+                    the the `attr` should be ignored. For instance, a regular
+                    expression object.
 
     :param new_attrs: New attributes the class must have. These will take
                       precedence over the attributes in the original class.
