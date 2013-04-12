@@ -492,7 +492,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         If there are no levels in the stacked dict, a TypeError is raised.
 
         '''
-        from xoutil.types import Unset
+        from xoutil import Unset
         level = self._level
         if level <= 0:
             raise TypeError('Cannot pop from StackedDict without any levels')
@@ -544,7 +544,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         return iter(self._data)
 
     def __getitem__(self, key):
-        from xoutil.types import Unset
+        from xoutil import Unset
         item = self._data[key]
         level = self._level
         res = Unset
@@ -557,7 +557,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         return res
 
     def __setitem__(self, key, value):
-        from xoutil.types import Unset
+        from xoutil import Unset
         d = self._data
         level = self._level
         item = d.get(key, Unset)
@@ -567,7 +567,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
             item[level] = value
 
     def __delitem__(self, key):
-        from xoutil.types import Unset
+        from xoutil import Unset
         d = self._data
         level = self._level
         item = d.get(key, Unset)

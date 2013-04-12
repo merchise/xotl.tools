@@ -25,7 +25,8 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
-from xoutil.types import Unset, is_collection
+from xoutil import Unset
+from xoutil.types import is_collection
 from xoutil.compat import str_base
 from xoutil.string import names as _names
 
