@@ -65,9 +65,15 @@ def smart_copy(source, target, full=False):
 
 
 def adapt_exception(value, **kwargs):
-    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception)``.'''
+    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,
+    None)``.
+
+    If the value is not an exception is expected to be a tuple/list which
+    contains an Exception type as its first item.
+
+    '''
     isi, issc, ebc = isinstance, issubclass, Exception
-    if isi(value, ebc) or issc(value, ebc):
+    if isi(value, ebc) or isi(value, type) and issc(value, ebc):
         return value
     elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
         from xoutil.compat import str_base
