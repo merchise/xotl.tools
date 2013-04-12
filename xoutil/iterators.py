@@ -191,8 +191,7 @@ def smart_dict(defaults, *sources):
 
 
 def slides(iterator, width=2, fill=Unset):
-    '''
-    Creates a sliding window of a given `width` over an iterable::
+    '''Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
         [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
@@ -203,7 +202,13 @@ def slides(iterator, width=2, fill=Unset):
 
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
         [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, Unset, Unset)]
+
+    .. versionadded:: 1.3.1 If the `fill` argument is a collection is cycled
+                      over to get the filling, just like in :func:`first_n`.
+
     '''
+    from itertools import cycle, repeat
+    from xoutil.types import is_collection
     pos = 0
     res = []
     iterator = iter(iterator)
@@ -218,8 +223,12 @@ def slides(iterator, width=2, fill=Unset):
             res = []
             pos = 0
     if res:
+        if is_collection(fill):
+            fill = cycle(fill)
+        else:
+            fill = repeat(fill)
         while pos < width:
-            res.append(fill)
+            res.append(next(fill))
             pos += 1
         yield tuple(res)
 
