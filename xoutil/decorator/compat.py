@@ -40,20 +40,8 @@ def metaclass(meta):
         <class '...Metaclass'>
 
     '''
-    def decorator(cls):
-        from xoutil.compat import iteritems_
-        from xoutil.types import MemberDescriptorType
-        attrs = {name: value
-                 for name, value in iteritems_(cls.__dict__)
-                 if name not in ('__class__', '__mro__', '__name__', '__doc__',
-                                 '__weakref__')
-                 # Must remove member descriptors, otherwise the old's class
-                 # descriptor will override those that must be created here.
-                 if not isinstance(value, MemberDescriptorType)}
-        result = meta(cls.__name__, cls.__bases__, attrs)
-        result.__doc__ = cls.__doc__
-        return result
-    return decorator
+    from xoutil.objects import copy_class
+    return lambda cls: copy_class(cls, meta=meta)
 
 
 def test_metaclass_decorator_with_slots():
@@ -66,7 +54,13 @@ def test_metaclass_decorator_with_slots():
     class Base(object):
         __slots__ = 'attr'
 
+    @metaclass(Meta)
+    class Ok(object):
+        pass
+
     assert isinstance(Base.attr, MemberDescriptorType)
+    assert isinstance(Base, Meta)
+    assert isinstance(Ok, Meta)
 
     b = Base()
     b.attr = 1
