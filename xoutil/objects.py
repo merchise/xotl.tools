@@ -506,7 +506,7 @@ def full_nameof(target):
 
 
 def copy_class(cls, meta=None, ignores=None, **new_attrs):
-    '''Copies a class (object) definition.
+    '''Copies a class definition to a new class.
 
     :param meta: If None, the `type(cls)` of the class is used to build the new
                  class, otherwise this must be a *proper* metaclass.
