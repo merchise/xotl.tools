@@ -228,7 +228,8 @@ def first_n(iterable, n=1, fill=Unset):
     '''Takes the first `n` items from iterable.
 
     If there are less than `n` items in the iterator and `fill` is
-    :class:`~xoutil.types.Unset`, a StopIteration exception is raised.
+    :class:`~xoutil.types.Unset`, a StopIteration exception is raised;
+    otherwise it's used as a filling pattern as explained below.
 
     :param iterable: An iterable from which the first `n` items should be
                      collected.
@@ -238,10 +239,15 @@ def first_n(iterable, n=1, fill=Unset):
 
     :param fill: The filling pattern to use. It may be:
 
-                 - an iterable (i.e has an __iter__ method), in which case
-                   `first_n` fills the last items by cycling over `fill`.
+                 - a collection, in which case `first_n` fills the last items
+                   by cycling over `fill`.
 
-                 - anything else is used as the filling item.
+                   .. versionadded:: 1.3.1 The notion of collection uses
+                                     :class:`xoutil.types.is_collection`
+                                     instead of probing for the ``__iter__``
+                                     method.
+
+                 - anything else is used as the filling pattern by repeating.
 
     :returns: The first `n` items from `iterable`, probably with a filling
               pattern at the end.
@@ -251,8 +257,9 @@ def first_n(iterable, n=1, fill=Unset):
 
     '''
     if fill is not Unset:
+        from xoutil.types import is_collection
         from itertools import cycle, repeat, chain
-        if getattr(fill, '__iter__', False):
+        if is_collection(fill):
             fill = cycle(fill)
         else:
             fill = repeat(fill)
