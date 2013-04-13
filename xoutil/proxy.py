@@ -30,10 +30,9 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-
+from xoutil import Unset
 from xoutil.context import context
 from xoutil.aop import complementor
-from xoutil.types import Unset
 from xoutil.string import names as _names
 
 __docstring_format__ = 'rst'

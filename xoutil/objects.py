@@ -25,7 +25,8 @@ from __future__ import (division as _py3_division,
 
 from functools import partial
 
-from xoutil.types import Unset, is_collection
+from xoutil import Unset
+from xoutil.types import is_collection
 from xoutil.compat import str_base
 from xoutil.string import names as _names
 
@@ -507,6 +508,56 @@ def full_nameof(target):
         if not mod.startswith('__') and (not py3k or mod != 'builtins'):
             res = '.'.join((mod, res))
         return res
+
+
+def copy_class(cls, meta=None, ignores=None, **new_attrs):
+    '''Copies a class definition to a new class.
+
+    :param meta: If None, the `type(cls)` of the class is used to build the new
+                 class, otherwise this must be a *proper* metaclass.
+
+
+    :param ignores: A (sequence of) string, glob-pattern, or regexp for
+                    attributes names that should not be copied to new class.
+
+                    If the strings begins with "(?" it will be considered a
+                    regular expression string representation, if it does not
+                    but it contains any wild-char it will be considered a
+                    glob-pattern, otherwise is the exact name of the ignored
+                    attribute.
+
+                    Any ignored that is not a string **must** be an object with
+                    a `match(attr)` method that must return a non-null value if
+                    the the `attr` should be ignored. For instance, a regular
+                    expression object.
+
+    :param new_attrs: New attributes the class must have. These will take
+                      precedence over the attributes in the original class.
+
+    .. versionadded:: 1.4.0
+
+    '''
+    from xoutil.fs import _get_regex
+    from xoutil.compat import iteritems_, str_base
+    from xoutil.types import MemberDescriptorType
+    if not meta:
+        meta = type(cls)
+    if isinstance(ignores, str_base):
+        ignores = (ignores, )
+        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i) for i in ignores)
+        ignored = lambda name: any(ignore.match(name) for ignore in ignores)
+    else:
+        ignored = None
+    attrs = {name: value
+             for name, value in iteritems_(cls.__dict__)
+             if name not in ('__class__', '__mro__', '__name__', '__weakref__')
+             # Must remove member descriptors, otherwise the old's class
+             # descriptor will override those that must be created here.
+             if not isinstance(value, MemberDescriptorType)
+             if ignored is None or not ignored(name)}
+    attrs.update(new_attrs)
+    result = meta(cls.__name__, cls.__bases__, attrs)
+    return result
 
 
 __all__ = _names('xdir', 'fdir', 'validate_attrs', 'get_first_of',

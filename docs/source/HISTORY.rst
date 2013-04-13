@@ -1,5 +1,12 @@
 Changelog
 =========
+
+1.4 series
+----------
+
+.. include:: history/changes-1.4.0.rst
+
+
 1.3 series
 ----------
 

@@ -24,11 +24,6 @@ from __future__ import (division as _py3_division,
 import xoutil.collections
 from xoutil.deprecation import deprecated
 
-# TODO: [med] Create an package for PEP-246 (Object Adaptation).
-#       See `zope.interface` and Go4's "Chain Of Responsibility" pattern.
-#       Migrate all "(force|adapt)_.*" into this protocol.
-
-
 def smart_copy(source, target, full=False):
     '''Copies attributes (or keys) from `source` to `target`.
 
@@ -70,9 +65,15 @@ def smart_copy(source, target, full=False):
 
 
 def adapt_exception(value, **kwargs):
-    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception)``.'''
+    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,
+    None)``.
+
+    If the value is not an exception is expected to be a tuple/list which
+    contains an Exception type as its first item.
+
+    '''
     isi, issc, ebc = isinstance, issubclass, Exception
-    if isi(value, ebc) or issc(value, ebc):
+    if isi(value, ebc) or isi(value, type) and issc(value, ebc):
         return value
     elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
         from xoutil.compat import str_base
@@ -84,47 +85,13 @@ def adapt_exception(value, **kwargs):
         return None
 
 
-# TODO: Cuando se pone el deprecated como esto tiene un __new__ se entra en un
-# ciclo infinito
-
-# @deprecated('collections.namedtuple')
-class MappedTuple(tuple):
-    '''An implementation of a named tuple.
-
-    Deprecated since the introduction of namedtuple in Python 2.6
-
-    '''
-    def __new__(cls, key_attr='key', sequence=()):
-        import warnings
-        warnings.warn('MappedTuple is deprecated, you should use '
-                      'collections.namedtuple', stacklevel=1)
-        self = super(MappedTuple, cls).__new__(cls, sequence)
-        self.mapping = {getattr(item, key_attr): i
-                          for i, item in enumerate(sequence)}
-        return self
-
-    def __getitem__(self, key):
-        from numbers import Integral
-        if not isinstance(key, Integral):
-            key = self.mapping[key]
-        return super(MappedTuple, self).__getitem__(key)
-
-    def get(self, key, default=None):
-        from numbers import Integral
-        if not isinstance(key, Integral):
-            key = self.mapping.get(key, None)
-        if (key is not None) and (key >= 0) and (key < len(self)):
-            return super(MappedTuple, self).__getitem__(key)
-        else:
-            return default
-
 @deprecated(xoutil.collections.SmartDict)
 class SmartDict(xoutil.collections.SmartDict):
     '''A smart dict that extends the `update` method to accept several args.
 
     .. warning:: Deprecated, moved to :class:`xoutil.collections.SmartDict`.
 
-                 Deprecated since 1.3.1
+                 Deprecated since 1.4.0
 
     '''
 
@@ -135,26 +102,6 @@ class SortedSmartDict(xoutil.collections.OrderedSmartDict):
     .. warning:: Deprecated, moved to
                 :class:`xoutil.collections.OrderedSmartDict`.
 
-                 Deprecated since 1.3.1
+                 Deprecated since 1.4.0
 
     '''
-
-
-class IntSet(object):
-    '''Like a Python 'set' but only accepting integers saving a lot of space.
-
-    Constructor is smart, you can give:
-     * integers
-     * any iterable of integers
-     * strings using the pattern ''. For example:
-       - '1..5, 6, 10-20'
-
-    Not yet implemented.
-    '''
-
-    def __init__(self, *args):
-        '''
-        Not yet implemented.
-        '''
-        # TODO: Implement this
-        raise NotImplementedError

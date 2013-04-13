@@ -144,7 +144,7 @@ def complementor(*sources, **attrs):
         from collections import (Mapping, MutableMapping,
                                  MutableSequence as List,
                                  Set)
-        from xoutil.types import Unset
+        from xoutil import Unset
         from xoutil.compat import iteritems_
         for attr, value in iteritems_(attrs):
             attr = str(attr)

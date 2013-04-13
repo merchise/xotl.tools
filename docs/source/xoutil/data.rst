@@ -2,4 +2,4 @@
 ========================================================================
 
 .. automodule:: xoutil.data
-   :members: SmartDict, SortedSmartDict, smart_copy
+   :members:

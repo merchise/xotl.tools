@@ -36,8 +36,8 @@ from __future__ import (division as _py3_division,
 import types
 from functools import wraps as _wraps, partial
 
+from xoutil import Unset
 from xoutil.compat import inspect_getfullargspec
-from xoutil.types import Unset
 
 
 __docstring_format__ = 'rst'
