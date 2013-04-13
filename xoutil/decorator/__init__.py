@@ -271,8 +271,6 @@ __all__ = (str('settle'),
            str('instantiate'),
            str('AttributeAlias'),
            str('assignment_operator'),
-           str('FunctionMaker'),
-           str('signature_keeping_decorator'),
            str('memoized_property'),
            str('memoized_instancemethod'),
            str('reset_memoized'))
