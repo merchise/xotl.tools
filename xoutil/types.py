@@ -80,7 +80,8 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 DictProxyType = type(object.__dict__)
 
 if _pypy:
-    class _foo(object): __slots__ = 'bar'
+    class _foo(object):
+        __slots__ = 'bar'
 
     MemberDescriptorType = type(_foo.bar)
 

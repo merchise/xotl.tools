@@ -46,7 +46,11 @@ def smart_get(obj):
     '''
     from collections import Mapping
     from xoutil.types import DictProxyType
-    return obj.get if isinstance(obj, (DictProxyType, Mapping)) else partial(getattr, obj)
+    if isinstance(obj, (DictProxyType, Mapping)):
+        return obj.get
+    else:
+        return partial(getattr, obj)
+
 
 def smart_get_and_del(obj, **kwargs):
     '''Returns a function that get and deletes either a key or an attribute of
