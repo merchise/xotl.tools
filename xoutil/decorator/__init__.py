@@ -30,8 +30,13 @@ from types import FunctionType as function
 
 from .meta import decorator as _decorator
 
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
+
 
 @wraps(_decorator)
+@__all__
 def decorator(caller):
     import warnings
     msg = ('xoutil.decorators.decorator has being moved to '
@@ -41,6 +46,7 @@ def decorator(caller):
     return _decorator(caller)
 
 
+@__all__
 class AttributeAlias(object):
     '''Descriptor to create aliases for object attributes.
 
@@ -63,6 +69,7 @@ class AttributeAlias(object):
         delattr(instance, self.attr_name)
 
 
+@__all__
 def settle(**kwargs):
     '''Returns a decorator that sets different attribute values to the
     decorated target (function or class)::
@@ -82,6 +89,7 @@ def settle(**kwargs):
     return inner
 
 
+@__all__
 def namer(name, **kwargs):
     '''Similar to :func:`settle`, but always consider first argument as *the
     name* (i.e, assigned to `__name__`)::
@@ -99,21 +107,36 @@ def namer(name, **kwargs):
     return settle(__name__=name, **kwargs)
 
 
-def aliases(**kwargs):
+@__all__
+def aliases(*names, **kwargs):
     '''In a class, create an :class:`AttributeAlias` descriptor for each
     definition as keyword argument (alias=existing_attribute).
+
+    If "names" are given, then the definition context is looked and are
+    assigned to it the same decorator target with all new names::
+
+        >>> @aliases('foo', 'bar')
+        ... def foobar(*args):
+        ...     'This function is added to its module with two new names.'
+
     '''
     def inner(target):
         '''Direct closure decorator that settle several attribute aliases.
         '''
-        assert isinstance(target, type), '"target" must be a class.'
-        for alias, field in kwargs.iteritems():
-            setattr(target, alias, AttributeAlias(field))
+        if names:
+            _locals = sys._getframe(1).f_locals
+            for name in names:
+                _locals[str(name)] = target
+        if kwargs:
+            assert isinstance(target, type), '"target" must be a class.'
+            for alias, field in kwargs.iteritems():
+                setattr(target, alias, AttributeAlias(field))
         return target
     return inner
 
 
 @_decorator
+@__all__
 def assignment_operator(func, maybe_inline=False):
     '''Makes a function that receives a name, and other args to get its first
     argument (the name) from an assigment operation, meaning that it if its
@@ -161,6 +184,7 @@ def assignment_operator(func, maybe_inline=False):
 
 
 @_decorator
+@__all__
 def instantiate(target, *args, **kwargs):
     '''Some singleton classes must be instantiated as part of its declaration
     because they represents singleton objects.
@@ -200,6 +224,7 @@ def instantiate(target, *args, **kwargs):
 # This module is part of SQLAlchemy and is released under the MIT License:
 # http://www.opensource.org/licenses/mit-license.php
 #
+@__all__
 class memoized_property(object):
     """A read-only @property that is only evaluated once.
 
@@ -224,6 +249,7 @@ class memoized_property(object):
         return result
 
 
+@__all__
 class memoized_instancemethod(object):
     """Decorate a method memoize its return value.
 
@@ -260,20 +286,9 @@ class memoized_instancemethod(object):
         return oneshot
 
 
+@__all__
 def reset_memoized(instance, name):
     instance.__dict__.pop(name, None)
-
-
-__all__ = (str('settle'),
-           str('namer'),
-           str('aliases'),
-           str('decorator'),
-           str('instantiate'),
-           str('AttributeAlias'),
-           str('assignment_operator'),
-           str('memoized_property'),
-           str('memoized_instancemethod'),
-           str('reset_memoized'))
 
 
 if __name__ == '__main__':

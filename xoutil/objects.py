@@ -23,15 +23,12 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-from functools import partial
-
-from xoutil import Unset
-from xoutil.types import is_collection
-from xoutil.compat import str_base
-from xoutil.string import names as _names
-
 __docstring_format__ = 'rst'
 __author__ = 'manu'
+
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
 
 
 # These two functions can be use to always return True or False
@@ -39,6 +36,20 @@ _true = lambda * args, **kwargs: True
 _false = lambda * args, **kwargs: False
 
 
+# TODO: Deprecate and restructure all its uses
+@__all__
+def nameof(target):
+    '''Gets the name of an object.
+
+    Original implementation is moved to "xoutil.names", this one must be
+    deprecated and restructure its all uses.
+
+    '''
+    from xoutil.names import nameof as wrapped
+    return wrapped(target, force_type=True)
+
+
+@__all__
 def smart_get(obj):
     '''Returns a getter for `obj`. If obj is Mapping, it returns the ``.get()``
     method bound to the object `obj`. Otherwise it returns a partial of
@@ -50,6 +61,7 @@ def smart_get(obj):
     if isinstance(obj, (DictProxyType, Mapping)):
         return obj.get
     else:
+        from functools import partial
         return partial(getattr, obj)
 
 
@@ -59,12 +71,18 @@ def smart_get_and_del(obj, **kwargs):
 
     '''
     from collections import Mapping
+    from functools import partial
     if isinstance(obj, Mapping):
         return partial(get_and_del_key, obj, **kwargs)
     else:
         return partial(get_and_del_attr, obj, **kwargs)
 
 
+# TODO: [manu] This is only a proposal, integrate in all these functions in ...
+#       order to use only one argument ``filter`` instead the use of
+#       ``attr_filter`` and ``value_filter``.
+#       So, ``def xdir(obj, filter=None, getter=None):``
+@__all__
 def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
@@ -92,11 +110,13 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     return res
 
 
+@__all__
 def fdir(obj, attr_filter=None, value_filter=None, getter=None):
     '''Similar to :func:`xdir` but yields only the attributes names.'''
     return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getter))
 
 
+@__all__
 def validate_attrs(source, target, force_equals=(), force_differents=()):
     '''Makes a 'comparison' of `source` and `target` by its attributes (or
     keys).
@@ -116,7 +136,7 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         ...        for which in kwargs:
         ...            setattr(self, which, kwargs[which])
 
-        >>> source = Person(**{str('name'): 'Manuel', str('age'): 33, str('sex'): 'male'})
+        >>> source = Person(name='Manuel', age=33, sex='male')
         >>> target = {'name': 'Manuel', 'age': 4, 'sex': 'male'}
 
         >>> validate_attrs(source, target, force_equals=('sex',),
@@ -152,9 +172,11 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     return res
 
 
+@__all__
 def get_first_of(source, *keys, **kwargs):
-    '''Return the first occurrence of any of the specified keys in `source`. If
-    `source` is a tuple, a list, a set, or a generator; then the keys are
+    '''Return the first occurrence of any of the specified keys in `source`.
+
+    If `source` is a tuple, a list, a set, or a generator; then the keys are
     searched in all the items.
 
     Examples:
@@ -213,6 +235,8 @@ def get_first_of(source, *keys, **kwargs):
         True
 
     '''
+    from xoutil import Unset
+    from xoutil.types import is_collection
     def inner(source):
         get = smart_get(source)
         res, i = Unset, 0
@@ -265,6 +289,8 @@ def get_and_del_first_of(source, *keys, **kwargs):
         True
 
     '''
+    from xoutil import Unset
+    from xoutil.types import is_collection
     def inner(source):
         get = smart_get_and_del(source)
         res, i = Unset, 0
@@ -285,6 +311,7 @@ def get_and_del_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
+@__all__
 def smart_getattr(name, *sources, **kwargs):
     '''Gets an attr by `name` for the first source that has it::
 
@@ -307,11 +334,13 @@ def smart_getattr(name, *sources, **kwargs):
     :func:`get_first_of`_.
 
     '''
+    from xoutil import Unset
     from xoutil.iterators import dict_update_new
     dict_update_new(kwargs, {'default': Unset})
     return get_first_of(sources, name, **kwargs)
 
 
+@__all__
 def get_and_del_attr(obj, name, default=None):
     '''Looks for an attribute in the `obj` and returns its value and removes
     the attribute. If the attribute is not found, `default` is returned
@@ -331,6 +360,7 @@ def get_and_del_attr(obj, name, default=None):
         True
 
     '''
+    from xoutil import Unset
     res = getattr(obj, name, Unset)
     if res is Unset:
         res = default
@@ -358,6 +388,7 @@ def get_and_del_key(d, key, default=None):
         True
 
     '''
+    from xoutil import Unset
     res = d.get(key, Unset)
     if res is Unset:
         res = default
@@ -386,6 +417,7 @@ class lazy(object):
             return res
 
 
+@__all__
 def setdefaultattr(obj, name, value):
     '''Sets the attribute name to value if it is not set::
 
@@ -418,6 +450,7 @@ def setdefaultattr(obj, name, value):
         'a'
 
     '''
+    from xoutil import Unset
     res = getattr(obj, name, Unset)
     if res is Unset:
         if isinstance(value, lazy):
@@ -427,45 +460,7 @@ def setdefaultattr(obj, name, value):
     return res
 
 
-def nameof(target):
-    '''Gets the name of an object:
-
-    - The name of a string is the same string::
-
-        >>> nameof('manuel')
-        'manuel'
-
-    - The name of an object with a ``__name__`` attribute is its
-      value::
-
-        >>> nameof(type)
-        'type'
-
-        >>> class Someclass: pass
-        >>> nameof(Someclass)
-        'Someclass'
-
-    - The name of any other object is the ``__name__`` of the its
-      type::
-
-        >>> nameof([1, 2])
-        'list'
-
-        >>> nameof((1, 2))
-        'tuple'
-
-        >>> nameof({})
-        'dict'
-
-    '''
-    if isinstance(target, str_base):
-        return target
-    else:
-        if not hasattr(target, '__name__'):
-            target = type(target)
-        return target.__name__
-
-
+@__all__
 def full_nameof(target):
     '''Gets the full name of an object:
 
@@ -497,7 +492,7 @@ def full_nameof(target):
         'dict'
 
     '''
-    from xoutil.compat import py3k
+    from xoutil.compat import py3k, str_base
     if isinstance(target, str_base):
         return target
     else:
@@ -538,7 +533,12 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
 
     '''
     from xoutil.fs import _get_regex
-    from xoutil.compat import iteritems_, str_base
+    from xoutil.compat import str_base
+    # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
+    #       isn't correct to depend on it. Migrate part of "_get_regex" to a
+    #       module that can be imported logically without problems from both,
+    #       this and "xoutil.fs".
+    from xoutil.compat import iteritems_
     from xoutil.types import MemberDescriptorType
     if not meta:
         meta = type(cls)
@@ -558,8 +558,3 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
     attrs.update(new_attrs)
     result = meta(cls.__name__, cls.__bases__, attrs)
     return result
-
-
-__all__ = _names('xdir', 'fdir', 'validate_attrs', 'get_first_of',
-                 'smart_getattr', 'get_and_del_attr',
-                 'setdefaultattr', 'nameof', 'full_nameof')

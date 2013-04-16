@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Fri Apr 12 11:45:51 2013"
+__date__ = "Fri Apr 12 11:45:51 2013"
 
 
 class UnsetType(object):

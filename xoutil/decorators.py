@@ -17,15 +17,18 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.string import names
 from xoutil import decorator
 from xoutil.deprecation import inject_deprecated
 
-__all__ = names('AttributeAlias',
-                'settle',
-                'namer',
-                'aliases',
-                'instantiate',
-                'assignment_operator',)
+from xoutil.names import namelist
+
+__all__ = namelist('AttributeAlias',
+                   'settle',
+                   'namer',
+                   'aliases',
+                   'instantiate',
+                   'assignment_operator')
+
+del namelist
 
 inject_deprecated(__all__, decorator)

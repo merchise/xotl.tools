@@ -11,15 +11,14 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil.compat import py32
-from xoutil.string import names as _names
-
-
-__all__ = _names("Repr", "repr", "recursive_repr")
 
 
 if py32:
-    from reprlib import Repr, repr, recursive_repr
+    from reprlib import Repr, repr, recursive_repr, __all__
 else:
+    # Don't use name list here to avoid module recursive use
+    __all__ = (str("Repr"), str("repr"), str("recursive_repr"))
+
     import __builtin__ as builtins
     from itertools import islice
     try:
@@ -28,7 +27,8 @@ else:
         from dummy_thread import get_ident
 
     def recursive_repr(fillvalue='...'):
-        'Decorator to make a repr function return fillvalue for a recursive call'
+        '''Decorator to make a repr function return ``fillvalue`` for a recursive
+        call'''
 
         def decorating_function(user_function):
             repr_running = set()
@@ -54,7 +54,7 @@ else:
 
         return decorating_function
 
-    class Repr:
+    class Repr(object):
 
         def __init__(self):
             self.maxlevel = 6
@@ -117,12 +117,15 @@ else:
                                        self.maxfrozenset)
 
         def repr_deque(self, x, level):
-            return self._repr_iterable(x, level, 'deque([', '])', self.maxdeque)
+            return self._repr_iterable(x, level, 'deque([', '])',
+                                       self.maxdeque)
 
         def repr_dict(self, x, level):
             n = len(x)
-            if n == 0: return '{}'
-            if level <= 0: return '{...}'
+            if n == 0:
+                return '{}'
+            if level <= 0:
+                return '{...}'
             newlevel = level - 1
             repr1 = self.repr1
             pieces = []
@@ -130,7 +133,8 @@ else:
                 keyrepr = repr1(key, newlevel)
                 valrepr = repr1(x[key], newlevel)
                 pieces.append('%s: %s' % (keyrepr, valrepr))
-            if n > self.maxdict: pieces.append('...')
+            if n > self.maxdict:
+                pieces.append('...')
             s = ', '.join(pieces)
             return '{%s}' % (s,)
 

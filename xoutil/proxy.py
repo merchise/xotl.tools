@@ -33,13 +33,14 @@ from __future__ import (division as _py3_division,
 from xoutil import Unset
 from xoutil.context import context
 from xoutil.aop import complementor
-from xoutil.string import names as _names
+from xoutil.names import namelist as _namelist
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-__all__ = _names('SUPPORTED_OPERATIONS', 'proxify')
+
+__all__ = _namelist('SUPPORTED_OPERATIONS')
 
 
 class UNPROXIFING_CONTEXT(object):
@@ -51,34 +52,25 @@ class UNPROXIFING_CONTEXT(object):
     '''
 
 
-SUPPORTED_UNARY_OPERATIONS = _names('__pos__', '__abs__', '__neg__',
+SUPPORTED_UNARY_OPERATIONS = _namelist('__pos__', '__abs__', '__neg__',
                                     '__invert__',)
 
 
-SUPPORTED_BINARY_LOGICAL_OPERATIONS = _names('__and__', '__or__', '__xor__',
-                                             '__lt__', '__le__', '__gt__',
-                                             '__ge__', '__eq__', '__ne__',
-                                             '__rand__', '__ror__', '__rxor__',
-                                             '__iand__', '__ior__', '__ixor__',)
+SUPPORTED_BINARY_LOGICAL_OPERATIONS = _namelist('__and__', '__or__', '__xor__',
+    '__lt__', '__le__', '__gt__', '__ge__', '__eq__', '__ne__', '__rand__',
+    '__ror__', '__rxor__', '__iand__', '__ior__', '__ixor__')
 
 
-SUPPORTED_BINARY_ARITH_OPERATIONS = _names('__add__', '__sub__', '__mul__',
-                                           '__div__', '__mod__', '__pow__',
-                                           '__truediv__', '__floordiv__',
-                                           '__lshift__', '__rshift__',
-
-                                           '__radd__', '__rsub__', '__rmul__',
-                                           '__rdiv__', '__rmod__', '__rpow__',
-                                           '__rtruediv__', '__rfloordiv__',
-                                           '__rlshift__', '__rrshift__',
-
-                                           '__iadd__', '__isub__', '__imul__',
-                                           '__idiv__', '__imod__', '__ipow__',
-                                           '__itruediv__', '__ifloordiv__',
-                                           '__ilshift__', '__irshift__',)
+SUPPORTED_BINARY_ARITH_OPERATIONS = _namelist('__add__', '__sub__', '__mul__',
+    '__div__', '__mod__', '__pow__', '__truediv__', '__floordiv__',
+    '__lshift__', '__rshift__', '__radd__', '__rsub__', '__rmul__',
+    '__rdiv__', '__rmod__', '__rpow__', '__rtruediv__', '__rfloordiv__',
+    '__rlshift__', '__rrshift__', '__iadd__', '__isub__', '__imul__',
+    '__idiv__', '__imod__', '__ipow__', '__itruediv__', '__ifloordiv__',
+    '__ilshift__', '__irshift__')
 
 
-SUPPORTED_BINARY_OPERATIONS = _names('__contains__',)
+SUPPORTED_BINARY_OPERATIONS = _namelist('__contains__')
 
 
 SUPPORTED_OPERATIONS = (SUPPORTED_UNARY_OPERATIONS +
@@ -247,6 +239,7 @@ class unboxed(object):
             pass
 
 
+@__all__
 def proxify(cls, *complementors):
     '''A decorator to proxify classes with :class:`Proxy`.
 

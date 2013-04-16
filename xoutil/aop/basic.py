@@ -57,7 +57,8 @@ def _update(attrs, *sources):
     '''
     from xoutil.compat import class_types, iteritems_
     attrs.update({str(f.__name__): f for f in sources
-                  if not isinstance(f, class_types) and getattr(f, '__name__', False)})
+                  if (not isinstance(f, class_types) and
+                      getattr(f, '__name__', False))})
 
     attrs.update({str(name): member
                   for cls in sources if isinstance(cls, class_types)

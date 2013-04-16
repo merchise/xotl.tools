@@ -357,6 +357,7 @@ def normalize_to_str(value, encoding='utf-8'):
         return value.encode(encoding)
 
 
+# TODO: [manu] This must be removed
 def names(*strings):
     '''Returns all `strings` as a tuple of type-valid identifiers.
 
