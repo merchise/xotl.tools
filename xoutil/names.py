@@ -34,106 +34,94 @@ __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
-def nameof(target, force_type=False, depth=1):
+def nameof(target, depth=1, inner=False, typed=False):
     '''Gets the name of an object.
 
-    - The name of a function or a class (an object with a ``__name__``
-      attribute) is its value::
+    The name of an object is normally the variable name in the calling stack::
 
-       >>> nameof(type)
-       'type'
+        >>> from collections import OrderedDict as sorted_dict
+        >>> nameof(sorted_dict)
+        'sorted_dict'
 
-       >>> class Someclass:
-       ...     pass
-       >>> nameof(Someclass)
-       'Someclass'
+    If the `inner` flag is true, then the name is found by introspection
+    first::
 
-    - Other objects are looked up in the stack locals and globals definitions::
+        >>> nameof(sorted_dict, inner=True)
+        'OrderedDict'
 
-       >>> x, y = 1, '2'
-       >>> nameof(1)
-       'x'
-       >>> nameof('2')
-       'y'
+    If the `typed` flag is true, is name of the type unless `target` is already
+    a type::
 
-    - For values not in previous cases:
+        >>> sd = sorted_dict(x=1, y=2)
+        >>> nameof(sd)
+        'sd'
+        >>> nameof(sd, typed=True)
+        'sorted_dict'
+        >>> nameof(sd, inner=True, typed=True)
+        'OrderedDict'
 
-      * If it's ``None``, is the empty string::
+    If `target` is an instance of a simple type (strings or numbers) and
+    `inner` is true, then the name is the standard representation of `target`::
 
-          >>> nameof(None)
-          ''
-
-      * If instance of a string is the same string::
-
-          >>> nameof('manuel')
-          'manuel'
-
-      * If instance of a number is the same number as string::
-
-          >>> nameof(1.1)
-          '1.1'
-
-      * Other values is ``id(%s) % id(target)::
-
-          >>> x = object()
-          >>> str(id(x)) in nameof(x)
-          True
-
-    - If ``force_type is True``, then it tries the type of the object if not
-      a type or a string::
-
-        >>> nameof([1, 2], force_type=True)
-        'list'
-
-        >>> nameof((1, 2), force_type=True)
-        'tuple'
-
-        >>> nameof({}, force_type=True)
-        'dict'
-
-        >>> # Strings are exceptions because it's considered that values are
-        >>> # already converted to names
-        >>> nameof('foobar', force_type=True)
+        >>> s = 'foobar'
+        >>> nameof(s)
+        's'
+        >>> nameof(s, inner=True)
         'foobar'
+        >>> i = 1
+        >>> nameof(i)
+        'i'
+        >>> nameof(i, inner=True)
+        '1'
+        >>> nameof(i, typed=True)
+        'int'
 
-    - :param:`depth`: level of stack frames to start looking up, if needed.
+    If `target` isn't an instance of a simple type (strings or numbers) and
+    `inner` is true, then the id of the object is used::
+
+        >>> str(id(sd)) in nameof(sd, inner=True)
+        True
+
+    - :param:`depth`: level of stack frames to look up, if needed.
 
     '''
-    if hasattr(target, '__name__'):
-        return target.__name__
-    else:
-        from xoutil.compat import str_base
-        if force_type:
-            if isinstance(target, str_base):
-                return str(target)      # Just in case
-            else:
-                return type(target).__name__
+    from numbers import Number
+    from xoutil.compat import str_base
+    if typed and not isinstance(target, type):
+        target = type(target)
+    if inner:
+        res = getattr(target, '__name__', False)
+        if res:
+            return str(res)
+        elif isinstance(target, (str_base, Number)):
+            return str(target)
         else:
-            import sys
-            try:
-                from xoutil.collections import dict_key_for_value as search
-                sf = sys._getframe(depth)
-                res = False
-                i, LIMIT = 0, 5   # Limit number of stack to recurse
-                while not res and sf and (i < LIMIT):
-                    key = search(sf.f_globals, target)
-                    if key:
-                        res = key
-                    else:
-                        sf = sf.f_back
-                        i =+ 1
-            except Exception as error:
-                print('ERROR:', type(error), '::', error, file=sys.stderr)
-                res = None
-                raise
-            if res:
-                return str(res)
-            else:
-                from numbers import Number
-                if isinstance(target, (str_base, Number)):
-                    return str(target)
+            return str('id(%s)' % id(target))
+    else:
+        import sys
+        from xoutil.collections import dict_key_for_value as search
+        sf = sys._getframe(depth)
+        try:
+            res = False
+            i, LIMIT = 0, 5   # Limit number of stack to recurse
+            while not res and sf and (i < LIMIT):
+                l = sf.f_locals
+                key = search(l, target)
+                if not key:
+                    g = sf.f_globals
+                    if l is not g:
+                        key = search(g, target)
+                if key:
+                    res = key
                 else:
-                    return str('id(%s)' % id(target))
+                    sf = sf.f_back
+                    i =+ 1
+        finally:
+            del sf
+        if res:
+            return str(res)
+        else:
+            return nameof(target, depth=depth+1, inner=True)
 
 
 class namelist(list):
@@ -157,26 +145,26 @@ class namelist(list):
             from types import GeneratorType as gtype
             if isinstance(args[0], (tuple, list, set, frozenset, gtype)):
                 args = args[0]
-        super(namelist, self).__init__((nameof(arg) for arg in args))
+        super(namelist, self).__init__((nameof(arg, depth=2) for arg in args))
 
     def __add__(self, other):
-        other = [nameof(item) for item in other]
+        other = [nameof(item, depth=2) for item in other]
         return super(namelist, self).__add__(other)
     __iadd__ = __add__
 
     def __contains__(self, target):
-        return super(namelist, self).__contains__(nameof(target))
+        return super(namelist, self).__contains__(nameof(target, depth=2))
 
     def append(self, value):
         '''l.append(value) -- append a name object to end'''
-        super(namelist, self).append(nameof(value))
+        super(namelist, self).append(nameof(value, depth=2))
         return value    # What allow to use its instances as a decorator
     __call__ = append
 
     def extend(self, items):
         '''l.extend(items) -- extend list by appending items from the iterable
         '''
-        items = (nameof(item) for item in items)
+        items = (nameof(item, depth=2) for item in items)
         return super(namelist, self).extend(items)
 
     def index(self, value, *args):
@@ -185,12 +173,12 @@ class namelist(list):
         Raises ValueError if the name is not present.
 
         '''
-        return super(namelist, self).index(nameof(value), *args)
+        return super(namelist, self).index(nameof(value, depth=2), *args)
 
     def insert(self, index, value):
         '''l.insert(index, value) -- insert object before index
         '''
-        return super(namelist, self).insert(index, nameof(value))
+        return super(namelist, self).insert(index, nameof(value, depth=2))
 
     def remove(self, value):
         '''l.remove(value) -- remove first occurrence of value
@@ -198,7 +186,7 @@ class namelist(list):
         Raises ValueError if the value is not present.
 
         '''
-        return list.remove(self, nameof(value))
+        return list.remove(self, nameof(value, depth=2))
 
 
 __all__ = namelist(nameof, namelist)
