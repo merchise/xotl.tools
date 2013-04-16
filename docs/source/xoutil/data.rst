@@ -2,4 +2,6 @@
 ========================================================================
 
 .. automodule:: xoutil.data
-   :members:
+   :members: SmartDict, SortedSmartDict, adapt_exception
+
+.. autofunction:: smart_copy(source, target, full=False)

@@ -57,7 +57,7 @@ def nameof(target):
 
 
 @__all__
-def smart_get(obj):
+def smart_getter(obj):
     '''Returns a getter for `obj`. If obj is Mapping, it returns the ``.get()``
     method bound to the object `obj`. Otherwise it returns a partial of
     `getattr` on `obj`.
@@ -71,10 +71,16 @@ def smart_get(obj):
         from functools import partial
         return partial(getattr, obj)
 
+smart_get = deprecated(smart_getter)(smart_getter)
 
-def smart_get_and_del(obj, **kwargs):
+
+@__all__
+def smart_getter_and_deleter(obj):
     '''Returns a function that get and deletes either a key or an attribute of
     obj depending on the type of `obj`.
+
+    If `obj` is a `collections.Mapping` it must be a
+    `collections.MutableMapping`.
 
     '''
     from collections import Mapping
@@ -83,6 +89,8 @@ def smart_get_and_del(obj, **kwargs):
         return partial(get_and_del_key, obj, **kwargs)
     else:
         return partial(get_and_del_attr, obj, **kwargs)
+
+smart_get_and_del = deprecated(smart_getter_and_deleter)(smart_getter_and_deleter)
 
 
 # TODO: [manu] This is only a proposal, integrate in all these functions in ...
@@ -164,8 +172,8 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     res = True
     tests = ((ne, force_equals), (eq, force_differents))
     j = 0
-    get_from_source = smart_get(source)
-    get_from_target = smart_get(target)
+    get_from_source = smart_getter(source)
+    get_from_target = smart_getter(target)
     while res and  (j < len(tests)):
         fail, attrs = tests[j]
         i = 0
@@ -245,7 +253,7 @@ def get_first_of(source, *keys, **kwargs):
     from xoutil import Unset
     from xoutil.types import is_collection
     def inner(source):
-        get = smart_get(source)
+        get = smart_getter(source)
         res, i = Unset, 0
         while (res is Unset) and (i < len(keys)):
             res = get(keys[i], Unset)
@@ -264,6 +272,7 @@ def get_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
+@__all__
 def get_and_del_first_of(source, *keys, **kwargs):
     '''Similar to :func:`get_first_of` but uses either :func:`get_and_del_attr`
     or :func:`get_and_del_key` to get and del the first key.
@@ -299,7 +308,7 @@ def get_and_del_first_of(source, *keys, **kwargs):
     from xoutil import Unset
     from xoutil.types import is_collection
     def inner(source):
-        get = smart_get_and_del(source)
+        get = smart_getter_and_deleter(source)
         res, i = Unset, 0
         while (res is Unset) and (i < len(keys)):
             res = get(keys[i], Unset)
@@ -512,6 +521,7 @@ def full_nameof(target):
         return res
 
 
+@__all__
 def copy_class(cls, meta=None, ignores=None, **new_attrs):
     '''Copies a class definition to a new class.
 
@@ -540,12 +550,11 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
 
     '''
     from xoutil.fs import _get_regex
-    from xoutil.compat import str_base
+    from xoutil.compat import str_base, iteritems_
     # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
     #       isn't correct to depend on it. Migrate part of "_get_regex" to a
     #       module that can be imported logically without problems from both,
     #       this and "xoutil.fs".
-    from xoutil.compat import iteritems_
     from xoutil.types import MemberDescriptorType
     if not meta:
         meta = type(cls)
@@ -565,3 +574,118 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
     attrs.update(new_attrs)
     result = meta(cls.__name__, cls.__bases__, attrs)
     return result
+
+
+# Real signature is (*sources, target, filter=None) where target is a
+# positional argument, and not a keyword.
+@__all__
+def smart_copy(*args, **kwargs):
+    '''Copies the first apparition of attributes (or keys) from `sources` to
+    `target`.
+
+    :param sources: The objects from which to extract keys or attributes.
+
+    :param target: The object to fill.
+
+    :param defaults: Defaultss the attributes to be copied as explained
+                   below. Defaults to False.
+
+    :type defaults: Either True, False, a dictionary or a callable.
+
+    .. note::
+
+       Both `sources` and `target` are always positional arguments.
+
+    If `defaults` is not provided as a keyword argument, and there are at least
+    3 positional arguments and the last positional argument is either None,
+    True, False or a *function*, then `target` is the next-to-last positional
+    argument.
+
+    If `defaults` is a dictionary or an iterable then only the keys provided by
+    itering over `defaults` will be copied. If it's a dictionary, and one of
+    its key is not found in the `sources`, then the value of the key in the
+    dictionary is set to `target` unless:
+
+    - It's the value :class:`xoutil.types.Required` or an instance of Required.
+
+    - An exception object
+
+    - A sequence with is first value being a subclass of Exception.
+
+    In these cases a KeyError is raised if the key is not found in the sources.
+
+    If `defaults` is a callable then it should receive one positional arguments
+    ``attr`` and return either True or False if the attr should be copied.
+
+    If `defaults` is False only the attributes that do not start with a "_" are
+    copied, if it's True all attributes are copied.
+
+    When `target` is not a mapping (other Python objects) only valid
+    identifiers will be copied.
+
+    Each `source` is considered a mapping if it's an instance of
+    `collections.Mapping` or a DictProxyType.
+
+    The `target` is considered a mapping if it's an instance of
+    `collections.MutableMapping`.
+
+    :returns: `target`.
+
+    '''
+    from collections import Mapping, MutableMapping
+    from xoutil.types import Unset, Required
+    from xoutil.types import FunctionType as function
+    from xoutil.data import adapt_exception
+    from xoutil.validators.identifiers import is_valid_identifier
+    defaults = get_and_del_key(kwargs, 'defaults', default=Unset)
+    if kwargs:
+        raise TypeError('smart_copy does not accept a "%s" keyword argument'
+                        % kwargs.keys()[0])
+    if defaults is Unset and len(args) >= 3:
+        args, last = args[:-1], args[-1]
+        if isinstance(last, bool) or isinstance(last, function):
+            defaults = last
+            sources, target = args[:-1], args[-1]
+        else:
+            sources, target, defaults = args, last, False
+    else:
+        if defaults is Unset:
+            defaults = False
+        sources, target = args[:-1], args[-1]
+    if isinstance(target, MutableMapping):
+        def setter(key, val):
+            target[key] = val
+    else:
+        def setter(key, val):
+            if is_valid_identifier(key):
+                setattr(target, key, val)
+    is_mapping = isinstance(defaults, Mapping)
+    if is_mapping or not isinstance(defaults, (bool, function)):
+        for key, val in ((key, get_first_of(sources, key, default=Unset))
+                         for key in defaults):
+            if val is Unset:
+                if is_mapping:
+                    val = defaults.get(key, None)
+                else:
+                    val = None
+                exc = adapt_exception(val, key=key)
+                if exc or val is Required or isinstance(val, Required):
+                    raise exc
+            setter(key, val)
+    else:
+        assert isinstance(defaults, (bool, function))
+        keys = []
+        for source in sources:
+            get = smart_getter(source)
+            for key, val in xdir(source, getter=lambda o, a: get(a)):
+                if defaults is False and key.startswith('_'):
+                    copy = False
+                elif isinstance(defaults, function):
+                    copy = defaults(key)
+                else:
+                    copy = True
+                if key not in keys:
+                    keys.append(key)
+                    if copy:
+                        setter(key, val)
+    return target
