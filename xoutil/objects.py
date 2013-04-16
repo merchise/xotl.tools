@@ -30,6 +30,8 @@ from xoutil.names import namelist
 __all__ = namelist()
 del namelist
 
+from xoutil.deprecation import deprecated
+
 
 # These two functions can be use to always return True or False
 _true = lambda * args, **kwargs: True
@@ -37,6 +39,7 @@ _false = lambda * args, **kwargs: False
 
 
 # TODO: Deprecate and restructure all its uses
+@deprecated('xoutil.names.nameof')
 @__all__
 def nameof(target):
     '''Gets the name of an object.
@@ -46,7 +49,11 @@ def nameof(target):
 
     '''
     from xoutil.names import nameof as wrapped
-    return wrapped(target, force_type=True)
+    from xoutil.compat import str_base
+    if isinstance(target, str_base):
+        return wrapped(target, depth=2, inner=True)
+    else:
+        return wrapped(target, depth=2, inner=True, typed=True)
 
 
 @__all__

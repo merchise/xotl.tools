@@ -56,6 +56,7 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 #: A compatible Py2 and Py3k DictProxyType, since it does not exists in Py3k.
 DictProxyType = type(object.__dict__)
 
+
 if _pypy:
     class _foo(object):
         __slots__ = 'bar'
