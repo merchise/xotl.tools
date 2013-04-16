@@ -13,7 +13,14 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 
-'''Some useful Data Structures and data-related algorithms and functions.'''
+'''Some useful Data Structures and data-related algorithms and functions.
+
+.. warning::
+
+   **This module is completely deprecated since 1.4.0**. Most of its contents
+   are already deprecated.
+
+'''
 
 
 from __future__ import (division as _py3_division,
@@ -24,45 +31,17 @@ from __future__ import (division as _py3_division,
 import xoutil.collections
 from xoutil.deprecation import deprecated
 
+@deprecated('xoutil.objects.smart_copy')
 def smart_copy(source, target, full=False):
     '''Copies attributes (or keys) from `source` to `target`.
 
-    Names starting with an '_' will not be copied unless `full` is True.
+    .. warning::
 
-    When `target` is not a dictionary (other Python objects):
-
-        - Only valid identifiers will be copied.
-
-        - If `full` is False only public values (which name does not starts
-          with '_') will be copied.
-
-    Assumed introspections:
-
-        - `source` is considered a dictionary when it has a method called
-          ``iteritem`` or ``items``.
-
-        - `target` is considered a dictionary when: ``isinstance(target,
-          collections.Mapping)`` is True.
+       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`.
 
     '''
-    from collections import Mapping
-    from xoutil.validators.identifiers import is_valid_identifier
-    if callable(getattr(source, 'iteritems', None)):
-        items = source.iteritems()
-    elif callable(getattr(source, 'items', None)):
-        items = source.items()
-    else:
-        items = ((name, getattr(source, name)) for name in dir(source))
-    if isinstance(target, Mapping):
-        def setvalue(key, value):
-            target[key] = value
-    else:
-        def setvalue(key, value):
-            if is_valid_identifier(key) and (full or not key.startswith('_')):
-                setattr(target, key, value)
-    for key, value in items:
-        setvalue(key, value)
-
+    from xoutil.objects import smart_copy as _smart_copy
+    return _smart_copy(source, target, defaults=full)
 
 def adapt_exception(value, **kwargs):
     '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,

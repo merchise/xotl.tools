@@ -158,8 +158,7 @@ def fake_dict_iteritems(source):
         yield key, source[key]
 
 
-# TODO: [manu] Discuss with med. Docstring does not match behavior! Only used
-# in xoonko and xopgi (on my machine). See also adapt_exception.
+@deprecated('xoutil.objects.smart_copy')
 def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
@@ -169,27 +168,15 @@ def smart_dict(defaults, *sources):
     If `defaults` is not a dictionary, `None` is used as default value.
 
     Persistence of all original objects are warranted.
+
+    .. warning::
+
+       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`.
+
     '''
-    from copy import deepcopy
-    from collections import Mapping
-    is_mapping = isinstance(defaults, Mapping)
-    res = {}
-    for key in defaults:
-        for s in sources:
-            get = s.get if isinstance(s, Mapping) else partial(getattr, s)
-            value = get(key, Unset)
-            if (value is not Unset) and (key not in res):
-                res[key] = deepcopy(value)
-        if key not in res:
-            if isinstance(defaults, Mapping):
-                from xoutil.data import adapt_exception
-                value = defaults[key]
-                error = adapt_exception(value, key=key)
-                if not error:
-                    res[key] = deepcopy(defaults[key]) if is_mapping else None
-                else:
-                    raise error
-    return res
+    from xoutil.objects import smart_copy
+    args = sources + ({}, )
+    return smart_copy(*args, defaults=defaults)
 
 
 def slides(iterator, width=2, fill=Unset):
