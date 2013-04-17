@@ -38,7 +38,7 @@ from xoutil.compat import pypy as _pypy
 from xoutil._values import UnsetType, Unset, Ignored as ignored
 from xoutil.deprecation import deprecated
 
-from xoutil.collections import mro_dict as _mro_dict
+from xoutil.objects import mro_dict as _mro_dict
 mro_dict = deprecated(_mro_dict)(_mro_dict)
 
 from xoutil.names import namelist
@@ -159,7 +159,7 @@ def is_staticmethod(desc, name=Unset):
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
-    from xoutil.collections import mro_dict
+    from xoutil.objects import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, staticmethod)
@@ -184,7 +184,7 @@ def is_classmethod(desc, name=Unset):
     :param name: The name of the method, if the first argument is the class.
 
     '''
-    from xoutil.collections import mro_dict
+    from xoutil.objects import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, classmethod)
@@ -199,7 +199,7 @@ def is_instancemethod(desc, name=Unset):
 
     '''
     from types import FunctionType
-    from xoutil.collections import mro_dict
+    from xoutil.objects import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, FunctionType)
@@ -213,7 +213,7 @@ def is_slotwrapper(desc, name=Unset):
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
-    from xoutil.collections import mro_dict
+    from xoutil.objects import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, SlotWrapperType)

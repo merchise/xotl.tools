@@ -39,11 +39,11 @@ will remain importable from this module up to version 1.5.0.
 
 
 Likewise `mro_dict` does not fit the purpose of the this module. It has being
-moved to :mod:`xoutil.collections`.
+moved to :class:`xoutil.objects <xoutil.objects.mro_dict>`.
 
 .. autoclass:: mro_dict
 
    .. warning:: Importing mro_dict from :mod:`!xoutil.types` is deprecated
 		since 1.4.0.
 
-		You must import it from :mod:`xoutil.collections`.
+		You must import it from :mod:`xoutil.objects`.

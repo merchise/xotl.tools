@@ -23,15 +23,16 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 from xoutil.names import namelist
 __all__ = namelist()
 del namelist
 
+from collections import Mapping
 from xoutil.deprecation import deprecated
 
+
+__docstring_format__ = 'rst'
+__author__ = 'manu'
 
 # These two functions can be use to always return True or False
 _true = lambda * args, **kwargs: True
@@ -689,3 +690,42 @@ def smart_copy(*args, **kwargs):
                     if copy:
                         setter(key, val)
     return target
+
+
+@__all__
+class mro_dict(Mapping):
+    '''An utility class that behaves like a read-only dict to query the
+    attributes in the MRO chain of a `target` class (or an object's class).
+
+    :param target: An object or a type. It is considered a type if it has an
+                   `mro` attribute.
+
+                   If an object is passed, then its type is used for finding
+                   the MRO.
+
+    '''
+    def __init__(self, target):
+        t = target if hasattr(target, 'mro') else type(target)
+        self._target_mro = t.mro()
+
+    def __getitem__(self, name):
+        from xoutil import Unset
+        from xoutil.objects import get_first_of
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        result = get_first_of(probes, name, default=Unset)
+        if result is not Unset:
+            return result
+        else:
+            raise KeyError(name)
+
+    def __iter__(self):
+        res = []
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        for probe in probes:
+            for key in probe:
+                if key not in res:
+                    res.append(key)
+                    yield key
+
+    def __len__(self):
+        return sum(1 for _ in self)
