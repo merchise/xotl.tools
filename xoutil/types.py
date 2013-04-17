@@ -41,12 +41,6 @@ from xoutil.deprecation import deprecated
 from xoutil.collections import mro_dict as _mro_dict
 mro_dict = deprecated(_mro_dict)(_mro_dict)
 
-from xoutil.names import namelist
-__all__ = namelist(UnsetType, Unset, ignored, 'DictProxyType',
-                   'SlotWrapperType')
-del namelist
-
-
 #: The type of methods that are builtin in Python.
 #:
 #: This is roughly the type of the ``object.__getattribute__`` method.
@@ -55,6 +49,12 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 #: A compatible Py2 and Py3k DictProxyType, since it does not exists in Py3k.
 DictProxyType = type(object.__dict__)
+
+
+from xoutil.names import namelist
+__all__ = namelist(UnsetType, Unset, ignored, DictProxyType,
+                   SlotWrapperType)
+del namelist
 
 
 if _pypy:
