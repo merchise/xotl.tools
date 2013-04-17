@@ -623,7 +623,9 @@ def smart_copy(*args, **kwargs):
     In these cases a KeyError is raised if the key is not found in the sources.
 
     If `defaults` is a callable then it should receive one positional arguments
-    ``attr`` and return either True or False if the attr should be copied.
+    for the current `attribute name` and several keyword arguments (we pass
+    ``source``) and return either True or False if the attribute should be
+    copied.
 
     If `defaults` is False only the attributes that do not start with a "_" are
     copied, if it's True all attributes are copied.
@@ -695,7 +697,7 @@ def smart_copy(*args, **kwargs):
                 if defaults is False and key.startswith('_'):
                     copy = False
                 elif isinstance(defaults, function):
-                    copy = defaults(key)
+                    copy = defaults(key, source=source)
                 else:
                     copy = True
                 if key not in keys:
