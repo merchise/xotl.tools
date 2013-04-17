@@ -476,6 +476,7 @@ def setdefaultattr(obj, name, value):
     return res
 
 
+# TODO: Use "xoutil.names.nameof" with "full=True, inner=True, typed=True"
 @__all__
 def full_nameof(target):
     '''Gets the full name of an object:

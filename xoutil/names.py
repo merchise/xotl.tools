@@ -34,7 +34,23 @@ __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
-def nameof(target, depth=1, inner=False, typed=False):
+def module_name(target):
+    from xoutil.compat import py3k, str_base
+    if target is None:
+        target = ''
+    elif isinstance(target, str_base):
+        res = target
+    else:
+        res = getattr(target, '__module__', None)
+        if res is None:
+            res = getattr(type(target), '__module__', '')
+    if (res.startswith('__') or (py3k and (res == 'builtins')) or
+        (res == '<module>')):
+        res = ''
+    return str(res)
+
+
+def nameof(target, depth=1, inner=False, typed=False, full=False):
     '''Gets the name of an object.
 
     The name of an object is normally the variable name in the calling stack::
@@ -93,11 +109,16 @@ def nameof(target, depth=1, inner=False, typed=False):
     if inner:
         res = getattr(target, TYPED_NAME, False)
         if res:
+            if full:
+                head = module_name(target)
+                if head:
+                    res = '.'.join((head, res))
             return str(res)
         elif isinstance(target, (str_base, Number)):
             return str(target)
         else:
-            return str('id(%s)' % id(target))
+            type_name = nameof(target, inner=True, typed=True, full=full)
+            return str('@'.join((type_name, hex(id(target)))))
     else:
         import sys
         from xoutil.collections import dict_key_for_value as search
@@ -105,24 +126,38 @@ def nameof(target, depth=1, inner=False, typed=False):
         try:
             res = False
             i, LIMIT = 0, 5   # Limit number of stack to recurse
+            def getter(src):
+                key = search(l, target)
+                if key and full:
+                    head = src.get('__name__')
+                    if not head:
+                        head = sf.f_code.co_name
+                    head = module_name(head)
+                    if not head:
+                        head = module_name(target) or None
+                else:
+                    head = None
+                return key, head
             while not res and sf and (i < LIMIT):
                 l = sf.f_locals
-                key = search(l, target)
+                key, head = getter(l)
                 if not key:
                     g = sf.f_globals
                     if l is not g:
-                        key = search(g, target)
+                        key, head = getter(g)
                 if key:
                     res = key
                 else:
                     sf = sf.f_back
                     i =+ 1
         finally:
-            del sf
+            # TODO: on "del sf" Python says "SyntaxError: can not delete
+            # variable 'sf' referenced in nested scope".
+            sf = None
         if res:
-            return str(res)
+            return str('.'.join((head, res)) if head else res)
         else:
-            return nameof(target, depth=depth+1, inner=True)
+            return nameof(target, depth=depth+1, inner=True, full=full)
 
 
 class namelist(list):

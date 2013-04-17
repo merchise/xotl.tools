@@ -29,9 +29,9 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 _SIGNATURE = _regex_compile(r'''(?ixm)
-                            \(                # Required opening for the argumens
+                            \(              # Required opening for the argumens
                             (?P<args>(.)*)
-                            \)\s*             # Required close
+                            \)\s*           # Required close
                             (?:->\s*(?P<return>.+))?$
                             ''')
 
