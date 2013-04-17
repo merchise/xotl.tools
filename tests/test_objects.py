@@ -49,3 +49,10 @@ def test_smart_copy_with_defaults():
     # if missing a required key
     with pytest.raises(KeyError):
         args = smart_copy({}, {}, defaults=defaults)
+
+
+def test_smart_copy_signature():
+    with pytest.raises(TypeError):
+        smart_copy({}, defaults=False)
+    with pytest.raises(TypeError):
+        smart_copy({}, False)

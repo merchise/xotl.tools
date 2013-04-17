@@ -661,6 +661,11 @@ def smart_copy(*args, **kwargs):
         if defaults is Unset:
             defaults = False
         sources, target = args[:-1], args[-1]
+    if not sources:
+        raise TypeError('smart_copy requires at least one source')
+    if isinstance(target, (bool, type(None), int, float)):
+        raise TypeError('target should be a mutable object, not %s' %
+                        type(target))
     if isinstance(target, MutableMapping):
         def setter(key, val):
             target[key] = val
