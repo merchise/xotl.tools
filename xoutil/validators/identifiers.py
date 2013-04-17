@@ -33,6 +33,7 @@ __all__ = namelist()
 del namelist
 
 
+# TODO: In Py3k "ña" is a valid identifier and this regex won't allow it
 _IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')
 
 
