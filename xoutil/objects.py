@@ -84,12 +84,14 @@ def smart_getter_and_deleter(obj):
     `collections.MutableMapping`.
 
     '''
-    from collections import Mapping
+    from collections import Mapping, MutableMapping
     from functools import partial
-    if isinstance(obj, Mapping):
-        return partial(get_and_del_key, obj, **kwargs)
+    if isinstance(obj, Mapping) and not isinstance(obj, MutableMapping):
+        raise TypeError('If `obj` is a Mapping it must be a MutableMapping')
+    if isinstance(obj, MutableMapping):
+        return partial(get_and_del_key, obj)
     else:
-        return partial(get_and_del_attr, obj, **kwargs)
+        return partial(get_and_del_attr, obj)
 
 smart_get_and_del = deprecated(smart_getter_and_deleter)(smart_getter_and_deleter)
 
