@@ -745,3 +745,21 @@ class mro_dict(Mapping):
 
     def __len__(self):
         return sum(1 for _ in self)
+
+
+@__all__
+def extract_attrs(obj, *names, **kwargs):
+    '''Returns a tuple of the `names` from an object.
+
+    If `obj` is a Mapping, the names will be search in the keys of the `obj`;
+    otherwise the names are considered regular attribute names.
+
+    If `default` is Unset and one attribute is not found an AttributeError (or
+    KeyError) is raised, otherwise the `default` is used instead.
+
+    .. versionadded:: 1.4.0
+
+    '''
+    from xoutil.objects import smart_getter
+    get = smart_getter(obj)
+    return tuple(get(attr, **kwargs) for attr in names)
