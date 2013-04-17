@@ -691,7 +691,7 @@ def smart_copy(*args, **kwargs):
         keys = []
         for source in sources:
             get = smart_getter(source)
-            for key, val in xdir(source, getter=lambda o, a: get(a)):
+            for key in dir(source):
                 if defaults is False and key.startswith('_'):
                     copy = False
                 elif isinstance(defaults, function):
@@ -701,7 +701,7 @@ def smart_copy(*args, **kwargs):
                 if key not in keys:
                     keys.append(key)
                     if copy:
-                        setter(key, val)
+                        setter(key, get(key))
     return target
 
 
