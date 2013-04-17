@@ -595,10 +595,10 @@ def smart_copy(*args, **kwargs):
 
     :param target: The object to fill.
 
-    :param defaults: Defaultss the attributes to be copied as explained
-                   below. Defaults to False.
+    :param defaults: Default values for the attributes to be copied as explained
+                     below. Defaults to False.
 
-    :type defaults: Either True, False, a dictionary or a callable.
+    :type defaults: Either a bool, a dictionary or a callable.
 
     .. note::
 
@@ -641,6 +641,7 @@ def smart_copy(*args, **kwargs):
 
     '''
     from collections import Mapping, MutableMapping
+    from xoutil.compat import callable
     from xoutil.types import Unset, Required
     from xoutil.types import FunctionType as function
     from xoutil.data import adapt_exception
@@ -668,7 +669,7 @@ def smart_copy(*args, **kwargs):
             if is_valid_identifier(key):
                 setattr(target, key, val)
     is_mapping = isinstance(defaults, Mapping)
-    if is_mapping or not isinstance(defaults, (bool, function)):
+    if is_mapping or not (isinstance(defaults, bool) or callable(defaults)):
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:
@@ -681,7 +682,7 @@ def smart_copy(*args, **kwargs):
                     raise exc
             setter(key, val)
     else:
-        assert isinstance(defaults, (bool, function))
+        assert isinstance(defaults, bool) or callable(defaults)
         keys = []
         for source in sources:
             get = smart_getter(source)
