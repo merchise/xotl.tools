@@ -37,7 +37,11 @@ def smart_copy(source, target, full=False):
 
     .. warning::
 
-       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`.
+       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`. Using
+       the new function this one is roughly equivalent to::
+
+           from xoutil.objects import smart_copy
+           smart_copy(source, target, defaults=full)
 
     '''
     from xoutil.objects import smart_copy as _smart_copy

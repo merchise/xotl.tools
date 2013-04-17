@@ -23,13 +23,9 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-
-from functools import partial
-
 from xoutil import Unset
 from xoutil.types import is_scalar
 from xoutil.deprecation import deprecated
-from xoutil.types import is_scalar, Unset, ignored
 
 
 __docstring_format__ = 'rst'
@@ -182,7 +178,11 @@ def smart_dict(defaults, *sources):
 
     .. warning::
 
-       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`.
+       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`. Using
+       the new function this one is roughly equivalent to::
+
+           args = sources + ({}, )
+           return smart_copy(*args, defaults=defaults)
 
     '''
     from xoutil.objects import smart_copy

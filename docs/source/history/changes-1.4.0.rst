@@ -11,12 +11,17 @@
 - :class:`xoutil.collections.StackedDict` gains zero-level initialization data
   and is now a smart dict.
 
+- Removes deprecated :mod:`!xoutil.decorators`. Use :mod:`xoutil.decorator`.
+
 - Removed :func:`!xoutil.iterators.first`, and
   :func:`!xoutil.iterators.get_first`.
 
   Deprecates :func:`xoutil.iterators.obtain`.
 
   Introduces :func:`xoutil.iterators.first_non_null`.
+
+- Deprecates :func:`xoutil.iterators.smart_dict` and
+  :func:`xoutil.data.smart_copy` in favor of :func:`xoutil.objects.smart_copy`.
 
 - Adds :func:`xoutil.objects.copy_class` and updates
   :func:`xoutil.decorator.compat.metaclass` to use it.
