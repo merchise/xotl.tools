@@ -22,7 +22,12 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
 
+
+@__all__
 def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     Normalizes string, converts to lower-case, removes non-alpha characters,
@@ -100,6 +105,3 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     #remove redundant -
     s = re.sub('-{2,}', minus, s).strip(minus)
     return s
-
-
-__all__ = (str('slugify'),)

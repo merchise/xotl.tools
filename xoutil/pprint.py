@@ -51,27 +51,32 @@ saferepr()
 
 '''
 
+# TODO: Which is the difference with the standard-library's pprint??
+# TODO: Make this a drop-in replacement if needed.
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-__docstring_format__ = 'rst'
-__author__ = 'med'
-
-
-
 import sys as _sys
 from collections import OrderedDict as _OrderedDict
 from io import StringIO as _StringIO
 
-__all__ = [str(name) for name in ("pprint", "pformat", "isreadable",
-                                  "isrecursive", "saferepr", "PrettyPrinter")]
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
+
+
+__docstring_format__ = 'rst'
+__author__ = 'med'
+
 
 # cache these for faster access:
 _commajoin = ", ".join
 
 
+@__all__
 def pprint(obj, stream=None, indent=1, width=80, depth=None):
     '''Pretty-print a Python object to a stream [default is sys.stdout].'''
     printer = PrettyPrinter(stream=stream, indent=indent, width=width,
@@ -79,21 +84,25 @@ def pprint(obj, stream=None, indent=1, width=80, depth=None):
     printer.pprint(obj)
 
 
+@__all__
 def pformat(obj, indent=1, width=80, depth=None):
     '''Format a Python object into a pretty-printed representation.'''
     return PrettyPrinter(indent=indent, width=width, depth=depth).pformat(obj)
 
 
+@__all__
 def saferepr(obj):
     '''Version of repr() which can handle recursive data structures.'''
     return _safe_repr(obj, {}, None, 0)[0]
 
 
+@__all__
 def isreadable(obj):
     '''Determine if saferepr(obj) is readable by eval().'''
     return _safe_repr(obj, {}, None, 0)[1]
 
 
+@__all__
 def isrecursive(obj):
     '''Determine if obj requires a recursive representation.'''
     return _safe_repr(obj, {}, None, 0)[2]
@@ -131,6 +140,7 @@ def _safe_tuple(t):
     return _safe_key(t[0]), _safe_key(t[1])
 
 
+@__all__
 class PrettyPrinter(object):
     def __init__(self, indent=1, width=80, depth=None, stream=None):
         '''Handle pretty printing operations onto a stream using a set of

@@ -27,12 +27,15 @@ from __future__ import (division as _py3_division,
 
 from xoutil.aop.classical import weave as classical_weave
 
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-__all__ = (b'weave', )
 
-
+@__all__
 def weave(aspect, target):
     '''Similar to :py:func:`xoutil.aop.classical.weave` but introduces
     _before_weave and _around_weave hooks to the weaving process::

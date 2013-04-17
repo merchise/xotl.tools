@@ -2,7 +2,9 @@
 ===================================================================================
 
 .. automodule:: xoutil.functools
-   :members: compose, lru_cache
+   :members: lru_cache
+
+.. autofunction:: compose(*funcs, math=True)
 
 .. autofunction:: pow_(*funcs, times)
 

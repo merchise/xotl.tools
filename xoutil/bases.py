@@ -16,6 +16,12 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
+
+
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__   = "Mon Mar 25 14:38:12 2013"
 
@@ -72,6 +78,7 @@ class BaseConvertor(object):
         return result
 
 
+@__all__
 class B32(BaseConvertor):
     '''Handles base-32 convertions.
 
@@ -90,6 +97,7 @@ class B32(BaseConvertor):
     case_insensitive = True
 
 
+@__all__
 class B64(BaseConvertor):
     '''Handles [a kind of] base 64 convertions.
 

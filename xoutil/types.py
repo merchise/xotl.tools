@@ -31,8 +31,6 @@ from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 GeneratorType = _pm.GeneratorType
 
-del _pm, _copy_python_module_members
-
 from xoutil.compat import xrange_
 from xoutil.compat import pypy as _pypy
 from xoutil._values import UnsetType, Unset, Ignored as ignored
@@ -42,9 +40,11 @@ from xoutil.objects import mro_dict as _mro_dict
 mro_dict = deprecated(_mro_dict)(_mro_dict)
 
 from xoutil.names import namelist
-__all__ = namelist(UnsetType, Unset, ignored, 'DictProxyType',
-                   'SlotWrapperType')
+__all__ = namelist(getattr(_pm, '__all__', dir(_pm)))
+__all__.extend((UnsetType, Unset, ignored, 'DictProxyType', 'SlotWrapperType'))
 del namelist
+del _pm, _copy_python_module_members
+
 
 
 #: The type of methods that are builtin in Python.

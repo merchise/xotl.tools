@@ -20,10 +20,16 @@ from __future__ import (division as _py3_division,
 
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
+
 from xoutil.compat import str_base as _str_base
 from xoutil.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
+
 from xoutil.decorator.meta import decorator
+
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -149,6 +155,7 @@ def _parse_signature(signature):
 
 
 @decorator
+@__all__
 def annotate(func, signature=None, **keyword_annotations):
     '''Annotates a function with a Python 3k forward-compatible
     ``__annotations__`` mapping.

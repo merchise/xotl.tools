@@ -43,6 +43,7 @@ __author__ = 'manu'
 __all__ = _namelist('SUPPORTED_OPERATIONS')
 
 
+@__all__
 class UNPROXIFING_CONTEXT(object):
     '''Mark for an :mod:`execution context <xoutil.context>` in which you don't
     want to proxy to the target's attributes. When in this context all
@@ -116,7 +117,7 @@ SupportedOperations = type(str('SupportedOperations'), (object,),
 
 def _mro_getattr(obj, attr, default=Unset):
     '''Gets the attr from obj's MRO'''
-    from xoutil.types import mro_dict
+    from xoutil.objects import mro_dict
     unset = object()
     res = mro_dict(obj).get(attr, unset)
     if res is unset:
@@ -128,6 +129,7 @@ def _mro_getattr(obj, attr, default=Unset):
         return res
 
 
+@__all__
 class Proxy(object):
     '''A complementor for a "behavior" defined in query expressions or a target
     object.
@@ -179,6 +181,7 @@ class Proxy(object):
                 return result
 
 
+@__all__
 class unboxed(object):
     '''A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also
     provides support for "updating" a single attribute.

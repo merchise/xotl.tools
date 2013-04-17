@@ -26,15 +26,36 @@ from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 
 wraps = _pm.wraps
-del _pm, _copy_python_module_members
+from xoutil.names import namelist
+__all__ = namelist(getattr(_pm, '__all__', dir(_pm)))
+del _pm, _copy_python_module_members, namelist
 
 from xoutil.compat import py32, callable
 
 
+@__all__
 class ctuple(tuple):
-    '''Simple tuple marker for :func:`compose`.'''
+    '''Simple tuple marker for :func:`compose`.
+
+    Since is a callable you may use it directly in ``compose`` instead of
+    changing your functions to returns ctuples instead of tuples::
+
+       >>> def compat_print(*args):
+       ...     for arg in args:
+       ...         print arg,
+       ...     print
+
+       >>> compose(compat_print, ctuple, list, range, math=False)(10)
+       0 1 2 3 4 5 6 7 8 9
+
+       # Without ctuple prints the list
+       >>> compose(compat_print, list, range, math=False)(10)
+       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    '''
 
 
+@__all__
 def compose(*funcs, **kwargs):
     '''Returns a function that is the composition of `funcs`.
 
@@ -49,18 +70,6 @@ def compose(*funcs, **kwargs):
                  function composition: last function in `funcs` is applied
                  last. If False, then the last function in `func` is applied
                  first.
-
-    Example::
-
-        >>> import operator
-        >>> compose(operator.mul, operator.neg)(3, 4)
-        -12
-
-        >>> compose(operator.neg, operator.mul, math=False)(3, 4)
-        -12
-
-        >>> operator.neg(operator.mul(3, 4))
-        -12
     '''
     math = kwargs.get('math', True)
     if not math:
@@ -78,6 +87,7 @@ def compose(*funcs, **kwargs):
 
 
 # The real signature should be (*funcs, times)
+@__all__
 def pow_(*args):
     '''Returns the "power" composition of several functions.
 
@@ -117,6 +127,7 @@ if not py32:
 
     # Back-ported lru_cache from py32. But take note that if running with at
     # least py32 we will use Python's version, so don't mess with internals.
+    @__all__
     def lru_cache(maxsize=100):
         '''Least-recently-used cache decorator.
 

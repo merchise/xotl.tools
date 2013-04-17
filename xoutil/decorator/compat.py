@@ -20,10 +20,15 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from xoutil.names import namelist
+__all__ = namelist()
+del namelist
+
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__   = "Tue Jan 15 11:38:55 2013"
 
 
+@__all__
 def metaclass(meta):
     '''Declares a meta class transparently in Python 2 and Python 3.
 

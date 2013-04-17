@@ -18,12 +18,22 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+import subprocess as _pm
+from xoutil.modules import copy_members as _copy_members
+_copy_members(_pm)
+
+Popen = _pm.Popen
+PIPE = _pm.PIPE
+
+from xoutil.names import namelist
+__all__ = namelist(getattr(_pm, '__all__', dir(_pm)))
+del namelist, _pm, _copy_members
+
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__   = "Fri Jan 11 10:28:59 2013"
 
 
-from subprocess import *
-
+@__all__
 def call_and_check_output(*popenargs, **kwargs):
     '''Combines `call` and `check_output`. Returns a tuple ``(returncode,
     output, err_output)``.

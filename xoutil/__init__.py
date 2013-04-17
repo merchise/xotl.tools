@@ -38,6 +38,8 @@ elsewhere.
 
 '''
 
-from ._values import Unset, Ignored
 
-__all__ = (str('Unset'), str('Ignored'))
+from ._values import Unset, Ignored
+from xoutil.names import namelist
+__all__ = namelist(Unset, Ignored)
+del namelist

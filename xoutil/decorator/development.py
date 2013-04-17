@@ -20,6 +20,7 @@ import warnings
 
 from xoutil.compat import class_types as _class_types
 from xoutil.objects import full_nameof
+
 from .meta import decorator as _decorator
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
