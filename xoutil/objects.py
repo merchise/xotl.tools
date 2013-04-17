@@ -45,16 +45,21 @@ _false = lambda * args, **kwargs: False
 def nameof(target):
     '''Gets the name of an object.
 
-    Original implementation is moved to "xoutil.names", this one must be
-    deprecated and restructure its all uses.
+    .. warning::
+
+       *Deprecate since 1.4.0*. Use :func:`xoutil.names.nameof`.
+
+       Notice also that there are semantic changes in the new ``nameof``; the
+       most notable is that ``nameof(number)`` now returns the number
+       representation instead of "int" unless `typed` is true.
 
     '''
     from xoutil.names import nameof as wrapped
-    from xoutil.compat import str_base
-    if isinstance(target, str_base):
-        return wrapped(target, depth=2, inner=True)
+    from numbers import Number
+    if isinstance(target, Number):
+        return wrapped(target, depth=2, typed=True)
     else:
-        return wrapped(target, depth=2, inner=True, typed=True)
+        return wrapped(target, depth=2, inner=True)
 
 
 @__all__
