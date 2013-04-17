@@ -6,6 +6,6 @@
 
 .. autofunction:: compose(*funcs, math=True)
 
-.. autofunction:: pow_(*funcs, times)
+.. autofunction:: power(*funcs, times)
 
 .. autoclass:: ctuple

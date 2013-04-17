@@ -31,6 +31,7 @@ __all__ = namelist(getattr(_pm, '__all__', dir(_pm)))
 del _pm, _copy_python_module_members, namelist
 
 from xoutil.compat import py32, callable
+from xoutil.deprecation import deprecated
 
 
 @__all__
@@ -88,7 +89,7 @@ def compose(*funcs, **kwargs):
 
 # The real signature should be (*funcs, times)
 @__all__
-def pow_(*args):
+def power(*args):
     '''Returns the "power" composition of several functions.
 
     Examples::
@@ -119,6 +120,9 @@ def pow_(*args):
     else:
         base = (funcs[0], )
     return compose(*(base * times))
+
+
+pow_ = __all__(deprecated(power)(power))
 
 
 if not py32:
