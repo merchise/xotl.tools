@@ -59,9 +59,11 @@ def nameof(target):
 
 @__all__
 def smart_getter(obj):
-    '''Returns a getter for `obj`. If obj is Mapping, it returns the ``.get()``
-    method bound to the object `obj`. Otherwise it returns a partial of
-    `getattr` on `obj`.
+    '''Returns a smart getter for `obj`.
+
+    If obj is Mapping, it returns the ``.get()`` method bound to the object
+    `obj`. Otherwise it returns a partial of `getattr` on `obj` with default
+    set to None.
 
     '''
     from collections import Mapping
@@ -69,8 +71,7 @@ def smart_getter(obj):
     if isinstance(obj, (DictProxyType, Mapping)):
         return obj.get
     else:
-        from functools import partial
-        return partial(getattr, obj)
+        return lambda attr, default=None: getattr(obj, attr, default)
 
 smart_get = deprecated(smart_getter)(smart_getter)
 
