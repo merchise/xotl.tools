@@ -201,9 +201,7 @@ class Template(object):
             self.items.append(item)
 
     def _GetFactory(self, token):
-        keys = self.factories.keys()
-        if not isinstance(keys, list):
-            keys = list(keys)
+        keys = list(self.factories)     # Get keys
         i, count = 0, len(keys)
         res = None
         while not res and (i < count):

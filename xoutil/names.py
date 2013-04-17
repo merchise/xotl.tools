@@ -50,7 +50,7 @@ def nameof(target, depth=1, inner=False, typed=False):
         'OrderedDict'
 
     If the `typed` flag is true, is name of the type unless `target` is already
-    a type::
+    a type (all objects with "__name__" attribute are considered valid types)::
 
         >>> sd = sorted_dict(x=1, y=2)
         >>> nameof(sd)
@@ -87,10 +87,11 @@ def nameof(target, depth=1, inner=False, typed=False):
     '''
     from numbers import Number
     from xoutil.compat import str_base
-    if typed and not isinstance(target, type):
+    TYPED_NAME = '__name__'
+    if typed and not hasattr(target, TYPED_NAME):
         target = type(target)
     if inner:
-        res = getattr(target, '__name__', False)
+        res = getattr(target, TYPED_NAME, False)
         if res:
             return str(res)
         elif isinstance(target, (str_base, Number)):

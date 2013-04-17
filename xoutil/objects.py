@@ -75,7 +75,7 @@ smart_get = deprecated(smart_getter)(smart_getter)
 
 
 @__all__
-def smart_getter_and_deleter(obj):
+def smart_getter_and_deleter(obj, **kwargs):
     '''Returns a function that get and deletes either a key or an attribute of
     obj depending on the type of `obj`.
 
