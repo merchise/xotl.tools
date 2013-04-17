@@ -10,6 +10,6 @@
 
 .. autofunction:: fdir(obj[, attr_filter[, value_filter[, getattr]]])
 
-.. autofunction:: smart_copy(*sources, target, filter=None)
+.. autofunction:: smart_copy(*sources, target, defaults=False)
 
 .. autofunction:: nameof(target)
