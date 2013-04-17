@@ -608,7 +608,7 @@ def smart_copy(*args, **kwargs):
     If `defaults` is a dictionary or an iterable then only the keys provided by
     itering over `defaults` will be copied. If it's a dictionary, and one of
     its key is not found in the `sources`, then the value of the key in the
-    dictionary is set to `target` unless:
+    dictionary is copied to `target` unless:
 
     - It's the value :class:`xoutil.types.Required` or an instance of Required.
 
@@ -617,6 +617,9 @@ def smart_copy(*args, **kwargs):
     - A sequence with is first value being a subclass of Exception.
 
     In these cases a KeyError is raised if the key is not found in the sources.
+
+    If `default` is an iterable and a `key` is not found in sources, None is
+    copied to `target`.
 
     If `defaults` is a callable then it should receive one positional arguments
     for the current `attribute name` and several keyword arguments (we pass

@@ -72,9 +72,10 @@ def adapt_exception(value, **kwargs):
 class SmartDict(xoutil.collections.SmartDict):
     '''A smart dict that extends the `update` method to accept several args.
 
-    .. warning:: Deprecated, moved to :class:`xoutil.collections.SmartDict`.
+    .. warning::
 
-                 Deprecated since 1.4.0
+       Deprecated since 1.4.0. Moved to
+       :class:`xoutil.collections.SmartDict`.
 
     '''
 
@@ -82,9 +83,9 @@ class SmartDict(xoutil.collections.SmartDict):
 class SortedSmartDict(xoutil.collections.OrderedSmartDict):
     '''An ordered SmartDict.
 
-    .. warning:: Deprecated, moved to
-                :class:`xoutil.collections.OrderedSmartDict`.
+    .. warning::
 
-                 Deprecated since 1.4.0
+       Deprecated since 1.4.0. Moved to
+       :class:`xoutil.collections.OrderedSmartDict`.
 
     '''
