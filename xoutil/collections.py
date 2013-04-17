@@ -618,7 +618,7 @@ def dict_key_for_value(target, value, strict=True):
 
     '''
     from xoutil import Unset
-    keys = target.keys()
+    keys = list(target)     # Get keys
     i, found, equal = 0, Unset, Unset
     while (i < len(keys)) and (found is Unset):
         key = keys[i]

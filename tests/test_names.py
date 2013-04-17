@@ -49,4 +49,4 @@ def test_nameof():
     assert nameof(i) == 'i'
     assert nameof(i, inner=True) == '1'
     assert nameof(i, typed=True) == 'int'
-    assert str(id(sd)) in nameof(sd, inner=True)
+    assert hex(id(sd)) in nameof(sd, inner=True)
