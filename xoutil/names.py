@@ -49,14 +49,16 @@ def nameof(target, depth=1, inner=False, typed=False):
         >>> nameof(sorted_dict, inner=True)
         'OrderedDict'
 
-    If the `typed` flag is true, is name of the type unless `target` is already
-    a type::
+    If the `typed` flag is true, then is the name of the type unless `target`
+    is already a type::
 
         >>> sd = sorted_dict(x=1, y=2)
         >>> nameof(sd)
         'sd'
+
         >>> nameof(sd, typed=True)
         'sorted_dict'
+
         >>> nameof(sd, inner=True, typed=True)
         'OrderedDict'
 
@@ -66,13 +68,17 @@ def nameof(target, depth=1, inner=False, typed=False):
         >>> s = 'foobar'
         >>> nameof(s)
         's'
+
         >>> nameof(s, inner=True)
         'foobar'
+
         >>> i = 1
         >>> nameof(i)
         'i'
+
         >>> nameof(i, inner=True)
         '1'
+
         >>> nameof(i, typed=True)
         'int'
 
@@ -82,7 +88,7 @@ def nameof(target, depth=1, inner=False, typed=False):
         >>> str(id(sd)) in nameof(sd, inner=True)
         True
 
-    - :param:`depth`: level of stack frames to look up, if needed.
+    :param depth: Amount of stack levels to skip if needed.
 
     '''
     from numbers import Number
@@ -128,16 +134,21 @@ class namelist(list):
     '''Similar to list, but only intended for storing object names.
 
     Constructors:
-        * namelist() -> new empty list
-        * namelist(collection) -> new list initialized from collection's items
-        * namelist(item, ...) -> new list initialized from severals items
 
-    Instances can be used as decorator to store names of module items
+    * namelist() -> new empty list
+    * namelist(collection) -> new list initialized from collection's items
+    * namelist(item, ...) -> new list initialized from severals items
+
+    Instances can be used as decorators to store names of module items
     (functions or classes)::
+
         >>> __all__ = namelist()
         >>> @__all__
         ... def foobar(*args, **kwargs):
         ...     'Automatically added to this module "__all__" names.'
+
+        >>> 'foobar' in __all__
+        True
 
     '''
     def __init__(self, *args):
