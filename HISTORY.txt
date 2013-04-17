@@ -1,0 +1,331 @@
+
+Changelog
+*********
+
+
+1.4 series
+==========
+
+* Refactors "xoutil.types" as explained in *Importing Unset, ignored,
+  and mro_dict*.
+
+* Moves SmartDict and SortedSmartDict from "xoutil.data" to
+  "xoutil.collections".
+
+  They are still accessible from "xoutil.data" but deprecated there.
+
+  Also there is now a "xoutil.collections.SmartDictMixin" that
+  implements the *update* behind all smart dicts in xoutil.
+
+* "xoutil.collections.StackedDict" gains zero-level initialization
+  data and is now a smart dict.
+
+* Removes deprecated "xoutil.decorators". Use "xoutil.decorator".
+
+* Removed "xoutil.iterators.first()", and
+  "xoutil.iterators.get_first()".
+
+  Deprecates "xoutil.iterators.obtain()".
+
+  Introduces "xoutil.iterators.first_non_null()".
+
+* Deprecates "xoutil.iterators.smart_dict()" and
+  "xoutil.data.smart_copy()" in favor of
+  "xoutil.objects.smart_copy()".
+
+* Adds "xoutil.objects.copy_class()" and updates
+  "xoutil.decorator.compat.metaclass()" to use it.
+
+* Fixes a bug with "xoutil.deprecation.deprecated()" when used with
+  classes: It changed the hierarchy and provoked infinite recursion in
+  methods that use *super*.
+
+
+1.3 series
+==========
+
+* Removes deprecated module "xoutil.mdeco".
+
+* "xoutil.context.Context" now inherit from the newly created stacked
+  dict class "xoutil.collections.StackedDict". Whenever you enter a
+  context a new level of the stacked dict is "pushed", when you leave
+  the context a level is "poped".
+
+  This also **removes** the *data* attribute execution context used to
+  have, and, therefore, this is an incompatible change.
+
+* Introduces "xoutil.collections.OpenDictMixin" and
+  "xoutil.collections.StackedDict".
+
+* Fixes a bug in "xoutil.decorator.compat.metaclass()": Slots were not
+  properly handed.
+
+* Fixes a bug with the simple "xoutil.collections.opendict" that
+  allowed to shadow methods (even *__getitem__*) thus making the dict
+  unusable.
+
+
+1.2 series
+==========
+
+
+2013-04-03. Release 1.2.3
+-------------------------
+
+* Bug fixes in "xoutil.proxy" and "xoutil.aop.classical".
+
+
+2013-03-25. Release 1.2.2
+-------------------------
+
+* Adds "xoutil.bases" - Implementations of base 32 and base 64
+  (numeric) representations.
+
+
+2013-02-14. Release 1.2.1
+-------------------------
+
+* Loads of improvements for Python 3k compatibility: Several modules
+  were fixed or adapted to work on both Python 2.7 and Python 3.2.
+  They include (but we might have forgotten some):
+
+  * "xoutil.context"
+
+  * "xoutil.aop.basic"
+
+  * "xoutil.deprecation"
+
+  * "xoutil.proxy"
+
+* Rescued "xoutil.annotate" and is going to be supported from now on.
+
+* Introduced module "xoutil.subprocess" and function
+  "xoutil.subprocess.call_and_check_output()".
+
+* Introduced module "xoutil.decorator.compat" that enables
+  constructions that are interoperable in Python 2 and Python 3.
+
+* Introduced "xoutil.iterators.zip()", "xoutil.iterators.izip()",
+  "xoutil.iterators.map()", and "xoutil.iterators.imap()".
+
+
+2013-01-04. Release 1.2.0
+-------------------------
+
+This is the first of the 1.2.0 series. It's been given a bump in the
+minor version number because we've removed some deprecated functions
+and/or modules.
+
+* Several enhancements to "xoutil.string" to make it work on Python
+  2.7 and Python 3.2.
+
+  Deprecates "xoutil.string.normalize_to_str()" in favor of the newly
+  created "xoutil.string.force_str()" which is Python 3 friendly.
+
+* Backwards incompatible changes in "xoutil.objects" API. For
+  instance, replaces *getattr* parameter with *getter* in
+  "xoutil.objects.xdir()" and co.
+
+* Extracts decorator-making facilities from "xoutil.decorators" into
+  "xoutil.mdeco".
+
+* Fixes in "xoutil.aop.extended". Added parameters in
+  "xoutil.aop.classical.weave()".
+
+* Introduces "xoutil.iterators.first_n()" and deprecates
+  "xoutil.iterators.first()" and "xoutil.iterators.get_first()".
+
+* Removes the *zope.interface* awareness from "xoutil.context" since
+  it contained a very hard to catch bug. Furthermore, this was
+  included to help the implementation of *xotl.ql*, and it's no longer
+  used there.
+
+  This breaks version control policy since it was not deprecated
+  beforehand, but we feel it's needed to avoid spreading this bug.
+
+* Removed long-standing deprecated modules "xoutil.default_dict",
+  "xoutil.memoize" and "xoutil.opendict".
+
+* Fixes bug in "xoutil.datetime.strfdelta()". It used to show things
+  like '1h 62min'.
+
+* Introduces "xoutil.compat.class_type" that holds class types for
+  Python 2 or Python 3.
+
+
+1.1 series
+==========
+
+
+2012-11-01. Release 1.1.4
+-------------------------
+
+* Introduces "xoutil.compat.iteritems_()", "xoutil.compat.iterkeys_()"
+  and "xoutil.compat.itervalues_()".
+
+* "execution context" are now aware of *zope.interface* interfaces; so
+  that you may ask for a context name implementing a given interface,
+  instead of the name itself.
+
+* Improves xoutil.formatter documentation.
+
+* Several fixes to "xoutil.aop.classical". It has sudden backwards
+  incompatible changes.
+
+* *before* and *after* methods may use the **args, **kwargs* idiom to
+  get the passed arguments of the weaved method.
+
+* Several minor fixes: Invalid warning about Unset not in xoutil.types
+
+
+2012-08-22. Release 1.1.3
+-------------------------
+
+* Adds function "xoutil.fs.rmdirs()" that removes empty dirs.
+
+* Adds functions "xoutil.string.safe_join()",
+  "xoutil.string.safe_encode()", "xoutil.string.safe_decode()", and
+  "xoutil.string.safe_strip()"; and the class
+  "xoutil.string.SafeFormatter".
+
+* Adds function "xoutil.cpystack.iter_frames()".
+
+
+2012-07-11. Release 1.1.2
+-------------------------
+
+* Fixes all copyrights notices and chooses the PSF License for Python
+  3.2.3 as the license model for xoutil releases.
+
+* All releases from now on will be publicly available at github.
+
+
+2012-07-06. Release 1.1.1
+-------------------------
+
+* Improves deprecation warnings by pointing to the real calling
+  filename
+
+* Removes all internal use of simple_memoize since it's deprecated. We
+  now use "lru_cache()".
+
+
+2012-07-03. Release 1.1.0
+-------------------------
+
+* Created the whole documentation Sphinx directory.
+
+* Removed xoutil.future since it was not properly tested.
+
+* Removed xoutil.annotate, since it's not portable across Python's
+  VMs.
+
+* Introduced module "xoutil.collections"
+
+* Deprecated modules "xoutil.default_dict", "xoutil.opendict" in favor
+  of "xoutil.collections".
+
+* Backported "xoutil.functools.lru_cache()" from Python 3.2.
+
+* Deprecated module "xoutil.memoize" in favor of
+  "xoutil.functools.lru_cache()".
+
+
+1.0 series
+==========
+
+
+2012-06-15. Release 1.0.30
+--------------------------
+
+* Introduces a new module "xoutil.proxy".
+
+* Starts working on the sphinx documentation so that we move to 1.1
+  release we a decent documentation.
+
+
+2012-06-01. Release 1.0.29.
+---------------------------
+
+* Introduces *xoutil.iterators.slides* and
+  *xoutil.aop.basic.contextualized*
+
+
+2012-05-28. Release 1.0.28.
+---------------------------
+
+* Fixes normalize path and other details
+
+* Makes validate_attrs to work with mappings as well as objects
+
+* Improves complementors to use classes as a special case of sources
+
+* Simplifies importing of legacy modules
+
+* PEP8
+
+
+2012-05-22. Release 1.0.27.
+---------------------------
+
+* Removes bugs that were not checked (tested) in the previous release.
+
+
+2012-05-21. Release 1.0.26.
+---------------------------
+
+* Changes in AOP classic. Now you have to rename after, before and
+  around methods to _after, _before and _around.
+
+  It is expected that the signature of those methods change in the
+  future.
+
+* Introducing a default argument for "xoutil.objects.get_first_of()".
+
+* Other minor additions in the code. Refactoring and the like.
+
+
+2012-04-30. Release 1.0.25.
+---------------------------
+
+* Extends the classical AOP approach to modules. Implements an
+  extended version with hooks.
+
+* 1.0.25.1: Makes classical/extended AOP more reliable to TypeError's
+  in getattr. xoonko, may raise TypeError's for TranslatableFields.
+
+2012-04-27. Release 1.0.24.
+
+* Introduces a classical AOP implementation: xoutil.aop.classical.
+
+
+2012-04-10. Release 1.0.23.
+---------------------------
+
+* Introduces decorators: xoutil.decorators.instantiate and
+  xoutil.aop.complementor
+
+
+2012-04-05. Release 1.0.22
+--------------------------
+
+* Allows annotation's expressions to use defined local variables.
+  Before this release the following code raised an error:
+
+     >>> from xoutil.annotate import annotate
+     >>> x1 = 1
+     >>> @annotation('(a: x1)')
+     ... def dummy():
+     ...     pass
+     Traceback (most recent call last):
+        ...
+     NameError: global name 'x1' is not defined
+
+* Fixes decorators to allow args-less decorators
+
+
+2012-04-03. Release 1.0.21
+--------------------------
+
+* Includes a new module "xoutil.annotate" that provides a way to place
+  Python annotations in forward-compatible way.
