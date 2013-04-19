@@ -40,10 +40,10 @@ from __future__ import (division as _py3_division,
 from types import MethodType, FunctionType
 from contextlib import contextmanager
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
-
+from xoutil.names import strlist as strs
+__all__ = strs('complementor', 'contextualized', 'inject_dependencies',
+               'weaved')
+del strs
 
 __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
@@ -74,7 +74,6 @@ def _update(attrs, *sources):
     return attrs
 
 
-@__all__
 def complementor(*sources, **attrs):
     '''
     Returns a decorator to be applied to a class in order to add attributes
@@ -186,7 +185,6 @@ def complementor(*sources, **attrs):
     return inner
 
 
-@__all__
 def contextualized(context, *sources, **attrs):
     '''
     Another decorator very similar to :func:`complementor`, but this wraps
@@ -230,7 +228,6 @@ def contextualized(context, *sources, **attrs):
     return complementor(**wrapped_attrs)
 
 
-@__all__
 def inject_dependencies(target, *sources, **attrs):
     'Injects/replaces the sources for the given target.'
     cls = target if isinstance(target, type) else target.__class__
@@ -256,7 +253,6 @@ def inject_dependencies(target, *sources, **attrs):
 
 
 @contextmanager
-@__all__
 def weaved(target, *sources, **attrs):
     '''
     Returns a context manager that weaves `target` with all the `sources` and

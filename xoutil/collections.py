@@ -172,7 +172,6 @@ class SmartDictMixin(object):
 
         '''
         from types import GeneratorType
-        from collections import Mapping
         from xoutil.types import is_iterable
         for arg in args:
             if isinstance(arg, (Mapping, tuple, list, GeneratorType)):

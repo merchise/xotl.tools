@@ -70,16 +70,16 @@ from types import FunctionType as function
 from xoutil.compat import inspect_getfullargspec as getfullargspec
 from xoutil.compat import str_base as _str_base
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
+
+from xoutil.names import strlist as strs
+__all__ = strs('FunctionMaker', 'flat_decorator', 'decorator')
+del strs
 
 
 DEF = re.compile('\s*def\s*([_\w][_\w\d]*)\s*\(')
 
 
 # basic functionality
-@__all__
 class FunctionMaker(object):
     """
     An object with the ability to create functions with a given signature.
@@ -199,7 +199,6 @@ class FunctionMaker(object):
                         evaldict, addsource, **attrs)
 
 
-@__all__
 def flat_decorator(caller, func=None):
     """
     Creates a signature keeping decorator.
@@ -237,7 +236,6 @@ def flat_decorator(caller, func=None):
 # -- End of decorators package
 
 
-@__all__
 def decorator(caller):
     '''Eases the creation of decorators with arguments. Normally a decorator
     with arguments needs three nested functions like this::

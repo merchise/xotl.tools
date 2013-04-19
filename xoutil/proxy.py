@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.models.ql.proxy
+# xoutil.proxy
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
@@ -33,17 +33,14 @@ from __future__ import (division as _py3_division,
 from xoutil import Unset
 from xoutil.context import context
 from xoutil.aop import complementor
-from xoutil.names import namelist as _namelist
+
+from xoutil.names import strlist as strs
+__all__ = strs('SUPPORTED_OPERATIONS', 'proxify')
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-
-__all__ = _namelist('SUPPORTED_OPERATIONS')
-
-
-@__all__
 class UNPROXIFING_CONTEXT(object):
     '''Mark for an :mod:`execution context <xoutil.context>` in which you don't
     want to proxy to the target's attributes. When in this context all
@@ -53,16 +50,16 @@ class UNPROXIFING_CONTEXT(object):
     '''
 
 
-SUPPORTED_UNARY_OPERATIONS = _namelist('__pos__', '__abs__', '__neg__',
+SUPPORTED_UNARY_OPERATIONS = strs('__pos__', '__abs__', '__neg__',
                                     '__invert__',)
 
 
-SUPPORTED_BINARY_LOGICAL_OPERATIONS = _namelist('__and__', '__or__', '__xor__',
+SUPPORTED_BINARY_LOGICAL_OPERATIONS = strs('__and__', '__or__', '__xor__',
     '__lt__', '__le__', '__gt__', '__ge__', '__eq__', '__ne__', '__rand__',
     '__ror__', '__rxor__', '__iand__', '__ior__', '__ixor__')
 
 
-SUPPORTED_BINARY_ARITH_OPERATIONS = _namelist('__add__', '__sub__', '__mul__',
+SUPPORTED_BINARY_ARITH_OPERATIONS = strs('__add__', '__sub__', '__mul__',
     '__div__', '__mod__', '__pow__', '__truediv__', '__floordiv__',
     '__lshift__', '__rshift__', '__radd__', '__rsub__', '__rmul__',
     '__rdiv__', '__rmod__', '__rpow__', '__rtruediv__', '__rfloordiv__',
@@ -71,7 +68,7 @@ SUPPORTED_BINARY_ARITH_OPERATIONS = _namelist('__add__', '__sub__', '__mul__',
     '__ilshift__', '__irshift__')
 
 
-SUPPORTED_BINARY_OPERATIONS = _namelist('__contains__')
+SUPPORTED_BINARY_OPERATIONS = strs('__contains__')
 
 
 SUPPORTED_OPERATIONS = (SUPPORTED_UNARY_OPERATIONS +
@@ -117,7 +114,7 @@ SupportedOperations = type(str('SupportedOperations'), (object,),
 
 def _mro_getattr(obj, attr, default=Unset):
     '''Gets the attr from obj's MRO'''
-    from xoutil.objects import mro_dict
+    from xoutil.types import mro_dict
     unset = object()
     res = mro_dict(obj).get(attr, unset)
     if res is unset:
@@ -129,7 +126,6 @@ def _mro_getattr(obj, attr, default=Unset):
         return res
 
 
-@__all__
 class Proxy(object):
     '''A complementor for a "behavior" defined in query expressions or a target
     object.
@@ -181,7 +177,6 @@ class Proxy(object):
                 return result
 
 
-@__all__
 class unboxed(object):
     '''A small hack to access attributes in an UNPROXIFIED_CONTEXT. Also
     provides support for "updating" a single attribute.
@@ -242,7 +237,6 @@ class unboxed(object):
             pass
 
 
-@__all__
 def proxify(cls, *complementors):
     '''A decorator to proxify classes with :class:`Proxy`.
 
@@ -351,3 +345,6 @@ def proxify(cls, *complementors):
         complementors = (SupportedOperations,)
     ComplementedProxy = complementor(*complementors)(Proxy)
     return complementor(ComplementedProxy)(cls)
+
+
+del strs
