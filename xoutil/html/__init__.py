@@ -13,8 +13,7 @@
 
 '''This module defines utilities to manipulate HTML.
 
-This module backports several utilities from Python 3.2 to Python 2.7 and
-provides a compatible versions.
+This module backports several utilities from Python 3.2.
 
 '''
 

@@ -7,6 +7,8 @@
 This module defines a class HTMLParser which serves as the basis for parsing
 text files formatted in HTML (HyperText Mark-up Language) and XHTML.
 
+.. warning:: This module has not being made Python 2.7 and 3.2 compatible.
+
 .. class:: HTMLParser(strict=True)
 
    Create a parser instance. If strict is True (the default), invalid HTML
