@@ -28,15 +28,15 @@ from re import compile as _regex_compile
 from ..compat import str_base
 
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
+from xoutil.names import strlist as strs
+__all__ = strs('is_valid_identifier', 'is_valid_full_identifier',
+               'is_valid_slug')
+del strs
 
 
 _IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')
 
 
-@__all__
 def is_valid_identifier(name):
     return isinstance(name, str_base) and _IDENTIFIER_REGEX.match(name)
 
@@ -44,7 +44,6 @@ def is_valid_identifier(name):
 _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 
 
-@__all__
 def is_valid_full_identifier(name):
     return isinstance(name, str_base) and _FULL_IDENTIFIER_REGEX.match(name)
 
@@ -52,6 +51,5 @@ def is_valid_full_identifier(name):
 _SLUG_REGEX = _regex_compile('(?i)^[\w]+([-][\w]+)*$')
 
 
-@__all__
 def is_valid_slug(slug):
     return isinstance(slug, str_base) and _SLUG_REGEX.match(slug)

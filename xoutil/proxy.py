@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.models.ql.proxy
+# xoutil.proxy
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
@@ -40,7 +40,9 @@ __author__ = 'manu'
 
 
 
-__all__ = _namelist('SUPPORTED_OPERATIONS')
+from xoutil.names import strlist as strs
+__all__ = strs('SUPPORTED_OPERATIONS', 'proxify')
+del strs
 
 
 class UNPROXIFING_CONTEXT(object):
@@ -239,7 +241,6 @@ class unboxed(object):
             pass
 
 
-@__all__
 def proxify(cls, *complementors):
     '''A decorator to proxify classes with :class:`Proxy`.
 

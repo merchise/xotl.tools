@@ -20,15 +20,11 @@ from __future__ import (division as _py3_division,
 from xoutil import decorator
 from xoutil.deprecation import inject_deprecated
 
-from xoutil.names import namelist
 
-__all__ = namelist('AttributeAlias',
-                   'settle',
-                   'namer',
-                   'aliases',
-                   'instantiate',
-                   'assignment_operator')
+from xoutil.names import strlist as strs
+__all__ = strs('AttributeAlias', 'settle', 'namer', 'aliases', 'instantiate',
+               'assignment_operator')
+del strs
 
-del namelist
 
 inject_deprecated(__all__, decorator)

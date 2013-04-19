@@ -51,10 +51,13 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 DictProxyType = type(object.__dict__)
 
 
-from xoutil.names import namelist
-__all__ = namelist(UnsetType, Unset, ignored, DictProxyType,
-                   SlotWrapperType)
-del namelist
+from xoutil.names import strlist as strs
+__all__ = strs('UnsetType', 'Unset', 'ignored', 'DictProxyType',
+               'SlotWrapperType', 'is_iterable', 'is_collection',
+               'is_string_like', 'is_scalar', 'is_staticmethod',
+               'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
+               'is_module', 'Required')
+del strs
 
 
 if _pypy:
@@ -64,7 +67,6 @@ if _pypy:
     del _foo
 
 
-@__all__
 def is_iterable(maybe):
     '''Returns True if `maybe` is an iterable object (e.g. implements the
     `__iter__` method):
@@ -99,7 +101,6 @@ def is_iterable(maybe):
         return True
 
 
-@__all__
 def is_collection(maybe):
     '''
     Test `maybe` to see if it is a tuple, a list, a set or a generator
@@ -132,7 +133,6 @@ def is_collection(maybe):
                               GeneratorType))
 
 
-@__all__
 def is_string_like(maybe):
     '''Returns True if `maybe` acts like a string'''
     try:
@@ -143,7 +143,6 @@ def is_string_like(maybe):
         return True
 
 
-@__all__
 def is_scalar(maybe):
     '''Returns True if `maybe` is a string, an int, or some other scalar type
     (i.e not an iterable.)
@@ -152,7 +151,6 @@ def is_scalar(maybe):
     return is_string_like(maybe) or not is_iterable(maybe)
 
 
-@__all__
 def is_staticmethod(desc, name=Unset):
     '''Returns true if a `method` is a static method.
 
@@ -165,7 +163,6 @@ def is_staticmethod(desc, name=Unset):
     return isinstance(desc, staticmethod)
 
 
-@__all__
 def is_classmethod(desc, name=Unset):
     '''Returns true if a `method` is a class method.
 
@@ -190,7 +187,6 @@ def is_classmethod(desc, name=Unset):
     return isinstance(desc, classmethod)
 
 
-@__all__
 def is_instancemethod(desc, name=Unset):
     '''Returns true if a given `method` is neither a static method nor a class
     method.
@@ -205,7 +201,6 @@ def is_instancemethod(desc, name=Unset):
     return isinstance(desc, FunctionType)
 
 
-@__all__
 def is_slotwrapper(desc, name=Unset):
     '''Returns True if a given `method` is a slot wrapper (i.e. a method that
     is builtin in the `object` base class).
@@ -219,14 +214,12 @@ def is_slotwrapper(desc, name=Unset):
     return isinstance(desc, SlotWrapperType)
 
 
-@__all__
 def is_module(maybe):
     '''Returns True if `maybe` is a module.'''
     from types import ModuleType
     return isinstance(maybe, ModuleType)
 
 
-@__all__
 class Required(object):
     '''A type for required fields in scenarios where a default is not
     possible.

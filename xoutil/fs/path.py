@@ -23,10 +23,12 @@ from os.path import (abspath, expanduser, dirname, sep, normpath,
 
 from xoutil.functools import pow_
 
-from xoutil.names import namelist
-__all__ = namelist('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
-                   'rtrim')
-del namelist
+
+from xoutil.names import strlist as strs
+__all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
+               'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+               'shorten_module_filename', 'shorten_user')
+del strs
 
 
 __docstring_format__ = 'rst'
@@ -53,7 +55,6 @@ Example::
 """
 
 
-@__all__
 def fix_encoding(name, encoding=None):
     '''Fix encoding of a file system resource name.
 
@@ -70,7 +71,6 @@ def fix_encoding(name, encoding=None):
         return name
 
 
-@__all__
 def join(base, *extras):
     '''Join two or more pathname components, inserting '/' as needed.
 
@@ -89,7 +89,6 @@ def join(base, *extras):
     return normpath(path)
 
 
-@__all__
 def normalize_path(base, *extras):
     '''Normalize path by:
 
@@ -107,7 +106,6 @@ def normalize_path(base, *extras):
 
 
 # TODO: [manu] move to "xoutil.modules" and deprecate here
-@__all__
 def get_module_path(module):
     # TODO: [med] Standardize this
     from ..compat import str_base
@@ -117,7 +115,6 @@ def get_module_path(module):
 
 
 
-@__all__
 def shorten_module_filename(filename):
     '''A filename, normally a module o package name, is shortened looking his
     head in all python path.
@@ -138,7 +135,6 @@ def shorten_module_filename(filename):
     return shorten_user(filename)
 
 
-@__all__
 def shorten_user(filename):
     '''A filename is shortened looking for the (expantion) $HOME in his head
     and replacing it by '~'.

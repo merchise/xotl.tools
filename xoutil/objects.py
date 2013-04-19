@@ -23,14 +23,18 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
+from xoutil.deprecation import deprecated
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
 
-from xoutil.deprecation import deprecated
+from xoutil.names import strlist as strs
+__all__ = strs('nameof', 'smart_getter', 'smart_getter_and_deleter', 'xdir',
+               'fdir', 'validate_attrs', 'get_first_of',
+               'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
+               'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy')
+del strs
 
 
 # These two functions can be use to always return True or False
@@ -40,7 +44,6 @@ _false = lambda * args, **kwargs: False
 
 # TODO: Deprecate and restructure all its uses
 @deprecated('xoutil.names.nameof')
-@__all__
 def nameof(target):
     '''Gets the name of an object.
 
@@ -56,7 +59,6 @@ def nameof(target):
         return wrapped(target, depth=2, inner=True, typed=True)
 
 
-@__all__
 def smart_getter(obj):
     '''Returns a getter for `obj`. If obj is Mapping, it returns the ``.get()``
     method bound to the object `obj`. Otherwise it returns a partial of
@@ -74,7 +76,6 @@ def smart_getter(obj):
 smart_get = deprecated(smart_getter)(smart_getter)
 
 
-@__all__
 def smart_getter_and_deleter(obj, **kwargs):
     '''Returns a function that get and deletes either a key or an attribute of
     obj depending on the type of `obj`.
@@ -97,7 +98,6 @@ smart_get_and_del = deprecated(smart_getter_and_deleter)(smart_getter_and_delete
 #       order to use only one argument ``filter`` instead the use of
 #       ``attr_filter`` and ``value_filter``.
 #       So, ``def xdir(obj, filter=None, getter=None):``
-@__all__
 def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
@@ -125,13 +125,11 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     return res
 
 
-@__all__
 def fdir(obj, attr_filter=None, value_filter=None, getter=None):
     '''Similar to :func:`xdir` but yields only the attributes names.'''
     return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getter))
 
 
-@__all__
 def validate_attrs(source, target, force_equals=(), force_differents=()):
     '''Makes a 'comparison' of `source` and `target` by its attributes (or
     keys).
@@ -187,7 +185,6 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     return res
 
 
-@__all__
 def get_first_of(source, *keys, **kwargs):
     '''Return the first occurrence of any of the specified keys in `source`.
 
@@ -272,7 +269,6 @@ def get_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
-@__all__
 def get_and_del_first_of(source, *keys, **kwargs):
     '''Similar to :func:`get_first_of` but uses either :func:`get_and_del_attr`
     or :func:`get_and_del_key` to get and del the first key.
@@ -327,7 +323,6 @@ def get_and_del_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
-@__all__
 def smart_getattr(name, *sources, **kwargs):
     '''Gets an attr by `name` for the first source that has it::
 
@@ -356,7 +351,6 @@ def smart_getattr(name, *sources, **kwargs):
     return get_first_of(sources, name, **kwargs)
 
 
-@__all__
 def get_and_del_attr(obj, name, default=None):
     '''Looks for an attribute in the `obj` and returns its value and removes
     the attribute. If the attribute is not found, `default` is returned
@@ -433,7 +427,6 @@ class lazy(object):
             return res
 
 
-@__all__
 def setdefaultattr(obj, name, value):
     '''Sets the attribute name to value if it is not set::
 
@@ -477,7 +470,6 @@ def setdefaultattr(obj, name, value):
 
 
 # TODO: Use "xoutil.names.nameof" with "full=True, inner=True, typed=True"
-@__all__
 def full_nameof(target):
     '''Gets the full name of an object:
 
@@ -522,7 +514,6 @@ def full_nameof(target):
         return res
 
 
-@__all__
 def copy_class(cls, meta=None, ignores=None, **new_attrs):
     '''Copies a class definition to a new class.
 
@@ -579,7 +570,6 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
 
 # Real signature is (*sources, target, filter=None) where target is a
 # positional argument, and not a keyword.
-@__all__
 def smart_copy(*args, **kwargs):
     '''Copies the first apparition of attributes (or keys) from `sources` to
     `target`.
