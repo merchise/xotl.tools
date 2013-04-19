@@ -39,9 +39,9 @@ from functools import wraps as _wraps, partial
 from xoutil import Unset
 from xoutil.compat import inspect_getfullargspec
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
+from xoutil.names import strlist as strs
+__all__ = strs('weave', 'StopExceptionChain')
+del strs
 
 
 __docstring_format__ = 'rst'
@@ -60,7 +60,6 @@ def wraps(target):
         return target
 
 
-@__all__
 class StopExceptionChain(Exception):
     pass
 
@@ -81,9 +80,10 @@ def _filter_args_byspec(method, *args, **kwargs):
     return (args, kwargs)
 
 
+# TODO: [manu] This is repeated in "xoutil.proxy"
 def _mro_getattr(obj, attr, default=Unset):
     '''Gets the attr from obj's MRO'''
-    from xoutil.objects import mro_dict
+    from xoutil.types import mro_dict
     unset = object()
     res = mro_dict(obj).get(attr, unset)
     if res is unset:
@@ -449,7 +449,6 @@ _aspect_method = lambda attr: any(attr.startswith(prefix) and attr != prefix
 _public = lambda attr: not attr.startswith('_')
 
 
-@__all__
 def weave(aspect, target, *ignored):
     '''Weaves an aspect into `target`. The weaving involves:
 
