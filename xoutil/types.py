@@ -36,10 +36,17 @@ del _pm, _copy_python_module_members
 from xoutil.compat import xrange_
 from xoutil.compat import pypy as _pypy
 from xoutil._values import UnsetType, Unset, Ignored as ignored
-from xoutil.deprecation import deprecated
+from collections import Mapping
 
-from xoutil.collections import mro_dict as _mro_dict
-mro_dict = deprecated(_mro_dict)(_mro_dict)
+
+from xoutil.names import strlist as strs
+__all__ = strs('mro_dict', 'UnsetType', 'Unset', 'ignored', 'DictProxyType',
+               'SlotWrapperType', 'is_iterable', 'is_collection',
+               'is_string_like', 'is_scalar', 'is_staticmethod',
+               'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
+               'is_module', 'Required')
+del strs
+
 
 #: The type of methods that are builtin in Python.
 #:
@@ -51,20 +58,42 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 DictProxyType = type(object.__dict__)
 
 
-from xoutil.names import strlist as strs
-__all__ = strs('UnsetType', 'Unset', 'ignored', 'DictProxyType',
-               'SlotWrapperType', 'is_iterable', 'is_collection',
-               'is_string_like', 'is_scalar', 'is_staticmethod',
-               'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
-               'is_module', 'Required')
-del strs
-
-
 if _pypy:
     class _foo(object):
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
     del _foo
+
+
+class mro_dict(Mapping):
+    '''An utility class that behaves like a read-only dict to query the
+    attributes in the MRO chain of a `target` class (or an object's class).
+
+    '''
+    def __init__(self, target):
+        t = target if hasattr(target, 'mro') else type(target)
+        self._target_mro = t.mro()
+
+    def __getitem__(self, name):
+        from xoutil.objects import get_first_of
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        result = get_first_of(probes, name, default=Unset)
+        if result is not Unset:
+            return result
+        else:
+            raise KeyError(name)
+
+    def __iter__(self):
+        res = []
+        probes = tuple(c.__dict__ for c in self._target_mro)
+        for probe in probes:
+            for key in probe:
+                if key not in res:
+                    res.append(key)
+                    yield key
+
+    def __len__(self):
+        return sum(1 for _ in self)
 
 
 def is_iterable(maybe):
@@ -157,7 +186,6 @@ def is_staticmethod(desc, name=Unset):
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
-    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, staticmethod)
@@ -181,7 +209,6 @@ def is_classmethod(desc, name=Unset):
     :param name: The name of the method, if the first argument is the class.
 
     '''
-    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, classmethod)
@@ -195,7 +222,6 @@ def is_instancemethod(desc, name=Unset):
 
     '''
     from types import FunctionType
-    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, FunctionType)
@@ -208,7 +234,6 @@ def is_slotwrapper(desc, name=Unset):
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
-    from xoutil.collections import mro_dict
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, SlotWrapperType)
