@@ -40,6 +40,40 @@ except:
     str_base = str
 
 
+def _key_for_value(target, value, strict=True):
+    '''Returns the key that has the "value" in dictionary "target".
+
+    if strict is True, then look first for the same object::
+        >>> from functools import partial
+        >>> x = {1}
+        >>> y = {1}
+        >>> search = partial(_key_for_value, {'x': x, 'y': y})
+        >>> search(x) == search(y)
+        False
+        >>> search(x, strict=False) == search(y, strict=False)
+        True
+
+    This is mainly intended to find object names in stack frame variables.
+
+    '''
+    keys = list(target)     # Get keys
+    i, found, equal = 0, False, None
+    while (i < len(keys)) and not found:
+        key = keys[i]
+        item = target[key]
+        if item is value:
+            found = key
+        elif item == value:
+            if strict:
+                equal = key
+                i += 1
+            else:
+                found = key
+        else:
+            i += 1
+    return found or equal
+
+
 def module_name(target):
     if target is None:
         target = ''
@@ -124,13 +158,12 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
             return str('@'.join((type_name, hex(id(target)))))
     else:
         import sys
-        from xoutil.collections import dict_key_for_value as search
         sf = sys._getframe(depth)
         try:
             res = False
             i, LIMIT = 0, 5   # Limit number of stack to recurse
             def getter(src):
-                key = search(l, target)
+                key = _key_for_value(l, target)
                 if key and full:
                     head = src.get('__name__')
                     if not head:

@@ -600,36 +600,3 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         '''
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)
-
-
-def dict_key_for_value(target, value, strict=True):
-    '''Returns the key that has the "value" in dictionary "target".
-
-    if strict is True, then look first for the same object::
-        >>> from functools import partial
-        >>> x = {1}
-        >>> y = {1}
-        >>> search = partial(dict_key_for_value, {'x': x, 'y': y})
-        >>> search(x) == search(y)
-        False
-        >>> search(x, strict=False) == search(y, strict=False)
-        True
-
-    '''
-    from xoutil import Unset
-    keys = list(target)     # Get keys
-    i, found, equal = 0, Unset, Unset
-    while (i < len(keys)) and (found is Unset):
-        key = keys[i]
-        item = target[key]
-        if item is value:
-            found = key
-        elif item == value:
-            if strict:
-                equal = key
-                i += 1
-            else:
-                found = key
-        else:
-            i += 1
-    return found if found is not Unset else equal
