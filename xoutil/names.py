@@ -34,8 +34,47 @@ __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
+try:
+    str_base = basestring
+except:
+    str_base = str
+
+
+def _key_for_value(target, value, strict=True):
+    '''Returns the key that has the "value" in dictionary "target".
+
+    if strict is True, then look first for the same object::
+        >>> from functools import partial
+        >>> x = {1}
+        >>> y = {1}
+        >>> search = partial(_key_for_value, {'x': x, 'y': y})
+        >>> search(x) == search(y)
+        False
+        >>> search(x, strict=False) == search(y, strict=False)
+        True
+
+    This is mainly intended to find object names in stack frame variables.
+
+    '''
+    keys = list(target)     # Get keys
+    i, found, equal = 0, False, None
+    while (i < len(keys)) and not found:
+        key = keys[i]
+        item = target[key]
+        if item is value:
+            found = key
+        elif item == value:
+            if strict:
+                equal = key
+                i += 1
+            else:
+                found = key
+        else:
+            i += 1
+    return found or equal
+
+
 def module_name(target):
-    from xoutil.compat import py3k, str_base
     if target is None:
         target = ''
     elif isinstance(target, str_base):
@@ -44,8 +83,7 @@ def module_name(target):
         res = getattr(target, '__module__', None)
         if res is None:
             res = getattr(type(target), '__module__', '')
-    if (res.startswith('__') or (py3k and (res == 'builtins')) or
-        (res == '<module>')):
+    if res.startswith('__') or (res in ('builtins', '<module>')):
         res = ''
     return str(res)
 
@@ -108,7 +146,6 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
 
     '''
     from numbers import Number
-    from xoutil.compat import str_base
     TYPED_NAME = '__name__'
     if typed and not hasattr(target, TYPED_NAME):
         target = type(target)
@@ -127,13 +164,12 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
             return str('@'.join((type_name, hex(id(target)))))
     else:
         import sys
-        from xoutil.collections import dict_key_for_value as search
         sf = sys._getframe(depth)
         try:
             res = False
             i, LIMIT = 0, 5   # Limit number of stack to recurse
             def getter(src):
-                key = search(l, target)
+                key = _key_for_value(l, target)
                 if key and full:
                     head = src.get('__name__')
                     if not head:
@@ -192,7 +228,7 @@ class namelist(list):
             from types import GeneratorType as gtype
             if isinstance(args[0], (tuple, list, set, frozenset, gtype)):
                 args = args[0]
-        super(namelist, self).__init__((nameof(arg, depth=2) for arg in args))
+        super(namelist, self).__init__(nameof(arg, depth=2) for arg in args)
 
     def __add__(self, other):
         other = [nameof(item, depth=2) for item in other]
@@ -236,4 +272,65 @@ class namelist(list):
         return list.remove(self, nameof(value, depth=2))
 
 
-__all__ = namelist(nameof, namelist)
+class strlist(list):
+    '''Similar to list, but only intended for storing ``str`` instances.
+
+    Constructors:
+        * strlist() -> new empty list
+        * strlist(collection) -> new list initialized from collection's items
+        * strlist(item, ...) -> new list initialized from severals items
+
+    Last versions of Python 2.x has a feature to use unicode as standard
+    strings, but some object names can be only ``str``. To be compatible with
+    Python 3.x in an easy way, use this list.
+    '''
+    def __init__(self, *args):
+        if len(args) == 1:
+            from types import GeneratorType as gtype
+            if isinstance(args[0], (tuple, list, set, frozenset, gtype)):
+                args = args[0]
+        super(strlist, self).__init__(str(arg) for arg in args)
+
+    def __add__(self, other):
+        other = [str(item) for item in other]
+        return super(strlist, self).__add__(other)
+    __iadd__ = __add__
+
+    def __contains__(self, target):
+        return super(strlist, self).__contains__(str(target))
+
+    def append(self, value):
+        '''l.append(value) -- append a name object to end'''
+        super(strlist, self).append(str(value))
+        return value    # What allow to use its instances as a decorator
+    __call__ = append
+
+    def extend(self, items):
+        '''l.extend(items) -- extend list by appending items from the iterable
+        '''
+        items = (str(item) for item in items)
+        return super(strlist, self).extend(items)
+
+    def index(self, value, *args):
+        '''l.index(value, [start, [stop]]) -> int -- return first index of name
+
+        Raises ValueError if the name is not present.
+
+        '''
+        return super(strlist, self).index(str(value), *args)
+
+    def insert(self, index, value):
+        '''l.insert(index, value) -- insert object before index
+        '''
+        return super(strlist, self).insert(index, str(value))
+
+    def remove(self, value):
+        '''l.remove(value) -- remove first occurrence of value
+
+        Raises ValueError if the value is not present.
+
+        '''
+        return list.remove(self, str(value))
+
+
+__all__ = strlist('nameof', 'namelist', 'strlist')

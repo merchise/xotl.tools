@@ -20,15 +20,14 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
+from xoutil.names import strlist as strs
+__all__ = strs('Progress')
+del strs
 
 
 _HELIX = '|/-\\'
 
 
-@__all__
 class Progress(object):
     '''
     Print a progress percent to the console. Also the elapsed and the

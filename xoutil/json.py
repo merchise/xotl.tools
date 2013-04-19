@@ -37,9 +37,11 @@ _pm = _copy_python_module_members()
 
 load = _pm.load
 
-from xoutil.names import namelist
-__all__ = namelist(getattr(_pm, '__all__', dir(_pm)))
-del namelist
+from xoutil.names import strlist as strs
+__all__ = strs('file_load')
+__all__.extend(getattr(_pm, '__all__', dir(_pm)))
+del strs, _copy_python_module_members
+
 
 class JSONEncoder(_pm.JSONEncoder):
     __doc__ = (_pm.JSONEncoder.__doc__ +
@@ -77,7 +79,6 @@ class JSONEncoder(_pm.JSONEncoder):
         return super(JSONEncoder, self).default(o)
 
 
-@__all__
 def file_load(filename):
     with file(filename, 'r') as f:
         return load(f)

@@ -24,17 +24,16 @@ from __future__ import (division as _py3_division,
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
-
 wraps = _pm.wraps
-from xoutil.names import namelist
-__all__ = namelist(getattr(_pm, '__all__', dir(_pm)))
-del _pm, _copy_python_module_members, namelist
+
+from xoutil.names import strlist as strs
+__all__ = strs('ctuple', 'compose', 'power', 'lru_cache')
+del _pm, _copy_python_module_members, strs
 
 from xoutil.compat import py32, callable
 from xoutil.deprecation import deprecated
 
 
-@__all__
 class ctuple(tuple):
     '''Simple tuple marker for :func:`compose`.
 
@@ -56,7 +55,6 @@ class ctuple(tuple):
     '''
 
 
-@__all__
 def compose(*funcs, **kwargs):
     '''Returns a function that is the composition of `funcs`.
 
@@ -88,7 +86,6 @@ def compose(*funcs, **kwargs):
 
 
 # The real signature should be (*funcs, times)
-@__all__
 def power(*args):
     '''Returns the "power" composition of several functions.
 
@@ -131,7 +128,6 @@ if not py32:
 
     # Back-ported lru_cache from py32. But take note that if running with at
     # least py32 we will use Python's version, so don't mess with internals.
-    @__all__
     def lru_cache(maxsize=100):
         '''Least-recently-used cache decorator.
 

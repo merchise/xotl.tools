@@ -20,15 +20,14 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
+from xoutil.names import strlist as strs
+__all__ = strs('uuid', )
+del strs
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-@__all__
 def uuid():
     '''Return a "Global Unique ID" as a string.'''
     from uuid import uuid1

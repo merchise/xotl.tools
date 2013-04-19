@@ -17,9 +17,9 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-from xoutil.names import namelist
-__all__ = namelist()
-del namelist
+from xoutil.names import strlist as strs
+__all__ = strs('B32', 'B64')
+del strs
 
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
@@ -78,7 +78,6 @@ class BaseConvertor(object):
         return result
 
 
-@__all__
 class B32(BaseConvertor):
     '''Handles base-32 convertions.
 
@@ -97,7 +96,6 @@ class B32(BaseConvertor):
     case_insensitive = True
 
 
-@__all__
 class B64(BaseConvertor):
     '''Handles [a kind of] base 64 convertions.
 
