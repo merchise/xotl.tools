@@ -79,6 +79,7 @@ def _filter_args_byspec(method, *args, **kwargs):
     return (args, kwargs)
 
 
+# TODO: [manu] This is repeated in "xoutil.proxy"
 def _mro_getattr(obj, attr, default=Unset):
     '''Gets the attr from obj's MRO'''
     from xoutil.types import mro_dict
