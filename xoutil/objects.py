@@ -45,8 +45,9 @@ _false = lambda * args, **kwargs: False
 def nameof(target):
     '''Gets the name of an object.
 
-    Original implementation is moved to "xoutil.names", this one must be
-    deprecated and restructure its all uses.
+    .. warning::
+
+       *Deprecated since version 1.4.0.* Use :func:`xoutil.names.nameof`.
 
     '''
     from xoutil.names import nameof as wrapped
