@@ -34,8 +34,13 @@ __docstring_format__ = 'rst'
 __author__ = 'med'
 
 
+try:
+    str_base = basestring
+except:
+    str_base = str
+
+
 def module_name(target):
-    from xoutil.compat import py3k, str_base
     if target is None:
         target = ''
     elif isinstance(target, str_base):
@@ -44,8 +49,7 @@ def module_name(target):
         res = getattr(target, '__module__', None)
         if res is None:
             res = getattr(type(target), '__module__', '')
-    if (res.startswith('__') or (py3k and (res == 'builtins')) or
-        (res == '<module>')):
+    if res.startswith('__') or (res in ('builtins', '<module>')):
         res = ''
     return str(res)
 
@@ -102,7 +106,6 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
 
     '''
     from numbers import Number
-    from xoutil.compat import str_base
     TYPED_NAME = '__name__'
     if typed and not hasattr(target, TYPED_NAME):
         target = type(target)
