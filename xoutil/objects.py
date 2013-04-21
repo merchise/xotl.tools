@@ -582,7 +582,7 @@ def smart_copy(*args, **kwargs):
     :param defaults: Defaults the attributes to be copied as explained
                    below. Defaults to False.
 
-    :type defaults: Either True, False, a dictionary or a callable.
+    :type defaults: Either a bool, a dictionary or a callable.
 
     .. note::
 

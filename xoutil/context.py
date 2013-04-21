@@ -33,6 +33,9 @@ from threading import local
 from xoutil.decorator.compat import metaclass
 from xoutil.collections import StackedDict
 
+from xoutil.names import strlist as strs
+__all__ = strs('Context', 'context', 'NulContext')
+del strs
 
 class LocalData(local):
     def __init__(self):
@@ -64,6 +67,7 @@ class MetaContext(type(StackedDict)):
 
         '''
         return bool(self[name])
+
 
 @metaclass(MetaContext)
 class Context(StackedDict):
@@ -166,6 +170,7 @@ class Context(StackedDict):
 
 # A simple alias for Context
 context = Context
+__all__.append('context')
 
 
 class NullContext(object):

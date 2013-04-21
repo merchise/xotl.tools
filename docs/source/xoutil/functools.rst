@@ -2,8 +2,10 @@
 ===================================================================================
 
 .. automodule:: xoutil.functools
-   :members: compose, lru_cache
+   :members: lru_cache
 
-.. autofunction:: pow_(*funcs, times)
+.. autofunction:: compose(*funcs, math=True)
+
+.. autofunction:: power(*funcs, times)
 
 .. autoclass:: ctuple

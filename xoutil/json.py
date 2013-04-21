@@ -37,13 +37,10 @@ _pm = _copy_python_module_members()
 
 load = _pm.load
 
-from decimal import Decimal as _Decimal
-from xoutil.types import is_iterable
-from xoutil.datetime import (is_datetime as _is_datetime,
-                             new_datetime as _new_datetime,
-                             is_date as _is_date,
-                             new_date as __new_date,
-                             is_time as _is_time)
+from xoutil.names import strlist as strs
+__all__ = strs('file_load')
+__all__.extend(getattr(_pm, '__all__', dir(_pm)))
+del strs, _copy_python_module_members
 
 
 class JSONEncoder(_pm.JSONEncoder):
@@ -59,6 +56,14 @@ class JSONEncoder(_pm.JSONEncoder):
     TIME_FORMAT = "%H:%M:%S"
 
     def default(self, o):
+        from decimal import Decimal as _Decimal
+        from xoutil.types import is_iterable
+        from xoutil.datetime import (is_datetime as _is_datetime,
+                                     new_datetime as _new_datetime,
+                                     is_date as _is_date,
+                                     new_date as __new_date,
+                                     is_time as _is_time)
+
         if _is_datetime(o):
             d = _new_datetime(o)
             return d.strftime("%s %s" % (self.DATE_FORMAT, self.TIME_FORMAT))
@@ -78,7 +83,5 @@ def file_load(filename):
     with file(filename, 'r') as f:
         return load(f)
 
-
-__all__ = tuple(_pm.__all__) + (str('file_load'),)
 
 del _pm

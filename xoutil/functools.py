@@ -24,15 +24,35 @@ from __future__ import (division as _py3_division,
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
-
 wraps = _pm.wraps
-del _pm, _copy_python_module_members
+
+from xoutil.names import strlist as strs
+__all__ = strs('ctuple', 'compose', 'power', 'lru_cache')
+del _pm, _copy_python_module_members, strs
 
 from xoutil.compat import py32, callable
+from xoutil.deprecation import deprecated
 
 
 class ctuple(tuple):
-    '''Simple tuple marker for :func:`compose`.'''
+    '''Simple tuple marker for :func:`compose`.
+
+    Since is a callable you may use it directly in ``compose`` instead of
+    changing your functions to returns ctuples instead of tuples::
+
+       >>> def compat_print(*args):
+       ...     for arg in args:
+       ...         print arg,
+       ...     print
+
+       >>> compose(compat_print, ctuple, list, range, math=False)(10)
+       0 1 2 3 4 5 6 7 8 9
+
+       # Without ctuple prints the list
+       >>> compose(compat_print, list, range, math=False)(10)
+       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    '''
 
 
 def compose(*funcs, **kwargs):
@@ -49,18 +69,6 @@ def compose(*funcs, **kwargs):
                  function composition: last function in `funcs` is applied
                  last. If False, then the last function in `func` is applied
                  first.
-
-    Example::
-
-        >>> import operator
-        >>> compose(operator.mul, operator.neg)(3, 4)
-        -12
-
-        >>> compose(operator.neg, operator.mul, math=False)(3, 4)
-        -12
-
-        >>> operator.neg(operator.mul(3, 4))
-        -12
     '''
     math = kwargs.get('math', True)
     if not math:
@@ -78,7 +86,7 @@ def compose(*funcs, **kwargs):
 
 
 # The real signature should be (*funcs, times)
-def pow_(*args):
+def power(*args):
     '''Returns the "power" composition of several functions.
 
     Examples::
@@ -109,6 +117,9 @@ def pow_(*args):
     else:
         base = (funcs[0], )
     return compose(*(base * times))
+
+
+pow_ = __all__(deprecated(power)(power))
 
 
 if not py32:

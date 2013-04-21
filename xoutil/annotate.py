@@ -20,10 +20,16 @@ from __future__ import (division as _py3_division,
 
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
+
 from xoutil.compat import str_base as _str_base
 from xoutil.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
+
 from xoutil.decorator.meta import decorator
+
+from xoutil.names import strlist as strs
+__all__ = strs('annotate')
+del strs
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'

@@ -3,23 +3,11 @@
 #----------------------------------------------------------------------
 # xoutil.names
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement
+# Copyright (c) 2013 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License (GPL) as published by the
-# Free Software Foundation;  either version 2  of  the  License, or (at
-# your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-# MA 02110-1301, USA.
+# the terms of the LICENCE attached in the distribution package.
 #
 # Created on 15 avr. 2013
 
@@ -91,6 +79,9 @@ def module_name(target):
 def nameof(target, depth=1, inner=False, typed=False, full=False):
     '''Gets the name of an object.
 
+    .. versionadded:: 1.4.0
+
+
     The name of an object is normally the variable name in the calling stack::
 
         >>> from collections import OrderedDict as sorted_dict
@@ -109,8 +100,10 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> sd = sorted_dict(x=1, y=2)
         >>> nameof(sd)
         'sd'
+
         >>> nameof(sd, typed=True)
         'sorted_dict'
+
         >>> nameof(sd, inner=True, typed=True)
         'OrderedDict'
 
@@ -120,13 +113,17 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> s = 'foobar'
         >>> nameof(s)
         's'
+
         >>> nameof(s, inner=True)
         'foobar'
+
         >>> i = 1
         >>> nameof(i)
         'i'
+
         >>> nameof(i, inner=True)
         '1'
+
         >>> nameof(i, typed=True)
         'int'
 
@@ -136,7 +133,7 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> str(id(sd)) in nameof(sd, inner=True)
         True
 
-    - :param:`depth`: level of stack frames to look up, if needed.
+    :param depth: Amount of stack levels to skip if needed.
 
     '''
     from numbers import Number
@@ -200,16 +197,21 @@ class namelist(list):
     '''Similar to list, but only intended for storing object names.
 
     Constructors:
-        * namelist() -> new empty list
-        * namelist(collection) -> new list initialized from collection's items
-        * namelist(item, ...) -> new list initialized from severals items
 
-    Instances can be used as decorator to store names of module items
+    * namelist() -> new empty list
+    * namelist(collection) -> new list initialized from collection's items
+    * namelist(item, ...) -> new list initialized from severals items
+
+    Instances can be used as decorators to store names of module items
     (functions or classes)::
+
         >>> __all__ = namelist()
         >>> @__all__
         ... def foobar(*args, **kwargs):
         ...     'Automatically added to this module "__all__" names.'
+
+        >>> 'foobar' in __all__
+        True
 
     '''
     def __init__(self, *args):

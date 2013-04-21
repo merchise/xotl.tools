@@ -40,7 +40,10 @@ from __future__ import (division as _py3_division,
 from types import MethodType, FunctionType
 from contextlib import contextmanager
 
-from xoutil.objects import xdir
+from xoutil.names import strlist as strs
+__all__ = strs('complementor', 'contextualized', 'inject_dependencies',
+               'weaved')
+del strs
 
 __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
@@ -180,7 +183,6 @@ def complementor(*sources, **attrs):
 
     _update(attrs, *sources)
     return inner
-
 
 
 def contextualized(context, *sources, **attrs):

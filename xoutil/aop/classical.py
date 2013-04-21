@@ -39,12 +39,13 @@ from functools import wraps as _wraps, partial
 from xoutil import Unset
 from xoutil.compat import inspect_getfullargspec
 
+from xoutil.names import strlist as strs
+__all__ = strs('weave', 'StopExceptionChain')
+del strs
+
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
-
-
-__all__ = (str('StopExceptionChain'), str('weave'))
 
 
 def wraps(target):
