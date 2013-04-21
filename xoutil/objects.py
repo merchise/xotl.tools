@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.objutil
+# xoutil.objects
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
@@ -570,6 +570,7 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
 
 # Real signature is (*sources, target, filter=None) where target is a
 # positional argument, and not a keyword.
+# TODO: First look up "target" in keywords and then in positional arguments.
 def smart_copy(*args, **kwargs):
     '''Copies the first apparition of attributes (or keys) from `sources` to
     `target`.
@@ -578,7 +579,7 @@ def smart_copy(*args, **kwargs):
 
     :param target: The object to fill.
 
-    :param defaults: Defaultss the attributes to be copied as explained
+    :param defaults: Defaults the attributes to be copied as explained
                    below. Defaults to False.
 
     :type defaults: Either True, False, a dictionary or a callable.
