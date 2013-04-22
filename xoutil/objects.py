@@ -571,6 +571,7 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
 # Real signature is (*sources, target, filter=None) where target is a
 # positional argument, and not a keyword.
 # TODO: First look up "target" in keywords and then in positional arguments.
+# FIXME: This doesn't work with a dict as a source.
 def smart_copy(*args, **kwargs):
     '''Copies the first apparition of attributes (or keys) from `sources` to
     `target`.
