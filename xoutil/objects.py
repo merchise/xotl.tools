@@ -24,14 +24,13 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
-from collections import Mapping
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as strs
 __all__ = strs('nameof', 'smart_getter', 'smart_getter_and_deleter', 'xdir',
                'fdir', 'validate_attrs', 'get_first_of',
                'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
-               'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy', 
+               'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy',
                'extract_attrs')
 del strs
 
@@ -635,7 +634,7 @@ def smart_copy(*args, **kwargs):
     '''
     from collections import Mapping, MutableMapping
     from xoutil.compat import callable
-    from xoutil.types import Unset, Required
+    from xoutil.types import Unset, Required, DictProxyType
     from xoutil.types import FunctionType as function
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
@@ -659,6 +658,9 @@ def smart_copy(*args, **kwargs):
     if isinstance(target, (bool, type(None), int, float)):
         raise TypeError('target should be a mutable object, not %s' %
                         type(target))
+    if not isinstance(defaults, (Mapping, bool)) and not callable(defaults):
+        raise TypeError('defaults should be either a Mapping, a bool or a '
+                        'callable, not %s' % type(defaults))
     if isinstance(target, MutableMapping):
         def setter(key, val):
             target[key] = val
@@ -667,7 +669,7 @@ def smart_copy(*args, **kwargs):
             if is_valid_identifier(key):
                 setattr(target, key, val)
     is_mapping = isinstance(defaults, Mapping)
-    if is_mapping or not (isinstance(defaults, bool) or callable(defaults)):
+    if is_mapping:
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:
@@ -680,11 +682,14 @@ def smart_copy(*args, **kwargs):
                     raise exc
             setter(key, val)
     else:
-        assert isinstance(defaults, bool) or callable(defaults)
         keys = []
         for source in sources:
             get = smart_getter(source)
-            for key in dir(source):
+            if isinstance(source, (Mapping, DictProxyType)):
+                items = (name for name in source)
+            else:
+                items = dir(source)
+            for key in items:
                 if defaults is False and key.startswith('_'):
                     copy = False
                 elif isinstance(defaults, function):

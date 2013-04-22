@@ -56,3 +56,10 @@ def test_smart_copy_signature():
         smart_copy({}, defaults=False)
     with pytest.raises(TypeError):
         smart_copy({}, False)
+
+
+def test_smart_copy_from_dict_to_dict():
+    c = dict(c=1, d=23)
+    d = dict(d=1)
+    smart_copy(c, d)
+    assert d == dict(c=1, d=23)
