@@ -585,7 +585,7 @@ def smart_copy(*args, **kwargs):
     :param defaults: Default values for the attributes to be copied as explained
                      below. Defaults to False.
 
-    :type defaults: Either a bool, a dictionary or a callable.
+    :type defaults: Either a bool, a dictionary, an iterable or a callable.
 
     .. note::
 
@@ -594,34 +594,37 @@ def smart_copy(*args, **kwargs):
     If `defaults` is not provided as a keyword argument, and there are at least
     3 positional arguments and the last positional argument is either None,
     True, False or a *function*, then `target` is the next-to-last positional
+    argument and `defaults` is the last positional argument. Notice that
+    passing a callable that is not a function is possible only with a keyword
     argument.
 
-    If `defaults` is a dictionary or an iterable then only the keys provided by
-    itering over `defaults` will be copied. If it's a dictionary, and one of
-    its key is not found in the `sources`, then the value of the key in the
-    dictionary is copied to `target` unless:
+    If `defaults` is a dictionary or an iterable then only the names provided
+    by itering over `defaults` will be copied. If `defaults` is a dictionary,
+    and one of its key is not found in any of the `sources`, then the value of
+    the key in the dictionary is copied to `target` unless:
 
     - It's the value :class:`xoutil.types.Required` or an instance of Required.
 
     - An exception object
 
-    - A sequence with is first value being a subclass of Exception.
+    - A sequence with is first value being a subclass of Exception. In which
+      case :class:`xoutil.data.adapt_exception` is used.
 
     In these cases a KeyError is raised if the key is not found in the sources.
 
-    If `default` is an iterable and a `key` is not found in sources, None is
-    copied to `target`.
+    If `default` is an iterable and a key is not found in any of the sources,
+    None is copied to `target`.
 
     If `defaults` is a callable then it should receive one positional arguments
     for the current `attribute name` and several keyword arguments (we pass
     ``source``) and return either True or False if the attribute should be
     copied.
 
-    If `defaults` is False only the attributes that do not start with a "_" are
-    copied, if it's True all attributes are copied.
+    If `defaults` is False (or None) only the attributes that do not start with
+    a "_" are copied, if it's True all attributes are copied.
 
-    When `target` is not a mapping (other Python objects) only valid
-    identifiers will be copied.
+    When `target` is not a mapping only valid Python identifiers will be
+    copied.
 
     Each `source` is considered a mapping if it's an instance of
     `collections.Mapping` or a DictProxyType.
