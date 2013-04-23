@@ -587,16 +587,20 @@ def smart_copy(*args, **kwargs):
 
     :type defaults: Either a bool, a dictionary, an iterable or a callable.
 
-    .. note::
+    Every `sources` and `target` are always positional arguments. There should
+    be at least one source. `target` will always be the last positional
+    argument, unless:
 
-       Both `sources` and `target` are always positional arguments.
+    - `defaults` is not provided as a keyword argument, and
 
-    If `defaults` is not provided as a keyword argument, and there are at least
-    3 positional arguments and the last positional argument is either None,
-    True, False or a *function*, then `target` is the next-to-last positional
-    argument and `defaults` is the last positional argument. Notice that
-    passing a callable that is not a function is possible only with a keyword
-    argument.
+    - there are at least 3 positional arguments and
+
+    - the last positional argument is either None, True, False or a *function*,
+
+    then `target` is the next-to-last positional argument and `defaults` is the
+    last positional argument. Notice that passing a callable that is not a
+    function is possible only with a keyword argument. If this is too
+    confusing, pass `defaults` as a keyword argument.
 
     If `defaults` is a dictionary or an iterable then only the names provided
     by itering over `defaults` will be copied. If `defaults` is a dictionary,
@@ -680,7 +684,7 @@ def smart_copy(*args, **kwargs):
                     val = None
                 exc = adapt_exception(val, key=key)
                 if exc or val is Required or isinstance(val, Required):
-                    raise exc
+                    raise KeyError(key)
             setter(key, val)
     else:
         keys = []
