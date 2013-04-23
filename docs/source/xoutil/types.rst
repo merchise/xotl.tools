@@ -5,14 +5,14 @@
    :members: is_iterable, is_collection, is_scalar, is_string_like, is_module,
 	     is_classmethod, is_staticmethod, is_instancemethod,
 	     is_slotwrapper, UnsetType, DictProxyType, SlotWrapperType,
-	     Required
+	     Required, mro_dict
 
 
 
 .. _types-140-refactor:
 
-Importing `Unset`, `ignored`, and `mro_dict`
---------------------------------------------
+Importing `Unset` and `ignored`
+-------------------------------
 
 The values `Unset` and `ignored` are not types neither functions that test for
 types. They are values and are moved out of this module. Nevertheless, they
@@ -36,14 +36,3 @@ will remain importable from this module up to version 1.5.0.
 		1.4.0. You must import `Ignored` from `xoutil` directly::
 
 		    from xoutil import Ignored
-
-
-Likewise `mro_dict` does not fit the purpose of the this module. It has being
-moved to :class:`xoutil.objects <xoutil.objects.mro_dict>`.
-
-.. autoclass:: mro_dict
-
-   .. warning:: Importing mro_dict from :mod:`!xoutil.types` is deprecated
-		since 1.4.0.
-
-		You must import it from :mod:`xoutil.objects`.
