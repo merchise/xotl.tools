@@ -341,6 +341,7 @@ def smart_getattr(name, *sources, **kwargs):
         >>> smart_getattr('foo', inst, somedict)
         'bar2'
 
+        >>> from xoutil import Unset
         >>> smart_getattr('fail', somedict, inst) is Unset
         True
 
