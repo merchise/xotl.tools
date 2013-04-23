@@ -639,6 +639,7 @@ def smart_copy(*args, **kwargs):
     from xoutil.compat import callable
     from xoutil.types import Unset, Required, DictProxyType
     from xoutil.types import FunctionType as function
+    from xoutil.types import is_collection
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
     defaults = get_and_del_key(kwargs, 'defaults', default=Unset)
@@ -669,7 +670,7 @@ def smart_copy(*args, **kwargs):
             if is_valid_identifier(key):
                 setattr(target, key, val)
     is_mapping = isinstance(defaults, Mapping)
-    if is_mapping:
+    if is_mapping or is_collection(defaults):
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:

@@ -63,3 +63,11 @@ def test_smart_copy_from_dict_to_dict():
     d = dict(d=1)
     smart_copy(c, d)
     assert d == dict(c=1, d=23)
+
+
+
+def test_smart_copy_with_plain_defaults():
+    c = dict(a=1, b=2, c=3)
+    d = {}
+    smart_copy(c, d, defaults=('a', 'x'))
+    assert d == dict(a=1, x=None)
