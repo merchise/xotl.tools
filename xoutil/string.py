@@ -228,22 +228,6 @@ def capitalize(value, title=True):
         return empty
 
 
-def normalize_str_collection(items):
-    '''Normalize a collection expecting ``str`` members.
-
-     This is mostly intended for incompatibilities using Python 3 ``unicode``
-     strings in Python 2 by importing ``__future__.unicode_literals``. Type and
-     module names are expected to be ``str`` (not ``unicode`` as declared with
-     normal literal string in this context).
-    '''
-    if not _py3k:
-        std_types = (tuple, set, frozenset)
-        rt = type(items) if isinstance(items, std_types) else list
-        return rt(str(item) for item in items)
-    else:
-        return items
-
-
 def normalize_unicode(value):
     # FIXME: i18n
     if (value is None) or (value is b''):
@@ -343,26 +327,3 @@ def force_str(value, encoding=None):
         return safe_encode(value, encoding)
     else:
         return safe_decode(value, encoding)
-
-
-@_deprecated(force_str)
-def normalize_to_str(value, encoding='utf-8'):
-    '''
-    .. warning:: Deprecated since 1.2.0
-    '''
-    # FIXME: Wrong in Py3, with some similar to `force_str` would be enough
-    if type(value) is bytes:
-        return value
-    elif type(value) is _unicode:
-        return value.encode(encoding)
-
-
-# TODO: [manu] This must be removed
-def names(*strings):
-    '''Returns all `strings` as a tuple of type-valid identifiers.
-
-    This helps compatibility between Python 2 and 3 for those modules
-    where you have `unicode_literals` from ``__future__`` in Python 2.
-    '''
-    return tuple(str(name) for name in strings)
-

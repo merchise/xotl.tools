@@ -29,3 +29,6 @@
 - Fixes a bug with :func:`xoutil.deprecation.deprecated` when used with
   classes: It changed the hierarchy and provoked infinite recursion in methods
   that use `super`.
+
+- Removed :func:`!xoutil.string.names`, :func:`!xoutil.string.normalize_to_str`
+  and :func:`!xoutil.string.normalize_str_collection`.
