@@ -636,7 +636,7 @@ def smart_copy(*args, **kwargs):
 
     '''
     from collections import Mapping, MutableMapping
-    from xoutil.compat import callable
+    from xoutil.compat import callable, str_base
     from xoutil.types import Unset, Required, DictProxyType
     from xoutil.types import FunctionType as function
     from xoutil.types import is_collection
@@ -659,7 +659,7 @@ def smart_copy(*args, **kwargs):
         sources, target = args[:-1], args[-1]
     if not sources:
         raise TypeError('smart_copy requires at least one source')
-    if isinstance(target, (bool, type(None), int, float)):
+    if isinstance(target, (bool, type(None), int, float, str_base)):
         raise TypeError('target should be a mutable object, not %s' %
                         type(target))
     if isinstance(target, MutableMapping):
