@@ -112,7 +112,7 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     :param value_filter: *optional* A filter for attribute values.
 
     :param getter: *optional* A function with the same signature that
-                    ``getattr`` to be used to get the values from `obj`.
+                   ``getattr`` to be used to get the values from `obj`.
 
     If neither `attr_filter` nor `value_filter` are given, all `(attr, value)`
     are generated.
