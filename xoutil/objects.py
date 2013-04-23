@@ -473,35 +473,14 @@ def setdefaultattr(obj, name, value):
 
 
 # TODO: Use "xoutil.names.nameof" with "full=True, inner=True, typed=True"
+@deprecated('xoutil.names.nameof')
 def full_nameof(target):
     '''Gets the full name of an object:
 
-    - The name of a string is the same string::
+    .. warning::
 
-        >>> full_nameof('manuel')
-        'manuel'
-
-    - The name of an object with a ``__name__`` attribute is its
-      value::
-
-        >>> full_nameof(type)
-        'type'
-
-        >>> class Someclass: pass
-        >>> full_nameof(Someclass) == 'xoutil.objects.Someclass'
-        True
-
-    - The name of any other object is the ``__name__`` of the its
-      type::
-
-        >>> full_nameof([1, 2])
-        'list'
-
-        >>> full_nameof((1, 2))
-        'tuple'
-
-        >>> full_nameof({})
-        'dict'
+       *Deprecated since 1.4.0*. Use :func:`xoutil.names.nameof` with the
+       `full` argument.
 
     '''
     from xoutil.compat import py3k, str_base

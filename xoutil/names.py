@@ -84,7 +84,7 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
 
     The name of an object is normally the variable name in the calling stack::
 
-        >>> from collections import OrderedDict as sorted_dict
+        >>> from xoutil.collections import OrderedDict as sorted_dict
         >>> nameof(sorted_dict)
         'sorted_dict'
 
@@ -133,6 +133,18 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
 
         >>> hex(id(sd)) in nameof(sd, inner=True)
         True
+
+    If `full` is True, then the module where the name if defined is
+    prefixed. Examples::
+
+        >>> nameof(sd, full=True)
+        'xoutil.names.sd'
+
+        >>> nameof(sd, typed=True, full=True)
+        'xoutil.names.sorted_dict'
+
+        >>> nameof(sd, inner=True, typed=True, full=True)  # doctest: +ELLIPSIS
+        '...collections.OrderedDict'
 
     :param depth: Amount of stack levels to skip if needed.
 

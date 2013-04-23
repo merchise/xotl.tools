@@ -32,6 +32,8 @@ from __future__ import (division as _py3_division,
 __docstring_format__ = 'rst'
 __author__ = 'med'
 
+from xoutil.collections import OrderedSmartDict
+
 
 def test_nameof():
     from xoutil.names import nameof
@@ -50,3 +52,28 @@ def test_nameof():
     assert nameof(i, inner=True) == '1'
     assert nameof(i, typed=True) == 'int'
     assert hex(id(sd)) in nameof(sd, inner=True)
+
+
+
+def test_fullnameof():
+    from xoutil.names import nameof
+    from collections import OrderedDict as sorted_dict
+    assert nameof(sorted_dict, full=True) == 'test_fullnameof.sorted_dict'
+    assert nameof(sorted_dict, inner=True, full=True) == 'collections.OrderedDict'
+    sd = sorted_dict(x=1, y=2)
+    assert nameof(sd, full=True) == 'test_fullnameof.sd'
+    assert nameof(sd, typed=True, full=True) == 'test_fullnameof.sorted_dict'
+    assert nameof(sd, inner=True, typed=True, full=True) == 'collections.OrderedDict'
+
+
+def test_fullnameof_no_rename():
+    from xoutil.names import nameof
+    from collections import OrderedDict
+    assert nameof(OrderedDict, full=True) == 'test_fullnameof_no_rename.OrderedDict'
+    assert nameof(OrderedDict, inner=True, full=True) == 'collections.OrderedDict'
+
+def test_module_level_name():
+    from xoutil.names import nameof
+    assert nameof(OrderedSmartDict) == 'OrderedSmartDict'
+    assert nameof(OrderedSmartDict, typed=True) == 'OrderedSmartDict'
+    assert nameof(OrderedSmartDict, full=True) == 'xoutil.collections.OrderedSmartDict'
