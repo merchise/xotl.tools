@@ -60,6 +60,10 @@ def test_metaclass_decorator_with_slots():
 
     @metaclass(Meta)
     class Ok(object):
+        def __init__(self, **kwargs):
+            self.__dict__ = kwargs
+
+
         @classmethod
         def clmethod(cls):
             return cls
@@ -85,7 +89,8 @@ def test_metaclass_decorator_with_slots():
     except:
         assert False, 'Should have raised AttributeError'
 
-    ok = Ok()
+    ok = Ok(name='ok')
     assert ok.stmethod(ok) == ok
     assert ok.clmethod() == Ok
     assert ok.echo(1) == (ok, 1)
+    assert ok.name == 'ok'
