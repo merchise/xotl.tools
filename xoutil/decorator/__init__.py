@@ -31,21 +31,29 @@ from types import FunctionType as function
 from .meta import decorator as _decorator
 
 
+from xoutil.names import strlist as strs
+__all__ = strs('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
+               'assignment_operator', 'instantiate', 'memoized_property',
+               'memoized_instancemethod', 'reset_memoized')
+del strs
+
+
 @wraps(_decorator)
 def decorator(caller):
     import warnings
-    msg = ('xoutil.decorators.decorator has being moved to xoutil.mdeco.decorator, and '
-           'it will be removed from this module in the future.')
+    msg = ('xoutil.decorators.decorator has being moved to '
+           'xoutil.mdeco.decorator, and it will be removed from this module '
+           'in the future.')
     warnings.warn(msg, stacklevel=2)
     return _decorator(caller)
 
 
 class AttributeAlias(object):
-    '''
-    Descriptor to create aliases for object attributes.
+    '''Descriptor to create aliases for object attributes.
 
     This descriptor is mainly to be used internally by :func:`aliases`
     decorator.
+
     '''
 
     def __init__(self, attr_name):
@@ -63,9 +71,8 @@ class AttributeAlias(object):
 
 
 def settle(**kwargs):
-    '''
-    Returns a decorator that sets different attribute values to the decorated
-    target (function or class)::
+    '''Returns a decorator that sets different attribute values to the
+    decorated target (function or class)::
 
         >>> @settle(name='Name')
         ... class Person(object):
@@ -83,8 +90,7 @@ def settle(**kwargs):
 
 
 def namer(name, **kwargs):
-    '''
-    Similar to :func:`settle`, but always consider first argument as *the
+    '''Similar to :func:`settle`, but always consider first argument as *the
     name* (i.e, assigned to `__name__`)::
 
         >>> @namer('Identity', custom=1)
@@ -100,26 +106,36 @@ def namer(name, **kwargs):
     return settle(__name__=name, **kwargs)
 
 
-def aliases(**kwargs):
-    '''
-    In a class, create an :class:`AttributeAlias` descriptor for each
+def aliases(*names, **kwargs):
+    '''In a class, create an :class:`AttributeAlias` descriptor for each
     definition as keyword argument (alias=existing_attribute).
+
+    If "names" are given, then the definition context is looked and are
+    assigned to it the same decorator target with all new names::
+
+        >>> @aliases('foo', 'bar')
+        ... def foobar(*args):
+        ...     'This function is added to its module with two new names.'
+
     '''
     def inner(target):
+        '''Direct closure decorator that settle several attribute aliases.
         '''
-        Direct closure decorator that settle several attribute aliases.
-        '''
-        assert isinstance(target, type), '"target" must be a class.'
-        for alias, field in kwargs.iteritems():
-            setattr(target, alias, AttributeAlias(field))
+        if names:
+            _locals = sys._getframe(1).f_locals
+            for name in names:
+                _locals[str(name)] = target
+        if kwargs:
+            assert isinstance(target, type), '"target" must be a class.'
+            for alias, field in kwargs.iteritems():
+                setattr(target, alias, AttributeAlias(field))
         return target
     return inner
 
 
 @_decorator
 def assignment_operator(func, maybe_inline=False):
-    '''
-    Makes a function that receives a name, and other args to get its first
+    '''Makes a function that receives a name, and other args to get its first
     argument (the name) from an assigment operation, meaning that it if its
     used in a single assignment statement the name will be taken from the left
     part of the ``=`` operator.
@@ -138,9 +154,10 @@ def assignment_operator(func, maybe_inline=False):
 
     @wraps(func)
     def inner(*args):
-        filename, lineno, funcname, sourcecode_lines, index = inspect.getframeinfo(sys._getframe(1))
+        frm = sys._getframe(1)
+        filename, line, funcname, src_lines, idx = inspect.getframeinfo(frm)
         try:
-            sourceline = sourcecode_lines[index].strip()
+            sourceline = src_lines[idx].strip()
             parsed_line = ast.parse(sourceline, filename).body[0]
             assert maybe_inline or isinstance(parsed_line, ast.Assign)
             if isinstance(parsed_line, ast.Assign):
@@ -159,14 +176,13 @@ def assignment_operator(func, maybe_inline=False):
             else:
                 return func(*args)
         finally:
-            del filename, lineno, funcname, sourcecode_lines, index
+            del filename, line, funcname, src_lines, idx
     return inner
 
 
 @_decorator
 def instantiate(target, *args, **kwargs):
-    '''
-    Some singleton classes must be instantiated as part of its declaration
+    '''Some singleton classes must be instantiated as part of its declaration
     because they represents singleton objects.
 
     Every argument, positional or keyword, is passed as such when invoking the
@@ -266,20 +282,6 @@ class memoized_instancemethod(object):
 
 def reset_memoized(instance, name):
     instance.__dict__.pop(name, None)
-
-
-__all__ = (str('settle'),
-           str('namer'),
-           str('aliases'),
-           str('decorator'),
-           str('instantiate'),
-           str('AttributeAlias'),
-           str('assignment_operator'),
-           str('FunctionMaker'),
-           str('signature_keeping_decorator'),
-           str('memoized_property'),
-           str('memoized_instancemethod'),
-           str('reset_memoized'))
 
 
 if __name__ == '__main__':

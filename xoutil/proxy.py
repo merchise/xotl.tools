@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xotl.models.ql.proxy
+# xoutil.proxy
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
@@ -30,17 +30,15 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-
+from xoutil import Unset
 from xoutil.context import context
 from xoutil.aop import complementor
-from xoutil.types import Unset
-from xoutil.string import names as _names
+
+from xoutil.names import strlist as strs
+__all__ = strs('SUPPORTED_OPERATIONS', 'proxify')
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
-
-
-__all__ = _names('SUPPORTED_OPERATIONS', 'proxify')
 
 
 class UNPROXIFING_CONTEXT(object):
@@ -52,34 +50,25 @@ class UNPROXIFING_CONTEXT(object):
     '''
 
 
-SUPPORTED_UNARY_OPERATIONS = _names('__pos__', '__abs__', '__neg__',
+SUPPORTED_UNARY_OPERATIONS = strs('__pos__', '__abs__', '__neg__',
                                     '__invert__',)
 
 
-SUPPORTED_BINARY_LOGICAL_OPERATIONS = _names('__and__', '__or__', '__xor__',
-                                             '__lt__', '__le__', '__gt__',
-                                             '__ge__', '__eq__', '__ne__',
-                                             '__rand__', '__ror__', '__rxor__',
-                                             '__iand__', '__ior__', '__ixor__',)
+SUPPORTED_BINARY_LOGICAL_OPERATIONS = strs('__and__', '__or__', '__xor__',
+    '__lt__', '__le__', '__gt__', '__ge__', '__eq__', '__ne__', '__rand__',
+    '__ror__', '__rxor__', '__iand__', '__ior__', '__ixor__')
 
 
-SUPPORTED_BINARY_ARITH_OPERATIONS = _names('__add__', '__sub__', '__mul__',
-                                           '__div__', '__mod__', '__pow__',
-                                           '__truediv__', '__floordiv__',
-                                           '__lshift__', '__rshift__',
-
-                                           '__radd__', '__rsub__', '__rmul__',
-                                           '__rdiv__', '__rmod__', '__rpow__',
-                                           '__rtruediv__', '__rfloordiv__',
-                                           '__rlshift__', '__rrshift__',
-
-                                           '__iadd__', '__isub__', '__imul__',
-                                           '__idiv__', '__imod__', '__ipow__',
-                                           '__itruediv__', '__ifloordiv__',
-                                           '__ilshift__', '__irshift__',)
+SUPPORTED_BINARY_ARITH_OPERATIONS = strs('__add__', '__sub__', '__mul__',
+    '__div__', '__mod__', '__pow__', '__truediv__', '__floordiv__',
+    '__lshift__', '__rshift__', '__radd__', '__rsub__', '__rmul__',
+    '__rdiv__', '__rmod__', '__rpow__', '__rtruediv__', '__rfloordiv__',
+    '__rlshift__', '__rrshift__', '__iadd__', '__isub__', '__imul__',
+    '__idiv__', '__imod__', '__ipow__', '__itruediv__', '__ifloordiv__',
+    '__ilshift__', '__irshift__')
 
 
-SUPPORTED_BINARY_OPERATIONS = _names('__contains__',)
+SUPPORTED_BINARY_OPERATIONS = strs('__contains__')
 
 
 SUPPORTED_OPERATIONS = (SUPPORTED_UNARY_OPERATIONS +
@@ -356,3 +345,6 @@ def proxify(cls, *complementors):
         complementors = (SupportedOperations,)
     ComplementedProxy = complementor(*complementors)(Proxy)
     return complementor(ComplementedProxy)(cls)
+
+
+del strs

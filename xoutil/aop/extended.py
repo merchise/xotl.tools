@@ -27,10 +27,12 @@ from __future__ import (division as _py3_division,
 
 from xoutil.aop.classical import weave as classical_weave
 
+from xoutil.names import strlist as strs
+__all__ = strs('weave')
+del strs
+
 __docstring_format__ = 'rst'
 __author__ = 'manu'
-
-__all__ = (b'weave', )
 
 
 def weave(aspect, target):

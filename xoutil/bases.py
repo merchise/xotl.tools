@@ -16,6 +16,12 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+
+from xoutil.names import strlist as strs
+__all__ = strs('B32', 'B64')
+del strs
+
+
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__   = "Mon Mar 25 14:38:12 2013"
 

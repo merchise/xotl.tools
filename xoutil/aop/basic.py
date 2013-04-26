@@ -40,7 +40,10 @@ from __future__ import (division as _py3_division,
 from types import MethodType, FunctionType
 from contextlib import contextmanager
 
-from xoutil.objects import xdir
+from xoutil.names import strlist as strs
+__all__ = strs('complementor', 'contextualized', 'inject_dependencies',
+               'weaved')
+del strs
 
 __docstring_format__ = 'rst'
 __author__ = 'Medardo Rodriguez'
@@ -57,7 +60,8 @@ def _update(attrs, *sources):
     '''
     from xoutil.compat import class_types, iteritems_
     attrs.update({str(f.__name__): f for f in sources
-                  if not isinstance(f, class_types) and getattr(f, '__name__', False)})
+                  if (not isinstance(f, class_types) and
+                      getattr(f, '__name__', False))})
 
     attrs.update({str(name): member
                   for cls in sources if isinstance(cls, class_types)
@@ -144,7 +148,7 @@ def complementor(*sources, **attrs):
         from collections import (Mapping, MutableMapping,
                                  MutableSequence as List,
                                  Set)
-        from xoutil.types import Unset
+        from xoutil import Unset
         from xoutil.compat import iteritems_
         for attr, value in iteritems_(attrs):
             attr = str(attr)
@@ -179,7 +183,6 @@ def complementor(*sources, **attrs):
 
     _update(attrs, *sources)
     return inner
-
 
 
 def contextualized(context, *sources, **attrs):

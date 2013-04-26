@@ -64,7 +64,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             funcname = deprecated_module + '.' + target.__name__
         else:
             funcname = target.__name__
-        if isinstance(replacement, types.FunctionType):
+        if isinstance(replacement, _class_types + (types.FunctionType, )):
             repl_name = replacement.__module__ + '.' + replacement.__name__
         else:
             repl_name = replacement
@@ -74,8 +74,22 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
                                          replacement=repl_name),
                               stacklevel=2)
                 return target.__new__(*args, **kwargs)
-            klass = type(target.__name__, (target,), {'__new__': new})
-            return klass
+            # Code copied and adapted from xoutil.objects.copy_class. This is
+            # done so because this module *must* not depends on any other,
+            # otherwise an import cycle might be formed when deprecating a
+            # class in xoutil.objects.
+            from xoutil.compat import iteritems_
+            from xoutil.types import MemberDescriptorType
+            meta = type(target)
+            attrs = {name: value
+                     for name, value in iteritems_(target.__dict__)
+                     if name not in ('__class__', '__mro__', '__name__', '__weakref__')
+                     # Must remove member descriptors, otherwise the old's class
+                     # descriptor will override those that must be created here.
+                     if not isinstance(value, MemberDescriptorType)}
+            attrs.update(__new__=new)
+            result = meta(target.__name__, target.__bases__, attrs)
+            return result
         else:
             @wraps(target)
             def inner(*args, **kw):

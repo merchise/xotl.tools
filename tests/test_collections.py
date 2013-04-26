@@ -48,7 +48,7 @@ class TestCollections(unittest.TestCase):
 @pytest.mark.xfail(str("sys.version.find('PyPy') != -1"))
 def test_stacked_dict():
     from xoutil.collections import StackedDict
-    sd = StackedDict()
+    sd = StackedDict(a='level-0')
     sd.push(a=1, b=2, c=10)
     assert sd.level == 1
     sd.push(b=4, c=5)
@@ -69,6 +69,15 @@ def test_stacked_dict():
     assert sd['b'] == 2
     assert sd['a'] == 1
     assert len(sd) == 3
+    sd.pop()
+    assert sd['a'] == 'level-0'
+    try:
+        sd.pop()
+        assert False, 'Level 0 cannot be poped. It should have raised a TypeError'
+    except TypeError:
+        pass
+    except:
+        assert False, 'Level 0 cannot be poped. It should have raised a TypeError'
 
 
 if __name__ == "__main__":

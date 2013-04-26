@@ -36,15 +36,16 @@ from __future__ import (division as _py3_division,
 import types
 from functools import wraps as _wraps, partial
 
+from xoutil import Unset
 from xoutil.compat import inspect_getfullargspec
-from xoutil.types import Unset
+
+from xoutil.names import strlist as strs
+__all__ = strs('weave', 'StopExceptionChain')
+del strs
 
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
-
-
-__all__ = (str('StopExceptionChain'), str('weave'))
 
 
 def wraps(target):
@@ -79,6 +80,7 @@ def _filter_args_byspec(method, *args, **kwargs):
     return (args, kwargs)
 
 
+# TODO: [manu] This is repeated in "xoutil.proxy"
 def _mro_getattr(obj, attr, default=Unset):
     '''Gets the attr from obj's MRO'''
     from xoutil.types import mro_dict

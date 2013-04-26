@@ -20,6 +20,10 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from xoutil.names import strlist as strs
+__all__ = strs('metaclass')
+del strs
+
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__   = "Tue Jan 15 11:38:55 2013"
 
@@ -40,20 +44,8 @@ def metaclass(meta):
         <class '...Metaclass'>
 
     '''
-    def decorator(cls):
-        from xoutil.compat import iteritems_
-        from xoutil.types import MemberDescriptorType
-        attrs = {name: value
-                 for name, value in iteritems_(cls.__dict__)
-                 if name not in ('__class__', '__mro__', '__name__', '__doc__',
-                                 '__weakref__')
-                 # Must remove member descriptors, otherwise the old's class
-                 # descriptor will override those that must be created here.
-                 if not isinstance(value, MemberDescriptorType)}
-        result = meta(cls.__name__, cls.__bases__, attrs)
-        result.__doc__ = cls.__doc__
-        return result
-    return decorator
+    from xoutil.objects import copy_class
+    return lambda cls: copy_class(cls, meta=meta)
 
 
 def test_metaclass_decorator_with_slots():
@@ -66,7 +58,26 @@ def test_metaclass_decorator_with_slots():
     class Base(object):
         __slots__ = 'attr'
 
+    @metaclass(Meta)
+    class Ok(object):
+        def __init__(self, **kwargs):
+            self.__dict__ = kwargs
+
+
+        @classmethod
+        def clmethod(cls):
+            return cls
+
+        @staticmethod
+        def stmethod(echo):
+            return echo
+
+        def echo(self, echo):
+            return self, echo
+
     assert isinstance(Base.attr, MemberDescriptorType)
+    assert isinstance(Base, Meta)
+    assert isinstance(Ok, Meta)
 
     b = Base()
     b.attr = 1
@@ -77,3 +88,9 @@ def test_metaclass_decorator_with_slots():
         pass
     except:
         assert False, 'Should have raised AttributeError'
+
+    ok = Ok(name='ok')
+    assert ok.stmethod(ok) == ok
+    assert ok.clmethod() == Ok
+    assert ok.echo(1) == (ok, 1)
+    assert ok.name == 'ok'

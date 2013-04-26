@@ -22,7 +22,13 @@ from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
 from xoutil.functools import pow_
-from xoutil.string import names as _names
+
+
+from xoutil.names import strlist as strs
+__all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
+               'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+               'shorten_module_filename', 'shorten_user')
+del strs
 
 
 __docstring_format__ = 'rst'
@@ -138,8 +144,3 @@ def shorten_user(filename):
     if filename.startswith(home):
         filename = _orig_join('~', filename[len(home):])
     return filename
-
-
-__all__ = _names('abspath', 'expanduser', 'dirname', 'sep', 'normpath',
-                 'fix_encoding', 'join', 'normalize_path', 'get_module_path',
-                 'shorten_module_filename', 'shorten_user', 'rtrim')

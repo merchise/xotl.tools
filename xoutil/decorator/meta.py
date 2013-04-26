@@ -71,7 +71,13 @@ from xoutil.compat import inspect_getfullargspec as getfullargspec
 from xoutil.compat import str_base as _str_base
 
 
+from xoutil.names import strlist as strs
+__all__ = strs('FunctionMaker', 'flat_decorator', 'decorator')
+del strs
+
+
 DEF = re.compile('\s*def\s*([_\w][_\w\d]*)\s*\(')
+
 
 # basic functionality
 class FunctionMaker(object):
@@ -311,7 +317,7 @@ def decorator(caller):
         try:
             from zope.interface import Interface
         except ImportError:
-            from xoutil.types import ignored as Interface
+            from xoutil.types import Unset as Interface
         if (len(args) == 1 and not kwargs and
             (isinstance(args[0], (function, type)) or
              issubclass(type(args[0]), type(Interface)))):
@@ -337,6 +343,3 @@ def decorator(caller):
         else:
             return caller
     return outer_decorator
-
-__all__ = tuple(str(which) for which in ('decorator', 'FunctionMaker',
-                                         'flat_decorator'))

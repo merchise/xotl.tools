@@ -2,10 +2,16 @@
 ==============================================================================
 
 .. automodule:: xoutil.iterators
-   :members: dict_update_new, fake_dict_iteritems, first_n, get_flat_list,
-	     obtain, slides, smart_dict
+   :members: dict_update_new, fake_dict_iteritems, first_n, first_non_null,
+	     slides
 
-.. autofunction:: xoutil.iterators.flatten(sequence, is_scalar=xoutil.types.is_scalar, depth=None)
+.. autofunction:: smart_dict(defaults, *sources)
+
+.. autofunction:: obtain(predicate, default=None)
+
+.. autofunction:: flatten(sequence, is_scalar=xoutil.types.is_scalar, depth=None)
+
+.. autofunction:: get_flat_list(iterable)
 
 .. function:: xoutil.iterators.zip([iter1[, iter2[, ...]]])
 

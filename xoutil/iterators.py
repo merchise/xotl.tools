@@ -23,12 +23,9 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-
-from functools import partial
-
-from xoutil.compat import py3k as _py3k
+from xoutil import Unset
+from xoutil.types import is_scalar
 from xoutil.deprecation import deprecated
-from xoutil.types import is_scalar, Unset, ignored
 
 
 __docstring_format__ = 'rst'
@@ -37,94 +34,38 @@ __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
 
 
 
+def first_non_null(iterable, default=None):
+    '''Returns the first value from iterable which is non-null.
+
+    This is roughly the same as::
+
+         next((x for x in iter(iterable) if x), default)
+
+    .. versionadded:: 1.4.0
+    '''
+    return next((x for x in iter(iterable) if x), default)
+
+
+@deprecated('first_non_null(map(predicate, iterable), default)',
+            'Function `obtain` is deprecated since 1.4.0. Use the combo '
+            '{replacement} instead.')
 def obtain(predicate, iterable, default=None):
-    '''
-    Returns the first non null value, calculated as predicate(item), each one
-    from an 'iterable'.
+    '''Returns the first non-null value, calculated as predicate(item), each
+    one from an 'iterable'.
 
-    Example::
+    This is roughly the same as::
 
-        >>> d = ({'n': 'Ana', 'phone':'12-34'}, {'n': 'Med', 'phone':'56-78'})
-        >>> predicate = lambda x: x['phone'] if x['n'] == 'Med' else False
-        >>> obtain(predicate, d)
-        '56-78'
-
-    If nothing matches the default is returned::
-
-        >>> predicate = lambda x: x['phone'] if x['n'] == 'Manu' else False
-        >>> obtain(predicate, d, False)
-        False
-    '''
-    return next((j for j in (predicate(i) for i in iterable) if j), default)
-
-
-@deprecated('next',
-            'Function `first` is deprecated since 1.2.0. Use the built-in '
-            '`{replacement}` function.')
-def first(predicate, iterable, default=None):
-    '''
-    .. warning::
-
-       .. deprecated:: 1.2.0
-
-       Use the `next` function. Since this function is just the same
-       as ``next((which for which in iterable if pred(which)), default)``.
-
-    Returns the first element of an iterable that matches 'predicate'.
-
-    Examples::
-
-        >>> first(lambda x: x > 4, range(10))
-        5
-
-        >>> first(lambda x: x < 4, range(10))
-        0
-
-    If nothing matches the default is returned::
-
-        >>> first(lambda x: x > 100, range(10), False)
-        False
-
-    The iterable gets consumed if possible::
-
-        >>> x = (x for x in range(10))
-
-        >>> first(lambda x: x > 4, x)
-        5
-
-        >>> first(lambda x: x > 4, x)
-        6
-
-        >>> list(x)
-        [7, 8, 9]
-    '''
-    return next((x for x in iterable if predicate(x)), default)
-
-
-@deprecated('next',
-            'Function `get_first` is deprecated since 1.2.0. Use the built-in'
-            '`{replacement}` function.')
-def get_first(iterable, default=None):
-    '''Returns the first element of an iterable.
+         first_non_null(map(predicate, iterable), default)
 
     .. warning::
 
-       .. deprecated:: 1.2.0
+       *Deprecated since 1.4.0*. The name `obtain` is too general to convey the
+       meaning of the function, using :func:`first_non_null` is deemed more
+       clear.
 
-       Use the `next` function, since this function is just the same
-       as ``next((which for which in iterable), default)``.
     '''
-    # TODO: Check who is using this function to find out if could be replaced
-    #       by "next" and remove this one.
-    #
-    #    Response: `next` does not work on simple sequences::
-    #        >>> get_first(range(10))
-    #        0
-    #        >>> next(range(10))
-    #        Traceback (...)
-    #            ...
-    #        TypeError: list object is not an iterator
-    return first(lambda x: True, iterable, default=default)
+    from xoutil.compat import map
+    return first_non_null(map(predicate, iterable), default)
 
 
 def flatten(sequence, is_scalar=is_scalar, depth=None):
@@ -164,13 +105,19 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
                 yield subitem
 
 
+@deprecated('list(flatten(..))',
+            'Function `get_flat_list` is deprecated since 1.4.0. Use the combo '
+            '{replacement} instead.')
 def get_flat_list(sequence):
-    '''
-    Flatten out a sequence as a flat list.
+    '''Flatten out a sequence as a flat list.
 
     This is the same as::
 
         list(flatten(sequence))
+
+    .. warning::
+
+       *Deprecated since 1.4.0*. Just use the proposed equivalent combo.
 
     '''
     return list(flatten(sequence))
@@ -188,47 +135,40 @@ def dict_update_new(target, source):
 def fake_dict_iteritems(source):
     '''Iterate (key, value) in a source that have defined method "keys" and
     operator "__getitem__".
+
+    .. warning::
+
+       *In risk since 1.4.0*. Most of the time is enough to use the generator
+       expression ``((key, source[key]) for key in source.keys())``.
+
     '''
+    import warnings
+    warnings.warn('fake_dict_iteritems is in risk for deprecation')
     for key in source.keys():
         yield key, source[key]
 
 
-# TODO: [manu] Probably this must go to 'xoutil.data', is not an iterator
+@deprecated('xoutil.objects.smart_copy')
 def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
 
-    Each item in `sources` could be a dictionary or any other Python object.
+    .. warning::
 
-    If `defaults` is not a dictionary, `None` is used as default value.
+       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`. Using
+       the new function this one is roughly equivalent to::
 
-    Persistence of all original objects are warranted.
+           args = sources + ({}, )
+           return smart_copy(*args, defaults=defaults)
+
     '''
-    from copy import deepcopy
-    from collections import Mapping
-    is_mapping = isinstance(defaults, Mapping)
-    res = {}
-    for key in defaults:
-        for s in sources:
-            get = s.get if isinstance(s, Mapping) else partial(getattr, s)
-            value = get(key, Unset)
-            if (value is not Unset) and (key not in res):
-                res[key] = deepcopy(value)
-        if key not in res:
-            if isinstance(defaults, Mapping):
-                from xoutil.data import adapt_exception
-                value = defaults[key]
-                error = adapt_exception(value, key=key)
-                if not error:
-                    res[key] = deepcopy(defaults[key]) if is_mapping else None
-                else:
-                    raise error
-    return res
+    from xoutil.objects import smart_copy
+    args = sources + ({}, )
+    return smart_copy(*args, defaults=defaults)
 
 
 def slides(iterator, width=2, fill=Unset):
-    '''
-    Creates a sliding window of a given `width` over an iterable::
+    '''Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
         [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
@@ -239,7 +179,13 @@ def slides(iterator, width=2, fill=Unset):
 
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
         [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, Unset, Unset)]
+
+    .. versionadded:: 1.4.0 If the `fill` argument is a collection is cycled
+                      over to get the filling, just like in :func:`first_n`.
+
     '''
+    from itertools import cycle, repeat
+    from xoutil.types import is_collection
     pos = 0
     res = []
     iterator = iter(iterator)
@@ -254,16 +200,22 @@ def slides(iterator, width=2, fill=Unset):
             res = []
             pos = 0
     if res:
+        if is_collection(fill):
+            fill = cycle(fill)
+        else:
+            fill = repeat(fill)
         while pos < width:
-            res.append(fill)
+            res.append(next(fill))
             pos += 1
         yield tuple(res)
 
 
-def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
-    '''Take the first `n` items from iterable. If there are less than `n` items
-    in the iterator and `fill` is :class:`~xoutil.types.Unset`, a
-    StopIteration exception is raised.
+def first_n(iterable, n=1, fill=Unset):
+    '''Takes the first `n` items from iterable.
+
+    If there are less than `n` items in the iterator and `fill` is
+    :class:`~xoutil.types.Unset`, a StopIteration exception is raised;
+    otherwise it's used as a filling pattern as explained below.
 
     :param iterable: An iterable from which the first `n` items should be
                      collected.
@@ -273,40 +225,27 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
 
     :param fill: The filling pattern to use. It may be:
 
-                 - an iterable (i.e has an __iter__ method), in which case
-                   `first_n` fills the last items by cycling over `fill`.
+                 - a collection, in which case `first_n` fills the last items
+                   by cycling over `fill`.
 
-                 - anything else is used as the filling item.
+                   .. versionadded:: 1.4.0 The notion of collection uses
+                                     :class:`xoutil.types.is_collection`
+                                     instead of probing for the ``__iter__``
+                                     method.
+
+                 - anything else is used as the filling pattern by repeating.
 
     :returns: The first `n` items from `iterable`, probably with a filling
               pattern at the end.
     :rtype: generator object
 
-    .. warning:: The `return_tuple` parameter is now deprecated and is
-                 ignored.
-
-    Examples::
-
-        >>> list(first_n(range(10), 3))
-        [0, 1, 2]
-
-        # You won't see the StopIteration cause list uses it to complete the
-        # list.
-        >>> list(first_n(range(2), 4))
-        [0, 1]
-
-        >>> list(first_n(range(2), 4, fill=2))
-        [0, 1, 2, 2]
-
-        >>> tuple(first_n(range(2), 6, fill=(1, 2)))
-        (0, 1, 1, 2, 1, 2)
-
-    .. versionadded: 1.2.0
+    .. versionadded:: 1.2.0
 
     '''
     if fill is not Unset:
+        from xoutil.types import is_collection
         from itertools import cycle, repeat, chain
-        if getattr(fill, '__iter__', False):
+        if is_collection(fill):
             fill = cycle(fill)
         else:
             fill = repeat(fill)
@@ -318,8 +257,7 @@ def first_n(iterable, n=1, fill=Unset, return_tuple=ignored):
         n -= 1
 
 
-
 # Compatible izip and imap
 from xoutil.compat import zip, map
-izip = zip
-imap = map
+izip = deprecated(zip)(zip)
+imap = deprecated(map)(map)

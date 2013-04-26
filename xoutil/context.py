@@ -33,6 +33,9 @@ from threading import local
 from xoutil.decorator.compat import metaclass
 from xoutil.collections import StackedDict
 
+from xoutil.names import strlist as strs
+__all__ = strs('Context', 'context', 'NulContext')
+del strs
 
 class LocalData(local):
     def __init__(self):
@@ -53,17 +56,9 @@ class MetaContext(type(StackedDict)):
         return _data.contexts.get(name, _null_context)
 
     def __contains__(self, name):
-        '''
-        Basic support for the 'A in context' idiom::
-
-            >>> from xoutil.context import context
-            >>> with context('A'):
-            ...    if 'A' in context:
-            ...        print('A')
-            A
-
-        '''
+        '''Basic support for the 'A in context' idiom.'''
         return bool(self[name])
+
 
 @metaclass(MetaContext)
 class Context(StackedDict):
@@ -113,7 +108,7 @@ class Context(StackedDict):
         ...   with a1:
         ...       pass
         Traceback (most recent call last):
-          ...
+        ...
         RuntimeError: Entering the same context level twice! ...
 
     '''
@@ -143,7 +138,7 @@ class Context(StackedDict):
             _data.contexts[self.name] = self
         self.count += 1
         if self.count != self.level:
-            raise RuntimeError('Entering the same context level twice! -- cl(%d, %d)' % (self.count, self.level))
+            raise RuntimeError('Entering the same context level twice! -- c(%s, %d, %d)' % (self.name, self.count, self.level))
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -166,6 +161,7 @@ class Context(StackedDict):
 
 # A simple alias for Context
 context = Context
+__all__.append('context')
 
 
 class NullContext(object):

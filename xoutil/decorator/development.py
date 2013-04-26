@@ -20,6 +20,7 @@ import warnings
 
 from xoutil.compat import class_types as _class_types
 from xoutil.objects import full_nameof
+
 from .meta import decorator as _decorator
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
@@ -46,7 +47,7 @@ def unstable(target, msg=None):
     try:
         from zope.interface import Interface
     except ImportError:
-        from xoutil.types import Unset as Interface
+        from xoutil import Ignored as Interface
     if isinstance(target, type(Interface)):
         objtype = 'interface'
     elif isinstance(target, _class_types):
