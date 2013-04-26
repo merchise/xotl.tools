@@ -25,17 +25,16 @@ from __future__ import (division as _py3_division,
 
 from xoutil.deprecation import deprecated
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
-
 from xoutil.names import strlist as strs
 __all__ = strs('nameof', 'smart_getter', 'smart_getter_and_deleter', 'xdir',
                'fdir', 'validate_attrs', 'get_first_of',
                'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
-               'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy')
+               'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy',
+               'extract_attrs')
 del strs
 
+__docstring_format__ = 'rst'
+__author__ = 'manu'
 
 # These two functions can be use to always return True or False
 _true = lambda * args, **kwargs: True
@@ -47,8 +46,9 @@ _false = lambda * args, **kwargs: False
 def nameof(target):
     '''Gets the name of an object.
 
-    Original implementation is moved to "xoutil.names", this one must be
-    deprecated and restructure its all uses.
+    .. warning::
+
+       *Deprecated since version 1.4.0.* Use :func:`xoutil.names.nameof`.
 
     '''
     from xoutil.names import nameof as wrapped
@@ -60,9 +60,11 @@ def nameof(target):
 
 
 def smart_getter(obj):
-    '''Returns a getter for `obj`. If obj is Mapping, it returns the ``.get()``
-    method bound to the object `obj`. Otherwise it returns a partial of
-    `getattr` on `obj`.
+    '''Returns a smart getter for `obj`.
+
+    If obj is Mapping, it returns the ``.get()`` method bound to the object
+    `obj`. Otherwise it returns a partial of `getattr` on `obj` with default
+    set to None.
 
     '''
     from collections import Mapping
@@ -70,13 +72,12 @@ def smart_getter(obj):
     if isinstance(obj, (DictProxyType, Mapping)):
         return obj.get
     else:
-        from functools import partial
-        return partial(getattr, obj)
+        return lambda attr, default=None: getattr(obj, attr, default)
 
 smart_get = deprecated(smart_getter)(smart_getter)
 
 
-def smart_getter_and_deleter(obj, **kwargs):
+def smart_getter_and_deleter(obj):
     '''Returns a function that get and deletes either a key or an attribute of
     obj depending on the type of `obj`.
 
@@ -84,12 +85,14 @@ def smart_getter_and_deleter(obj, **kwargs):
     `collections.MutableMapping`.
 
     '''
-    from collections import Mapping
+    from collections import Mapping, MutableMapping
     from functools import partial
-    if isinstance(obj, Mapping):
-        return partial(get_and_del_key, obj, **kwargs)
+    if isinstance(obj, Mapping) and not isinstance(obj, MutableMapping):
+        raise TypeError('If `obj` is a Mapping it must be a MutableMapping')
+    if isinstance(obj, MutableMapping):
+        return partial(get_and_del_key, obj)
     else:
-        return partial(get_and_del_attr, obj, **kwargs)
+        return partial(get_and_del_attr, obj)
 
 smart_get_and_del = deprecated(smart_getter_and_deleter)(smart_getter_and_deleter)
 
@@ -109,7 +112,7 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None):
     :param value_filter: *optional* A filter for attribute values.
 
     :param getter: *optional* A function with the same signature that
-                    ``getattr`` to be used to get the values from `obj`.
+                   ``getattr`` to be used to get the values from `obj`.
 
     If neither `attr_filter` nor `value_filter` are given, all `(attr, value)`
     are generated.
@@ -338,6 +341,7 @@ def smart_getattr(name, *sources, **kwargs):
         >>> smart_getattr('foo', inst, somedict)
         'bar2'
 
+        >>> from xoutil import Unset
         >>> smart_getattr('fail', somedict, inst) is Unset
         True
 
@@ -470,35 +474,14 @@ def setdefaultattr(obj, name, value):
 
 
 # TODO: Use "xoutil.names.nameof" with "full=True, inner=True, typed=True"
+@deprecated('xoutil.names.nameof')
 def full_nameof(target):
     '''Gets the full name of an object:
 
-    - The name of a string is the same string::
+    .. warning::
 
-        >>> full_nameof('manuel')
-        'manuel'
-
-    - The name of an object with a ``__name__`` attribute is its
-      value::
-
-        >>> full_nameof(type)
-        'type'
-
-        >>> class Someclass: pass
-        >>> full_nameof(Someclass) == 'xoutil.objects.Someclass'
-        True
-
-    - The name of any other object is the ``__name__`` of the its
-      type::
-
-        >>> full_nameof([1, 2])
-        'list'
-
-        >>> full_nameof((1, 2))
-        'tuple'
-
-        >>> full_nameof({})
-        'dict'
+       *Deprecated since 1.4.0*. Use :func:`xoutil.names.nameof` with the
+       `full` argument.
 
     '''
     from xoutil.compat import py3k, str_base
@@ -514,8 +497,10 @@ def full_nameof(target):
         return res
 
 
-def copy_class(cls, meta=None, ignores=None, **new_attrs):
+def copy_class(cls, meta=None, ignores=None, new_attrs=None):
     '''Copies a class definition to a new class.
+
+    The returned class will have the same name, bases and module of `cls`.
 
     :param meta: If None, the `type(cls)` of the class is used to build the new
                  class, otherwise this must be a *proper* metaclass.
@@ -538,6 +523,8 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
     :param new_attrs: New attributes the class must have. These will take
                       precedence over the attributes in the original class.
 
+    :type new_attrs: dict
+
     .. versionadded:: 1.4.0
 
     '''
@@ -558,12 +545,13 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
         ignored = None
     attrs = {name: value
              for name, value in iteritems_(cls.__dict__)
-             if name not in ('__class__', '__mro__', '__name__', '__weakref__')
+             if name not in ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
              if not isinstance(value, MemberDescriptorType)
              if ignored is None or not ignored(name)}
-    attrs.update(new_attrs)
+    if new_attrs:
+        attrs.update(new_attrs)
     result = meta(cls.__name__, cls.__bases__, attrs)
     return result
 
@@ -571,7 +559,6 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
 # Real signature is (*sources, target, filter=None) where target is a
 # positional argument, and not a keyword.
 # TODO: First look up "target" in keywords and then in positional arguments.
-# FIXME: This doesn't work with a dict as a source.
 def smart_copy(*args, **kwargs):
     '''Copies the first apparition of attributes (or keys) from `sources` to
     `target`.
@@ -580,41 +567,53 @@ def smart_copy(*args, **kwargs):
 
     :param target: The object to fill.
 
-    :param defaults: Defaults the attributes to be copied as explained
-                   below. Defaults to False.
+    :param defaults: Default values for the attributes to be copied as explained
+                     below. Defaults to False.
 
-    :type defaults: Either a bool, a dictionary or a callable.
+    :type defaults: Either a bool, a dictionary, an iterable or a callable.
 
-    .. note::
+    Every `sources` and `target` are always positional arguments. There should
+    be at least one source. `target` will always be the last positional
+    argument, unless:
 
-       Both `sources` and `target` are always positional arguments.
+    - `defaults` is not provided as a keyword argument, and
 
-    If `defaults` is not provided as a keyword argument, and there are at least
-    3 positional arguments and the last positional argument is either None,
-    True, False or a *function*, then `target` is the next-to-last positional
-    argument.
+    - there are at least 3 positional arguments and
 
-    If `defaults` is a dictionary or an iterable then only the keys provided by
-    itering over `defaults` will be copied. If it's a dictionary, and one of
-    its key is not found in the `sources`, then the value of the key in the
-    dictionary is set to `target` unless:
+    - the last positional argument is either None, True, False or a *function*,
+
+    then `target` is the next-to-last positional argument and `defaults` is the
+    last positional argument. Notice that passing a callable that is not a
+    function is possible only with a keyword argument. If this is too
+    confusing, pass `defaults` as a keyword argument.
+
+    If `defaults` is a dictionary or an iterable then only the names provided
+    by itering over `defaults` will be copied. If `defaults` is a dictionary,
+    and one of its key is not found in any of the `sources`, then the value of
+    the key in the dictionary is copied to `target` unless:
 
     - It's the value :class:`xoutil.types.Required` or an instance of Required.
 
     - An exception object
 
-    - A sequence with is first value being a subclass of Exception.
+    - A sequence with is first value being a subclass of Exception. In which
+      case :class:`xoutil.data.adapt_exception` is used.
 
     In these cases a KeyError is raised if the key is not found in the sources.
 
+    If `default` is an iterable and a key is not found in any of the sources,
+    None is copied to `target`.
+
     If `defaults` is a callable then it should receive one positional arguments
-    ``attr`` and return either True or False if the attr should be copied.
+    for the current `attribute name` and several keyword arguments (we pass
+    ``source``) and return either True or False if the attribute should be
+    copied.
 
-    If `defaults` is False only the attributes that do not start with a "_" are
-    copied, if it's True all attributes are copied.
+    If `defaults` is False (or None) only the attributes that do not start with
+    a "_" are copied, if it's True all attributes are copied.
 
-    When `target` is not a mapping (other Python objects) only valid
-    identifiers will be copied.
+    When `target` is not a mapping only valid Python identifiers will be
+    copied.
 
     Each `source` is considered a mapping if it's an instance of
     `collections.Mapping` or a DictProxyType.
@@ -626,8 +625,10 @@ def smart_copy(*args, **kwargs):
 
     '''
     from collections import Mapping, MutableMapping
-    from xoutil.types import Unset, Required
+    from xoutil.compat import callable, str_base
+    from xoutil.types import Unset, Required, DictProxyType
     from xoutil.types import FunctionType as function
+    from xoutil.types import is_collection
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
     defaults = get_and_del_key(kwargs, 'defaults', default=Unset)
@@ -645,6 +646,11 @@ def smart_copy(*args, **kwargs):
         if defaults is Unset:
             defaults = False
         sources, target = args[:-1], args[-1]
+    if not sources:
+        raise TypeError('smart_copy requires at least one source')
+    if isinstance(target, (bool, type(None), int, float, str_base)):
+        raise TypeError('target should be a mutable object, not %s' %
+                        type(target))
     if isinstance(target, MutableMapping):
         def setter(key, val):
             target[key] = val
@@ -653,7 +659,7 @@ def smart_copy(*args, **kwargs):
             if is_valid_identifier(key):
                 setattr(target, key, val)
     is_mapping = isinstance(defaults, Mapping)
-    if is_mapping or not isinstance(defaults, (bool, function)):
+    if is_mapping or is_collection(defaults):
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:
@@ -663,22 +669,42 @@ def smart_copy(*args, **kwargs):
                     val = None
                 exc = adapt_exception(val, key=key)
                 if exc or val is Required or isinstance(val, Required):
-                    raise exc
+                    raise KeyError(key)
             setter(key, val)
     else:
-        assert isinstance(defaults, (bool, function))
         keys = []
         for source in sources:
             get = smart_getter(source)
-            for key, val in xdir(source, getter=lambda o, a: get(a)):
+            if isinstance(source, (Mapping, DictProxyType)):
+                items = (name for name in source)
+            else:
+                items = dir(source)
+            for key in items:
                 if defaults is False and key.startswith('_'):
                     copy = False
-                elif isinstance(defaults, function):
-                    copy = defaults(key)
+                elif callable(defaults):
+                    copy = defaults(key, source=source)
                 else:
                     copy = True
                 if key not in keys:
                     keys.append(key)
                     if copy:
-                        setter(key, val)
+                        setter(key, get(key))
     return target
+
+
+def extract_attrs(obj, *names, **kwargs):
+    '''Returns a tuple of the `names` from an object.
+
+    If `obj` is a Mapping, the names will be search in the keys of the `obj`;
+    otherwise the names are considered regular attribute names.
+
+    If `default` is Unset and one attribute is not found an AttributeError (or
+    KeyError) is raised, otherwise the `default` is used instead.
+
+    .. versionadded:: 1.4.0
+
+    '''
+    from xoutil.objects import smart_getter
+    get = smart_getter(obj)
+    return tuple(get(attr, **kwargs) for attr in names)

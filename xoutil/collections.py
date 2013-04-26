@@ -177,14 +177,12 @@ class SmartDictMixin(object):
         - any object implementing "keys()" and "__getitem__(key)" methods.
 
         '''
-        from types import GeneratorType
-        from xoutil.types import is_iterable
+        from xoutil.types import GeneratorType, DictProxyType, is_iterable
         for arg in args:
-            if isinstance(arg, (Mapping, tuple, list, GeneratorType)):
+            if isinstance(arg, (Mapping, tuple, list, GeneratorType, DictProxyType)):
                 self._update(arg)
             elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
-                from xoutil.iterators import fake_dict_iteritems
-                self._update(fake_dict_iteritems(arg))
+                self._update(((key, arg[key]) for key in arg.keys()))
             elif is_iterable(arg):
                 self._update(iter(arg))
             else:

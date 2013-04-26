@@ -63,31 +63,6 @@ def obtain(predicate, iterable, default=None):
        meaning of the function, using :func:`first_non_null` is deemed more
        clear.
 
-    Example::
-
-        >>> d = ({'n': 'Ana', 'phone':'12-34'}, {'n': 'Med', 'phone':'56-78'})
-        >>> predicate = lambda x: x['phone'] if x['n'] == 'Med' else False
-        >>> obtain(predicate, d)
-        '56-78'
-
-    If nothing matches the default is returned::
-
-        >>> predicate = lambda x: x['phone'] if x['n'] == 'Manu' else False
-        >>> obtain(predicate, d, False)
-        False
-
-    The iterable gets consumed if possible::
-
-        >>> x = (x for x in range(10))
-
-        >>> first(lambda x: x > 4, x)
-        5
-
-        >>> first(lambda x: x > 4, x)
-        6
-
-        >>> list(x)
-        [7, 8, 9]
     '''
     from xoutil.compat import map
     return first_non_null(map(predicate, iterable), default)
@@ -160,7 +135,15 @@ def dict_update_new(target, source):
 def fake_dict_iteritems(source):
     '''Iterate (key, value) in a source that have defined method "keys" and
     operator "__getitem__".
+
+    .. warning::
+
+       *In risk since 1.4.0*. Most of the time is enough to use the generator
+       expression ``((key, source[key]) for key in source.keys())``.
+
     '''
+    import warnings
+    warnings.warn('fake_dict_iteritems is in risk for deprecation')
     for key in source.keys():
         yield key, source[key]
 
@@ -169,12 +152,6 @@ def fake_dict_iteritems(source):
 def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
-
-    Each item in `sources` could be a dictionary or any other Python object.
-
-    If `defaults` is not a dictionary, `None` is used as default value.
-
-    Persistence of all original objects are warranted.
 
     .. warning::
 

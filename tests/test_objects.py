@@ -56,3 +56,43 @@ def test_smart_copy_signature():
         smart_copy({}, defaults=False)
     with pytest.raises(TypeError):
         smart_copy({}, False)
+
+
+def test_smart_copy_from_dict_to_dict():
+    c = dict(c=1, d=23)
+    d = dict(d=1)
+    smart_copy(c, d)
+    assert d == dict(c=1, d=23)
+
+
+
+def test_smart_copy_with_plain_defaults():
+    c = dict(a=1, b=2, c=3)
+    d = {}
+    smart_copy(c, d, defaults=('a', 'x'))
+    assert d == dict(a=1, x=None)
+
+
+
+def test_smart_copy_with_callable_default():
+    def default(attr, source=None):
+        return attr in ('a', 'b')
+
+    c = dict(a=1, b='2', c='3x')
+    d = {}
+    smart_copy(c, d, defaults=default)
+    assert d == dict(a=1, b='2')
+
+
+    class inset(object):
+        def __init__(self, items):
+            self.items = items
+
+        def __call__(self, attr, source=None):
+            return attr in self.items
+
+
+    c = dict(a=1, b='2', c='3x')
+    d = {}
+    smart_copy(c, d, defaults=inset('ab'))
+    assert d == dict(a=1, b='2')
