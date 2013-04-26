@@ -497,8 +497,10 @@ def full_nameof(target):
         return res
 
 
-def copy_class(cls, meta=None, ignores=None, **new_attrs):
+def copy_class(cls, meta=None, ignores=None, new_attrs=None):
     '''Copies a class definition to a new class.
+
+    The returned class will have the same name, bases and module of `cls`.
 
     :param meta: If None, the `type(cls)` of the class is used to build the new
                  class, otherwise this must be a *proper* metaclass.
@@ -520,6 +522,8 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
 
     :param new_attrs: New attributes the class must have. These will take
                       precedence over the attributes in the original class.
+
+    :type new_attrs: dict
 
     .. versionadded:: 1.4.0
 
@@ -546,7 +550,8 @@ def copy_class(cls, meta=None, ignores=None, **new_attrs):
              # descriptor will override those that must be created here.
              if not isinstance(value, MemberDescriptorType)
              if ignored is None or not ignored(name)}
-    attrs.update(new_attrs)
+    if new_attrs:
+        attrs.update(new_attrs)
     result = meta(cls.__name__, cls.__bases__, attrs)
     return result
 
