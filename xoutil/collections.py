@@ -132,6 +132,12 @@ class OpenDictMixin(object):
     - The object has a ``__dict__`` attribute and the name is key there.
 
     '''
+    def __dir__(self):
+        super_dict = getattr(super(OpenDictMixin, self), '__dict__', {})
+        slots = (getattr(cls, '__slots__', ()) for cls in type(self).mro())
+        slot_attrs = {name for slot in slots for name in slot}
+        return list(set(self) | set(super_dict) | slot_attrs)
+
     def __getattr__(self, name):
         return self[name]
 
