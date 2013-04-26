@@ -682,7 +682,7 @@ def smart_copy(*args, **kwargs):
             for key in items:
                 if defaults is False and key.startswith('_'):
                     copy = False
-                elif isinstance(defaults, function):
+                elif callable(defaults):
                     copy = defaults(key, source=source)
                 else:
                     copy = True

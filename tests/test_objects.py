@@ -71,3 +71,28 @@ def test_smart_copy_with_plain_defaults():
     d = {}
     smart_copy(c, d, defaults=('a', 'x'))
     assert d == dict(a=1, x=None)
+
+
+
+def test_smart_copy_with_callable_default():
+    def default(attr, source=None):
+        return attr in ('a', 'b')
+
+    c = dict(a=1, b='2', c='3x')
+    d = {}
+    smart_copy(c, d, defaults=default)
+    assert d == dict(a=1, b='2')
+
+
+    class inset(object):
+        def __init__(self, items):
+            self.items = items
+
+        def __call__(self, attr, source=None):
+            return attr in self.items
+
+
+    c = dict(a=1, b='2', c='3x')
+    d = {}
+    smart_copy(c, d, defaults=inset('ab'))
+    assert d == dict(a=1, b='2')
