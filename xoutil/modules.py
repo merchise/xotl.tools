@@ -156,10 +156,11 @@ def modulemethod(func):
     '''
     import sys
     from functools import wraps
-    self = sys.modules[func.__module__]
+    self, _created, cls = customize(sys.modules[func.__module__])
     @wraps(func)
     def inner(*args, **kwargs):
         return func(self, *args, **kwargs)
+    setattr(cls, func.__name__, func)
     return inner
 
 
@@ -172,7 +173,7 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None):
     '''
     import sys
     module = sys.modules[getter.__module__]
-    module, created, cls = customize(module)
+    module, _created, cls = customize(module)
     class prop(property):
         def setter(self, func):
             result = super(prop, self).setter(func)
