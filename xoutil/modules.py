@@ -153,7 +153,7 @@ def customize(module, **kwargs):
 
 
 def modulemethod(func):
-    '''Defines a module-level method.
+    '''Decorator that defines a module-level method.
 
     Simply a module-level method, will always receive a first argument `self`
     with the module object.
@@ -169,10 +169,10 @@ def modulemethod(func):
 
 
 def moduleproperty(getter, setter=None, deleter=None, doc=None):
-    '''Creates a module-level property.
+    '''Decorator that creates a module-level property.
 
     The module of the `getter` is replaced by a custom implementation of the
-    module, and the property is injected to the class.
+    module, and the property is injected to the custom module's class.
 
     '''
     import sys
