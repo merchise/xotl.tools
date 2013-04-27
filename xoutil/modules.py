@@ -141,6 +141,9 @@ def customize(module, **kwargs):
             def __getattr__(self, attr):
                 return getattr(module, attr)
 
+            def __dir__(self):
+                return dir(module)
+
         sys.modules[module.__name__] = result = CustomModule(module.__name__)
         return result, True, CustomModule
     else:
