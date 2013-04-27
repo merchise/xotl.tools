@@ -40,24 +40,6 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
         @deprecate(new_function)
         def deprecated_function(...):
             ...
-
-    .. note::
-
-       There's a package `zope.deferredimport` that has a `deprecated` function
-       that injects same implementations of some object into a module, with
-       a deprecation warning.
-
-       The main difference is that we don't require the same implementation
-       and/or interface. We may deprecate a feature to be removed by another
-       that has not the same interface.
-
-       For instance :class:`xoutil.memoize.simple_memoize` decorator is
-       deprecated in favor of :func:`xoutil.functools.lru_cache` but they
-       don't share the same interface.
-
-       However `zope.deferredimport` allows also for deferred imports (without
-       deprecation), and are very useful if you need to keep names for other
-       stuff around without loading them until they are used.
     '''
     def decorator(target):
         if deprecated_module:
