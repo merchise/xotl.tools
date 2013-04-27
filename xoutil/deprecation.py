@@ -83,7 +83,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             meta = type(target)
             attrs = {name: value
                      for name, value in iteritems_(target.__dict__)
-                     if name not in ('__class__', '__mro__', '__name__', '__weakref__')
+                     if name not in ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
                      # Must remove member descriptors, otherwise the old's class
                      # descriptor will override those that must be created here.
                      if not isinstance(value, MemberDescriptorType)}
