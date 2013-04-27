@@ -93,9 +93,21 @@ class TestWeavingModules(unittest.TestCase):
                 if not exc_value:
                     return result * 2
 
+            def _after_rien(self, method, result, exc_value):
+                return result + 1
+
+
+            def _after_method(self, method, result, exc_value):
+                return result
+
         weave(Dupper, self.testbed)
 
         self.assertEquals(20, testbed.echo(10))
+        self.assertEquals(2, testbed.rien())
+        module, args, kwargs = testbed.method(1, 2, 3, a=1)
+        self.assertEquals(args, (1, 2, 3))
+        self.assertEquals(kwargs, {'a': 1})
+        self.assertEquals(testbed, module)
 
         # Unfortunately is quite difficult to replace standing references. Is
         # possible by keeping the old func_code function and replacing

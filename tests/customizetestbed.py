@@ -40,3 +40,7 @@ def store(self, value):
 @store.deleter
 def store(self):
     delattr(self, '_store')
+
+
+def otherfunction():
+    return 1

@@ -36,17 +36,15 @@ class TestModulesCustomization(unittest.TestCase):
     def test_echo(self):
         import testbed
         module, created, klass = customize(testbed)
-        self.assertTrue(created)
         self.assertEqual(10, module.echo(10))
 
     def test_module_props(self):
         @property
-        def this(self):
-            return self
+        def this(mod):
+            return mod
 
         import testbed
         module, created, klass = customize(testbed, this=this)
-        self.assertTrue(created)
         self.assertEqual(module, module.this)
 
 
