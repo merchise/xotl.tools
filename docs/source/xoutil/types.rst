@@ -1,13 +1,38 @@
 :mod:`xoutil.types` - Names for built-in types and extensions.
 ===============================================================
 
-.. automodule:: xoutil.types
-   :members: is_iterable, is_collection, is_scalar, is_string_like, is_module,
-	     is_classmethod, is_staticmethod, is_instancemethod,
-	     is_slotwrapper, UnsetType, DictProxyType, SlotWrapperType,
-	     Required, mro_dict
+.. Unfortunately our customized modules is not compatible with sphinx
+   automodule
 
+.. module:: xoutil.types
 
+.. autofunction:: is_iterable
+
+.. autofunction:: is_collection
+
+.. autofunction:: is_scalar
+
+.. autofunction:: is_string_like
+
+.. autofunction:: is_module
+
+.. autofunction:: is_classmethod
+
+.. autofunction:: is_staticmethod
+
+.. autofunction:: is_instancemethod
+
+.. autofunction:: is_slotwrapper
+
+.. autoclass:: UnsetType
+
+.. autoclass:: DictProxyType
+
+.. autoclass:: SlotWrapperType
+
+.. autoclass:: Required
+
+.. autoclass:: mro_dict
 
 .. _types-140-refactor:
 
