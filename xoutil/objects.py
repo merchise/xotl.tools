@@ -720,6 +720,23 @@ else:
     # metaclass = importlib.import_module('xoutil._meta2').metaclass
 
 
-metaclass.__doc__ = '''Defines the metaclass of a class.
+metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking style.
 
+Usage::
+
+   >>> class Meta(type):
+   ...   pass
+
+   # This is the same as the Py3k syntax: class Foobar(metaclass=Meta)
+   >>> class Foobar(metaclass(Meta)):
+   ...   pass
+
+   >>> class Spam(dict, metaclass(Meta)):
+   ...   pass
+
+   >>> type(Spam) is Meta
+   True
+
+   >>> Spam.__bases__ == (dict, )
+   True
 '''
