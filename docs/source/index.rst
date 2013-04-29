@@ -32,6 +32,7 @@ Contents:
    xoutil/*
    others
    HISTORY
+   CONTRIBUTING
    CONTRIBUTORS
    LICENSE
 
