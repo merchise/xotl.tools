@@ -37,6 +37,7 @@ from xoutil.names import strlist as strs
 __all__ = strs('Context', 'context', 'NulContext')
 del strs
 
+
 class LocalData(local):
     def __init__(self):
         super(LocalData, self).__init__()
@@ -137,9 +138,11 @@ class Context(StackedDict):
         if self.count == 0:
             _data.contexts[self.name] = self
         self.count += 1
-        if self.count != self.level:
-            raise RuntimeError('Entering the same context level twice! -- c(%s, %d, %d)' % (self.name, self.count, self.level))
-        return self
+        if self.count == self.level:
+            return self
+        else:
+            msg = 'Entering the same context level twice! -- c(%s, %d, %d)'
+            raise RuntimeError(msg % (self.name, self.count, self.level))
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.count -= 1
@@ -161,7 +164,6 @@ class Context(StackedDict):
 
 # A simple alias for Context
 context = Context
-__all__.append('context')
 
 
 class NullContext(object):
@@ -203,10 +205,9 @@ class NullContext(object):
 _null_context = NullContext()
 
 
-from collections import Mapping, MutableMapping
+from collections import Mapping
 
 Mapping.register(MetaContext)
 Mapping.register(NullContext)
-MutableMapping.register(Context)
 
-del Mapping, MutableMapping
+del Mapping
