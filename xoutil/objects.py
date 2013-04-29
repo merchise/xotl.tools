@@ -23,6 +23,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
+from xoutil.compat import py3k as _py3k
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as strs
@@ -708,3 +709,34 @@ def extract_attrs(obj, *names, **kwargs):
     from xoutil.objects import smart_getter
     get = smart_getter(obj)
     return tuple(get(attr, **kwargs) for attr in names)
+
+
+import importlib
+if _py3k:
+    from xoutil._meta3 import metaclass
+    # metaclass = importlib.import_module('xoutil._meta3').metaclass
+else:
+    from xoutil._meta2 import metaclass
+    # metaclass = importlib.import_module('xoutil._meta2').metaclass
+
+
+metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking style.
+
+Usage::
+
+   >>> class Meta(type):
+   ...   pass
+
+   # This is the same as the Py3k syntax: class Foobar(metaclass=Meta)
+   >>> class Foobar(metaclass(Meta)):
+   ...   pass
+
+   >>> class Spam(dict, metaclass(Meta)):
+   ...   pass
+
+   >>> type(Spam) is Meta
+   True
+
+   >>> Spam.__bases__ == (dict, )
+   True
+'''

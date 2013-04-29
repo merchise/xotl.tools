@@ -4,7 +4,7 @@
 .. automodule:: xoutil.objects
    :members: validate_attrs, get_first_of, smart_getter,
 	     smart_getter_and_deleter, smart_getattr, get_and_del_attr,
-	     get_and_del_key, setdefaultattr, copy_class, mro_dict
+	     get_and_del_key, setdefaultattr, copy_class, mro_dict, metaclass
 
 .. autofunction:: xdir(obj[, attr_filter[, value_filter[, getattr]]])
 

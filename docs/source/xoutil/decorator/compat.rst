@@ -3,4 +3,5 @@
 ================================================================================
 
 .. automodule:: xoutil.decorator.compat
-   :members:
+
+.. autofunction:: metaclass(meta)

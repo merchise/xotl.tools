@@ -96,3 +96,54 @@ def test_smart_copy_with_callable_default():
     d = {}
     smart_copy(c, d, defaults=inset('ab'))
     assert d == dict(a=1, b='2')
+
+
+
+def test_newstyle_metaclass():
+    from xoutil.objects import metaclass
+
+    class Field(object):
+        __slots__ = (str('name'), str('default'))
+        def __init__(self, default):
+            self.default = default
+
+        def __get__(self, inst, owner):
+            if not inst:
+                return self
+            return self.default
+
+    class ModelType(type):
+        pass
+
+    class Base(object):
+        def __init__(self, **attrs):
+            self.__dict__.update(attrs)
+
+    class Model(metaclass(ModelType)):
+        f1 = Field(1009)
+        f2 = 0
+
+        def __init__(self, **attrs):
+            self.__dict__.update(attrs)
+
+    class Model2(Base, metaclass(ModelType)):
+        pass
+
+    class SubMeta(ModelType):
+        pass
+
+
+    class Submodel(Model, metaclass(SubMeta)):
+        pass
+
+    inst = Model(name='Instance')
+    assert inst.f1 == 1009
+    assert inst.name == 'Instance'
+    assert isinstance(Model.f1, Field)
+    assert type(Model) is ModelType
+    assert type(Submodel) is SubMeta
+    assert type(Model2) is ModelType
+    assert Model2.__base__ is Base
+    assert Submodel.__base__ is Model
+    # This is failing
+    assert Model.__base__ is object
