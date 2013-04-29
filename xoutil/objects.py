@@ -713,9 +713,12 @@ def extract_attrs(obj, *names, **kwargs):
 
 import importlib
 if _py3k:
-    metaclass = importlib.import_module('xoutil._meta3').meta
+    from xoutil._meta3 import metaclass
+    # metaclass = importlib.import_module('xoutil._meta3').metaclass
 else:
-    metaclass = importlib.import_module('xoutil._meta2').meta
+    from xoutil._meta2 import metaclass
+    # metaclass = importlib.import_module('xoutil._meta2').metaclass
+
 
 metaclass.__doc__ = '''Defines the metaclass of a class.
 

@@ -145,6 +145,5 @@ def test_newstyle_metaclass():
     assert type(Model2) is ModelType
     assert Model2.__base__ is Base
     assert Submodel.__base__ is Model
-
     # This is failing
-    # assert Model.__base__ is object
+    assert Model.__base__ is object

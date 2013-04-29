@@ -25,11 +25,9 @@ assert not py3k, 'This module should not be loaded in Py3k'
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__ = "Mon Apr 29 15:34:11 2013"
 
-_count = 0
-
+METACLASS_ATTR = str('__metaclass__')
 
 def metaclass(meta):
-
     class inner_meta(meta):
         pass
 
@@ -44,7 +42,8 @@ def metaclass(meta):
         bases = tuple(b for b in bases if b is not base)
         if not bases:
             bases = (object,)
-        attrs[str('__metaclass__')] = meta
+        if METACLASS_ATTR in attrs:
+            attrs[METACLASS_ATTR] = meta
         res = old_new(meta, name, bases, attrs)
         meta.__new__ = staticmethod(old_new)
         return res
@@ -67,3 +66,4 @@ def test_meta():
     assert type(Base) is Meta
     assert type(Entity) is Meta
     assert Entity.__base__ is Base
+    assert Base.__base__ is object

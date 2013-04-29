@@ -26,26 +26,35 @@ __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__   = "Mon Apr 29 15:34:11 2013"
 
 
-def meta(metacls, base=object):
-    class _markbase(base):
+def metaclass(meta):
+    class inner_meta(meta):
         pass
 
-    class _meta(metacls):
-        def __new__(cls, name, bases, attrs):
-            bases = tuple(b for b in bases if not issubclass(b, _markbase))
-            return metacls(name, bases, attrs)
-
-    class _base(_markbase, metaclass=_meta):
+    class base(object, metaclass=inner_meta):
         pass
 
-    return _base
+    old_new = meta.__new__
+
+    @staticmethod
+    def __new__(cls, name, bases, attrs):
+        print('='*10, cls, '::', name, '::', bases, '::', attrs)
+        bases = tuple(b for b in bases if b is not base)
+        if not bases:
+            bases = (object,)
+        res = old_new(meta, name, bases, attrs)
+        meta.__new__ = staticmethod(old_new)
+        return res
+
+    meta.__new__ = __new__
+
+    return base
 
 
 def test_meta():
     class Meta(type):
         pass
 
-    class Base(meta(Meta)):
+    class Base(metaclass(Meta)):
         pass
 
     class Entity(Base):
@@ -54,3 +63,4 @@ def test_meta():
     assert type(Base) is Meta
     assert type(Entity) is Meta
     assert Entity.__base__ is Base
+    assert Base.__base__ is object
