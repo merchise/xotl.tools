@@ -139,8 +139,7 @@ def customize(module, **kwargs):
         @metaclass(CustomModuleType)
         class CustomModule(_CustomModuleBase):
             def __getattr__(self, attr):
-                result = getattr(module, attr)
-                setattr(self, attr, result)
+                self.__dict__[attr] = result = getattr(module, attr)
                 return result
 
             def __dir__(self):
