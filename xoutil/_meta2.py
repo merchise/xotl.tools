@@ -11,7 +11,7 @@
 #
 # Created on 2013-04-29
 
-'''Implements the meta() function using the Py3k syntax.
+'''Implements the metaclass() function using the Py3k syntax.
 '''
 
 from __future__ import (division as _py3_division,
@@ -23,29 +23,42 @@ from xoutil.compat import py3k
 assert not py3k, 'This module should not be loaded in Py3k'
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Apr 29 15:34:11 2013"
+__date__ = "Mon Apr 29 15:34:11 2013"
 
 _count = 0
 
-def meta(metacls, base=object):
-    class _markbase(base):
+
+def metaclass(meta):
+
+    class inner_meta(meta):
         pass
 
-    class _meta(metacls):
-        def __new__(cls, name, bases, attrs):
-            bases = tuple(b for b in bases if not issubclass(b, _markbase))
-            return metacls(name, bases, attrs)
+    class base(object):
+        __metaclass__ = inner_meta
 
-    class _base(_markbase):
-        __metaclass__ = _meta
-    return _base
+    old_new = meta.__new__
+
+    @staticmethod
+    def __new__(cls, name, bases, attrs):
+        print('='*10, cls, '::', name, '::', bases, '::', attrs)
+        bases = tuple(b for b in bases if b is not base)
+        if not bases:
+            bases = (object,)
+        attrs[str('__metaclass__')] = meta
+        res = old_new(meta, name, bases, attrs)
+        meta.__new__ = staticmethod(old_new)
+        return res
+
+    meta.__new__ = __new__
+
+    return base
 
 
 def test_meta():
     class Meta(type):
         pass
 
-    class Base(meta(Meta)):
+    class Base(metaclass(Meta)):
         pass
 
     class Entity(Base):
