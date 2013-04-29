@@ -125,7 +125,6 @@ def bind_method(method, *args, **kwargs):
         self = None
         bound_method = method.__func__
     else:
-        assert is_instancemethod(method)
         self = None
         bound_method = method
     return self, bound_method, args, kwargs
