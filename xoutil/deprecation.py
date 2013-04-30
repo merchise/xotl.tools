@@ -45,21 +45,56 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None, removed_in_
         @deprecate(new_function)
         def deprecated_function(...):
             ...
+
+    :param replacement: Either a string or the object that replaces the deprecated.
+
+    :param msg: A string with keyword arguments for the `format`
+       function. Currently we pass the current keyword arguments: `replacement`
+       (after some processing), `funcname` with the name of the currently
+       deprecated object and `in_version` with the version this object is going
+       to be removed if `removed_in_version` argument is not None.
+
+       Defaults to: "{funcname} is now deprecated and it will be
+       removed{in_version}. Use {replacement} instead."
+
+    :param removed_in_version: The version the deprecated object is going to be
+       removed.
+
+    :param check_version: If True and `removed_in_version` is not None, then
+       declarations of obseleted objects will raise a DeprecationError. This
+       helps the release manager to keep the release clean.
+
+    :param deprecated_module: If provided, the name of the module the
+       deprecated object resides. Not needed if the deprecated object is a
+       function or class.
+
+    .. versionchanged:: 1.4.1 Introduces removed_in_version and
+                        check_version
+
     '''
     def decorator(target):
+        from xoutil.names import nameof
         def raise_if_deprecated(target_version):
             import pkg_resources
             from xoutil.compat import str_base
-            from xoutil.names import nameof
-            xoutil_dist = pkg_resources.get_distribution('xoutil')
+            pkg = nameof(target, inner=True, typed=True, full=True)
+            pkg, obj = pkg.rsplit('.', 1)
+            dist = None
+            while not dist and pkg:
+                try:
+                    dist = pkg_resources.get_distribution(pkg)
+                except pkg_resources.DistributionNotFound:
+                    dist = None
+                    pkg, obj = pkg.rsplit('.', 1)
+            assert dist
             if isinstance(target_version, str_base):
                 target_version = pkg_resources.parse_version(target_version)
-            if xoutil_dist.parsed_version >= target_version:
+            if dist.parsed_version >= target_version:
                 msg = ('A deprecated feature %r was scheduled to be '
                        'removed in version %r and it is still '
                        'alive in %r!' % (nameof(target, inner=True, full=True),
                                          str(removed_in_version),
-                                         str(xoutil_dist.version)))
+                                         str(dist.version)))
                 raise DeprecationError(msg)
 
         if deprecated_module:
