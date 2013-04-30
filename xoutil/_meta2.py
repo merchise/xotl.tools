@@ -38,7 +38,6 @@ def metaclass(meta):
 
     @staticmethod
     def __new__(cls, name, bases, attrs):
-        print('='*10, cls, '::', name, '::', bases, '::', attrs)
         bases = tuple(b for b in bases if b is not base)
         if not bases:
             bases = (object,)
