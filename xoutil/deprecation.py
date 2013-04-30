@@ -27,12 +27,17 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed. ' +
+DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed{in_version}. ' +
               'Use {replacement} instead.')
+
+
+class DeprecationError(Exception):
+    pass
+
 
 # XXX: Don't make deprecated depends upon anything more than compat and
 # decorator.py. Since this is meant to be used by all others xoutil modules.
-def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
+def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None, removed_in_version=None, check_version=False):
     '''Small decorator for deprecated functions.
 
     Usage::
@@ -42,6 +47,21 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             ...
     '''
     def decorator(target):
+        def raise_if_deprecated(target_version):
+            import pkg_resources
+            from xoutil.compat import str_base
+            from xoutil.names import nameof
+            xoutil_dist = pkg_resources.get_distribution('xoutil')
+            if isinstance(target_version, str_base):
+                target_version = pkg_resources.parse_version(target_version)
+            if xoutil_dist.parsed_version >= target_version:
+                msg = ('A deprecated feature %r was scheduled to be '
+                       'removed in version %r and it is still '
+                       'alive in %r!' % (nameof(target, inner=True, full=True),
+                                         str(removed_in_version),
+                                         str(xoutil_dist.version)))
+                raise DeprecationError(msg)
+
         if deprecated_module:
             funcname = deprecated_module + '.' + target.__name__
         else:
@@ -50,10 +70,17 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
             repl_name = replacement.__module__ + '.' + replacement.__name__
         else:
             repl_name = replacement
+        if removed_in_version:
+            in_version = ' in version ' + removed_in_version
+        else:
+            in_version = ''
         if isinstance(target, _class_types):
             def new(*args, **kwargs):
+                if check_version and removed_in_version:
+                    raise_if_deprecated(removed_in_version)
                 warnings.warn(msg.format(funcname=funcname,
-                                         replacement=repl_name),
+                                         replacement=repl_name,
+                                         in_version=in_version),
                               stacklevel=2)
                 return target.__new__(*args, **kwargs)
             # Code copied and adapted from xoutil.objects.copy_class. This is
@@ -75,8 +102,11 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None):
         else:
             @wraps(target)
             def inner(*args, **kw):
+                if check_version and removed_in_version:
+                    raise_if_deprecated(removed_in_version)
                 warnings.warn(msg.format(funcname=funcname,
-                                         replacement=repl_name),
+                                         replacement=repl_name,
+                                         in_version=in_version),
                               stacklevel=2)
                 return target(*args, **kw)
             return inner
