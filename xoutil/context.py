@@ -30,7 +30,7 @@ from __future__ import (division as _py3_division,
 
 
 from threading import local
-from xoutil.decorator.compat import metaclass
+from xoutil.objects import metaclass
 from xoutil.collections import StackedDict
 
 from xoutil.names import strlist as strs
@@ -61,8 +61,7 @@ class MetaContext(type(StackedDict)):
         return bool(self[name])
 
 
-@metaclass(MetaContext)
-class Context(StackedDict):
+class Context(StackedDict, metaclass(MetaContext)):
     '''A context manager for execution context flags.
 
     Use as::
