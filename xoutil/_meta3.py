@@ -23,7 +23,7 @@ from xoutil.compat import py3k
 assert py3k, 'This module should be loaded in Py3k only'
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Apr 29 15:34:11 2013"
+__date__ = "Mon Apr 29 15:34:11 2013"
 
 
 def metaclass(meta):
@@ -37,7 +37,6 @@ def metaclass(meta):
 
     @staticmethod
     def __new__(cls, name, bases, attrs):
-        print('='*10, cls, '::', name, '::', bases, '::', attrs)
         bases = tuple(b for b in bases if b is not base)
         if not bases:
             bases = (object,)
