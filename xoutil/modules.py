@@ -127,7 +127,7 @@ def customize(module, **kwargs):
     '''
     if not isinstance(module, _CustomModuleBase):
         import sys
-        from xoutil.decorator.compat import metaclass
+        from xoutil.objects import metaclass
 
         class CustomModuleType(type):
             def __new__(cls, name, bases, attrs):
@@ -136,8 +136,7 @@ def customize(module, **kwargs):
                 attrs.update(kwargs)
                 return super(CustomModuleType, cls).__new__(cls, name, bases, attrs)
 
-        @metaclass(CustomModuleType)
-        class CustomModule(_CustomModuleBase):
+        class CustomModule(_CustomModuleBase, metaclass(CustomModuleType)):
             def __getattr__(self, attr):
                 self.__dict__[attr] = result = getattr(module, attr)
                 return result
