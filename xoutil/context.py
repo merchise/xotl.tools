@@ -115,16 +115,16 @@ class Context(StackedDict, metaclass(MetaContext)):
     __slots__ = ('name', 'count', '_events')
 
     def __new__(cls, name, **data):
-        res = cls[name]
-        if not res:     # if res is _null_context:
-            res = super(Context, cls).__new__(cls)
-            res.name = name
-            res.count = 0
+        self = cls[name]
+        if not self:     # if self is _null_context:
+            self = super(Context, cls).__new__(cls)
+            self.name = name
+            self.count = 0
             # TODO: Redefine all event management
-            res._events = []
-            super(Context, res).__init__()
-        res.push(**data)
-        return res
+            self._events = []
+            super(Context, self).__init__()
+        self.push(**data)
+        return self
 
     def __init__(self, name, **data):
         pass
@@ -149,7 +149,7 @@ class Context(StackedDict, metaclass(MetaContext)):
             for event in self.events:
                 event(self)
             del _data.contexts[self.name]
-        super(Context, self).pop()
+        self.pop()
         return False
 
     @property

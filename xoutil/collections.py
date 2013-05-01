@@ -49,16 +49,6 @@ from xoutil.compat import defaultdict as _defaultdict
 from xoutil.compat import py32 as _py32
 
 
-def _key2attr(key, sep='_'):
-    '''Normalize a key to be a valid attribute name.'''
-    from xoutil.validators.identifiers import is_valid_identifier
-    res = key
-    sep = str(sep)
-    for s in str('. \t\n'):
-        res = res.replace(s, sep)
-    return str(res) if is_valid_identifier(res) else None
-
-
 class defaultdict(_defaultdict):
     '''A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
@@ -146,8 +136,6 @@ class OpenDictMixin(object):
     - The object has a ``__dict__`` attribute and the name is key there.
 
     '''
-    dotted = True
-
     def __dir__(self):
         from xoutil.validators.identifiers import is_valid_identifier
         super_dict = getattr(super(OpenDictMixin, self), '__dict__', {})
@@ -532,33 +520,9 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
                 res[key] = value
         return res
 
-    def pprint(self, stream=None, indent=1, width=80, depth=None):
-        if stream is None:
-            import sys
-            stream = sys.stdout
-        stream.write('{')
-        start = True
-        for key in self:
-            if start:
-                start = False
-            else:
-                stream.write(', ')
-            stream.write('%s: ' % key)
-            value = self[key]
-            if isinstance(value, StackedDict):
-                value.pprint(stream=stream, indent=indent, width=width,
-                             depth=depth-1 if depth else depth)
-            else:
-                from pprint import pprint
-                pprint(value, stream=stream, indent=indent, width=width,
-                       depth=depth-1 if depth else depth)
-        stream.write('}')
-
     def __str__(self):
-        from StringIO import StringIO
-        stream = StringIO()
-        self.pprint(stream)
-        return stream.getvalue()
+        # TODO: Optimize
+        return str(dict(self))
 
     def __repr__(self):
         return '%s(%s)' % (type(self).__name__, str(self))
