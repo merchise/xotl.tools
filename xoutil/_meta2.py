@@ -27,6 +27,7 @@ __date__ = "Mon Apr 29 15:34:11 2013"
 
 METACLASS_ATTR = str('__metaclass__')
 
+
 def metaclass(meta):
     class inner_meta(meta):
         pass

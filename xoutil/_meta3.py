@@ -23,7 +23,7 @@ from xoutil.compat import py3k
 assert py3k, 'This module should be loaded in Py3k only'
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Apr 29 15:34:11 2013"
+__date__ = "Mon Apr 29 15:34:11 2013"
 
 
 def metaclass(meta):

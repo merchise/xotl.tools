@@ -134,7 +134,8 @@ def customize(module, **kwargs):
                 # TODO: Take all attrs from `module` to avoid the double call
                 # in __getattr__.
                 attrs.update(kwargs)
-                return super(CustomModuleType, cls).__new__(cls, name, bases, attrs)
+                return super(CustomModuleType, cls).__new__(cls, name, bases,
+                                                            attrs)
 
         class CustomModule(_CustomModuleBase, metaclass(CustomModuleType)):
             def __getattr__(self, attr):

@@ -108,7 +108,11 @@ class opendict(dict):
 
     '''
     def __getattr__(self, name):
-        return self[name]
+        try:
+            return self[name]
+        except:
+            msg = "type object '%s' has no attribute '%s'"
+            raise AttributeError(msg % (type(self), name))
 
 
 class OpenDictMixin(object):
@@ -133,13 +137,19 @@ class OpenDictMixin(object):
 
     '''
     def __dir__(self):
+        from xoutil.validators.identifiers import is_valid_identifier
         super_dict = getattr(super(OpenDictMixin, self), '__dict__', {})
         slots = (getattr(cls, '__slots__', ()) for cls in type(self).mro())
         slot_attrs = {name for slot in slots for name in slot}
-        return list(set(self) | set(super_dict) | slot_attrs)
+        key_attrs = {name for name in self if is_valid_identifier(name)}
+        return list(key_attrs | set(super_dict) | slot_attrs)
 
     def __getattr__(self, name):
-        return self[name]
+        try:
+            return self[name]
+        except:
+            msg = "type object '%s' has no attribute '%s'"
+            raise AttributeError(msg % (type(self), name))
 
     def __setattr__(self, name, value):
         from xoutil.types import MemberDescriptorType
@@ -179,7 +189,8 @@ class SmartDictMixin(object):
         '''
         from xoutil.types import GeneratorType, DictProxyType, is_iterable
         for arg in args:
-            if isinstance(arg, (Mapping, tuple, list, GeneratorType, DictProxyType)):
+            valids = (Mapping, tuple, list, GeneratorType, DictProxyType)
+            if isinstance(arg, valids):
                 self._update(arg)
             elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
                 self._update(((key, arg[key]) for key in arg.keys()))
@@ -509,33 +520,9 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
                 res[key] = value
         return res
 
-    def pprint(self, stream=None, indent=1, width=80, depth=None):
-        if stream is None:
-            import sys
-            stream = sys.stdout
-        stream.write('{')
-        start = True
-        for key in self:
-            if start:
-                start = False
-            else:
-                stream.write(', ')
-            stream.write('%s: ' % key)
-            value = self[key]
-            if isinstance(value, StackedDict):
-                value.pprint(stream=stream, indent=indent, width=width,
-                             depth=depth-1 if depth else depth)
-            else:
-                from pprint import pprint
-                pprint(value, stream=stream, indent=indent, width=width,
-                       depth=depth-1 if depth else depth)
-        stream.write('}')
-
     def __str__(self):
-        from StringIO import StringIO
-        stream = StringIO()
-        self.pprint(stream)
-        return stream.getvalue()
+        # TODO: Optimize
+        return str(dict(self))
 
     def __repr__(self):
         return '%s(%s)' % (type(self).__name__, str(self))
