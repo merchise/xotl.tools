@@ -740,3 +740,22 @@ Usage::
    >>> Spam.__bases__ == (dict, )
    True
 '''
+
+
+def register_with(abc):
+    '''Register a virtual `subclass` of an ABC.
+
+    For example::
+
+        >>> from collections import Mapping
+        >>> @register_with(Mapping)
+        ... class Foobar(object):
+        ...     pass
+        >>> issubclass(Foobar, Mapping)
+            True
+
+    '''
+    def inner(subclass):
+        abc.register(subclass)
+        return subclass
+    return inner

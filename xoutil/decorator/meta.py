@@ -152,14 +152,14 @@ class FunctionMaker(object):
         mo = DEF.match(src)
         if mo is None:
             raise SyntaxError('not a valid function template\n%s' % src)
-        name = mo.group(1) # extract the function name
+        name = mo.group(1)  # extract the function name
         names = set([name] + [arg.strip(' *') for arg in
                              self.shortsignature.split(',')])
         for n in names:
             if n in ('_func_', '_call_'):
                 raise NameError('%s is overridden in\n%s' % (n, src))
-        if not src.endswith('\n'): # add a newline just for safety
-            src += '\n' # this is needed in old versions of Python
+        if not src.endswith('\n'):  # add a newline just for safety
+            src += '\n'   # this is needed in old versions of Python
         try:
             code = compile(src, '<string>', 'single')
             # print >> sys.stderr, 'Compiling %s' % src

@@ -24,7 +24,7 @@ from xoutil.objects import full_nameof
 from .meta import decorator as _decorator
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Tue Jan  8 09:14:05 2013"
+__date__ = "Tue Jan  8 09:14:05 2013"
 
 
 @_decorator

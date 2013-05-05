@@ -27,7 +27,7 @@ __date__   = "Mon Mar 25 14:38:12 2013"
 
 
 class BaseConvertor(object):
-    '''Base class that implements convertion algorithms based on a simple
+    '''Base class that implements conversion algorithms based on a simple
     lookup table and a bit mask.
 
     It's supposed that the mask is a sigle string of set-up bits. And the table
@@ -79,7 +79,7 @@ class BaseConvertor(object):
 
 
 class B32(BaseConvertor):
-    '''Handles base-32 convertions.
+    '''Handles base-32 conversions.
 
     In base 32, each 5-bits chunks are represented by a single "digit". Digits
     comprises all 0..9 and a..w.
@@ -97,7 +97,7 @@ class B32(BaseConvertor):
 
 
 class B64(BaseConvertor):
-    '''Handles [a kind of] base 64 convertions.
+    '''Handles [a kind of] base 64 conversions.
 
     This **is not standard base64**, but a reference-friendly base 64 to help
     the use case of generating a short reference.

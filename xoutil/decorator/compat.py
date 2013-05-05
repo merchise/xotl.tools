@@ -27,7 +27,8 @@ __all__ = strs('metaclass')
 del strs
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Tue Jan 15 11:38:55 2013"
+__date__ = "Tue Jan 15 11:38:55 2013"
+
 
 @deprecated('xoutil.objects.metaclass')
 def metaclass(meta):
