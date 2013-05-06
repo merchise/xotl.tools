@@ -8,19 +8,36 @@
 
    .. warning::
 
-      *Deprecated since 1.4.1, will be removed in 1.6.0*. You should use
-      :func:`xoutil.objects.metaclass`.  This function is faster because it
-      does not recreates the class like the decorator does.
+      *Deprecated since 1.4.1*, and it will be **removed in 1.4.2!** because of
+      a bug. You should use :func:`xoutil.objects.metaclass`.
 
-      In a benchmark we have created with a dummy metaclass and fat class with
-      102 attributes, we observe the following results for the new function::
+      The bug happens precisely because this *is a decorator*: since the class
+      is created before is passed to decorator; a metaclass with has
+      side-effects (like registration) won't work properly with this decorator.
 
-	   >>> %timeit -n1000 inline_meta()
-	   1000 loops, best of 3: 89.1 us per loop
+      Example of the bug::
 
-      and for the decorator one::
+            class RegisteringType(type):
+                classes = []
 
-	   >>> %timeit -n1000 deco_meta()
-	   1000 loops, best of 3: 215 us per loop
+                def __new__(cls, name, bases, attrs):
+                    res = super(RegisteringType, cls).__new__(cls, name, bases, attrs)
+                    cls.classes.append(res)  # <--- registers the new class
+                    return res
 
-      So the new function is about 2.4x faster than the deprecated decorator.
+            @metaclass(RegisteringType)
+            class Base(object):
+                pass
+
+            class SubType(RegisteringType):
+                def __new__(cls, name, bases, attrs):
+                    return super(SubType, cls).__new__(cls, name, bases, attrs)
+
+            @metaclass(SubType)
+            class Foo(Base):
+                pass
+
+      ``RegisteringType`` adds all its instances to ``classes``, so you'd
+      expect that only ``Base`` and ``Foo`` are there, but since ``Foo`` is
+      actually created two times (before and after the decorator) there are
+      **three** classes registered.
