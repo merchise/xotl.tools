@@ -8,3 +8,6 @@
 - New style for declaring portable metaclasses in
   :func:`xoutil.objects.metaclass`, so
   :func:`xoutil.decorator.compat.metaclass` is now deprecated.
+
+- Adds the module :mod:`xoutil.pprint` and function
+  :func:`xoutil.pprint.ppformat`.
