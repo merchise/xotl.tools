@@ -211,7 +211,7 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
-#
+# TODO: If next is part of "__doc__", remove the comment or the __doc__ part.
 # The following is extracted from the SQLAlchemy project's codebase, merit and
 # copyright goes to SQLAlchemy authors::
 #
