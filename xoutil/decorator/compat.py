@@ -30,14 +30,10 @@ __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__ = "Tue Jan 15 11:38:55 2013"
 
 
-@deprecated('xoutil.objects.metaclass')
+@deprecated('xoutil.objects.metaclass', removed_in_version='1.6',
+            check_version=True)
 def metaclass(meta):
     '''Declares a meta class transparently in Python 2 and Python 3.
-
-    .. warning::
-
-       *Deprecated since 1.4.1*. Use :func:`xoutil.objects.metaclass`.  That
-       function is deemed more optimal since it does not copies the class.
 
     Example::
 
