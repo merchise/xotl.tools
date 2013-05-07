@@ -172,6 +172,7 @@ class OpenDictMixin(object):
             del self[name]
 
 
+# TODO: Analyze if " __missing__" can be used here
 class SmartDictMixin(object):
     '''A mixin that extends the `update` method of dicts.
 

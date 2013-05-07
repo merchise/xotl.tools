@@ -432,6 +432,33 @@ class lazy(object):
             return res
 
 
+class classproperty(object):
+    '''A descriptor that behaves like property for instances but for classes.
+
+    Example of its use::
+
+        class Foobar(object):
+            @classproperty
+            def getx(cls):
+                return cls._x
+
+    Class properties are always read-only, if attribute values must be setted
+    or deleted, a metaclass must be defined.
+
+    '''
+    def __init__(self, fget):
+        '''Create the class property descriptor.
+
+          :param:`fget` is a function for getting the class attribute value
+
+        '''
+        self.__get = fget
+
+    def __get__(self, instance, owner):
+        cls = type(instance) if instance is not None else owner
+        return self.__get(cls)
+
+
 def setdefaultattr(obj, name, value):
     '''Sets the attribute name to value if it is not set::
 
