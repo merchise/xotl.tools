@@ -11,7 +11,10 @@
 #
 # Created on 7 mai 2013
 
-'''An example of an application that use "xoutil.cli"
+'''A simple :func:`main` entry point for CLI based applications.
+
+This module provides an example of how to use :mod:`xoutil.cli` to create a CLI
+application.
 
 '''
 
@@ -25,8 +28,7 @@ __author__ = 'med'
 
 
 def main(default=None):
-    '''
-    Execute a command, it can be given as the first program argument or it's
+    '''Execute a command, it can be given as the first program argument or it's
     the default command is defined.
 
     '''

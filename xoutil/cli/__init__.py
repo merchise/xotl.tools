@@ -93,10 +93,7 @@ class Command(metaclass(ABCMeta)):
 
     Each command could include its own argument parser, but it isn't used
     automatically, all arguments will be passed as a single parameter to
-    :method:`run` removing the command when obtained from "sys.argv".
-    Nevertheless, if the command define one class method named
-    "get_arg_parser", then it will be used to complement the help of this
-    command. See :method:`get_help` for more info.
+    :meth:`run` removing the command when obtained from "sys.argv".
 
     '''
     __default_command__ = None

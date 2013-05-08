@@ -30,6 +30,7 @@ Contents:
    :glob:
 
    xoutil/*
+   xoutil/**
    others
    HISTORY
    CONTRIBUTING
