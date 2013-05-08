@@ -11,3 +11,5 @@
 
 - Adds the module :mod:`xoutil.pprint` and function
   :func:`xoutil.pprint.ppformat`.
+
+- Adds the package :mod:`xoutil.cli`.

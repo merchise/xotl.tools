@@ -17,6 +17,8 @@ CLi is a means of interaction with a computer program where the user (or
 client) issues commands to the program in the form of successive lines of text
 (command lines).
 
+.. versionadded:: 1.4.1
+
 '''
 
 from __future__ import (division as _py3_division,
