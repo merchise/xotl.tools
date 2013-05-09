@@ -105,10 +105,10 @@ class Command(metaclass(ABCMeta)):
 
     Each command could include its own argument parser, but it isn't used
     automatically, all arguments will be passed as a single parameter to
-    :method:`run` removing the command when obtained from "sys.argv".
+    :meth:`run` removing the command when obtained from "sys.argv".
     Nevertheless, if the command define one class method named
     "get_arg_parser", then it will be used to complement the help of this
-    command. See :method:`get_help` for more info.
+    command. See :meth:`get_help` for more info.
 
     '''
     __default_command__ = None
@@ -179,7 +179,7 @@ class Command(metaclass(ABCMeta)):
 
     @staticmethod
     def _settle_cache(target, source, recursed=set()):
-        ''':param:`target` is a mapping to store result commands'''
+        '''`target` is a mapping to store result commands'''
         # TODO: Convert check based in argument "recursed" in a decorator
         from xoutil.names import nameof
         name = nameof(source, inner=True, full=True)
