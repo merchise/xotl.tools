@@ -26,20 +26,20 @@ from __future__ import (division as _py3_division,
 from xoutil.compat import py3k as _py3k
 from xoutil.deprecation import deprecated
 
-from xoutil.names import strlist as strs
-__all__ = strs('nameof', 'smart_getter', 'smart_getter_and_deleter', 'xdir',
-               'fdir', 'validate_attrs', 'get_first_of',
-               'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
-               'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy',
-               'extract_attrs')
-del strs
+from xoutil.names import strlist as slist
+__all__ = slist('nameof', 'smart_getter', 'smart_getter_and_deleter',
+                'xdir', 'fdir', 'validate_attrs', 'get_first_of',
+                'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
+                'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy',
+                'extract_attrs')
+del slist
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 # These two functions can be use to always return True or False
-_true = lambda * args, **kwargs: True
-_false = lambda * args, **kwargs: False
+_true = lambda *args, **kwargs: True
+_false = lambda *args, **kwargs: False
 
 
 # TODO: Deprecate and restructure all its uses
@@ -96,6 +96,74 @@ def smart_getter_and_deleter(obj):
         return partial(get_and_del_attr, obj)
 
 smart_get_and_del = deprecated(smart_getter_and_deleter)(smart_getter_and_deleter)
+
+
+def is_private_name(name):
+    '''Return if `name` is private or not.'''
+    prefix = '__'
+    return name.startswith(prefix) and not name.endswith(prefix)
+
+
+def fix_private_name(cls, name):
+    '''Correct a private name with Python conventions, return the same value if
+    name is not private.
+
+    '''
+    if is_private_name(name):
+        return str('_%s%s' % (cls.__name__, name))
+    else:
+        return name
+
+
+def attrclass(obj, name):
+    '''Find the definition class of an attribute specified by `name', return
+    None if not found.
+
+    If `name` is private, classes are recursed in MRO until a definition or an
+    assign was made at that level.
+
+    '''
+    attrs = getattr(obj, '__dict__', {})
+    if name in attrs:
+        return type(obj)
+    else:
+        def check(cls):
+            attr = fix_private_name(cls, name)
+            if attr in attrs:
+                return cls
+            else:
+                desc = getattr(cls, '__dict__', {}).get(attr)
+                if desc:
+                    from types import UnboundMethodType as UM
+                    get = getattr(desc, '__get__', None)
+                    if callable(get) and not isinstance(get, UM):
+                        return cls
+                    else:
+                        return None
+                else:
+                    return None
+        cls_chcks = (check(cls) for cls in type(obj).mro())
+        return next((cls for cls in cls_chcks if cls is not None), None)
+
+
+def fulldir(obj):
+    '''Return a set with all valid attribute names defined in `obj`'''
+    res = set()
+    if isinstance(obj, type):
+        last = None
+        for cls in type.mro(obj):
+            attrs = getattr(cls, '__dict__', {})
+            if attrs is not last:
+                for name in attrs:
+                    res.add(name)
+            last = attrs
+    else:
+        for name in getattr(obj, '__dict__', {}):
+            res.add(name)
+    cls = type(obj)
+    if cls is not type:
+        res |= set(dir(cls))
+    return res
 
 
 # TODO: [manu] This is only a proposal, integrate in all these functions in ...
@@ -449,7 +517,7 @@ class classproperty(object):
     def __init__(self, fget):
         '''Create the class property descriptor.
 
-          :param:`fget` is a function for getting the class attribute value
+          :param fget: is a function for getting the class attribute value
 
         '''
         self.__get = fget
@@ -595,8 +663,8 @@ def smart_copy(*args, **kwargs):
 
     :param target: The object to fill.
 
-    :param defaults: Default values for the attributes to be copied as explained
-                     below. Defaults to False.
+    :param defaults: Default values for the attributes to be copied as
+                     explained below. Defaults to False.
 
     :type defaults: Either a bool, a dictionary, an iterable or a callable.
 

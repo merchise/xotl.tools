@@ -47,6 +47,7 @@ del _pm, _copy_python_module_members
 
 from xoutil.compat import defaultdict as _defaultdict
 from xoutil.compat import py32 as _py32
+from xoutil.names import strlist as slist
 
 
 class defaultdict(_defaultdict):
@@ -136,45 +137,99 @@ class OpenDictMixin(object):
     - The object has a ``__dict__`` attribute and the name is key there.
 
     '''
+    # Subclasses can redefine this for converting keys to attributes by
+    # replacing separator chars (keys) for valid identifier chars (values).
+    __separators__ = {'.': '_', '-': '_'}
+
+    # Cache for inverted mapping
+    __slots__ = slist('__mapping')
+
     def __dir__(self):
-        from xoutil.validators.identifiers import is_valid_identifier
-        super_dict = getattr(super(OpenDictMixin, self), '__dict__', {})
-        slots = (getattr(cls, '__slots__', ()) for cls in type(self).mro())
-        slot_attrs = {name for slot in slots for name in slot}
-        key_attrs = {name for name in self if is_valid_identifier(name)}
-        return list(key_attrs | set(super_dict) | slot_attrs)
+        '''Return normal "dir" plus valid keys as attributes.'''
+        # TODO: Check if super must be called if defined
+        from xoutil.objects import fulldir
+        return list(set(~self) | fulldir(self))
 
     def __getattr__(self, name):
-        try:
-            return self[name]
-        except:
-            msg = "type object '%s' has no attribute '%s'"
-            raise AttributeError(msg % (type(self), name))
+        from xoutil.objects import attrclass, fix_private_name
+        cls = attrclass(self, name)
+        if cls:
+            attr = fix_private_name(cls, name)
+            return super(OpenDictMixin, self).__getattr__(attr)
+        else:
+            key = (~self).get(name)
+            if key is not None:
+                return self[key]
+            else:
+                msg = "'%s' object has no attribute '%s'"
+                raise AttributeError(msg % (type(self).__name__, name))
 
     def __setattr__(self, name, value):
-        from xoutil.types import MemberDescriptorType
-        _super = super(OpenDictMixin, self)
-        slot = getattr(type(self), name, None)
-        super_dict = getattr(_super, '__dict__', {})
-        if isinstance(slot, MemberDescriptorType) or name in super_dict:
-            _super.__setattr__(name, value)
+        from xoutil.objects import attrclass, fix_private_name
+        cls = attrclass(self, name)
+        if not cls:
+            key = (~self).get(name)
+            if not key:
+                cls = type(self)
+        if cls:
+            attr = fix_private_name(cls, name)
+            super(OpenDictMixin, self).__setattr__(attr, value)
         else:
-            self[name] = value
+            self[key] = value
 
     def __delattr__(self, name):
-        from xoutil.types import MemberDescriptorType
-        _super = super(OpenDictMixin, self)
-        slot = getattr(type(self), name, None)
-        super_dict = getattr(_super, '__dict__', {})
-        if isinstance(slot, MemberDescriptorType) or name in super_dict:
-            _super.__delattr__(name)
+        from xoutil.objects import attrclass, fix_private_name
+        cls = attrclass(self, name)
+        if not cls:
+            key = (~self).get(name)
+            if not key:
+                cls = type(self)    # Maybe just for raising the error
+        if cls:
+            attr = fix_private_name(cls, name)
+            super(OpenDictMixin, self).__delattr__(attr)
         else:
-            del self[name]
+            del self[key]
+
+    def __invert__(self):
+        '''Return an inverted mapping between key and attribute names (keys of
+        the resulting dictionary are identifiers for attribute names and values
+        are original key names).
+
+        Class attribute "__separators__" are used to calculate it and is cached
+        in private variable "__mapping".
+
+        Several keys could have the same identifier, only one will be valid and
+        used.
+
+        To obtain this mapping you can use as the unary operator "~".
+
+        '''
+        try:
+            calculate = len(self.__mapping) != len(self)
+        except:
+            calculate = True
+        if calculate:
+            def k2a(key):
+                from xoutil.validators.identifiers import is_valid_identifier
+                res = key
+                seps = self.__separators__
+                for sep in seps:
+                    res = res.replace(sep, seps[sep])
+                return str(res) if is_valid_identifier(res) else None
+            self._mapping = {k2a(key): key for key in self}
+            self._mapping.pop(None, None)
+        return self._mapping
 
 
-# TODO: Analyze if " __missing__" can be used here
 class SmartDictMixin(object):
-    '''A mixin that extends the `update` method of dicts.
+    '''A mixin that extends the `update` method of dictionaries
+
+    Standard method allow only one positional argument, this allow several.
+
+    Note on using mixins in Python: method resolution order is calculated in
+    the order of inheritance, if a mixin is defined to overwrite behavior
+    already existent, use first that classes with it. See :class:`SmartDict'
+    below.
 
     '''
     def update(self, *args, **kwargs):
@@ -183,30 +238,21 @@ class SmartDictMixin(object):
 
         Each positional argument could be:
 
-        - another dictionary.
+        - another mapping (any object implementing "keys" and "__getitem__"
+          methods.
+
         - an iterable of (key, value) pairs.
-        - any object implementing "keys()" and "__getitem__(key)" methods.
 
         '''
-        from xoutil.types import GeneratorType, DictProxyType, is_iterable
         for arg in args:
-            valids = (Mapping, tuple, list, GeneratorType, DictProxyType)
-            if isinstance(arg, valids):
-                self._update(arg)
-            elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
-                self._update(((key, arg[key]) for key in arg.keys()))
-            elif is_iterable(arg):
-                self._update(iter(arg))
+            if hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
+                for key in arg:
+                    self[key] = arg[key]
             else:
-                msg = ('cannot convert dictionary update sequence element '
-                       '"%s" to a (key, value) pair iterator') % arg
-                raise TypeError(msg)
-        if kwargs:
-            self.update(kwargs)
-
-    def _update(self, items):
-        '''For legacy compatibility.'''
-        super(SmartDictMixin, self).update(items)
+                for key, value in arg:
+                    self[key] = value
+        for key in kwargs:
+            self[key] = kwargs[key]
 
 
 class SmartDict(SmartDictMixin, dict):
@@ -215,7 +261,6 @@ class SmartDict(SmartDictMixin, dict):
     See :meth:`SmartDictMixin.update`.
 
     '''
-
     def __init__(self, *args, **kwargs):
         super(SmartDict, self).__init__()
         self.update(*args, **kwargs)
@@ -592,3 +637,7 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         '''
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)
+
+
+# get rid of unused global variables
+del slist
