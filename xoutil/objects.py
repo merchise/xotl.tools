@@ -817,6 +817,8 @@ else:
 
 metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking style.
 
+.. versionadded:: 1.4.1
+
 Usage::
 
    >>> class Meta(type):
