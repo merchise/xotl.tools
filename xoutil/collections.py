@@ -142,7 +142,7 @@ class OpenDictMixin(object):
     __separators__ = {'.': '_', '-': '_'}
 
     # Cache for inverted mapping
-    __slots__ = slist('__mapping')
+    __slots__ = slist('__mapping')  # First must be always '__mapping'
 
     def __dir__(self):
         '''Return normal "dir" plus valid keys as attributes.'''
@@ -153,12 +153,18 @@ class OpenDictMixin(object):
     def __getattr__(self, name):
         from xoutil.objects import attrclass, fix_private_name
         cls = attrclass(self, name)
-        if cls:
+        if cls is not None:
+            from xoutil import Unset
             attr = fix_private_name(cls, name)
-            return super(OpenDictMixin, self).__getattr__(attr)
+            attrs = getattr(self, '__dict__', {})
+            res = attrs.get(attr, Unset)
+            if res is Unset:
+                desc = cls.__dict__[attr]
+                res = desc.__get__(self, type(self))
+            return res
         else:
             key = (~self).get(name)
-            if key is not None:
+            if key:
                 return self[key]
             else:
                 msg = "'%s' object has no attribute '%s'"
@@ -167,11 +173,11 @@ class OpenDictMixin(object):
     def __setattr__(self, name, value):
         from xoutil.objects import attrclass, fix_private_name
         cls = attrclass(self, name)
-        if not cls:
+        if cls is None:
             key = (~self).get(name)
             if not key:
                 cls = type(self)
-        if cls:
+        if cls is not None:
             attr = fix_private_name(cls, name)
             super(OpenDictMixin, self).__setattr__(attr, value)
         else:
@@ -180,11 +186,11 @@ class OpenDictMixin(object):
     def __delattr__(self, name):
         from xoutil.objects import attrclass, fix_private_name
         cls = attrclass(self, name)
-        if not cls:
+        if cls is None:
             key = (~self).get(name)
             if not key:
                 cls = type(self)    # Maybe just for raising the error
-        if cls:
+        if cls is not None:
             attr = fix_private_name(cls, name)
             super(OpenDictMixin, self).__delattr__(attr)
         else:
@@ -204,21 +210,26 @@ class OpenDictMixin(object):
         To obtain this mapping you can use as the unary operator "~".
 
         '''
+        from xoutil.objects import fix_private_name
+        name = fix_private_name(OpenDictMixin, OpenDictMixin.__slots__[0])
+        mm = OpenDictMixin.__dict__[name]
         try:
-            calculate = len(self.__mapping) != len(self)
+            mapping = mm.__get__(self, OpenDictMixin)
+            calculate = len(mapping) != len(self)
         except:
             calculate = True
         if calculate:
             def k2a(key):
                 from xoutil.validators.identifiers import is_valid_identifier
                 res = key
-                seps = self.__separators__
+                seps = type(self).__separators__
                 for sep in seps:
                     res = res.replace(sep, seps[sep])
                 return str(res) if is_valid_identifier(res) else None
-            self._mapping = {k2a(key): key for key in self}
-            self._mapping.pop(None, None)
-        return self._mapping
+            mapping = {k2a(key): key for key in self}
+            mapping.pop(None, None)
+            mm.__set__(self, mapping)
+        return mapping
 
 
 class SmartDictMixin(object):
@@ -503,7 +514,6 @@ if not _py32:
             return dict.__eq__(self, other)
 
 
-
 class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     '''A multi-level mapping.
 
@@ -522,11 +532,11 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     Setting the value for key, sets it in the current level.
 
     '''
-    __slots__ = set(('_data', '_level'))
+    __slots__ = set(('_stack', '_level'))
 
     def __init__(self, *args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        self._data = {}
+        self._stack = {}
         self._level = 0
         self.update(*args, **kwargs)
 
@@ -554,17 +564,18 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         '''
         from xoutil import Unset
         level = self._level
-        if level <= 0:
+        if level > 0:
+            self._level = level - 1
+            stack = self._stack
+            res = {}
+            for key in stack:
+                items = stack[key]
+                value = items.pop(level, Unset)
+                if value is not Unset:
+                    res[key] = value
+            return res
+        else:
             raise TypeError('Cannot pop from StackedDict without any levels')
-        self._level = level - 1
-        d = self._data
-        res = {}
-        for key in d:
-            items = d[key]
-            value = items.pop(level, Unset)
-            if value is not Unset:
-                res[key] = value
-        return res
 
     def __str__(self):
         # TODO: Optimize
@@ -574,44 +585,38 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         return '%s(%s)' % (type(self).__name__, str(self))
 
     def __len__(self):
-        return len(self._data)
+        return len(self._stack)
 
     def __iter__(self):
-        return iter(self._data)
+        return iter(self._stack)
 
     def __getitem__(self, key):
         from xoutil import Unset
-        item = self._data[key]
+        item = self._stack[key]
         level = self._level
         res = Unset
         while res is Unset and (level >= 0):
             res = item.get(level, Unset)
             if res is Unset:
                 level -= 1
-        if res is Unset:
+        if res is not Unset:
+            return res
+        else:
             raise KeyError(key)
-        return res
 
     def __setitem__(self, key, value):
-        from xoutil import Unset
-        d = self._data
-        level = self._level
-        item = d.get(key, Unset)
-        if item is Unset:
-            d[key] = {level: value}
-        else:
-            item[level] = value
+        self._stack.setdefault(key, {})[self._level] = value
 
     def __delitem__(self, key):
         from xoutil import Unset
-        d = self._data
+        stack = self._stack
         level = self._level
-        item = d.get(key, Unset)
+        item = stack.get(key, Unset)
         if item is not Unset:
             if level in item:
                 del item[level]
                 if not item:
-                    del d[key]
+                    del stack[key]
             else:
                 raise KeyError("'%s' is not in this level (%s)" % (key, level))
         else:
