@@ -118,11 +118,11 @@ class Context(StackedDict, metaclass(MetaContext)):
         self = cls[name]
         if not self:     # if self is _null_context:
             self = super(Context, cls).__new__(cls)
+            super(Context, self).__init__()
             self.name = name
             self.count = 0
             # TODO: Redefine all event management
             self._events = []
-            super(Context, self).__init__()
         self.push(**data)
         return self
 
@@ -206,7 +206,6 @@ _null_context = NullContext()
 
 from collections import Mapping
 
-Mapping.register(MetaContext)
 Mapping.register(NullContext)
 
 del Mapping
