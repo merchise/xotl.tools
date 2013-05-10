@@ -133,10 +133,11 @@ def attrclass(obj, name):
                 return cls
             else:
                 desc = getattr(cls, '__dict__', {}).get(attr)
-                if desc:
-                    from types import UnboundMethodType as UM
+                if desc is not None:
+                    # For incompatibilities in module "types" between
+                    # Python 2.x and 3.x for method types, next is a nice try
                     get = getattr(desc, '__get__', None)
-                    if callable(get) and not isinstance(get, UM):
+                    if callable(get) and not isinstance(desc, type):
                         return cls
                     else:
                         return None
