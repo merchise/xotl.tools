@@ -568,11 +568,16 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
             self._level = level - 1
             stack = self._stack
             res = {}
+            todel = set()
             for key in stack:
                 items = stack[key]
                 value = items.pop(level, Unset)
                 if value is not Unset:
                     res[key] = value
+                    if not items:
+                        todel.add(key)
+            for key in todel:
+                del stack[key]
             return res
         else:
             raise TypeError('Cannot pop from StackedDict without any levels')
