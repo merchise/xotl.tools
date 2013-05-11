@@ -17,3 +17,5 @@
 - Adds the `filter` parameter to functions :func:`xoutil.objects.xdir` and
   :func:`xoutil.objects.fdir` and deprecates `attr_filter` and
   `value_filter`.
+
+- Adds function :func:`xoutil.objects.attrclass`.

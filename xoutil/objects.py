@@ -116,11 +116,14 @@ def fix_private_name(cls, name):
 
 
 def attrclass(obj, name):
-    '''Find the definition class of an attribute specified by `name', return
-    None if not found.
+    '''Finds the class that has the definition of an attribute specified by
+    `name', return None if not found.
 
-    If `name` is private, classes are recursed in MRO until a definition or an
-    assign was made at that level.
+    Classes are recursed in MRO until a definition or an assign was made at
+    that level.
+
+    If `name` is private according to Python's conventions it is rewritted to
+    the "real" attribute name before searching.
 
     '''
     attrs = getattr(obj, '__dict__', {})
