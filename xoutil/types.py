@@ -85,6 +85,10 @@ if _pypy:
     del _foo
 
 
+# TODO: Many of is_*method methods here are needed to be compared agains
+# the standard lib's module inspect versions. If they behave the same,
+# these should be deprecated in favor of the standards.
+
 class mro_dict(Mapping):
     '''An utility class that behaves like a read-only dict to query the
     attributes in the MRO chain of a `target` class (or an object's class).
