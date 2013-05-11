@@ -150,6 +150,7 @@ def attrclass(obj, name):
         return next((cls for cls in cls_chcks if cls is not None), None)
 
 
+# TODO: [med] Explain "valid" in documentation.
 def fulldir(obj):
     '''Return a set with all valid attribute names defined in `obj`'''
     res = set()
