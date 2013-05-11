@@ -802,18 +802,53 @@ def extract_attrs(obj, *names, **kwargs):
     .. versionadded:: 1.4.0
 
     '''
-    from xoutil.objects import smart_getter
+    # TODO: Delete next:
+    # from xoutil.objects import smart_getter
     get = smart_getter(obj)
     return tuple(get(attr, **kwargs) for attr in names)
 
 
-import importlib
 if _py3k:
-    from xoutil._meta3 import metaclass
-    # metaclass = importlib.import_module('xoutil._meta3').metaclass
+    from xoutil import _meta3 as __m
 else:
-    from xoutil._meta2 import metaclass
-    # metaclass = importlib.import_module('xoutil._meta2').metaclass
+    from xoutil import _meta2 as __m
+
+metaclass = __m.metaclass
+
+
+def _collect_unused_base(base):
+    try:
+        base = (base,)  # Tuples can be colleted
+        meta = getattr(getattr(base[0], '__class__', base[0]), '__name__', '?')
+        import gc
+        refs = gc.get_referrers(base[0])
+        for ref in refs:
+            try:
+                from collections import (MutableSequence as mseq,
+                                         MutableSet as mset,
+                                         MutableMapping as mmap)
+                if isinstance(ref, mseq):
+                    count = ref.count(base[0])
+                    while count > 0:
+                        ref.remove(base[0])
+                        count -= 1
+                elif isinstance(ref, mset):
+                    ref.remove(base[0])
+                elif isinstance(ref, mmap):
+                    for key in ref:
+                        if key is base[0] or ref[key] is base[0]:
+                            del ref[key]
+                # else: not removed
+            except Exception as error:
+                msg = 'Error "%s" collecting base for meta %s, ref "%s"'
+                print(msg % (error, meta, type(ref)))
+    except Exception as error:
+        msg = 'Error "%s" collecting base for meta "%s"'
+        print(msg % (error, meta))
+
+__m._collect_unused_bases = _collect_unused_base
+
+del __m, _collect_unused_base
 
 
 metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking style.
