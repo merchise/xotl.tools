@@ -44,6 +44,9 @@ def metaclass(meta, collect=True):
             else:
                 return type.__new__(cls, name, bases, attrs)
 
+        def __init__(self, name, bases, attrs):
+            pass
+
     class __inner__(base, metaclass=inner_meta):
         pass
 

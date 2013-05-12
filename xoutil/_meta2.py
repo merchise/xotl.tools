@@ -29,6 +29,7 @@ assert not py3k, 'This module should not be loaded in Py3k'
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__ = "Mon Apr 29 15:34:11 2013"
 
+
 METACLASS_ATTR = str('__metaclass__')
 
 
@@ -47,6 +48,7 @@ def metaclass(meta):
                 return meta(name, bases, attrs)
             else:
                 return type.__new__(cls, name, bases, attrs)
+
 
     class __inner__(base):
         __metaclass__ = inner_meta

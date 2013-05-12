@@ -87,11 +87,16 @@ def test_no_double_registration_with_inlinemetaclass():
         def __new__(cls, name, bases, attrs):
             return super(SubType, cls).__new__(cls, name, bases, attrs)
 
-    class Foo(Base, metaclass(SubType)):
+    class Foo(metaclass(SubType), Base):
         pass
 
-    assert set(RegisteringType.classes) == set((Base, Foo))
     assert len(RegisteringType.classes) == 2
+
+    class Bar(Base, metaclass(SubType)):
+        '''Like "Foo" but not in correct bases order for Python 2.x.'''
+
+    assert len(set(RegisteringType.classes)) == 3
+    assert len(RegisteringType.classes) == 3
 
 
 def test_inlinemetaclass_decorator_with_slots():
