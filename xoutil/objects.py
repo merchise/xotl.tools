@@ -819,29 +819,58 @@ metaclass = __m.metaclass
 
 
 metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
-style.
+    style.
 
-.. versionadded:: 1.4.1
+    .. versionadded:: 1.4.1
 
-Usage::
+    Usage::
 
-   >>> class Meta(type):
-   ...   pass
+       >>> class Meta(type):
+       ...   pass
 
-   # This is the same as the Py3k syntax: class Foobar(metaclass=Meta)
-   >>> class Foobar(metaclass(Meta)):
-   ...   pass
+       # This is the same as the Py3k syntax: class Foobar(metaclass=Meta)
+       >>> class Foobar(metaclass(Meta)):
+       ...   pass
 
-   >>> class Spam(dict, metaclass(Meta)):
-   ...   pass
+       >>> class Spam(dict, metaclass(Meta)):
+       ...   pass
 
-   >>> type(Spam) is Meta
-   True
+       >>> type(Spam) is Meta
+       True
 
-   >>> Spam.__bases__ == (dict, )
-   True
+       >>> Spam.__bases__ == (dict, )
+       True
 
-'''
+    For metaclasses with colateral effects in constructors (combination of
+    "__new__" and "__init__" methods), use "metaclass" definition as first
+    argument::
+
+        >>> class BaseMeta(type):
+        ...     classes = []
+        ...     def __new__(cls, name, bases, attrs):
+        ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
+        ...         cls.classes.append(res)
+        ...         return res
+
+        >>> class Base(metaclass(BaseMeta)):
+        ...     pass
+
+        >>> class SubType(BaseMeta):
+        ...     pass
+
+        >>> class Egg(metaclass(SubType), Base):
+        ...     pass
+
+        >>> len(BaseMeta.classes) == 2
+        True
+
+        >>> class Spam(Base, metaclass(SubType)):
+        ...     'Like "Egg" but registered twice in Python 2.x.'
+
+        >>> len(BaseMeta.classes) == 3    # Fail in Python 2.x
+        True
+
+    '''
 
 
 def register_with(abc):

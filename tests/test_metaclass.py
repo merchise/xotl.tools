@@ -71,10 +71,10 @@ def test_double_registration_with_decorator():
 
 def test_no_double_registration_with_inlinemetaclass():
     from xoutil.objects import metaclass
+    from xoutil.compat import py3k
 
     class RegisteringType(type):
         classes = []
-
         def __new__(cls, name, bases, attrs):
             res = super(RegisteringType, cls).__new__(cls, name, bases, attrs)
             cls.classes.append(res)
@@ -84,19 +84,17 @@ def test_no_double_registration_with_inlinemetaclass():
         pass
 
     class SubType(RegisteringType):
-        def __new__(cls, name, bases, attrs):
-            return super(SubType, cls).__new__(cls, name, bases, attrs)
+        pass
 
-    class Foo(metaclass(SubType), Base):
+    class Egg(metaclass(SubType), Base):
         pass
 
     assert len(RegisteringType.classes) == 2
 
-    class Bar(Base, metaclass(SubType)):
-        '''Like "Foo" but not in correct bases order for Python 2.x.'''
+    class Spam(Base, metaclass(SubType)):
+        'Like "Egg" but registered twice in Python 2.x.'
 
-    assert len(set(RegisteringType.classes)) == 3
-    assert len(RegisteringType.classes) == 3
+    assert len(RegisteringType.classes) == (3 if py3k else 4)
 
 
 def test_inlinemetaclass_decorator_with_slots():
