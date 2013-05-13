@@ -31,7 +31,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-from types import ModuleType as _ModuleType
+from types import ModuleType
 
 __docstring_format__ = 'rst'
 __author__ = 'med'
@@ -49,7 +49,6 @@ def force_module(ref=None):
        implementations of Python.
 
     '''
-    from types import ModuleType
     if isinstance(ref, ModuleType):
         return ref
     else:
@@ -109,7 +108,7 @@ def copy_members(source=None, target=None):
     return source
 
 
-class _CustomModuleBase(_ModuleType):
+class _CustomModuleBase(ModuleType):
     pass
 
 
@@ -137,7 +136,7 @@ def customize(module, **kwargs):
                 return super(CustomModuleType, cls).__new__(cls, name, bases,
                                                             attrs)
 
-        class CustomModule(_CustomModuleBase, metaclass(CustomModuleType)):
+        class CustomModule(metaclass(CustomModuleType), _CustomModuleBase):
             def __getattr__(self, attr):
                 self.__dict__[attr] = result = getattr(module, attr)
                 return result

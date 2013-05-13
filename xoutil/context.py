@@ -61,7 +61,7 @@ class MetaContext(type(StackedDict)):
         return bool(self[name])
 
 
-class Context(StackedDict, metaclass(MetaContext)):
+class Context(metaclass(MetaContext), StackedDict):
     '''A context manager for execution context flags.
 
     Use as::
