@@ -841,36 +841,45 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
        >>> Spam.__bases__ == (dict, )
        True
 
-    For metaclasses with colateral effects in constructors (combination of
-    "__new__" and "__init__" methods), use "metaclass" definition as first
-    argument::
+    .. note::
 
-        >>> class BaseMeta(type):
-        ...     classes = []
-        ...     def __new__(cls, name, bases, attrs):
-        ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
-        ...         cls.classes.append(res)
-        ...         return res
+       In Python 2.7, metaclasses that have colateral effects in constructors
+       (combination of "__new__" and "__init__" methods), are called *twice*
+       unless you use the :func:`metaclass` definition as the first argument::
 
-        >>> class Base(metaclass(BaseMeta)):
-        ...     pass
+          >>> class BaseMeta(type):
+          ...     classes = []
+          ...     def __new__(cls, name, bases, attrs):
+          ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
+          ...         cls.classes.append(res)   # <-- side effect
+          ...         return res
 
-        >>> class SubType(BaseMeta):
-        ...     pass
+          >>> class Base(metaclass(BaseMeta)):
+          ...     pass
 
-        >>> class Egg(metaclass(SubType), Base):
-        ...     pass
+          >>> class SubType(BaseMeta):
+          ...     pass
 
-        >>> len(BaseMeta.classes) == 2
-        True
+          >>> class Egg(metaclass(SubType), Base):   # <-- metaclass first
+          ...     pass
 
-        >>> class Spam(Base, metaclass(SubType)):
-        ...     'Like "Egg" but registered twice in Python 2.x.'
+          >>> Egg.__base__ is Base   # <-- but the base is Base
+          True
 
-        >>> len(BaseMeta.classes) == 3    # Fail in Python 2.x
-        True
+          >>> len(BaseMeta.classes) == 2
+          True
 
-    '''
+          >>> class Spam(Base, metaclass(SubType)):
+          ...     'Like "Egg" but it will be registered twice in Python 2.x.'
+
+          # Fail in Python 2.x
+          >>> len(BaseMeta.classes) == 3  # doctest: +SKIP
+          True
+
+          # Nevertheless the bases are ok:
+          >>> Spam.__bases__ == (Base, )
+          True
+'''
 
 
 def register_with(abc):
