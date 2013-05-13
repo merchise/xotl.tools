@@ -532,17 +532,17 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     Setting the value for key, sets it in the current level.
 
     '''
-    __slots__ = set(('_stack', '_level'))
+    __slots__ = set(('__stack', '__level'))
 
     def __init__(self, *args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        self._stack = {}
-        self._level = 0
+        self.__stack = {}
+        self.__level = 0
         self.update(*args, **kwargs)
 
     @property
     def level(self):
-        return self._level
+        return self.__level
 
     def push(self, *args, **kwargs):
         '''Pushes a whole new level to the stacked dict.
@@ -552,9 +552,9 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
 
         :param kwargs: Values to fill the new level.
         '''
-        self._level += 1
+        self.__level += 1
         self.update(*args, **kwargs)
-        return self._level
+        return self.__level
 
     def pop(self):
         '''Pops the last pushed level and returns the whole level.
@@ -563,10 +563,10 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
 
         '''
         from xoutil import Unset
-        level = self._level
+        level = self.__level
         if level > 0:
-            self._level = level - 1
-            stack = self._stack
+            self.__level = level - 1
+            stack = self.__stack
             res = {}
             todel = set()
             for key in stack:
@@ -590,15 +590,15 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         return '%s(%s)' % (type(self).__name__, str(self))
 
     def __len__(self):
-        return len(self._stack)
+        return len(self.__stack)
 
     def __iter__(self):
-        return iter(self._stack)
+        return iter(self.__stack)
 
     def __getitem__(self, key):
         from xoutil import Unset
-        item = self._stack[key]
-        level = self._level
+        item = self.__stack[key]
+        level = self.__level
         res = Unset
         while res is Unset and (level >= 0):
             res = item.get(level, Unset)
@@ -610,12 +610,12 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
             raise KeyError(key)
 
     def __setitem__(self, key, value):
-        self._stack.setdefault(key, {})[self._level] = value
+        self.__stack.setdefault(key, {})[self.__level] = value
 
     def __delitem__(self, key):
         from xoutil import Unset
-        stack = self._stack
-        level = self._level
+        stack = self.__stack
+        level = self.__level
         item = stack.get(key, Unset)
         if item is not Unset:
             if level in item:

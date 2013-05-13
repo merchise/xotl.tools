@@ -12,6 +12,10 @@
 # Created on 2013-04-29
 
 '''Implements the metaclass() function using the Py3k syntax.
+
+:func:`_collect_unused_bases` is injected from "xoutil.objects", also
+`__doc__` of :func:`metaclass`.
+
 '''
 
 from __future__ import (division as _py3_division,
@@ -25,45 +29,28 @@ assert not py3k, 'This module should not be loaded in Py3k'
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__ = "Mon Apr 29 15:34:11 2013"
 
+
 METACLASS_ATTR = str('__metaclass__')
 
 
 def metaclass(meta):
-    class inner_meta(meta):
+    class base(object):
         pass
 
-    class base(object):
+    class inner_meta(meta.__base__):
+        def __new__(cls, name, bases, attrs):
+            if name != '__inner__':
+                bases = tuple(b for b in bases if not issubclass(b, base))
+                if not bases:
+                    bases = (object,)
+                if METACLASS_ATTR in attrs:
+                    attrs[METACLASS_ATTR] = meta
+                return meta(name, bases, attrs)
+            else:
+                return type.__new__(cls, name, bases, attrs)
+
+
+    class __inner__(base):
         __metaclass__ = inner_meta
 
-    old_new = meta.__new__
-
-    @staticmethod
-    def __new__(cls, name, bases, attrs):
-        bases = tuple(b for b in bases if b is not base)
-        if not bases:
-            bases = (object,)
-        if METACLASS_ATTR in attrs:
-            attrs[METACLASS_ATTR] = meta
-        res = old_new(meta, name, bases, attrs)
-        meta.__new__ = staticmethod(old_new)
-        return res
-
-    meta.__new__ = __new__
-
-    return base
-
-
-def test_meta():
-    class Meta(type):
-        pass
-
-    class Base(metaclass(Meta)):
-        pass
-
-    class Entity(Base):
-        pass
-
-    assert type(Base) is Meta
-    assert type(Entity) is Meta
-    assert Entity.__base__ is Base
-    assert Base.__base__ is object
+    return __inner__

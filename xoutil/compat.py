@@ -57,8 +57,12 @@ if py3k:
     str_types = (str, )
     u = _unicode = str
     ext_str_types = (bytes, str)
+    TypeType = type
     class_types = (type, )
     integer = long = int
+    # TODO: [manu] Remove all "xrange" and all aliases:
+    #       "xoutil.compat.range" will be "xrange" in Python 2.x and will
+    #       remains unchanged in Python 2.0
     from builtins import range as xrange
     xrange_ = xrange
     range_ = range = lambda *args: list(xrange(*args))

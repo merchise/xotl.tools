@@ -131,8 +131,6 @@ class Template(metaclass(_TemplateClass)):
         True
     '''
 
-    __metaclass__ = _TemplateClass
-
     delimiter = str('$')
 
     def __init__(self, template):

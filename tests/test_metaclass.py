@@ -17,7 +17,25 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon May  6 15:55:00 2013"
+__date__ = "Mon May  6 15:55:00 2013"
+
+
+def test_basic_inline_metaclass():
+    from xoutil.objects import metaclass
+
+    class Meta(type):
+        pass
+
+    class Base(metaclass(Meta)):
+        pass
+
+    class Entity(Base):
+        pass
+
+    assert type(Base) is Meta
+    assert type(Entity) is Meta
+    assert Entity.__base__ is Base
+    assert Base.__base__ is object
 
 
 def test_double_registration_with_decorator():
@@ -53,10 +71,10 @@ def test_double_registration_with_decorator():
 
 def test_no_double_registration_with_inlinemetaclass():
     from xoutil.objects import metaclass
+    from xoutil.compat import py3k
 
     class RegisteringType(type):
         classes = []
-
         def __new__(cls, name, bases, attrs):
             res = super(RegisteringType, cls).__new__(cls, name, bases, attrs)
             cls.classes.append(res)
@@ -66,13 +84,17 @@ def test_no_double_registration_with_inlinemetaclass():
         pass
 
     class SubType(RegisteringType):
-        def __new__(cls, name, bases, attrs):
-            return super(SubType, cls).__new__(cls, name, bases, attrs)
+        pass
 
-    class Foo(Base, metaclass(SubType)):
+    class Egg(metaclass(SubType), Base):
         pass
 
     assert len(RegisteringType.classes) == 2
+
+    class Spam(Base, metaclass(SubType)):
+        'Like "Egg" but registered twice in Python 2.x.'
+
+    assert len(RegisteringType.classes) == (3 if py3k else 4)
 
 
 def test_inlinemetaclass_decorator_with_slots():
