@@ -13,9 +13,6 @@
 
 '''Implements the meta() function using the Py3k syntax.
 
-:func:`_collect_unused_bases` is injected from "xoutil.objects", also
-`__doc__` of :func:`metaclass`.
-
 '''
 
 from __future__ import (division as _py3_division,
