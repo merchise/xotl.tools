@@ -42,9 +42,10 @@ _IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')
 def is_valid_identifier(name):
     '''Returns True if `name` a valid Python identifier.
 
-    .. note:: Only for Python 2.x's version of valid identifier. This means
-              that some Python 3 valid identifiers are not considered valid.
-              This helps to keep things working the same in Python 2 and 3.
+    .. note:: Only Python 2's version of valid identifier. This means that some
+              Python 3 valid identifiers are not considered valid.  This helps
+              to keep things working the same in Python 2 and 3.
+
     '''
     return isinstance(name, str_base) and _IDENTIFIER_REGEX.match(name)
 
