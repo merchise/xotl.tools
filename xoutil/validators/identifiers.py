@@ -30,6 +30,7 @@ from ..compat import str_base
 
 from xoutil.names import strlist as strs
 __all__ = strs('is_valid_identifier', 'is_valid_full_identifier',
+               'is_valid_public_identifier',
                'is_valid_slug')
 del strs
 
@@ -39,6 +40,12 @@ _IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')
 
 
 def is_valid_identifier(name):
+    '''Returns True if `name` a valid Python identifier.
+
+    .. note:: Only for Python 2.x's version of valid identifier. This means
+              that some Python 3 valid identifiers are not considered valid.
+              This helps to keep things working the same in Python 2 and 3.
+    '''
     return isinstance(name, str_base) and _IDENTIFIER_REGEX.match(name)
 
 
@@ -46,7 +53,26 @@ _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 
 
 def is_valid_full_identifier(name):
+    '''Returns True if `name` is a valid dotted Python identifier.
+
+    See :func:`is_valid_identifier` for what "validity" means.
+    '''
     return isinstance(name, str_base) and _FULL_IDENTIFIER_REGEX.match(name)
+
+
+_PUBLIC_IDENTIFIER_REGEX = _regex_compile('(?i)^[a-z][\w]*$')
+
+
+def is_valid_public_identifier(name):
+    '''Returns True if `name` is a valid Python identifier that is deemed
+    public.
+
+    Convention says that any name starting with a "_" is not public.
+
+    See :func:`is_valid_identifier` for what "validity" means.
+
+    '''
+    return isinstance(name, str_base) and _PUBLIC_IDENTIFIER_REGEX.match(name)
 
 
 _SLUG_REGEX = _regex_compile('(?i)^[\w]+([-][\w]+)*$')
