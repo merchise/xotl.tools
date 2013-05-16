@@ -2,6 +2,9 @@
 ====================================
 
 .. automodule:: xoutil.aop.basic
-   :members:
-   :undoc-members:
 
+.. autofunction:: complementor
+
+.. autofunction:: contextualized
+
+.. autofunction:: weaved(target, *sources, **attrs)
