@@ -858,7 +858,7 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
        >>> class Foobar(metaclass(Meta)):
        ...   pass
 
-       >>> class Spam(dict, metaclass(Meta)):
+       >>> class Spam(metaclass(Meta), dict):
        ...   pass
 
        >>> type(Spam) is Meta
@@ -869,9 +869,13 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
 
     .. note::
 
-       In Python 2.7, metaclasses that have colateral effects in constructors
-       (combination of "__new__" and "__init__" methods), are called *twice*
-       unless you use the :func:`metaclass` definition as the first argument::
+       You should always place your metaclass declaration *first* in the list
+       of bases. Doing otherwise triggers *twice* the metaclass' constructors
+       in Python 2.7.
+
+       If your metaclass has some non-idempotent side-effect (such as
+       registration of classes), then this would lead to unwanted double
+       registration of the class.
 
           >>> class BaseMeta(type):
           ...     classes = []
@@ -905,6 +909,7 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
           # Nevertheless the bases are ok:
           >>> Spam.__bases__ == (Base, )
           True
+
 '''
 
 
