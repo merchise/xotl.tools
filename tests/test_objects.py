@@ -145,5 +145,39 @@ def test_newstyle_metaclass():
     assert type(Model2) is ModelType
     assert Model2.__base__ is Base
     assert Submodel.__base__ is Model
-    # This is failing
     assert Model.__base__ is object
+
+
+def test_new_style_metaclass_registration():
+    import sys
+    from xoutil.objects import metaclass
+
+    class BaseMeta(type):
+        classes = []
+        def __new__(cls, name, bases, attrs):
+            res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
+            cls.classes.append(res)   # <-- side effect
+            return res
+
+    class Base(metaclass(BaseMeta)):
+        pass
+
+    class SubType(BaseMeta):
+        pass
+
+    class Egg(metaclass(SubType), Base):   # <-- metaclass first
+        pass
+
+    assert Egg.__base__ is Base   # <-- but the base is Base
+    assert len(BaseMeta.classes) == 2
+
+    class Spam(Base, metaclass(SubType)):
+        'Like "Egg" but it will be registered twice in Python 2.x.'
+
+    if sys.version_info < (3, 0):
+        assert len(BaseMeta.classes) == 4 # Called twice in Python 2
+    else:
+        assert len(BaseMeta.classes) == 3 # Properly called once in Python 3
+
+      # Nevertheless the bases are ok.
+    assert Spam.__bases__ == (Base, )
