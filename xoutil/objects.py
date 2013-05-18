@@ -902,11 +902,13 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
           >>> class Spam(Base, metaclass(SubType)):
           ...     'Like "Egg" but it will be registered twice in Python 2.x.'
 
-          # Fail in Python 2.x
-          >>> len(BaseMeta.classes) == 3  # doctest: +SKIP
-          True
+       In this case the registration of Spam ocurred twice::
 
-          # Nevertheless the bases are ok:
+          >>> BaseMeta.classes  # doctest: +SKIP
+          [<class Base>, <class Egg>, <class Spam>, <class Spam>]
+
+       Bases, however, are just fine::
+
           >>> Spam.__bases__ == (Base, )
           True
 
