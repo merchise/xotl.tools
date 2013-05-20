@@ -60,6 +60,7 @@ if py3k:
     TypeType = type
     class_types = (type, )
     integer = long = int
+    integers = (int, )
     # TODO: [manu] Remove all "xrange" and all aliases:
     #       "xoutil.compat.range" will be "xrange" in Python 2.x and will
     #       remains unchanged in Python 2.0
@@ -73,6 +74,8 @@ else:
     ext_str_types = (str, unicode)
     from types import TypeType
     class_types = (type, TypeType)
+    # FIXME: [manu] In Py2  isinstance(1, long) is False.
+    integers = (long, int)
     integer = long
     from __builtin__ import xrange, range
     xrange_ = xrange
