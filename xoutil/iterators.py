@@ -210,6 +210,33 @@ def slides(iterator, width=2, fill=Unset):
         yield tuple(res)
 
 
+def continuously_slides(iterable, width=2, fill=None):
+    '''Similar to :func:`slides` but moves one item at the time (i.e
+    continuously).
+
+    `fill` is only used to fill the fist chunk if the `iterable` has less items
+    than the `width` of the window.
+
+    Example (generate a texts tri-grams)::
+
+        >>> list(str('').join(chunk) for chunk in continuously_slides(str('maupassant'), 3, str('')))
+        ['mau', 'aup', 'upa', 'pas', 'ass', 'ssa', 'san', 'ant']
+
+    '''
+    i = iter(iterable)
+    res = []
+    while len(res) < width:
+        current = next(i, fill)
+        res.append(current)
+    yield tuple(res)
+    current = next(i, Unset)
+    while current is not Unset:
+        res.pop(0)
+        res.append(current)
+        yield tuple(res)
+        current = next(i, Unset)
+
+
 def first_n(iterable, n=1, fill=Unset):
     '''Takes the first `n` items from iterable.
 

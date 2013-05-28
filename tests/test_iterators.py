@@ -59,3 +59,16 @@ def test_slides_with_repeating_filling():
 def test_slides_with_cycling_filling():
     from xoutil.iterators import slides
     assert list(slides(range(1, 12), width=5, fill=(1, 2))) == [(1, 2, 3, 4, 5), (6, 7, 8, 9, 10), (11, 1, 2, 1, 2)]
+
+
+def test_continuously_slides():
+    from xoutil.iterators import continuously_slides
+    trigrams = list(''.join(x) for x in continuously_slides('maupasant', 3, ''))
+    assert 'mau' in trigrams
+    assert 'aup' in trigrams
+    assert 'upa' in trigrams
+    assert 'pas' in trigrams
+    assert 'asa' in trigrams
+    assert 'san' in trigrams
+    assert 'ant' in trigrams
+    assert len(trigrams) == 7
