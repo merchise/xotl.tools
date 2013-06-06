@@ -57,9 +57,7 @@ def obtain(predicate, iterable, default=None):
 
          first_non_null(map(predicate, iterable), default)
 
-    .. warning::
-
-       *Deprecated since 1.4.0*. The name `obtain` is too general to convey the
+    .. deprecated:: 1.4.0 The name `obtain` is too general to convey the
        meaning of the function, using :func:`first_non_null` is deemed more
        clear.
 
@@ -115,9 +113,7 @@ def get_flat_list(sequence):
 
         list(flatten(sequence))
 
-    .. warning::
-
-       *Deprecated since 1.4.0*. Just use the proposed equivalent combo.
+    .. deprecated:: 1.4.0 Just use the proposed equivalent combo.
 
     '''
     return list(flatten(sequence))
@@ -153,10 +149,8 @@ def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
 
-    .. warning::
-
-       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`. Using
-       the new function this one is roughly equivalent to::
+    .. deprecated:: 1.4.0 Use :func:`xoutil.objects.smart_copy`. Using the new
+       function this one is roughly equivalent to::
 
            args = sources + ({}, )
            return smart_copy(*args, defaults=defaults)

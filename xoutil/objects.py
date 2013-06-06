@@ -47,9 +47,7 @@ _false = lambda *args, **kwargs: False
 def nameof(target):
     '''Gets the name of an object.
 
-    .. warning::
-
-       *Deprecated since version 1.4.0.* Use :func:`xoutil.names.nameof`.
+    .. deprecated:: 1.4.0 Use :func:`xoutil.names.nameof`.
 
     '''
     from xoutil.names import nameof as wrapped
@@ -601,10 +599,8 @@ def setdefaultattr(obj, name, value):
 def full_nameof(target):
     '''Gets the full name of an object:
 
-    .. warning::
-
-       *Deprecated since 1.4.0*. Use :func:`xoutil.names.nameof` with the
-       `full` argument.
+    .. deprecated:: 1.4.0 Use :func:`xoutil.names.nameof` with the `full`
+       argument.
 
     '''
     from xoutil.compat import py3k, str_base
