@@ -513,14 +513,16 @@ class lazy(object):
     :func:`setdefaultattr`.
 
     '''
-    def __init__(self, value):
+    def __init__(self, value, *args, **kwargs):
         self.value = value
+        self.args = args
+        self.kwargs = kwargs
 
     def __call__(self):
         from xoutil.compat import callable
         res = self.value
         if callable(res):
-            return res()
+            return res(*self.args, **self.kwargs)
         else:
             return res
 

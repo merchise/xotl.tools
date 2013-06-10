@@ -181,3 +181,14 @@ def test_new_style_metaclass_registration():
 
       # Nevertheless the bases are ok.
     assert Spam.__bases__ == (Base, )
+
+
+def test_lazy():
+    from xoutil.objects import lazy, setdefaultattr
+    class new(object): pass
+    inst = new()
+    setter = lambda a: -a
+    setdefaultattr(inst, 'c', lazy(setter, 10))
+    assert inst.c == -10
+    setdefaultattr(inst, 'c', lazy(setter, 20))
+    assert inst.c == -10
