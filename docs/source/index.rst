@@ -13,7 +13,14 @@ Welcome to xoutil's documentation!
 What's new in this version
 --------------------------
 
+.. include:: history/changes-1.4.1.rst
+
+and in since 1.4.0
+~~~~~~~~~~~~~~~~~~~~~~
 .. include:: history/changes-1.4.0.rst
+
+
+
 
 Contents:
 ---------
@@ -22,9 +29,12 @@ Contents:
    :maxdepth: 2
    :glob:
 
+   xoutil/toplevel
    xoutil/*
+   xoutil/**
    others
    HISTORY
+   CONTRIBUTING
    CONTRIBUTORS
    LICENSE
 

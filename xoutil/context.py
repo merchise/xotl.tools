@@ -30,12 +30,13 @@ from __future__ import (division as _py3_division,
 
 
 from threading import local
-from xoutil.decorator.compat import metaclass
+from xoutil.objects import metaclass
 from xoutil.collections import StackedDict
 
 from xoutil.names import strlist as strs
 __all__ = strs('Context', 'context', 'NulContext')
 del strs
+
 
 class LocalData(local):
     def __init__(self):
@@ -60,8 +61,7 @@ class MetaContext(type(StackedDict)):
         return bool(self[name])
 
 
-@metaclass(MetaContext)
-class Context(StackedDict):
+class Context(metaclass(MetaContext), StackedDict):
     '''A context manager for execution context flags.
 
     Use as::
@@ -115,16 +115,16 @@ class Context(StackedDict):
     __slots__ = ('name', 'count', '_events')
 
     def __new__(cls, name, **data):
-        res = cls[name]
-        if not res:     # if res is _null_context:
-            res = super(Context, cls).__new__(cls)
-            res.name = name
-            res.count = 0
+        self = cls[name]
+        if not self:     # if self is _null_context:
+            self = super(Context, cls).__new__(cls)
+            super(Context, self).__init__()
+            self.name = name
+            self.count = 0
             # TODO: Redefine all event management
-            res._events = []
-            super(Context, res).__init__()
-        res.push(**data)
-        return res
+            self._events = []
+        self.push(**data)
+        return self
 
     def __init__(self, name, **data):
         pass
@@ -137,9 +137,11 @@ class Context(StackedDict):
         if self.count == 0:
             _data.contexts[self.name] = self
         self.count += 1
-        if self.count != self.level:
-            raise RuntimeError('Entering the same context level twice! -- c(%s, %d, %d)' % (self.name, self.count, self.level))
-        return self
+        if self.count == self.level:
+            return self
+        else:
+            msg = 'Entering the same context level twice! -- c(%s, %d, %d)'
+            raise RuntimeError(msg % (self.name, self.count, self.level))
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.count -= 1
@@ -147,7 +149,7 @@ class Context(StackedDict):
             for event in self.events:
                 event(self)
             del _data.contexts[self.name]
-        super(Context, self).pop()
+        self.pop()
         return False
 
     @property
@@ -161,7 +163,6 @@ class Context(StackedDict):
 
 # A simple alias for Context
 context = Context
-__all__.append('context')
 
 
 class NullContext(object):
@@ -203,10 +204,8 @@ class NullContext(object):
 _null_context = NullContext()
 
 
-from collections import Mapping, MutableMapping
+from collections import Mapping
 
-Mapping.register(MetaContext)
 Mapping.register(NullContext)
-MutableMapping.register(Context)
 
-del Mapping, MutableMapping
+del Mapping

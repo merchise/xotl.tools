@@ -23,22 +23,23 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
+from xoutil.compat import py3k as _py3k
 from xoutil.deprecation import deprecated
 
-from xoutil.names import strlist as strs
-__all__ = strs('nameof', 'smart_getter', 'smart_getter_and_deleter', 'xdir',
-               'fdir', 'validate_attrs', 'get_first_of',
-               'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
-               'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy',
-               'extract_attrs')
-del strs
+from xoutil.names import strlist as slist
+__all__ = slist('nameof', 'smart_getter', 'smart_getter_and_deleter',
+                'xdir', 'fdir', 'validate_attrs', 'get_first_of',
+                'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
+                'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy',
+                'extract_attrs')
+del slist
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 # These two functions can be use to always return True or False
-_true = lambda * args, **kwargs: True
-_false = lambda * args, **kwargs: False
+_true = lambda *args, **kwargs: True
+_false = lambda *args, **kwargs: False
 
 
 # TODO: Deprecate and restructure all its uses
@@ -46,9 +47,7 @@ _false = lambda * args, **kwargs: False
 def nameof(target):
     '''Gets the name of an object.
 
-    .. warning::
-
-       *Deprecated since version 1.4.0.* Use :func:`xoutil.names.nameof`.
+    .. deprecated:: 1.4.0 Use :func:`xoutil.names.nameof`.
 
     '''
     from xoutil.names import nameof as wrapped
@@ -97,40 +96,137 @@ def smart_getter_and_deleter(obj):
 smart_get_and_del = deprecated(smart_getter_and_deleter)(smart_getter_and_deleter)
 
 
-# TODO: [manu] This is only a proposal, integrate in all these functions in ...
-#       order to use only one argument ``filter`` instead the use of
-#       ``attr_filter`` and ``value_filter``.
-#       So, ``def xdir(obj, filter=None, getter=None):``
-def xdir(obj, attr_filter=None, value_filter=None, getter=None):
+def is_private_name(name):
+    '''Return if `name` is private or not.'''
+    prefix = '__'
+    return name.startswith(prefix) and not name.endswith(prefix)
+
+
+def fix_private_name(cls, name):
+    '''Correct a private name with Python conventions, return the same value if
+    name is not private.
+
+    '''
+    if is_private_name(name):
+        return str('_%s%s' % (cls.__name__, name))
+    else:
+        return name
+
+
+def attrclass(obj, name):
+    '''Finds the class that has the definition of an attribute specified by
+    `name', return None if not found.
+
+    Classes are recursed in MRO until a definition or an assign was made at
+    that level.
+
+    If `name` is private according to Python's conventions it is rewritted to
+    the "real" attribute name before searching.
+
+    '''
+    attrs = getattr(obj, '__dict__', {})
+    if name in attrs:
+        return type(obj)
+    else:
+        def check(cls):
+            attr = fix_private_name(cls, name)
+            if attr in attrs:
+                return cls
+            else:
+                desc = getattr(cls, '__dict__', {}).get(attr)
+                if desc is not None:
+                    # For incompatibilities in module "types" between
+                    # Python 2.x and 3.x for method types, next is a nice try
+                    get = getattr(desc, '__get__', None)
+                    if callable(get) and not isinstance(desc, type):
+                        return cls
+                    else:
+                        return None
+                else:
+                    return None
+        cls_chcks = (check(cls) for cls in type(obj).mro())
+        return next((cls for cls in cls_chcks if cls is not None), None)
+
+
+# TODO: [med] Explain "valid" in documentation.
+def fulldir(obj):
+    '''Return a set with all valid attribute names defined in `obj`'''
+    res = set()
+    if isinstance(obj, type):
+        last = None
+        for cls in type.mro(obj):
+            attrs = getattr(cls, '__dict__', {})
+            if attrs is not last:
+                for name in attrs:
+                    res.add(name)
+            last = attrs
+    else:
+        for name in getattr(obj, '__dict__', {}):
+            res.add(name)
+    cls = type(obj)
+    if cls is not type:
+        res |= set(dir(cls))
+    return res
+
+
+# TODO: Fix signature after removal of attr_filter and value_filter
+def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None, _depth=0):
     '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
 
     :param obj: The object to be instrospected.
 
-    :param attr_filter: *optional* A filter for attribute names.
+    :param filter: *optional* A filter that will be passed both the attribute
+       name and it's value as two positional arguments. It should return True
+       for attrs that should be yielded.
 
-    :param value_filter: *optional* A filter for attribute values.
+       .. note::
+
+          If passed, both `attr_filter` and `value_filter` will be
+          ignored.
+
+    :param attr_filter: *optional* A filter for attribute names. *Deprecated
+         since 1.4.1*
+
+    :param value_filter: *optional* A filter for attribute values. *Deprecated
+         since 1.4.1*
 
     :param getter: *optional* A function with the same signature that
                    ``getattr`` to be used to get the values from `obj`.
 
-    If neither `attr_filter` nor `value_filter` are given, all `(attr, value)`
-    are generated.
+    .. deprecated:: 1.4.1 The use of params `attr_filter` and `value_filter`.
 
     '''
     getter = getter or getattr
     attrs = dir(obj)
+    if attr_filter or value_filter:
+        import warnings
+        msg = ('Arguments of `attr_filter` and `value_filter` are deprecated. '
+               'Use argument `filter` instead.')
+        warnings.warn(msg, stacklevel=_depth + 1)
+    if filter:
+        attr_filter = None
+        value_filter = None
     if attr_filter:
         attrs = (attr for attr in attrs if attr_filter(attr))
     res = ((a, getter(obj, a)) for a in attrs)
     if value_filter:
         res = ((a, v) for a, v in res if value_filter(v))
+    if filter:
+        res = ((a, v) for a, v in res if filter(a, v))
     return res
 
 
-def fdir(obj, attr_filter=None, value_filter=None, getter=None):
+# TODO: Fix signature after removal of attr_filter and value_filter
+def fdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None):
     '''Similar to :func:`xdir` but yields only the attributes names.'''
-    return (attr for attr, _v in xdir(obj, attr_filter, value_filter, getter))
+    full = xdir(obj,
+                filter=filter,
+                attr_filter=attr_filter,
+                value_filter=value_filter,
+                getter=getter,
+                _depth=1)
+    return (attr for attr, _v in full)
 
 
 def validate_attrs(source, target, force_equals=(), force_differents=()):
@@ -419,16 +515,45 @@ class lazy(object):
     :func:`setdefaultattr`.
 
     '''
-    def __init__(self, value):
+    def __init__(self, value, *args, **kwargs):
         self.value = value
+        self.args = args
+        self.kwargs = kwargs
 
     def __call__(self):
         from xoutil.compat import callable
         res = self.value
         if callable(res):
-            return res()
+            return res(*self.args, **self.kwargs)
         else:
             return res
+
+
+class classproperty(object):
+    '''A descriptor that behaves like property for instances but for classes.
+
+    Example of its use::
+
+        class Foobar(object):
+            @classproperty
+            def getx(cls):
+                return cls._x
+
+    Class properties are always read-only, if attribute values must be setted
+    or deleted, a metaclass must be defined.
+
+    '''
+    def __init__(self, fget):
+        '''Create the class property descriptor.
+
+          :param fget: is a function for getting the class attribute value
+
+        '''
+        self.__get = fget
+
+    def __get__(self, instance, owner):
+        cls = type(instance) if instance is not None else owner
+        return self.__get(cls)
 
 
 def setdefaultattr(obj, name, value):
@@ -478,10 +603,8 @@ def setdefaultattr(obj, name, value):
 def full_nameof(target):
     '''Gets the full name of an object:
 
-    .. warning::
-
-       *Deprecated since 1.4.0*. Use :func:`xoutil.names.nameof` with the
-       `full` argument.
+    .. deprecated:: 1.4.0 Use :func:`xoutil.names.nameof` with the `full`
+       argument.
 
     '''
     from xoutil.compat import py3k, str_base
@@ -567,8 +690,8 @@ def smart_copy(*args, **kwargs):
 
     :param target: The object to fill.
 
-    :param defaults: Default values for the attributes to be copied as explained
-                     below. Defaults to False.
+    :param defaults: Default values for the attributes to be copied as
+                     explained below. Defaults to False.
 
     :type defaults: Either a bool, a dictionary, an iterable or a callable.
 
@@ -705,6 +828,107 @@ def extract_attrs(obj, *names, **kwargs):
     .. versionadded:: 1.4.0
 
     '''
-    from xoutil.objects import smart_getter
+    # TODO: Delete next:
+    # from xoutil.objects import smart_getter
     get = smart_getter(obj)
     return tuple(get(attr, **kwargs) for attr in names)
+
+
+if _py3k:
+    from xoutil import _meta3
+    __m = _meta3
+else:
+    from xoutil import _meta2
+    __m = _meta2
+
+metaclass = __m.metaclass
+
+
+metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
+    style.
+
+    .. versionadded:: 1.4.1
+
+    Usage::
+
+       >>> class Meta(type):
+       ...   pass
+
+       # This is the same as the Py3k syntax: class Foobar(metaclass=Meta)
+       >>> class Foobar(metaclass(Meta)):
+       ...   pass
+
+       >>> class Spam(metaclass(Meta), dict):
+       ...   pass
+
+       >>> type(Spam) is Meta
+       True
+
+       >>> Spam.__bases__ == (dict, )
+       True
+
+    .. note::
+
+       You should always place your metaclass declaration *first* in the list
+       of bases. Doing otherwise triggers *twice* the metaclass' constructors
+       in Python 2.7.
+
+       If your metaclass has some non-idempotent side-effect (such as
+       registration of classes), then this would lead to unwanted double
+       registration of the class.
+
+          >>> class BaseMeta(type):
+          ...     classes = []
+          ...     def __new__(cls, name, bases, attrs):
+          ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
+          ...         cls.classes.append(res)   # <-- side effect
+          ...         return res
+
+          >>> class Base(metaclass(BaseMeta)):
+          ...     pass
+
+          >>> class SubType(BaseMeta):
+          ...     pass
+
+          >>> class Egg(metaclass(SubType), Base):   # <-- metaclass first
+          ...     pass
+
+          >>> Egg.__base__ is Base   # <-- but the base is Base
+          True
+
+          >>> len(BaseMeta.classes) == 2
+          True
+
+          >>> class Spam(Base, metaclass(SubType)):
+          ...     'Like "Egg" but it will be registered twice in Python 2.x.'
+
+       In this case the registration of Spam ocurred twice::
+
+          >>> BaseMeta.classes  # doctest: +SKIP
+          [<class Base>, <class Egg>, <class Spam>, <class Spam>]
+
+       Bases, however, are just fine::
+
+          >>> Spam.__bases__ == (Base, )
+          True
+
+'''
+
+
+def register_with(abc):
+    '''Register a virtual `subclass` of an ABC.
+
+    For example::
+
+        >>> from collections import Mapping
+        >>> @register_with(Mapping)
+        ... class Foobar(object):
+        ...     pass
+        >>> issubclass(Foobar, Mapping)
+            True
+
+    '''
+    def inner(subclass):
+        abc.register(subclass)
+        return subclass
+    return inner

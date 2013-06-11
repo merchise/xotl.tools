@@ -33,9 +33,30 @@ GeneratorType = _pm.GeneratorType
 
 del _pm, _copy_python_module_members
 
+
+from xoutil.modules import moduleproperty as _moduleproperty
+_deprecated_msg = '{which} is deprecated here. It should be imported directly from {replacement}.'
+
+@_moduleproperty
+def Unset(self):
+    import warnings
+    warnings.warn(_deprecated_msg.format(which='Unset', replacement='xoutil'), stacklevel=2)
+    return _Unset
+
+
+@_moduleproperty
+def ignored(self):
+    import warnings
+    warnings.warn(_deprecated_msg.format(which='ignored', replacement='xoutil.Ignored'), stacklevel=2)
+    return _ignored
+
+del _moduleproperty
+
+
+
 from xoutil.compat import xrange_
 from xoutil.compat import pypy as _pypy
-from xoutil._values import UnsetType, Unset, Ignored as ignored
+from xoutil._values import UnsetType, Unset as _Unset, Ignored as _ignored
 from collections import Mapping
 
 
@@ -46,7 +67,6 @@ __all__ = strs('mro_dict', 'UnsetType', 'Unset', 'ignored', 'DictProxyType',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
                'is_module', 'Required')
 del strs
-
 
 #: The type of methods that are builtin in Python.
 #:
@@ -65,6 +85,10 @@ if _pypy:
     del _foo
 
 
+# TODO: Many of is_*method methods here are needed to be compared agains
+# the standard lib's module inspect versions. If they behave the same,
+# these should be deprecated in favor of the standards.
+
 class mro_dict(Mapping):
     '''An utility class that behaves like a read-only dict to query the
     attributes in the MRO chain of a `target` class (or an object's class).
@@ -77,8 +101,8 @@ class mro_dict(Mapping):
     def __getitem__(self, name):
         from xoutil.objects import get_first_of
         probes = tuple(c.__dict__ for c in self._target_mro)
-        result = get_first_of(probes, name, default=Unset)
-        if result is not Unset:
+        result = get_first_of(probes, name, default=_Unset)
+        if result is not _Unset:
             return result
         else:
             raise KeyError(name)
@@ -180,7 +204,7 @@ def is_scalar(maybe):
     return is_string_like(maybe) or not is_iterable(maybe)
 
 
-def is_staticmethod(desc, name=Unset):
+def is_staticmethod(desc, name=_Unset):
     '''Returns true if a `method` is a static method.
 
     This function takes the same arguments as :func:`is_classmethod`.
@@ -191,7 +215,7 @@ def is_staticmethod(desc, name=Unset):
     return isinstance(desc, staticmethod)
 
 
-def is_classmethod(desc, name=Unset):
+def is_classmethod(desc, name=_Unset):
     '''Returns true if a `method` is a class method.
 
     :param desc: This may be the method descriptor or the class that holds the
@@ -214,7 +238,7 @@ def is_classmethod(desc, name=Unset):
     return isinstance(desc, classmethod)
 
 
-def is_instancemethod(desc, name=Unset):
+def is_instancemethod(desc, name=_Unset):
     '''Returns true if a given `method` is neither a static method nor a class
     method.
 
@@ -227,7 +251,7 @@ def is_instancemethod(desc, name=Unset):
     return isinstance(desc, FunctionType)
 
 
-def is_slotwrapper(desc, name=Unset):
+def is_slotwrapper(desc, name=_Unset):
     '''Returns True if a given `method` is a slot wrapper (i.e. a method that
     is builtin in the `object` base class).
 

@@ -2,4 +2,5 @@
 =================================================================
 
 .. automodule:: xoutil.deprecation
-   :members:
+
+.. autofunction:: deprecated(replacement, msg=None, deprecated_module=None, removed_in_version=None, check_version=False)

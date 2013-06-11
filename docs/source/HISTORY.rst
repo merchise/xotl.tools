@@ -4,6 +4,11 @@ Changelog
 1.4 series
 ----------
 
+.. include:: history/changes-1.4.1.rst
+
+2013-04-26. Release 1.4.0
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. include:: history/changes-1.4.0.rst
 
 

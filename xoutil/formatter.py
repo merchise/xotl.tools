@@ -23,8 +23,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from .compat import str_base
-from .decorator.compat import metaclass
+from xoutil.compat import str_base
+from xoutil.objects import metaclass
 
 
 class DelimiterFactory(object):
@@ -103,8 +103,7 @@ class _TemplateClass(type):
         cls.factories = factories
 
 
-@metaclass(_TemplateClass)
-class Template(object):
+class Template(metaclass(_TemplateClass)):
     '''
     A string class for supporting $-substitutions.
 
@@ -131,8 +130,6 @@ class Template(object):
         >>> tpl(x=5) == '2 is 2, and 10 is 5 + 5'
         True
     '''
-
-    __metaclass__ = _TemplateClass
 
     delimiter = str('$')
 

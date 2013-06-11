@@ -57,9 +57,7 @@ def obtain(predicate, iterable, default=None):
 
          first_non_null(map(predicate, iterable), default)
 
-    .. warning::
-
-       *Deprecated since 1.4.0*. The name `obtain` is too general to convey the
+    .. deprecated:: 1.4.0 The name `obtain` is too general to convey the
        meaning of the function, using :func:`first_non_null` is deemed more
        clear.
 
@@ -115,9 +113,7 @@ def get_flat_list(sequence):
 
         list(flatten(sequence))
 
-    .. warning::
-
-       *Deprecated since 1.4.0*. Just use the proposed equivalent combo.
+    .. deprecated:: 1.4.0 Just use the proposed equivalent combo.
 
     '''
     return list(flatten(sequence))
@@ -153,10 +149,9 @@ def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
 
-    .. warning::
+    .. deprecated:: 1.4.0 Use :func:`xoutil.objects.smart_copy`.
 
-       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`. Using
-       the new function this one is roughly equivalent to::
+    Using the new function this one is roughly equivalent to::
 
            args = sources + ({}, )
            return smart_copy(*args, defaults=defaults)
@@ -208,6 +203,33 @@ def slides(iterator, width=2, fill=Unset):
             res.append(next(fill))
             pos += 1
         yield tuple(res)
+
+
+def continuously_slides(iterable, width=2, fill=None):
+    '''Similar to :func:`slides` but moves one item at the time (i.e
+    continuously).
+
+    `fill` is only used to fill the fist chunk if the `iterable` has less items
+    than the `width` of the window.
+
+    Example (generate a texts tri-grams)::
+
+        >>> list(str('').join(chunk) for chunk in continuously_slides(str('maupassant'), 3, str('')))
+        ['mau', 'aup', 'upa', 'pas', 'ass', 'ssa', 'san', 'ant']
+
+    '''
+    i = iter(iterable)
+    res = []
+    while len(res) < width:
+        current = next(i, fill)
+        res.append(current)
+    yield tuple(res)
+    current = next(i, Unset)
+    while current is not Unset:
+        res.pop(0)
+        res.append(current)
+        yield tuple(res)
+        current = next(i, Unset)
 
 
 def first_n(iterable, n=1, fill=Unset):

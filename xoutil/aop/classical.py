@@ -108,27 +108,25 @@ def get_staticattr(obj, attr, default=None):
 def bind_method(method, *args, **kwargs):
     '''Returns the method to be called already bound to self if needed'''
     from xoutil.types import is_instancemethod, is_classmethod, is_staticmethod
-    if is_instancemethod(method):
+    if args and is_instancemethod(method):
         self = args[0]
         args = args[1:]
         bound_method = _wraps(method)(lambda *args, **kwargs: method(self,
                                                                     *args,
                                                                     **kwargs))
-    elif is_classmethod(method):
+    elif args and is_classmethod(method):
         self = args[0]
         args = args[1:]
         bound_method = _wraps(method.__func__)(lambda *a, **kw:
                                                method.__func__(self,
                                                                *a,
                                                                **kw))
-    else:
-        try:
-            assert is_staticmethod(method)
-        except:
-            print(method, is_classmethod(method))
-            raise
+    elif is_staticmethod(method):
         self = None
         bound_method = method.__func__
+    else:
+        self = None
+        bound_method = method
     return self, bound_method, args, kwargs
 
 
