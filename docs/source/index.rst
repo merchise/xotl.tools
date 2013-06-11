@@ -29,6 +29,7 @@ Contents:
    :maxdepth: 2
    :glob:
 
+   xoutil/toplevel
    xoutil/*
    xoutil/**
    others

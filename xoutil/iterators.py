@@ -149,8 +149,9 @@ def smart_dict(defaults, *sources):
     '''Build a dictionary looking in `sources` for all keys or attributes
     defined in `defaults`.
 
-    .. deprecated:: 1.4.0 Use :func:`xoutil.objects.smart_copy`. Using the new
-       function this one is roughly equivalent to::
+    .. deprecated:: 1.4.0 Use :func:`xoutil.objects.smart_copy`.
+
+    Using the new function this one is roughly equivalent to::
 
            args = sources + ({}, )
            return smart_copy(*args, defaults=defaults)

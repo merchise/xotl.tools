@@ -3,7 +3,7 @@
 
 .. automodule:: xoutil.iterators
    :members: dict_update_new, fake_dict_iteritems, first_n, first_non_null,
-	     slides
+	     slides, continuously_slides
 
 .. autofunction:: smart_dict(defaults, *sources)
 

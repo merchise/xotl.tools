@@ -194,6 +194,8 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None, _de
     :param getter: *optional* A function with the same signature that
                    ``getattr`` to be used to get the values from `obj`.
 
+    .. deprecated:: 1.4.1 The use of params `attr_filter` and `value_filter`.
+
     '''
     getter = getter or getattr
     attrs = dir(obj)
