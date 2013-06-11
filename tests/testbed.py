@@ -32,3 +32,17 @@ __author__ = 'manu'
 def echo(what):
     return what
 
+
+from xoutil.modules import moduleproperty, modulemethod
+
+@moduleproperty
+def this(self):
+    return self
+
+
+def rien():
+    return 1
+
+@modulemethod
+def method(self, *args, **kwargs):
+    return self, args, kwargs

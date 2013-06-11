@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.abspath('../'))
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.doctest',
+              'sphinx.ext.viewcode',
               'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
               'sphinx.ext.coverage']
@@ -280,6 +281,6 @@ intersphinx_mapping = {
     'py2': ('http://docs.python.org/2.7/', None),
 }
 
-intersphins_cache_limit = 60
+intersphinx_cache_limit = 60
 
 autosummary_generate = True

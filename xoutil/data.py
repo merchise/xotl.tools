@@ -15,10 +15,8 @@
 
 '''Some useful Data Structures and data-related algorithms and functions.
 
-.. warning::
-
-   **This module is completely deprecated since 1.4.0**. Most of its contents
-   are already deprecated.
+.. deprecated:: 1.4.0 This module is completely deprecated since 1.4.0. Most of
+   its contents are already deprecated.
 
 '''
 
@@ -35,13 +33,12 @@ from xoutil.deprecation import deprecated
 def smart_copy(source, target, full=False):
     '''Copies attributes (or keys) from `source` to `target`.
 
-    .. warning::
+    .. deprecated:: 1.4.0 Use :func:`xoutil.objects.smart_copy`.
 
-       *Deprecated since 1.4.0*. Use :func:`xoutil.objects.smart_copy`. Using
-       the new function this one is roughly equivalent to::
+    Using the new function this one is roughly equivalent to::
 
-           from xoutil.objects import smart_copy
-           smart_copy(source, target, defaults=full)
+       from xoutil.objects import smart_copy
+       smart_copy(source, target, defaults=full)
 
     '''
     from xoutil.objects import smart_copy as _smart_copy
@@ -72,10 +69,7 @@ def adapt_exception(value, **kwargs):
 class SmartDict(xoutil.collections.SmartDict):
     '''A smart dict that extends the `update` method to accept several args.
 
-    .. warning::
-
-       Deprecated since 1.4.0. Moved to
-       :class:`xoutil.collections.SmartDict`.
+    .. deprecated:: 1.4.0 Moved to :class:`xoutil.collections.SmartDict`.
 
     '''
 
@@ -83,9 +77,7 @@ class SmartDict(xoutil.collections.SmartDict):
 class SortedSmartDict(xoutil.collections.OrderedSmartDict):
     '''An ordered SmartDict.
 
-    .. warning::
-
-       Deprecated since 1.4.0. Moved to
+    .. deprecated:: 1.4.0 Moved to
        :class:`xoutil.collections.OrderedSmartDict`.
 
     '''

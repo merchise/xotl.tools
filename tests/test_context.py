@@ -20,7 +20,7 @@ import unittest
 from xoutil.context import context
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__  = "Tue Jan 15 12:17:01 2013"
+__date__ = "Tue Jan 15 12:17:01 2013"
 
 
 class TestContext(unittest.TestCase):
@@ -54,10 +54,11 @@ def test_stacking_of_data_does_not_leak():
     c1 = 'CONTEXT-1'
     with context(c1, a=1, b=1) as cc1:
         assert cc1['a'] == 1
-        with context(c1, a=2) as cc2:
+        with context(c1, a=2, z='zzz') as cc2:
             assert cc2 is cc1
             assert cc2['a'] == 2
             assert cc2['b'] == 1   # Given by the upper enclosing level
+            assert cc2['z'] == 'zzz'
 
             # Let's change it for this level
             cc2['b'] = 'jailed!'
@@ -66,6 +67,7 @@ def test_stacking_of_data_does_not_leak():
         # But in the upper level both a and b stay the same
         assert cc1['a'] == 1
         assert cc1['b'] == 1
+        assert set(cc1) == {'a', 'b'}
 
     try:
         assert cc1['a'] == 1
