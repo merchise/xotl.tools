@@ -539,8 +539,8 @@ class classproperty(object):
             def getx(cls):
                 return cls._x
 
-    Class properties are always read-only, if attribute values must be setted
-    or deleted, a metaclass must be defined.
+    Class properties are always read-only, if attribute values must be set or
+    deleted, a metaclass must be defined.
 
     '''
     def __init__(self, fget):
