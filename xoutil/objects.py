@@ -749,9 +749,10 @@ def smart_copy(*args, **kwargs):
     '''
     from collections import Mapping, MutableMapping
     from xoutil.compat import callable, str_base
-    from xoutil.types import Unset, Required, DictProxyType
+    from xoutil import Unset
     from xoutil.types import FunctionType as function
-    from xoutil.types import is_collection
+    from xoutil.types import is_collection, Required
+    from xoutil.types import DictProxyType
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
     defaults = get_and_del_key(kwargs, 'defaults', default=Unset)
