@@ -60,6 +60,18 @@ línea):
 
 Se puede emplear también «**Tiempo dedicado**: <horas>»
 
+Se pueden expresar valores negativos con el objetivo de corregir resultados
+que se hayan reportando pero que en análisis posteriores se plantee que las
+tareas o avances merecían menos tiempo.
+
+
+Uso de GIT y los reportes de trabajo
+====================================
+
+Un reporte de tiempo se considera efectivo cuando esté en la rama «develop»,
+por lo tanto
+
+
 .. note:
 
    Este formato se debe respetar para cuando estos ficheros se puedan procesar
