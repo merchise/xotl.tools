@@ -44,7 +44,7 @@ class TestModulesCustomization(unittest.TestCase):
             return mod
 
         import testbed
-        module, created, klass = customize(testbed, this=this)
+        module, created, klass = customize(testbed, custom_attrs={'this':this})
         self.assertEqual(module, module.this)
 
 
