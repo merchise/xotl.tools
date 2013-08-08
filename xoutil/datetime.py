@@ -222,12 +222,18 @@ def parse_date(value=None):
 
 
 def get_month_first(ref=None):
+    '''Given a reference date, returns the first date of the same month. If
+    `ref` is not give, then uses current date as the reference.
+    '''
     aux = ref or date.today()
     y, m = aux.year, aux.month
     return date(y, m, 1)
 
 
 def get_month_last(ref=None):
+    '''Given a reference date, returns the last date of the same month. If
+    `ref` is not give, then uses current date as the reference.
+    '''
     aux = ref or date.today()
     y, m = aux.year, aux.month
     if m == 12:
@@ -239,11 +245,12 @@ def get_month_last(ref=None):
 
 
 def is_full_month(start, end):
+    '''Returns true if the arguments comprises a whole month.
+    '''
     sd, sm, sy = start.day, start.month, start.year
     em, ey = end.month, end.year
     return ((sd == 1) and (sm == em) and (sy == ey) and
             (em != (end + timedelta(1)).month))
-
 
 
 class flextime(timedelta):
@@ -264,6 +271,57 @@ class flextime(timedelta):
             return super(flextime, cls).__new__(cls, hours=hour, minutes=minutes, seconds=seconds)
         else:
             return super(flextime, cls).__new__(cls, *args, **kwargs)
+
+
+def daterange(*args):
+    '''Returns an iterator that yields each date in the range of ``[start,
+    stop)``, not including the stop.
+
+    There are several possible signatures for this function:
+
+    - ``daterange(start, [stop, step])``
+
+      In this case `start` should be a date, and `stop` may be either an
+      integer or another date. `step` must be an integer that indicates how
+      many days to jump from one date to the next.
+
+      If `stop` (and therefor `step`) is missing, this will yield forever.
+
+    - ``daterange(None, stop [, step])``
+
+      In this case `stop` must be a date, and the first date will be the
+      first date of the month of `stop`.
+
+    '''
+    import operator
+    # Don't use this modules versions to allow broader audience
+    from datetime import date, datetime
+    if len(args) == 1:
+        start, stop, step = args[0], None, None
+    elif len(args) == 2:
+        start, stop = args
+        step = None
+    else:
+        start, stop, step = args
+        if not step and step is not None:
+            raise TypeError('Invalid step value %r' % step)
+    if not start:
+        if not isinstance(stop, (date, datetime)):
+            raise TypeError('stop must a date if start is None')
+        else:
+            start = date(stop.year, stop.month, 1)
+    else:
+        if stop is not None and not isinstance(stop, (date, datetime)):
+            stop = start + timedelta(days=stop)
+    current = start
+    if step is None or step > 0:
+        compare = operator.lt
+    else:
+        compare = operator.gt
+    step = timedelta(days=(step if step else 1))
+    while stop is None or compare(current, stop):
+        yield current
+        current += step
 
 
 del _pm, _copy_python_module_members
