@@ -49,7 +49,15 @@ def test_first_n_simple():
 
 def test_slides():
     from xoutil.iterators import slides
-    assert list(slides(range(1, 11))) == [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
+    assert list(slides(range(1, 11))) == [(1, 2),
+                                          (3, 4),
+                                          (5, 6),
+                                          (7, 8),
+                                          (9, 10)]
+
+def test_slides_filling():
+    from xoutil.iterators import slides
+    assert list(slides(range(1, 5), 3)) == [(1, 2, 3), (4, None, None)]
 
 
 def test_slides_with_repeating_filling():

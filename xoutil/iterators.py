@@ -162,28 +162,30 @@ def smart_dict(defaults, *sources):
     return smart_copy(*args, defaults=defaults)
 
 
-def slides(iterator, width=2, fill=Unset):
+def slides(iterable, width=2, fill=None):
     '''Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
         [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
 
     If the iterator does not yield a width-aligned number of items, the last
-    slice returned is filled with `fill` (by default
-    :class:`~xoutil.types.Unset`)::
+    slice returned is filled with `fill` (by default None)::
 
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
-        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, Unset, Unset)]
+        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, None, None)]
 
-    .. versionadded:: 1.4.0 If the `fill` argument is a collection is cycled
-                      over to get the filling, just like in :func:`first_n`.
+    .. versionchanged:: 1.4.0 If the `fill` argument is a collection is cycled
+                        over to get the filling, just like in :func:`first_n`.
+
+    .. versionchanged:: 1.4.2 The `fill` argument now defaults to None,
+                        instead of Unset.
 
     '''
     from itertools import cycle, repeat
     from xoutil.types import is_collection
     pos = 0
     res = []
-    iterator = iter(iterator)
+    iterator = iter(iterable)
     current = next(iterator, Unset)
     while current is not Unset:
         if pos < width:
@@ -250,11 +252,6 @@ def first_n(iterable, n=1, fill=Unset):
                  - a collection, in which case `first_n` fills the last items
                    by cycling over `fill`.
 
-                   .. versionadded:: 1.4.0 The notion of collection uses
-                                     :class:`xoutil.types.is_collection`
-                                     instead of probing for the ``__iter__``
-                                     method.
-
                  - anything else is used as the filling pattern by repeating.
 
     :returns: The first `n` items from `iterable`, probably with a filling
@@ -262,6 +259,11 @@ def first_n(iterable, n=1, fill=Unset):
     :rtype: generator object
 
     .. versionadded:: 1.2.0
+
+    .. versionchanged:: 1.4.0 The notion of collection for the `fill`
+                        argument uses :class:`xoutil.types.is_collection`
+                        instead of probing for the ``__iter__`` method.
+
 
     '''
     if fill is not Unset:
