@@ -1,5 +1,7 @@
 - Adds :func:`xoutil.datetime.daterange`.
 
+- Adds :func:`xoutil.objects.traverse`.
+
 - The `fill` argument in function :func:`xoutil.iterators.slides` now
   defaults to None. This is consistent with the intended usage of
   :class:`~xoutil.Unset` and with the semantics of both

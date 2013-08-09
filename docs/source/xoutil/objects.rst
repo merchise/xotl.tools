@@ -16,3 +16,5 @@
 .. autofunction:: nameof(target)
 
 .. autofunction:: extract_attrs(obj, *attrs, default=Unset)
+
+.. autofunction:: traverse(obj, path, default=Unset, sep='.', getter=None)

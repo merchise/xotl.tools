@@ -23,6 +23,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
+from xoutil import Unset
 from xoutil.compat import py3k as _py3k
 from xoutil.deprecation import deprecated
 
@@ -933,3 +934,39 @@ def register_with(abc):
         abc.register(subclass)
         return subclass
     return inner
+
+
+def traverse(obj, path, default=Unset, sep='.', getter=None):
+    '''Traverses an object's hierarchy by performing an attribute get at each
+    level.
+
+    This helps getting an attribute that is buried down several levels
+    deep. For example::
+
+       traverse(request, 'session.somevalue')
+
+    If `default` is not provided and any component in the path is not found
+    an AttributeError exceptions is raised.
+
+    You may provide `sep` to change the default separator.
+
+    You may provide a custom `getter`. By default, does an
+    :func:`smart_getter` over the objects. If provided `getter` should have
+    the signature of `getattr`.
+
+    '''
+    unset = object()
+    current = obj
+    if not getter:
+        getter = lambda o, a, default=None: smart_getter(o)(a, default)
+    attrs = path.split(sep)
+    while current is not unset and attrs:
+        attr = attrs.pop(0)
+        current = getter(current, attr, unset)
+    if current is unset:
+        if default is Unset:
+            raise AttributeError(attr)
+        else:
+            return default
+    else:
+        return current
