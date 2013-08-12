@@ -23,7 +23,7 @@ del strs
 
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Mar 25 14:38:12 2013"
+__date__ = "Mon Mar 25 14:38:12 2013"
 
 
 class BaseConvertor(object):

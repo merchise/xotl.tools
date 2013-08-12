@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# untitled.py
+# xoutil.iterators
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
@@ -31,7 +31,6 @@ from xoutil.deprecation import deprecated
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
 __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
-
 
 
 def first_non_null(iterable, default=None):
@@ -97,15 +96,15 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         elif depth == 0:
             yield item
         else:
-            for subitem in flatten(item, is_scalar,
-                                   depth=(depth - 1) if depth is not None
-                                                     else None):
+            if depth is not None:
+                depth = depth - 1
+            for subitem in flatten(item, is_scalar, depth=depth):
                 yield subitem
 
 
 @deprecated('list(flatten(..))',
-            'Function `get_flat_list` is deprecated since 1.4.0. Use the combo '
-            '{replacement} instead.')
+            'Function `get_flat_list` is deprecated since 1.4.0. Use '
+            'the combo {replacement} instead.')
 def get_flat_list(sequence):
     '''Flatten out a sequence as a flat list.
 
@@ -211,12 +210,13 @@ def continuously_slides(iterable, width=2, fill=None):
     '''Similar to :func:`slides` but moves one item at the time (i.e
     continuously).
 
-    `fill` is only used to fill the fist chunk if the `iterable` has less items
-    than the `width` of the window.
+    `fill` is only used to fill the fist chunk if the `iterable` has less
+    items than the `width` of the window.
 
     Example (generate a texts tri-grams)::
 
-        >>> list(str('').join(chunk) for chunk in continuously_slides(str('maupassant'), 3, str('')))
+        >>> slider = continuously_slides(str('maupassant'), 3)
+        >>> list(str('').join(chunk) for chunk in slider)
         ['mau', 'aup', 'upa', 'pas', 'ass', 'ssa', 'san', 'ant']
 
     '''
@@ -263,7 +263,6 @@ def first_n(iterable, n=1, fill=Unset):
     .. versionchanged:: 1.4.0 The notion of collection for the `fill`
                         argument uses :class:`xoutil.types.is_collection`
                         instead of probing for the ``__iter__`` method.
-
 
     '''
     if fill is not Unset:

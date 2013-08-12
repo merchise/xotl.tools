@@ -122,7 +122,8 @@ def _parse_signature(signature):
             if res is Unset and f:
                 f_globals = self.f_globals
                 if py3k:
-                    # FIXME: This modifies f_globals! Use f_builtins of the frame.
+                    # FIXME: This modifies f_globals! Use f_builtins of the
+                    # frame.
 
                     # In Py3k (at least Python 3.2) builtins are not directly
                     # in f_globals but inside a __builtins__ key.
@@ -199,8 +200,8 @@ def annotate(func, signature=None, **keyword_annotations):
     than possible by following the PEP syntax. This is not considered an error,
     since the PEP allows annotations to be modified by others means.
 
-    If you provide a signature string **and** keywords annotations, the keywords
-    will take precedence over the signature::
+    If you provide a signature string **and** keywords annotations, the
+    keywords will take precedence over the signature::
 
           >>> @annotate('() -> list', return_annotation=tuple)
           ... def otherfunction():

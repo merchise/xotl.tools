@@ -78,7 +78,6 @@ class InvalidFactory(object):
         raise ValueError(msg)
 
 
-
 class _TemplateClass(type):
     'Metaclass for Template.'
 

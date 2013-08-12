@@ -27,7 +27,7 @@ __date__ = "Tue May 28 11:27:04 2013"
 
 def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
     '''Executes a function `func` with the given positional and keyword
-    arguments asynchronuously.
+    arguments asynchronously.
 
     If `callback` is provided, it is called with a single positional argument:
     the result of calling `func(*args, **kwargs)`.
