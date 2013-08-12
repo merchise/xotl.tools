@@ -237,7 +237,7 @@ def continuously_slides(iterable, width=2, fill=None):
 def first_n(iterable, n=1, fill=Unset):
     '''Takes the first `n` items from iterable.
 
-    If there are less than `n` items in the iterator and `fill` is
+    If there are less than `n` items in the iterable and `fill` is
     :class:`~xoutil.types.Unset`, a StopIteration exception is raised;
     otherwise it's used as a filling pattern as explained below.
 
