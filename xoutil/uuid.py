@@ -28,7 +28,15 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-def uuid():
-    '''Return a "Global Unique ID" as a string.'''
-    from uuid import uuid1
-    return '%s' % uuid1()
+def uuid(random=False):
+    '''Return a "Global Unique ID" as a string.
+
+    :param random: If True then a random uuid is generated (does not use host
+                   id).
+
+    '''
+    from uuid import uuid1, uuid4
+    if not random:
+        return '%s' % uuid1()
+    else:
+        return '%s' % uuid4()
