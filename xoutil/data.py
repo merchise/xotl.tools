@@ -29,6 +29,7 @@ from __future__ import (division as _py3_division,
 import xoutil.collections
 from xoutil.deprecation import deprecated
 
+
 @deprecated('xoutil.objects.smart_copy')
 def smart_copy(source, target, full=False):
     '''Copies attributes (or keys) from `source` to `target`.
@@ -43,6 +44,7 @@ def smart_copy(source, target, full=False):
     '''
     from xoutil.objects import smart_copy as _smart_copy
     return _smart_copy(source, target, defaults=full)
+
 
 def adapt_exception(value, **kwargs):
     '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,
@@ -72,6 +74,7 @@ class SmartDict(xoutil.collections.SmartDict):
     .. deprecated:: 1.4.0 Moved to :class:`xoutil.collections.SmartDict`.
 
     '''
+
 
 @deprecated(xoutil.collections.OrderedSmartDict)
 class SortedSmartDict(xoutil.collections.OrderedSmartDict):

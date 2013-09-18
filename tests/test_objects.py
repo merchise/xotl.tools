@@ -192,3 +192,33 @@ def test_lazy():
     assert inst.c == -10
     setdefaultattr(inst, 'c', lazy(setter, 20))
     assert inst.c == -10
+
+
+# Easly creates a hierarchy of objects
+class new(object):
+    def __init__(self, **kwargs):
+        attrs = {}
+        children = {}
+        for attr, value in kwargs.items():
+            if '.' in attr:
+                name, childattr = attr.split('.', 1)
+                child = children.setdefault(name, {})
+                child[childattr] = value
+            else:
+                attrs[attr] = value
+        self.__dict__.update(attrs)
+        assert set(attrs.keys()) & set(children.keys()) == set()
+        for child, vals in children.items():
+            setattr(self, child, new(**vals))
+
+
+def test_traversing():
+    from xoutil.objects import traverse
+    obj = new(**{'a': 1, 'b.c.d': {'x': 2}, 'b.c.x': 3})
+    assert traverse(obj, 'a') == 1
+    assert traverse(obj, 'b.c.d.x') == 2
+    assert traverse(obj, 'b.c.x') == 3
+    with pytest.raises(AttributeError):
+        traverse(obj, 'a.v')
+    with pytest.raises(AttributeError):
+        traverse(obj, 'a.b.c.d.y')

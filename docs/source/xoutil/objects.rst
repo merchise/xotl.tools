@@ -5,7 +5,7 @@
    :members: validate_attrs, get_first_of, smart_getter,
 	     smart_getter_and_deleter, smart_getattr, get_and_del_attr,
 	     get_and_del_key, setdefaultattr, copy_class, mro_dict, metaclass,
-	     attrclass, fulldir
+	     attrclass, fulldir, classproperty
 
 .. autofunction:: xdir(obj, filter=None, attr_filter=None, value_filter=None, getattr=None)
 
@@ -16,3 +16,5 @@
 .. autofunction:: nameof(target)
 
 .. autofunction:: extract_attrs(obj, *attrs, default=Unset)
+
+.. autofunction:: traverse(obj, path, default=Unset, sep='.', getter=None)

@@ -65,7 +65,7 @@ def force_module(ref=None):
                     ref = ref.encode()  # Python 2.x
                 except:
                     msg = ("invalid type '%s' for module name '%s'" %
-                            (type(ref), ref))
+                           (type(ref), ref))
                     raise TypeError(msg)
         return __import__(ref, fromlist=[ref], level=0)
 
@@ -112,27 +112,41 @@ class _CustomModuleBase(ModuleType):
     pass
 
 
-def customize(module, **kwargs):
+def customize(module, custom_attrs=None, meta=None):
     '''Replaces a `module` by a custom one.
 
     Injects all kwargs into the newly created module's class. This allows to
-    have module into which we may have properties or other type of descriptors.
+    have module into which we may have properties or other type of
+    descriptors.
 
-    :returns: A tuple of ``(module, customized, class)`` with the module in the
-              first place, `customized` will be True only if the module was
-              created (i.e :func:`customize` is idempotent), and the third item
-              will be the class of the module (the first item).
+    :param module: The module object to customize.
+
+    :param custom_attrs: A dictionary of custom attributes that should be
+        injected in the customized module.
+
+        .. versionadded:: 1.4.2 Changes the API, no longer uses the
+                          ``**kwargs`` idiom for custom attributes.
+
+    :param meta: The metaclass of the module type. This should be a subclass
+                 of `type`. We will actually subclass this metaclass to
+                 properly inject `custom_attrs` in our own internal
+                 metaclass.
+
+    :returns: A tuple of ``(module, customized, class)`` with the module in
+              the first place, `customized` will be True only if the module
+              was created (i.e :func:`customize` is idempotent), and the
+              third item will be the class of the module (the first item).
 
     '''
     if not isinstance(module, _CustomModuleBase):
         import sys
         from xoutil.objects import metaclass
+        meta_base = meta if meta else type
 
-        class CustomModuleType(type):
+        class CustomModuleType(meta_base):
             def __new__(cls, name, bases, attrs):
-                # TODO: Take all attrs from `module` to avoid the double call
-                # in __getattr__.
-                attrs.update(kwargs)
+                if custom_attrs:
+                    attrs.update(custom_attrs)
                 return super(CustomModuleType, cls).__new__(cls, name, bases,
                                                             attrs)
 
@@ -142,7 +156,9 @@ def customize(module, **kwargs):
                 return result
 
             def __dir__(self):
-                return dir(module)
+                res = set(dir(module))
+                res |= set(custom_attrs.keys())
+                return list(res)
 
         sys.modules[module.__name__] = result = CustomModule(module.__name__)
         return result, True, CustomModule

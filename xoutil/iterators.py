@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# untitled.py
+# xoutil.iterators
 #----------------------------------------------------------------------
 # Copyright (c) 2013 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
@@ -31,7 +31,6 @@ from xoutil.deprecation import deprecated
 __docstring_format__ = 'rst'
 __version__ = '0.1.0'
 __author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
-
 
 
 def first_non_null(iterable, default=None):
@@ -97,15 +96,15 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         elif depth == 0:
             yield item
         else:
-            for subitem in flatten(item, is_scalar,
-                                   depth=(depth - 1) if depth is not None
-                                                     else None):
+            if depth is not None:
+                depth = depth - 1
+            for subitem in flatten(item, is_scalar, depth=depth):
                 yield subitem
 
 
 @deprecated('list(flatten(..))',
-            'Function `get_flat_list` is deprecated since 1.4.0. Use the combo '
-            '{replacement} instead.')
+            'Function `get_flat_list` is deprecated since 1.4.0. Use '
+            'the combo {replacement} instead.')
 def get_flat_list(sequence):
     '''Flatten out a sequence as a flat list.
 
@@ -162,28 +161,30 @@ def smart_dict(defaults, *sources):
     return smart_copy(*args, defaults=defaults)
 
 
-def slides(iterator, width=2, fill=Unset):
+def slides(iterable, width=2, fill=None):
     '''Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
         [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
 
     If the iterator does not yield a width-aligned number of items, the last
-    slice returned is filled with `fill` (by default
-    :class:`~xoutil.types.Unset`)::
+    slice returned is filled with `fill` (by default None)::
 
         >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
-        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, Unset, Unset)]
+        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, None, None)]
 
-    .. versionadded:: 1.4.0 If the `fill` argument is a collection is cycled
-                      over to get the filling, just like in :func:`first_n`.
+    .. versionchanged:: 1.4.0 If the `fill` argument is a collection is cycled
+                        over to get the filling, just like in :func:`first_n`.
+
+    .. versionchanged:: 1.4.2 The `fill` argument now defaults to None,
+                        instead of Unset.
 
     '''
     from itertools import cycle, repeat
     from xoutil.types import is_collection
     pos = 0
     res = []
-    iterator = iter(iterator)
+    iterator = iter(iterable)
     current = next(iterator, Unset)
     while current is not Unset:
         if pos < width:
@@ -209,12 +210,13 @@ def continuously_slides(iterable, width=2, fill=None):
     '''Similar to :func:`slides` but moves one item at the time (i.e
     continuously).
 
-    `fill` is only used to fill the fist chunk if the `iterable` has less items
-    than the `width` of the window.
+    `fill` is only used to fill the fist chunk if the `iterable` has less
+    items than the `width` of the window.
 
     Example (generate a texts tri-grams)::
 
-        >>> list(str('').join(chunk) for chunk in continuously_slides(str('maupassant'), 3, str('')))
+        >>> slider = continuously_slides(str('maupassant'), 3)
+        >>> list(str('').join(chunk) for chunk in slider)
         ['mau', 'aup', 'upa', 'pas', 'ass', 'ssa', 'san', 'ant']
 
     '''
@@ -235,7 +237,7 @@ def continuously_slides(iterable, width=2, fill=None):
 def first_n(iterable, n=1, fill=Unset):
     '''Takes the first `n` items from iterable.
 
-    If there are less than `n` items in the iterator and `fill` is
+    If there are less than `n` items in the iterable and `fill` is
     :class:`~xoutil.types.Unset`, a StopIteration exception is raised;
     otherwise it's used as a filling pattern as explained below.
 
@@ -250,11 +252,6 @@ def first_n(iterable, n=1, fill=Unset):
                  - a collection, in which case `first_n` fills the last items
                    by cycling over `fill`.
 
-                   .. versionadded:: 1.4.0 The notion of collection uses
-                                     :class:`xoutil.types.is_collection`
-                                     instead of probing for the ``__iter__``
-                                     method.
-
                  - anything else is used as the filling pattern by repeating.
 
     :returns: The first `n` items from `iterable`, probably with a filling
@@ -262,6 +259,10 @@ def first_n(iterable, n=1, fill=Unset):
     :rtype: generator object
 
     .. versionadded:: 1.2.0
+
+    .. versionchanged:: 1.4.0 The notion of collection for the `fill`
+                        argument uses :class:`xoutil.types.is_collection`
+                        instead of probing for the ``__iter__`` method.
 
     '''
     if fill is not Unset:

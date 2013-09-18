@@ -306,3 +306,9 @@ if py3k:
     from builtins import chr
 else:
     from __builtin__ import unichr as chr
+
+
+if py3k:
+    from builtins import input
+else:
+    from __builtin__ import raw_input as input

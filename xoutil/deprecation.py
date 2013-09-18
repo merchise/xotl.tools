@@ -27,8 +27,8 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
-DEFAULT_MSG = ('{funcname} is now deprecated and it will be removed{in_version}. ' +
-              'Use {replacement} instead.')
+DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
+               'removed{in_version}. Use {replacement} instead.')
 
 
 class DeprecationError(Exception):
@@ -37,7 +37,8 @@ class DeprecationError(Exception):
 
 # XXX: Don't make deprecated depends upon anything more than compat and
 # decorator.py. Since this is meant to be used by all others xoutil modules.
-def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None, removed_in_version=None, check_version=False):
+def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
+               removed_in_version=None, check_version=False):
     '''Small decorator for deprecated functions.
 
     Usage::
@@ -46,7 +47,8 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None, removed_in_
         def deprecated_function(...):
             ...
 
-    :param replacement: Either a string or the object that replaces the deprecated.
+    :param replacement: Either a string or the object that replaces the
+       deprecated.
 
     :param msg: A string with keyword arguments for the `format`
        function. Currently we pass the current keyword arguments: `replacement`
@@ -127,9 +129,11 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None, removed_in_
             meta = type(target)
             attrs = {name: value
                      for name, value in iteritems_(target.__dict__)
-                     if name not in ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
-                     # Must remove member descriptors, otherwise the old's class
-                     # descriptor will override those that must be created here.
+                     if name not in ('__class__', '__mro__',
+                                     '__name__', '__weakref__', '__dict__')
+                     # Must remove member descriptors, otherwise the old's
+                     # class descriptor will override those that must be
+                     # created here.
                      if not isinstance(value, MemberDescriptorType)}
             attrs.update(__new__=new)
             result = meta(target.__name__, target.__bases__, attrs)
@@ -149,11 +153,10 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None, removed_in_
 
 
 def inject_deprecated(funcnames, source, target=None):
-    '''
-    Takes a sequence of function names `funcnames` which reside in the `source`
-    module and injects them into `target` marked as deprecated. If `target` is
-    None then we inject the functions into the locals of the calling code. It's
-    expected it's a module.
+    '''Takes a sequence of function names `funcnames` which reside in the
+    `source` module and injects them into `target` marked as deprecated. If
+    `target` is None then we inject the functions into the locals of the
+    calling code. It's expected it's a module.
 
     This function is provided for easing the deprecation of whole modules and
     should not be used to do otherwise.
@@ -172,7 +175,8 @@ def inject_deprecated(funcnames, source, target=None):
         unset = object()
         target = getattr(source, targetname, unset)
         if target is not unset:
-            if isinstance(target, (types.FunctionType, types.LambdaType) + _class_types):
+            testclasses = (types.FunctionType, types.LambdaType) + _class_types
+            if isinstance(target, testclasses):
                 replacement = source.__name__ + '.' + targetname
                 module_name = target_locals.get('__name__', None)
                 target_locals[targetname] = deprecated(replacement,
