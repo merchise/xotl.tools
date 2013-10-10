@@ -955,15 +955,15 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
     the signature of `getattr`.
 
     '''
-    unset = object()
+    notfound = object()
     current = obj
     if not getter:
         getter = lambda o, a, default=None: smart_getter(o)(a, default)
     attrs = path.split(sep)
-    while current is not unset and attrs:
+    while current is not notfound and attrs:
         attr = attrs.pop(0)
-        current = getter(current, attr, unset)
-    if current is unset:
+        current = getter(current, attr, notfound)
+    if current is notfound:
         if default is Unset:
             raise AttributeError(attr)
         else:
