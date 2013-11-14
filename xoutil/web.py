@@ -45,7 +45,8 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
 
     If `entities` is False, then no HTML-entities substitution is made::
 
-        >>> slugify("Manuel V&aacute;zquez Acosta", entities=False)  # doctest: +SKIP
+        >>> value = "Manuel V&aacute;zquez Acosta"
+        >>> slugify(value, entities=False)  # doctest: +SKIP
         'manuel-v-aacute-zquez-acosta'
 
     If `decimal` is True, then all entities of the form ``&#nnnn`` where
@@ -55,7 +56,8 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
         >>> slugify('Manuel V&#225;zquez Acosta')  # doctest: +SKIP
         'manuel-vazquez-acosta'
 
-        >>> slugify('Manuel V&#225;zquez Acosta', decimal=False)  # doctest: +SKIP
+        >>> value = 'Manuel V&#225;zquez Acosta'
+        >>> slugify(value, decimal=False)  # doctest: +SKIP
         'manuel-v-225-zquez-acosta'
 
 
@@ -73,26 +75,26 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     import re
     import unicodedata
     from xoutil.compat import chr as unichr
-    try:
-        from htmlentitydefs import name2codepoint
-    except ImportError:
-        # Py3k: The htmlentitydefs module has been renamed to html.entities in
-        # Python 3
-        from html.entities import name2codepoint
     from xoutil.string import _unicode, safe_decode
     if not isinstance(s, _unicode):
         s = safe_decode(s)  # "smart_unicode" in orginal
     if entities:
+        try:
+            from htmlentitydefs import name2codepoint
+        except ImportError:
+            # Py3k: The ``htmlentitydefs`` module has been renamed to
+            # ``html.entities`` in Python 3
+            from html.entities import name2codepoint
         s = re.sub(str('&(%s);') % str('|').join(name2codepoint),
                    lambda m: unichr(name2codepoint[m.group(1)]), s)
     if decimal:
         try:
-            s = re.sub('&#(\d+);', lambda m: unichr(int(m.group(1))), s)
+            s = re.sub(r'&#(\d+);', lambda m: unichr(int(m.group(1))), s)
         except:
             pass
     if hexadecimal:
         try:
-            s = re.sub('&#x([\da-fA-F]+);',
+            s = re.sub(r'&#x([\da-fA-F]+);',
                        lambda m: unichr(int(m.group(1), 16)), s)
         except:
             pass
