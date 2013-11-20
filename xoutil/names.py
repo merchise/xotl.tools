@@ -24,7 +24,7 @@ __author__ = 'med'
 
 try:
     str_base = basestring
-except:
+except NameError:
     str_base = str
 
 
