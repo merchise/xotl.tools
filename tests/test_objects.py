@@ -34,6 +34,11 @@ def test_smart_copy():
     smart_copy(source, target, False)
     assert target == dict(a=1, b=2, c=4)
 
+    source = new(a=1, b=2, c=4, _d=5)
+    target = {}
+    smart_copy(source, target, None)
+    assert target == dict(a=1, b=2, c=4)
+
     target = {}
     smart_copy(source, target, True)
     assert target['_d'] == 5

@@ -762,8 +762,8 @@ def smart_copy(*args, **kwargs):
                         % kwargs.keys()[0])
     if defaults is Unset and len(args) >= 3:
         args, last = args[:-1], args[-1]
-        if isinstance(last, bool) or isinstance(last, function):
-            defaults = last
+        if isinstance(last, bool) or isinstance(last, function) or last is None:
+            defaults = last if last is not None else False
             sources, target = args[:-1], args[-1]
         else:
             sources, target, defaults = args, last, False
