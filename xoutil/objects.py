@@ -347,7 +347,6 @@ def get_first_of(source, *keys, **kwargs):
         True
 
     '''
-    from xoutil import Unset
     from xoutil.types import is_collection
     def inner(source):
         get = smart_getter(source)
@@ -401,7 +400,6 @@ def get_and_del_first_of(source, *keys, **kwargs):
         True
 
     '''
-    from xoutil import Unset
     from xoutil.types import is_collection
     def inner(source):
         get = smart_getter_and_deleter(source)
@@ -446,7 +444,6 @@ def smart_getattr(name, *sources, **kwargs):
     :func:`get_first_of`_.
 
     '''
-    from xoutil import Unset
     from xoutil.iterators import dict_update_new
     dict_update_new(kwargs, {'default': Unset})
     return get_first_of(sources, name, **kwargs)
@@ -471,7 +468,6 @@ def get_and_del_attr(obj, name, default=None):
         True
 
     '''
-    from xoutil import Unset
     res = getattr(obj, name, Unset)
     if res is Unset:
         res = default
@@ -499,7 +495,6 @@ def get_and_del_key(d, key, default=None):
         True
 
     '''
-    from xoutil import Unset
     res = d.get(key, Unset)
     if res is Unset:
         res = default
@@ -589,7 +584,6 @@ def setdefaultattr(obj, name, value):
         'a'
 
     '''
-    from xoutil import Unset
     res = getattr(obj, name, Unset)
     if res is Unset:
         if isinstance(value, lazy):
@@ -750,7 +744,6 @@ def smart_copy(*args, **kwargs):
     '''
     from collections import Mapping, MutableMapping
     from xoutil.compat import callable, str_base
-    from xoutil import Unset
     from xoutil.types import FunctionType as function
     from xoutil.types import is_collection, Required
     from xoutil.types import DictProxyType
