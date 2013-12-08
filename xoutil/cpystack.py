@@ -150,13 +150,13 @@ def error_info(*args, **kwargs):
     Example::
 
       >>> def foo(x):
-      ...     print('foo:', x, 1/x)
+      ...     x += 1//x
       ...     if x % 2:
-      ...         bar(x + 1)
+      ...         bar(x - 1)
       ...     else:
       ...         bar(x - 2)
       >>> def bar(x):
-      ...     print('foo:', x, 1/x)
+      ...     x -= 1//x
       ...     if x % 2:
       ...         foo(x//2)
       ...     else:
@@ -164,7 +164,7 @@ def error_info(*args, **kwargs):
       >>> try:
       ...     foo(20)
       ... except:
-      ...     print(printable_error_info('Base', foo=['x'], bar=['x']))
+      ...     print(printable_error_info('Example', foo=['x'], bar=['x']))
 
     '''
     import sys
