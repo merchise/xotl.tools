@@ -26,11 +26,12 @@ from xoutil.names import strlist as strs
 from xoutil.compat import py3k as _py3k
 
 
-__all__ = strs('MAX_DEEP', 'getargvalues', 'object_info_finder',
-               'object_finder', 'track_value', 'iter_frames')
+__all__ = strs('MAX_DEEP', 'getargvalues', 'error_info',
+               'object_info_finder', 'object_finder', 'track_value',
+               'iter_frames')
 del strs
 
-MAX_DEEP = 15
+MAX_DEEP = 25
 
 
 def getargvalues(frame):
@@ -81,6 +82,125 @@ if not _py3k:
         2
 
     """
+
+
+def __error_info(tb, *args, **kwargs):
+    '''Internal function used by :func:`error_info` and
+    :func:`printable_error_info`.
+
+    '''
+    # TODO: Formalize tests for this
+    ALL = True
+    res = []
+    kwargs.update(dict.fromkeys(args, ALL))
+    if kwargs:
+        deep = 0
+        processed = set()
+        while tb and (deep < MAX_DEEP):
+            frame = tb.tb_frame
+            func_name = frame.f_code.co_name
+            attrs1 = kwargs.get(func_name, None)
+            attrs2 = kwargs.get(deep, None)
+            if attrs1 or attrs2:
+                processed.add(func_name)
+                processed.add(deep)
+                if (attrs1 is ALL) or (attrs2 is ALL):
+                    attrs = ALL
+                else:
+                    attrs = list(attrs1) if attrs1 else []
+                    if attrs2:
+                        attrs.extend(attrs2)
+                if attrs is ALL:
+                    item = frame.f_locals.copy()
+                else:
+                    item = {key: frame.f_locals.get(key) for key in attrs}
+                item['function-name'] = func_name
+                item['traceback-deep'] = deep
+                item['line-number'] = tb.tb_lineno
+                item['file-name'] = frame.f_code.co_filename
+                res.append(item)
+            tb = tb.tb_next
+            deep += 1
+        for item in processed:
+            if item in kwargs:
+                del kwargs[item]
+        if kwargs:
+            res['unprocessed-items'] = kwargs
+    return res
+
+
+def error_info(*args, **kwargs):
+    '''Get error information in current trace-back.
+
+    No all trace-back are returned, to select which are returned use:
+
+      - ``args``: Positional parameters
+
+        - If string, represent the name of a function.
+
+        - If an integer, a trace-back level.
+
+        Return all values.
+
+      - ``kwargs``: The same as ``args`` but each value is a list of local
+        names to return. If a value is ``True``, means all local variables.
+
+    Return a list with a dict in each item.
+
+    Example::
+
+      >>> def foo(x):
+      ...     print('foo:', x, 1/x)
+      ...     if x % 2:
+      ...         bar(x + 1)
+      ...     else:
+      ...         bar(x - 2)
+      >>> def bar(x):
+      ...     print('foo:', x, 1/x)
+      ...     if x % 2:
+      ...         foo(x//2)
+      ...     else:
+      ...         foo(x//3)
+      >>> try:
+      ...     foo(20)
+      ... except:
+      ...     print(printable_error_info('Base', foo=['x'], bar=['x']))
+
+    '''
+    import sys
+    _error_type, _error, tb = sys.exc_info()
+    return __error_info(tb, *args, **kwargs)
+
+
+def printable_error_info(base, *args, **kwargs):
+    '''Get error information in current trace-back.
+
+    No all trace-back are returned, to select which are returned use:
+
+      - ``args``: Positional parameters
+
+        - If string, represent the name of a function.
+
+        - If an integer, a trace-back level.
+
+        Return all values.
+
+      - ``kwargs``: The same as ``args`` but each value is a list of local
+        names to return. If a value is ``True``, means all local variables.
+
+    Return a formatted string with all information.
+
+    See :func:`error_info` for an example.
+
+    '''
+    import sys
+    _error_type, error, tb = sys.exc_info()
+    if tb:
+        res = '%s\n\tERROR: %s\n\t' % (base, error)
+        info = __error_info(tb, *args, **kwargs)
+        return res + '\n\t'.join(str(item) for item in info)
+    else:
+        return ''
 
 
 def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
