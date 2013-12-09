@@ -407,3 +407,30 @@ def imap(func, pattern):
         res = func(item, st)
         if res is not None:
             yield res
+
+
+def walk_up(start, sentinel):
+    '''Given a `start` directory walk-up the file system tree until either the
+    FS root is reached or the `sentinel` is found.
+
+    The `sentinel` must be a string containing the file name to be found.
+
+    .. warning:: If `sentinel` is an absolute path that exists this will return
+       `start`, no matter what `start` is (in windows this could be even
+       different drives).
+
+    '''
+    from os.path import abspath, exists, isdir, join, dirname
+    current = abspath(start)
+    if not exists(current) or not isdir(current):
+        raise ValueError('Invalid directory "%s"' % current)
+    previouspath = None
+    found = False
+    while not found and current is not previouspath:
+        clue = join(current, sentinel)
+        if exists(clue):
+            found = True
+        else:
+            previouspath = current
+            current = dirname(current)
+    return current if found else None
