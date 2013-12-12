@@ -65,7 +65,7 @@ __all__ = strs('mro_dict', 'UnsetType', 'Unset', 'ignored', 'DictProxyType',
                'SlotWrapperType', 'is_iterable', 'is_collection',
                'is_string_like', 'is_scalar', 'is_staticmethod',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
-               'is_module', 'Required')
+               'is_module', 'Required', 'NoneType')
 del strs
 
 #: The type of methods that are builtin in Python.
@@ -83,6 +83,11 @@ if _pypy:
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
     del _foo
+
+
+# In Py3.3 NoneType is not defined in the stdlib `types` module. This solves
+# the issue.
+NoneType = type(None)
 
 
 # TODO: Many of is_*method methods here are needed to be compared agains

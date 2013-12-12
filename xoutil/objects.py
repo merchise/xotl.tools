@@ -888,8 +888,8 @@ def smart_copy(*args, **kwargs):
                         % kwargs.keys()[0])
     if defaults is Unset and len(args) >= 3:
         args, last = args[:-1], args[-1]
-        if isinstance(last, bool) or isinstance(last, function):
-            defaults = last
+        if isinstance(last, bool) or isinstance(last, function) or last is None:
+            defaults = last if last is not None else False
             sources, target = args[:-1], args[-1]
         else:
             sources, target, defaults = args, last, False
@@ -1081,15 +1081,15 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
     the signature of `getattr`.
 
     '''
-    unset = object()
+    notfound = object()
     current = obj
     if not getter:
         getter = lambda o, a, default=None: smart_getter(o)(a, default)
     attrs = path.split(sep)
-    while current is not unset and attrs:
+    while current is not notfound and attrs:
         attr = attrs.pop(0)
-        current = getter(current, attr, unset)
-    if current is unset:
+        current = getter(current, attr, notfound)
+    if current is notfound:
         if default is Unset:
             raise AttributeError(attr)
         else:

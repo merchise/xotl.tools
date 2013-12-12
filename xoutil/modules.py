@@ -157,7 +157,8 @@ def customize(module, custom_attrs=None, meta=None):
 
             def __dir__(self):
                 res = set(dir(module))
-                res |= set(custom_attrs.keys())
+                if custom_attrs:
+                    res |= set(custom_attrs.keys())
                 return list(res)
 
         sys.modules[module.__name__] = result = CustomModule(module.__name__)
