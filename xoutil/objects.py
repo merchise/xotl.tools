@@ -38,9 +38,17 @@ del slist
 __docstring_format__ = 'rst'
 __author__ = 'manu'
 
+
+_INVALID_CLASS_TYPE_MSG = '``cls`` must be a class not an instance'
+
+# === Helper functions ====
+
+_len = lambda x: len(x) if x else 0
+
 # These two functions can be use to always return True or False
 _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
+
 
 
 # TODO: Deprecate and restructure all its uses
@@ -147,6 +155,131 @@ def attrclass(obj, name):
                     return None
         cls_chcks = (check(cls) for cls in type(obj).mro())
         return next((cls for cls in cls_chcks if cls is not None), None)
+
+
+def get_method_function(cls, method_name):
+    '''Get definition function given in its :param:`method_name`.
+
+    There is a difference between the result of this function and
+    ``getattr(cls, method_name)`` because the last one return the unbound
+    method and this a python function.
+
+    '''
+    if not isinstance(cls, type):
+        cls = cls.__class__
+    mro = cls.mro()
+    i, res = 0, None
+    while not res and (i < len(mro)):
+        sc = mro[i]
+        method = sc.__dict__.get(method_name)
+        if callable(method):
+            res = method
+        else:
+            i += 1
+    return res
+
+
+def build_documentation(cls, get_doc=None, deep=1):
+    '''Build a proper documentation from a class :param:`cls`.
+
+    Classes are recursed in MRO until process all levels (:param:`deep`)
+    building the resulting documentation.
+
+    The function :param:`get_doc` get the documentation of a given class. If
+    no function is given, then attribute ``__doc__`` is used.
+
+    '''
+    from xoutil.string import safe_decode
+    assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
+    if deep < 1:
+        deep = 1
+    get_doc = get_doc or (lambda c: c.__doc__)
+    mro = cls.mro()
+    i, level, used, res = 0, 0, {}, ''
+    while (level < deep) and (i < len(mro)):
+        sc = mro[i]
+        doc = get_doc(sc)
+        if doc:
+            doc = safe_decode(doc).strip()
+            key = sc.__name__
+            docs = used.setdefault(key, set())
+            if doc not in docs:
+                docs.add(doc)
+                if res:
+                    res += '\n\n'
+                res += '=== <%s> ===\n\n%s' % (key, doc)
+                level += 1
+        i += 1
+    return res
+
+
+def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
+                            default=None):
+    '''Fix the documentation for the given class using its super-classes.
+
+    This function may be useful for shells or Python Command Line Interfaces
+    (CLI).
+
+    If :param:`cls` has an invalid documentation, super-classes are recursed
+    in MRO until a documentation definition was made at any level.
+
+    :param:`ignore` could be used to specify which classes to ignore by
+                    specifying its name in this list.
+
+    :param:`min_length` specify that documentations with less that a number of
+                        characters, also are ignored.
+
+    '''
+    assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
+    if _len(cls.__doc__) < min_length:
+        ignore = ignore or ()
+        def get_doc(c):
+            if (c.__name__ not in ignore) and _len(c.__doc__) >= min_length:
+                return c.__doc__
+            else:
+                return None
+        doc = build_documentation(cls, get_doc, deep)
+        if doc:
+            cls.__doc__ = doc
+        elif default:
+            cls.__doc__ = default(cls) if callable(default) else default
+
+
+def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
+                             deep=1, default=None):
+    '''Fix the documentation for the given class using its super-classes.
+
+    This function may be useful for shells or Python Command Line Interfaces
+    (CLI).
+
+    If :param:`cls` has an invalid documentation, super-classes are recursed
+    in MRO until a documentation definition was made at any level.
+
+    :param:`ignore` could be used to specify which classes to ignore by
+                    specifying its name in this list.
+
+    :param:`min_length` specify that documentations with less that a number of
+                        characters, also are ignored.
+
+    '''
+    assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
+    method = get_method_function(cls, method_name)
+    if method and _len(method.__doc__) < min_length:
+        ignore = ignore or ()
+        def get_doc(c):
+            if (c.__name__ not in ignore):
+                method = c.__dict__.get(method_name)
+                if callable(method) and _len(method.__doc__) >= min_length:
+                    return method.__doc__
+                else:
+                    return None
+            else:
+                return None
+        doc = build_documentation(cls, get_doc, deep)
+        if doc:
+            method.__doc__ = doc
+        elif default:
+            method.__doc__ = default(cls) if callable(default) else default
 
 
 # TODO: [med] Explain "valid" in documentation.
