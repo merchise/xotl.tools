@@ -157,6 +157,11 @@ def attrclass(obj, name):
         return next((cls for cls in cls_chcks if cls is not None), None)
 
 
+# TODO: [med] [manu] Decide if it's best to create a 'xoutil.inspect' that
+# extends the standard library module 'inspect' and place this
+# signature-dealing functions there. Probably, to be consistent, this imposes a
+# refactoring of some of 'xoutil.types' and move all the "is_classmethod",
+# "is_staticmethod" and inspection-related functions there.
 def get_method_function(cls, method_name):
     '''Get definition function given in its :param:`method_name`.
 
