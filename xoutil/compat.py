@@ -47,6 +47,7 @@ except ImportError:
     import dummy_threading as threading
 
 py32 = sys.version_info >= (3, 2)
+py33 = sys.version_info >= (3, 3)
 py3k = getattr(sys, 'py3kwarning', False) or sys.version_info >= (3, 0)
 jython = sys.platform.startswith('java')
 pypy = hasattr(sys, 'pypy_version_info')
