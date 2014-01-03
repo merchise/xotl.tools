@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.fs.path
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -12,6 +12,12 @@
 # package.
 #
 # Created on Feb 16, 2012
+
+'''Extensions to os.path
+
+Functions inside this module must not have side-effects on the file-system.
+
+'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -112,7 +118,6 @@ def get_module_path(module):
     mod = __import__(module) if isinstance(module, str_base) else module
     path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
     return abspath(dirname(path).decode('utf-8'))
-
 
 
 def shorten_module_filename(filename):

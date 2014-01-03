@@ -4,7 +4,7 @@
 # xoutil.mdeco
 #----------------------------------------------------------------------
 #
-# Copyright (c) 2012, 2013 Merchise Autrement and contributors for the
+# Copyright (c) 2012, 2013, 2014 Merchise Autrement and contributors for the
 # decorator function.
 #
 # This is free software; you can redistribute it and/or modify it under

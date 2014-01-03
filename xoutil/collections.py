@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2013 Merchise Autrement and Contributors for the
+# Copyright 2013, 2014 Merchise Autrement and Contributors for the
 # defaultdict and opendict implementations.
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict

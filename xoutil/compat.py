@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------
 #
 # ============================ Original copyright notice ===================
-# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2011, 2014 the SQLAlchemy authors and contributors
 #
 # This module is based on part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php

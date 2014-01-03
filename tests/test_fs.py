@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_fs
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -56,13 +56,11 @@ class TestFs(unittest.TestCase):
         self.assertIn(self.files[-3][-1], res)
         self.assertIn(self.files[-1][-1], res)
 
-
     def test_iter_files_with_maxdepth(self):
         from xoutil.fs import iter_files
         res = list(iter_files(self.base, '(?xi)/Z', maxdepth=3))
         self.assertEquals(1, len(res))
         self.assertIn(self.files[-1][-1], res)
-
         res = list(iter_files(self.base, '(?xi)/Z', maxdepth=2))
         self.assertEquals(0, len(res))
 
