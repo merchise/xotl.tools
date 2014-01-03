@@ -418,11 +418,13 @@ def walk_up(start, sentinel):
        `start`, no matter what `start` is (in windows this could be even
        different drives).
 
+    If `start` path exists but is not a directory an OSError is raised.
+
     '''
     from os.path import abspath, exists, isdir, join, dirname
     current = abspath(start)
     if not exists(current) or not isdir(current):
-        raise ValueError('Invalid directory "%s"' % current)
+        raise OSError('Invalid directory "%s"' % current)
     previouspath = None
     found = False
     while not found and current is not previouspath:
