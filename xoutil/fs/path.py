@@ -15,7 +15,9 @@
 
 '''Extensions to os.path
 
-Functions inside this module must not have side-effects on the file-system.
+Functions inside this module must not have side-effects on the
+file-system. This module re-exports (without change) several functions from the
+:py:mod:`os.path` standard module.
 
 '''
 
@@ -98,9 +100,9 @@ def join(base, *extras):
 def normalize_path(base, *extras):
     '''Normalize path by:
 
-      - expanding '~' and '~user' constructions.
-      - eliminating double slashes
-      - converting to absolute.
+    - expanding '~' and '~user' constructions.
+    - eliminating double slashes
+    - converting to absolute.
 
     '''
     # FIXME: [med] Redundant "path" in name "xoutil.fs.path.normalize_path"

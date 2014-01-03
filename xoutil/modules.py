@@ -43,7 +43,7 @@ def force_module(ref=None):
     If `ref` is not specified (or integer) calling module is assumed looking
     in the stack.
 
-    .. impl-detail::
+    .. note:: Implementation detail
 
        Function used to inspect the stack is not guaranteed to exist in all
        implementations of Python.
@@ -89,7 +89,7 @@ def copy_members(source=None, target=None):
     :returns: Source module.
     :rtype: `ModuleType`
 
-    .. impl-detail::
+    .. warning:: Implementation detail
 
        Function used to inspect the stack is not guaranteed to exist in all
        implementations of Python.

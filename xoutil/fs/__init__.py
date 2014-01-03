@@ -12,8 +12,12 @@
 #
 # Created on Nov 28, 2011
 
-'''
-File system utilities.
+'''File system utilities.
+
+This module contains file-system utilities that could have side-effects. For
+path-handling functions that have no side-effects look at
+:mod:`xoutil.fs.path`.
+
 '''
 
 
