@@ -25,9 +25,9 @@ from __future__ import (division as _py3_division,
 
 import os
 from re import compile as _rcompile
-from .path import (normalize_path, get_module_path, shorten_module_filename,
-                   shorten_user)
-from ..compat import str_base
+from xoutil.fs.path import (normalize_path, get_module_path,
+                            shorten_module_filename, shorten_user)
+from xoutil.compat import str_base, py33 as __py33
 
 
 re_magic = _rcompile('[*?[]')
@@ -91,9 +91,9 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
             if (regex is None) or regex.search(path):
                 yield path
         if maxdepth is not None:
-           depth += 1
-           if depth >= maxdepth:
-               _dirs[:] = []
+            depth += 1
+            if depth >= maxdepth:
+                _dirs[:] = []
 
 
 # ------------------------------ iter_dict_files ------------------------------
@@ -344,7 +344,7 @@ def read_file(path):
     try:
         with open(path, 'r') as f:
             return f.read()
-    except:
+    except OSError:
         return ''
 
 
@@ -392,8 +392,7 @@ def _list(pattern):
 
 
 def imap(func, pattern):
-    '''
-    Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ... for each dir
+    r'''Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ... for each dir
     path. The `pattern` may contain:
 
     - Simple shell-style wild-cards à la `fnmatch`.
