@@ -208,3 +208,11 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None):
     result = prop(getter, setter, deleter, doc)
     setattr(cls, getter.__name__, result)
     return result
+
+
+def get_module_path(module):
+    # TODO: [med] Standardize this
+    from xoutil.compat import str_base
+    mod = __import__(module) if isinstance(module, str_base) else module
+    path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
+    return abspath(dirname(path).decode('utf-8'))

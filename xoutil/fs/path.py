@@ -30,8 +30,7 @@ from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
 from xoutil.functools import pow_
-
-
+from xoutil.deprecation import deprecated
 from xoutil.names import strlist as strs
 __all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
                'fix_encoding', 'join', 'normalize_path', 'get_module_path',
@@ -113,13 +112,10 @@ def normalize_path(base, *extras):
     return abspath(expanduser(path))
 
 
-# TODO: [manu] move to "xoutil.modules" and deprecate here
+@deprecated('xoutil.modules.get_module_path')
 def get_module_path(module):
-    # TODO: [med] Standardize this
-    from ..compat import str_base
-    mod = __import__(module) if isinstance(module, str_base) else module
-    path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
-    return abspath(dirname(path).decode('utf-8'))
+    from xoutil.modules import get_module_path as _original
+    return _original(module)
 
 
 def shorten_module_filename(filename):
