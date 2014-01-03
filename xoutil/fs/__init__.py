@@ -435,3 +435,79 @@ def walk_up(start, sentinel):
             previouspath = current
             current = dirname(current)
     return current if found else None
+
+if not __py33:
+    def makedirs(name, mode=0o777, exist_ok=False):
+        """makedirs(path [, mode=0o777][, exist_ok=False])
+
+        Super-mkdir; create a leaf directory and all intermediate ones.
+        Works like mkdir, except that any intermediate path segment (not
+        just the rightmost) will be created if it does not exist. If the
+        target directory with the same mode as we specified already exists,
+        raises an OSError if exist_ok is False, otherwise no exception is
+        raised.  This is recursive.
+
+        """
+        import stat as st
+        from xoutil.string import safe_encode
+        def _get_masked_mode(mode):
+            mask = os.umask(0)
+            os.umask(mask)
+            return mode & ~mask
+        import errno
+        head, tail = os.path.split(name)
+        if not tail:
+            head, tail = os.path.split(head)
+        if head and tail and not os.path.exists(head):
+            try:
+                makedirs(head, mode, exist_ok)
+            except OSError as e:
+                # be happy if someone already created the path
+                if e.errno != errno.EEXIST:
+                    raise
+            cdir = os.curdir
+            if isinstance(tail, str):
+                cdir = safe_encode(os.curdir, 'ASCII')
+            if tail == cdir:     # xxx/newdir/. exists if xxx/newdir exists
+                return
+        try:
+            os.mkdir(name, mode)
+        except OSError as e:
+            dir_exists = os.path.isdir(name)
+            expected_mode = _get_masked_mode(mode)
+            if dir_exists:
+                # S_ISGID is automatically copied by the OS from parent to child
+                # directories on mkdir.  Don't consider it being set to be a mode
+                # mismatch as mkdir does not unset it when not specified in mode.
+                actual_mode = st.S_IMODE(lstat(name).st_mode) & ~st.S_ISGID
+            else:
+                actual_mode = -1
+            if not (e.errno == errno.EEXIST and exist_ok and dir_exists and
+                    actual_mode == expected_mode):
+                if dir_exists and actual_mode != expected_mode:
+                    e.strerror += ' (mode %o != expected mode %o)' % (
+                            actual_mode, expected_mode)
+                raise
+else:
+    from os import makedirs
+del __py33
+
+def ensure_filename(filename):
+    '''Ensures the existence of a file with a given filename.
+
+    If the filename is taken and is not pointing to a file (or a link to a
+    file) an OSError is raised.
+
+    The function creates all directories if needed. See :func:`makedirs` for
+    restrictions.
+
+    '''
+    if not os.path.exists(filename):
+        filename = normalize_path(filename)
+        dirname = os.path.dirname(filename)
+        makedirs(dirname, exist_ok=True)
+        open(filename, 'wb').close()
+    else:
+        if not os.path.isfile(filename):
+            raise OSError('Expected a file but another thing is found \'%s\'' %
+                          filename)

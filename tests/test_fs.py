@@ -70,10 +70,16 @@ class TestFs(unittest.TestCase):
         sentinel = self.sentinel
         self.assertEqual(expected, walk_up(start, sentinel))
 
+    def test_ensure_filename(self):
+        from xoutil.fs import ensure_filename
+        filename = os.path.join(self.base, 'en', 'sure', 'filename.txt')
+        ensure_filename(filename)
+        self.assert_(os.path.isfile(filename))
 
     def tearDown(self):
         shutil.rmtree(self.base)
         os.chdir(self.previous_dir)
+
 
 if __name__ == '__main__':
     unittest.main()
