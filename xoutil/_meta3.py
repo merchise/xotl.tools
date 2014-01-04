@@ -44,7 +44,9 @@ def metaclass(meta, collect=True):
         def __init__(self, name, bases, attrs):
             pass
 
-    class __inner__(base, metaclass=inner_meta):
-        pass
+    # Hide this stuff from Python 2.7 compiler so several static analysis tools
+    # (like pylint and other) don't complain about a SyntaxError.
+    exec(compile('class __inner__(base, metaclass=inner_meta):pass',
+                 __file__, 'exec'))
 
-    return __inner__
+    return locals()['__inner__']
