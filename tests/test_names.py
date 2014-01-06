@@ -46,7 +46,12 @@ def test_nameof():
     assert nameof(sd, inner=True, typed=True) == 'OrderedDict'
     s = 'foobar'
     assert nameof(s, inner=True) == 'foobar'
-    assert nameof('foobar') == 's'
+    # The following needs to be tested outside the assert, cause in Py3.3,
+    # py.test rewrites the assert sentences and the local scope `nameof`
+    # searched is not reached properly.
+    passed = nameof('foobar') == 's'
+    assert passed
+
     i = 1
     assert nameof(i) == 'i'
     assert nameof(i, inner=True) == '1'
