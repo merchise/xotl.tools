@@ -440,6 +440,7 @@ def walk_up(start, sentinel):
             current = dirname(current)
     return current if found else None
 
+
 if not __py33:
     def makedirs(name, mode=0o777, exist_ok=False):
         """makedirs(path [, mode=0o777][, exist_ok=False])
@@ -495,6 +496,7 @@ if not __py33:
 else:
     from os import makedirs
 del __py33
+
 
 def ensure_filename(filename):
     '''Ensures the existence of a file with a given filename.
