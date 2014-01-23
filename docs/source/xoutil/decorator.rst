@@ -31,8 +31,7 @@ Sub packages
 ------------
 
 .. toctree::
+   :glob:
    :maxdepth: 1
 
-   decorator/meta
-   decorator/development
-   decorator/compat
+   decorator/*

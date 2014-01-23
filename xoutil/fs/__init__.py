@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.fs
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -12,8 +12,12 @@
 #
 # Created on Nov 28, 2011
 
-'''
-File system utilities.
+'''File system utilities.
+
+This module contains file-system utilities that could have side-effects. For
+path-handling functions that have no side-effects look at
+:mod:`xoutil.fs.path`.
+
 '''
 
 
@@ -25,9 +29,9 @@ from __future__ import (division as _py3_division,
 
 import os
 from re import compile as _rcompile
-from .path import (normalize_path, get_module_path, shorten_module_filename,
-                   shorten_user)
-from ..compat import str_base
+from xoutil.fs.path import (normalize_path, get_module_path,
+                            shorten_module_filename, shorten_user)
+from xoutil.compat import str_base, py33 as __py33
 
 
 re_magic = _rcompile('[*?[]')
@@ -91,9 +95,9 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
             if (regex is None) or regex.search(path):
                 yield path
         if maxdepth is not None:
-           depth += 1
-           if depth >= maxdepth:
-               _dirs[:] = []
+            depth += 1
+            if depth >= maxdepth:
+                _dirs[:] = []
 
 
 # ------------------------------ iter_dict_files ------------------------------
@@ -344,7 +348,7 @@ def read_file(path):
     try:
         with open(path, 'r') as f:
             return f.read()
-    except:
+    except OSError:
         return ''
 
 
@@ -392,8 +396,7 @@ def _list(pattern):
 
 
 def imap(func, pattern):
-    '''
-    Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ... for each dir
+    r'''Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ... for each dir
     path. The `pattern` may contain:
 
     - Simple shell-style wild-cards à la `fnmatch`.
@@ -407,3 +410,110 @@ def imap(func, pattern):
         res = func(item, st)
         if res is not None:
             yield res
+
+
+def walk_up(start, sentinel):
+    '''Given a `start` directory walk-up the file system tree until either the
+    FS root is reached or the `sentinel` is found.
+
+    The `sentinel` must be a string containing the file name to be found.
+
+    .. warning:: If `sentinel` is an absolute path that exists this will return
+       `start`, no matter what `start` is (in windows this could be even
+       different drives).
+
+    If `start` path exists but is not a directory an OSError is raised.
+
+    '''
+    from os.path import abspath, exists, isdir, join, dirname
+    current = abspath(start)
+    if not exists(current) or not isdir(current):
+        raise OSError('Invalid directory "%s"' % current)
+    previouspath = None
+    found = False
+    while not found and current is not previouspath:
+        clue = join(current, sentinel)
+        if exists(clue):
+            found = True
+        else:
+            previouspath = current
+            current = dirname(current)
+    return current if found else None
+
+
+if not __py33:
+    def makedirs(name, mode=0o777, exist_ok=False):
+        """makedirs(path [, mode=0o777][, exist_ok=False])
+
+        Super-mkdir; create a leaf directory and all intermediate ones.
+        Works like mkdir, except that any intermediate path segment (not
+        just the rightmost) will be created if it does not exist. If the
+        target directory with the same mode as we specified already exists,
+        raises an OSError if exist_ok is False, otherwise no exception is
+        raised.  This is recursive.
+
+        """
+        import stat as st
+        from xoutil.string import safe_encode
+        def _get_masked_mode(mode):
+            mask = os.umask(0)
+            os.umask(mask)
+            return mode & ~mask
+        import errno
+        head, tail = os.path.split(name)
+        if not tail:
+            head, tail = os.path.split(head)
+        if head and tail and not os.path.exists(head):
+            try:
+                makedirs(head, mode, exist_ok)
+            except OSError as e:
+                # be happy if someone already created the path
+                if e.errno != errno.EEXIST:
+                    raise
+            cdir = os.curdir
+            if isinstance(tail, str):
+                cdir = safe_encode(os.curdir, 'ASCII')
+            if tail == cdir:     # xxx/newdir/. exists if xxx/newdir exists
+                return
+        try:
+            os.mkdir(name, mode)
+        except OSError as e:
+            dir_exists = os.path.isdir(name)
+            expected_mode = _get_masked_mode(mode)
+            if dir_exists:
+                # S_ISGID is automatically copied by the OS from parent to child
+                # directories on mkdir.  Don't consider it being set to be a mode
+                # mismatch as mkdir does not unset it when not specified in mode.
+                actual_mode = st.S_IMODE(lstat(name).st_mode) & ~st.S_ISGID
+            else:
+                actual_mode = -1
+            if not (e.errno == errno.EEXIST and exist_ok and dir_exists and
+                    actual_mode == expected_mode):
+                if dir_exists and actual_mode != expected_mode:
+                    e.strerror += ' (mode %o != expected mode %o)' % (
+                            actual_mode, expected_mode)
+                raise
+else:
+    from os import makedirs
+del __py33
+
+
+def ensure_filename(filename):
+    '''Ensures the existence of a file with a given filename.
+
+    If the filename is taken and is not pointing to a file (or a link to a
+    file) an OSError is raised.
+
+    The function creates all directories if needed. See :func:`makedirs` for
+    restrictions.
+
+    '''
+    if not os.path.exists(filename):
+        filename = normalize_path(filename)
+        dirname = os.path.dirname(filename)
+        makedirs(dirname, exist_ok=True)
+        open(filename, 'wb').close()
+    else:
+        if not os.path.isfile(filename):
+            raise OSError('Expected a file but another thing is found \'%s\'' %
+                          filename)

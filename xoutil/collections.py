@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2013 Merchise Autrement and Contributors for the
+# Copyright 2013, 2014 Merchise Autrement and Contributors for the
 # defaultdict and opendict implementations.
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
@@ -239,7 +239,7 @@ class SmartDictMixin(object):
 
     Note on using mixins in Python: method resolution order is calculated in
     the order of inheritance, if a mixin is defined to overwrite behavior
-    already existent, use first that classes with it. See :class:`SmartDict'
+    already existent, use first that classes with it. See :class:`SmartDict`
     below.
 
     '''

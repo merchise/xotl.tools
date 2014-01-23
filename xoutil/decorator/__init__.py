@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.decorator
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
+# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2009-2011 Medardo Rodríguez
 #
 # Author: Medardo Rodriguez
@@ -72,14 +72,17 @@ class AttributeAlias(object):
 
 def settle(**kwargs):
     '''Returns a decorator that sets different attribute values to the
-    decorated target (function or class)::
+    decorated target (function or class).
 
-        >>> @settle(name='Name')
-        ... class Person(object):
-        ...    pass
+    Usage::
 
-        >>> Person.name
-        'Name'
+       >>> @settle(name='Name')
+       ... class Person(object):
+       ...    pass
+
+       >>> Person.name
+       ... 'Name'
+
     '''
     def inner(target):
         from xoutil.compat import iteritems_
@@ -90,8 +93,10 @@ def settle(**kwargs):
 
 
 def namer(name, **kwargs):
-    '''Similar to :func:`settle`, but always consider first argument as *the
-    name* (i.e, assigned to `__name__`)::
+    '''Like :func:`settle`, but name is a positional argument and is assigned
+    to the attribute ``__name__``.
+
+    Usage::
 
         >>> @namer('Identity', custom=1)
         ... class I(object):
@@ -102,6 +107,7 @@ def namer(name, **kwargs):
 
         >>> I.custom
         1
+
     '''
     return settle(__name__=name, **kwargs)
 

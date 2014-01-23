@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # tests.test_objects
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -32,6 +32,11 @@ def test_smart_copy():
     source = new(a=1, b=2, c=4, _d=5)
     target = {}
     smart_copy(source, target, False)
+    assert target == dict(a=1, b=2, c=4)
+
+    source = new(a=1, b=2, c=4, _d=5)
+    target = {}
+    smart_copy(source, target, None)
     assert target == dict(a=1, b=2, c=4)
 
     target = {}

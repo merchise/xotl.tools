@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_decorators
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -103,7 +103,10 @@ class TestAssignable(unittest.TestCase):
 
 class RegressionTests(unittest.TestCase):
     def test_with_kwargs(self):
-        'When passing a function as first positional argument, kwargs should be tested empty'
+        '''When passing a function as first positional argument, kwargs should be
+        tested empty.
+
+        '''
         from xoutil.functools import partial
         @decorator
         def ditmoi(target, *args, **kwargs):
@@ -117,64 +120,6 @@ class RegressionTests(unittest.TestCase):
             return n
 
         self.assertEqual(badguy, foobar(1))
-
-
-class TestMetaclassDecorator(unittest.TestCase):
-    def setUp(self):
-        from xoutil.decorator.compat import metaclass
-
-        class FooMeta(type):
-            def __new__(cls, name, bases, attrs):
-                result = super(FooMeta, cls).__new__(cls, name, bases, attrs)
-                result.foo_class = True
-                return result
-
-        class FooBarMeta(FooMeta):
-            def __new__(cls, name, bases, attrs):
-                result = super(FooBarMeta, cls).__new__(cls, name, bases, attrs)
-                result.foobar_args = (name, bases)
-                return result
-
-        @metaclass(FooMeta)
-        class FooClass(object):
-            @staticmethod
-            def static(*args):
-                return args
-
-            @classmethod
-            def clsmethod(cls, *args):
-                return (cls.foo_class, getattr(cls, 'foobar_args', ()))
-
-            def get_or_set(self, name, value):
-                from xoutil.objects import setdefaultattr
-                result = setdefaultattr(self, name, value)
-                return result
-
-
-        @metaclass(FooBarMeta)
-        class FooBarClass(FooClass):
-            value = {1:2}
-
-        self.FooClass = FooClass
-        self.FooBarClass = FooBarClass
-
-
-    def test_metaclass(self):
-        from xoutil.types import is_classmethod, is_staticmethod, is_instancemethod
-        FooClass = self.FooClass
-        FooBarClass = self.FooBarClass
-
-        self.assertTrue(FooClass.foo_class and FooBarClass.foo_class)
-        self.assertEquals(('FooBarClass', (FooClass, )), FooBarClass.foobar_args)
-
-        self.assertTrue(is_classmethod(FooClass, 'clsmethod'))
-        self.assertTrue(is_staticmethod(FooClass, 'static'))
-        self.assertTrue(is_instancemethod(FooClass, 'get_or_set'))
-
-        self.assertTrue(is_classmethod(FooBarClass, 'clsmethod'))
-        self.assertTrue(is_staticmethod(FooBarClass, 'static'))
-        self.assertTrue(is_instancemethod(FooBarClass, 'get_or_set'))
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
