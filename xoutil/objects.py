@@ -1000,7 +1000,7 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
        >>> Spam.__bases__ == (dict, )
        True
 
-    .. note::
+    .. warning::
 
        You should always place your metaclass declaration *first* in the list
        of bases. Doing otherwise triggers *twice* the metaclass' constructors
@@ -1008,7 +1008,7 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
 
        If your metaclass has some non-idempotent side-effect (such as
        registration of classes), then this would lead to unwanted double
-       registration of the class.
+       registration of the class::
 
           >>> class BaseMeta(type):
           ...     classes = []

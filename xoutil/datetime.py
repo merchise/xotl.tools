@@ -304,12 +304,13 @@ def daterange(*args):
 
     If only `stop` is given, `start` will be the first day of stop's month.
 
-    `step`, if given, should be non-zero integer meaning the numbers of days
+    `step`, if given, should be a non-zero integer meaning the numbers of days
     to jump from one date to the next. It defaults to ``1``. If it's positive
     then `stop` should happen after `start`, otherwise no dates will be
     yielded. If it's negative `stop` should be before `start`.
 
     As with `range`, `stop` is never included in the yielded dates.
+
     '''
     import operator
     # Use base classes to allow broader audience
