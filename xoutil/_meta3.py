@@ -27,7 +27,7 @@ __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__ = "Mon Apr 29 15:34:11 2013"
 
 
-def metaclass(meta, collect=True):
+def metaclass(meta):
     class base:
         pass
 
