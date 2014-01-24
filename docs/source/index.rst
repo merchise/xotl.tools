@@ -14,19 +14,7 @@ Welcome to xoutil's documentation!
 What's new in this version
 --------------------------
 
-.. include:: history/changes-1.4.2.rst
-
-and in since 1.4.0
-~~~~~~~~~~~~~~~~~~
-
-Release 1.4.1:
-
-.. include:: history/changes-1.4.1.rst
-
-Release 1.4.0:
-
-.. include:: history/changes-1.4.0.rst
-
+.. include:: history/_changes-1.5.0.rst
 
 
 
