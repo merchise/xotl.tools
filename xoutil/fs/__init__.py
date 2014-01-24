@@ -29,8 +29,8 @@ from __future__ import (division as _py3_division,
 
 import os
 from re import compile as _rcompile
-from xoutil.fs.path import (normalize_path, get_module_path,
-                            shorten_module_filename, shorten_user)
+from xoutil.fs.path import (normalize_path, shorten_module_filename,
+                            shorten_user)
 from xoutil.compat import str_base, py33 as __py33
 
 

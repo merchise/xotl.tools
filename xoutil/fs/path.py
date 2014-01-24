@@ -29,11 +29,10 @@ import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
-from xoutil.functools import pow_
-from xoutil.deprecation import deprecated
+from xoutil.functools import power as pow_
 from xoutil.names import strlist as strs
 __all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
-               'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+               'fix_encoding', 'join', 'normalize_path',
                'shorten_module_filename', 'shorten_user')
 del strs
 
@@ -59,7 +58,9 @@ Example::
     # It does not matter if `/` is at the end
     >>> rtrim('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
     '.../tmp/a'
+
 """
+del pow_
 
 
 def fix_encoding(name, encoding=None):
@@ -110,12 +111,6 @@ def normalize_path(base, *extras):
     except:
         path = join(base, *extras)
     return abspath(expanduser(path))
-
-
-@deprecated('xoutil.modules.get_module_path')
-def get_module_path(module):
-    from xoutil.modules import get_module_path as _original
-    return _original(module)
 
 
 def shorten_module_filename(filename):

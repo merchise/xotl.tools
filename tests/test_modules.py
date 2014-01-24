@@ -67,3 +67,37 @@ class TestModuleDecorators(unittest.TestCase):
         m.store = (1, 2)
         self.assertEquals((1, 2), m.store)
         self.assertEquals((1, 2), m._store)
+
+
+def test_get_module_path_by_module_object():
+    import xoutil, xoutil.iterators
+    from os.path import dirname, join
+    from xoutil.modules import get_module_path
+    top = join(dirname(dirname(__file__)), 'xoutil')
+    expected = top
+    assert get_module_path(xoutil) == expected
+
+    expected = (join(top, 'iterators.py'),
+                join(top, 'iterators.pyc'),
+                join(top, 'iterators.pyo'))
+    assert get_module_path(xoutil.iterators) in expected
+
+
+def test_get_module_path_by_module_string_abs():
+    from os.path import dirname, join
+    from xoutil.modules import get_module_path
+    top = join(dirname(dirname(__file__)), 'xoutil')
+    expected = top
+    assert get_module_path('xoutil') == expected
+
+    expected = (join(top, 'iterators.py'),
+                join(top, 'iterators.pyc'),
+                join(top, 'iterators.pyo'))
+    assert get_module_path('xoutil.iterators') in expected
+
+
+def test_get_module_path_by_module_string_rel():
+    import pytest
+    from xoutil.modules import get_module_path
+    with pytest.raises(TypeError):
+        assert get_module_path('.iterators') == expected

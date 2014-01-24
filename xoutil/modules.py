@@ -211,8 +211,23 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None):
 
 
 def get_module_path(module):
-    # TODO: [med] Standardize this
+    '''Gets the absolute path of a `module`.
+
+    :param module: Either module object or a (dotted) string for the module.
+
+    :returns: The path of the module.
+
+    If the module is a package, returns the directory path (not the path to the
+    ``__init__``).
+
+    If `module` is a string and it's not absolute, raises a TypeError.
+
+    '''
+    from importlib import import_module
+    from xoutil.fs.path import normalize_path
     from xoutil.compat import str_base
-    mod = __import__(module) if isinstance(module, str_base) else module
+    mod = import_module(module) if isinstance(module, str_base) else module
+    # The __path__ only exists for packages and does not include the
+    # __init__.py
     path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
-    return abspath(dirname(path).decode('utf-8'))
+    return normalize_path(path)
