@@ -18,7 +18,3 @@
   custom attributes.
 
 - Includes a `random` parameter to :func:`xoutil.uuid.uuid`.
-
-- Removes module :mod:`!xoutil.decorator.compat`, since it only contained the
-  deprecated decorator :func:`!xoutil.decorator.compat.metaclass` in favor of
-  :func:`xoutil.objects.metaclass`.
