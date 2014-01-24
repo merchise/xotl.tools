@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.datetime
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -49,6 +49,27 @@ from time import strftime as _time_strftime
 
 __docstring_format__ = 'rst'
 __author__ = 'med'
+
+
+#: Simple constants for .weekday() method
+class WEEKDAY:
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
+    SUNDAY = 6
+
+
+class ISOWEEKDAY:
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
 
 
 if hasattr(_pm.timedelta, 'total_seconds'):
@@ -283,12 +304,13 @@ def daterange(*args):
 
     If only `stop` is given, `start` will be the first day of stop's month.
 
-    `step`, if given, should be non-zero integer meaning the numbers of days
+    `step`, if given, should be a non-zero integer meaning the numbers of days
     to jump from one date to the next. It defaults to ``1``. If it's positive
     then `stop` should happen after `start`, otherwise no dates will be
     yielded. If it's negative `stop` should be before `start`.
 
     As with `range`, `stop` is never included in the yielded dates.
+
     '''
     import operator
     # Use base classes to allow broader audience

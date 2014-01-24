@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.extended
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
+# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Manuel Vázquez Acosta
@@ -26,8 +26,9 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil.aop.classical import weave as classical_weave
-
+from xoutil.deprecation import deprecated as _deprecated
 from xoutil.names import strlist as strs
+
 __all__ = strs('weave')
 del strs
 
@@ -35,6 +36,8 @@ __docstring_format__ = 'rst'
 __author__ = 'manu'
 
 
+@_deprecated('None', msg="This entire module is deprecated and will be "
+             "removed.", removed_in_version='1.6.0')
 def weave(aspect, target):
     '''Similar to :py:func:`xoutil.aop.classical.weave` but introduces
     _before_weave and _around_weave hooks to the weaving process::
@@ -78,3 +81,6 @@ def weave(aspect, target):
     else:
         return classical_weave(aspect, target,
                                '_before_weave', '_around_weave')
+
+
+del _deprecated

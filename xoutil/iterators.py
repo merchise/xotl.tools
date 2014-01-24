@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.iterators
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -45,26 +45,6 @@ def first_non_null(iterable, default=None):
     return next((x for x in iter(iterable) if x), default)
 
 
-@deprecated('first_non_null(map(predicate, iterable), default)',
-            'Function `obtain` is deprecated since 1.4.0. Use the combo '
-            '{replacement} instead.')
-def obtain(predicate, iterable, default=None):
-    '''Returns the first non-null value, calculated as predicate(item), each
-    one from an 'iterable'.
-
-    This is roughly the same as::
-
-         first_non_null(map(predicate, iterable), default)
-
-    .. deprecated:: 1.4.0 The name `obtain` is too general to convey the
-       meaning of the function, using :func:`first_non_null` is deemed more
-       clear.
-
-    '''
-    from xoutil.compat import map
-    return first_non_null(map(predicate, iterable), default)
-
-
 def flatten(sequence, is_scalar=is_scalar, depth=None):
     '''Flattens out a sequence. It takes care of everything deemed a collection
     (i.e, not a scalar according to the callabled passed in `is_scalar`)::
@@ -102,22 +82,6 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
                 yield subitem
 
 
-@deprecated('list(flatten(..))',
-            'Function `get_flat_list` is deprecated since 1.4.0. Use '
-            'the combo {replacement} instead.')
-def get_flat_list(sequence):
-    '''Flatten out a sequence as a flat list.
-
-    This is the same as::
-
-        list(flatten(sequence))
-
-    .. deprecated:: 1.4.0 Just use the proposed equivalent combo.
-
-    '''
-    return list(flatten(sequence))
-
-
 def dict_update_new(target, source):
     '''
     Update values in "source" that are new (not currently present) in "target".
@@ -141,24 +105,6 @@ def fake_dict_iteritems(source):
     warnings.warn('fake_dict_iteritems is in risk for deprecation')
     for key in source.keys():
         yield key, source[key]
-
-
-@deprecated('xoutil.objects.smart_copy')
-def smart_dict(defaults, *sources):
-    '''Build a dictionary looking in `sources` for all keys or attributes
-    defined in `defaults`.
-
-    .. deprecated:: 1.4.0 Use :func:`xoutil.objects.smart_copy`.
-
-    Using the new function this one is roughly equivalent to::
-
-           args = sources + ({}, )
-           return smart_copy(*args, defaults=defaults)
-
-    '''
-    from xoutil.objects import smart_copy
-    args = sources + ({}, )
-    return smart_copy(*args, defaults=defaults)
 
 
 def slides(iterable, width=2, fill=None):
@@ -280,7 +226,5 @@ def first_n(iterable, n=1, fill=Unset):
         n -= 1
 
 
-# Compatible izip and imap
-from xoutil.compat import zip, map
-izip = deprecated(zip)(zip)
-imap = deprecated(map)(map)
+# Compatible zip and map
+from xoutil.compat import zip, map, zip_longest

@@ -32,10 +32,18 @@
    This method is actually the stardard ``itertools.imap`` when in Python 2.7,
    and the builtin ``map`` when in Python 3.
 
-.. function:: xoutil.iterators.izip
+.. function:: xoutil.iterators.zip_longest(*iterables, fillvalue=None)
 
-   An alias to :func:`zip`.
+   Make an iterator that aggregates elements from each of the iterables. If the
+   iterables are of uneven length, missing values are filled-in with
+   fillvalue. Iteration continues until the longest iterable is
+   exhausted.
 
-.. function:: xoutil.iterators.imap
+   If one of the iterables is potentially infinite, then the
+   :func:`zip_longest` function should be wrapped with something that limits
+   the number of calls (for example :func:`islice` or :func:`takewhile`). If
+   not specified, `fillvalue` defaults to None.
 
-   An alias to :func:`map`.
+   This function is actually an alias to :func:`itertools.izip_longest` in
+   Python 2.7, and an alias to :func:`itertools.zip_longest` in Python
+   3.3.

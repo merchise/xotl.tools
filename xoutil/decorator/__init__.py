@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.decorator
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
+# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2009-2011 Medardo Rodríguez
 #
 # Author: Medardo Rodriguez
@@ -38,16 +38,6 @@ __all__ = strs('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
 del strs
 
 
-@wraps(_decorator)
-def decorator(caller):
-    import warnings
-    msg = ('xoutil.decorators.decorator has being moved to '
-           'xoutil.mdeco.decorator, and it will be removed from this module '
-           'in the future.')
-    warnings.warn(msg, stacklevel=2)
-    return _decorator(caller)
-
-
 class AttributeAlias(object):
     '''Descriptor to create aliases for object attributes.
 
@@ -72,14 +62,17 @@ class AttributeAlias(object):
 
 def settle(**kwargs):
     '''Returns a decorator that sets different attribute values to the
-    decorated target (function or class)::
+    decorated target (function or class).
 
-        >>> @settle(name='Name')
-        ... class Person(object):
-        ...    pass
+    Usage::
 
-        >>> Person.name
-        'Name'
+       >>> @settle(name='Name')
+       ... class Person(object):
+       ...    pass
+
+       >>> Person.name
+       ... 'Name'
+
     '''
     def inner(target):
         from xoutil.compat import iteritems_
@@ -90,8 +83,10 @@ def settle(**kwargs):
 
 
 def namer(name, **kwargs):
-    '''Similar to :func:`settle`, but always consider first argument as *the
-    name* (i.e, assigned to `__name__`)::
+    '''Like :func:`settle`, but name is a positional argument and is assigned
+    to the attribute ``__name__``.
+
+    Usage::
 
         >>> @namer('Identity', custom=1)
         ... class I(object):
@@ -102,6 +97,7 @@ def namer(name, **kwargs):
 
         >>> I.custom
         1
+
     '''
     return settle(__name__=name, **kwargs)
 
@@ -211,7 +207,9 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
-# TODO: If next is part of "__doc__", remove the comment or the __doc__ part.
+del _decorator
+
+
 # The following is extracted from the SQLAlchemy project's codebase, merit and
 # copyright goes to SQLAlchemy authors::
 #
@@ -221,7 +219,7 @@ def instantiate(target, *args, **kwargs):
 # http://www.opensource.org/licenses/mit-license.php
 #
 class memoized_property(object):
-    """A read-only @property that is only evaluated once.
+    """A read-only property that is only evaluated once.
 
     This is extracted from the SQLAlchemy project's codebase, merit and
     copyright goes to SQLAlchemy authors::

@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_metaclass
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -36,37 +36,6 @@ def test_basic_inline_metaclass():
     assert type(Entity) is Meta
     assert Entity.__base__ is Base
     assert Base.__base__ is object
-
-
-def test_double_registration_with_decorator():
-    import pytest
-    from xoutil.decorator.compat import metaclass
-
-    class RegisteringType(type):
-        classes = []
-
-        def __new__(cls, name, bases, attrs):
-            res = super(RegisteringType, cls).__new__(cls, name, bases, attrs)
-            cls.classes.append(res)
-            return res
-
-    @metaclass(RegisteringType)
-    class Base(object):
-        pass
-
-
-    class SubType(RegisteringType):
-        def __new__(cls, name, bases, attrs):
-            return super(SubType, cls).__new__(cls, name, bases, attrs)
-
-
-    @metaclass(SubType)
-    class Foo(Base):
-        pass
-
-    with pytest.raises(AssertionError):
-        assert len(RegisteringType.classes) == 2  # !!!!
-        # There are three classes the olf Foo and newly created Foo
 
 
 def test_no_double_registration_with_inlinemetaclass():

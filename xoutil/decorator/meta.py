@@ -4,7 +4,7 @@
 # xoutil.mdeco
 #----------------------------------------------------------------------
 #
-# Copyright (c) 2012, 2013 Merchise Autrement and contributors for the
+# Copyright (c) 2012, 2013, 2014 Merchise Autrement and contributors for the
 # decorator function.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -317,7 +317,7 @@ def decorator(caller):
         try:
             from zope.interface import Interface
         except ImportError:
-            from xoutil.types import Unset as Interface
+            from xoutil import Unset as Interface
         if (len(args) == 1 and not kwargs and
             (isinstance(args[0], (function, type)) or
              issubclass(type(args[0]), type(Interface)))):

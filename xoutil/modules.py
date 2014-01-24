@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.modules
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement
+# Copyright (c) 2013, 2014 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -43,7 +43,7 @@ def force_module(ref=None):
     If `ref` is not specified (or integer) calling module is assumed looking
     in the stack.
 
-    .. impl-detail::
+    .. note:: Implementation detail
 
        Function used to inspect the stack is not guaranteed to exist in all
        implementations of Python.
@@ -89,7 +89,7 @@ def copy_members(source=None, target=None):
     :returns: Source module.
     :rtype: `ModuleType`
 
-    .. impl-detail::
+    .. warning:: Implementation detail
 
        Function used to inspect the stack is not guaranteed to exist in all
        implementations of Python.
@@ -157,7 +157,8 @@ def customize(module, custom_attrs=None, meta=None):
 
             def __dir__(self):
                 res = set(dir(module))
-                res |= set(custom_attrs.keys())
+                if custom_attrs:
+                    res |= set(custom_attrs.keys())
                 return list(res)
 
         sys.modules[module.__name__] = result = CustomModule(module.__name__)
@@ -207,3 +208,26 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None):
     result = prop(getter, setter, deleter, doc)
     setattr(cls, getter.__name__, result)
     return result
+
+
+def get_module_path(module):
+    '''Gets the absolute path of a `module`.
+
+    :param module: Either module object or a (dotted) string for the module.
+
+    :returns: The path of the module.
+
+    If the module is a package, returns the directory path (not the path to the
+    ``__init__``).
+
+    If `module` is a string and it's not absolute, raises a TypeError.
+
+    '''
+    from importlib import import_module
+    from xoutil.fs.path import normalize_path
+    from xoutil.compat import str_base
+    mod = import_module(module) if isinstance(module, str_base) else module
+    # The __path__ only exists for packages and does not include the
+    # __init__.py
+    path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
+    return normalize_path(path)

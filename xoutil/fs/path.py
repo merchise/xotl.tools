@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.fs.path
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -13,6 +13,14 @@
 #
 # Created on Feb 16, 2012
 
+'''Extensions to os.path
+
+Functions inside this module must not have side-effects on the
+file-system. This module re-exports (without change) several functions from the
+:py:mod:`os.path` standard module.
+
+'''
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
@@ -21,12 +29,10 @@ import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
-from xoutil.functools import pow_
-
-
+from xoutil.functools import power as pow_
 from xoutil.names import strlist as strs
 __all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
-               'fix_encoding', 'join', 'normalize_path', 'get_module_path',
+               'fix_encoding', 'join', 'normalize_path',
                'shorten_module_filename', 'shorten_user')
 del strs
 
@@ -52,7 +58,9 @@ Example::
     # It does not matter if `/` is at the end
     >>> rtrim('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
     '.../tmp/a'
+
 """
+del pow_
 
 
 def fix_encoding(name, encoding=None):
@@ -92,9 +100,9 @@ def join(base, *extras):
 def normalize_path(base, *extras):
     '''Normalize path by:
 
-      - expanding '~' and '~user' constructions.
-      - eliminating double slashes
-      - converting to absolute.
+    - expanding '~' and '~user' constructions.
+    - eliminating double slashes
+    - converting to absolute.
 
     '''
     # FIXME: [med] Redundant "path" in name "xoutil.fs.path.normalize_path"
@@ -103,16 +111,6 @@ def normalize_path(base, *extras):
     except:
         path = join(base, *extras)
     return abspath(expanduser(path))
-
-
-# TODO: [manu] move to "xoutil.modules" and deprecate here
-def get_module_path(module):
-    # TODO: [med] Standardize this
-    from ..compat import str_base
-    mod = __import__(module) if isinstance(module, str_base) else module
-    path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
-    return abspath(dirname(path).decode('utf-8'))
-
 
 
 def shorten_module_filename(filename):

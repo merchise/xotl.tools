@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.basic
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
+# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -40,6 +40,8 @@ from __future__ import (division as _py3_division,
 from types import MethodType, FunctionType
 from contextlib import contextmanager
 
+from xoutil.deprecation import deprecated as _deprecated
+
 from xoutil.names import strlist as strs
 __all__ = strs('complementor', 'contextualized', 'inject_dependencies',
                'weaved')
@@ -74,6 +76,8 @@ def _update(attrs, *sources):
     return attrs
 
 
+@_deprecated('None', msg="This entire module is deprecated and will be "
+             "removed.", removed_in_version='1.6.0')
 def complementor(*sources, **attrs):
     '''
     Returns a decorator to be applied to a class in order to add attributes
@@ -185,6 +189,8 @@ def complementor(*sources, **attrs):
     return inner
 
 
+@_deprecated('None', msg="This entire module is deprecated and will be "
+             "removed.", removed_in_version='1.6.0')
 def contextualized(context, *sources, **attrs):
     '''
     Another decorator very similar to :func:`complementor`, but this wraps
@@ -228,6 +234,8 @@ def contextualized(context, *sources, **attrs):
     return complementor(**wrapped_attrs)
 
 
+@_deprecated('None', msg="This entire module is deprecated and will be "
+             "removed.", removed_in_version='1.6.0')
 def inject_dependencies(target, *sources, **attrs):
     'Injects/replaces the sources for the given target.'
     cls = target if isinstance(target, type) else target.__class__
@@ -252,6 +260,8 @@ def inject_dependencies(target, *sources, **attrs):
     return result
 
 
+@_deprecated('None', msg="This entire module is deprecated and will be "
+             "removed.", removed_in_version='1.6.0')
 @contextmanager
 def weaved(target, *sources, **attrs):
     '''
@@ -325,3 +335,5 @@ def weaved(target, *sources, **attrs):
                 res += 1
             if res > 0:
                 target.__class__ = cls
+
+del _deprecated

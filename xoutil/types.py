@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # xoutil.types
 #----------------------------------------------------------------------
-# Copyright (c) 2013 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2010-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -34,38 +34,18 @@ GeneratorType = _pm.GeneratorType
 del _pm, _copy_python_module_members
 
 
-from xoutil.modules import moduleproperty as _moduleproperty
-_deprecated_msg = '{which} is deprecated here. It should be imported directly from {replacement}.'
-
-@_moduleproperty
-def Unset(self):
-    import warnings
-    warnings.warn(_deprecated_msg.format(which='Unset', replacement='xoutil'), stacklevel=2)
-    return _Unset
-
-
-@_moduleproperty
-def ignored(self):
-    import warnings
-    warnings.warn(_deprecated_msg.format(which='ignored', replacement='xoutil.Ignored'), stacklevel=2)
-    return _ignored
-
-del _moduleproperty
-
-
-
 from xoutil.compat import xrange_
 from xoutil.compat import pypy as _pypy
-from xoutil._values import UnsetType, Unset as _Unset, Ignored as _ignored
+from xoutil._values import UnsetType, Unset as _Unset
 from collections import Mapping
 
 
 from xoutil.names import strlist as strs
-__all__ = strs('mro_dict', 'UnsetType', 'Unset', 'ignored', 'DictProxyType',
+__all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
                'SlotWrapperType', 'is_iterable', 'is_collection',
                'is_string_like', 'is_scalar', 'is_staticmethod',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
-               'is_module', 'Required')
+               'is_module', 'Required', 'NoneType')
 del strs
 
 #: The type of methods that are builtin in Python.
@@ -85,6 +65,11 @@ if _pypy:
     del _foo
 
 
+# In Py3.3 NoneType is not defined in the stdlib `types` module. This solves
+# the issue.
+NoneType = type(None)
+
+
 # TODO: Many of is_*method methods here are needed to be compared agains
 # the standard lib's module inspect versions. If they behave the same,
 # these should be deprecated in favor of the standards.
@@ -95,10 +80,11 @@ class mro_dict(Mapping):
 
     '''
     def __init__(self, target):
-        t = target if hasattr(target, 'mro') else type(target)
-        self._target_mro = t.mro()
+        type_ = target if hasattr(target, 'mro') else type(target)
+        self._target_mro = type_.mro()
 
     def __getitem__(self, name):
+
         from xoutil.objects import get_first_of
         probes = tuple(c.__dict__ for c in self._target_mro)
         result = get_first_of(probes, name, default=_Unset)

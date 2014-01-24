@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.classical
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013 Merchise Autrement and Contributors
+# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Manuel Vázquez Acosta
@@ -38,8 +38,9 @@ from functools import wraps as _wraps, partial
 
 from xoutil import Unset
 from xoutil.compat import inspect_getfullargspec
-
+from xoutil.deprecation import deprecated as _deprecated
 from xoutil.names import strlist as strs
+
 __all__ = strs('weave', 'StopExceptionChain')
 del strs
 
@@ -283,8 +284,8 @@ def _weave_after_method(target, aspect, method_name,
         wrapper = build_method(method, inner)
         if isinstance(target, types.ModuleType):
             import sys
-            from xoutil.objects import nameof
-            target = sys.modules[nameof(target)]
+            from xoutil.names import nameof
+            target = sys.modules[nameof(target, inner=True)]
         setattr(target, method_name, wrapper)
 
 
@@ -323,8 +324,9 @@ def _weave_before_method(target, aspect, method_name,
         ...
         ...    @staticmethod
         ...    def check_execution_permissions(self, method):
-        ...        from xoutil.objects import nameof
-        ...        if Security.current_user_may_execute(nameof(method)):
+        ...        from xoutil.names import nameof
+        ...        methodname = nameof(method, inner=True)
+        ...        if Security.current_user_may_execute(methodname):
         ...            return result
         ...
         ...    @classmethod
@@ -447,6 +449,8 @@ _aspect_method = lambda attr: any(attr.startswith(prefix) and attr != prefix
 _public = lambda attr: not attr.startswith('_')
 
 
+@_deprecated('None', msg="This entire module is deprecated and will be "
+             "removed.", removed_in_version='1.6.0')
 def weave(aspect, target, *ignored):
     '''Weaves an aspect into `target`. The weaving involves:
 
@@ -513,3 +517,6 @@ def weave(aspect, target, *ignored):
         for attr in fdir(target, attr_filter=_public, value_filter=method,
                          getter=_mro_getattrdef):
             _weave_around_method(target, aspect, attr, '_around_')
+
+
+del _deprecated

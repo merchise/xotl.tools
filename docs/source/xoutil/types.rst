@@ -39,25 +39,20 @@
 Importing `Unset` and `ignored`
 -------------------------------
 
+.. warning:: Removed in 1.5.0
+
+   .. deprecated:: 1.4.0 These imports are removed in version 1.5.0.
+
 The values `Unset` and `ignored` are not types neither functions that test for
-types. They are values and are moved out of this module. Nevertheless, they
+types.  They are values and are moved out of this module.  Nevertheless, they
 will remain importable from this module up to version 1.5.0.
 
 .. data:: Unset
 
    See :class:`UnsetType`.
 
-   .. warning:: Import directly from `xoutil`, importing Unset from
-		`xoutil.types` is deprecated since 1.4.0
-
-
 .. data:: ignored
 
    To be used in arguments that are currently ignored cause they are being
    deprecated. The only valid reason to use `ignored` is to signal ignored
    arguments in method's/function's signature.
-
-   .. warning:: Importing `ignored` from `xoutil.types` is deprecated since
-		1.4.0. You must import `Ignored` from `xoutil` directly::
-
-		    from xoutil import Ignored

@@ -1,9 +1,19 @@
 Changelog
 =========
 
+1.5 series
+----------
+
+2014-01-24. Release 1.5.0
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.5.0.rst
+
+
 1.4 series
 ----------
 
+.. include:: history/changes-1.4.2.rst
 .. include:: history/changes-1.4.1.rst
 
 2013-04-26. Release 1.4.0
