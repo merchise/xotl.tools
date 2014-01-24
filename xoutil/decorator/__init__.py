@@ -219,7 +219,7 @@ del _decorator
 # http://www.opensource.org/licenses/mit-license.php
 #
 class memoized_property(object):
-    """A read-only @property that is only evaluated once.
+    """A read-only property that is only evaluated once.
 
     This is extracted from the SQLAlchemy project's codebase, merit and
     copyright goes to SQLAlchemy authors::

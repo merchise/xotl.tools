@@ -35,8 +35,8 @@ class DeprecationError(Exception):
     pass
 
 
-# XXX: Don't make deprecated depends upon anything more than compat and
-# decorator.py. Since this is meant to be used by all others xoutil modules.
+# WARNING!!! Don't make deprecated depends upon anything more than compat and
+# decorator.py, since this is meant to be used by all others xoutil modules.
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                removed_in_version=None, check_version=False):
     '''Small decorator for deprecated functions.
@@ -50,11 +50,12 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
     :param replacement: Either a string or the object that replaces the
        deprecated.
 
-    :param msg: A string with keyword arguments for the `format`
-       function. Currently we pass the current keyword arguments: `replacement`
-       (after some processing), `funcname` with the name of the currently
-       deprecated object and `in_version` with the version this object is going
-       to be removed if `removed_in_version` argument is not None.
+    :param msg: A deprecation warning message template.  You should provide
+       keyword arguments for the :py:func:`format` function.  Currently we pass
+       the current keyword arguments: `replacement` (after some processing),
+       `funcname` with the name of the currently deprecated object and
+       `in_version` with the version this object is going to be removed if
+       `removed_in_version` argument is not None.
 
        Defaults to: "{funcname} is now deprecated and it will be
        removed{in_version}. Use {replacement} instead."
@@ -66,39 +67,44 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
        declarations of obseleted objects will raise a DeprecationError. This
        helps the release manager to keep the release clean.
 
+       .. note:: Currently only works with setuptools' installed distributions.
+
     :param deprecated_module: If provided, the name of the module the
        deprecated object resides. Not needed if the deprecated object is a
        function or class.
 
-    .. versionchanged:: 1.4.1 Introduces removed_in_version and
-                        check_version
+    .. versionchanged:: 1.4.1 Introduces removed_in_version and check_version.
 
     '''
-    def decorator(target):
-        from xoutil.names import nameof
-        def raise_if_deprecated(target_version):
-            import pkg_resources
-            from xoutil.compat import str_base
-            pkg = nameof(target, inner=True, typed=True, full=True)
-            pkg, obj = pkg.rsplit('.', 1)
-            dist = None
-            while not dist and pkg:
-                try:
-                    dist = pkg_resources.get_distribution(pkg)
-                except pkg_resources.DistributionNotFound:
-                    dist = None
-                    pkg, obj = pkg.rsplit('.', 1)
-            assert dist
-            if isinstance(target_version, str_base):
-                target_version = pkg_resources.parse_version(target_version)
-            if dist.parsed_version >= target_version:
-                msg = ('A deprecated feature %r was scheduled to be '
-                       'removed in version %r and it is still '
-                       'alive in %r!' % (nameof(target, inner=True, full=True),
-                                         str(removed_in_version),
-                                         str(dist.version)))
-                raise DeprecationError(msg)
+    from xoutil.names import nameof
 
+    def raise_if_deprecated(target, target_version):
+        import pkg_resources
+        from xoutil.compat import str_base
+        pkg = nameof(target, inner=True, typed=True, full=True)
+        pkg, _obj = pkg.rsplit('.', 1)
+        dist = None
+        while not dist and pkg:
+            try:
+                dist = pkg_resources.get_distribution(pkg)
+            except pkg_resources.DistributionNotFound:
+                dist = None
+                if '.' in pkg:
+                    pkg, _obj = pkg.rsplit('.', 1)
+                else:
+                    pkg, _obj = None, None
+        assert dist
+        if isinstance(target_version, str_base):
+            target_version = pkg_resources.parse_version(target_version)
+        if dist.parsed_version >= target_version:
+            msg = ('A deprecated feature %r was scheduled to be '
+                   'removed in version %r and it is still '
+                   'alive in %r!' % (nameof(target, inner=True, full=True),
+                                     str(removed_in_version),
+                                     str(dist.version)))
+            raise DeprecationError(msg)
+
+    def decorator(target):
         if deprecated_module:
             funcname = deprecated_module + '.' + target.__name__
         else:
@@ -114,7 +120,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
         if isinstance(target, _class_types):
             def new(*args, **kwargs):
                 if check_version and removed_in_version:
-                    raise_if_deprecated(removed_in_version)
+                    raise_if_deprecated(target, removed_in_version)
                 warnings.warn(msg.format(funcname=funcname,
                                          replacement=repl_name,
                                          in_version=in_version),
@@ -142,7 +148,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             @wraps(target)
             def inner(*args, **kw):
                 if check_version and removed_in_version:
-                    raise_if_deprecated(removed_in_version)
+                    raise_if_deprecated(target, removed_in_version)
                 warnings.warn(msg.format(funcname=funcname,
                                          replacement=repl_name,
                                          in_version=in_version),
