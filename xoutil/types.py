@@ -34,34 +34,14 @@ GeneratorType = _pm.GeneratorType
 del _pm, _copy_python_module_members
 
 
-from xoutil.modules import moduleproperty as _moduleproperty
-_deprecated_msg = '{which} is deprecated here. It should be imported directly from {replacement}.'
-
-@_moduleproperty
-def Unset(self):
-    import warnings
-    warnings.warn(_deprecated_msg.format(which='Unset', replacement='xoutil'), stacklevel=2)
-    return _Unset
-
-
-@_moduleproperty
-def ignored(self):
-    import warnings
-    warnings.warn(_deprecated_msg.format(which='ignored', replacement='xoutil.Ignored'), stacklevel=2)
-    return _ignored
-
-del _moduleproperty
-
-
-
 from xoutil.compat import xrange_
 from xoutil.compat import pypy as _pypy
-from xoutil._values import UnsetType, Unset as _Unset, Ignored as _ignored
+from xoutil._values import UnsetType, Unset as _Unset
 from collections import Mapping
 
 
 from xoutil.names import strlist as strs
-__all__ = strs('mro_dict', 'UnsetType', 'Unset', 'ignored', 'DictProxyType',
+__all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
                'SlotWrapperType', 'is_iterable', 'is_collection',
                'is_string_like', 'is_scalar', 'is_staticmethod',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
@@ -100,10 +80,11 @@ class mro_dict(Mapping):
 
     '''
     def __init__(self, target):
-        t = target if hasattr(target, 'mro') else type(target)
-        self._target_mro = t.mro()
+        type_ = target if hasattr(target, 'mro') else type(target)
+        self._target_mro = type_.mro()
 
     def __getitem__(self, name):
+
         from xoutil.objects import get_first_of
         probes = tuple(c.__dict__ for c in self._target_mro)
         result = get_first_of(probes, name, default=_Unset)
