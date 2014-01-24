@@ -92,34 +92,31 @@ def power(*args):
     Examples::
 
        >>> import operator
-       >>> f = pow_(partial(operator.mul, 3), 3)
+       >>> f = power(partial(operator.mul, 3), 3)
        >>> f(23) == 3*(3*(3*23))
        True
 
-       >>> pow_(operator.neg)
+       >>> power(operator.neg)
        Traceback (most recent call last):
        ...
-       TypeError: Function `pow_` requires at least two arguments
+       TypeError: Function `power` requires at least two arguments
     '''
     try:
         funcs, times = args[:-1], args[-1]
     except IndexError:
-        msg = "Function `pow_` requires at least two arguments"
+        msg = "Function `power` requires at least two arguments"
         raise TypeError(msg)
     if not funcs:
-        raise TypeError('Function `pow_` requires at least two arguments')
+        raise TypeError('Function `power` requires at least two arguments')
     if any(not callable(func) for func in funcs):
-        raise TypeError('First arguments of `pow_` must be callables')
+        raise TypeError('First arguments of `power` must be callables')
     if not isinstance(times, int):
-        raise TypeError('Last argument of `pow_` must be int')
+        raise TypeError('Last argument of `power` must be int')
     if len(funcs) > 1:
         base = (compose(funcs), )
     else:
         base = (funcs[0], )
     return compose(*(base * times))
-
-
-pow_ = __all__(deprecated(power)(power))
 
 
 if not py32:
