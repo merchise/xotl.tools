@@ -35,8 +35,7 @@ class DeprecationError(Exception):
     pass
 
 
-# WARNING!!! Don't make deprecated depends upon anything more than compat and
-# decorator.py, since this is meant to be used by all others xoutil modules.
+# WARNING!!! Don't make deprecated depends upon anything more than compat.
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                removed_in_version=None, check_version=False):
     '''Small decorator for deprecated functions.
