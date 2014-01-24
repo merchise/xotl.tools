@@ -38,8 +38,9 @@ from functools import wraps as _wraps, partial
 
 from xoutil import Unset
 from xoutil.compat import inspect_getfullargspec
-
+from xoutil.deprecation import deprecated as _deprecated
 from xoutil.names import strlist as strs
+
 __all__ = strs('weave', 'StopExceptionChain')
 del strs
 
@@ -448,6 +449,8 @@ _aspect_method = lambda attr: any(attr.startswith(prefix) and attr != prefix
 _public = lambda attr: not attr.startswith('_')
 
 
+@_deprecated('None', msg="This entire module is deprecated and will be "
+             "removed.", removed_in_version='1.6.0')
 def weave(aspect, target, *ignored):
     '''Weaves an aspect into `target`. The weaving involves:
 
@@ -514,3 +517,6 @@ def weave(aspect, target, *ignored):
         for attr in fdir(target, attr_filter=_public, value_filter=method,
                          getter=_mro_getattrdef):
             _weave_around_method(target, aspect, attr, '_around_')
+
+
+del _deprecated
