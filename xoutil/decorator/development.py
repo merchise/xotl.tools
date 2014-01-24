@@ -19,7 +19,7 @@ from __future__ import (division as _py3_division,
 import warnings
 
 from xoutil.compat import class_types as _class_types
-from xoutil.objects import full_nameof
+from xoutil.names import nameof
 
 from .meta import decorator as _decorator
 
@@ -54,7 +54,8 @@ def unstable(target, msg=None):
         objtype = 'class'
     else:
         objtype = 'function or method'
-    message = msg.format(objtype, full_nameof(target))
+    message = msg.format(objtype,
+                         nameof(target, inner=True, full=True))
     if isinstance(target, _class_types) or issubclass(type(target),
                                                       type(Interface)):
         class meta(type(target)):
@@ -66,7 +67,8 @@ def unstable(target, msg=None):
         return klass
     else:
         def _unstable(*args, **kwargs):
-            message = msg.format(objtype, full_nameof(target))
+            message = msg.format(objtype,
+                                 nameof(target, inner=True, full=True))
             warnings.warn(message, stacklevel=2)
             return target(*args, **kwargs)
         return _unstable

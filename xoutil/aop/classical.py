@@ -283,8 +283,8 @@ def _weave_after_method(target, aspect, method_name,
         wrapper = build_method(method, inner)
         if isinstance(target, types.ModuleType):
             import sys
-            from xoutil.objects import nameof
-            target = sys.modules[nameof(target)]
+            from xoutil.names import nameof
+            target = sys.modules[nameof(target, inner=True)]
         setattr(target, method_name, wrapper)
 
 
@@ -323,8 +323,9 @@ def _weave_before_method(target, aspect, method_name,
         ...
         ...    @staticmethod
         ...    def check_execution_permissions(self, method):
-        ...        from xoutil.objects import nameof
-        ...        if Security.current_user_may_execute(nameof(method)):
+        ...        from xoutil.names import nameof
+        ...        methodname = nameof(method, inner=True)
+        ...        if Security.current_user_may_execute(methodname):
         ...            return result
         ...
         ...    @classmethod

@@ -28,10 +28,10 @@ from xoutil.compat import py3k as _py3k
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as slist
-__all__ = slist('nameof', 'smart_getter', 'smart_getter_and_deleter',
+__all__ = slist('smart_getter', 'smart_getter_and_deleter',
                 'xdir', 'fdir', 'validate_attrs', 'get_first_of',
                 'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
-                'setdefaultattr', 'full_nameof', 'copy_class', 'smart_copy',
+                'setdefaultattr', 'copy_class', 'smart_copy',
                 'extract_attrs')
 del slist
 
@@ -50,23 +50,6 @@ _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
 
 
-
-# TODO: Deprecate and restructure all its uses
-@deprecated('xoutil.names.nameof')
-def nameof(target):
-    '''Gets the name of an object.
-
-    .. deprecated:: 1.4.0 Use :func:`xoutil.names.nameof`.
-
-    '''
-    from xoutil.names import nameof as wrapped
-    from xoutil.compat import str_base
-    if isinstance(target, str_base):
-        return wrapped(target, depth=2, inner=True)
-    else:
-        return wrapped(target, depth=2, inner=True, typed=True)
-
-
 def smart_getter(obj):
     '''Returns a smart getter for `obj`.
 
@@ -81,8 +64,6 @@ def smart_getter(obj):
         return obj.get
     else:
         return lambda attr, default=None: getattr(obj, attr, default)
-
-smart_get = deprecated(smart_getter)(smart_getter)
 
 
 def smart_getter_and_deleter(obj):
@@ -101,8 +82,6 @@ def smart_getter_and_deleter(obj):
         return partial(get_and_del_key, obj)
     else:
         return partial(get_and_del_attr, obj)
-
-smart_get_and_del = deprecated(smart_getter_and_deleter)(smart_getter_and_deleter)
 
 
 def is_private_name(name):
@@ -729,28 +708,6 @@ def setdefaultattr(obj, name, value):
         setattr(obj, name, value)
         res = value
     return res
-
-
-# TODO: Use "xoutil.names.nameof" with "full=True, inner=True, typed=True"
-@deprecated('xoutil.names.nameof')
-def full_nameof(target):
-    '''Gets the full name of an object:
-
-    .. deprecated:: 1.4.0 Use :func:`xoutil.names.nameof` with the `full`
-       argument.
-
-    '''
-    from xoutil.compat import py3k, str_base
-    if isinstance(target, str_base):
-        return target
-    else:
-        if not hasattr(target, '__name__'):
-            target = type(target)
-        res = target.__name__
-        mod = getattr(target, '__module__', '__')
-        if not mod.startswith('__') and (not py3k or mod != 'builtins'):
-            res = '.'.join((mod, res))
-        return res
 
 
 def copy_class(cls, meta=None, ignores=None, new_attrs=None):
