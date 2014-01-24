@@ -94,58 +94,62 @@ We are establishing several rules to keep our module layout and dependency
 quite stable while, at the same time, allowing developers to use almost every
 feature in xoutil.
 
-We divide xoutil modules into 3 tiers:
+We divide xoutil modules into 4 tiers:
 
 #. Tier 0
 
-   This tier groups the modules that *must* not depend from other
-   modules. Modules that implement some features that are exported through
-   other modules. These module are never documented, for instance see
+   This tier groups the modules that **must not** depend from other modules
+   besides the standard library.  These modules implement some features that
+   are exported through other xoutil modules.  These module are never
+   documented, but their re-exported features are documented elsewhere.  For
+   instance, :class:`xoutil.type.UnsetType` is actually implemented in
    ``xoutil._values``.
 
    Also the exported module :mod:`xoutil.compat` is this tier.
 
 #. Tier 1
 
-   In this tier we have only :mod:`xoutil.decorator.meta`. This is to allow
-   :func:`xoutil.deprecation.deprecated` to use this facility.
+   In this tier we have:
+
+   - :mod:`xoutil.decorator.meta`.  This is to allow the definition of
+     decorators in other modules.
+
+   - :mod:`xoutil.names`.  This is to allow the use of
+     :class:`xoutil.names.namelist` for the ``__all__`` attribute of other
+     modules.
+
+   - :mod:`xoutil.deprecation`.  It **must not** depend on any other module
+     besides :mod:`xoutil.compat`.  Many modules in `xoutil` will use this
+     module at import time to declare deprecated features.
 
 #. Tier 2
 
    Modules in this tier should depend only on features defined in tiers 0 and 1
-   modules.
+   modules, and that export features that could be imported at the module
+   level.
 
-   The list include:
-
-   - :mod:`xoutil.deprecation` *must* not depend on any other module besides
-     :mod:`xoutil.compat`. Many modules in `xoutil` will use this module at
-     import time to declare deprecated features.
-
-   - :mod:`xoutil.modules`.
+   This tier only has the :mod:`xoutil.modules`.  Both
+   :func:`xoutil.modules.modulepropery` and :func:`xoutil.modules.modulemethod`
+   are meant be used at module level definitions, so they are likely to be
+   imported at module level.
 
 #. Tier 3
 
    The rest of the modules.
 
-   In this tier, :mod:`xoutil.objects` and :mod:`xoutil.types` are kings. But
+   In this tier, :mod:`xoutil.objects` and :mod:`xoutil.types` are kings.  But
    in order to allow the import of other modules the following pair of rules
    are placed:
 
-  - At the module level only import from upper tiers and from
-    :mod:`xoutil.decorator`.
+  - At the module level only import from upper tiers.
 
-  - Imports from tier 2 are allowed but imported inside the functions that use
+  - Imports from tier 3 are allowed, but only inside the functions that use
     them.
 
-  This logically entails that you can't define a function that must be a module
-  level import, like a decorator for other functions. For that reason,
-  decorators are mostly placed in the :mod:`xoutil.decorator` module.
+  This entails that you can't define a function that must be a module level
+  import, like a decorator for other functions.  For that reason, decorators
+  are mostly placed in the :mod:`xoutil.decorator` module.
 
 
-The tiers above are a logical "suggestion" of how xoutil modules are organized
-and how they might evolve. For instance,
-:func:`xoutil.decorator.compat.metaclass` uses
-:func:`xoutil.objects.copy_class` this is valid cause they are both in the same
-tier and `copy_class` was used as a function local import. However, if in the
-future we find ourselves trying to define a metaclass in :mod:`xoutil.objects`,
-then we would need a tiebreaker.
+The tiers above are a "logical suggestion" of how xoutil modules are organized
+and indicated how they might evolve.
