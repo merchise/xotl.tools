@@ -30,6 +30,7 @@ def dev_tag():
         try:
             import configparser
         except:
+            # Python 2.7
             import ConfigParser as configparser
         parser = configparser.SafeConfigParser()
         parser.read([fn])
