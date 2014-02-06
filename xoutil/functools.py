@@ -31,7 +31,6 @@ __all__ = strs('ctuple', 'compose', 'power', 'lru_cache')
 del _pm, _copy_python_module_members, strs
 
 from xoutil.compat import py32, callable
-from xoutil.deprecation import deprecated
 
 
 class ctuple(tuple):
@@ -62,13 +61,14 @@ def compose(*funcs, **kwargs):
     is to say that ``compose(f1, ... fn)`` is equivalent to ``lambda _x:
     fn(...(f1(_x))...)``.
 
-    If any "intermediate" function returns a :class:`ctuple` is expanded as
+    If any "intermediate" function returns a :class:`ctuple` it is expanded as
     several positional arguments to the next function.
 
     :param math: Indicates if `compose` should behave like mathematical
                  function composition: last function in `funcs` is applied
                  last. If False, then the last function in `func` is applied
                  first.
+
     '''
     math = kwargs.get('math', True)
     if not math:
