@@ -885,7 +885,6 @@ def smart_copy(*args, **kwargs):
                     raise KeyError(key)
             setter(key, val)
     else:
-        from xoutil.compat import str_base
         keys = []
         for source in sources:
             get = smart_getter(source)
