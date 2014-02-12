@@ -885,6 +885,7 @@ def smart_copy(*args, **kwargs):
                     raise KeyError(key)
             setter(key, val)
     else:
+        from xoutil.compat import str_base
         keys = []
         for source in sources:
             get = smart_getter(source)
@@ -893,7 +894,8 @@ def smart_copy(*args, **kwargs):
             else:
                 items = dir(source)
             for key in items:
-                if defaults is False and key.startswith('_'):
+                private = isinstance(key, str_base) and key.startswith('_')
+                if defaults is False and private:
                     copy = False
                 elif callable(defaults):
                     copy = defaults(key, source=source)
