@@ -1092,8 +1092,12 @@ def dict_merge(*dicts, **others):
     dicts = list(dicts)
     result = {}
     collections = (Set, Sequence)
-    instances_of = lambda *args: all(isinstance(which, args[-1])
-                                     for which in args[:-2])
+    #: Returns True if all but-last argument are instance of the last one
+    are_instances = lambda *args: all(isinstance(which, args[-1])
+                                      for which in args[:-1])
+    #: Returns True if all but-last argument are not instances of the last one
+    no_instances = lambda *args: all(not isinstance(which, args[-1])
+                                     for which in args[:-1])
     while dicts:
         current = dicts.pop(0)
         for key, val in iteritems_(current):
@@ -1101,7 +1105,7 @@ def dict_merge(*dicts, **others):
                 val = {key: val[key] for key in val}
             value = result.setdefault(key, val)
             if value is not val:
-                if instances_of(value, val, collections):
+                if are_instances(value, val, collections):
                     join = get_first_of((value, ), '__add__', '__or__')
                     if join:
                         constructor = type(value)
@@ -1109,9 +1113,9 @@ def dict_merge(*dicts, **others):
                     else:
                         raise ValueError("Invalid value for key '%s'"
                                          % key)
-                elif instances_of(value, val, Mapping):
+                elif are_instances(value, val, Mapping):
                     value = dict_merge(value, val)
-                elif not isinstance(val, (Set, Sequence, Mapping)):
+                elif no_instances(value, val, (Set, Sequence, Mapping)):
                     value = val
                 else:
                     raise TypeError("Found incompatible values for key '%s'"
