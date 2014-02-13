@@ -1059,3 +1059,62 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
             return default
     else:
         return current
+
+
+def dict_merge(*dicts, **others):
+    '''Merges several dicts into a single one.
+
+    Merging is similar to updating a dict, but if values are non-scalars they
+    are also merged is this way:
+
+    - Any two :class:`sequences <collection.Sequence>` or :class:`sets
+      <collections.Set>` are joined together.
+
+    - Any two mappings are recursively merged.
+
+    - Other types are just replaced like in :func:`update`.
+
+    If for a single key two values of incompatible types are found, raise a
+    TypeError.  If the values for a single key are compatible but different
+    (i.e a list an a tuple) the resultant type will be the type of the first
+    apparition of the key, unless for mappings which are always cast to dicts.
+
+    No matter the types of `dicts` the result is always a dict.
+
+    Without arguments, return the empty dict.
+
+    '''
+    from collections import Mapping, Sequence, Set
+    from xoutil.compat import iteritems_
+    from xoutil.objects import get_first_of
+    if others:
+        dicts = dicts + (others, )
+    dicts = list(dicts)
+    result = {}
+    collections = (Set, Sequence)
+    instances_of = lambda *args: all(isinstance(which, args[-1])
+                                     for which in args[:-2])
+    while dicts:
+        current = dicts.pop(0)
+        for key, val in iteritems_(current):
+            if isinstance(val, Mapping):
+                val = {key: val[key] for key in val}
+            value = result.setdefault(key, val)
+            if value is not val:
+                if instances_of(value, val, collections):
+                    join = get_first_of((value, ), '__add__', '__or__')
+                    if join:
+                        constructor = type(value)
+                        value = join(constructor(val))
+                    else:
+                        raise ValueError("Invalid value for key '%s'"
+                                         % key)
+                elif instances_of(value, val, Mapping):
+                    value = dict_merge(value, val)
+                elif not isinstance(val, (Set, Sequence, Mapping)):
+                    value = val
+                else:
+                    raise TypeError("Found incompatible values for key '%s'"
+                                    % key)
+                result[key] = value
+    return result
