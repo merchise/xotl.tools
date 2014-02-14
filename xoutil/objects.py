@@ -1087,17 +1087,12 @@ def dict_merge(*dicts, **others):
     from collections import Mapping, Sequence, Set
     from xoutil.compat import iteritems_
     from xoutil.objects import get_first_of
+    from xoutil.types import are_instances, no_instances
     if others:
         dicts = dicts + (others, )
     dicts = list(dicts)
     result = {}
     collections = (Set, Sequence)
-    #: Returns True if all but-last argument are instance of the last one
-    are_instances = lambda *args: all(isinstance(which, args[-1])
-                                      for which in args[:-1])
-    #: Returns True if all but-last argument are not instances of the last one
-    no_instances = lambda *args: all(not isinstance(which, args[-1])
-                                     for which in args[:-1])
     while dicts:
         current = dicts.pop(0)
         for key, val in iteritems_(current):

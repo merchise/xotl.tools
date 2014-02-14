@@ -262,3 +262,64 @@ class Required(object):
     '''
     def __init__(self, *args, **kwargs):
         pass
+
+
+# Real "Py4k" signature ``are_instances(*subjects, types)``.
+def are_instances(*args):
+    '''Return True if every `subject` is an instance of (any) `types`.
+
+    :param subjects: All but last positional arguments.  Are the objects
+        required to be instances of `types`.
+
+    :param types: The last positional argument.  Either a single type or a
+       sequence of types.  This must meet the conditions on the last argument
+       of `isinstance`:func:.
+
+    :returns: True or False.  True if for every `subject`,
+       ``isinstance(subject, types)`` is True.  Otherwise, False.
+
+    If no `subjects` are provided return True::
+
+        >>> are_instances(int)
+        True
+
+    See also :func:`no_instances`.
+    '''
+    if not args:
+        raise TypeError('are_instances requires at least an argument')
+    subjects, types = args[:-1], args[-1]
+    if not subjects:
+        isinstance(None, types)   # HACK: always validate `types`.
+    return all(isinstance(subject, types) for subject in subjects)
+
+
+# Real Py4k signature ``are_instances(*subjects, types)``self.
+def no_instances(*args):
+    '''Return True if every `subject` is **not** an instance of (neither)
+    `types`.
+
+    :param subjects: All but last positional arguments.  Are the objects
+        required not to be instances of `types`.
+
+    :param types: The last positional argument.  Either a single type or a
+       sequence of types.  This must meet the conditions on the last argument
+       of `isinstance`:func:.
+
+    :returns: True or False.  True if for every `subject`,
+       ``isinstance(subject, types)`` is False.  Otherwise, False.
+
+    If no `subjects` are provided return True::
+
+        >>> no_instances(int)
+        True
+
+
+
+    See also :func:`are_instances`.
+    '''
+    if not args:
+        raise TypeError('no_instances requires at least an argument')
+    subjects, types = args[:-1], args[-1]
+    if not subjects:
+        isinstance(None, types)   # HACK: always validate `types`.
+    return all(not isinstance(subject, types) for subject in subjects)
