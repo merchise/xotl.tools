@@ -24,6 +24,10 @@
 
 .. autofunction:: is_slotwrapper
 
+.. autofunction:: are_instances(*subjects, types)
+
+.. autofunction:: no_instances(*subjects, types)
+
 .. autoclass:: UnsetType
 
 .. autoclass:: DictProxyType

@@ -13,8 +13,8 @@
 
 .. autofunction:: smart_copy(*sources, target, defaults=False)
 
-.. autofunction:: nameof(target)
-
 .. autofunction:: extract_attrs(obj, *attrs, default=Unset)
 
 .. autofunction:: traverse(obj, path, default=Unset, sep='.', getter=None)
+
+.. autofunction:: dict_merge(*dicts, **other)

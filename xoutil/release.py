@@ -19,7 +19,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.5.0'
+VERSION = '1.5.1'
 
 
 def dev_tag():
@@ -30,6 +30,7 @@ def dev_tag():
         try:
             import configparser
         except:
+            # Python 2.7
             import ConfigParser as configparser
         parser = configparser.SafeConfigParser()
         parser.read([fn])

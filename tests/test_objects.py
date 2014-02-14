@@ -227,3 +227,52 @@ def test_traversing():
         traverse(obj, 'a.v')
     with pytest.raises(AttributeError):
         traverse(obj, 'a.b.c.d.y')
+
+
+def test_dict_merge_base_cases():
+    from xoutil.objects import dict_merge
+    base = {'a': 'a', 'd': {'attr1': 2}}
+    assert dict_merge() == {}
+    assert dict_merge(base) == base
+    assert dict_merge(**base) == base
+
+
+def test_dict_merge_simple_cases():
+    from xoutil.objects import dict_merge
+    first = {'a': {'attr1': 1}, 'b': {'attr1': 1}, 'c': 194, 'shared': 1}
+    second = {'a': {'attr2': 2}, 'b': {'attr2': 2}, 'd': 195, 'shared': 2}
+    expected = {'a': {'attr1': 1, 'attr2': 2},
+                'b': {'attr1': 1, 'attr2': 2},
+                'c': 194,
+                'd': 195,
+                'shared': 2}
+    assert dict_merge(first, second) == expected
+    assert dict_merge(first, **second) == expected
+    assert dict_merge(second, first) == dict(expected, shared=1)
+    assert dict_merge(second, **first) == dict(expected, shared=1)
+
+
+def test_dict_merge_compatible_cases():
+    from xoutil.objects import dict_merge
+    first = {192: ['attr1', 1], 193: {'attr1', 1}}
+    second = {192: ('attr2', 2), 193: ['attr2', 2]}
+    assert dict_merge(first, second) == {192: ['attr1', 1, 'attr2', 2],
+                                         193: {'attr1', 1, 'attr2', 2}}
+    result = dict_merge(second, first)
+    assert result[192] == ('attr2', 2, 'attr1', 1)
+    key_193 = result[193]
+    assert key_193[:2] == ['attr2', 2]
+    # Since order of set's members is not defined we can't test order, we can
+    # only know that they'll be in the last two positions.
+    assert key_193.index('attr1') in (2, 3)
+    assert key_193.index(1) in (2, 3)
+
+
+def test_dict_merge_errors():
+    from xoutil.objects import dict_merge
+    first = {192: 192}
+    second = {192: [192]}
+    with pytest.raises(TypeError):
+        dict_merge(second, first)
+    with pytest.raises(TypeError):
+        dict_merge(first, second)

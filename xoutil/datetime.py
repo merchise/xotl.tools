@@ -313,7 +313,7 @@ def daterange(*args):
 
     '''
     import operator
-    # Use base classes to allow broader audience
+    # Use base classes to allow broader argument values
     from datetime import date, datetime
     if len(args) == 1:
         start, stop, step = None, args[0], None
