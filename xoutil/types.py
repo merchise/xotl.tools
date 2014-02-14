@@ -284,6 +284,7 @@ def are_instances(*args):
         True
 
     See also :func:`no_instances`.
+
     '''
     if not args:
         raise TypeError('are_instances requires at least an argument')
@@ -313,9 +314,8 @@ def no_instances(*args):
         >>> no_instances(int)
         True
 
-
-
     See also :func:`are_instances`.
+
     '''
     if not args:
         raise TypeError('no_instances requires at least an argument')
