@@ -20,14 +20,7 @@
 a framework for anything. `xoutil` is essentially an extension to the
 Python's standard library.
 
-xoutil provides very simple implementations of mini-frameworks for several
-programming tasks. For instance the :py:mod:`xoutil.aop` provides two basic
-implementations of what may be called Aspect-Oriented Programming (AOP), but
-we do not claim any affiliation to other AOP frameworks. In fact, we believe
-that Python's dynamic nature makes so easy the injection of code that every
-team would probably use it's own AOP mini-framework.
-
-xoutil also provides a basic implementation of :mod:`execution contexts
+xoutil provides a basic implementation of :mod:`execution contexts
 <xoutil.context>`, that allows a programmer to enter/exit an execution
 context; which then may signal a component to behave differently. This
 implementation of contexts does not support distribution, though. But it's
