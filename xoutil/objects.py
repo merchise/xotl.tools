@@ -389,10 +389,10 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     j = 0
     get_from_source = smart_getter(source)
     get_from_target = smart_getter(target)
-    while res and  (j < len(tests)):
+    while res and (j < len(tests)):
         fail, attrs = tests[j]
         i = 0
-        while res and  (i < len(attrs)):
+        while res and (i < len(attrs)):
             attr = attrs[i]
             if fail(get_from_source(attr), get_from_target(attr)):
                 res = False
@@ -402,87 +402,64 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     return res
 
 
-def get_first_of(source, *keys, **kwargs):
-    '''Return the first occurrence of any of the specified keys in `source`.
+def iterate_over(source, *keys):
+    '''Yields pairs of (key, value) for of all `keys` in `source`.
 
-    If `source` is a tuple, a list, a set, or a generator; then the keys are
-    searched in all the items.
+    If any `key` is missing from `source` is ignored (not yielded).
 
-    Examples:
+    If `source` is a `collection <xoutil.types.is_collection>`:func:, iterate
+    over each of the items searching for any of keys.  This is not recursive.
 
-    - To search some keys (whatever is found first) from a dict::
+    If no `keys` are provided, return an "empty" iterator -- i.e will raise
+    StopIteration upon calling `next`.
 
-        >>> somedict = {"foo": "bar", "spam": "eggs"}
-        >>> get_first_of(somedict, "no", "foo", "spam")
-        'bar'
-
-    - If a key/attr is not found, None is returned::
-
-        >>> somedict = {"foo": "bar", "spam": "eggs"}
-        >>> get_first_of(somedict, "eggs") is None
-        True
-
-    - Objects may be sources as well::
-
-        >>> class Someobject(object): pass
-        >>> inst = Someobject()
-        >>> inst.foo = 'bar'
-        >>> inst.eggs = 'spam'
-        >>> get_first_of(inst, 'no', 'eggs', 'foo')
-        'spam'
-
-        >>> get_first_of(inst, 'invalid') is None
-        True
-
-    - You may pass several sources in a list, tuple or generator, and
-      `get_first` will try each object at a time until it finds any of
-      the key on a object; so any object that has one of the keys will
-      "win"::
-
-        >>> somedict = {"foo": "bar", "spam": "eggs"}
-        >>> class Someobject(object): pass
-        >>> inst = Someobject()
-        >>> inst.foo = 'bar2'
-        >>> inst.eggs = 'spam'
-        >>> get_first_of((somedict, inst), 'eggs')
-        'spam'
-
-        >>> get_first_of((somedict, inst), 'foo')
-        'bar'
-
-        >>> get_first_of((inst, somedict), 'foo')
-        'bar2'
-
-        >>> get_first_of((inst, somedict), 'foobar') is None
-        True
-
-    You may pass a keywork argument called `default` with the value
-    you want to be returned if no key is found in source::
-
-        >>> none = object()
-        >>> get_first_of((inst, somedict), 'foobar', default=none) is none
-        True
+    .. versionadded:: 1.5.2
 
     '''
     from xoutil.types import is_collection
     def inner(source):
         get = smart_getter(source)
-        res, i = Unset, 0
-        while (res is Unset) and (i < len(keys)):
-            res = get(keys[i], Unset)
-            i += 1
-        return res
+        for key in keys:
+            val = get(key, Unset)
+            if val is not Unset:
+                yield key, val
+
+    def when_collection(source):
+        from xoutil.compat import map
+        for generator in map(inner, source):
+            for key, val in generator:
+                yield key, val
 
     if is_collection(source):
-        from xoutil.compat import map
-        from itertools import takewhile
-        res = Unset
-        for item in takewhile(lambda _: res is Unset, map(inner, source)):
-            if item is not Unset:
-                res = item
+        res = when_collection(source)
     else:
         res = inner(source)
-    return res if res is not Unset else kwargs.get('default', None)
+    return res
+
+
+def get_first_of(source, *keys, **kwargs):
+    '''Return the value of the first occurrence of any of the specified `keys` in
+    `source` that matches `pred` (if given).
+
+    Both `source` and `keys` has the same meaning as in :func:`iterate_over`.
+
+    :param default: A value to be returned if no key is found in `source`.
+
+    :param pred:  A function that should receive a single value and return
+                  False if the value is not acceptable, and thus
+                  `get_first_of` should look for another.
+
+    .. versionchanged:: 1.5.2  Added the `pred` option.
+
+    '''
+    default = kwargs.pop('default', None)
+    pred = kwargs.pop('pred', None)
+    if kwargs:
+        raise TypeError('Invalid keywords %s for get_first_of' %
+                        (kwargs.keys(), ))
+    _key, res = next(((k, val) for k, val in iterate_over(source, *keys)
+                      if not pred or pred(val)), (Unset, Unset))
+    return res if res is not Unset else default
 
 
 def get_and_del_first_of(source, *keys, **kwargs):

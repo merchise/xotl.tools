@@ -2,7 +2,7 @@
 ==========================================================
 
 .. automodule:: xoutil.objects
-   :members: validate_attrs, get_first_of, smart_getter,
+   :members: validate_attrs, iterate_over, get_first_of, smart_getter,
 	     smart_getter_and_deleter, smart_getattr, get_and_del_attr,
 	     get_and_del_key, setdefaultattr, copy_class, metaclass, attrclass,
 	     fulldir, classproperty
