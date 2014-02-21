@@ -231,7 +231,7 @@ def capitalize(value, title=True):
 # TODO: Document and fix all these "normalize_..." functions
 def normalize_unicode(value):
     # FIXME: i18n
-    if (value is None) or (value is b''):
+    if (value is None) or (value is str('')):
         return ''
     elif value is True:
         return 'Sí'
