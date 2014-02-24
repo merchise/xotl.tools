@@ -71,7 +71,7 @@ def settle(**kwargs):
        ...    pass
 
        >>> Person.name
-       ... 'Name'
+       'Name'
 
     '''
     def inner(target):

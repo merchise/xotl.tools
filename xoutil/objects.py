@@ -992,8 +992,9 @@ def register_with(abc):
         >>> @register_with(Mapping)
         ... class Foobar(object):
         ...     pass
+
         >>> issubclass(Foobar, Mapping)
-            True
+        True
 
     '''
     def inner(subclass):

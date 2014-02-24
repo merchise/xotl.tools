@@ -267,17 +267,17 @@ def normalize_slug(value, unwanted_replacement='-'):
 
     This function converts any type to a valid string.  For example::
 
-      >>> normalize_slug(None)
-      'none'
+      >>> normalize_slug(None) == 'none'
+      True
 
-      >>> normalize_slug(1 == 1)
-      'true'
+      >>> normalize_slug(1 == 1)  == 'true'
+      True
 
-      >>> normalize_slug(1.0)
-      '1-0'
+      >>> normalize_slug(1.0) == '1-0'
+      True
 
-      >>> normalize_slug(135)
-      '135'
+      >>> normalize_slug(135) == '135'
+      True
 
     '''
     import unicodedata
@@ -383,9 +383,9 @@ if not _py3k:
     from input, converts it to a string (stripping a trailing newline), and
     returns that. When EOF is read, EOFError is raised. Example::
 
-        >>> s = input('--> ')
+        >>> s = input('--> ')                 # doctest: +SKIP
         --> Monty Python's Flying Circus
-        >>> s
+        >>> s                                 # doctest: +SKIP
         "Monty Python's Flying Circus"
 
     If the ``readline`` module was loaded, then :func:`input` will use it to

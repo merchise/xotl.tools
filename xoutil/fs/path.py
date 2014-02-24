@@ -60,7 +60,6 @@ Example::
     '.../tmp/a'
 
 """
-del pow_
 
 
 def fix_encoding(name, encoding=None):
