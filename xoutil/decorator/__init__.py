@@ -117,12 +117,13 @@ def aliases(*names, **kwargs):
     def inner(target):
         '''Direct closure decorator that settle several attribute aliases.
         '''
+        if kwargs:
+            assert isinstance(target, type), '"target" must be a class.'
         if names:
             _locals = sys._getframe(1).f_locals
             for name in names:
                 _locals[str(name)] = target
         if kwargs:
-            assert isinstance(target, type), '"target" must be a class.'
             for alias, field in kwargs.iteritems():
                 setattr(target, alias, AttributeAlias(field))
         return target
