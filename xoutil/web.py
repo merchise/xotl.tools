@@ -73,11 +73,10 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
 
     '''
     import re
-    import unicodedata
     from xoutil.compat import chr as unichr
-    from xoutil.string import _unicode, safe_decode
+    from xoutil.string import _unicode, safe_decode, normalize_slug
     if not isinstance(s, _unicode):
-        s = safe_decode(s)  # "smart_unicode" in orginal
+        s = safe_decode(s)
     if entities:
         try:
             from htmlentitydefs import name2codepoint
@@ -98,11 +97,4 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
                        lambda m: unichr(int(m.group(1), 16)), s)
         except:
             pass
-    #translate
-    s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore')
-    #replace unwanted characters
-    minus = '-'
-    s = re.sub(r'[^-_a-z0-9]+', minus, safe_decode(s.lower()))
-    #remove redundant -
-    s = re.sub('-{2,}', minus, s).strip(minus)
-    return s
+    return normalize_slug(s, '-')
