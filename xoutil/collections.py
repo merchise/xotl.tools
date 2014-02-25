@@ -302,12 +302,15 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     def __init__(self, *args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
         self.__stack = ChainMap()
-        self.__level = 0
         self.update(*args, **kwargs)
 
     @property
     def level(self):
-        return self.__level
+        '''Return the current level.
+
+        This is the same as ``len(d.maps) - 1``.
+        '''
+        return len(self.__stack.maps) - 1
 
     def push(self, *args, **kwargs):
         '''Pushes a whole new level to the stacked dict.
@@ -317,10 +320,9 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
 
         :param kwargs: Values to fill the new level.
         '''
-        self.__level += 1
         self.__stack = self.__stack.new_child()
         self.update(*args, **kwargs)
-        return self.__level
+        return self.level
 
     def pop(self):
         '''Pops the last pushed level and returns the whole level.
@@ -328,9 +330,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         If there are no levels in the stacked dict, a TypeError is raised.
 
         '''
-        level = self.__level
-        if level > 0:
-            self.__level = level - 1
+        if self.level > 0:
             stack = self.__stack
             res = stack.maps[0]
             self.__stack = stack.parents
@@ -346,7 +346,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         return '%s(%s)' % (type(self).__name__, str(self))
 
     def __len__(self):
-        return len(self.__stack)
+        return len(self.__stack.maps)
 
     def __iter__(self):
         return iter(self.__stack)
