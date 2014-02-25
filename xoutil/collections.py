@@ -23,9 +23,9 @@
 
 '''Extensions to Python's ``collections`` module.
 
-You may use it as drop-in replacement of ``collections``. Although we
-don't document all items here. Refer to :mod:`collections
-<py:collections>` documentation.
+You may use it as drop-in replacement of ``collections``. Although we don't
+document all items here. Refer to :mod:`collections <collections>`
+documentation.
 
 '''
 

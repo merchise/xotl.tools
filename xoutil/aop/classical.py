@@ -19,7 +19,7 @@
 classes' into your own classes/modules.
 
 This "classical" approach is different from the basic approach in
-:py:mod:`~xoutil.aop.basic` in that this one is meant to apply changes to the
+:mod:`~xoutil.aop.basic` in that this one is meant to apply changes to the
 behavior of objects that endure beyond any given context of execution. Once a
 class/module has been weaved, it will remain weaved forever.
 
@@ -466,7 +466,7 @@ def weave(aspect, target, *ignored):
 
       The same is done for `_before_` and `_around_`.
 
-    Since the introduction :py:mod:`xoutil.aop.extended` this method might look
+    Since the introduction :mod:`xoutil.aop.extended` this method might look
     for a `_before_weave` or a `_around_weave` method in `aspect`; which allow
     aspects to hook this method.
 

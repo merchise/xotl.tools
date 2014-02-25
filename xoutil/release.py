@@ -21,7 +21,6 @@ from __future__ import (division as _py3_division,
 
 VERSION = '1.5.2'
 
-
 def dev_tag():
     result = ''
     import os

@@ -39,7 +39,7 @@ __author__ = 'manu'
 @_deprecated('None', msg="This entire module is deprecated and will be "
              "removed.", removed_in_version='1.6.0')
 def weave(aspect, target):
-    '''Similar to :py:func:`xoutil.aop.classical.weave` but introduces
+    '''Similar to :func:`xoutil.aop.classical.weave` but introduces
     _before_weave and _around_weave hooks to the weaving process::
 
         >>> class Foobar(object):

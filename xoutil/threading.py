@@ -38,7 +38,7 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
     :returns: An event object that gets signalled when the function ends its
               execution whether normally or with an error.
 
-    :rtype: :class:`py:threading.Event`
+    :rtype: :class:`threading.Event`
 
     '''
     event = threading.Event()

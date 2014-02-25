@@ -20,7 +20,7 @@
 a framework for anything. `xoutil` is essentially an extension to the
 Python's standard library.
 
-xoutil also provides a basic implementation of :mod:`execution contexts
+xoutil provides a basic implementation of :mod:`execution contexts
 <xoutil.context>`, that allows a programmer to enter/exit an execution
 context; which then may signal a component to behave differently. This
 implementation of contexts does not support distribution, though. But it's

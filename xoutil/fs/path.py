@@ -17,7 +17,7 @@
 
 Functions inside this module must not have side-effects on the
 file-system. This module re-exports (without change) several functions from the
-:py:mod:`os.path` standard module.
+:mod:`os.path` standard module.
 
 '''
 
