@@ -31,6 +31,7 @@ We have backported several Python 3.3 features but not all.
 .. autoclass:: SmartDictMixin
 
 .. autoclass:: StackedDict
+   :members: push, pop, level
 
 .. class:: ChainMap(*maps)
 

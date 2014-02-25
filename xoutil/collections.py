@@ -306,9 +306,11 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
 
     @property
     def level(self):
-        '''Return the current level.
+        '''Return the current level number.
 
-        This is the same as ``len(d.maps) - 1``.
+        The first level is 0.  Calling :meth:`push` increases the current
+        level (and returns it), while calling :meth:`pop` decreases the
+        current level (if possible).
         '''
         return len(self.__stack.maps) - 1
 
@@ -319,6 +321,8 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
                      initialled filled.
 
         :param kwargs: Values to fill the new level.
+
+        :returns: The pushed :attr:`level` number.
         '''
         self.__stack = self.__stack.new_child()
         self.update(*args, **kwargs)
@@ -328,6 +332,8 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         '''Pops the last pushed level and returns the whole level.
 
         If there are no levels in the stacked dict, a TypeError is raised.
+
+        :returns:  A dict containing the poped level.
 
         '''
         if self.level > 0:
