@@ -515,27 +515,15 @@ def get_and_del_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
+@deprecated(get_first_of)
 def smart_getattr(name, *sources, **kwargs):
-    '''Gets an attr by `name` for the first source that has it::
+    '''Gets an attr by `name` for the first source that has it.
 
-        >>> somedict = {'foo': 'bar', 'spam': 'eggs'}
-        >>> class Some(object): pass
-        >>> inst = Some()
-        >>> inst.foo = 'bar2'
-        >>> inst.eggs = 'spam'
+    This is roughly that same as::
 
-        >>> smart_getattr('foo', somedict, inst)
-        'bar'
+       get_first_of(sources, name, default=Unset, **kwargs)
 
-        >>> smart_getattr('foo', inst, somedict)
-        'bar2'
-
-        >>> from xoutil import Unset
-        >>> smart_getattr('fail', somedict, inst) is Unset
-        True
-
-    You may pass all keyword arguments supported by
-    :func:`get_first_of`_.
+    .. warning:: Deprecated since 1.5.1
 
     '''
     from xoutil.iterators import dict_update_new
