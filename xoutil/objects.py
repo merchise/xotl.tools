@@ -564,6 +564,7 @@ def get_and_del_attr(obj, name, default=None):
     return res
 
 
+@deprecated('pop', 'Use dict.pop()!!')
 def get_and_del_key(d, key, default=None):
     '''Looks for a key in the dict `d` and returns its value and removes the
     key. If the attribute is not found, `default` is returned instead.
@@ -577,15 +578,7 @@ def get_and_del_key(d, key, default=None):
         True
 
     '''
-    res = d.get(key, Unset)
-    if res is Unset:
-        res = default
-    else:
-        try:
-            del d[key]
-        except IndexError:
-            pass
-    return res
+    return d.pop(key, default)
 
 
 class lazy(object):
