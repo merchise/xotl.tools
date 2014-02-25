@@ -120,8 +120,11 @@ def power(*args):
 
 
 if not py33:
-    from xoutil.collections import _CacheInfo
     from threading import RLock
+    from xoutil.collections import namedtuple
+
+    _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
+
 
     # Back-ported lru_cache from py33. But take note that if running with at
     # least py3 we will use Python's version, so don't mess with internals.
