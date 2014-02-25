@@ -47,7 +47,6 @@ class TestCollections(unittest.TestCase):
         self.assertEqual(1, d['abc'])
 
 
-@pytest.mark.xfail(str("sys.version.find('PyPy') != -1"))
 def test_stacked_dict():
     from xoutil.collections import StackedDict
     sd = StackedDict(a='level-0')

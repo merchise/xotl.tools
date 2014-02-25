@@ -277,7 +277,6 @@ class SmartDict(SmartDictMixin, dict):
         self.update(*args, **kwargs)
 
 
-# TODO: [manu]{2}  Base upon ChainMap.
 class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     '''A multi-level mapping.
 
@@ -295,12 +294,14 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
 
     Setting the value for key, sets it in the current level.
 
+    .. versionchanged:: 1.5.2 Based on the newly introduced :class:`ChainMap`.
+
     '''
     __slots__ = set(('__stack', '__level'))
 
     def __init__(self, *args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        self.__stack = {}
+        self.__stack = ChainMap()
         self.__level = 0
         self.update(*args, **kwargs)
 
@@ -317,6 +318,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         :param kwargs: Values to fill the new level.
         '''
         self.__level += 1
+        self.__stack = self.__stack.new_child()
         self.update(*args, **kwargs)
         return self.__level
 
@@ -326,22 +328,12 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         If there are no levels in the stacked dict, a TypeError is raised.
 
         '''
-        from xoutil import Unset
         level = self.__level
         if level > 0:
             self.__level = level - 1
             stack = self.__stack
-            res = {}
-            todel = set()
-            for key in stack:
-                items = stack[key]
-                value = items.pop(level, Unset)
-                if value is not Unset:
-                    res[key] = value
-                    if not items:
-                        todel.add(key)
-            for key in todel:
-                del stack[key]
+            res = stack.maps[0]
+            self.__stack = stack.parents
             return res
         else:
             raise TypeError('Cannot pop from StackedDict without any levels')
@@ -360,37 +352,13 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         return iter(self.__stack)
 
     def __getitem__(self, key):
-        from xoutil import Unset
-        item = self.__stack[key]
-        level = self.__level
-        res = Unset
-        while res is Unset and (level >= 0):
-            res = item.get(level, Unset)
-            if res is Unset:
-                level -= 1
-        if res is not Unset:
-            return res
-        else:
-            raise KeyError(key)
+        return self.__stack[key]
 
     def __setitem__(self, key, value):
-        self.__stack.setdefault(key, {})[self.__level] = value
+        self.__stack[key] = value
 
     def __delitem__(self, key):
-        from xoutil import Unset
-        stack = self.__stack
-        level = self.__level
-        item = stack.get(key, Unset)
-        if item is not Unset:
-            if level in item:
-                del item[level]
-                if not item:
-                    del stack[key]
-            else:
-                raise KeyError("'%s' is not in this level (%s)" % (key, level))
-        else:
-            raise KeyError("'%s'" % key)
-
+        del self.__stack[key]
 
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
     '''A combination of the the OrderedDict with the
@@ -706,18 +674,18 @@ if not _py33:
             return cls(dict.fromkeys(iterable, *args))
 
         def copy(self):
-            'New ChainMap or subclass with a new copy of maps[0] and refs to maps[1:]'
+            'New ChainMap or subclass with a new copy of ``maps[0]`` and refs to ``maps[1:]``'
             return self.__class__(self.maps[0].copy(), *self.maps[1:])
 
         __copy__ = copy
 
-        def new_child(self):                        # like Django's Context.push()
+        def new_child(self):
             'New ChainMap with a new dict followed by all previous maps.'
             return self.__class__({}, *self.maps)
 
         @property
-        def parents(self):                          # like Django's Context.pop()
-            'New ChainMap from maps[1:].'
+        def parents(self):
+            'New ChainMap from ``maps[1:]``.'
             return self.__class__(*self.maps[1:])
 
         def __setitem__(self, key, value):
@@ -730,21 +698,27 @@ if not _py33:
                 raise KeyError('Key not found in the first mapping: {!r}'.format(key))
 
         def popitem(self):
-            'Remove and return an item pair from maps[0]. Raise KeyError is maps[0] is empty.'
+            '''Remove and return an item pair from ``maps[0]``.
+
+            Raise KeyError is ``maps[0]`` is empty.
+
+            '''
             try:
                 return self.maps[0].popitem()
             except KeyError:
                 raise KeyError('No keys found in the first mapping.')
 
         def pop(self, key, *args):
-            'Remove *key* from maps[0] and return its value. Raise KeyError if *key* not in maps[0].'
+            '''Remove *key* from ``maps[0]`` and return its value.
+
+            Raise KeyError if *key* not in ``maps[0]``.'''
             try:
                 return self.maps[0].pop(key, *args)
             except KeyError:
                 raise KeyError('Key not found in the first mapping: {!r}'.format(key))
 
         def clear(self):
-            'Clear maps[0], leaving maps[1:] intact.'
+            'Clear ``maps[0]``, leaving ``maps[1:]`` intact.'
             self.maps[0].clear()
 
 
