@@ -42,6 +42,7 @@ def fib(n):
         b = fib(n-2)
         return a + b
 
+
 def takes_no_more_than(duration, msg=None):
     if not msg:
         msg = 'It took longer than {s} seconds'.format(s=duration)
@@ -60,5 +61,10 @@ def test_lrucache():
     # Without caching fib(120) would take ages.  On a 2.20GHz laptop with
     # caching this takes less than 1 sec, so let's test that it will respond in
     # no more than 3 min to allow very slow machines testing this code.
+    fib.cache_clear()
     with takes_no_more_than(90):
         assert fib(120) == 8670007398507948658051921
+
+
+def test_lrucache_stats():
+    pass
