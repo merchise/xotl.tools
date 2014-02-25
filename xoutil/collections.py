@@ -46,7 +46,7 @@ del _pm, _copy_python_module_members
 
 
 from xoutil.compat import defaultdict as _defaultdict
-from xoutil.compat import py32 as _py32
+from xoutil.compat import py33 as _py33
 from xoutil.names import strlist as slist
 
 
@@ -277,15 +277,148 @@ class SmartDict(SmartDictMixin, dict):
         self.update(*args, **kwargs)
 
 
-if not _py32:
+class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
+    '''A multi-level mapping.
+
+    A level is entered by using the :meth:`push` and is leaved by calling
+    :meth:`pop`.
+
+    The property :attr:`level` returns the actual number of levels.
+
+    When accessing keys they are searched from the lastest level "upwards", if
+    such a key does not exists in any level a KeyError is raised.
+
+    Deleting a key only works in the *current level*; if it's not defined there
+    a KeyError is raised. This means that you can't delete keys from the upper
+    levels without :func:`popping <pop>`.
+
+    Setting the value for key, sets it in the current level.
+
+    '''
+    __slots__ = set(('__stack', '__level'))
+
+    def __init__(self, *args, **kwargs):
+        # Each data item is stored as {key: {level: value, ...}}
+        self.__stack = {}
+        self.__level = 0
+        self.update(*args, **kwargs)
+
+    @property
+    def level(self):
+        return self.__level
+
+    def push(self, *args, **kwargs):
+        '''Pushes a whole new level to the stacked dict.
+
+        :param args: Several mappings from which the new level will be
+                     initialled filled.
+
+        :param kwargs: Values to fill the new level.
+        '''
+        self.__level += 1
+        self.update(*args, **kwargs)
+        return self.__level
+
+    def pop(self):
+        '''Pops the last pushed level and returns the whole level.
+
+        If there are no levels in the stacked dict, a TypeError is raised.
+
+        '''
+        from xoutil import Unset
+        level = self.__level
+        if level > 0:
+            self.__level = level - 1
+            stack = self.__stack
+            res = {}
+            todel = set()
+            for key in stack:
+                items = stack[key]
+                value = items.pop(level, Unset)
+                if value is not Unset:
+                    res[key] = value
+                    if not items:
+                        todel.add(key)
+            for key in todel:
+                del stack[key]
+            return res
+        else:
+            raise TypeError('Cannot pop from StackedDict without any levels')
+
+    def __str__(self):
+        # TODO: Optimize
+        return str(dict(self))
+
+    def __repr__(self):
+        return '%s(%s)' % (type(self).__name__, str(self))
+
+    def __len__(self):
+        return len(self.__stack)
+
+    def __iter__(self):
+        return iter(self.__stack)
+
+    def __getitem__(self, key):
+        from xoutil import Unset
+        item = self.__stack[key]
+        level = self.__level
+        res = Unset
+        while res is Unset and (level >= 0):
+            res = item.get(level, Unset)
+            if res is Unset:
+                level -= 1
+        if res is not Unset:
+            return res
+        else:
+            raise KeyError(key)
+
+    def __setitem__(self, key, value):
+        self.__stack.setdefault(key, {})[self.__level] = value
+
+    def __delitem__(self, key):
+        from xoutil import Unset
+        stack = self.__stack
+        level = self.__level
+        item = stack.get(key, Unset)
+        if item is not Unset:
+            if level in item:
+                del item[level]
+                if not item:
+                    del stack[key]
+            else:
+                raise KeyError("'%s' is not in this level (%s)" % (key, level))
+        else:
+            raise KeyError("'%s'" % key)
+
+
+class OrderedSmartDict(SmartDictMixin, OrderedDict):
+    '''A combination of the the OrderedDict with the
+    :class:`SmartDictMixin`.
+
+    .. warning:: Initializing with kwargs does not ensure any initial ordering,
+                 since Python's keyword dict is not ordered. Use a list/tuple
+                 of pairs instead.
+
+    '''
+    def __init__(self, *args, **kwds):
+        '''Initialize an ordered dictionary.
+
+        The signature is the same as regular dictionaries, but keyword
+        arguments are not recommended because their insertion order is
+        arbitrary.
+
+        '''
+        super(OrderedSmartDict, self).__init__()
+        self.update(*args, **kwds)
+
+
+if not _py33:
     # From this point below: Copyright (c) 2001-2013, Python Software
     # Foundation; All rights reserved.
 
     import sys as _sys
     from weakref import proxy as _proxy
     from xoutil.reprlib import recursive_repr as _recursive_repr
-
-    _CacheInfo = namedtuple("CacheInfo", "hits misses maxsize currsize")
 
     class _Link(object):
         __slots__ = 'prev', 'next', 'key', '__weakref__'
@@ -512,141 +645,6 @@ if not _py32:
                 return len(self) == len(other) and \
                        all(p == q for p, q in zip(self.items(), other.items()))
             return dict.__eq__(self, other)
-
-
-class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
-    '''A multi-level mapping.
-
-    A level is entered by using the :meth:`push` and is leaved by calling
-    :meth:`pop`.
-
-    The property :attr:`level` returns the actual number of levels.
-
-    When accessing keys they are searched from the lastest level "upwards", if
-    such a key does not exists in any level a KeyError is raised.
-
-    Deleting a key only works in the *current level*; if it's not defined there
-    a KeyError is raised. This means that you can't delete keys from the upper
-    levels without :func:`popping <pop>`.
-
-    Setting the value for key, sets it in the current level.
-
-    '''
-    __slots__ = set(('__stack', '__level'))
-
-    def __init__(self, *args, **kwargs):
-        # Each data item is stored as {key: {level: value, ...}}
-        self.__stack = {}
-        self.__level = 0
-        self.update(*args, **kwargs)
-
-    @property
-    def level(self):
-        return self.__level
-
-    def push(self, *args, **kwargs):
-        '''Pushes a whole new level to the stacked dict.
-
-        :param args: Several mappings from which the new level will be
-                     initialled filled.
-
-        :param kwargs: Values to fill the new level.
-        '''
-        self.__level += 1
-        self.update(*args, **kwargs)
-        return self.__level
-
-    def pop(self):
-        '''Pops the last pushed level and returns the whole level.
-
-        If there are no levels in the stacked dict, a TypeError is raised.
-
-        '''
-        from xoutil import Unset
-        level = self.__level
-        if level > 0:
-            self.__level = level - 1
-            stack = self.__stack
-            res = {}
-            todel = set()
-            for key in stack:
-                items = stack[key]
-                value = items.pop(level, Unset)
-                if value is not Unset:
-                    res[key] = value
-                    if not items:
-                        todel.add(key)
-            for key in todel:
-                del stack[key]
-            return res
-        else:
-            raise TypeError('Cannot pop from StackedDict without any levels')
-
-    def __str__(self):
-        # TODO: Optimize
-        return str(dict(self))
-
-    def __repr__(self):
-        return '%s(%s)' % (type(self).__name__, str(self))
-
-    def __len__(self):
-        return len(self.__stack)
-
-    def __iter__(self):
-        return iter(self.__stack)
-
-    def __getitem__(self, key):
-        from xoutil import Unset
-        item = self.__stack[key]
-        level = self.__level
-        res = Unset
-        while res is Unset and (level >= 0):
-            res = item.get(level, Unset)
-            if res is Unset:
-                level -= 1
-        if res is not Unset:
-            return res
-        else:
-            raise KeyError(key)
-
-    def __setitem__(self, key, value):
-        self.__stack.setdefault(key, {})[self.__level] = value
-
-    def __delitem__(self, key):
-        from xoutil import Unset
-        stack = self.__stack
-        level = self.__level
-        item = stack.get(key, Unset)
-        if item is not Unset:
-            if level in item:
-                del item[level]
-                if not item:
-                    del stack[key]
-            else:
-                raise KeyError("'%s' is not in this level (%s)" % (key, level))
-        else:
-            raise KeyError("'%s'" % key)
-
-
-class OrderedSmartDict(SmartDictMixin, OrderedDict):
-    '''A combination of the the OrderedDict with the
-    :class:`SmartDictMixin`.
-
-    .. warning:: Initializing with kwargs does not ensure any initial ordering,
-                 since Python's keyword dict is not ordered. Use a list/tuple
-                 of pairs instead.
-
-    '''
-    def __init__(self, *args, **kwds):
-        '''Initialize an ordered dictionary.
-
-        The signature is the same as regular dictionaries, but keyword
-        arguments are not recommended because their insertion order is
-        arbitrary.
-
-        '''
-        super(OrderedSmartDict, self).__init__()
-        self.update(*args, **kwds)
 
 
 # get rid of unused global variables
