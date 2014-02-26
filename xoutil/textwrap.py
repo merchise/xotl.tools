@@ -2,34 +2,15 @@
 #----------------------------------------------------------------------
 # xoutil.textwrap
 #----------------------------------------------------------------------
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# Copyright (c) Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# terms of the Python Software Licence as of Python 3.3.
 #
 # Created on 2014-02-26
 
 '''Text wrapping and filling.
-
-Exposes all original `string` module functionalities, with some general
-additions.
-
-In this module `str` and `unicode` types are not used because Python 2.x and
-Python 3.x treats strings differently, `bytes` and `_unicode` will be used
-instead with the following conventions:
-
-- In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str') are
-  both string types inheriting form `basestring`.  `_unicode` is synonym of
-  `unicode`.
-
-- In Python 3.x `str` is always unicode but `unicode` and `basestring` types
-  doesn't exists. `bytes` type can be used as an array of one byte each item.
-
-  `_unicode` is synonym of `str`.
-
-  Many methods are readjusted to these conditions.
 
 '''
 
@@ -59,6 +40,9 @@ def dedent(text, skip_firstline=False):
 
     If `skip_firstline` is True, the first line is separated from the rest of
     the body.  This helps with docstrings that follow :pep:`257`.
+
+    .. warning:: The `skip_firstline` argument is missing in standard library.
+
     '''
     if skip_firstline:
         parts = text.split('\n', 1)
@@ -75,6 +59,9 @@ def dedent(text, skip_firstline=False):
 
 
 if not _pm_indent:
+    #
+    # The following is Copyright (c) of the Python Software Foundation.
+    #
     def indent(text, prefix, predicate=None):
         """Adds 'prefix' to the beginning of selected lines in 'text'.
 
@@ -82,6 +69,8 @@ if not _pm_indent:
         where 'predicate(line)' is True. If 'predicate' is not provided, it
         will default to adding 'prefix' to all non-empty lines that do not
         consist solely of whitespace characters.
+
+        .. note:: Backported from Python 3.3.  In Python 3.3 this is an alias.
 
         """
         if predicate is None:
