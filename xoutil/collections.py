@@ -352,7 +352,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         return '%s(%s)' % (type(self).__name__, str(self))
 
     def __len__(self):
-        return len(self.__stack.maps)
+        return len(self.__stack)
 
     def __iter__(self):
         return iter(self.__stack)
