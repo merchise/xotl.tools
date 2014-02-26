@@ -28,15 +28,15 @@ del _pm, _copy_python_module_members
 
 
 def dedent(text, skip_firstline=False):
-    '''Remove any common leading whitespace from every line in text.
+    r'''Remove any common leading whitespace from every line in text.
 
     This can be used to make triple-quoted strings line up with the left edge
     of the display, while still presenting them in the source code in indented
     form.
 
     Note that tabs and spaces are both treated as whitespace, but they are not
-    equal: the lines "\ \ \ \ hello" and "\\thello" are considered to have no
-    common leading whitespace.
+    equal: the lines ``"    hello"`` and ``"\thello"`` are considered to have
+    no common leading whitespace.
 
     If `skip_firstline` is True, the first line is separated from the rest of
     the body.  This helps with docstrings that follow :pep:`257`.
