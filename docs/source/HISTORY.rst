@@ -4,6 +4,12 @@ Changelog
 1.5 series
 ----------
 
+Unreleased. Release 1.5.2
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.5.2.rst
+
+
 2014-02-14. Release 1.5.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
