@@ -1,6 +1,3 @@
-- Deprecated function :func:`xoutil.objects.smart_getattr`.  Use
-  :func:`xoutil.objects.get_first_of` instead.
-
 - Deprecated function :func:`xoutil.objects.get_and_del_key`. Use the
   `dict.pop`:meth: directly.
 
