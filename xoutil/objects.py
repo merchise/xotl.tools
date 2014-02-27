@@ -30,7 +30,7 @@ from xoutil.deprecation import deprecated
 from xoutil.names import strlist as slist
 __all__ = slist('smart_getter', 'smart_getter_and_deleter',
                 'xdir', 'fdir', 'validate_attrs', 'get_first_of',
-                'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
+                'pop_first_of', 'smart_getattr', 'popattr',
                 'setdefaultattr', 'copy_class', 'smart_copy',
                 'extract_attrs')
 del slist
@@ -81,7 +81,7 @@ def smart_getter_and_deleter(obj):
     if isinstance(obj, MutableMapping):
         return lambda key, default=None: obj.pop(key, default)
     else:
-        return partial(get_and_del_attr, obj)
+        return partial(popattr, obj)
 
 
 def is_private_name(name):
@@ -462,7 +462,7 @@ def get_first_of(source, *keys, **kwargs):
     return res if res is not Unset else default
 
 
-def get_and_del_first_of(source, *keys, **kwargs):
+def pop_first_of(source, *keys, **kwargs):
     '''Similar to :func:`get_first_of` using as `source` either an object or a
     mapping and deleting the first attribute or key.
 
@@ -475,22 +475,22 @@ def get_and_del_first_of(source, *keys, **kwargs):
         >>> foo.bar = 'bar-obj'
         >>> foo.eggs = 'eggs-obj'
 
-        >>> get_and_del_first_of((somedict, foo), 'eggs')
+        >>> pop_first_of((somedict, foo), 'eggs')
         'eggs-dict'
 
-        >>> get_and_del_first_of((somedict, foo), 'eggs')
+        >>> pop_first_of((somedict, foo), 'eggs')
         'eggs-obj'
 
-        >>> get_and_del_first_of((somedict, foo), 'eggs') is None
+        >>> pop_first_of((somedict, foo), 'eggs') is None
         True
 
-        >>> get_and_del_first_of((foo, somedict), 'bar')
+        >>> pop_first_of((foo, somedict), 'bar')
         'bar-obj'
 
-        >>> get_and_del_first_of((foo, somedict), 'bar')
+        >>> pop_first_of((foo, somedict), 'bar')
         'bar-dict'
 
-        >>> get_and_del_first_of((foo, somedict), 'bar') is None
+        >>> pop_first_of((foo, somedict), 'bar') is None
         True
 
     '''
@@ -515,6 +515,9 @@ def get_and_del_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
+get_and_del_first_of = deprecated(pop_first_of)(pop_first_of)
+
+
 @deprecated(get_first_of)
 def smart_getattr(name, *sources, **kwargs):
     '''Gets an attr by `name` for the first source that has it.
@@ -531,7 +534,7 @@ def smart_getattr(name, *sources, **kwargs):
     return get_first_of(sources, name, **kwargs)
 
 
-def get_and_del_attr(obj, name, default=None):
+def popattr(obj, name, default=None):
     '''Looks for an attribute in the `obj` and returns its value and removes
     the attribute. If the attribute is not found, `default` is returned
     instead.
@@ -542,11 +545,11 @@ def get_and_del_attr(obj, name, default=None):
         ...   a = 1
         >>> foo = Foo()
         >>> foo.a = 2
-        >>> get_and_del_attr(foo, 'a')
+        >>> popattr(foo, 'a')
         2
-        >>> get_and_del_attr(foo, 'a')
+        >>> popattr(foo, 'a')
         1
-        >>> get_and_del_attr(foo, 'a') is None
+        >>> popattr(foo, 'a') is None
         True
 
     '''
@@ -563,19 +566,17 @@ def get_and_del_attr(obj, name, default=None):
                 pass
     return res
 
+get_and_del_attr = deprecated(popattr)(popattr)
 
-@deprecated('pop', 'Use dict.pop()!!')
+@deprecated('pop', 'Use dict.pop() with default=None.')
 def get_and_del_key(d, key, default=None):
     '''Looks for a key in the dict `d` and returns its value and removes the
     key. If the attribute is not found, `default` is returned instead.
 
-    Examples::
+    This is the same as ``d.pop(key, default)``.
 
-        >>> foo = dict(a=1)
-        >>> get_and_del_key(foo, 'a')
-        1
-        >>> get_and_del_key(foo, 'a') is None
-        True
+    .. warning:: Deprecated since 1.5.2.  Use :meth:`d.pop(key, default)
+       <dict.pop>`.
 
     '''
     return d.pop(key, default)
