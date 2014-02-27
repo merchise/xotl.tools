@@ -46,7 +46,7 @@ def metaclass(meta):
 
     # Hide this stuff from Python 2.7 compiler so several static analysis tools
     # (like pylint and other) don't complain about a SyntaxError.
-    exec(compile('class __inner__(base, metaclass=inner_meta):pass',
+    eval(compile('class __inner__(base, metaclass=inner_meta):pass',
                  __file__, 'exec'))
 
     return locals()['__inner__']
