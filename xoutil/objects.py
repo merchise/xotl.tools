@@ -79,7 +79,7 @@ def smart_getter_and_deleter(obj):
     if isinstance(obj, Mapping) and not isinstance(obj, MutableMapping):
         raise TypeError('If `obj` is a Mapping it must be a MutableMapping')
     if isinstance(obj, MutableMapping):
-        return partial(get_and_del_key, obj)
+        return lambda key, default=None: obj.pop(key, default)
     else:
         return partial(get_and_del_attr, obj)
 
@@ -463,8 +463,8 @@ def get_first_of(source, *keys, **kwargs):
 
 
 def get_and_del_first_of(source, *keys, **kwargs):
-    '''Similar to :func:`get_first_of` but uses either :func:`get_and_del_attr`
-    or :func:`get_and_del_key` to get and del the first key.
+    '''Similar to :func:`get_first_of` using as `source` either an object or a
+    mapping and deleting the first attribute or key.
 
     Examples::
 
@@ -802,7 +802,7 @@ def smart_copy(*args, **kwargs):
     from xoutil.types import DictProxyType
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
-    defaults = get_and_del_key(kwargs, 'defaults', default=Unset)
+    defaults = kwargs.pop('defaults', Unset)
     if kwargs:
         raise TypeError('smart_copy does not accept a "%s" keyword argument'
                         % kwargs.keys()[0])
