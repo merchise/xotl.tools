@@ -35,7 +35,6 @@ class TestContext(unittest.TestCase):
             self.assertIsNot(None, context['CONTEXT-1'])
         self.assertEquals(False, bool(context['CONTEXT-1']))
 
-
     def test_with_objects(self):
         CONTEXT1 = object()
         CONTEXT2 = object()

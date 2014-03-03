@@ -14,12 +14,13 @@ Welcome to xoutil's documentation!
 What's new in this version
 --------------------------
 
-.. include:: history/_changes-1.5.1.rst
+.. include:: history/_changes-1.5.2.rst
 
 
 And from version 1.5.0
 ~~~~~~~~~~~~~~~~~~~~~~
 
+.. include:: history/_changes-1.5.1.rst
 .. include:: history/_changes-1.5.0.rst
 
 

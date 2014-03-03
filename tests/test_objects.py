@@ -276,3 +276,37 @@ def test_dict_merge_errors():
         dict_merge(second, first)
     with pytest.raises(TypeError):
         dict_merge(first, second)
+
+
+def test_get_first_of():
+    from xoutil.objects import get_first_of
+    somedict = {"foo": "bar", "spam": "eggs"}
+    assert get_first_of(somedict, "no", "foo", "spam") == 'bar'
+
+    somedict = {"foo": "bar", "spam": "eggs"}
+    assert get_first_of(somedict, "eggs") is None
+
+    class Someobject(object): pass
+    inst = Someobject()
+    inst.foo = 'bar'
+    inst.eggs = 'spam'
+    assert get_first_of(inst, 'no', 'eggs', 'foo') == 'spam'
+    assert get_first_of(inst, 'invalid') is None
+
+    somedict = {"foo": "bar", "spam": "eggs"}
+    class Someobject(object): pass
+    inst = Someobject()
+    inst.foo = 'bar2'
+    inst.eggs = 'spam'
+    assert get_first_of((somedict, inst), 'eggs') == 'spam'
+    assert get_first_of((somedict, inst), 'foo') == 'bar'
+    assert get_first_of((inst, somedict), 'foo') == 'bar2'
+    assert get_first_of((inst, somedict), 'foobar') is None
+
+    none = object()
+    assert get_first_of((inst, somedict), 'foobar', default=none) is none
+    assert get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 3) == 'eggs'
+    assert get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 4) is None
+
+    with pytest.raises(TypeError):
+        get_first_of(None, anything=1)

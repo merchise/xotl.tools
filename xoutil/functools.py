@@ -24,13 +24,13 @@ from __future__ import (division as _py3_division,
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
-wraps = _pm.wraps
+_pm_update_wrapper, wraps = _pm.update_wrapper, _pm.wraps
 
 from xoutil.names import strlist as strs
 __all__ = strs('ctuple', 'compose', 'power', 'lru_cache')
 del _pm, _copy_python_module_members, strs
 
-from xoutil.compat import py32, callable
+from xoutil.compat import py33, callable
 
 
 class ctuple(tuple):
@@ -119,114 +119,276 @@ def power(*args):
     return compose(*(base * times))
 
 
-if not py32:
-    from threading import Lock
-    from xoutil.collections import _CacheInfo, OrderedDict
+if not py33:
+    from threading import RLock
+    from xoutil.collections import namedtuple
 
-    # Back-ported lru_cache from py32. But take note that if running with at
-    # least py32 we will use Python's version, so don't mess with internals.
-    def lru_cache(maxsize=100):
-        '''Least-recently-used cache decorator.
+    _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
 
-        If *maxsize* is set to None, the LRU features are disabled and the
-        cache can grow without bound.
 
-        Arguments to the cached function must be hashable.
+    # Back-ported lru_cache from py33. But take note that if running with at
+    # least py3 we will use Python's version, so don't mess with internals.
 
-        View the cache statistics named tuple (hits, misses, maxsize,
-        currsize) with f.cache_info().  Clear the cache and statistics with
-        f.cache_clear(). Access the underlying function with f.__wrapped__.
+    WRAPPER_ASSIGNMENTS = ('__module__', '__name__', '__qualname__', '__doc__',
+                           '__annotations__')
+    WRAPPER_UPDATES = ('__dict__',)
+    def update_wrapper(wrapper,
+                       wrapped,
+                       assigned = WRAPPER_ASSIGNMENTS,
+                       updated = WRAPPER_UPDATES):
+        """Update a wrapper function to look like the wrapped function
 
-        See:  http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used
+           wrapper is the function to be updated
+           wrapped is the original function
+           assigned is a tuple naming the attributes assigned directly
+           from the wrapped function to the wrapper function (defaults to
+           functools.WRAPPER_ASSIGNMENTS)
+           updated is a tuple naming the attributes of the wrapper that
+           are updated with the corresponding attribute from the wrapped
+           function (defaults to functools.WRAPPER_UPDATES)
+        """
+        wrapper.__wrapped__ = wrapped
+        for attr in assigned:
+            try:
+                value = getattr(wrapped, attr)
+            except AttributeError:
+                pass
+            else:
+                setattr(wrapper, attr, value)
+        for attr in updated:
+            getattr(wrapper, attr).update(getattr(wrapped, attr, {}))
+        # Return the wrapper so this can be used as a decorator via partial()
+        return wrapper
 
-        '''
+    def wraps(wrapped,
+              assigned = WRAPPER_ASSIGNMENTS,
+              updated = WRAPPER_UPDATES):
+        """Decorator factory to apply update_wrapper() to a wrapper function
+
+           Returns a decorator that invokes update_wrapper() with the decorated
+           function as the wrapper argument and the arguments to wraps() as the
+           remaining arguments. Default arguments are as for update_wrapper().
+           This is a convenience function to simplify applying partial() to
+           update_wrapper().
+        """
+        return partial(update_wrapper, wrapped=wrapped,
+                       assigned=assigned, updated=updated)
+
+    class _HashedSeq(list):
+        """ This class guarantees that hash() will be called no more than once
+            per element.  This is important because the lru_cache() will hash
+            the key multiple times on a cache miss.
+
+        """
+
+        __slots__ = 'hashvalue'
+
+        def __init__(self, tup, hash=hash):
+            self[:] = tup
+            self.hashvalue = hash(tup)
+
+        def __hash__(self):
+            return self.hashvalue
+
+
+    def _make_key(args, kwds, typed,
+                  kwd_mark=(object(),),
+                  fasttypes={int, str, frozenset, type(None)},
+                  sorted=sorted, tuple=tuple, type=type, len=len):
+        """Make a cache key from optionally typed positional and keyword arguments
+
+        The key is constructed in a way that is flat as possible rather than
+        as a nested structure that would take more memory.
+
+        If there is only a single argument and its data type is known to cache
+        its hash value, then that argument is returned without a wrapper.  This
+        saves space and improves lookup speed.
+
+        """
+        key = args
+        if kwds:
+            sorted_items = sorted(kwds.items())
+            key += kwd_mark
+            for item in sorted_items:
+                key += item
+        if typed:
+            key += tuple(type(v) for v in args)
+            if kwds:
+                key += tuple(type(v) for k, v in sorted_items)
+        elif len(key) == 1 and type(key[0]) in fasttypes:
+            return key[0]
+        return _HashedSeq(key)
+
+    def lru_cache(maxsize=128, typed=False):
+        """Decorator to wrap a function with a memoizing callable that saves up to the
+        `maxsize` most recent calls.  It can save time when an expensive or
+        I/O bound function is periodically called with the same arguments.
+
+        Since a dictionary is used to cache results, the positional and
+        keyword arguments to the function must be hashable.
+
+        If `maxsize` is set to None, the LRU feature is disabled and the cache
+        can grow without bound.  The LRU feature performs best when maxsize is
+        a power-of-two.
+
+        If `typed` is set to True, function arguments of different types will
+        be cached separately.  For example, ``f(3)`` and ``f(3.0)`` will be
+        treated as distinct calls with distinct results.
+
+        To help measure the effectiveness of the cache and tune the `maxsize`
+        parameter, the wrapped function is instrumented with a cache_info()
+        function that returns a named tuple showing hits, misses, maxsize and
+        currsize.  In a multi-threaded environment, the hits and misses are
+        approximate.
+
+        The decorator also provides a ``cache_clear()`` function for clearing
+        or invalidating the cache.
+
+        The original underlying function is accessible through the
+        ``__wrapped__`` attribute.  This is useful for introspection, for
+        bypassing the cache, or for rewrapping the function with a different
+        cache.
+
+        An `LRU (least recently used)`__ cache works best when the most recent
+        calls are the best predictors of upcoming calls (for example, the most
+        popular articles on a news server tend to change each day).  The
+        cache's size limit assures that the cache does not grow without bound
+        on long-running processes such as web servers.
+
+        __ http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used
+
+        """
+
         # Users should only access the lru_cache through its public API:
         #       cache_info, cache_clear, and f.__wrapped__
-        # The internals of the lru_cache are encapsulated for thread safety and
-        # to allow the implementation to change (including a possible C
+
+        # The internals of the lru_cache are encapsulated for thread safety
+        # and to allow the implementation to change (including a possible C
         # version).
 
-        def decorating_function(user_function,
-                    tuple=tuple, sorted=sorted, len=len, KeyError=KeyError):
+        # Constants shared by all lru cache instances:
+        sentinel = object()          # unique object used to signal cache misses
+        make_key = _make_key         # build a key from the function arguments
+        PREV, NEXT, KEY, RESULT = 0, 1, 2, 3   # names for the link fields
 
-            _cache_info = [0, 0]
-            # separates positional and keyword args
-            kwd_mark = (object(),)
-            # needed because OrderedDict isn't threadsafe
-            lock = Lock()
+        def decorating_function(user_function):
 
-            if maxsize is None:
-                # simple cache without ordering or size limit
-                cache = {}
+            cache = {}
+            hits = misses = 0
+            _cache_vars = [hits, misses]  # hits, misses
+            _HITS, _MISSES = 0, 1
+            full = False
+            cache_get = cache.get    # bound method to lookup a key or return None
+            lock = RLock()           # because linkedlist updates aren't threadsafe
+            root = []                # root of the circular doubly linked list
+            root[:] = [root, root, None, None] # initialize by pointing to
+                                               # self
+            _cache_vars.extend([full, root])
+            _FULL = 2
+            _ROOT = 3
 
-                @wraps(user_function)
+            if maxsize == 0:
+
                 def wrapper(*args, **kwds):
-                    #~ nonlocal hits, misses
-                    hits, misses = tuple(_cache_info)
-                    key = args
-                    if kwds:
-                        key += kwd_mark + tuple(sorted(kwds.items()))
-                    try:
-                        result = cache[key]
-                        hits += 1
-                        _cache_info[0] = hits
-                        _cache_info[1] = misses
+                    # No caching -- just a statistics update after a
+                    # successful call
+                    # nonlocal misses
+                    result = user_function(*args, **kwds)
+                    _cache_vars[_MISSES] += 1
+                    return result
+
+            elif maxsize is None:
+
+                def wrapper(*args, **kwds):
+                    # Simple caching without ordering or size limit
+                    #nonlocal hits, misses
+                    key = make_key(args, kwds, typed)
+                    result = cache_get(key, sentinel)
+                    if result is not sentinel:
+                        _cache_vars[_HITS] += 1
                         return result
-                    except KeyError:
-                        pass
                     result = user_function(*args, **kwds)
                     cache[key] = result
-                    misses += 1
-                    _cache_info[0] = hits
-                    _cache_info[1] = misses
+                    _cache_vars[_MISSES] += 1
                     return result
-            else:
-                cache = OrderedDict()     # ordered least recent to most recent
-                cache_popitem = cache.popitem
-                cache_renew = cache.move_to_end
 
-                @wraps(user_function)
+            else:
+
                 def wrapper(*args, **kwds):
-                    #~ nonlocal hits, misses
-                    hits, misses = tuple(_cache_info)
-                    key = args
-                    if kwds:
-                        key += kwd_mark + tuple(sorted(kwds.items()))
+                    # Size limited caching that tracks accesses by recency
+                    #nonlocal root, hits, misses, full
+                    root = _cache_vars[_ROOT]
+                    key = make_key(args, kwds, typed)
                     with lock:
-                        try:
-                            result = cache[key]
-                            cache_renew(key)    # record recent use of this key
-                            hits += 1
-                            _cache_info[0] = hits
-                            _cache_info[1] = misses
+                        link = cache_get(key)
+                        if link is not None:
+                            # Move the link to the front of the circular queue
+                            link_prev, link_next, _key, result = link
+                            link_prev[NEXT] = link_next
+                            link_next[PREV] = link_prev
+                            last = root[PREV]
+                            last[NEXT] = root[PREV] = link
+                            link[PREV] = last
+                            link[NEXT] = root
+                            _cache_vars[_HITS] += 1
                             return result
-                        except KeyError:
-                            pass
                     result = user_function(*args, **kwds)
                     with lock:
-                        cache[key] = result     # record recent use of this key
-                        misses += 1
-                        _cache_info[0] = hits
-                        _cache_info[1] = misses
-                        if len(cache) > maxsize:
-                            cache_popitem(0)    # purge least recently used
+                        if key in cache:
+                            # Getting here means that this same key was added to the
+                            # cache while the lock was released.  Since the link
+                            # update is already done, we need only return the
+                            # computed result and update the count of misses.
+                            pass
+                        elif _cache_vars[_FULL]:
+                            # Use the old root to store the new key and result.
+                            oldroot = root = _cache_vars[_ROOT]
+                            oldroot[KEY] = key
+                            oldroot[RESULT] = result
+                            # Empty the oldest link and make it the new root.
+                            # Keep a reference to the old key and old result to
+                            # prevent their ref counts from going to zero during the
+                            # update. That will prevent potentially arbitrary object
+                            # clean-up code (i.e. __del__) from running while we're
+                            # still adjusting the links.
+                            root = _cache_vars[_ROOT] = oldroot[NEXT]
+                            oldkey = root[KEY]
+                            oldresult = root[RESULT]
+                            root[KEY] = root[RESULT] = None
+                            # Now update the cache dictionary.
+                            del cache[oldkey]
+                            # Save the potentially reentrant cache[key] assignment
+                            # for last, after the root and links have been put in
+                            # a consistent state.
+                            cache[key] = oldroot
+                        else:
+                            # Put result in a new link at the front of the queue.
+                            last = root[PREV]
+                            link = [last, root, key, result]
+                            last[NEXT] = root[PREV] = cache[key] = link
+                            _cache_vars[_FULL] = (len(cache) >= maxsize)
+                        _cache_vars[_MISSES] += 1
                     return result
 
             def cache_info():
-                '''Report cache statistics'''
+                """Report cache statistics"""
                 with lock:
-                    return _CacheInfo(_cache_info[0], _cache_info[1], maxsize,
-                                      len(cache))
+                    hits, misses = _cache_vars[:2]
+                    return _CacheInfo(hits, misses, maxsize, len(cache))
 
             def cache_clear():
-                '''Clear the cache and cache statistics'''
-                #~ nonlocal hits, misses
+                """Clear the cache and cache statistics"""
+                # nonlocal hits, misses, full
                 with lock:
+                    hits, misses, full, root = _cache_vars
                     cache.clear()
-                    _cache_info[0] = _cache_info[1] = 0
+                    root[:] = [root, root, None, None]
+                    hits = misses = 0
+                    full = False
+                    _cache_vars[:] = [hits, misses, full, root]
 
             wrapper.cache_info = cache_info
             wrapper.cache_clear = cache_clear
-            return wrapper
+            return update_wrapper(wrapper, user_function)
 
         return decorating_function

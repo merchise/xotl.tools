@@ -228,9 +228,10 @@ def capitalize(value, title=True):
         return empty
 
 
+# TODO: Document and fix all these "normalize_..." functions
 def normalize_unicode(value):
     # FIXME: i18n
-    if (value is None) or (value is b''):
+    if (value is None) or (value is str('')):
         return ''
     elif value is True:
         return 'Sí'
@@ -255,6 +256,41 @@ def normalize_str(value):
     matches = regex.findall(value)
     names = (m.capitalize() if len(m) >= 3 else m.lower() for m in matches)
     return sep.join(names)
+
+
+def normalize_slug(value, unwanted_replacement='-'):
+    '''Return the string normal form for the :param:`value`
+
+    Convert all non-ascii to valid characters using unicode 'NFKC'
+    normalization form or replace by :param:`unwanted_replacement` in cases
+    where unwanted characters for slugs are found.
+
+    This function converts any type to a valid string.  For example::
+
+      >>> normalize_slug(None) == 'none'
+      True
+
+      >>> normalize_slug(1 == 1)  == 'true'
+      True
+
+      >>> normalize_slug(1.0) == '1-0'
+      True
+
+      >>> normalize_slug(135) == '135'
+      True
+
+    '''
+    import unicodedata
+    if not isinstance(value, _unicode):
+        value = safe_decode(value)
+    res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    res = safe_decode(res.lower())
+    regex = r'[^-_a-z0-9]+'
+    if unwanted_replacement:
+        regex = r'(%s|%s{2,})' % (regex, unwanted_replacement)
+    regex = _regex_compile(regex)
+    res = regex.sub(unwanted_replacement, res)
+    return res.strip(unwanted_replacement)
 
 
 def strfnumber(number, format_spec='%0.2f'):
@@ -339,6 +375,7 @@ def make_a10z(string):
     '''
     return string[0] + str(len(string[1:-1])) + string[-1]
 
+
 if not _py3k:
     input = lambda prompt=None: safe_decode(raw_input(prompt))
     input.__doc__ = '''If the prompt argument is present, it is written to
@@ -346,9 +383,9 @@ if not _py3k:
     from input, converts it to a string (stripping a trailing newline), and
     returns that. When EOF is read, EOFError is raised. Example::
 
-        >>> s = input('--> ')
+        >>> s = input('--> ')                 # doctest: +SKIP
         --> Monty Python's Flying Circus
-        >>> s
+        >>> s                                 # doctest: +SKIP
         "Monty Python's Flying Circus"
 
     If the ``readline`` module was loaded, then :func:`input` will use it to

@@ -166,35 +166,29 @@ def annotate(func, signature=None, **keyword_annotations):
 
 
     :param signature: A string with the annotated signature of the
-                      decorated function.
+        decorated function.
 
-                      This string should follow the annotations syntax in
-                      :pep:`3107`. But there are several deviations from the
-                      PEP text:
+        This string should follow the annotations syntax in :pep:`3107`. But
+        there are several deviations from the PEP text:
 
-                      - There's no support for the full syntax of Python 2
-                        expressions; in particular nested arguments are not
-                        supported since they are deprecated and are not valid
-                        in Py3k.
+       - There's no support for the full syntax of Python 2 expressions; in
+         particular nested arguments are not supported since they are
+         deprecated and are not valid in Py3k.
 
-                      - Specifying defaults is no supported (nor needed).
-                        Defaults are placed in the signature of the function.
+       - Specifying defaults is no supported (nor needed).  Defaults are
+         placed in the signature of the function.
 
-                      - In the string it makes no sense to put an argument
-                        without an annotation, so this will raise an exception
-                        (SyntaxError).
+       - In the string it makes no sense to put an argument without an
+         annotation, so this will raise an exception (SyntaxError).
 
     :param keyword_annotations: These are each mapped to a single annotation.
 
-                                Since you can't include the 'return' keyword
-                                argument for the annotation related with the
-                                return of the function, we provide several
-                                alternatives: if any of the following keywords
-                                arguments is provided (tested in the given
-                                order): 'return_annotation', '_return',
-                                '__return'; then it will be considered the
-                                'return' annotation, the rest will be regarded
-                                as other annotations.
+        Since you can't include the 'return' keyword argument for the
+        annotation related with the return of the function, we provide several
+        alternatives: if any of the following keywords arguments is provided
+        (tested in the given order): 'return_annotation', '_return',
+        '__return'; then it will be considered the 'return' annotation, the
+        rest will be regarded as other annotations.
 
     In any of the previous cases, you may provide more (or less) annotations
     than possible by following the PEP syntax. This is not considered an error,
@@ -225,14 +219,13 @@ def annotate(func, signature=None, **keyword_annotations):
           <class '...ISomething'>
 
     '''
-    from xoutil.objects import get_and_del_first_of
+    from xoutil.objects import pop_first_of
     func.__annotations__ = annotations = getattr(func, '__annotations__', {})
     if signature:
         annotations.update({argname: value
                             for argname, value in _parse_signature(signature)})
     probes = ('return_annotation', '_return', '__return')
-    return_annotation_kwarg = get_and_del_first_of(keyword_annotations,
-                                                   *probes)
+    return_annotation_kwarg = pop_first_of(keyword_annotations, *probes)
     if return_annotation_kwarg:
         annotations['return'] = return_annotation_kwarg
     annotations.update(keyword_annotations)

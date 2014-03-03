@@ -19,8 +19,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.5.1.1'
-
+VERSION = '1.5.2'
 
 def dev_tag():
     result = ''

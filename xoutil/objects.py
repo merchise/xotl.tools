@@ -30,7 +30,7 @@ from xoutil.deprecation import deprecated
 from xoutil.names import strlist as slist
 __all__ = slist('smart_getter', 'smart_getter_and_deleter',
                 'xdir', 'fdir', 'validate_attrs', 'get_first_of',
-                'get_and_del_first_of', 'smart_getattr', 'get_and_del_attr',
+                'pop_first_of', 'smart_getattr', 'popattr',
                 'setdefaultattr', 'copy_class', 'smart_copy',
                 'extract_attrs')
 del slist
@@ -79,9 +79,9 @@ def smart_getter_and_deleter(obj):
     if isinstance(obj, Mapping) and not isinstance(obj, MutableMapping):
         raise TypeError('If `obj` is a Mapping it must be a MutableMapping')
     if isinstance(obj, MutableMapping):
-        return partial(get_and_del_key, obj)
+        return lambda key, default=None: obj.pop(key, default)
     else:
-        return partial(get_and_del_attr, obj)
+        return partial(popattr, obj)
 
 
 def is_private_name(name):
@@ -389,10 +389,10 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     j = 0
     get_from_source = smart_getter(source)
     get_from_target = smart_getter(target)
-    while res and  (j < len(tests)):
+    while res and (j < len(tests)):
         fail, attrs = tests[j]
         i = 0
-        while res and  (i < len(attrs)):
+        while res and (i < len(attrs)):
             attr = attrs[i]
             if fail(get_from_source(attr), get_from_target(attr)):
                 res = False
@@ -402,92 +402,69 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     return res
 
 
-def get_first_of(source, *keys, **kwargs):
-    '''Return the first occurrence of any of the specified keys in `source`.
+def iterate_over(source, *keys):
+    '''Yields pairs of (key, value) for of all `keys` in `source`.
 
-    If `source` is a tuple, a list, a set, or a generator; then the keys are
-    searched in all the items.
+    If any `key` is missing from `source` is ignored (not yielded).
 
-    Examples:
+    If `source` is a `collection <xoutil.types.is_collection>`:func:, iterate
+    over each of the items searching for any of keys.  This is not recursive.
 
-    - To search some keys (whatever is found first) from a dict::
+    If no `keys` are provided, return an "empty" iterator -- i.e will raise
+    StopIteration upon calling `next`.
 
-        >>> somedict = {"foo": "bar", "spam": "eggs"}
-        >>> get_first_of(somedict, "no", "foo", "spam")
-        'bar'
-
-    - If a key/attr is not found, None is returned::
-
-        >>> somedict = {"foo": "bar", "spam": "eggs"}
-        >>> get_first_of(somedict, "eggs") is None
-        True
-
-    - Objects may be sources as well::
-
-        >>> class Someobject(object): pass
-        >>> inst = Someobject()
-        >>> inst.foo = 'bar'
-        >>> inst.eggs = 'spam'
-        >>> get_first_of(inst, 'no', 'eggs', 'foo')
-        'spam'
-
-        >>> get_first_of(inst, 'invalid') is None
-        True
-
-    - You may pass several sources in a list, tuple or generator, and
-      `get_first` will try each object at a time until it finds any of
-      the key on a object; so any object that has one of the keys will
-      "win"::
-
-        >>> somedict = {"foo": "bar", "spam": "eggs"}
-        >>> class Someobject(object): pass
-        >>> inst = Someobject()
-        >>> inst.foo = 'bar2'
-        >>> inst.eggs = 'spam'
-        >>> get_first_of((somedict, inst), 'eggs')
-        'spam'
-
-        >>> get_first_of((somedict, inst), 'foo')
-        'bar'
-
-        >>> get_first_of((inst, somedict), 'foo')
-        'bar2'
-
-        >>> get_first_of((inst, somedict), 'foobar') is None
-        True
-
-    You may pass a keywork argument called `default` with the value
-    you want to be returned if no key is found in source::
-
-        >>> none = object()
-        >>> get_first_of((inst, somedict), 'foobar', default=none) is none
-        True
+    .. versionadded:: 1.5.2
 
     '''
     from xoutil.types import is_collection
     def inner(source):
         get = smart_getter(source)
-        res, i = Unset, 0
-        while (res is Unset) and (i < len(keys)):
-            res = get(keys[i], Unset)
-            i += 1
-        return res
+        for key in keys:
+            val = get(key, Unset)
+            if val is not Unset:
+                yield key, val
+
+    def when_collection(source):
+        from xoutil.compat import map
+        for generator in map(inner, source):
+            for key, val in generator:
+                yield key, val
 
     if is_collection(source):
-        from xoutil.compat import map
-        from itertools import takewhile
-        res = Unset
-        for item in takewhile(lambda _: res is Unset, map(inner, source)):
-            if item is not Unset:
-                res = item
+        res = when_collection(source)
     else:
         res = inner(source)
-    return res if res is not Unset else kwargs.get('default', None)
+    return res
 
 
-def get_and_del_first_of(source, *keys, **kwargs):
-    '''Similar to :func:`get_first_of` but uses either :func:`get_and_del_attr`
-    or :func:`get_and_del_key` to get and del the first key.
+def get_first_of(source, *keys, **kwargs):
+    '''Return the value of the first occurrence of any of the specified `keys` in
+    `source` that matches `pred` (if given).
+
+    Both `source` and `keys` has the same meaning as in :func:`iterate_over`.
+
+    :param default: A value to be returned if no key is found in `source`.
+
+    :param pred:  A function that should receive a single value and return
+                  False if the value is not acceptable, and thus
+                  `get_first_of` should look for another.
+
+    .. versionchanged:: 1.5.2  Added the `pred` option.
+
+    '''
+    default = kwargs.pop('default', None)
+    pred = kwargs.pop('pred', None)
+    if kwargs:
+        raise TypeError('Invalid keywords %s for get_first_of' %
+                        (kwargs.keys(), ))
+    _key, res = next(((k, val) for k, val in iterate_over(source, *keys)
+                      if not pred or pred(val)), (Unset, Unset))
+    return res if res is not Unset else default
+
+
+def pop_first_of(source, *keys, **kwargs):
+    '''Similar to :func:`get_first_of` using as `source` either an object or a
+    mapping and deleting the first attribute or key.
 
     Examples::
 
@@ -498,22 +475,22 @@ def get_and_del_first_of(source, *keys, **kwargs):
         >>> foo.bar = 'bar-obj'
         >>> foo.eggs = 'eggs-obj'
 
-        >>> get_and_del_first_of((somedict, foo), 'eggs')
+        >>> pop_first_of((somedict, foo), 'eggs')
         'eggs-dict'
 
-        >>> get_and_del_first_of((somedict, foo), 'eggs')
+        >>> pop_first_of((somedict, foo), 'eggs')
         'eggs-obj'
 
-        >>> get_and_del_first_of((somedict, foo), 'eggs') is None
+        >>> pop_first_of((somedict, foo), 'eggs') is None
         True
 
-        >>> get_and_del_first_of((foo, somedict), 'bar')
+        >>> pop_first_of((foo, somedict), 'bar')
         'bar-obj'
 
-        >>> get_and_del_first_of((foo, somedict), 'bar')
+        >>> pop_first_of((foo, somedict), 'bar')
         'bar-dict'
 
-        >>> get_and_del_first_of((foo, somedict), 'bar') is None
+        >>> pop_first_of((foo, somedict), 'bar') is None
         True
 
     '''
@@ -538,27 +515,18 @@ def get_and_del_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
+get_and_del_first_of = deprecated(pop_first_of)(pop_first_of)
+
+
+@deprecated(get_first_of)
 def smart_getattr(name, *sources, **kwargs):
-    '''Gets an attr by `name` for the first source that has it::
+    '''Gets an attr by `name` for the first source that has it.
 
-        >>> somedict = {'foo': 'bar', 'spam': 'eggs'}
-        >>> class Some(object): pass
-        >>> inst = Some()
-        >>> inst.foo = 'bar2'
-        >>> inst.eggs = 'spam'
+    This is roughly that same as::
 
-        >>> smart_getattr('foo', somedict, inst)
-        'bar'
+       get_first_of(sources, name, default=Unset, **kwargs)
 
-        >>> smart_getattr('foo', inst, somedict)
-        'bar2'
-
-        >>> from xoutil import Unset
-        >>> smart_getattr('fail', somedict, inst) is Unset
-        True
-
-    You may pass all keyword arguments supported by
-    :func:`get_first_of`_.
+    .. warning:: Deprecated since 1.5.1
 
     '''
     from xoutil.iterators import dict_update_new
@@ -566,7 +534,7 @@ def smart_getattr(name, *sources, **kwargs):
     return get_first_of(sources, name, **kwargs)
 
 
-def get_and_del_attr(obj, name, default=None):
+def popattr(obj, name, default=None):
     '''Looks for an attribute in the `obj` and returns its value and removes
     the attribute. If the attribute is not found, `default` is returned
     instead.
@@ -577,11 +545,11 @@ def get_and_del_attr(obj, name, default=None):
         ...   a = 1
         >>> foo = Foo()
         >>> foo.a = 2
-        >>> get_and_del_attr(foo, 'a')
+        >>> popattr(foo, 'a')
         2
-        >>> get_and_del_attr(foo, 'a')
+        >>> popattr(foo, 'a')
         1
-        >>> get_and_del_attr(foo, 'a') is None
+        >>> popattr(foo, 'a') is None
         True
 
     '''
@@ -598,29 +566,20 @@ def get_and_del_attr(obj, name, default=None):
                 pass
     return res
 
+get_and_del_attr = deprecated(popattr)(popattr)
 
+@deprecated('pop', 'Use dict.pop() with default=None.')
 def get_and_del_key(d, key, default=None):
     '''Looks for a key in the dict `d` and returns its value and removes the
     key. If the attribute is not found, `default` is returned instead.
 
-    Examples::
+    This is the same as ``d.pop(key, default)``.
 
-        >>> foo = dict(a=1)
-        >>> get_and_del_key(foo, 'a')
-        1
-        >>> get_and_del_key(foo, 'a') is None
-        True
+    .. warning:: Deprecated since 1.5.2.  Use :meth:`d.pop(key, default)
+       <dict.pop>`.
 
     '''
-    res = d.get(key, Unset)
-    if res is Unset:
-        res = default
-    else:
-        try:
-            del d[key]
-        except IndexError:
-            pass
-    return res
+    return d.pop(key, default)
 
 
 class lazy(object):
@@ -844,7 +803,7 @@ def smart_copy(*args, **kwargs):
     from xoutil.types import DictProxyType
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
-    defaults = get_and_del_key(kwargs, 'defaults', default=Unset)
+    defaults = kwargs.pop('defaults', Unset)
     if kwargs:
         raise TypeError('smart_copy does not accept a "%s" keyword argument'
                         % kwargs.keys()[0])
@@ -1015,8 +974,9 @@ def register_with(abc):
         >>> @register_with(Mapping)
         ... class Foobar(object):
         ...     pass
+
         >>> issubclass(Foobar, Mapping)
-            True
+        True
 
     '''
     def inner(subclass):

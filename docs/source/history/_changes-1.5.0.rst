@@ -1,7 +1,7 @@
 - Lots of removals.  Practically all deprecated since 1.4.0 (or before).  Let's
   list a few but not all:
 
-  - Both :obj:`xoutil.Unset` and :obj:`xoutil.ignored` are no longer
+  - Both :obj:`xoutil.Unset` and :obj:`xoutil.Ignored` are no longer
     re-exported in :mod:`xoutil.types`.
 
   - Removes module :mod:`!xoutil.decorator.compat`, since it only contained the
@@ -11,7 +11,7 @@
   - Removes ``nameof`` and ``full_nameof`` from :mod:`xoutil.objects` in favor
     of :func:`xoutil.names.nameof`.
 
-  - Removes ``pow_`` alias of :func:`xoutil.functools.power``.
+  - Removes ``pow_`` alias of :func:`xoutil.functools.power`.
 
   - Removes the deprecated ``xoutil.decorator.decorator`` function.  Use
     :func:`xoutil.decorator.meta.decorator` instead.
