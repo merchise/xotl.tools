@@ -568,6 +568,7 @@ def popattr(obj, name, default=None):
 
 get_and_del_attr = deprecated(popattr)(popattr)
 
+
 @deprecated('pop', 'Use dict.pop() with default=None.')
 def get_and_del_key(d, key, default=None):
     '''Looks for a key in the dict `d` and returns its value and removes the
