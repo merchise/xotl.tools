@@ -218,7 +218,7 @@ class new(object):
 
 
 def test_traversing():
-    from xoutil.objects import traverse
+    from xoutil.objects import traverse, get_traverser
     obj = new(**{'a': 1, 'b.c.d': {'x': 2}, 'b.c.x': 3})
     assert traverse(obj, 'a') == 1
     assert traverse(obj, 'b.c.d.x') == 2
@@ -227,6 +227,12 @@ def test_traversing():
         traverse(obj, 'a.v')
     with pytest.raises(AttributeError):
         traverse(obj, 'a.b.c.d.y')
+
+    traverser = get_traverser('a', 'b.c.d.x', 'b.c.d.y')
+    with pytest.raises(AttributeError):
+        traverser(obj)
+    obj.b.c.d['y'] = None
+    assert traverser(obj) == (1, 2, None)
 
 
 def test_dict_merge_base_cases():
