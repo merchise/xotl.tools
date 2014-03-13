@@ -19,9 +19,6 @@ from __future__ import (division as _py3_division,
 import pytest
 from xoutil.objects import smart_copy
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Tue Apr 16 10:22:16 2013"
-
 
 def test_smart_copy():
     class new(object):
@@ -49,7 +46,8 @@ def test_smart_copy_with_defaults():
                 'password': (KeyError, '{key}')}
     kwargs = {'password': 'keep-out!'}
     args = smart_copy(kwargs, {}, defaults=defaults)
-    assert args == dict(host='localhost', port=5432, user='openerp', password='keep-out!')
+    assert args == dict(host='localhost', port=5432, user='openerp',
+                        password='keep-out!')
 
     # if missing a required key
     with pytest.raises(KeyError):
@@ -70,13 +68,11 @@ def test_smart_copy_from_dict_to_dict():
     assert d == dict(c=1, d=23)
 
 
-
 def test_smart_copy_with_plain_defaults():
     c = dict(a=1, b=2, c=3)
     d = {}
     smart_copy(c, d, defaults=('a', 'x'))
     assert d == dict(a=1, x=None)
-
 
 
 def test_smart_copy_with_callable_default():
@@ -88,7 +84,6 @@ def test_smart_copy_with_callable_default():
     smart_copy(c, d, defaults=default)
     assert d == dict(a=1, b='2')
 
-
     class inset(object):
         def __init__(self, items):
             self.items = items
@@ -96,12 +91,10 @@ def test_smart_copy_with_callable_default():
         def __call__(self, attr, source=None):
             return attr in self.items
 
-
     c = dict(a=1, b='2', c='3x')
     d = {}
     smart_copy(c, d, defaults=inset('ab'))
     assert d == dict(a=1, b='2')
-
 
 
 def test_newstyle_metaclass():
@@ -109,6 +102,7 @@ def test_newstyle_metaclass():
 
     class Field(object):
         __slots__ = (str('name'), str('default'))
+
         def __init__(self, default):
             self.default = default
 
@@ -137,7 +131,6 @@ def test_newstyle_metaclass():
     class SubMeta(ModelType):
         pass
 
-
     class Submodel(Model, metaclass(SubMeta)):
         pass
 
@@ -159,6 +152,7 @@ def test_new_style_metaclass_registration():
 
     class BaseMeta(type):
         classes = []
+
         def __new__(cls, name, bases, attrs):
             res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
             cls.classes.append(res)   # <-- side effect
@@ -180,9 +174,9 @@ def test_new_style_metaclass_registration():
         'Like "Egg" but it will be registered twice in Python 2.x.'
 
     if sys.version_info < (3, 0):
-        assert len(BaseMeta.classes) == 4 # Called twice in Python 2
+        assert len(BaseMeta.classes) == 4  # Called twice in Python 2
     else:
-        assert len(BaseMeta.classes) == 3 # Properly called once in Python 3
+        assert len(BaseMeta.classes) == 3  # Properly called once in Python 3
 
       # Nevertheless the bases are ok.
     assert Spam.__bases__ == (Base, )
