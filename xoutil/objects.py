@@ -50,20 +50,48 @@ _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
 
 
-def smart_getter(obj):
+def smart_getter(obj, strict=False):
     '''Returns a smart getter for `obj`.
 
     If obj is Mapping, it returns the ``.get()`` method bound to the object
     `obj`. Otherwise it returns a partial of `getattr` on `obj` with default
-    set to None.
+    set to None (if `strict` is False).
+
+    :param strict:  Set this to True so that the returned getter checks that
+                    keys/attrs exists.  If `strict` is True the getter may
+                    raise KeyError or AttributeError.
+
+    .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     '''
     from collections import Mapping
     from xoutil.types import DictProxyType
     if isinstance(obj, (DictProxyType, Mapping)):
-        return obj.get
+        if not strict:
+            return obj.get
+        else:
+            def _get(key, default=Unset):
+                try:
+                    return obj[key]
+                except KeyError:
+                    if default is Unset:
+                        raise
+                    else:
+                        return default
+            return _get
     else:
-        return lambda attr, default=None: getattr(obj, attr, default)
+        if not strict:
+            return lambda attr, default=None: getattr(obj, attr, default)
+        else:
+            def _partial(attr, default=Unset):
+                try:
+                    return getattr(obj, attr)
+                except AttributeError:
+                    if default is Unset:
+                        raise
+                    else:
+                        return default
+            return _partial
 
 
 def smart_getter_and_deleter(obj):

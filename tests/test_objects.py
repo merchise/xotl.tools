@@ -310,3 +310,30 @@ def test_get_first_of():
 
     with pytest.raises(TypeError):
         get_first_of(None, anything=1)
+
+
+def test_smart_getter():
+    from xoutil.objects import smart_getter
+    class new(object): pass
+    o = new()
+    o.attr1 = 1
+    o.attr2 = 1
+    getter = smart_getter(o)
+    assert getter('attr1') == getter('attr2') == 1
+    assert getter('attr3') is None
+
+    getter = smart_getter(o, strict=True)
+    assert getter('attr1') == getter('attr2') == 1
+    with pytest.raises(AttributeError):
+        assert getter('attr3') is None
+
+    d = {'key1': 1, 'key2': 1}
+    getter = smart_getter(d)
+    assert getter('key1') == getter('key2') == 1
+    assert getter('key3') is None
+
+    getter = smart_getter(d, strict=True)
+    assert getter('key1') == getter('key2') == 1
+    with pytest.raises(KeyError):
+        assert getter('key3') is None
+    assert getter('key3', None) is None
