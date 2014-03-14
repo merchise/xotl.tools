@@ -18,6 +18,8 @@
 
 .. autofunction:: traverse(obj, path, default=Unset, sep='.', getter=None)
 
+.. autofunction:: get_traverser(*paths, default=Unset, sep='.', getter=None)
+
 .. autofunction:: dict_merge(*dicts, **other)
 
 .. autofunction:: smart_getattr(name, *sources, **kwargs)
