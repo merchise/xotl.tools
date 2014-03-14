@@ -82,7 +82,7 @@ def test_stacked_dict():
 
 
 # Backported from Python 3.3.0 standard library
-from xoutil.compat import py3k
+from xoutil.six import PY3
 from xoutil.collections import ChainMap, Counter, OrderedDict, Mapping
 from xoutil.collections import MutableMapping
 import copy, pickle, inspect
@@ -112,7 +112,7 @@ class TestChainMap(unittest.TestCase):
             self.assertIn(key, d)
         for k, v in dict(a=1, b=2, c=30, z=100).items():              # check get
             self.assertEqual(d.get(k, 100), v)
-        if not py3k:
+        if not PY3:
             self.assertIn(repr(d), [                                      # check repr
                 type(d).__name__ + "({u'c': 30}, {u'a': 1, u'b': 2})",
                 type(d).__name__ + "({u'c': 30}, {u'b': 2, u'a': 1})"
@@ -206,7 +206,7 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(c.get('b', 10), 2)
         self.assertEqual(c.get('z', 10), 10)
         self.assertEqual(c, dict(a=3, b=2, c=1))
-        if not py3k:
+        if not PY3:
             self.assertEqual(repr(c), "Counter({u'a': 3, u'b': 2, u'c': 1})")
         else:
             self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
@@ -582,7 +582,7 @@ class TestOrderedDict(unittest.TestCase):
 
     def test_repr(self):
         od = OrderedDict([('c', 1), ('b', 2), ('a', 3)])
-        if not py3k:
+        if not PY3:
             self.assertEqual(
                 repr(od),
                 "OrderedDict([(u'c', 1), (u'b', 2), (u'a', 3)])")
@@ -597,7 +597,7 @@ class TestOrderedDict(unittest.TestCase):
         # See issue #9826
         od = OrderedDict.fromkeys('abc')
         od['x'] = od
-        if not py3k:
+        if not PY3:
             self.assertEqual(
                 repr(od),
                 "OrderedDict([(u'a', None), (u'b', None), (u'c', None), (u'x', ...)])")

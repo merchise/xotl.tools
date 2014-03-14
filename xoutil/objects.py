@@ -24,7 +24,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.compat import py3k as _py3k
+from xoutil.six import PY3 as _py3k
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as slist
@@ -425,7 +425,7 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from xoutil.compat import map
+        from xoutil.six.moves import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val
@@ -594,7 +594,7 @@ class lazy(object):
         self.kwargs = kwargs
 
     def __call__(self):
-        from xoutil.compat import callable
+        from xoutil.six import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -702,7 +702,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
 
     '''
     from xoutil.fs import _get_regex
-    from xoutil.compat import str_base, iteritems_
+    from xoutil.six import string_types as str_base, iteritems as iteritems_
     # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
     #       isn't correct to depend on it. Migrate part of "_get_regex" to a
     #       module that can be imported logically without problems from both,
@@ -798,7 +798,7 @@ def smart_copy(*args, **kwargs):
 
     '''
     from collections import Mapping, MutableMapping
-    from xoutil.compat import callable, str_base
+    from xoutil.six import callable, string_types as str_base
     from xoutil.types import FunctionType as function
     from xoutil.types import is_collection, Required
     from xoutil.types import DictProxyType
@@ -1046,7 +1046,7 @@ def dict_merge(*dicts, **others):
 
     '''
     from collections import Mapping, Sequence, Set
-    from xoutil.compat import iteritems_
+    from xoutil.six import iteritems as iteritems_
     from xoutil.objects import get_first_of
     from xoutil.types import are_instances, no_instances
     if others:

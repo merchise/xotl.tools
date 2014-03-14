@@ -45,9 +45,12 @@ Mapping = _pm.Mapping
 del _pm, _copy_python_module_members
 
 
-from xoutil.compat import defaultdict as _defaultdict
-from xoutil.compat import py33 as _py33
+from collections import defaultdict as _defaultdict
 from xoutil.names import strlist as slist
+
+import sys
+_py33 = sys.version_info >= (3, 3, 0)
+del sys
 
 
 class defaultdict(_defaultdict):

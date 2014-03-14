@@ -37,9 +37,15 @@ import types
 from functools import wraps as _wraps, partial
 
 from xoutil import Unset
-from xoutil.compat import inspect_getfullargspec
+from xoutil.six import PY3 as _py3
 from xoutil.deprecation import deprecated as _deprecated
 from xoutil.names import strlist as strs
+
+if _py3:
+    from inspect import getfullargspec as _getfullargspec
+else:
+    from inspect import getargspec as _getfullargspec
+del _py3
 
 __all__ = strs('weave', 'StopExceptionChain')
 del strs
@@ -67,7 +73,7 @@ class StopExceptionChain(Exception):
 
 def _filter_args_byspec(method, *args, **kwargs):
     from xoutil.objects import get_first_of
-    spec = inspect_getfullargspec(method)
+    spec = _getfullargspec(method)
     if not spec.varargs:
         args = ()
     # XXX: [manu] In Python 3.2, the FullArgsSpec named tuple does not have a
@@ -200,10 +206,10 @@ def _weave_after_method(target, aspect, method_name,
         0
 
         # You won't see the print result cause the Exception in doctests.
-        >>> bad_instance.echo(0)
+        >>> bad_instance.echo(0)        # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ZeroDivisionError: integer division or modulo by zero
+        ZeroDivisionError: ...
 
         # Class methods remains classmethods
         >>> good_instance.superecho(0)  # doctest: +ELLIPSIS

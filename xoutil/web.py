@@ -73,7 +73,7 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
 
     '''
     import re
-    from xoutil.compat import chr as unichr
+    from xoutil.six import unichr
     from xoutil.string import _unicode, safe_decode, normalize_slug
     if not isinstance(s, _unicode):
         s = safe_decode(s)

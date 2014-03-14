@@ -21,7 +21,7 @@ from __future__ import (division as _py3_division,
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
 
-from xoutil.compat import str_base as _str_base
+from xoutil.six import string_types as _str_base
 from xoutil.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
@@ -115,13 +115,13 @@ def _parse_signature(signature):
         def __getitem__(self, key):
             from xoutil import Unset
             from xoutil.iterators import dict_update_new
-            from xoutil.compat import py3k
+            from xoutil.six import PY3
             d = self.d
             res = d.get(key, Unset)
             f = self.f
             if res is Unset and f:
                 f_globals = self.f_globals
-                if py3k:
+                if PY3:
                     # FIXME: This modifies f_globals! Use f_builtins of the
                     # frame.
 
