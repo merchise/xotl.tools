@@ -47,19 +47,45 @@ def command_name(cls):
         >>> command_name(SomeCommand) == 'some-command'
         True
 
+    If the command class has an attribute `command_cli_name`, this will be
+    used instead::
+
+        >>> class SomeCommand(object):
+        ...    command_cli_name = 'adduser'
+
+        >>> command_name(SomeCommand) == 'adduser'
+        True
+
+    It's an error to have a non-string `command_cli_name` attribute::
+
+        >>> class SomeCommand(object):
+        ...    command_cli_name = None
+
+        >>> command_name(SomeCommand)  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+           ...
+        TypeError: Attribute 'command_cli_name' must be a string.
+
     '''
-    from io import StringIO
-    from xoutil.string import safe_decode
-    buf = StringIO()
-    start = True
-    for letter in cls.__name__:
-        if letter.isupper():
-            if not start:
-                buf.write(safe_decode('-'))
-            letter = letter.lower()
-        buf.write(safe_decode(letter))
-        start = False
-    buf.flush()
-    res = buf.getvalue()
-    buf.close()
+    Unset = object()
+    res = getattr(cls, 'command_cli_name', Unset)
+    if res is not Unset:
+        from xoutil.compat import str_base as text_type
+        if not isinstance(res, text_type):
+            raise TypeError("Attribute 'command_cli_name' must be a string.")
+    else:
+        from io import StringIO
+        from xoutil.string import safe_decode
+        buf = StringIO()
+        start = True
+        for letter in cls.__name__:
+            if letter.isupper():
+                if not start:
+                    buf.write(safe_decode('-'))
+                letter = letter.lower()
+            buf.write(safe_decode(letter))
+            start = False
+        buf.flush()
+        res = buf.getvalue()
+        buf.close()
     return res
