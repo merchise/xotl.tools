@@ -19,7 +19,8 @@ setup(name=project_name,
       version=version,
       description="Collection of usefull algorithms and other very disparate "
                   "stuff",
-      long_description=open(os.path.join('docs', 'readme.txt')).read(),
+      long_description=open(
+          os.path.join(_current_dir, 'docs', 'readme.txt')).read(),
       classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
             dev_classifier,
