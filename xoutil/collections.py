@@ -366,6 +366,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     def __delitem__(self, key):
         del self.__stack[key]
 
+
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
     '''A combination of the the OrderedDict with the
     :class:`SmartDictMixin`.

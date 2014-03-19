@@ -47,9 +47,6 @@ __all__ = strs('complementor', 'contextualized', 'inject_dependencies',
                'weaved')
 del strs
 
-__docstring_format__ = 'rst'
-__author__ = 'Medardo Rodriguez'
-
 
 def _update(attrs, *sources):
     '''
@@ -323,6 +320,7 @@ def weaved(target, *sources, **attrs):
         yield result
     except:
         result = None
+        raise
     finally:
         if result is target:
             cls = target.__class__
