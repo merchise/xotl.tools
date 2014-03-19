@@ -50,9 +50,12 @@ class TestCollections(unittest.TestCase):
 def test_stacked_dict():
     from xoutil.collections import StackedDict
     sd = StackedDict(a='level-0')
+    assert sd.peek() == dict(a='level-0')
     sd.push(a=1, b=2, c=10)
     assert sd.level == 1
+    assert sd.peek() == dict(a=1, b=2, c=10)
     sd.push(b=4, c=5)
+    assert sd.peek() == dict(b=4, c=5)
     assert sd.level == 2
     assert sd['b'] == 4
     assert sd['a'] == 1
