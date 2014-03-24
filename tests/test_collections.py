@@ -191,8 +191,8 @@ class TestCounter(unittest.TestCase):
         c = Counter('abcaba')
         self.assertEqual(c, Counter({'a':3 , 'b': 2, 'c': 1}))
         self.assertEqual(c, Counter(a=3, b=2, c=1))
-        self.assertIsInstance(c, dict)
-        self.assertIsInstance(c, Mapping)
+        self.assert_(isinstance(c, dict))
+        self.assert_(isinstance(c, Mapping))
         self.assertTrue(issubclass(Counter, dict))
         self.assertTrue(issubclass(Counter, Mapping))
         self.assertEqual(len(c), 3)
@@ -454,7 +454,7 @@ class TestOrderedDict(unittest.TestCase):
             [('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5), ('f', 6), ('g', 7)])
 
     def test_abc(self):
-        self.assertIsInstance(OrderedDict(), MutableMapping)
+        self.assert_(isinstance(OrderedDict(), MutableMapping))
         self.assertTrue(issubclass(OrderedDict, MutableMapping))
 
     def test_clear(self):
