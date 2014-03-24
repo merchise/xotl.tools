@@ -173,7 +173,7 @@ def test_new_style_metaclass_registration():
     class Spam(Base, metaclass(SubType)):
         'Like "Egg" but it will be registered twice in Python 2.x.'
 
-    if sys.version_info < (3, 0):
+    if sys.version_info < (3, 2):
         assert len(BaseMeta.classes) == 4  # Called twice in Python 2
     else:
         assert len(BaseMeta.classes) == 3  # Properly called once in Python 3

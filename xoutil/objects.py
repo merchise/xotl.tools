@@ -24,7 +24,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.compat import py3k as _py3k
+from xoutil.compat import py3k as _py3k, callable
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as slist
@@ -950,7 +950,7 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
 
        You should always place your metaclass declaration *first* in the list
        of bases. Doing otherwise triggers *twice* the metaclass' constructors
-       in Python 2.7.
+       in Python 3.1 or less.
 
        If your metaclass has some non-idempotent side-effect (such as
        registration of classes), then this would lead to unwanted double

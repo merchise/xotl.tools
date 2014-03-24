@@ -40,7 +40,7 @@ def test_basic_inline_metaclass():
 
 def test_no_double_registration_with_inlinemetaclass():
     from xoutil.objects import metaclass
-    from xoutil.compat import py3k
+    from xoutil.compat import py32
 
     class RegisteringType(type):
         classes = []
@@ -63,7 +63,7 @@ def test_no_double_registration_with_inlinemetaclass():
     class Spam(Base, metaclass(SubType)):
         'Like "Egg" but registered twice in Python 2.x.'
 
-    assert len(RegisteringType.classes) == (3 if py3k else 4)
+    assert len(RegisteringType.classes) == (3 if py32 else 4)
 
 
 def test_inlinemetaclass_decorator_with_slots():
