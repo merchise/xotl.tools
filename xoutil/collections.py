@@ -344,6 +344,23 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
         else:
             raise TypeError('Cannot pop from StackedDict without any levels')
 
+    def peek(self):
+        '''Peeks the top level of the stack.
+
+        Returns a copy of the top-most level without any of the keys from
+        lower levels.
+
+        Example::
+
+           >>> sdict = StackedDict(a=1, b=2)
+           >>> sdict.push(c=3)  # it returns the level...
+           1
+           >>> sdict.peek()
+           {'c': 3}
+
+        '''
+        return dict(self.__stack.maps[0])
+
     def __str__(self):
         # TODO: Optimize
         return str(dict(self))
@@ -365,6 +382,7 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
 
     def __delitem__(self, key):
         del self.__stack[key]
+
 
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
     '''A combination of the the OrderedDict with the

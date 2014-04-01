@@ -54,6 +54,7 @@ pypy = hasattr(sys, 'pypy_version_info')
 win32 = sys.platform.startswith('win')
 
 if py3k:
+    import builtins
     str_base = str
     str_types = (str, )
     u = _unicode = str
@@ -68,6 +69,9 @@ if py3k:
     from builtins import range as xrange
     xrange_ = xrange
     range_ = range = lambda *args: list(xrange(*args))
+    exec_ = getattr(builtins, "exec")
+    def execfile_(fname, *args):
+        return exec_(compile(open(fname, 'rb').read(), fname, 'exec'), *args)
 else:
     str_base = basestring
     str_types = (str, unicode)
@@ -78,9 +82,23 @@ else:
     # FIXME: [manu] In Py2  isinstance(1, long) is False.
     integers = (long, int)
     integer = long
-    from __builtin__ import xrange, range
+    from __builtin__ import xrange, range, execfile
     xrange_ = xrange
     range_ = range
+    execfile_ = execfile
+
+    def exec_(code, globs=None, locs=None):
+        """Execute code in a namespace."""
+        if globs is None:
+            frame = sys._getframe(1)
+            globs = frame.f_globals
+            if locs is None:
+                locs = frame.f_locals
+            del frame
+        elif locs is None:
+            locs = globs
+        exec("""exec code in globs, locs""")
+
 
 if py3k:
     set_types = set

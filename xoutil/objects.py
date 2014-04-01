@@ -24,7 +24,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.compat import py3k as _py3k
+from xoutil.compat import py3k as _py3k, callable
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as slist
@@ -50,20 +50,48 @@ _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
 
 
-def smart_getter(obj):
+def smart_getter(obj, strict=False):
     '''Returns a smart getter for `obj`.
 
     If obj is Mapping, it returns the ``.get()`` method bound to the object
     `obj`. Otherwise it returns a partial of `getattr` on `obj` with default
-    set to None.
+    set to None (if `strict` is False).
+
+    :param strict:  Set this to True so that the returned getter checks that
+                    keys/attrs exists.  If `strict` is True the getter may
+                    raise KeyError or AttributeError.
+
+    .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     '''
     from collections import Mapping
     from xoutil.types import DictProxyType
     if isinstance(obj, (DictProxyType, Mapping)):
-        return obj.get
+        if not strict:
+            return obj.get
+        else:
+            def _get(key, default=Unset):
+                try:
+                    return obj[key]
+                except KeyError:
+                    if default is Unset:
+                        raise
+                    else:
+                        return default
+            return _get
     else:
-        return lambda attr, default=None: getattr(obj, attr, default)
+        if not strict:
+            return lambda attr, default=None: getattr(obj, attr, default)
+        else:
+            def _partial(attr, default=Unset):
+                try:
+                    return getattr(obj, attr)
+                except AttributeError:
+                    if default is Unset:
+                        raise
+                    else:
+                        return default
+            return _partial
 
 
 def smart_getter_and_deleter(obj):
@@ -568,6 +596,7 @@ def popattr(obj, name, default=None):
 
 get_and_del_attr = deprecated(popattr)(popattr)
 
+
 @deprecated('pop', 'Use dict.pop() with default=None.')
 def get_and_del_key(d, key, default=None):
     '''Looks for a key in the dict `d` and returns its value and removes the
@@ -921,7 +950,7 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
 
        You should always place your metaclass declaration *first* in the list
        of bases. Doing otherwise triggers *twice* the metaclass' constructors
-       in Python 2.7.
+       in Python 3.1 or less.
 
        If your metaclass has some non-idempotent side-effect (such as
        registration of classes), then this would lead to unwanted double
@@ -1001,27 +1030,65 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
 
     You may provide a custom `getter`. By default, does an
     :func:`smart_getter` over the objects. If provided `getter` should have
-    the signature of `getattr`.
+    the signature of `getattr`:func:.
+
+    See `get_traverser`:func: if you need to apply the same path(s) to several
+    objects.  Actually this is equivalent to::
+
+        get_traverser(path, default=default, sep=sep, getter=getter)(obj)
 
     '''
-    notfound = object()
-    current = obj
-    if not getter:
-        getter = lambda o, a, default=None: smart_getter(o)(a, default)
-    attrs = path.split(sep)
-    while current is not notfound and attrs:
-        attr = attrs.pop(0)
-        current = getter(current, attr, notfound)
-    if current is notfound:
-        if default is Unset:
-            raise AttributeError(attr)
-        else:
-            return default
+    _traverser = get_traverser(path, default=default, sep=sep, getter=None)
+    return _traverser(obj)
+
+
+def get_traverser(*paths, **kw):
+    '''Combines the power of `traverse`:func: with the expectations from both
+    `operator.itergetter`:func: and `operator.attrgetter`:func:.
+
+    :param paths: Several paths to extract.
+
+    Keyword arguments has the same meaning as in `traverse`:func:.
+
+    :returns: A function the when invoked with an `object` traverse the object
+              finding each `path`.
+
+    .. versionadded:: 1.5.3
+
+    '''
+    def _traverser(path, default=Unset, sep='.', getter=None):
+        if not getter:
+            getter = lambda o, a, default=None: smart_getter(o)(a, default)
+        def inner(obj):
+            notfound = object()
+            current = obj
+            attrs = path.split(sep)
+            while current is not notfound and attrs:
+                attr = attrs.pop(0)
+                current = getter(current, attr, notfound)
+            if current is notfound:
+                if default is Unset:
+                    raise AttributeError(attr)
+                else:
+                    return default
+            else:
+                return current
+        return inner
+    if len(paths) == 1:
+        result = _traverser(paths[0], **kw)
+    elif len(paths) > 1:
+        _traversers = tuple(_traverser(path, **kw) for path in paths)
+        def _result(obj):
+            return tuple(traverse(obj) for traverse in _traversers)
+        result = _result
     else:
-        return current
+        raise TypeError('"get_traverser" requires at least a path')
+    return result
+
 
 
 def dict_merge(*dicts, **others):
+
     '''Merges several dicts into a single one.
 
     Merging is similar to updating a dict, but if values are non-scalars they
