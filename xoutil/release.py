@@ -19,7 +19,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.5.2.1'
+VERSION = '1.5.3'
+
 
 def dev_tag():
     result = ''
@@ -41,4 +42,21 @@ def dev_tag():
             result = res
     return result
 
-RELEASE_TAG = dev_tag()
+
+def dev_tag_installed():
+    import re
+    import pkg_resources
+    tag_start_regex = re.compile(r'[^\d\.]')
+    try:
+        dist = pkg_resources.get_distribution('xoutil')
+        version = dist.version
+        match = tag_start_regex.search(version)
+        if match:
+            return version[match.start():]
+        else:
+            return None
+    except:
+        return None
+
+
+RELEASE_TAG = dev_tag_installed() or dev_tag()
