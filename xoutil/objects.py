@@ -896,21 +896,28 @@ def smart_copy(*args, **kwargs):
 
 
 def extract_attrs(obj, *names, **kwargs):
-    '''Returns a tuple of the `names` from an object.
+    '''Extracts all `names` from an object.
 
     If `obj` is a Mapping, the names will be search in the keys of the `obj`;
     otherwise the names are considered regular attribute names.
 
-    If `default` is Unset and one attribute is not found an AttributeError (or
-    KeyError) is raised, otherwise the `default` is used instead.
+    If `default` is Unset and any name is not found, an AttributeError is
+    raised, otherwise the `default` is used instead.
+
+    Returns a tuple if there are more that one name, otherwise returns a
+    single value.
 
     .. versionadded:: 1.4.0
 
+    .. versionchanged:: 1.5.3 Each `name` may be a path like in
+       `get_traverser`:func:, but only "." is allowed as separator.
+
     '''
-    # TODO: Delete next:
-    # from xoutil.objects import smart_getter
-    get = smart_getter(obj)
-    return tuple(get(attr, **kwargs) for attr in names)
+    default = kwargs.pop('default', Unset)
+    if kwargs:
+        raise TypeError('Invalid keyword arguments for `extract_attrs`')
+    getter = get_traverser(*names, default=default)
+    return getter(obj)
 
 
 if _py3k:
