@@ -337,3 +337,26 @@ def test_smart_getter():
     with pytest.raises(KeyError):
         assert getter('key3') is None
     assert getter('key3', None) is None
+
+
+def test_extract_attrs():
+    from xoutil.objects import extract_attrs
+    d = dict(a=(1,), b=2, c=3, x=4)
+    assert extract_attrs(d, 'a') == (1,)
+    assert extract_attrs(d, 'a', 'b', 'c', 'x') == ((1,), 2, 3, 4)
+
+    with pytest.raises(AttributeError):
+        assert extract_attrs(d, 'y')
+    assert extract_attrs(d, 'y', default=None) is None
+
+    class new(object):
+        def __init__(self, **kw):
+            self.__dict__.update(kw)
+
+    d = new(a=(1,), b=2, c=3, x=4)
+    assert extract_attrs(d, 'a') == (1,)
+    assert extract_attrs(d, 'a', 'b', 'c', 'x') == ((1,), 2, 3, 4)
+
+    with pytest.raises(AttributeError):
+        assert extract_attrs(d, 'y')
+    assert extract_attrs(d, 'y', default=None) is None
