@@ -54,12 +54,12 @@ def smart_getter(obj, strict=False):
     '''Returns a smart getter for `obj`.
 
     If obj is Mapping, it returns the ``.get()`` method bound to the object
-    `obj`. Otherwise it returns a partial of `getattr` on `obj` with default
+    `obj`.  Otherwise it returns a partial of `getattr` on `obj` with default
     set to None (if `strict` is False).
 
-    :param strict:  Set this to True so that the returned getter checks that
-                    keys/attrs exists.  If `strict` is True the getter may
-                    raise KeyError or AttributeError.
+    :param strict: Set this to True so that the returned getter checks that
+                   keys/attrs exists.  If `strict` is True the getter may
+                   raise a KeyError or an AttributeError.
 
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
