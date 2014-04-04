@@ -1063,7 +1063,7 @@ def get_traverser(*paths, **kw):
     .. versionadded:: 1.5.3
 
     '''
-    def _traverser(path, default=Unset, sep=str('.'), getter=None):
+    def _traverser(path, default=Unset, sep='.', getter=None):
         if not getter:
             getter = lambda o, a, default=None: smart_getter(o)(a, default)
         def inner(obj):
@@ -1081,12 +1081,10 @@ def get_traverser(*paths, **kw):
             else:
                 return current
         return inner
-    from xoutil.string import force_str
     if len(paths) == 1:
-        result = _traverser(force_str(paths[0]), **kw)
+        result = _traverser(paths[0], **kw)
     elif len(paths) > 1:
-        _traversers = tuple(_traverser(force_str(path), **kw)
-                            for path in paths)
+        _traversers = tuple(_traverser(path, **kw) for path in paths)
         def _result(obj):
             return tuple(traverse(obj) for traverse in _traversers)
         result = _result
