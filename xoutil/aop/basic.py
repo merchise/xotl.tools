@@ -151,7 +151,7 @@ def complementor(*sources, **attrs):
                                  MutableSequence as List,
                                  Set)
         from xoutil import Unset
-        from xoutil.compat import iteritems_
+        from xoutil.six import iteritems as iteritems_
         for attr, value in iteritems_(attrs):
             attr = str(attr)
             assigned = attr in cls.__dict__

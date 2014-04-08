@@ -34,8 +34,6 @@ GeneratorType = _pm.GeneratorType
 del _pm, _copy_python_module_members
 
 
-from xoutil.compat import xrange_
-from xoutil.compat import pypy as _pypy
 from xoutil._values import UnsetType, Unset as _Unset
 from collections import Mapping
 
@@ -57,12 +55,14 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 #: A compatible Py2 and Py3k DictProxyType, since it does not exists in Py3k.
 DictProxyType = type(object.__dict__)
 
-
+import sys
+_pypy = hasattr(sys, 'pypy_version_info')
 if _pypy:
     class _foo(object):
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
     del _foo
+del _pypy, sys
 
 
 # In Py3.3 NoneType is not defined in the stdlib `types` module. This solves
@@ -168,7 +168,8 @@ def is_collection(maybe):
         >>> is_collection(a for a in xrange_(100))
         True
     '''
-    return isinstance(maybe, (tuple, xrange_, list, set, frozenset,
+    from xoutil.six.moves import range
+    return isinstance(maybe, (tuple, range, list, set, frozenset,
                               GeneratorType))
 
 
