@@ -8,7 +8,7 @@
   ``xoutil.six`` (not documented here).  Thus the compatibility module
   ``xoutil.compat`` is now deprecated and will removed in the future.
 
-  There are somethings that ``xoutil.compat`` has that ``xoutil.six`` does
+  There are some things that ``xoutil.compat`` has that ``xoutil.six`` does
   not.  For instance, ``six`` does not include fine grained python version
   markers.  So if your code depends not on Python 3 v Python 2 dichotomy but
   on features introduced in Python 3.2 you must use the ``sys.version_info``
