@@ -39,8 +39,9 @@ def test_basic_inline_metaclass():
 
 
 def test_no_double_registration_with_inlinemetaclass():
+    import sys
     from xoutil.objects import metaclass
-    from xoutil.compat import py32
+    py32 = sys.version_info >= (3, 2)
 
     class RegisteringType(type):
         classes = []

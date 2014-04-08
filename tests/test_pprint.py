@@ -22,6 +22,6 @@ __date__   = "Mon May  6 15:12:57 2013"
 
 def test_ppformat_rtype():
     from xoutil.pprint import ppformat
-    from xoutil.compat import _unicode
+    from xoutil.six import text_type
     o = [list(range(i+1)) for i in range(10)]
-    assert type(ppformat(o)) is _unicode
+    assert type(ppformat(o)) is text_type

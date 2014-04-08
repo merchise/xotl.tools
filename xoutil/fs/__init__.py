@@ -27,11 +27,13 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+import sys
 import os
 from re import compile as _rcompile
-from xoutil.fs.path import (normalize_path, shorten_module_filename,
-                            shorten_user)
-from xoutil.compat import str_base, py33 as __py33
+from xoutil.fs.path import normalize_path
+from xoutil.six import string_types
+
+__py33 = sys.version_info >= (3, 3)
 
 
 re_magic = _rcompile('[*?[]')
@@ -126,7 +128,7 @@ def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
 
     '''
     if regex:
-        if isinstance(regex, str_base):
+        if isinstance(regex, string_types):
             regex = _rcompile(regex)
     else:
         regex = _REGEX_DEFAULT_ALLFILES
@@ -218,7 +220,7 @@ def regex_rename(top, pattern, repl, maxdepth=None):
 
     '''
     from re import subn as _re_subn
-    if isinstance(pattern, str_base):
+    if isinstance(pattern, string_types):
         pattern = _rcompile(pattern)
     depth = 0
     for path, _dirs, files in os.walk(top):
@@ -280,7 +282,7 @@ filter_false = lambda path, stat_info: False
 
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
-    if isinstance(regex, str_base):
+    if isinstance(regex, string_types):
         regex = _rcompile(regex)
     def _filter(path, stat_info):
         return regex.match(os.path.basename(path)) is not None
@@ -481,9 +483,10 @@ if not __py33:
             dir_exists = os.path.isdir(name)
             expected_mode = _get_masked_mode(mode)
             if dir_exists:
-                # S_ISGID is automatically copied by the OS from parent to child
-                # directories on mkdir.  Don't consider it being set to be a mode
-                # mismatch as mkdir does not unset it when not specified in mode.
+                # S_ISGID is automatically copied by the OS from parent to
+                # child directories on mkdir.  Don't consider it being set to
+                # be a mode mismatch as mkdir does not unset it when not
+                # specified in mode.
                 actual_mode = st.S_IMODE(lstat(name).st_mode) & ~st.S_ISGID
             else:
                 actual_mode = -1
@@ -491,7 +494,7 @@ if not __py33:
                     actual_mode == expected_mode):
                 if dir_exists and actual_mode != expected_mode:
                     e.strerror += ' (mode %o != expected mode %o)' % (
-                            actual_mode, expected_mode)
+                        actual_mode, expected_mode)
                 raise
 else:
     from os import makedirs

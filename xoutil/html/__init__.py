@@ -22,11 +22,9 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.compat import py3k as _py3k, py32 as _py32, iteritems_
+from xoutil.six import PY3 as _py3k, iteritems as iteritems_
 from xoutil.string import safe_decode
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Thu Apr 18 09:45:40 2013"
 
 if _py3k:
     from html import entities
@@ -42,13 +40,13 @@ entities.entitydefs_utf8 = {}
 for name, entity in iteritems_(entities.entitydefs):
     text = entities.entitydefs_unicode[name] = safe_decode(entity, 'latin-1')
     entities.entitydefs_utf8[name] = text.encode('utf-8')
-del name, entity, safe_decode
+del name, entity, safe_decode, iteritems_
 
 
 def _further_escape(s):
     import re
     from xoutil.string import safe_encode
-    ASCII = getattr(re, 'ASCII', 0) # Py3k
+    ASCII = getattr(re, 'ASCII', 0)  # Py3k
     what = re.compile(br'[\x00-\x1F\x80-\xFF]', ASCII)
     res, pos = b'', 0
     for match in what.finditer(s):
@@ -60,6 +58,9 @@ def _further_escape(s):
     res += s[pos:]
     return res
 
+import sys
+_py32 = sys.version_info >= (3, 2)
+del sys
 
 if not _py32:
     # The following is a modified copy from the Python 3.2 standard library, to
@@ -79,9 +80,9 @@ if not _py32:
         also translated.
 
         """
-        from xoutil.compat import _unicode
+        from xoutil.six import text_type
         from xoutil.string import safe_decode, safe_encode
-        if not isinstance(s, _unicode):
+        if not isinstance(s, text_type):
             arg = safe_decode(s)
         else:
             arg = s
@@ -97,7 +98,7 @@ else:
     from html import escape
 
 
-del _py3k, _py32, iteritems_
+del _py3k, _py32
 
 
 __all__ = (str('entities'), str('parser'), str('escape'))

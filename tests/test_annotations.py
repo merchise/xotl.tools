@@ -22,7 +22,7 @@ __author__ = 'manu'
 import pytest
 
 from xoutil.annotate import annotate
-from xoutil.compat import class_types
+from xoutil.six import class_types
 
 
 def test_keywords():
@@ -62,14 +62,15 @@ def test_invalid_nonsense_signature():
 
 
 def test_mixed_annotations():
-    from xoutil.compat import _unicode
+    from xoutil.six import text_type
 
-    @annotate('(a: str, b:_unicode) -> bool', a=_unicode, return_annotation=True)
+    @annotate('(a: str, b:text_type) -> bool', a=text_type,
+              return_annotation=True)
     def dummy():
         pass
 
-    assert dummy.__annotations__.get('a') is _unicode
-    assert dummy.__annotations__.get('b') is _unicode
+    assert dummy.__annotations__.get('a') is text_type
+    assert dummy.__annotations__.get('b') is text_type
     assert dummy.__annotations__.get('return') is True
 
 

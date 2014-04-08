@@ -13,7 +13,7 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from xoutil.compat import str_base
+from xoutil.six import string_types
 from xoutil.textwrap import TextWrapper, wrap, fill, dedent, indent
 
 
@@ -26,7 +26,7 @@ class BaseTestCase(unittest.TestCase):
             for i in range(len(textin)):
                 result.append("  %d: %r" % (i, textin[i]))
             result = '\n'.join(result)
-        elif isinstance(textin, str_base):
+        elif isinstance(textin, string_types):
             result = "  %s\n" % repr(textin)
         return result
 

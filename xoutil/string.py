@@ -43,9 +43,10 @@ from __future__ import (division as _py3_division,
 from re import compile as _regex_compile
 
 from xoutil.deprecation import deprecated as _deprecated
-from xoutil.compat import (str_base as _str_base, _unicode,
-                           ext_str_types as _ext_str_types,
-                           py3k as _py3k)
+from xoutil.six import (string_types as _str_base,
+                        text_type as _unicode,
+                        binary_type as _bytes,
+                        PY3 as _py3k)
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -53,10 +54,6 @@ _pm = _copy_python_module_members()
 Formatter = _pm.Formatter     # Redundant but needed to avoid IDE errors
 
 del _copy_python_module_members, _pm
-
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 
 def force_encoding(encoding=None):
@@ -167,7 +164,7 @@ def safe_strip(value):
     .. versionadded:: 1.1.3
 
     '''
-    return value.strip() if isinstance(value, _ext_str_types) else value
+    return value.strip() if isinstance(value, (_unicode, _bytes)) else value
 
 
 def cut_prefix(value, prefix):

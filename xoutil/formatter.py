@@ -23,7 +23,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.compat import str_base
+from xoutil.six import string_types as _str_base
 from xoutil.objects import metaclass
 
 
@@ -43,8 +43,8 @@ class BaseFactory(object):
 
 class MapFactory(BaseFactory):
     def __call__(self, mapping):
-        from xoutil.compat import _unicode
-        return _unicode(mapping[self.key])
+        from xoutil.six import text_type
+        return text_type(mapping[self.key])
 
 
 class PyFactory(BaseFactory):
@@ -53,8 +53,8 @@ class PyFactory(BaseFactory):
                                         start, end)
 
     def __call__(self, mapping):
-        from xoutil.compat import _unicode
-        return _unicode(eval(self.key, mapping))
+        from xoutil.six import text_type
+        return text_type(eval(self.key, mapping))
 
 
 class InvalidFactory(object):
@@ -159,7 +159,7 @@ class Template(metaclass(_TemplateClass)):
         kwargs.update(mapping)    # Don't modify mapping if given
         res = self.template.__class__()
         for item in self.items:
-            if isinstance(item, str_base):
+            if isinstance(item, _str_base):
                 res += item
             else:
                 res += item(kwargs)
@@ -177,7 +177,7 @@ class Template(metaclass(_TemplateClass)):
         kwargs.update(mapping)    # Don't modify mapping if given
         res = self.template.__class__()
         for item in self.items:
-            if isinstance(item, str_base):
+            if isinstance(item, _str_base):
                 res += item
             else:
                 if item._unsafe:
@@ -190,8 +190,8 @@ class Template(metaclass(_TemplateClass)):
         return res
 
     def _append(self, item):
-        if (isinstance(item, str_base) and
-                self.items and isinstance(self.items[-1], str_base)):
+        if (isinstance(item, _str_base) and
+                self.items and isinstance(self.items[-1], _str_base)):
             self.items[-1] += item
         else:
             self.items.append(item)

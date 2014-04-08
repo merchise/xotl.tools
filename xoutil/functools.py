@@ -30,7 +30,11 @@ from xoutil.names import strlist as strs
 __all__ = strs('ctuple', 'compose', 'power', 'lru_cache')
 del _pm, _copy_python_module_members, strs
 
-from xoutil.compat import py33, callable
+import sys
+py33 = sys.version_info >= (3, 3, 0)
+del sys
+
+from xoutil.six import callable
 
 
 class ctuple(tuple):

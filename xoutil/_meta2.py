@@ -20,8 +20,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.compat import py3k
-assert not py3k, 'This module should not be loaded in Py3k'
+from xoutil.six import PY3
+assert not PY3, 'This module should not be loaded in Py3k'
 
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__ = "Mon Apr 29 15:34:11 2013"
