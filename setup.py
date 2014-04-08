@@ -17,18 +17,19 @@ else:
 
 setup(name=project_name,
       version=version,
-      description="Collection of usefull algorithms and other very disparate "
-                  "stuff",
+      description=("Collection of usefull algorithms and other very "
+                   "disparate stuff"),
       long_description=open(
           os.path.join(_current_dir, 'docs', 'readme.txt')).read(),
       classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-            dev_classifier,
-            'Intended Audience :: Developers',
-            'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-            'Operating System :: OS Independent',
-            'Programming Language :: Python',
-        ],
+          dev_classifier,
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 3',
+      ],
       keywords='',
       author='Medardo Rodríguez',
       author_email='merchise.h8@gmail.com',
