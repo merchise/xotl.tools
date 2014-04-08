@@ -24,7 +24,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.compat import py3k as _py3k, callable
+from xoutil.six import PY3 as _py3k, callable
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as slist
@@ -54,12 +54,12 @@ def smart_getter(obj, strict=False):
     '''Returns a smart getter for `obj`.
 
     If obj is Mapping, it returns the ``.get()`` method bound to the object
-    `obj`. Otherwise it returns a partial of `getattr` on `obj` with default
+    `obj`.  Otherwise it returns a partial of `getattr` on `obj` with default
     set to None (if `strict` is False).
 
-    :param strict:  Set this to True so that the returned getter checks that
-                    keys/attrs exists.  If `strict` is True the getter may
-                    raise KeyError or AttributeError.
+    :param strict: Set this to True so that the returned getter checks that
+                   keys/attrs exists.  If `strict` is True the getter may
+                   raise a KeyError or an AttributeError.
 
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
@@ -453,7 +453,7 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from xoutil.compat import map
+        from xoutil.six.moves import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val
@@ -622,7 +622,7 @@ class lazy(object):
         self.kwargs = kwargs
 
     def __call__(self):
-        from xoutil.compat import callable
+        from xoutil.six import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -730,7 +730,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
 
     '''
     from xoutil.fs import _get_regex
-    from xoutil.compat import str_base, iteritems_
+    from xoutil.six import string_types as str_base, iteritems as iteritems_
     # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
     #       isn't correct to depend on it. Migrate part of "_get_regex" to a
     #       module that can be imported logically without problems from both,
@@ -826,7 +826,7 @@ def smart_copy(*args, **kwargs):
 
     '''
     from collections import Mapping, MutableMapping
-    from xoutil.compat import callable, str_base
+    from xoutil.six import callable, string_types as str_base
     from xoutil.types import FunctionType as function
     from xoutil.types import is_collection, Required
     from xoutil.types import DictProxyType
@@ -896,21 +896,28 @@ def smart_copy(*args, **kwargs):
 
 
 def extract_attrs(obj, *names, **kwargs):
-    '''Returns a tuple of the `names` from an object.
+    '''Extracts all `names` from an object.
 
     If `obj` is a Mapping, the names will be search in the keys of the `obj`;
     otherwise the names are considered regular attribute names.
 
-    If `default` is Unset and one attribute is not found an AttributeError (or
-    KeyError) is raised, otherwise the `default` is used instead.
+    If `default` is Unset and any name is not found, an AttributeError is
+    raised, otherwise the `default` is used instead.
+
+    Returns a tuple if there are more that one name, otherwise returns a
+    single value.
 
     .. versionadded:: 1.4.0
 
+    .. versionchanged:: 1.5.3 Each `name` may be a path like in
+       `get_traverser`:func:, but only "." is allowed as separator.
+
     '''
-    # TODO: Delete next:
-    # from xoutil.objects import smart_getter
-    get = smart_getter(obj)
-    return tuple(get(attr, **kwargs) for attr in names)
+    default = kwargs.pop('default', Unset)
+    if kwargs:
+        raise TypeError('Invalid keyword arguments for `extract_attrs`')
+    getter = get_traverser(*names, default=default)
+    return getter(obj)
 
 
 if _py3k:
@@ -1086,7 +1093,6 @@ def get_traverser(*paths, **kw):
     return result
 
 
-
 def dict_merge(*dicts, **others):
 
     '''Merges several dicts into a single one.
@@ -1112,7 +1118,7 @@ def dict_merge(*dicts, **others):
 
     '''
     from collections import Mapping, Sequence, Set
-    from xoutil.compat import iteritems_
+    from xoutil.six import iteritems as iteritems_
     from xoutil.objects import get_first_of
     from xoutil.types import are_instances, no_instances
     if others:

@@ -21,7 +21,7 @@ import types
 import warnings
 
 from functools import wraps
-from xoutil.compat import class_types as _class_types
+from xoutil.six import class_types as _class_types
 
 __docstring_format__ = 'rst'
 __author__ = 'manu'
@@ -35,7 +35,7 @@ class DeprecationError(Exception):
     pass
 
 
-# WARNING!!! Don't make deprecated depends upon anything more than compat.
+# WARNING!!! Don't make deprecated depends upon anything more than six.
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                removed_in_version=None, check_version=False):
     '''Small decorator for deprecated functions.
@@ -79,7 +79,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
 
     def raise_if_deprecated(target, target_version):
         import pkg_resources
-        from xoutil.compat import str_base
+        from xoutil.six import string_types
         pkg = nameof(target, inner=True, typed=True, full=True)
         pkg, _obj = pkg.rsplit('.', 1)
         dist = None
@@ -93,7 +93,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                 else:
                     pkg, _obj = None, None
         assert dist
-        if isinstance(target_version, str_base):
+        if isinstance(target_version, string_types):
             target_version = pkg_resources.parse_version(target_version)
         if dist.parsed_version >= target_version:
             msg = ('A deprecated feature %r was scheduled to be '
@@ -129,7 +129,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             # done so because this module *must* not depends on any other,
             # otherwise an import cycle might be formed when deprecating a
             # class in xoutil.objects.
-            from xoutil.compat import iteritems_
+            from xoutil.six import iteritems as iteritems_
             from xoutil.types import MemberDescriptorType
             meta = type(target)
             attrs = {name: value

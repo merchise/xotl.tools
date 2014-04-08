@@ -67,8 +67,13 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-from xoutil.compat import inspect_getfullargspec as getfullargspec
-from xoutil.compat import str_base as _str_base
+from xoutil.six import string_types as _str_base, PY3 as _PY3
+
+
+if _PY3:
+    from inspect import getfullargspec as _getfullargspec
+else:
+    from inspect import getargspec as _getfullargspec
 
 
 from xoutil.names import strlist as strs
@@ -97,7 +102,7 @@ class FunctionMaker(object):
             self.doc = func.__doc__
             self.module = func.__module__
             if inspect.isfunction(func):
-                argspec = getfullargspec(func)
+                argspec = _getfullargspec(func)
                 for a in ('args', 'varargs', 'varkw', 'defaults', 'kwonlyargs',
                           'kwonlydefaults', 'annotations'):
                     setattr(self, a, getattr(argspec, a, None))
@@ -303,12 +308,12 @@ def decorator(caller):
         >>> def p():
         ...    print('This is p!!!')
 
-        >>> @plus2(p)
+        >>> @plus2(p)   # doctest: +ELLIPSIS
         ... def dummy():
         ...    print('This is dummy')
         Traceback (most recent call last):
             ...
-        TypeError: p() takes no arguments (1 given)
+        TypeError: p() takes ...
 
     The workaround for this case is to use a keyword argument.
     '''

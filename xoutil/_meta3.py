@@ -20,11 +20,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.compat import py3k
-assert py3k, 'This module should be loaded in Py3k only'
-
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__ = "Mon Apr 29 15:34:11 2013"
+from xoutil.six import PY3
+assert PY3, 'This module should be loaded in Py3k only'
 
 
 def metaclass(meta):

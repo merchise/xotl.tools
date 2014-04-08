@@ -70,7 +70,7 @@ def command_name(cls):
     Unset = object()
     res = getattr(cls, 'command_cli_name', Unset)
     if res is not Unset:
-        from xoutil.compat import str_base as text_type
+        from xoutil.six import text_type
         if not isinstance(res, text_type):
             raise TypeError("Attribute 'command_cli_name' must be a string.")
     else:

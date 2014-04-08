@@ -152,8 +152,8 @@ class Command(metaclass(ABCMeta)):
         '''
         if cls is Command:
             if cmd is not None:
-                from xoutil.compat import str_base
-                name = cmd if isinstance(cmd, str_base) else command_name(cmd)
+                from xoutil.six import string_types as text
+                name = cmd if isinstance(cmd, text) else command_name(cmd)
             else:
                 raise ValueError('missing command specification!')
         else:

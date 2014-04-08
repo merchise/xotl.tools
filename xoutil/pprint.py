@@ -31,9 +31,6 @@ __all__ = strs('ppformat', *getattr(_pm, '__all__', dir(_pm)))
 del strs
 del _pm, _copy_members
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon May  6 14:45:46 2013"
-
 
 def ppformat(obj):
     '''Just like :func:`pprint` but always returns the result instead of
@@ -44,15 +41,15 @@ def ppformat(obj):
 
     '''
     import io
-    from xoutil.compat import py3k, _unicode
-    if py3k:
+    from xoutil.six import PY3, text_type
+    if PY3:
         stream = io.StringIO()
     else:
         stream = io.BytesIO()
     pprint(obj, stream=stream)
     stream.seek(0)
     res = stream.read()
-    if isinstance(res, _unicode):
+    if isinstance(res, text_type):
         return res
     else:
         from xoutil.string import safe_decode

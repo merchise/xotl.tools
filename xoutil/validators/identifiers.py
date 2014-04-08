@@ -25,7 +25,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 from re import compile as _regex_compile
-from ..compat import str_base
+from xoutil.six import string_types
 
 
 from xoutil.names import strlist as strs
@@ -47,7 +47,7 @@ def is_valid_identifier(name):
               to keep things working the same in Python 2 and 3.
 
     '''
-    return isinstance(name, str_base) and _IDENTIFIER_REGEX.match(name)
+    return isinstance(name, string_types) and _IDENTIFIER_REGEX.match(name)
 
 
 _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
@@ -58,7 +58,8 @@ def is_valid_full_identifier(name):
 
     See :func:`is_valid_identifier` for what "validity" means.
     '''
-    return isinstance(name, str_base) and _FULL_IDENTIFIER_REGEX.match(name)
+    return isinstance(name, string_types) \
+        and _FULL_IDENTIFIER_REGEX.match(name)
 
 
 _PUBLIC_IDENTIFIER_REGEX = _regex_compile('(?i)^[a-z][\w]*$')
@@ -73,11 +74,12 @@ def is_valid_public_identifier(name):
     See :func:`is_valid_identifier` for what "validity" means.
 
     '''
-    return isinstance(name, str_base) and _PUBLIC_IDENTIFIER_REGEX.match(name)
+    return isinstance(name, string_types) \
+        and _PUBLIC_IDENTIFIER_REGEX.match(name)
 
 
 _SLUG_REGEX = _regex_compile('(?i)^[\w]+([-][\w]+)*$')
 
 
 def is_valid_slug(slug):
-    return isinstance(slug, str_base) and _SLUG_REGEX.match(slug)
+    return isinstance(slug, string_types) and _SLUG_REGEX.match(slug)
