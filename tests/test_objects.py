@@ -173,7 +173,7 @@ def test_new_style_metaclass_registration():
     class Spam(Base, metaclass(SubType)):
         'Like "Egg" but it will be registered twice in Python 2.x.'
 
-    if sys.version_info < (3, 0):
+    if sys.version_info < (3, 2):
         assert len(BaseMeta.classes) == 4  # Called twice in Python 2
     else:
         assert len(BaseMeta.classes) == 3  # Properly called once in Python 3
@@ -337,3 +337,26 @@ def test_smart_getter():
     with pytest.raises(KeyError):
         assert getter('key3') is None
     assert getter('key3', None) is None
+
+
+def test_extract_attrs():
+    from xoutil.objects import extract_attrs
+    d = dict(a=(1,), b=2, c=3, x=4)
+    assert extract_attrs(d, 'a') == (1,)
+    assert extract_attrs(d, 'a', 'b', 'c', 'x') == ((1,), 2, 3, 4)
+
+    with pytest.raises(AttributeError):
+        assert extract_attrs(d, 'y')
+    assert extract_attrs(d, 'y', default=None) is None
+
+    class new(object):
+        def __init__(self, **kw):
+            self.__dict__.update(kw)
+
+    d = new(a=(1,), b=2, c=3, x=4)
+    assert extract_attrs(d, 'a') == (1,)
+    assert extract_attrs(d, 'a', 'b', 'c', 'x') == ((1,), 2, 3, 4)
+
+    with pytest.raises(AttributeError):
+        assert extract_attrs(d, 'y')
+    assert extract_attrs(d, 'y', default=None) is None

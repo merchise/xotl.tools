@@ -24,7 +24,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.six import PY3 as _py3k
+from xoutil.six import PY3 as _py3k, callable
 from xoutil.deprecation import deprecated
 
 from xoutil.names import strlist as slist
@@ -54,12 +54,12 @@ def smart_getter(obj, strict=False):
     '''Returns a smart getter for `obj`.
 
     If obj is Mapping, it returns the ``.get()`` method bound to the object
-    `obj`. Otherwise it returns a partial of `getattr` on `obj` with default
+    `obj`.  Otherwise it returns a partial of `getattr` on `obj` with default
     set to None (if `strict` is False).
 
-    :param strict:  Set this to True so that the returned getter checks that
-                    keys/attrs exists.  If `strict` is True the getter may
-                    raise KeyError or AttributeError.
+    :param strict: Set this to True so that the returned getter checks that
+                   keys/attrs exists.  If `strict` is True the getter may
+                   raise a KeyError or an AttributeError.
 
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
@@ -896,21 +896,28 @@ def smart_copy(*args, **kwargs):
 
 
 def extract_attrs(obj, *names, **kwargs):
-    '''Returns a tuple of the `names` from an object.
+    '''Extracts all `names` from an object.
 
     If `obj` is a Mapping, the names will be search in the keys of the `obj`;
     otherwise the names are considered regular attribute names.
 
-    If `default` is Unset and one attribute is not found an AttributeError (or
-    KeyError) is raised, otherwise the `default` is used instead.
+    If `default` is Unset and any name is not found, an AttributeError is
+    raised, otherwise the `default` is used instead.
+
+    Returns a tuple if there are more that one name, otherwise returns a
+    single value.
 
     .. versionadded:: 1.4.0
 
+    .. versionchanged:: 1.5.3 Each `name` may be a path like in
+       `get_traverser`:func:, but only "." is allowed as separator.
+
     '''
-    # TODO: Delete next:
-    # from xoutil.objects import smart_getter
-    get = smart_getter(obj)
-    return tuple(get(attr, **kwargs) for attr in names)
+    default = kwargs.pop('default', Unset)
+    if kwargs:
+        raise TypeError('Invalid keyword arguments for `extract_attrs`')
+    getter = get_traverser(*names, default=default)
+    return getter(obj)
 
 
 if _py3k:
@@ -950,7 +957,7 @@ metaclass.__doc__ = '''Defines the metaclass of a class using a py3k-looking
 
        You should always place your metaclass declaration *first* in the list
        of bases. Doing otherwise triggers *twice* the metaclass' constructors
-       in Python 2.7.
+       in Python 3.1 or less.
 
        If your metaclass has some non-idempotent side-effect (such as
        registration of classes), then this would lead to unwanted double
@@ -1084,7 +1091,6 @@ def get_traverser(*paths, **kw):
     else:
         raise TypeError('"get_traverser" requires at least a path')
     return result
-
 
 
 def dict_merge(*dicts, **others):

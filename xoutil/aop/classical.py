@@ -37,7 +37,7 @@ import types
 from functools import wraps as _wraps, partial
 
 from xoutil import Unset
-from xoutil.six import PY3 as _py3
+from xoutil.six import PY3 as _py3, callable
 from xoutil.deprecation import deprecated as _deprecated
 from xoutil.names import strlist as strs
 

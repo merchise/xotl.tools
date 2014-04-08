@@ -10,21 +10,29 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-from xoutil.compat import py32
+import sys
 
-
-if py32:
+if sys.version_info >= (3, 2, 0):
     from reprlib import Repr, repr, recursive_repr, __all__
 else:
     # Don't use name list here to avoid module recursive use
     __all__ = (str("Repr"), str("repr"), str("recursive_repr"))
 
-    import __builtin__ as builtins
+    if sys.version_info <= (3, 1, 0):
+        import __builtin__ as builtins
+    else:
+        import builtins
     from itertools import islice
-    try:
-        from thread import get_ident
-    except ImportError:
-        from dummy_thread import get_ident
+    if sys.version_info >= (3, 0):
+        try:
+            from _thread import get_ident
+        except ImportError:
+            from _dummy_thread import get_ident
+    else:
+        try:
+            from thread import get_ident
+        except ImportError:
+            from dummy_thread import get_ident
 
     def recursive_repr(fillvalue='...'):
         '''Decorator to make a repr function return ``fillvalue`` for a recursive

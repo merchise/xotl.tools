@@ -4,6 +4,17 @@ Changelog
 1.5 series
 ----------
 
+Unreleased. Release 1.5.4
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.5.4.rst
+
+
+2014-04-01. Release 1.5.3
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.5.3.rst
+
 2014-03-03. Release 1.5.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
