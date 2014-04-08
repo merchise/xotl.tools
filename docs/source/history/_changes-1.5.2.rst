@@ -11,7 +11,3 @@
   aliases).
 
 - New module :mod:`xoutil.textwrap`.
-
-- `xoutil` contains now a copy of the excellent project `six`_ exported as
-  ``xoutil.six`` (not documented here).  Thus the compatibility module
-  ``xoutil.compat`` is now deprecated and will removed in the future.
