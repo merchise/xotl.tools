@@ -23,3 +23,26 @@ __author__ = 'manu'
 def test_NoneType_exists():
     from xoutil.types import NoneType
     assert NoneType is type(None)
+
+
+def test_iscollection():
+    from xoutil.types import is_collection
+    from xoutil.six.moves import range
+    from xoutil.collections import UserList, UserDict
+    assert is_collection('all strings are iterable') is False
+    assert is_collection(1) is False
+    assert is_collection(range(1)) is True
+    assert is_collection({}) is False
+    assert is_collection(tuple()) is True
+    assert is_collection(set()) is True
+    assert is_collection(a for a in range(100)) is True
+
+    class Foobar(UserList):
+        pass
+
+    assert is_collection(Foobar()) is True
+
+    class Foobar(UserDict):
+        pass
+
+    assert is_collection(Foobar()) is False

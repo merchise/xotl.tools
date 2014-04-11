@@ -141,9 +141,9 @@ def is_iterable(maybe):
 
 
 def is_collection(maybe):
-    '''
-    Test `maybe` to see if it is a tuple, a list, a set or a generator
+    '''Test `maybe` to see if it is a tuple, a list, a set or a generator
     function.
+
     It returns False for dictionaries and strings::
 
         >>> is_collection('all strings are iterable')
@@ -167,10 +167,15 @@ def is_collection(maybe):
 
         >>> is_collection(a for a in xrange_(100))
         True
+
+    .. versionchanged:: 1.5.5 UserList are collections.
+
     '''
+    from xoutil.collections import UserList
+    from xoutil.six import string_types
     from xoutil.six.moves import range
     return isinstance(maybe, (tuple, range, list, set, frozenset,
-                              GeneratorType))
+                              GeneratorType, UserList))
 
 
 def is_string_like(maybe):
