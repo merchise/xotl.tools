@@ -386,28 +386,6 @@ class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
     def __delitem__(self, key):
         del self.__stack[key]
 
-
-class OrderedSmartDict(SmartDictMixin, OrderedDict):
-    '''A combination of the the OrderedDict with the
-    :class:`SmartDictMixin`.
-
-    .. warning:: Initializing with kwargs does not ensure any initial ordering,
-                 since Python's keyword dict is not ordered. Use a list/tuple
-                 of pairs instead.
-
-    '''
-    def __init__(self, *args, **kwds):
-        '''Initialize an ordered dictionary.
-
-        The signature is the same as regular dictionaries, but keyword
-        arguments are not recommended because their insertion order is
-        arbitrary.
-
-        '''
-        super(OrderedSmartDict, self).__init__()
-        self.update(*args, **kwds)
-
-
 if not _py33:
     # From this point below: Copyright (c) 2001-2013, Python Software
     # Foundation; All rights reserved.
@@ -1360,6 +1338,29 @@ if not _py33:
                 if other_count < count:
                     self[elem] = other_count
             return self._keep_positive()
+
+### ;; end of Python 3.3 backport
+
+
+class OrderedSmartDict(SmartDictMixin, OrderedDict):
+    '''A combination of the the OrderedDict with the
+    :class:`SmartDictMixin`.
+
+    .. warning:: Initializing with kwargs does not ensure any initial ordering,
+                 since Python's keyword dict is not ordered. Use a list/tuple
+                 of pairs instead.
+
+    '''
+    def __init__(self, *args, **kwds):
+        '''Initialize an ordered dictionary.
+
+        The signature is the same as regular dictionaries, but keyword
+        arguments are not recommended because their insertion order is
+        arbitrary.
+
+        '''
+        super(OrderedSmartDict, self).__init__()
+        self.update(*args, **kwds)
 
 # get rid of unused global variables
 del slist
