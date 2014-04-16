@@ -50,6 +50,7 @@ from xoutil.names import strlist as slist
 
 import sys
 _py33 = sys.version_info >= (3, 3, 0)
+_py34 = sys.version_info >= (3, 4, 0)
 del sys
 
 
@@ -621,6 +622,7 @@ if not _py33:
             return dict.__eq__(self, other)
 
 
+if not _py34:
     class ChainMap(MutableMapping):
         '''A ChainMap groups multiple dicts (or other mappings) together
         to create a single, updateable view.
@@ -684,9 +686,15 @@ if not _py33:
 
         __copy__ = copy
 
-        def new_child(self):
-            'New ChainMap with a new dict followed by all previous maps.'
-            return self.__class__({}, *self.maps)
+        def new_child(self, m=None):
+            '''New ChainMap with a new map followed by all previous maps.
+
+            If no map is provided, an empty dict is used.
+
+            '''
+            if m is None:
+                m = {}
+            return self.__class__(m, *self.maps)
 
         @property
         def parents(self):
@@ -727,6 +735,7 @@ if not _py33:
             self.maps[0].clear()
 
 
+if not _py33:
     class UserDict(MutableMapping):
         # Start by filling-out the abstract methods
         def __init__(self, dict=None, **kwargs):
@@ -1363,4 +1372,4 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         self.update(*args, **kwds)
 
 # get rid of unused global variables
-del slist
+del slist, _py33, _py34
