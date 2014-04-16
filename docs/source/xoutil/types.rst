@@ -28,6 +28,14 @@
 
 .. autofunction:: no_instances(*subjects, types)
 
+.. autofunction:: new_class
+
+   .. versionadded:: 1.5.5
+
+.. autofunction:: prepare_class
+
+   .. versionadded:: 1.5.5
+
 .. autoclass:: UnsetType
 
 .. autoclass:: DictProxyType
@@ -37,6 +45,7 @@
 .. autoclass:: Required
 
 .. autoclass:: mro_dict
+
 
 .. _types-140-refactor:
 

@@ -30,24 +30,38 @@ __date__ = "Mon Apr 29 15:34:11 2013"
 METACLASS_ATTR = str('__metaclass__')
 
 
-def metaclass(meta):
+def metaclass(meta, **kwargs):
     class base(object):
         pass
 
     class inner_meta(meta.__base__):
         def __new__(cls, name, bases, attrs):
+            from copy import copy
             if name != '__inner__':
                 bases = tuple(b for b in bases if not issubclass(b, base))
                 if not bases:
                     bases = (object,)
-                if METACLASS_ATTR in attrs:
+                from xoutil.types import prepare_class
+                kwds = dict(kwargs, metaclass=meta)
+                basemeta, _ns, kwds = prepare_class(name, bases, kwds=kwds)
+                ns = copy(_ns)
+                update = getattr(ns, 'update', None)
+                if update:
+                    update(attrs)
+                else:
+                    for attr, val in attrs.items():
+                        ns[attr] = val
+                if METACLASS_ATTR not in attrs:
                     attrs[METACLASS_ATTR] = meta
-                return meta(name, bases, attrs)
+                return basemeta(name, bases, ns)
             else:
                 return type.__new__(cls, name, bases, attrs)
 
+    from xoutil.types import new_class
+    kwds = dict(kwargs, metaclass=inner_meta)
 
-    class __inner__(base):
-        __metaclass__ = inner_meta
+    def exec_body(ns):
+        return ns
 
-    return __inner__
+    return new_class(str('__inner__'), (base, ), kwds=kwds,
+                     exec_body=exec_body)
