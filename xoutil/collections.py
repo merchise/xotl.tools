@@ -34,9 +34,13 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _absolute_import)
 
-
+import sys
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
+
+if sys.version_info >= (3, 3):
+    _copy_python_module_members('collections.abc')
+del sys
 
 namedtuple = _pm.namedtuple
 MutableMapping = _pm.MutableMapping
