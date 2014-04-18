@@ -399,3 +399,8 @@ class SimpleNamespaceTests(unittest.TestCase):
             ns_roundtrip = pickle.loads(ns_pickled)
 
             self.assertEqual(ns, ns_roundtrip, pname)
+
+
+class TestDynamicClassAttribute(unittest.TestCase):
+    def test_isimportable(self):
+        from xoutil.types import DynamicClassAttribute
