@@ -147,6 +147,25 @@ if sys.version_info < (3, 3):
             del self._mapping[key]
 
 
+if sys.version_info < (3, 4):
+    class SimpleNamespace(object):
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+        def __eq__(self, other):
+            return self.__dict__ == other.__dict__
+
+        from xoutil.reprlib import recursive_repr
+
+        @recursive_repr(str('namespace(...)'))
+        def __repr__(self):
+            keys = sorted(self.__dict__)
+            items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
+            return "{}({})".format('namespace', ", ".join(items))
+
+
+
+
 # TODO: Many of is_*method methods here are needed to be compared agains
 # the standard lib's module inspect versions. If they behave the same,
 # these should be deprecated in favor of the standards.
