@@ -14,3 +14,7 @@
 - Now `xoutil.objects.metaclass`:func: supports the ``__prepare__``
   classmethod of metaclasses.  This is fully supported in Python 3.0+ and
   partially mocked in Python 2.7.
+
+- Backported :class:`xoutil.types.MappingProxyType` from Python 3.3.
+
+- Backported :class:`xoutil.types.SimpleNamespace` from Python 3.4.
