@@ -46,6 +46,17 @@
 
 .. autoclass:: mro_dict
 
+.. class:: MappingProxyType
+
+   .. versionadded: 1.5.5
+
+   Read-only proxy of a mapping. It provides a dynamic view on the mapping’s
+   entries, which means that when the mapping changes, the view reflects these
+   changes.
+
+   .. note:: In Python 3.3+ this is an alias for
+      :class:`types.MappingProxyType` in the standard library.
+
 
 .. _types-140-refactor:
 
