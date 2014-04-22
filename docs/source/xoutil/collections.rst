@@ -83,4 +83,4 @@ We have backported several Python 3.3 features but not all.
       equivalent to: ``ChainMap(*d.maps[1:])``.
 
 
-   .. note:: Backported from Python 3.3.  In Python 3.3 this is an alias.
+   .. note:: Backported from Python 3.4.  In Python 3.4 this is an alias.

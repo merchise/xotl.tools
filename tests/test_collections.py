@@ -707,6 +707,24 @@ class TestOrderedDict(unittest.TestCase):
         self.assertEqual(list(MyOD(items).items()), items)
 
 
+def test_abcs():
+    from xoutil.collections import Container
+    from xoutil.collections import Iterable
+    from xoutil.collections import Iterator
+    from xoutil.collections import Sized
+    from xoutil.collections import Callable
+    from xoutil.collections import Sequence
+    from xoutil.collections import MutableSequence
+    from xoutil.collections import Set
+    from xoutil.collections import MutableSet
+    from xoutil.collections import Mapping
+    from xoutil.collections import MutableMapping
+    from xoutil.collections import MappingView
+    from xoutil.collections import ItemsView
+    from xoutil.collections import KeysView
+    from xoutil.collections import ValuesView
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main(verbosity=2)

@@ -46,6 +46,47 @@
 
 .. autoclass:: mro_dict
 
+.. class:: MappingProxyType
+
+   .. versionadded:: 1.5.5
+
+   Read-only proxy of a mapping. It provides a dynamic view on the mapping’s
+   entries, which means that when the mapping changes, the view reflects these
+   changes.
+
+   .. note:: In Python 3.3+ this is an alias for
+      :class:`types.MappingProxyType` in the standard library.
+
+
+.. class:: SimpleNamespace
+
+   .. versionadded:: 1.5.5
+
+   A simple :class:`object` subclass that provides attribute access to its
+   namespace, as well as a meaningful repr.
+
+   Unlike :class:`object`, with ``SimpleNamespace`` you can add and remove
+   attributes.  If a ``SimpleNamespace`` object is initialized with keyword
+   arguments, those are directly added to the underlying namespace.
+
+   The type is roughly equivalent to the following code::
+
+       class SimpleNamespace(object):
+           def __init__(self, **kwargs):
+               self.__dict__.update(kwargs)
+           def __repr__(self):
+               keys = sorted(self.__dict__)
+               items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
+               return "{}({})".format(type(self).__name__, ", ".join(items))
+           def __eq__(self, other):
+               return self.__dict__ == other.__dict__
+
+   ``SimpleNamespace`` may be useful as a replacement for ``class NS: pass``.
+   However, for a structured record type use :func:`~collections.namedtuple`
+   instead.
+
+   .. note:: In Python 3.4+ this is an alias to
+             :class:`types.SimpleNamespace`.
 
 .. _types-140-refactor:
 

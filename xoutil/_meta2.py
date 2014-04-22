@@ -31,6 +31,13 @@ METACLASS_ATTR = str('__metaclass__')
 
 
 def metaclass(meta, **kwargs):
+    prepare = getattr(meta, '__prepare__', None)
+    if prepare:
+        import warnings
+        warnings.warn('Python 2.7 does not have the __prepare__ stuff and '
+                      'the metaclass "%s" seems to needs it.' % meta,
+                      stacklevel=2)
+
     class base(object):
         pass
 
