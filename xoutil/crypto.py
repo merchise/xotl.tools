@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.security
+# xoutil.crypto
 #----------------------------------------------------------------------
 # Copyright (c) 2014 Merchise Autrement
 # All rights reserved.
