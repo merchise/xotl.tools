@@ -106,6 +106,22 @@ def fake_dict_iteritems(source):
         yield key, source[key]
 
 
+def delete_duplicates(seq):
+    '''Remove all duplicate elements from SEQ (destructively).
+
+    It will function with lists, tuples and strings.
+
+    '''
+    i, done = 0, set()
+    while i < len(seq):
+        if seq[i] not in done:
+            done.add(seq[i])
+            i += 1
+        else:
+            seq = seq[:i] + seq[i+1:]
+    return seq
+
+
 def slides(iterable, width=2, fill=None):
     '''Creates a sliding window of a given `width` over an iterable::
 
