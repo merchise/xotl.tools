@@ -255,12 +255,14 @@ def normalize_str(value):
     return sep.join(names)
 
 
-def normalize_slug(value, unwanted_replacement='-'):
+def normalize_slug(value, unwanted_replacement='-', invalid_underscore=False):
     '''Return the string normal form for the :param:`value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization form or replace by :param:`unwanted_replacement` in cases
     where unwanted characters for slugs are found.
+
+    If :param:`invalid_underscore` is True, '_' is not allowed in result.
 
     This function converts any type to a valid string.  For example::
 
@@ -282,12 +284,20 @@ def normalize_slug(value, unwanted_replacement='-'):
         value = safe_decode(value)
     res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     res = safe_decode(res.lower())
-    regex = r'[^-_a-z0-9]+'
+    regex = r'[^_a-z0-9]+'
+    if invalid_underscore:
+        regex = regex.replace(r'_', r'')
     if unwanted_replacement:
         regex = r'(%s|%s{2,})' % (regex, unwanted_replacement)
     regex = _regex_compile(regex)
     res = regex.sub(unwanted_replacement, res)
-    return res.strip(unwanted_replacement)
+    if unwanted_replacement:
+        sgl = unwanted_replacement
+        dbl = sgl + sgl
+        res = res.strip(sgl)
+        while dbl in res:
+            res = res.replace(dbl, sgl)
+    return res
 
 
 def strfnumber(number, format_spec='%0.2f'):
