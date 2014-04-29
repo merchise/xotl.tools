@@ -35,9 +35,6 @@ except:
 
 from xoutil.collections import defaultdict
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 class TestCollections(unittest.TestCase):
     def test_defaultdict(self):

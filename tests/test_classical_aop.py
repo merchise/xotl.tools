@@ -26,10 +26,6 @@ from xoutil.aop.classical import _weave_after_method, StopExceptionChain
 from xoutil.aop.extended import weave
 
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
-
 class TestClassicalAOP(unittest.TestCase):
     def setUp(self):
         class LoggerAspect(object):

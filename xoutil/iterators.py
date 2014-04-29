@@ -28,11 +28,6 @@ from xoutil.types import is_scalar
 from xoutil.deprecation import deprecated
 
 
-__docstring_format__ = 'rst'
-__version__ = '0.1.0'
-__author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
-
-
 def first_non_null(iterable, default=None):
     '''Returns the first value from iterable which is non-null.
 

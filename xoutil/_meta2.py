@@ -23,9 +23,6 @@ from __future__ import (division as _py3_division,
 from xoutil.six import PY3
 assert not PY3, 'This module should not be loaded in Py3k'
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__ = "Mon Apr 29 15:34:11 2013"
-
 
 METACLASS_ATTR = str('__metaclass__')
 

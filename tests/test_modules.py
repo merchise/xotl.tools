@@ -21,9 +21,6 @@ import unittest
 
 from xoutil.modules import customize, modulemethod, moduleproperty
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Jan 28 19:32:00 2013"
-
 
 class TestModulesCustomization(unittest.TestCase):
     def setUp(self):

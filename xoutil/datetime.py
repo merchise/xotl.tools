@@ -47,10 +47,6 @@ from re import compile as _regex_compile
 from time import strftime as _time_strftime
 
 
-__docstring_format__ = 'rst'
-__author__ = 'med'
-
-
 #: Simple constants for .weekday() method
 class WEEKDAY:
     MONDAY = 0

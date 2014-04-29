@@ -35,9 +35,6 @@ __all__ = slist('smart_getter', 'smart_getter_and_deleter',
                 'extract_attrs')
 del slist
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 _INVALID_CLASS_TYPE_MSG = '``cls`` must be a class not an instance'
 

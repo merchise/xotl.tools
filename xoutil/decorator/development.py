@@ -23,9 +23,6 @@ from xoutil.names import nameof
 
 from .meta import decorator as _decorator
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__ = "Tue Jan  8 09:14:05 2013"
-
 
 @_decorator
 def unstable(target, msg=None):

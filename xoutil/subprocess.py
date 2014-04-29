@@ -30,9 +30,6 @@ __all__ = strs('call_and_check_output')
 __all__.extend(getattr(_pm, '__all__', dir(_pm)))
 del strs, _pm, _copy_members
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Fri Jan 11 10:28:59 2013"
-
 
 def call_and_check_output(*popenargs, **kwargs):
     '''Combines `call` and `check_output`. Returns a tuple ``(returncode,

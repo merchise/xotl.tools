@@ -25,9 +25,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 def echo(what):
     return what

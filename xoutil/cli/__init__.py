@@ -31,11 +31,6 @@ from xoutil.objects import metaclass, classproperty
 from .tools import command_name, program_name
 
 
-__docstring_format__ = 'rst'
-__author__ = 'med'
-
-
-
 class RegistryDescriptor(object):
     '''Define a mechanism to automatically obtain all registered commands.'''
 

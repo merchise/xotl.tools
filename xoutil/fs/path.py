@@ -37,10 +37,6 @@ __all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
 del strs
 
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
-
 # TODO: import all in "from os.path import *"
 
 rtrim = lambda path, n: pow_(dirname, n)(normalize_path(path))

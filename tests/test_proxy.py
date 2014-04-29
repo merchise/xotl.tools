@@ -25,9 +25,6 @@ import unittest
 from xoutil.context import context
 from xoutil.proxy import proxify, UNPROXIFING_CONTEXT, unboxed
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 class Foobar(object):
     def hi(self):

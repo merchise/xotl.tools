@@ -21,9 +21,6 @@ import random
 
 from xoutil.bases import B32, B64
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Mar 25 14:36:30 2013"
-
 
 def build_many_tests():
     def test_many_random_convertions(self):

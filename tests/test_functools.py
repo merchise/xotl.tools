@@ -25,9 +25,6 @@ from datetime import datetime, timedelta
 
 from xoutil.functools import lru_cache
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 @lru_cache(3)
 def fib(n):
