@@ -273,6 +273,25 @@ class SmartDictMixin(object):
         for key in kwargs:
             self[key] = kwargs[key]
 
+    def search(self, pattern):
+        '''Return new mapping with items which key match a `pattern` regexp.
+
+        This function always return a valid new mapping of the same type of
+        the caller instance.  If the constructor of corresponding type can't
+        be called without arguments, then return a standard Python dictionary.
+
+        '''
+        from re import compile
+        regexp = compile(pattern)
+        try:
+            res = type(self)()
+        except BaseException:
+            res = {}
+        for key in self:
+            if regexp.search(key):
+                res[key] = self[key]
+        return res
+
 
 class SmartDict(SmartDictMixin, dict):
     '''A "smart" dictionary that can receive a wide variety of arguments.
