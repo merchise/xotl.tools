@@ -43,3 +43,8 @@ def rien():
 @modulemethod
 def method(self, *args, **kwargs):
     return self, args, kwargs
+
+
+@modulemethod
+def selfish(self):
+    return self.selfish, selfish

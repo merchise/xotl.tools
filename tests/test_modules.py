@@ -98,3 +98,13 @@ def test_get_module_path_by_module_string_rel():
     from xoutil.modules import get_module_path
     with pytest.raises(TypeError):
         assert get_module_path('.iterators') == expected
+
+
+def test_object_stability():
+    import testbed
+    from testbed import selfish
+    a, b = testbed.selfish()
+    c, d = selfish()
+    e, f = testbed.selfish()
+    assert a == c == e
+    assert b == d == f
