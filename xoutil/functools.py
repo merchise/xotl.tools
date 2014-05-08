@@ -25,10 +25,7 @@ from __future__ import (division as _py3_division,
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 _pm_update_wrapper, wraps = _pm.update_wrapper, _pm.wraps
-
-from xoutil.names import strlist as strs
-__all__ = strs('ctuple', 'compose', 'power', 'lru_cache')
-del _pm, _copy_python_module_members, strs
+del _pm, _copy_python_module_members
 
 import sys
 py33 = sys.version_info >= (3, 3, 0)
