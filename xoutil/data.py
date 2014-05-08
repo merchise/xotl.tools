@@ -26,9 +26,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_absimports)
 
-import xoutil.collections
-from xoutil.deprecation import deprecated
-
 
 def adapt_exception(value, **kwargs):
     '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,
