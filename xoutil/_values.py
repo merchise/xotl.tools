@@ -24,8 +24,11 @@ __date__ = "Fri Apr 12 11:45:51 2013"
 
 
 class UnsetType(object):
-    '''The unique instance `Unset` is to be used as default value to be sure
-    `None` is returned in scenarios where `None` could be a valid value.
+    '''Instances are unique by name (singletons).
+
+    Special instance `Unset` is automatically created and intended to be used
+    as default value to be sure `None` is returned in scenarios it could be a
+    valid value.
 
     For example::
 
