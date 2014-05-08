@@ -33,7 +33,8 @@ try:
 except AttributeError:
     # This is copied from `/usr/lib/python3.3/inspect.py`
     import types
-    from xoutil import Unset as _sentinel  # In Py3 `_sentinel = object()`
+
+    _sentinel = object()
 
     def _static_getmro(klass):
         return type.__dict__['__mro__'].__get__(klass)
@@ -84,7 +85,7 @@ except AttributeError:
            that getattr can fetch (like dynamically created attributes)
            and may find attributes that getattr can't (like descriptors
            that raise AttributeError). It can also return descriptor objects
-           instead of instance members in some cases. See the
+           instead of instance members in some cases.  See the
            documentation for details.
         """
         instance_result = _sentinel
@@ -120,6 +121,34 @@ except AttributeError:
         if default is not _sentinel:
             return default
         raise AttributeError(attr)
+
+
+def _getattr(obj, name, *default):
+    '''Get a named attribute from an object in a safe way (similar to `getattr`
+    but without triggering dynamic look-up via the descriptor protocol,
+    `__getattr__` or `__getattribute__` by using ``getattr_static``.
+
+    '''
+    _false = object()
+    args = len(default)
+    if args in (0, 1):
+        from xoutil.inspect import getattr_static, isdatadescriptor
+        res = getattr_static(obj, name, _false)
+        if isdatadescriptor(res):
+            try:
+                res = res.__get__(obj, type(obj))
+            except AttributeError:
+                res = _false
+        if res is not _false:
+            return res
+        elif args == 1:
+            return default[0]
+        else:
+            msg = "'%s' object has no attribute '%s'"
+            raise AttributeError(msg % (type(obj).__name__, name))
+    else:
+        msg = "'_getattr' expected 2 or 3 arguments, got %s"
+        raise TypeError(msg % (args + 2))
 
 
 # get rid of unused global variables
