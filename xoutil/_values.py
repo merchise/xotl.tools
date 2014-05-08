@@ -37,21 +37,28 @@ class UnsetType(object):
 
     '''
     __slots__ = (str('name'), str('__name__'), )
+    __instances__ = {}
 
     def __new__(cls, name, **kwargs):
-        if kwargs.get('__singleton__', None) is UnsetType:
-            result = super(UnsetType, cls).__new__(cls)
-            result.__name__ = result.name = str(name)
+        klass = kwargs.pop('__singleton__', None)
+        if not kwargs and klass is UnsetType and cls is klass:
+            result = cls.__instances__.get(name)
+            if result is None:
+                result = super(UnsetType, cls).__new__(cls)
+                result.__name__ = result.name = str(name)
+                cls.__instances__[name] = result
             return result
         else:
             raise TypeError("cannot create 'UnsetType' instances")
 
     def __nonzero__(self):
         return False
+
     __bool__ = __nonzero__
 
     def __repr__(self):
         return self.name
+
     __str__ = __repr__
 
 
