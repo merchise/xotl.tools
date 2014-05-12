@@ -27,6 +27,12 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
+from .identifiers import (is_valid_identifier,
+                          is_valid_full_identifier,
+                          is_valid_public_identifier,
+                          is_valid_slug)
+
+
 def is_type(cls):
     '''Return a validator with the same name as the type given as argument
     `value`.
