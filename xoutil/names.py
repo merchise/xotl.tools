@@ -3,13 +3,13 @@
 #----------------------------------------------------------------------
 # xoutil.names
 #----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on 15 avr. 2013
+# Created 2013-04-15
 
 '''A protocol to obtain or manage object names.'''
 
@@ -19,8 +19,11 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 __docstring_format__ = 'rst'
-__author__ = 'med'
 
+
+from xoutil._values import UnsetType
+_false = UnsetType('names.false', __singleton__=UnsetType)
+del UnsetType
 
 try:
     str_base = basestring
@@ -28,14 +31,34 @@ except NameError:
     str_base = str
 
 
-def _key_for_value(target, value, strict=True):
-    '''Returns the key that has the "value" in dictionary "target".
+def _get_mappings(source):
+    '''Return a sequence of mappings from `source`.
+
+    Source could be a stack frame, a single dictionary, or any sequence of
+    dictionaries.
+
+    '''
+    from collections import Mapping
+    if isinstance(source, Mapping):
+        return (source,)
+    else:
+        from xoutil.inspect import _getattr
+        l = _getattr(source,  'f_locals', _false)
+        g = _getattr(source,  'f_globals', _false)
+        if isinstance(l, Mapping) and isinstance(g, Mapping):
+            return (l,) if l is g else (l, g)
+        else:
+            return tuple(source)
+
+
+def _key_for_value(source, value, strict=True):
+    '''Returns the key that has the "value" in dictionary "source".
 
     if strict is True, then look first for the same object::
-        >>> from functools import partial
         >>> x = {1}
         >>> y = {1}
-        >>> search = partial(_key_for_value, {'x': x, 'y': y})
+        >>> src = {'x': x, 'y': y}
+        >>> search = lambda o, strict=True: _key_for_value(src, o, strict)
         >>> search(x) == search(y)
         False
         >>> search(x, strict=False) == search(y, strict=False)
@@ -43,48 +66,116 @@ def _key_for_value(target, value, strict=True):
 
     This is mainly intended to find object names in stack frame variables.
 
+    Source could be a stack frame, a single dictionary, or any sequence of
+    dictionaries.
+
     '''
-    keys = list(target)     # Get keys
-    i, found, equal = 0, False, None
-    while (i < len(keys)) and not found:
-        key = keys[i]
-        item = target[key]
-        if item is value:
-            found = key
-        elif item == value:
-            if strict:
-                equal = key
-                i += 1
-            else:
+    source = _get_mappings(source)
+    found, equal = _false, None
+    i, mapping_count = 0, len(source)
+    while found is _false and (i < mapping_count):
+        mapping = source[i]
+        keys = list(mapping)
+        j, key_count = 0, len(keys)
+        while found is _false and (j < key_count):
+            key = keys[j]
+            item = mapping[key]
+            if item is value:
                 found = key
-        else:
-            i += 1
-    return found or equal
+            elif item == value:
+                if strict:
+                    equal = key
+                else:
+                    found = key
+            j += 1
+        i += 1
+    return found if found is not _false else equal
 
 
-def module_name(target):
-    if target is None:
-        target = ''
-    elif isinstance(target, str_base):
-        res = target
+def _get_value(source, key, default=None):
+    '''Returns the value for the given `key` in `source` mappings.
+
+    This is mainly intended to obtain object values in stack frame variables.
+
+    Source could be a stack frame, a single dictionary, or any sequence of
+    dictionaries.
+
+    '''
+    source = _get_mappings(source)
+    res = _false
+    i, mapping_count = 0, len(source)
+    while res is _false and (i < mapping_count):
+        mapping = source[i]
+        res = mapping.get(key, _false)
+        i += 1
+    return res if res is not _false else default
+
+
+def module_name(item):
+    '''Returns the module name where the given object is declared.
+
+    TODO: Declare doctests.
+
+    '''
+    from xoutil.inspect import _getattr
+    if item is None:
+        res = ''
+    elif isinstance(item, str_base):
+        res = item
     else:
-        res = getattr(target, '__module__', None)
+        res = _getattr(item, '__module__', None)
         if res is None:
-            res = getattr(type(target), '__module__', '')
+            res = _getattr(type(item), '__module__', '')
     if res.startswith('__') or (res in ('builtins', '<module>')):
         res = ''
     return str(res)
 
 
-def nameof(target, depth=1, inner=False, typed=False, full=False):
-    '''Gets the name of an object.
+def _get_best_name(names, start=0):
+    from xoutil.validators.identifiers import (is_valid_full_identifier,
+                                               is_valid_public_identifier,
+                                               is_valid_identifier,
+                                               is_valid_slug)
+    names = list(names)
+    i, count = start, len(names)
+    assert i < count, 'max start index is "%s"; "%s" given.' % (count, i)
+    last, best_idx, best_qlty = start, -1, 0
+    while i < count:
+        name = names[i]
+        if '%(next)s' in name:
+            names[i] = name % {'next': _get_best_name(names, i + 1)}
+            count = i + 1
+        else:
+            if is_valid_slug(name):
+                qlty = 25
+            if is_valid_identifier(name):
+                qlty = 75 if is_valid_public_identifier(name) else 50
+            elif is_valid_full_identifier(name):
+                qlty = 100
+            else:
+                qlty = -25
+            if best_qlty <= qlty:
+                best_idx = i
+                best_qlty = qlty
+            last = i
+            i += 1
+    idx = best_idx if best_idx >= 0 else last
+    return str(names[idx])
+
+
+def nameof(*args, **kwargs):
+    '''Obtain the name of each one of a set of objects.
 
     .. versionadded:: 1.4.0
 
+    If no object is given, None is returned; if only one object is given, a
+    single string is returned; otherwise a list of strings is returned.
 
     The name of an object is normally the variable name in the calling stack::
 
-        >>> from xoutil.collections import OrderedDict as sorted_dict
+        >>> class OrderedDict(dict): pass
+        >>> sorted_dict = OrderedDict
+        >>> del OrderedDict
         >>> nameof(sorted_dict)
         'sorted_dict'
 
@@ -94,7 +185,7 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> nameof(sorted_dict, inner=True)
         'OrderedDict'
 
-    If the `typed` flag is true, returns the name of the type unless `target`
+    If the `typed` flag is true, returns the name of the type unless `item`
     is already a type or it has a "__name__" attribute, but the "__name__" is
     used only if `inner` is True.
 
@@ -108,8 +199,8 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> nameof(sd, inner=True, typed=True)
         'OrderedDict'
 
-    If `target` is an instance of a simple type (strings or numbers) and
-    `inner` is true, then the name is the standard representation of `target`::
+    If `item` is an instance of a simple type (strings or numbers) and
+    `inner` is true, then the name is the standard representation of `item`::
 
         >>> s = 'foobar'
         >>> nameof(s)
@@ -128,7 +219,10 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> nameof(i, typed=True)
         'int'
 
-    If `target` isn't an instance of a simple type (strings or numbers) and
+        >>> nameof(i, sd)
+        ['i', 'sd']
+
+    If `item` isn't an instance of a simple type (strings or numbers) and
     `inner` is true, then the id of the object is used::
 
         >>> hex(id(sd)) in nameof(sd, inner=True)
@@ -143,67 +237,128 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> nameof(sd, typed=True, full=True)
         'xoutil.names.sorted_dict'
 
-        >>> nameof(sd, inner=True, typed=True, full=True)  # doctest: +ELLIPSIS
-        '...collections.OrderedDict'
+        >>> nameof(sd, inner=True, typed=True, full=True)
+        'xoutil.names.OrderedDict'
 
     :param depth: Amount of stack levels to skip if needed.
 
     '''
     from numbers import Number
+    from xoutil.inspect import _getattr
     TYPED_NAME = '__name__'
-    if typed and not hasattr(target, TYPED_NAME):
-        target = type(target)
-    if inner:
-        res = getattr(target, TYPED_NAME, False)
-        if res:
-            if full:
-                head = module_name(target)
-                if head:
-                    res = '.'.join((head, res))
-            return str(res)
-        elif isinstance(target, (str_base, Number)):
-            return str(target)
+    arg_count = len(args)
+    names = [[] for i in range(arg_count)]
+
+    class vars:
+        '`nonlocal` simulation'
+        params = kwargs
+        idx = 0
+
+    def grant(name=None, **again):
+        if name:
+            names[vars.idx].append(name)
+            assert len(names[vars.idx]) < 5
+        if again:
+            vars.params = dict(kwargs, **again)
         else:
-            type_name = nameof(target, inner=True, typed=True, full=full)
-            return str('@'.join((type_name, hex(id(target)))))
+            vars.params = kwargs
+            vars.idx += 1
+
+    def param(name, default=False):
+        return vars.params.get(name, default)
+
+    while vars.idx < arg_count:
+        item = args[vars.idx]
+        if param('typed') and not _getattr(item, TYPED_NAME, _false):
+            item = type(item)
+        if param('inner'):
+            res = _getattr(item, TYPED_NAME, _false)
+            if res:
+                if param('full'):
+                    head = module_name(item)
+                    if head:
+                        res = '.'.join((head, res))
+                grant(res)
+            elif isinstance(item, (str_base, Number)):
+                grant(str(item))
+            else:
+                grant('@'.join(('%(next)s', hex(id(item)))), typed=True)
+        else:
+            import sys
+            sf = sys._getframe(param('depth', 1))
+            try:
+                i, LIMIT, res = 0, 5, _false
+                while not res and sf and (i < LIMIT):
+                    key = _key_for_value(sf, item)
+                    if key and param('full'):
+                        head = _get_value(sf, '__name__')
+                        if not head:
+                            head = sf.f_code.co_name
+                        head = module_name(head)
+                        if not head:
+                            head = module_name(item) or None
+                    else:
+                        head = None
+                    if key:
+                        res = key
+                    else:
+                        sf = sf.f_back
+                        i += 1
+            finally:
+                # TODO: on "del sf" Python says "SyntaxError: can not delete
+                # variable 'sf' referenced in nested scope".
+                sf = None
+            if res:
+                grant('.'.join((head, res)) if head else res)
+            else:
+                res = _getattr(item, TYPED_NAME, _false)
+                if res:
+                    grant(res)
+                else:
+                    grant(None, inner=True)
+    for i in range(arg_count):
+        names[i] = _get_best_name(names[i])
+    if arg_count == 0:
+        return None
+    elif arg_count == 1:
+        return names[0]
     else:
-        import sys
-        sf = sys._getframe(depth)
-        try:
-            res = False
-            i, LIMIT = 0, 5   # Limit number of stack to recurse
-            def getter(src):
-                key = _key_for_value(l, target)
-                if key and full:
-                    head = src.get('__name__')
-                    if not head:
-                        head = sf.f_code.co_name
-                    head = module_name(head)
-                    if not head:
-                        head = module_name(target) or None
-                else:
-                    head = None
-                return key, head
-            while not res and sf and (i < LIMIT):
-                l = sf.f_locals
-                key, head = getter(l)
-                if not key:
-                    g = sf.f_globals
-                    if l is not g:
-                        key, head = getter(g)
-                if key:
-                    res = key
-                else:
-                    sf = sf.f_back
-                    i =+ 1
-        finally:
-            # TODO: on "del sf" Python says "SyntaxError: can not delete
-            # variable 'sf' referenced in nested scope".
-            sf = None
-        if res:
-            return str('.'.join((head, res)) if head else res)
-        else:
-            return nameof(target, depth=depth+1, inner=True, full=full)
+        return names
+
+
+def identifier_from(*args):
+    '''Build an valid identifier from the name extracted from an object.
+
+    .. versionadded:: 1.5.5
+
+    First, check if argument is a type and then returns the name of the type
+    prefixed with `_` if valid; otherwise calls `nameof` function repeatedly
+    until a valid identifier is found using the following order logic:
+    ``inner=True``, without arguments looking-up a variable in the calling
+    stack, and ``typed=True``.  Returns None if no valid value is found.
+
+    Examples::
+
+        >>> identifier_from({})
+        'dict'
+
+    '''
+    if len(args) == 1:
+        from xoutil.validators.identifiers import is_valid_identifier as valid
+        from xoutil.inspect import _getattr
+        res = None
+        if isinstance(args[0], type):
+            aux = _getattr(args[0], '__name__', None)
+            if valid(aux):
+                res = str('_%s' % aux)
+        if res is None:
+            tests = ({'inner': True}, {}, {'typed': True})
+            names = (nameof(args[0], depth=2, **test) for test in tests)
+            res = next((name for name in names if valid(name)), None)
+        return res
+    else:
+        msg = 'identifier_from() takes exactly 1 argument (%s given)'
+        raise TypeError(msg % len(args))
 
 
 class namelist(list):
@@ -237,15 +392,17 @@ class namelist(list):
     def __add__(self, other):
         other = [nameof(item, depth=2) for item in other]
         return super(namelist, self).__add__(other)
+
     __iadd__ = __add__
 
-    def __contains__(self, target):
-        return super(namelist, self).__contains__(nameof(target, depth=2))
+    def __contains__(self, item):
+        return super(namelist, self).__contains__(nameof(item, depth=2))
 
     def append(self, value):
         '''l.append(value) -- append a name object to end'''
         super(namelist, self).append(nameof(value, depth=2))
         return value    # What allow to use its instances as a decorator
+
     __call__ = append
 
     def extend(self, items):
@@ -298,15 +455,17 @@ class strlist(list):
     def __add__(self, other):
         other = [str(item) for item in other]
         return super(strlist, self).__add__(other)
+
     __iadd__ = __add__
 
-    def __contains__(self, target):
-        return super(strlist, self).__contains__(str(target))
+    def __contains__(self, item):
+        return super(strlist, self).__contains__(str(item))
 
     def append(self, value):
         '''l.append(value) -- append a name object to end'''
         super(strlist, self).append(str(value))
         return value    # What allow to use its instances as a decorator
+
     __call__ = append
 
     def extend(self, items):
@@ -335,6 +494,3 @@ class strlist(list):
 
         '''
         return list.remove(self, str(value))
-
-
-__all__ = strlist('nameof', 'namelist', 'strlist')
