@@ -131,36 +131,50 @@ def module_name(item):
     return str(res)
 
 
-def _get_best_name(names, start=0):
-    from xoutil.validators.identifiers import (is_valid_full_identifier,
-                                               is_valid_public_identifier,
-                                               is_valid_identifier,
-                                               is_valid_slug)
+def _get_best_name(names, safe=False):
+    '''Get the best name in the give list of `names`.
+
+    If `safe` is True, returned name must be a valid full identifier.
+
+    '''
+    from xoutil.validators import (is_valid_full_identifier,
+                                   is_valid_public_identifier,
+                                   is_valid_identifier,
+                                   is_valid_slug)
     names = list(names)
-    i, count = start, len(names)
-    assert i < count, 'max start index is "%s"; "%s" given.' % (count, i)
-    last, best_idx, best_qlty = start, -1, 0
-    while i < count:
-        name = names[i]
-        if '%(next)s' in name:
-            names[i] = name % {'next': _get_best_name(names, i + 1)}
-            count = i + 1
-        else:
-            if is_valid_slug(name):
-                qlty = 25
-            if is_valid_identifier(name):
-                qlty = 75 if is_valid_public_identifier(name) else 50
-            elif is_valid_full_identifier(name):
-                qlty = 100
+
+    def inner(start=0):
+        ok, best_idx, best_qlty = start, -1, 0
+        i, count = start, len(names)
+        assert start < count, 'start is "%s", max is "%s".' % (start, count)
+        while i < count:
+            name = names[i]
+            if '%(next)s' in name:
+                next = inner(i + 1)
+                names[i] = name % {'next': next}
+                count = i + 1
             else:
-                qlty = -25
-            if best_qlty <= qlty:
-                best_idx = i
-                best_qlty = qlty
-            last = i
-            i += 1
-    idx = best_idx if best_idx >= 0 else last
-    return str(names[idx])
+                if is_valid_slug(name):
+                    qlty = 25
+                if is_valid_identifier(name):
+                    qlty = 75 if is_valid_public_identifier(name) else 50
+                elif is_valid_full_identifier(name):
+                    qlty = 100
+                else:
+                    qlty = -25
+                if best_qlty <= qlty:
+                    best_idx = i
+                    best_qlty = qlty
+                ok = i
+                i += 1
+        idx = best_idx if best_idx >= 0 else ok
+        return names[idx]
+    res = inner()
+    if safe and not is_valid_full_identifier(res):
+        from xoutil.string import normalize_slug
+        res = normalize_slug(res, unwanted_replacement='',
+                             invalid_underscore=True)
+    return str(res)
 
 
 def nameof(*args, **kwargs):
@@ -317,7 +331,7 @@ def nameof(*args, **kwargs):
                 else:
                     grant(None, inner=True)
     for i in range(arg_count):
-        names[i] = _get_best_name(names[i])
+        names[i] = _get_best_name(names[i], safe=param('safe'))
     if arg_count == 0:
         return None
     elif arg_count == 1:
