@@ -287,6 +287,7 @@ intersphinx_mapping = {
     'py3': ('http://docs.python.org/3.4/', None),
 }
 
-intersphinx_cache_limit = 120
+# Maintain the cache forever.
+intersphinx_cache_limit = -1
 
 autosummary_generate = True
