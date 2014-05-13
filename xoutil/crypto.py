@@ -37,15 +37,28 @@ __all__ = strs('PASS_PHRASE_LEVEL_BASIC',
 del strs
 
 
+#: The most basic level (less ) for the password generation.
 PASS_PHRASE_LEVEL_BASIC = 0
+
+#: A level for simply mapping of several chars.
 PASS_PHRASE_LEVEL_MAPPED = 1
+
+#: Another "stronger" mapping level.
 PASS_PHRASE_LEVEL_MAPPED_MIXED = 2
+
+#: Appends the year after mapping.
 PASS_PHRASE_LEVEL_MAPPED_DATED = 3
+
+#: Totally scramble the result, making very hard to predict the result.
 PASS_PHRASE_LEVEL_STRICT = 4
 
+#: The default level for :func:`generate_password`
 DEFAULT_PASS_PHRASE_LEVEL = PASS_PHRASE_LEVEL_MAPPED_DATED
 
+
 BASIC_PASSWORD_SIZE = 4    # bytes
+
+#: An upper limit for generated password length.
 MAX_PASSWORD_SIZE = 512
 
 
@@ -66,26 +79,26 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
 
     There are several definitions with numerical values for `level` (0-4):
 
-    `PASS_PHRASE_LEVEL_BASIC`
+    :data:`PASS_PHRASE_LEVEL_BASIC`
 
         Generate the same pass-phrase, just removing invalid characters and
         converting the result to lower-case.
 
-    `PASS_PHRASE_LEVEL_MAPPED`
+    :data:`PASS_PHRASE_LEVEL_MAPPED`
 
         Replace some characters with new values: ``'e'->'3'``, ``'i'->'1'``,
         ``'o'->'0'``, ``'s'->'5'``.
 
-    `PASS_PHRASE_LEVEL_MAPPED_MIXED`
+    :data:`PASS_PHRASE_LEVEL_MAPPED_MIXED`
 
         Consonants characters before 'M' (included) are converted to
         upper-case, all other are kept lower-case.
 
-    `PASS_PHRASE_LEVEL_MAPPED_DATED`
+    :data:`PASS_PHRASE_LEVEL_MAPPED_DATED`
 
         Adds a suffix with the year of current date ("<YYYY>").
 
-    `PASS_PHRASE_LEVEL_STRICT`
+    :data:`PASS_PHRASE_LEVEL_STRICT`
 
         Randomly scramble previous result until unbreakable strong password is
         obtained.
@@ -101,9 +114,10 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
     `pass-phrase` is ``None`` for `level` zero or negative, size ``4`` is
     assumed.  First four levels are considered weak.
 
-    Maximum size is defined in the `MAX_PASSWORD_SIZE` constant.  Default
-    level is ``3`` (`PASS_PHRASE_LEVEL_MAPPED_DATED` when using a
-    pass-phrase).
+    Maximum size is defined in the :data:`MAX_PASSWORD_SIZE` constant.
+
+    Default level is :data:`PASS_PHRASE_LEVEL_MAPPED_DATED` when using a
+    pass-phrase.
 
     '''
     from random import sample, randint
