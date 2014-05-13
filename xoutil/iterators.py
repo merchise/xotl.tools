@@ -87,7 +87,7 @@ def dict_update_new(target, source):
 
 def fake_dict_iteritems(source):
     '''Iterate (key, value) in a source that have defined method "keys" and
-    operator "__getitem__".
+     :meth:`~object.__getitem__`.
 
     .. warning::
 
