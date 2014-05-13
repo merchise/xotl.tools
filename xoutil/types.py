@@ -164,17 +164,25 @@ if sys.version_info < (3, 4):
             return "{}({})".format('namespace', ", ".join(items))
 
     class DynamicClassAttribute(object):
-        """Route attribute access on a class to __getattr__.
+        """Route attribute access on a class to :meth:`~object.__getattr__`.
 
         This is a descriptor, used to define attributes that act differently
         when accessed through an instance and through a class.  Instance
         access remains normal, but access to an attribute through a class will
-        be routed to the class's __getattr__ method; this is done by raising
-        AttributeError.
+        be routed to the class's :meth:`~object.__getattr__` method; this is
+        done by raising AttributeError.
 
         This allows one to have properties active on an instance, and have
-        virtual attributes on the class with the same name (see Enum for an
-        example).
+        virtual attributes on the class with the same name (see
+        :class:`~py3:enum.Enum` for an example).
+
+        .. versionadded:: 1.5.5
+
+        .. note:: The class Enum mentioned has not yet been backported.
+
+        .. note:: In Python 3.4+ this is an alias to
+                  :func:`types.DynamicClassAttribute
+                  <py3:types.DynamicClassAttribute>`.
 
         """
         def __init__(self, fget=None, fset=None, fdel=None, doc=None):
