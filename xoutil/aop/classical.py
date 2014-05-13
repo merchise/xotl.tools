@@ -51,10 +51,6 @@ __all__ = strs('weave', 'StopExceptionChain')
 del strs
 
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
-
 def wraps(target):
     '''Hacks functools.wraps to bypass wrapper descriptors (for __repr__,
     etc.)

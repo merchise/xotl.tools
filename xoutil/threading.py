@@ -21,10 +21,6 @@ threading = copy_members('threading')
 del copy_members
 
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__ = "Tue May 28 11:27:04 2013"
-
-
 def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
     '''Executes a function `func` with the given positional and keyword
     arguments asynchronously.

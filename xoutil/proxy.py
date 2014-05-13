@@ -37,9 +37,6 @@ from xoutil.aop import complementor
 from xoutil.names import strlist as strs
 __all__ = strs('SUPPORTED_OPERATIONS', 'proxify')
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 class UNPROXIFING_CONTEXT(object):
     '''Mark for an :mod:`execution context <xoutil.context>` in which you don't
@@ -51,7 +48,7 @@ class UNPROXIFING_CONTEXT(object):
 
 
 SUPPORTED_UNARY_OPERATIONS = strs('__pos__', '__abs__', '__neg__',
-                                    '__invert__',)
+                                  '__invert__',)
 
 
 SUPPORTED_BINARY_LOGICAL_OPERATIONS = strs('__and__', '__or__', '__xor__',

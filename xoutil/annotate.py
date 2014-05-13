@@ -31,8 +31,6 @@ from xoutil.names import strlist as strs
 __all__ = strs('annotate')
 del strs
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
 
 _SIGNATURE = _regex_compile(r'''(?ixm)
                             \(              # Required opening for the argumens

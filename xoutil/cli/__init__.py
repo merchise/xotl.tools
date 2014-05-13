@@ -31,11 +31,6 @@ from xoutil.objects import metaclass, classproperty
 from .tools import command_name, program_name
 
 
-__docstring_format__ = 'rst'
-__author__ = 'med'
-
-
-
 class RegistryDescriptor(object):
     '''Define a mechanism to automatically obtain all registered commands.'''
 
@@ -125,9 +120,11 @@ class Command(metaclass(ABCMeta)):
         # = RegistryDescriptor()
 
     @abstractmethod
-    def run(self, args=[]):
+    def run(self, args=None):
         '''Must return a valid value for "sys.exit"'''
-        raise NotImplemented
+        if args is None:
+            args = []
+        raise NotImplementedError
 
     @classmethod
     def set_default_command(cls, cmd=None):
@@ -165,8 +162,10 @@ class Command(metaclass(ABCMeta)):
         Command.__default_command__ = name
 
     @staticmethod
-    def _settle_cache(target, source, recursed=set()):
+    def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
+        if recursed is None:
+            recursed = set()
         # TODO: Convert check based in argument "recursed" in a decorator
         from xoutil.names import nameof
         name = nameof(source, inner=True, full=True)

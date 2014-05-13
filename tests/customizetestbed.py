@@ -18,9 +18,6 @@ from __future__ import (division as _py3_division,
 
 from xoutil.modules import moduleproperty
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Jan 28 19:54:22 2013"
-
 
 @moduleproperty
 def this(self):
