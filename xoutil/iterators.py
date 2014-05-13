@@ -104,8 +104,9 @@ def fake_dict_iteritems(source):
 def delete_duplicates(seq):
     '''Remove all duplicate elements from `seq`.
 
-    Works with any sequence that supports :func:`len` and `__getitem__`.  The
-    return type will be the same as that of the original sequence.
+    Works with any sequence that supports :func:`len` and
+    :meth:`~object.__getitem__`.  The return type will be the same as that of
+    the original sequence.
 
     .. versionadded:: 1.5.5
 
