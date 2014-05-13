@@ -23,9 +23,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-__docstring_format__ = 'rst'
-__author__ = 'med'
-
 
 def main(default=None):
     '''Execute a command, it can be given as the first program argument or it's

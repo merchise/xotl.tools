@@ -19,9 +19,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__ = "Fri Apr 12 11:45:51 2013"
-
 
 class UnsetType(object):
     '''The unique instance `Unset` is to be used as default value to be sure

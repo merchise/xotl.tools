@@ -25,9 +25,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 def echo(what):
     return what
@@ -46,3 +43,8 @@ def rien():
 @modulemethod
 def method(self, *args, **kwargs):
     return self, args, kwargs
+
+
+@modulemethod
+def selfish(self):
+    return self.selfish, selfish

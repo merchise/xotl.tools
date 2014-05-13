@@ -61,13 +61,18 @@ We have backported several Python 3.3 features but not all.
       modified to change which mappings are searched.  The list should always
       contain at least one mapping.
 
-   .. method:: new_child()
+   .. method:: new_child(m=None)
 
-      Returns a new ChainMap containing a new dict followed by all of the maps
-      in the current instance.  A call to ``d.new_child()`` is equivalent to:
+      Returns a new :class:`ChainMap` containing a new map followed by all of
+      the maps in the current instance.  If ``m`` is specified, it becomes the
+      new map at the front of the list of mappings; if not specified, an empty
+      dict is used, so that a call to ``d.new_child()`` is equivalent to:
       ``ChainMap({}, *d.maps)``.  This method is used for creating subcontexts
       that can be updated without altering values in any of the parent
       mappings.
+
+      .. versionchanged:: 1.5.5
+	 The optional ``m`` parameter was added.
 
    .. attribute:: parents
 
@@ -78,4 +83,4 @@ We have backported several Python 3.3 features but not all.
       equivalent to: ``ChainMap(*d.maps[1:])``.
 
 
-   .. note:: Backported from Python 3.3.  In Python 3.3 this is an alias.
+   .. note:: Backported from Python 3.4.  In Python 3.4 this is an alias.

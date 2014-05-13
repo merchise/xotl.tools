@@ -37,27 +37,26 @@ __all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
 del strs
 
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
-
 # TODO: import all in "from os.path import *"
 
-rtrim = lambda path, n: pow_(dirname, n)(normalize_path(path))
+rtrim = lambda path, n=1: pow_(dirname, n)(normalize_path(path))
 rtrim.__doc__ = """Trims the last `n` components of the pathname `path`.
 
 This basically applies `n` times the function `os.path.dirname` to `path`.
 
 `path` is normalized before proceeding (but not tested to exists).
 
+.. versionchanged:: 1.5.5 `n` defaults to 1.  In this case rtrim is identical
+                    to :func:`os.path.dirname`.
+
 Example::
 
-    >>> rtrim('~/tmp/a/b/c/d', 3)  # doctest: +ELLIPSIS
-    '.../tmp/a'
+    >>> rtrim('/tmp/a/b/c/d', 3)
+    '/tmp/a'
 
     # It does not matter if `/` is at the end
-    >>> rtrim('~/tmp/a/b/c/d/', 3)  # doctest: +ELLIPSIS
-    '.../tmp/a'
+    >>> rtrim('/tmp/a/b/c/d/', 3)
+    '/tmp/a'
 
 """
 

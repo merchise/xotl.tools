@@ -17,9 +17,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Fri Apr 12 06:40:47 2013"
-
 
 def test_first_n_no_filling():
     from xoutil.iterators import first_n

@@ -33,9 +33,6 @@ from __future__ import (division as _py3_division,
 
 from types import ModuleType
 
-__docstring_format__ = 'rst'
-__author__ = 'med'
-
 
 def force_module(ref=None):
     '''Load a module from a string or return module if already created.

@@ -26,10 +26,6 @@ from xoutil.aop.classical import _weave_after_method, StopExceptionChain
 from xoutil.aop.extended import weave
 
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
-
 class TestClassicalAOP(unittest.TestCase):
     def setUp(self):
         class LoggerAspect(object):
@@ -96,7 +92,6 @@ class TestWeavingModules(unittest.TestCase):
             def _after_rien(self, method, result, exc_value):
                 return result + 1
 
-
             def _after_method(self, method, result, exc_value):
                 return result
 
@@ -115,7 +110,8 @@ class TestWeavingModules(unittest.TestCase):
         # it.
         self.assertEquals(10, echo(10))
 
-        # After the test, since other may require normal echo behavior, let's restore it
+        # After the test, since other may require normal echo behavior, let's
+        # restore it
         testbed.echo = echo
 
 

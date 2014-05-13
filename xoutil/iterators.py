@@ -28,11 +28,6 @@ from xoutil.types import is_scalar
 from xoutil.deprecation import deprecated
 
 
-__docstring_format__ = 'rst'
-__version__ = '0.1.0'
-__author__ = 'Manuel Vázquez Acosta <mva.led@gmail.com>'
-
-
 def first_non_null(iterable, default=None):
     '''Returns the first value from iterable which is non-null.
 
@@ -92,7 +87,7 @@ def dict_update_new(target, source):
 
 def fake_dict_iteritems(source):
     '''Iterate (key, value) in a source that have defined method "keys" and
-    operator "__getitem__".
+     :meth:`~object.__getitem__`.
 
     .. warning::
 
@@ -104,6 +99,26 @@ def fake_dict_iteritems(source):
     warnings.warn('fake_dict_iteritems is in risk for deprecation')
     for key in source.keys():
         yield key, source[key]
+
+
+def delete_duplicates(seq):
+    '''Remove all duplicate elements from `seq`.
+
+    Works with any sequence that supports :func:`len` and
+    :meth:`~object.__getitem__`.  The return type will be the same as that of
+    the original sequence.
+
+    .. versionadded:: 1.5.5
+
+    '''
+    i, done = 0, set()
+    while i < len(seq):
+        if seq[i] not in done:
+            done.add(seq[i])
+            i += 1
+        else:
+            seq = seq[:i] + seq[i+1:]
+    return seq
 
 
 def slides(iterable, width=2, fill=None):
