@@ -27,6 +27,8 @@ from __future__ import (division as _py3_division,
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 
+isdatadescriptor = _pm.isdatadescriptor
+
 
 try:
     getattr_static = _pm.getattr_static
@@ -132,7 +134,6 @@ def _getattr(obj, name, *default):
     _false = object()
     args = len(default)
     if args in (0, 1):
-        from xoutil.inspect import getattr_static, isdatadescriptor
         res = getattr_static(obj, name, _false)
         if isdatadescriptor(res):
             try:
