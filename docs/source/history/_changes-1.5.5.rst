@@ -18,3 +18,16 @@
 - Backported :class:`xoutil.types.MappingProxyType` from Python 3.3.
 
 - Backported :class:`xoutil.types.SimpleNamespace` from Python 3.4.
+
+- Backported :class:`xoutil.types.DynamicClassAttribute` from Python 3.4
+
+- Added function :func:`xoutil.iterators.delete_duplicates`.
+
+- Added parameter `ignore_underscore` to :func:`xoutil.string.normalize_slug`.
+
+- Added module :mod:`xoutil.crypto` with a function for generating passwords.
+
+- Fixed several bug in :func:`xoutil.functools.compose`.
+
+- Makes `xoutil.fs.path.rtrim`:func: have a default value for the amount of
+  step to traverse.
