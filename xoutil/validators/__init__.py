@@ -56,3 +56,36 @@ def is_type(cls):
     inner.__name__ = name
     inner.__doc__ = inner.__doc__ % name
     return inner
+
+
+def check(value, validator, msg=None):
+    '''Check a `value` with a `validator`.
+
+    Argument `validator` could be a callable, a type, or a tuple of types.
+
+    Return True if the value is valid.
+
+    Examples::
+
+      >>> check(1, int)
+      True
+
+      >>> check(10, lambda x: x <= 100, 'must be less than or equal to 100')
+      True
+
+      >>> check(11/2, (int, float))
+      True
+
+    '''
+    if isinstance(validator, (type, tuple)):
+        checker = is_type(validator)
+    else:
+        checker = validator
+    if checker(value):
+        return True
+    else:
+        if not msg:
+            # TODO: Use the name of validator with `inspect.getattr_static`
+            # when `xoutil.future` is ready
+            msg = 'Invalid value "%s" of type "%s"' % (value, type(value))
+        raise ValueError(msg)
