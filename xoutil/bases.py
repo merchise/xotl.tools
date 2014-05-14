@@ -26,8 +26,8 @@ class BaseConvertor(object):
     '''Base class that implements conversion algorithms based on a simple
     lookup table and a bit mask.
 
-    It's supposed that the mask is a sigle string of set-up bits. And the table
-    should be of length 2**<bit-lenght>.
+    It's supposed that the mask is a sigle string of set-up bits. And the
+    table should be of length 2**<bit-lenght>.
 
     Derived classes *must* provide a `table` and `mask` attributes with those
     values.
@@ -98,8 +98,8 @@ class B64(BaseConvertor):
     This **is not standard base64**, but a reference-friendly base 64 to help
     the use case of generating a short reference.
 
-    In base 64, each 6-bits chunks are represented by a single "digit". Digits
-    comprises all 0..9, a..z, A..Z and the four symbols: `()[]`.
+    In base 64, each 6-bits chunks are represented by a single "digit".
+    Digits comprises all 0..9, a..z, A..Z and the four symbols: `()[]`.
 
         >>> B64.inttobase(64) == '10'
         True
@@ -121,3 +121,9 @@ class B64(BaseConvertor):
     table = '0123456789abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUVWXZ()[]'
     mask = 0b111111
     case_insensitive = False
+
+
+class B64symbolic(B64):
+    '''Same as B64 but uses no capital letters and lots of symbols.'''
+    table = '0123456789abcdefghijklmnopqrstuwxyz:;><,.-_=+!@#$^*/?\{}%`|"()[]'
+    case_insensitive = True
