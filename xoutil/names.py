@@ -131,7 +131,7 @@ def module_name(item):
     return str(res)
 
 
-def _get_best_name(names, safe=False):
+def _get_best_name(names, safe=False, full=False):
     '''Get the best name in the give list of `names`.
 
     If `safe` is True, returned name must be a valid full identifier.
@@ -170,10 +170,16 @@ def _get_best_name(names, safe=False):
         idx = best_idx if best_idx >= 0 else ok
         return names[idx]
     res = inner()
-    if safe and not is_valid_full_identifier(res):
-        from xoutil.string import normalize_slug
-        res = normalize_slug(res, unwanted_replacement='',
-                             invalid_underscore=True)
+    if safe:
+        is_valid = is_valid_full_identifier if full else is_valid_identifier
+        if not is_valid(res):
+            from xoutil.string import normalize_slug
+            full = full and '.' in res
+            if full:
+                res = res.replace('.', 'dot_dot_dot')
+            res = normalize_slug(res, '_')
+            if full:
+                res = res.replace('dot_dot_dot', '.')
     return str(res)
 
 
@@ -200,7 +206,7 @@ def nameof(*args, **kwargs):
         'OrderedDict'
 
     If the `typed` flag is true, returns the name of the type unless `item`
-    is already a type or it has a "__name__" attribute, but the "__name__" is
+    is already a type or it has a "__name__" attribute, but this method is
     used only if `inner` is True.
 
         >>> sd = sorted_dict(x=1, y=2)
