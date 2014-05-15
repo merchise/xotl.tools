@@ -17,13 +17,111 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-from xoutil.names import strlist as strs
-__all__ = strs('B32', 'B64')
-del strs
-
-
 __author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
 __date__ = "Mon Mar 25 14:38:12 2013"
+
+
+try:
+    _strs = basestring
+except:
+    _strs = str
+
+
+_DEFAULT_TABLE = ("0123456789"
+                  "abcdefghijklmnopqrstuvwxyz"
+                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+_MAX_BASE = len(_DEFAULT_TABLE)
+
+_DEFAULT_BASE = _MAX_BASE
+
+
+def _check_base(base):
+    '''Check a base to be used in string to integer conversions.
+
+    Return a tuple (base, table) if valid or raise an exception.
+
+    '''
+    if isinstance(base, (int, long)):
+        table = _DEFAULT_TABLE
+        if not (1 < base <= _MAX_BASE):
+            raise ValueError('`base` must be between 2 and %s' % _MAX_BASE)
+    elif isinstance(base, _strs):
+        table = base
+        base = len(table)
+    else:
+        msg = ('`base` must be an integer (base) or a string (table) with '
+               'length greater or equal to 2; %s "%s" given')
+        raise TypeError(msg % (type(base).__name__, base))
+    return base, table
+
+
+def int2str(number, base=_DEFAULT_BASE):
+    '''Return the string representation of an integer using a base.
+
+    `base` could be an integer or a string with a custom table.
+
+    Examples::
+
+      >>> int2str(65535, 16)
+      'ffff'
+
+      >>> int2str(65535)
+      'h31'
+
+      >>> int2str(65110208921, 'merchise')
+      'ehimseiemsce'
+
+      >>> int2str(651102, 2)
+      '10011110111101011110'
+
+    '''
+    base, table = _check_base(base)
+    sign = '' if number >= 0 else '-'
+    number = abs(number)
+    res = table[0] if number == 0 else ''
+    while number:
+        number, idx = divmod(number, base)
+        res = table[idx] + res
+    return str(sign + res)
+
+
+def str2int(src, base=_DEFAULT_BASE):
+    '''Return the integer decoded from a string representation using a base.
+
+    `base` could be an integer or a string with a custom table.
+
+    Examples::
+
+      >>> str2int('ffff', 16)
+      65535
+
+      >>> str2int('1c', 16) == int('1c', 16)
+      True
+
+      >>> base = 'merchise'
+      >>> number = 65110208921
+      >>> str2int(int2str(number, base), base) == number
+      False
+
+      >>> base = 32
+      >>> str2int(int2str(number, base), base) == number
+      True
+
+    '''
+    base, table = _check_base(base)
+    if src.startswith('-'):
+        sign = -1
+        i = 1
+    else:
+        sign = 1
+        i = 0
+    res = 0
+    while i < len(src):
+        res *= base
+        res += table.index(src[i])
+        i += 1
+    return sign*res
 
 
 class BaseConvertor(object):
@@ -91,7 +189,7 @@ class B32(BaseConvertor):
         32
 
     '''
-    table = '0123456789abcdefghijklmnoprstuvw'
+    table = '0123456789abcdefghijklmnopqrstuv'
     mask = 0b11111
     case_insensitive = True
 
