@@ -138,9 +138,10 @@ def _getattr(obj, name, *default):
     if args in (0, 1):
         is_type = isinstance(obj, type)
         res = getattr_static(obj, name, _unset)
-        if isdatadescriptor(res) and not is_type:
+        if isdatadescriptor(res):
             try:
-                res = res.__get__(obj, type(obj))
+                owner = type if is_type else type(obj)
+                res = res.__get__(obj, owner)
             except AttributeError:
                 res = _unset
         if res is _unset and not is_type:
