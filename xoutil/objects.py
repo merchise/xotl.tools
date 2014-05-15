@@ -275,17 +275,8 @@ class SafeDataItem(object):
     def _unique_name(self):
         '''Generate a unique new name.'''
         from time import time
-        pivot = 1000000
-        chars = ("0123456789"
-                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                 "abcdefghijklmnopqrstuvwxyz")
-        base = len(chars)
-        now = int(pivot*time())
-        res = ""
-        while now:
-            res += chars[now % base]
-            now //= base
-        return str('_%s' % res)
+        from xoutil.bases import int2str
+        return '_%s' % int2str(int(1000000*time()))
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
