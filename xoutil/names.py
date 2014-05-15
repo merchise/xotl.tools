@@ -22,7 +22,7 @@ __docstring_format__ = 'rst'
 
 
 from xoutil._values import UnsetType
-_false = UnsetType('names.false', __singleton__=UnsetType)
+_unset = UnsetType('names.unset', __singleton__=UnsetType)    # Local unset
 del UnsetType
 
 try:
@@ -43,8 +43,8 @@ def _get_mappings(source):
         return (source,)
     else:
         from xoutil.inspect import _getattr
-        l = _getattr(source,  'f_locals', _false)
-        g = _getattr(source,  'f_globals', _false)
+        l = _getattr(source,  'f_locals', _unset)
+        g = _getattr(source,  'f_globals', _unset)
         if isinstance(l, Mapping) and isinstance(g, Mapping):
             return (l,) if l is g else (l, g)
         else:
@@ -71,13 +71,13 @@ def _key_for_value(source, value, strict=True):
 
     '''
     source = _get_mappings(source)
-    found, equal = _false, None
+    found, equal = _unset, None
     i, mapping_count = 0, len(source)
-    while found is _false and (i < mapping_count):
+    while found is _unset and (i < mapping_count):
         mapping = source[i]
         keys = list(mapping)
         j, key_count = 0, len(keys)
-        while found is _false and (j < key_count):
+        while found is _unset and (j < key_count):
             key = keys[j]
             item = mapping[key]
             if item is value:
@@ -89,7 +89,7 @@ def _key_for_value(source, value, strict=True):
                     found = key
             j += 1
         i += 1
-    return found if found is not _false else equal
+    return found if found is not _unset else equal
 
 
 def _get_value(source, key, default=None):
@@ -102,13 +102,13 @@ def _get_value(source, key, default=None):
 
     '''
     source = _get_mappings(source)
-    res = _false
+    res = _unset
     i, mapping_count = 0, len(source)
-    while res is _false and (i < mapping_count):
+    while res is _unset and (i < mapping_count):
         mapping = source[i]
-        res = mapping.get(key, _false)
+        res = mapping.get(key, _unset)
         i += 1
-    return res if res is not _false else default
+    return res if res is not _unset else default
 
 
 def module_name(item):
@@ -289,10 +289,10 @@ def nameof(*args, **kwargs):
 
     while vars.idx < arg_count:
         item = args[vars.idx]
-        if param('typed') and not _getattr(item, TYPED_NAME, _false):
+        if param('typed') and not _getattr(item, TYPED_NAME, _unset):
             item = type(item)
         if param('inner'):
-            res = _getattr(item, TYPED_NAME, _false)
+            res = _getattr(item, TYPED_NAME, _unset)
             if res:
                 if param('full'):
                     head = module_name(item)
@@ -307,7 +307,7 @@ def nameof(*args, **kwargs):
             import sys
             sf = sys._getframe(param('depth', 1))
             try:
-                i, LIMIT, res = 0, 5, _false
+                i, LIMIT, res = 0, 5, _unset
                 while not res and sf and (i < LIMIT):
                     key = _key_for_value(sf, item)
                     if key and param('full'):
@@ -331,7 +331,7 @@ def nameof(*args, **kwargs):
             if res:
                 grant('.'.join((head, res)) if head else res)
             else:
-                res = _getattr(item, TYPED_NAME, _false)
+                res = _getattr(item, TYPED_NAME, _unset)
                 if res:
                     grant(res)
                 else:

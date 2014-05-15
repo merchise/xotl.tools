@@ -20,8 +20,8 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.six import PY3 as _py3k, callable, string_types as str_base
 from xoutil.inspect import _getattr
+from xoutil.six import PY3 as _py3k, callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
 

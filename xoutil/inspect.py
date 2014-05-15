@@ -126,21 +126,31 @@ except AttributeError:
 
 
 def _getattr(obj, name, *default):
-    '''Get a named attribute from an object in a safe way (similar to `getattr`
-    but without triggering dynamic look-up via the descriptor protocol,
-    `__getattr__` or `__getattribute__` by using ``getattr_static``.
+    '''Get a named attribute from an object in a safe way.
+
+    Similar to `getattr` but without triggering dynamic look-up via the
+    descriptor protocol, `__getattr__` or `__getattribute__` by using
+    ``getattr_static``.
 
     '''
-    _false = object()
+    _unset = object()
     args = len(default)
     if args in (0, 1):
-        res = getattr_static(obj, name, _false)
-        if isdatadescriptor(res):
+        is_type = isinstance(obj, type)
+        res = getattr_static(obj, name, _unset)
+        if isdatadescriptor(res) and not is_type:
             try:
                 res = res.__get__(obj, type(obj))
             except AttributeError:
-                res = _false
-        if res is not _false:
+                res = _unset
+        if res is _unset and not is_type:
+            res = getattr_static(type(obj), name, _unset)
+            if isdatadescriptor(res):
+                try:
+                    res = res.__get__(obj, type(obj))
+                except AttributeError:
+                    res = _unset
+        if res is not _unset:
             return res
         elif args == 1:
             return default[0]
