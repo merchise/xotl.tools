@@ -30,6 +30,8 @@ from xoutil.modules import copy_members as _copy_python_module_members
 
 _pm = _copy_python_module_members()
 GeneratorType = _pm.GeneratorType
+FunctionType = _pm.FunctionType
+ModuleType = _pm.ModuleType
 
 del _pm, _copy_python_module_members
 
@@ -390,7 +392,6 @@ def is_instancemethod(desc, name=_unset):
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
-    from types import FunctionType
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, FunctionType)
@@ -410,7 +411,6 @@ def is_slotwrapper(desc, name=_unset):
 
 def is_module(maybe):
     '''Returns True if `maybe` is a module.'''
-    from types import ModuleType
     return isinstance(maybe, ModuleType)
 
 
