@@ -26,7 +26,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
-
+types = _pm.types
 
 isdatadescriptor = _pm.isdatadescriptor
 
@@ -36,20 +36,33 @@ try:
 except AttributeError:
     # Copied from `/usr/lib/python3.3/inspect.py`
 
-    _searchbases = _pm._searchbases
     _sentinel = object()
 
+    def _safe_search_bases(cls, accum):
+        # Simulate the "classic class" search order.
+        if cls in accum:
+            return
+        else:
+
+            accum.append(cls)
+            for base in cls.__bases__:
+                _safe_search_bases(base, accum)
+
     def _typeof(obj):
-        from types import InstanceType
-        return obj.__class__ if isinstance(obj, InstanceType) else type(obj)
+        old = isinstance(obj, types.InstanceType)
+        return obj.__class__ if old else type(obj)
 
     def _static_getmro(klass):
+        old_class_type = types.ClassType
         if isinstance(klass, type):
             return type.__dict__['__mro__'].__get__(klass)
-        else:
+        elif isinstance(klass, old_class_type):
             res = []
-            _searchbases(klass, res)
+            _safe_search_bases(klass, res)
             return res
+        else:
+            msg = "doesn't apply to '%s' object"
+            raise TypeError(msg % type_name(_typeof(klass)))
 
     def _check_instance(obj, attr):
         try:
@@ -85,9 +98,8 @@ except AttributeError:
             except KeyError:
                 pass
             else:
-                from types import GetSetDescriptorType as _desc
-                if not (type(class_dict) is _desc and
-                        class_dict.__name__ == "__dict__" and
+                _desc = isinstance(class_dict, types.GetSetDescriptorType)
+                if (not _desc and class_dict.__name__ == "__dict__" and
                         class_dict.__objclass__ is entry):
                     return class_dict
         return _sentinel
@@ -110,7 +122,7 @@ except AttributeError:
         """
         instance_result = _sentinel
         if not _is_type(obj):
-            from types import MemberDescriptorType as _member
+            _member = types.MemberDescriptorType
             klass = _typeof(obj)
             dict_attr = _shadowed_dict(klass)
             if dict_attr is _sentinel or isinstance(dict_attr, _member):
@@ -192,8 +204,7 @@ def type_name(obj):
 
     '''
     from xoutil.six import class_types, string_types
-    from types import (FunctionType as function, MethodType as method)
-    named_types = class_types + (function, method)
+    named_types = class_types + (types.FunctionType, types.MethodType)
     name = '__name__'
     if isinstance(obj, named_types):
         res = getattr_static(obj, name, None)

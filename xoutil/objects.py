@@ -20,7 +20,6 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.inspect import get_attr_value
 from xoutil.six import PY3 as _py3k, callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
@@ -70,12 +69,6 @@ class SafeDataItem(object):
         ...     __slots__ = safe.slot('mapping', dict)
         >>> f = Foobar()
         >>> f.mapping
-        {}
-
-    This class also has the static method `getattr` to obtain any attribute
-    value in a safe way using `xoutil.inspect.getattr_static`::
-
-        >>> safe.getattr(f, 'mapping', None)
         {}
 
     Alias to constructor is defined with `property` static method in order to
@@ -220,11 +213,10 @@ class SafeDataItem(object):
             msg = 'expected only one positional argument, got %s'
             raise TypeError(msg % len(args))
 
-    getattr = staticmethod(get_attr_value)    # TODO: Remove this
-
     def __get__(self, obj, owner):
         if obj is not None:
-            res = self.getattr(obj, self.inner_name, Unset)
+            from xoutil.inspect import get_attr_value
+            res = get_attr_value(obj, self.inner_name, Unset)
             if res is not Unset:
                 return res
             elif self.init is not Unset:
