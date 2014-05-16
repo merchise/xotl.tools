@@ -32,4 +32,4 @@ elsewhere.
 '''
 
 
-from ._values import Unset, Ignored
+from ._values import Unset, Undefined, Ignored
