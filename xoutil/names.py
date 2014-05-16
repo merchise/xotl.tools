@@ -21,9 +21,7 @@ from __future__ import (division as _py3_division,
 __docstring_format__ = 'rst'
 
 
-from xoutil._values import UnsetType
-_unset = UnsetType('names.unset', __singleton__=UnsetType)    # Local unset
-del UnsetType
+from xoutil import Undefined as _undef
 
 try:
     str_base = basestring
@@ -42,9 +40,9 @@ def _get_mappings(source):
     if isinstance(source, Mapping):
         return (source,)
     else:
-        from xoutil.inspect import _getattr
-        l = _getattr(source,  'f_locals', _unset)
-        g = _getattr(source,  'f_globals', _unset)
+        from xoutil.inspect import get_attr_value
+        l = get_attr_value(source,  'f_locals', _undef)
+        g = get_attr_value(source,  'f_globals', _undef)
         if isinstance(l, Mapping) and isinstance(g, Mapping):
             return (l,) if l is g else (l, g)
         else:
@@ -71,13 +69,13 @@ def _key_for_value(source, value, strict=True):
 
     '''
     source = _get_mappings(source)
-    found, equal = _unset, None
+    found, equal = _undef, None
     i, mapping_count = 0, len(source)
-    while found is _unset and (i < mapping_count):
+    while found is _undef and (i < mapping_count):
         mapping = source[i]
         keys = list(mapping)
         j, key_count = 0, len(keys)
-        while found is _unset and (j < key_count):
+        while found is _undef and (j < key_count):
             key = keys[j]
             item = mapping[key]
             if item is value:
@@ -89,7 +87,7 @@ def _key_for_value(source, value, strict=True):
                     found = key
             j += 1
         i += 1
-    return found if found is not _unset else equal
+    return found if found is not _undef else equal
 
 
 def _get_value(source, key, default=None):
@@ -102,33 +100,13 @@ def _get_value(source, key, default=None):
 
     '''
     source = _get_mappings(source)
-    res = _unset
+    res = _undef
     i, mapping_count = 0, len(source)
-    while res is _unset and (i < mapping_count):
+    while res is _undef and (i < mapping_count):
         mapping = source[i]
-        res = mapping.get(key, _unset)
+        res = mapping.get(key, _undef)
         i += 1
-    return res if res is not _unset else default
-
-
-def module_name(item):
-    '''Returns the module name where the given object is declared.
-
-    TODO: Declare doctests.
-
-    '''
-    from xoutil.inspect import _getattr
-    if item is None:
-        res = ''
-    elif isinstance(item, str_base):
-        res = item
-    else:
-        res = _getattr(item, '__module__', None)
-        if res is None:
-            res = _getattr(type(item), '__module__', '')
-    if res.startswith('__') or (res in ('builtins', '<module>')):
-        res = ''
-    return str(res)
+    return res if res is not _undef else default
 
 
 def _get_best_name(names, safe=False, full=False):
@@ -183,6 +161,26 @@ def _get_best_name(names, safe=False, full=False):
     return str(res)
 
 
+def module_name(item):
+    '''Returns the module name where the given object is declared.
+
+    TODO: Declare doctests.
+
+    '''
+    from xoutil.inspect import get_attr_value
+    if item is None:
+        res = ''
+    elif isinstance(item, str_base):
+        res = item
+    else:
+        res = get_attr_value(item, '__module__', None)
+        if res is None:
+            res = get_attr_value(type(item), '__module__', '')
+    if res.startswith('__') or (res in ('builtins', '<module>')):
+        res = ''
+    return str(res)
+
+
 def nameof(*args, **kwargs):
     '''Obtain the name of each one of a set of objects.
 
@@ -193,7 +191,8 @@ def nameof(*args, **kwargs):
 
     The name of an object is normally the variable name in the calling stack::
 
-        >>> class OrderedDict(dict): pass
+        >>> class OrderedDict(dict):
+        ...     pass
         >>> sorted_dict = OrderedDict
         >>> del OrderedDict
         >>> nameof(sorted_dict)
@@ -264,8 +263,7 @@ def nameof(*args, **kwargs):
 
     '''
     from numbers import Number
-    from xoutil.inspect import _getattr
-    TYPED_NAME = '__name__'
+    from xoutil.inspect import get_attr_value, type_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
 
@@ -289,10 +287,10 @@ def nameof(*args, **kwargs):
 
     while vars.idx < arg_count:
         item = args[vars.idx]
-        if param('typed') and not _getattr(item, TYPED_NAME, _unset):
+        if param('typed') and not type_name(item):
             item = type(item)
         if param('inner'):
-            res = _getattr(item, TYPED_NAME, _unset)
+            res = type_name(item)
             if res:
                 if param('full'):
                     head = module_name(item)
@@ -307,7 +305,7 @@ def nameof(*args, **kwargs):
             import sys
             sf = sys._getframe(param('depth', 1))
             try:
-                i, LIMIT, res = 0, 5, _unset
+                i, LIMIT, res = 0, 5, _undef
                 while not res and sf and (i < LIMIT):
                     key = _key_for_value(sf, item)
                     if key and param('full'):
@@ -331,7 +329,7 @@ def nameof(*args, **kwargs):
             if res:
                 grant('.'.join((head, res)) if head else res)
             else:
-                res = _getattr(item, TYPED_NAME, _unset)
+                res = type_name(item)
                 if res:
                     grant(res)
                 else:
@@ -365,10 +363,10 @@ def identifier_from(*args):
     '''
     if len(args) == 1:
         from xoutil.validators.identifiers import is_valid_identifier as valid
-        from xoutil.inspect import _getattr
+        from xoutil.inspect import get_attr_value
         res = None
         if isinstance(args[0], type):
-            aux = _getattr(args[0], '__name__', None)
+            aux = get_attr_value(args[0], '__name__', None)
             if valid(aux):
                 res = str('_%s' % aux)
         if res is None:
@@ -416,7 +414,7 @@ class namelist(list):
     __iadd__ = __add__
 
     def __contains__(self, item):
-        return super(namelist, self).__contains__(nameof(item, depth=2))
+        return super(namelist, self).__contains__(nameof(item, inner=True))
 
     def append(self, value):
         '''l.append(value) -- append a name object to end'''

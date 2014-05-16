@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.inspect import _getattr
+from xoutil.inspect import get_attr_value
 from xoutil.six import PY3 as _py3k, callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
@@ -220,7 +220,7 @@ class SafeDataItem(object):
             msg = 'expected only one positional argument, got %s'
             raise TypeError(msg % len(args))
 
-    getattr = staticmethod(_getattr)
+    getattr = staticmethod(get_attr_value)    # TODO: Remove this
 
     def __get__(self, obj, owner):
         if obj is not None:

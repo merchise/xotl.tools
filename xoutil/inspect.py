@@ -27,22 +27,31 @@ from __future__ import (division as _py3_division,
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 
+
 isdatadescriptor = _pm.isdatadescriptor
 
 
 try:
     getattr_static = _pm.getattr_static
 except AttributeError:
-    # This is copied from `/usr/lib/python3.3/inspect.py`
-    import types
+    # Copied from `/usr/lib/python3.3/inspect.py`
 
+    _searchbases = _pm._searchbases
     _sentinel = object()
 
+    def _typeof(obj):
+        from types import InstanceType
+        return obj.__class__ if isinstance(obj, InstanceType) else type(obj)
+
     def _static_getmro(klass):
-        return type.__dict__['__mro__'].__get__(klass)
+        if isinstance(klass, type):
+            return type.__dict__['__mro__'].__get__(klass)
+        else:
+            res = []
+            _searchbases(klass, res)
+            return res
 
     def _check_instance(obj, attr):
-
         try:
             instance_dict = object.__getattribute__(obj, "__dict__")
         except AttributeError:
@@ -62,22 +71,31 @@ except AttributeError:
         try:
             _static_getmro(obj)
             return True
-        except TypeError:
+        except StandardError:
             return False
 
     def _shadowed_dict(klass):
-        dict_attr = type.__dict__["__dict__"]
+        if isinstance(klass, type):
+            dict_get = type.__dict__["__dict__"].__get__
+        else:
+            dict_get = lambda item: {'__dict__': item.__dict__}
         for entry in _static_getmro(klass):
             try:
-                class_dict = dict_attr.__get__(entry)["__dict__"]
+                class_dict = dict_get(entry)["__dict__"]
             except KeyError:
                 pass
             else:
-                if not (type(class_dict) is types.GetSetDescriptorType and
+                from types import GetSetDescriptorType as _desc
+                if not (type(class_dict) is _desc and
                         class_dict.__name__ == "__dict__" and
                         class_dict.__objclass__ is entry):
                     return class_dict
         return _sentinel
+
+    def _is_descriptor(klass_result):
+        _ktype = type(klass_result)
+        return (_check_class(_ktype, '__get__') is not _sentinel and
+                _check_class(_ktype, '__set__') is not _sentinel)
 
     def getattr_static(obj, attr, default=_sentinel):
         """Retrieve attributes without triggering dynamic lookup via the
@@ -92,40 +110,43 @@ except AttributeError:
         """
         instance_result = _sentinel
         if not _is_type(obj):
-            klass = type(obj)
+            from types import MemberDescriptorType as _member
+            klass = _typeof(obj)
             dict_attr = _shadowed_dict(klass)
-            if (dict_attr is _sentinel or
-                type(dict_attr) is types.MemberDescriptorType):
+            if dict_attr is _sentinel or isinstance(dict_attr, _member):
                 instance_result = _check_instance(obj, attr)
         else:
             klass = obj
 
         klass_result = _check_class(klass, attr)
 
-        if instance_result is not _sentinel and klass_result is not _sentinel:
-            if (_check_class(type(klass_result), '__get__') is not _sentinel and
-                _check_class(type(klass_result), '__set__') is not _sentinel):
-                return klass_result
-
-        if instance_result is not _sentinel:
-            return instance_result
-        if klass_result is not _sentinel:
+        if (instance_result is not _sentinel and
+                klass_result is not _sentinel and
+                _is_descriptor(klass_result)):
             return klass_result
-
+        elif instance_result is not _sentinel:
+            return instance_result
+        elif klass_result is not _sentinel:
+            return klass_result
         if obj is klass:
-            # for types we check the metaclass too
-            for entry in _static_getmro(type(klass)):
-                if _shadowed_dict(type(entry)) is _sentinel:
-                    try:
-                        return entry.__dict__[attr]
-                    except KeyError:
-                        pass
+            if isinstance(obj, type):
+                # for types we check the metaclass too
+                meta_result = _check_class(type(klass), attr)
+                if meta_result is not _sentinel:
+                    return meta_result
+            elif attr == '__name__':
+                try:
+                    return klass.__name__
+                except AttributeError:
+                    pass
         if default is not _sentinel:
             return default
-        raise AttributeError(attr)
+        else:
+            print('>>>', default)
+            raise AttributeError(attr)
 
 
-def _getattr(obj, name, *default):
+def get_attr_value(obj, name, *default):
     '''Get a named attribute from an object in a safe way.
 
     Similar to `getattr` but without triggering dynamic look-up via the
@@ -133,34 +154,59 @@ def _getattr(obj, name, *default):
     ``getattr_static``.
 
     '''
-    _unset = object()
-    args = len(default)
-    if args in (0, 1):
-        is_type = isinstance(obj, type)
-        res = getattr_static(obj, name, _unset)
+    from xoutil import Undefined as _undef
+    from xoutil.tools import get_default
+    default = get_default(default, _undef)
+    is_type = isinstance(obj, type)
+    res = getattr_static(obj, name, _undef)
+    if isdatadescriptor(res):
+        try:
+            owner = type if is_type else type(obj)
+            res = res.__get__(obj, owner)
+        except AttributeError:
+            res = _undef
+    if res is _undef and not is_type:
+        cls = type(obj)
+        res = getattr_static(cls, name, _undef)
         if isdatadescriptor(res):
             try:
-                owner = type if is_type else type(obj)
-                res = res.__get__(obj, owner)
-            except AttributeError:
-                res = _unset
-        if res is _unset and not is_type:
-            res = getattr_static(type(obj), name, _unset)
-            if isdatadescriptor(res):
+                res = res.__get__(obj, cls)
+            except StandardError:
                 try:
-                    res = res.__get__(obj, type(obj))
-                except AttributeError:
-                    res = _unset
-        if res is not _unset:
-            return res
-        elif args == 1:
-            return default[0]
-        else:
-            msg = "'%s' object has no attribute '%s'"
-            raise AttributeError(msg % (type(obj).__name__, name))
+                    res = res.__get__(cls, type)
+                except StandardError:
+                    res = _undef
+    if res is not _undef:
+        return res
+    elif default is not _undef:
+        return default
     else:
-        msg = "'_getattr' expected 2 or 3 arguments, got %s"
-        raise TypeError(msg % (args + 2))
+        msg = "'%s' object has no attribute '%s'"
+        raise AttributeError(msg % (type(obj).__name__, name))
+
+
+def type_name(obj):
+    '''Return the type or callable internal name.
+
+    This function is saIf not a proper type, try a safe method.
+
+    '''
+    from xoutil.six import class_types, string_types
+    from types import (FunctionType as function, MethodType as method)
+    named_types = class_types + (function, method)
+    name = '__name__'
+    if isinstance(obj, named_types):
+        res = getattr_static(obj, name, None)
+        if res and isdatadescriptor(res):
+            res = res.__get__(obj, type)
+    else:
+        res = getattr_static(obj, name, None)
+        if res and isdatadescriptor(res):
+            res = res.__get__(obj, type(obj))
+    return res if isinstance(res, string_types) else None
+
+
+# TODO: Implement a safe version for `attrgetter`
 
 
 # get rid of unused global variables
