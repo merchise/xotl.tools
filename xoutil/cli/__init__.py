@@ -53,7 +53,7 @@ class RegistryDescriptor(object):
         else:
             if instance:
                 obj = 'Instance %s of class %s' % (id(instance),
-                                             type(instance).__name__)
+                                                   type(instance).__name__)
             else:
                 obj = 'Class %s' % owner.__name__
             msg = 'Only allowed in class "Command"; used invalidly from "%s"!'

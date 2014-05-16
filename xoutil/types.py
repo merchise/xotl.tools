@@ -34,7 +34,7 @@ GeneratorType = _pm.GeneratorType
 del _pm, _copy_python_module_members
 
 
-from xoutil._values import UnsetType, Unset as _Unset
+from xoutil._values import Unset as _unset
 from collections import Mapping
 
 
@@ -234,11 +234,10 @@ class mro_dict(Mapping):
         self._target_mro = type_.mro()
 
     def __getitem__(self, name):
-
         from xoutil.objects import get_first_of
         probes = tuple(c.__dict__ for c in self._target_mro)
-        result = get_first_of(probes, name, default=_Unset)
-        if result is not _Unset:
+        result = get_first_of(probes, name, default=_unset)
+        if result is not _unset:
             return result
         else:
             raise KeyError(name)
@@ -350,7 +349,7 @@ def is_scalar(maybe):
     return is_string_like(maybe) or not is_iterable(maybe)
 
 
-def is_staticmethod(desc, name=_Unset):
+def is_staticmethod(desc, name=_unset):
     '''Returns true if a `method` is a static method.
 
     This function takes the same arguments as :func:`is_classmethod`.
@@ -361,7 +360,7 @@ def is_staticmethod(desc, name=_Unset):
     return isinstance(desc, staticmethod)
 
 
-def is_classmethod(desc, name=_Unset):
+def is_classmethod(desc, name=_unset):
     '''Returns true if a `method` is a class method.
 
     :param desc: This may be the method descriptor or the class that holds the
@@ -384,7 +383,7 @@ def is_classmethod(desc, name=_Unset):
     return isinstance(desc, classmethod)
 
 
-def is_instancemethod(desc, name=_Unset):
+def is_instancemethod(desc, name=_unset):
     '''Returns true if a given `method` is neither a static method nor a class
     method.
 
@@ -397,7 +396,7 @@ def is_instancemethod(desc, name=_Unset):
     return isinstance(desc, FunctionType)
 
 
-def is_slotwrapper(desc, name=_Unset):
+def is_slotwrapper(desc, name=_unset):
     '''Returns True if a given `method` is a slot wrapper (i.e. a method that
     is builtin in the `object` base class).
 
