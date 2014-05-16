@@ -14,7 +14,7 @@
 # This file is distributed under the terms of the LICENCE distributed
 # with this package.
 #
-# @created: Jul 3, 2012
+# @created: 2012-07-03
 #
 # Contributors from Medardo Rodríguez:
 #    - Manuel Vázquez Acosta <manu@merchise.org>
@@ -45,12 +45,21 @@ del sys
 namedtuple = _pm.namedtuple
 MutableMapping = _pm.MutableMapping
 Mapping = _pm.Mapping
+MutableSequence = _pm.MutableSequence
+Sequence = _pm.Sequence
+_itemgetter = _pm._itemgetter
+_heapq = _pm._heapq
+_chain = _pm._chain
+_repeat = _pm._repeat
+_starmap = _pm._starmap
 
 del _pm, _copy_python_module_members
 
 
 from collections import defaultdict as _defaultdict
 from xoutil.names import strlist as slist
+from xoutil.objects import SafeDataItem as safe
+
 
 import sys
 _py33 = sys.version_info >= (3, 3, 0)
@@ -102,33 +111,14 @@ class defaultdict(_defaultdict):
             raise KeyError(key)
 
 
-class opendict(dict):
-    '''A dictionary implementation that mirrors its keys as attributes::
-
-         >>> d = opendict({'es': 'spanish'})
-         >>> d.es
-         'spanish'
-
-         >>> d['es'] = 'espanol'
-         >>> d.es
-         'espanol'
-
-    Setting attributes *does not* makes them keys.
-
-    '''
-    def __getattr__(self, name):
-        try:
-            return self[name]
-        except:
-            msg = "type object '%s' has no attribute '%s'"
-            raise AttributeError(msg % (type(self), name))
-
-
 class OpenDictMixin(object):
     '''A mixin for mappings implementation that expose keys as attributes::
 
-        >>> class MyOpenDict(dict, OpenDictMixin):
-        ...     pass
+        >>> from xoutil.objects import SafeDataItem as safe
+
+        >>> class MyOpenDict(OpenDictMixin, dict):
+        ...     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
+
         >>> d = MyOpenDict({'es': 'spanish'})
         >>> d.es
         'spanish'
@@ -144,13 +134,39 @@ class OpenDictMixin(object):
 
     - The object has a ``__dict__`` attribute and the name is key there.
 
-    '''
-    # Subclasses can redefine this for converting keys to attributes by
-    # replacing separator chars (keys) for valid identifier chars (values).
-    __separators__ = {'.': '_', '-': '_'}
+    This mixin defines the following features that can be redefined:
 
-    # Cache for inverted mapping
-    __slots__ = slist('__mapping')  # First must be always '__mapping'
+    _key2identifier
+
+        Protected method, receive a key as argument and return a valid
+        identifier that is used instead the key as an extended attribute.
+
+    __cache_name__
+
+        Inner field to store a cached mapping between actual keys and
+        calculated attribute names.  The field must be always implemented as a
+        `SafeDataItem` descriptor and must be of type `dict`.  There are two
+        ways of implementing this:
+
+        - As a slot.  The first time of this implementation is an example.
+          Don't forget to pass the second parameter with the constructor
+          `dict`.
+
+        - As a normal descriptor::
+
+            >>> from xoutil.objects import SafeDataItem as safe
+            >>> class MyOpenDict(OpenDictMixin, dict):
+            ...     safe(OpenDictMixin.__cache_name__, dict)
+
+
+    Classes or Mixins that can be integrated with `dict` by inheritance
+        must not have a `__slots__` definition.  Because of that, this mixin
+        must not declare any slot.  If needed, it must be declared explicitly
+        in customized classed like in the example in the first part of this
+        documentation or in the definition of `opendict` class.
+
+    '''
+    __cache_name__ = str('_inverted_cache')
 
     def __dir__(self):
         '''Return normal "dir" plus valid keys as attributes.'''
@@ -159,16 +175,10 @@ class OpenDictMixin(object):
         return list(set(~self) | fulldir(self))
 
     def __getattr__(self, name):
-        from xoutil.objects import attrclass, fix_private_name
-        cls = attrclass(self, name)
-        if cls is not None:
-            from xoutil import Unset
-            attr = fix_private_name(cls, name)
-            attrs = getattr(self, '__dict__', {})
-            res = attrs.get(attr, Unset)
-            if res is Unset:
-                desc = cls.__dict__[attr]
-                res = desc.__get__(self, type(self))
+        from xoutil import Unset
+        from xoutil.inspect import get_attr_value
+        res = get_attr_value(self, name, Unset)
+        if res is not Unset:
             return res
         else:
             key = (~self).get(name)
@@ -179,38 +189,26 @@ class OpenDictMixin(object):
                 raise AttributeError(msg % (type(self).__name__, name))
 
     def __setattr__(self, name, value):
-        from xoutil.objects import attrclass, fix_private_name
-        cls = attrclass(self, name)
-        if cls is None:
-            key = (~self).get(name)
-            if not key:
-                cls = type(self)
-        if cls is not None:
-            attr = fix_private_name(cls, name)
-            super(OpenDictMixin, self).__setattr__(attr, value)
-        else:
+        key = (~self).get(name)
+        if key:
             self[key] = value
+        else:
+            super(OpenDictMixin, self).__setattr__(name, value)
 
     def __delattr__(self, name):
-        from xoutil.objects import attrclass, fix_private_name
-        cls = attrclass(self, name)
-        if cls is None:
-            key = (~self).get(name)
-            if not key:
-                cls = type(self)    # Maybe just for raising the error
-        if cls is not None:
-            attr = fix_private_name(cls, name)
-            super(OpenDictMixin, self).__delattr__(attr)
-        else:
+        key = (~self).get(name)
+        if key:
             del self[key]
+        else:
+            super(OpenDictMixin, self).__delattr__(name)
 
     def __invert__(self):
         '''Return an inverted mapping between key and attribute names (keys of
         the resulting dictionary are identifiers for attribute names and values
         are original key names).
 
-        Class attribute "__separators__" are used to calculate it and is cached
-        in private variable "__mapping".
+        Class attribute "__separators__" are used to calculate it and is
+        cached in '_inverted_cache slot safe variable.
 
         Several keys could have the same identifier, only one will be valid and
         used.
@@ -218,26 +216,36 @@ class OpenDictMixin(object):
         To obtain this mapping you can use as the unary operator "~".
 
         '''
-        from xoutil.objects import fix_private_name
-        name = fix_private_name(OpenDictMixin, OpenDictMixin.__slots__[0])
-        mm = OpenDictMixin.__dict__[name]
-        try:
-            mapping = mm.__get__(self, OpenDictMixin)
-            calculate = len(mapping) != len(self)
-        except:
-            calculate = True
-        if calculate:
-            def k2a(key):
-                from xoutil.validators.identifiers import is_valid_identifier
-                res = key
-                seps = type(self).__separators__
-                for sep in seps:
-                    res = res.replace(sep, seps[sep])
-                return str(res) if is_valid_identifier(res) else None
-            mapping = {k2a(key): key for key in self}
-            mapping.pop(None, None)
-            mm.__set__(self, mapping)
-        return mapping
+        from xoutil.inspect import get_attr_value
+        KEY_LENGTH = 'length'
+        KEY_MAPPING = 'mapping'
+        cache = get_attr_value(self, type(self).__cache_name__)
+        cached_length = cache.setdefault(KEY_LENGTH, 0)
+        length = len(self)
+        if cached_length != length:
+            cache[KEY_LENGTH] = length
+            aux = ((self._key2identifier(k), k) for k in self)
+            res = {key: attr for key, attr in aux if key}
+            cache[KEY_MAPPING] = res
+        else:
+            res = cache.get(KEY_MAPPING)
+            if res is None:
+                assert cached_length == 0
+                res = {}
+                cache[KEY_MAPPING] = res
+        return res
+
+    @staticmethod
+    def _key2identifier(key):
+        '''Convert keys to valid identifiers.
+
+        This method could be redefined in sub-classes to change this feature.
+        This function must return a valid identifier or None if the conversion
+        is not possible.
+
+        '''
+        from xoutil.string import normalize_slug
+        return normalize_slug(key, '_')
 
 
 class SmartDictMixin(object):
@@ -276,17 +284,22 @@ class SmartDictMixin(object):
     def search(self, pattern):
         '''Return new mapping with items which key match a `pattern` regexp.
 
-        This function always return a valid new mapping of the same type of
-        the caller instance.  If the constructor of corresponding type can't
-        be called without arguments, then return a standard Python dictionary.
+        This function always tries to return a valid new mapping of the same
+        type of the caller instance.  If the constructor of corresponding type
+        can't be called without arguments, then look up for a class
+        variable named `__search_result_type__` or return a standard
+        Python dictionary if not found
 
         '''
         from re import compile
         regexp = compile(pattern)
+        cls = type(self)
         try:
-            res = type(self)()
+            res = cls()
         except BaseException:
-            res = {}
+            from xoutil.inspect import get_attr_value
+            creator = get_attr_value(cls, '__search_result_type__', None)
+            res = creator() if creator else {}
         for key in self:
             if regexp.search(key):
                 res[key] = self[key]
@@ -296,7 +309,7 @@ class SmartDictMixin(object):
 class SmartDict(SmartDictMixin, dict):
     '''A "smart" dictionary that can receive a wide variety of arguments.
 
-    See :meth:`SmartDictMixin.update`.
+    See :meth:`SmartDictMixin.update` and :meth:`SmartDictMixin.search`.
 
     '''
     def __init__(self, *args, **kwargs):
@@ -304,111 +317,22 @@ class SmartDict(SmartDictMixin, dict):
         self.update(*args, **kwargs)
 
 
-class StackedDict(MutableMapping, OpenDictMixin, SmartDictMixin):
-    '''A multi-level mapping.
+class opendict(OpenDictMixin, dict, object):
+    '''A dictionary implementation that mirrors its keys as attributes::
 
-    A level is entered by using the :meth:`push` and is leaved by calling
-    :meth:`pop`.
+         >>> d = opendict({'es': 'spanish'})
+         >>> d.es
+         'spanish'
 
-    The property :attr:`level` returns the actual number of levels.
+         >>> d['es'] = 'espanol'
+         >>> d.es
+         'espanol'
 
-    When accessing keys they are searched from the lastest level "upwards", if
-    such a key does not exists in any level a KeyError is raised.
-
-    Deleting a key only works in the *current level*; if it's not defined there
-    a KeyError is raised. This means that you can't delete keys from the upper
-    levels without :func:`popping <pop>`.
-
-    Setting the value for key, sets it in the current level.
-
-    .. versionchanged:: 1.5.2 Based on the newly introduced :class:`ChainMap`.
+    Setting attributes *does not* makes them keys.
 
     '''
-    __slots__ = set(('__stack', '__level'))
+    __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
-    def __init__(self, *args, **kwargs):
-        # Each data item is stored as {key: {level: value, ...}}
-        self.__stack = ChainMap()
-        self.update(*args, **kwargs)
-
-    @property
-    def level(self):
-        '''Return the current level number.
-
-        The first level is 0.  Calling :meth:`push` increases the current
-        level (and returns it), while calling :meth:`pop` decreases the
-        current level (if possible).
-        '''
-        return len(self.__stack.maps) - 1
-
-    def push(self, *args, **kwargs):
-        '''Pushes a whole new level to the stacked dict.
-
-        :param args: Several mappings from which the new level will be
-                     initialled filled.
-
-        :param kwargs: Values to fill the new level.
-
-        :returns: The pushed :attr:`level` number.
-        '''
-        self.__stack = self.__stack.new_child()
-        self.update(*args, **kwargs)
-        return self.level
-
-    def pop(self):
-        '''Pops the last pushed level and returns the whole level.
-
-        If there are no levels in the stacked dict, a TypeError is raised.
-
-        :returns:  A dict containing the poped level.
-
-        '''
-        if self.level > 0:
-            stack = self.__stack
-            res = stack.maps[0]
-            self.__stack = stack.parents
-            return res
-        else:
-            raise TypeError('Cannot pop from StackedDict without any levels')
-
-    def peek(self):
-        '''Peeks the top level of the stack.
-
-        Returns a copy of the top-most level without any of the keys from
-        lower levels.
-
-        Example::
-
-           >>> sdict = StackedDict(a=1, b=2)
-           >>> sdict.push(c=3)  # it returns the level...
-           1
-           >>> sdict.peek()
-           {'c': 3}
-
-        '''
-        return dict(self.__stack.maps[0])
-
-    def __str__(self):
-        # TODO: Optimize
-        return str(dict(self))
-
-    def __repr__(self):
-        return '%s(%s)' % (type(self).__name__, str(self))
-
-    def __len__(self):
-        return len(self.__stack)
-
-    def __iter__(self):
-        return iter(self.__stack)
-
-    def __getitem__(self, key):
-        return self.__stack[key]
-
-    def __setitem__(self, key, value):
-        self.__stack[key] = value
-
-    def __delitem__(self, key):
-        del self.__stack[key]
 
 if not _py33:
     # From this point below: Copyright (c) 2001-2013, Python Software
@@ -575,7 +499,7 @@ if not _py33:
         items = MutableMapping.items
         __ne__ = MutableMapping.__ne__
 
-        __marker = object()
+        __marker = object()    # TODO: Change for some UnsetType instance
 
         def pop(self, key, default=__marker):
             '''od.pop(k[,d]) -> v, remove specified key and return the
@@ -641,7 +565,7 @@ if not _py33:
             '''
             if isinstance(other, OrderedDict):
                 return len(self) == len(other) and \
-                       all(p == q for p, q in zip(self.items(), other.items()))
+                    all(p == q for p, q in zip(self.items(), other.items()))
             return dict.__eq__(self, other)
 
 
@@ -665,7 +589,7 @@ if not _py34:
             If no mappings are provided, a single empty dictionary is used.
 
             '''
-            self.maps = list(maps) or [{}]          # always at least one map
+            self.maps = list(maps) or [{}]    # always at least one map
 
         def __missing__(self, key):
             raise KeyError(key)
@@ -673,16 +597,19 @@ if not _py34:
         def __getitem__(self, key):
             for mapping in self.maps:
                 try:
-                    return mapping[key]             # can't use 'key in mapping' with defaultdict
+                    return mapping[key]    # can't use 'key in mapping' with
+                                           # defaultdict
                 except KeyError:
                     pass
-            return self.__missing__(key)            # support subclasses that define __missing__
+            return self.__missing__(key)    # support subclasses that define
+                                            # __missing__
 
         def get(self, key, default=None):
             return self[key] if key in self else default
 
         def __len__(self):
-            return len(set().union(*self.maps))     # reuses stored hash values if possible
+            return len(set().union(*self.maps))  # reuses stored hash values
+                                                 # if possible
 
         def __iter__(self):
             return iter(set().union(*self.maps))
@@ -704,7 +631,10 @@ if not _py34:
             return cls(dict.fromkeys(iterable, *args))
 
         def copy(self):
-            'New ChainMap or subclass with a new copy of ``maps[0]`` and refs to ``maps[1:]``'
+            '''New ChainMap or subclass with a new copy of ``maps[0]`` and
+            refs to ``maps[1:]``
+
+            '''
             return self.__class__(self.maps[0].copy(), *self.maps[1:])
 
         __copy__ = copy
@@ -731,7 +661,8 @@ if not _py34:
             try:
                 del self.maps[0][key]
             except KeyError:
-                raise KeyError('Key not found in the first mapping: {!r}'.format(key))
+                msg = 'Key not found in the first mapping: {!r}'.format(key)
+                raise KeyError(msg)
 
         def popitem(self):
             '''Remove and return an item pair from ``maps[0]``.
@@ -751,7 +682,8 @@ if not _py34:
             try:
                 return self.maps[0].pop(key, *args)
             except KeyError:
-                raise KeyError('Key not found in the first mapping: {!r}'.format(key))
+                msg = 'Key not found in the first mapping: {!r}'.format(key)
+                raise KeyError(msg)
 
         def clear(self):
             'Clear ``maps[0]``, leaving ``maps[1:]`` intact.'
@@ -767,15 +699,23 @@ if not _py33:
                 self.update(dict)
             if len(kwargs):
                 self.update(kwargs)
-        def __len__(self): return len(self.data)
+
+        def __len__(self):
+            return len(self.data)
+
         def __getitem__(self, key):
             if key in self.data:
                 return self.data[key]
             if hasattr(self.__class__, "__missing__"):
                 return self.__class__.__missing__(self, key)
             raise KeyError(key)
-        def __setitem__(self, key, item): self.data[key] = item
-        def __delitem__(self, key): del self.data[key]
+
+        def __setitem__(self, key, item):
+            self.data[key] = item
+
+        def __delitem__(self, key):
+            del self.data[key]
+
         def __iter__(self):
             return iter(self.data)
 
@@ -784,7 +724,9 @@ if not _py33:
             return key in self.data
 
         # Now, add the methods in dicts but not in MutableMapping
-        def __repr__(self): return repr(self.data)
+        def __repr__(self):
+            return repr(self.data)
+
         def copy(self):
             if self.__class__ is UserDict:
                 return UserDict(self.data.copy())
@@ -797,6 +739,7 @@ if not _py33:
                 self.data = data
             c.update(self)
             return c
+
         @classmethod
         def fromkeys(cls, iterable, value=None):
             d = cls()
@@ -816,32 +759,60 @@ if not _py33:
                     self.data[:] = initlist.data[:]
                 else:
                     self.data = list(initlist)
-        def __repr__(self): return repr(self.data)
-        def __lt__(self, other): return self.data <  self.__cast(other)
-        def __le__(self, other): return self.data <= self.__cast(other)
-        def __eq__(self, other): return self.data == self.__cast(other)
-        def __ne__(self, other): return self.data != self.__cast(other)
-        def __gt__(self, other): return self.data >  self.__cast(other)
-        def __ge__(self, other): return self.data >= self.__cast(other)
+
+        def __repr__(self):
+            return repr(self.data)
+
+        def __lt__(self, other):
+            return self.data < self.__cast(other)
+
+        def __le__(self, other):
+            return self.data <= self.__cast(other)
+
+        def __eq__(self, other):
+            return self.data == self.__cast(other)
+
+        def __ne__(self, other):
+            return self.data != self.__cast(other)
+
+        def __gt__(self, other):
+            return self.data > self.__cast(other)
+
+        def __ge__(self, other):
+            return self.data >= self.__cast(other)
+
         def __cast(self, other):
             return other.data if isinstance(other, UserList) else other
-        def __contains__(self, item): return item in self.data
-        def __len__(self): return len(self.data)
-        def __getitem__(self, i): return self.data[i]
-        def __setitem__(self, i, item): self.data[i] = item
-        def __delitem__(self, i): del self.data[i]
+
+        def __contains__(self, item):
+            return item in self.data
+
+        def __len__(self):
+            return len(self.data)
+
+        def __getitem__(self, i):
+            return self.data[i]
+
+        def __setitem__(self, i, item):
+            self.data[i] = item
+
+        def __delitem__(self, i):
+            del self.data[i]
+
         def __add__(self, other):
             if isinstance(other, UserList):
                 return self.__class__(self.data + other.data)
             elif isinstance(other, type(self.data)):
                 return self.__class__(self.data + other)
             return self.__class__(self.data + list(other))
+
         def __radd__(self, other):
             if isinstance(other, UserList):
                 return self.__class__(other.data + self.data)
             elif isinstance(other, type(self.data)):
                 return self.__class__(other + self.data)
             return self.__class__(list(other) + self.data)
+
         def __iadd__(self, other):
             if isinstance(other, UserList):
                 self.data += other.data
@@ -850,22 +821,46 @@ if not _py33:
             else:
                 self.data += list(other)
             return self
+
         def __mul__(self, n):
             return self.__class__(self.data*n)
+
         __rmul__ = __mul__
+
         def __imul__(self, n):
             self.data *= n
             return self
-        def append(self, item): self.data.append(item)
-        def insert(self, i, item): self.data.insert(i, item)
-        def pop(self, i=-1): return self.data.pop(i)
-        def remove(self, item): self.data.remove(item)
-        def clear(self): self.data.clear()
-        def copy(self): return self.__class__(self)
-        def count(self, item): return self.data.count(item)
-        def index(self, item, *args): return self.data.index(item, *args)
-        def reverse(self): self.data.reverse()
-        def sort(self, *args, **kwds): self.data.sort(*args, **kwds)
+
+        def append(self, item):
+            self.data.append(item)
+
+        def insert(self, i, item):
+            self.data.insert(i, item)
+
+        def pop(self, i=-1):
+            return self.data.pop(i)
+
+        def remove(self, item):
+            self.data.remove(item)
+
+        def clear(self):
+            self.data.clear()
+
+        def copy(self):
+            return self.__class__(self)
+
+        def count(self, item):
+            return self.data.count(item)
+
+        def index(self, item, *args):
+            return self.data.index(item, *args)
+
+        def reverse(self):
+            self.data.reverse()
+
+        def sort(self, *args, **kwds):
+            self.data.sort(*args, **kwds)
+
         def extend(self, other):
             if isinstance(other, UserList):
                 self.data.extend(other.data)
@@ -880,33 +875,50 @@ if not _py33:
                 self.data = seq.data[:]
             else:
                 self.data = str(seq)
-        def __str__(self): return str(self.data)
-        def __repr__(self): return repr(self.data)
-        def __int__(self): return int(self.data)
-        def __float__(self): return float(self.data)
-        def __complex__(self): return complex(self.data)
-        def __hash__(self): return hash(self.data)
+
+        def __str__(self):
+            return str(self.data)
+
+        def __repr__(self):
+            return repr(self.data)
+
+        def __int__(self):
+            return int(self.data)
+
+        def __float__(self):
+            return float(self.data)
+
+        def __complex__(self):
+            return complex(self.data)
+
+        def __hash__(self):
+            return hash(self.data)
 
         def __eq__(self, string):
             if isinstance(string, UserString):
                 return self.data == string.data
             return self.data == string
+
         def __ne__(self, string):
             if isinstance(string, UserString):
                 return self.data != string.data
             return self.data != string
+
         def __lt__(self, string):
             if isinstance(string, UserString):
                 return self.data < string.data
             return self.data < string
+
         def __le__(self, string):
             if isinstance(string, UserString):
                 return self.data <= string.data
             return self.data <= string
+
         def __gt__(self, string):
             if isinstance(string, UserString):
                 return self.data > string.data
             return self.data > string
+
         def __ge__(self, string):
             if isinstance(string, UserString):
                 return self.data >= string.data
@@ -917,99 +929,166 @@ if not _py33:
                 char = char.data
             return char in self.data
 
-        def __len__(self): return len(self.data)
-        def __getitem__(self, index): return self.__class__(self.data[index])
+        def __len__(self):
+            return len(self.data)
+
+        def __getitem__(self, index):
+            return self.__class__(self.data[index])
+
         def __add__(self, other):
             if isinstance(other, UserString):
                 return self.__class__(self.data + other.data)
             elif isinstance(other, str):
                 return self.__class__(self.data + other)
             return self.__class__(self.data + str(other))
+
         def __radd__(self, other):
             if isinstance(other, str):
                 return self.__class__(other + self.data)
             return self.__class__(str(other) + self.data)
+
         def __mul__(self, n):
             return self.__class__(self.data*n)
+
         __rmul__ = __mul__
+
         def __mod__(self, args):
             return self.__class__(self.data % args)
 
         # the following methods are defined in alphabetical order:
-        def capitalize(self): return self.__class__(self.data.capitalize())
+        def capitalize(self):
+            return self.__class__(self.data.capitalize())
+
         def center(self, width, *args):
             return self.__class__(self.data.center(width, *args))
+
         def count(self, sub, start=0, end=_sys.maxsize):
             if isinstance(sub, UserString):
                 sub = sub.data
             return self.data.count(sub, start, end)
-        def encode(self, encoding=None, errors=None): # XXX improve this?
+
+        def encode(self, encoding=None, errors=None):  # XXX improve this?
             if encoding:
                 if errors:
                     return self.__class__(self.data.encode(encoding, errors))
                 return self.__class__(self.data.encode(encoding))
             return self.__class__(self.data.encode())
+
         def endswith(self, suffix, start=0, end=_sys.maxsize):
             return self.data.endswith(suffix, start, end)
+
         def expandtabs(self, tabsize=8):
             return self.__class__(self.data.expandtabs(tabsize))
+
         def find(self, sub, start=0, end=_sys.maxsize):
             if isinstance(sub, UserString):
                 sub = sub.data
             return self.data.find(sub, start, end)
+
         def format(self, *args, **kwds):
             return self.data.format(*args, **kwds)
+
         def index(self, sub, start=0, end=_sys.maxsize):
             return self.data.index(sub, start, end)
-        def isalpha(self): return self.data.isalpha()
-        def isalnum(self): return self.data.isalnum()
-        def isdecimal(self): return self.data.isdecimal()
-        def isdigit(self): return self.data.isdigit()
-        def isidentifier(self): return self.data.isidentifier()
-        def islower(self): return self.data.islower()
-        def isnumeric(self): return self.data.isnumeric()
-        def isspace(self): return self.data.isspace()
-        def istitle(self): return self.data.istitle()
-        def isupper(self): return self.data.isupper()
-        def join(self, seq): return self.data.join(seq)
+
+        def isalpha(self):
+            return self.data.isalpha()
+
+        def isalnum(self):
+            return self.data.isalnum()
+
+        def isdecimal(self):
+            return self.data.isdecimal()
+
+        def isdigit(self):
+            return self.data.isdigit()
+
+        def isidentifier(self):
+            return self.data.isidentifier()
+
+        def islower(self):
+            return self.data.islower()
+
+        def isnumeric(self):
+            return self.data.isnumeric()
+
+        def isspace(self):
+            return self.data.isspace()
+
+        def istitle(self):
+            return self.data.istitle()
+
+        def isupper(self):
+            return self.data.isupper()
+
+        def join(self, seq):
+            return self.data.join(seq)
+
         def ljust(self, width, *args):
             return self.__class__(self.data.ljust(width, *args))
-        def lower(self): return self.__class__(self.data.lower())
-        def lstrip(self, chars=None): return self.__class__(self.data.lstrip(chars))
+
+        def lower(self):
+            return self.__class__(self.data.lower())
+
+        def lstrip(self, chars=None):
+            return self.__class__(self.data.lstrip(chars))
+
         def partition(self, sep):
             return self.data.partition(sep)
+
         def replace(self, old, new, maxsplit=-1):
             if isinstance(old, UserString):
                 old = old.data
             if isinstance(new, UserString):
                 new = new.data
             return self.__class__(self.data.replace(old, new, maxsplit))
+
         def rfind(self, sub, start=0, end=_sys.maxsize):
             if isinstance(sub, UserString):
                 sub = sub.data
             return self.data.rfind(sub, start, end)
+
         def rindex(self, sub, start=0, end=_sys.maxsize):
             return self.data.rindex(sub, start, end)
+
         def rjust(self, width, *args):
             return self.__class__(self.data.rjust(width, *args))
+
         def rpartition(self, sep):
             return self.data.rpartition(sep)
+
         def rstrip(self, chars=None):
             return self.__class__(self.data.rstrip(chars))
+
         def split(self, sep=None, maxsplit=-1):
             return self.data.split(sep, maxsplit)
+
         def rsplit(self, sep=None, maxsplit=-1):
             return self.data.rsplit(sep, maxsplit)
-        def splitlines(self, keepends=False): return self.data.splitlines(keepends)
+
+        def splitlines(self, keepends=False):
+            return self.data.splitlines(keepends)
+
         def startswith(self, prefix, start=0, end=_sys.maxsize):
             return self.data.startswith(prefix, start, end)
-        def strip(self, chars=None): return self.__class__(self.data.strip(chars))
-        def swapcase(self): return self.__class__(self.data.swapcase())
-        def title(self): return self.__class__(self.data.title())
+
+        def strip(self, chars=None):
+            return self.__class__(self.data.strip(chars))
+
+        def swapcase(self):
+            return self.__class__(self.data.swapcase())
+
+        def title(self):
+            return self.__class__(self.data.title())
+
         def translate(self, *args):
             return self.__class__(self.data.translate(*args))
-        def upper(self): return self.__class__(self.data.upper())
-        def zfill(self, width): return self.__class__(self.data.zfill(width))
+
+        def upper(self):
+            return self.__class__(self.data.upper())
+
+        def zfill(self, width):
+            return self.__class__(self.data.zfill(width))
 
     def _count_elements(mapping, iterable):
         self_get = mapping.get
@@ -1029,25 +1108,25 @@ if not _py33:
         ['a', 'b', 'c', 'd', 'e']
         >>> ''.join(sorted(c.elements()))   # list elements with repetitions
         'aaaaabbbbcccdde'
-        >>> sum(c.values())                 # total of all counts
+        >>> sum(c.values())            # total of all counts
         15
 
-        >>> c['a']                          # count of letter 'a'
+        >>> c['a']                     # count of letter 'a'
         5
-        >>> for elem in 'shazam':           # update counts from an iterable
-        ...     c[elem] += 1                # by adding 1 to each element's count
-        >>> c['a']                          # now there are seven 'a'
+        >>> for elem in 'shazam':      # update counts from an iterable
+        ...     c[elem] += 1           # by adding 1 to each element's count
+        >>> c['a']                     # now there are seven 'a'
         7
-        >>> del c['b']                      # remove all 'b'
-        >>> c['b']                          # now there are zero 'b'
+        >>> del c['b']                 # remove all 'b'
+        >>> c['b']                     # now there are zero 'b'
         0
 
-        >>> d = Counter('simsalabim')       # make another counter
-        >>> c.update(d)                     # add in the second counter
-        >>> c['a']                          # now there are nine 'a'
+        >>> d = Counter('simsalabim')  # make another counter
+        >>> c.update(d)                # add in the second counter
+        >>> c['a']                     # now there are nine 'a'
         9
 
-        >>> c.clear()                       # empty the counter
+        >>> c.clear()                  # empty the counter
         >>> c
         Counter()
 
@@ -1055,27 +1134,27 @@ if not _py33:
         in the counter until the entry is deleted or the counter is cleared:
 
         >>> c = Counter('aaabbc')
-        >>> c['b'] -= 2                     # reduce the count of 'b' by two
-        >>> c.most_common()                 # 'b' is still in, but its count is zero
+        >>> c['b'] -= 2               # reduce the count of 'b' by two
+        >>> c.most_common()           # 'b' is still in, but its count is zero
         [('a', 3), ('c', 1), ('b', 0)]
 
         '''
         # References:
-        #   http://en.wikipedia.org/wiki/Multiset
-        #   http://www.gnu.org/software/smalltalk/manual-base/html_node/Bag.html
-        #   http://www.demo2s.com/Tutorial/Cpp/0380__set-multiset/Catalog0380__set-multiset.htm
-        #   http://code.activestate.com/recipes/259174/
-        #   Knuth, TAOCP Vol. II section 4.6.3
+        # http://en.wikipedia.org/wiki/Multiset
+        # http://www.gnu.org/software/smalltalk/manual-base/html_node/Bag.html
+        # http://www.demo2s.com/Tutorial/Cpp/0380__set-multiset/Catalog0380__set-multiset.htm
+        # http://code.activestate.com/recipes/259174/
+        # Knuth, TAOCP Vol. II section 4.6.3
 
         def __init__(self, iterable=None, **kwds):
-            '''Create a new, empty Counter object.  And if given, count elements
-            from an input iterable.  Or, initialize the count from another mapping
-            of elements to their counts.
+            '''Create a new, empty Counter object.  And if given, count
+            elements from an input iterable.  Or, initialize the count from
+            another mapping of elements to their counts.
 
-            >>> c = Counter()                           # a new, empty counter
-            >>> c = Counter('gallahad')                 # a new counter from an iterable
-            >>> c = Counter({'a': 4, 'b': 2})           # a new counter from a mapping
-            >>> c = Counter(a=4, b=2)                   # a new counter from keyword args
+            >>> c = Counter()                 # a new, empty counter
+            >>> c = Counter('gallahad')       # a new counter from an iterable
+            >>> c = Counter({'a': 4, 'b': 2})  # a new counter from a mapping
+            >>> c = Counter(a=4, b=2)        # a new counter from keyword args
 
             '''
             super(Counter, self).__init__()
@@ -1100,7 +1179,8 @@ if not _py33:
             return _heapq.nlargest(n, self.items(), key=_itemgetter(1))
 
         def elements(self):
-            '''Iterator over elements repeating each as many times as its count.
+            '''Iterator over elements repeating each as many times as its
+            count.
 
             >>> c = Counter('ABCABC')
             >>> sorted(c.elements())
@@ -1127,19 +1207,20 @@ if not _py33:
         def fromkeys(cls, iterable, v=None):
             # There is no equivalent method for counters because setting v=1
             # means that no element can have a count greater than one.
-            raise NotImplementedError(
-                'Counter.fromkeys() is undefined.  Use Counter(iterable) instead.')
+            raise NotImplementedError('Counter.fromkeys() is undefined.  '
+                                      'Use Counter(iterable) instead.')
 
         def update(self, iterable=None, **kwds):
             '''Like dict.update() but add counts instead of replacing them.
 
-            Source can be an iterable, a dictionary, or another Counter instance.
+            Source can be an iterable, a dictionary, or another Counter
+            instance.
 
             >>> c = Counter('which')
-            >>> c.update('witch')           # add elements from another iterable
+            >>> c.update('witch')       # add elements from another iterable
             >>> d = Counter('watch')
-            >>> c.update(d)                 # add elements from another counter
-            >>> c['h']                      # four 'h' in which, witch, and watch
+            >>> c.update(d)             # add elements from another counter
+            >>> c['h']                  # four 'h' in which, witch, and watch
             4
 
             '''
@@ -1158,26 +1239,44 @@ if not _py33:
                         for elem, count in iterable.items():
                             self[elem] = count + self_get(elem, 0)
                     else:
-                        super(Counter, self).update(iterable) # fast path when counter is empty
+                        # fast path when counter is empty
+                        super(Counter, self).update(iterable)
                 else:
                     _count_elements(self, iterable)
             if kwds:
                 self.update(kwds)
 
         def subtract(self, iterable=None, **kwds):
-            '''Like dict.update() but subtracts counts instead of replacing them.
+            '''Like dict.update() but subtracts counts instead of replacing
+            them.
+
             Counts can be reduced below zero.  Both the inputs and outputs are
             allowed to contain zero and negative counts.
 
-            Source can be an iterable, a dictionary, or another Counter instance.
+            Source can be an iterable, a dictionary, or another Counter
+            instance.
 
-            >>> c = Counter('which')
-            >>> c.subtract('witch')             # subtract elements from another iterable
-            >>> c.subtract(Counter('watch'))    # subtract elements from another counter
-            >>> c['h']                          # 2 in which, minus 1 in witch, minus 1 in watch
-            0
-            >>> c['w']                          # 1 in which, minus 1 in witch, minus 1 in watch
-            -1
+            Examples::
+
+              >>> c = Counter('which')
+
+            Subtract elements from another iterable::
+
+              >>> c.subtract('witch')
+
+            Subtract elements from another counter::
+
+              >>> c.subtract(Counter('watch'))
+
+            2 in which, minus 1 in witch, minus 1 in watch::
+
+              >>> c['h']
+              0
+
+            1 in which, minus 1 in witch, minus 1 in watch::
+
+              >>> c['w']
+              -1
 
             '''
             if iterable is not None:
@@ -1199,7 +1298,8 @@ if not _py33:
             return self.__class__, (dict(self),)
 
         def __delitem__(self, elem):
-            'Like dict.__delitem__() but does not raise KeyError for missing values.'
+            '''Like dict.__delitem__() but does not raise KeyError for missing
+            values.'''
             if elem in self:
                 super(Counter, self).__delitem__(elem)
 
@@ -1298,19 +1398,22 @@ if not _py33:
             return result
 
         def __pos__(self):
-            'Adds an empty counter, effectively stripping negative and zero counts'
+            '''Adds an empty counter, effectively stripping negative and zero
+            counts.'''
             return self + Counter()
 
         def __neg__(self):
-            '''Subtracts from an empty counter.  Strips positive and zero counts,
-            and flips the sign on negative counts.
+            '''Subtracts from an empty counter.  Strips positive and zero
+            counts, and flips the sign on negative counts.
 
             '''
             return Counter() - self
 
         def _keep_positive(self):
-            '''Internal method to strip elements with a negative or zero count'''
-            nonpositive = [elem for elem, count in self.items() if not count > 0]
+            '''Internal method to strip elements with a negative or zero
+            count.'''
+            nonpositive = [elem for elem, count in self.items()
+                           if not count > 0]
             for elem in nonpositive:
                 del self[elem]
             return self
@@ -1329,7 +1432,8 @@ if not _py33:
             return self._keep_positive()
 
         def __isub__(self, other):
-            '''Inplace subtract counter, but keep only results with positive counts.
+            '''Inplace subtract counter, but keep only results with positive
+            counts.
 
             >>> c = Counter('abbbc')
             >>> c -= Counter('bccd')
@@ -1372,6 +1476,115 @@ if not _py33:
             return self._keep_positive()
 
 ### ;; end of Python 3.3 backport
+
+
+class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
+    '''A multi-level mapping.
+
+    A level is entered by using the :meth:`push` and is leaved by calling
+    :meth:`pop`.
+
+    The property :attr:`level` returns the actual number of levels.
+
+    When accessing keys they are searched from the lastest level "upwards", if
+    such a key does not exists in any level a KeyError is raised.
+
+    Deleting a key only works in the *current level*; if it's not defined there
+    a KeyError is raised. This means that you can't delete keys from the upper
+    levels without :func:`popping <pop>`.
+
+    Setting the value for key, sets it in the current level.
+
+    .. versionchanged:: 1.5.2 Based on the newly introduced :class:`ChainMap`.
+
+    '''
+    __slots__ = (safe.slot('inner', ChainMap),
+                 safe.slot(OpenDictMixin.__cache_name__, dict))
+
+    def __init__(self, *args, **kwargs):
+        # Each data item is stored as {key: {level: value, ...}}
+        self.update(*args, **kwargs)
+
+    @property
+    def level(self):
+        '''Return the current level number.
+
+        The first level is 0.  Calling :meth:`push` increases the current
+        level (and returns it), while calling :meth:`pop` decreases the
+        current level (if possible).
+
+        '''
+        return len(self.inner.maps) - 1
+
+    def push(self, *args, **kwargs):
+        '''Pushes a whole new level to the stacked dict.
+
+        :param args: Several mappings from which the new level will be
+                     initialled filled.
+
+        :param kwargs: Values to fill the new level.
+
+        :returns: The pushed :attr:`level` number.
+
+        '''
+        self.inner = self.inner.new_child()
+        self.update(*args, **kwargs)
+        return self.level
+
+    def pop(self):
+        '''Pops the last pushed level and returns the whole level.
+
+        If there are no levels in the stacked dict, a TypeError is raised.
+
+        :returns:  A dict containing the poped level.
+
+        '''
+        if self.level > 0:
+            stack = self.inner
+            res = stack.maps[0]
+            self.inner = stack.parents
+            return res
+        else:
+            raise TypeError('Cannot pop from StackedDict without any levels')
+
+    def peek(self):
+        '''Peeks the top level of the stack.
+
+        Returns a copy of the top-most level without any of the keys from
+        lower levels.
+
+        Example::
+
+           >>> sdict = StackedDict(a=1, b=2)
+           >>> sdict.push(c=3)  # it returns the level...
+           1
+           >>> sdict.peek()
+           {'c': 3}
+
+        '''
+        return dict(self.inner.maps[0])
+
+    def __str__(self):
+        # TODO: Optimize
+        return str(dict(self))
+
+    def __repr__(self):
+        return '%s(%s)' % (type(self).__name__, str(self))
+
+    def __len__(self):
+        return len(self.inner)
+
+    def __iter__(self):
+        return iter(self.inner)
+
+    def __getitem__(self, key):
+        return self.inner[key]
+
+    def __setitem__(self, key, value):
+        self.inner[key] = value
+
+    def __delitem__(self, key):
+        del self.inner[key]
 
 
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
