@@ -265,8 +265,8 @@ class SmartDictMixin(object):
 
         Each positional argument could be:
 
-        - another mapping (any object implementing "keys" and "__getitem__"
-          methods.
+        - another mapping (any object implementing "keys" and
+          :meth:`~object.__getitem__` methods.
 
         - an iterable of (key, value) pairs.
 

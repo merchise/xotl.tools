@@ -21,9 +21,6 @@ import unittest
 
 from xoutil.modules import customize, modulemethod, moduleproperty
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Jan 28 19:32:00 2013"
-
 
 class TestModulesCustomization(unittest.TestCase):
     def setUp(self):
@@ -101,3 +98,13 @@ def test_get_module_path_by_module_string_rel():
     from xoutil.modules import get_module_path
     with pytest.raises(TypeError):
         assert get_module_path('.iterators') == expected
+
+
+def test_object_stability():
+    import testbed
+    from testbed import selfish
+    a, b = testbed.selfish()
+    c, d = selfish()
+    e, f = testbed.selfish()
+    assert a == c == e
+    assert b == d == f

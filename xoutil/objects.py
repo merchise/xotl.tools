@@ -6,6 +6,9 @@
 # Copyright (c) 2012, 2014 Merchise Autrement
 # All rights reserved.
 #
+# Author: Medardo Rodríguez
+# Contributors: see CONTRIBUTORS and HISTORY file
+#
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.

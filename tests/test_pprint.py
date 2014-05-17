@@ -16,9 +16,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon May  6 15:12:57 2013"
-
 
 def test_ppformat_rtype():
     from xoutil.pprint import ppformat

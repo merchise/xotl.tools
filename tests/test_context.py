@@ -19,9 +19,6 @@ from __future__ import (division as _py3_division,
 import unittest
 from xoutil.context import context
 
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__ = "Tue Jan 15 12:17:01 2013"
-
 
 class TestContext(unittest.TestCase):
     def test_simple_contexts(self):

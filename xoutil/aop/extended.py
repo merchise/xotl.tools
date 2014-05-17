@@ -32,9 +32,6 @@ from xoutil.names import strlist as strs
 __all__ = strs('weave')
 del strs
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 @_deprecated('None', msg="This entire module is deprecated and will be "
              "removed.", removed_in_version='1.6.0')

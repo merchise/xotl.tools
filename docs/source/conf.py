@@ -284,9 +284,10 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'py2': ('http://docs.python.org/2.7/', None),
-    'py33': ('http://docs.python.org/3.3/', None),
+    'py3': ('http://docs.python.org/3.4/', None),
 }
 
-intersphinx_cache_limit = 120
+# Maintain the cache forever.
+intersphinx_cache_limit = -1
 
 autosummary_generate = True

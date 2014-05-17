@@ -18,8 +18,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-__docstring_format__ = 'rst'
-
 
 from xoutil import Undefined as _undef
 
@@ -204,8 +202,8 @@ def nameof(*args, **kwargs):
         >>> nameof(sorted_dict, inner=True)
         'OrderedDict'
 
-    If the `typed` flag is true, returns the name of the type unless `item`
-    is already a type or it has a "__name__" attribute, but this method is
+    If the `typed` flag is true, returns the name of the type unless `target`
+    is already a type or it has a "__name__" attribute, but the "__name__" is
     used only if `inner` is True.
 
         >>> sd = sorted_dict(x=1, y=2)

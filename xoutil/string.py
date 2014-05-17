@@ -278,6 +278,8 @@ def normalize_slug(value, unwanted_replacement='-', invalid_underscore=False):
       >>> normalize_slug(135) == '135'
       True
 
+    .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
+
     '''
     import unicodedata
     if not isinstance(value, _unicode):

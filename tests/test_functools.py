@@ -20,13 +20,12 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _absolute_import)
 
+import unittest
+
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 from xoutil.functools import lru_cache
-
-__docstring_format__ = 'rst'
-__author__ = 'manu'
 
 
 @lru_cache(3)
@@ -68,3 +67,51 @@ def test_lrucache():
 
 def test_lrucache_stats():
     pass
+
+
+from xoutil.functools import compose
+
+
+class TestCompose(unittest.TestCase):
+    def test_needs_at_least_an_argument(self):
+        with self.assertRaises(TypeError):
+            compose()
+
+    def test_single_argument_is_identitical(self):
+        def anything():
+            pass
+
+        self.assertIs(anything, compose(anything))
+
+    def test_only_callables(self):
+        with self.assertRaises(TypeError):
+            compose(1)
+
+    def test_simple_case(self):
+        incr = lambda x: x + 1
+        add_3 = compose(incr, incr, incr)
+        self.assertEqual(3, add_3(0))
+
+    def test_with_pow(self):
+        from xoutil.functools import power
+        incr = lambda x: x + 1
+        add_1 = power(incr, 1)
+        self.assertIs(incr, add_1)
+        add_3 = power(incr, 3)
+        self.assertEqual(3, add_3(0))
+
+    def test_ctuple(self):
+        from xoutil.six.moves import range
+        from xoutil.functools import ctuple
+
+        def echo(*args):
+            return args
+
+        result = compose(echo, ctuple, list, range, math=False)(10)
+        expected = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+        self.assertEqual(expected, result)
+
+        # Without ctuple prints the list
+        result = compose(echo, list, range, math=False)(10)
+        expected = ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], )
+        self.assertEqual(expected, result)

@@ -88,6 +88,9 @@
    .. note:: In Python 3.4+ this is an alias to
              :class:`types.SimpleNamespace`.
 
+.. autoclass:: DynamicClassAttribute
+
+
 .. _types-140-refactor:
 
 Importing `Unset` and `ignored`

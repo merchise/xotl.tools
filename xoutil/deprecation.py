@@ -23,9 +23,6 @@ import warnings
 from functools import wraps
 from xoutil.six import class_types as _class_types
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
                'removed{in_version}. Use {replacement} instead.')

@@ -19,25 +19,23 @@ from __future__ import (division as _py3_division,
 import unittest
 import random
 
-from xoutil.bases import B32, B64
-
-__author__ = "Manuel Vázquez Acosta <mva.led@gmail.com>"
-__date__   = "Mon Mar 25 14:36:30 2013"
+from xoutil.bases import B32, B64, B64symbolic
 
 
 def build_many_tests():
     def test_many_random_convertions(self):
-        subjects = [B32, B64]
+        subjects = [B32, B64, B64symbolic]
         for _ in range(5):
             testcase = random.randrange(0, 2**128)
             subject = random.choice(subjects)
-            assert testcase ==  subject.basetoint(subject.inttobase(testcase))
+            assert testcase == subject.basetoint(subject.inttobase(testcase))
     return {'test_many_random_convertions_%d' % i:
             test_many_random_convertions for i in range(10)}
 
 _TestManyConvertions = type(str('TestManyConvertions'),
-                           (object, ),
-                           build_many_tests())
+                            (object, ),
+                            build_many_tests())
+
 
 class TestManyConvertions(unittest.TestCase, _TestManyConvertions):
     pass

@@ -56,8 +56,8 @@ class ctuple(tuple):
     '''
 
 
-def compose(*funcs, **kwargs):
-    '''Returns a function that is the composition of `funcs`.
+def compose(*callables, **kwargs):
+    '''Returns a function that is the composition of several `callables`.
 
     By default `compose` behaves like mathematical function composition: this
     is to say that ``compose(f1, ... fn)`` is equivalent to ``lambda _x:
@@ -66,18 +66,29 @@ def compose(*funcs, **kwargs):
     If any "intermediate" function returns a :class:`ctuple` it is expanded as
     several positional arguments to the next function.
 
+    .. versionchanged:: 1.5.5 At least a callable must be passed, otherwise a
+                        TypeError is raised.  If a single callable is passed
+                        it is returned without change.
+
     :param math: Indicates if `compose` should behave like mathematical
                  function composition: last function in `funcs` is applied
                  last. If False, then the last function in `func` is applied
                  first.
 
     '''
+    from xoutil.six import callable
+    if not callables:
+        raise TypeError('At least a function must be provided')
+    if not all(callable(func) for func in callables):
+        raise TypeError('Every func must a callable')
+    if len(callables) == 1:
+        return callables[0]
     math = kwargs.get('math', True)
     if not math:
-        funcs = list(reversed(funcs))
+        callables = list(reversed(callables))
 
     def _inner(*args):
-        f, functions = funcs[0], funcs[1:]
+        f, functions = callables[0], callables[1:]
         result = f(*args)
         for f in functions:
             if isinstance(result, ctuple):
@@ -194,6 +205,7 @@ if not py33:
         def __hash__(self):
             return self.hashvalue
 
+
     def _make_key(args, kwds, typed,
                   kwd_mark=(object(),),
                   fasttypes={int, str, frozenset, type(None)},
@@ -272,8 +284,8 @@ if not py33:
         # version).
 
         # Constants shared by all lru cache instances:
-        sentinel = object()        # unique object used to signal cache misses
-        make_key = _make_key       # build a key from the function arguments
+        sentinel = object()          # unique object used to signal cache misses
+        make_key = _make_key         # build a key from the function arguments
         PREV, NEXT, KEY, RESULT = 0, 1, 2, 3   # names for the link fields
 
         def decorating_function(user_function):

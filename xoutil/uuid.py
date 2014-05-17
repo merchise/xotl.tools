@@ -24,9 +24,6 @@ from xoutil.names import strlist as strs
 __all__ = strs('uuid', )
 del strs
 
-__docstring_format__ = 'rst'
-__author__ = 'manu'
-
 
 def uuid(random=False):
     '''Return a "Global Unique ID" as a string.
