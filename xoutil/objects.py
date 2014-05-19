@@ -780,9 +780,9 @@ def smart_copy(*args, **kwargs):
 
     - the last positional argument is either None, True, False or a *function*,
 
-    then `target` is the next-to-last positional argument and `defaults` is the
-    last positional argument. Notice that passing a callable that is not a
-    function is possible only with a keyword argument. If this is too
+    then `target` is the next-to-last positional argument and `defaults` is
+    the last positional argument. Notice that passing a callable that is not a
+    function is possible only with a keyword argument.  If this is too
     confusing, pass `defaults` as a keyword argument.
 
     If `defaults` is a dictionary or an iterable then only the names provided
@@ -797,18 +797,19 @@ def smart_copy(*args, **kwargs):
     - A sequence with is first value being a subclass of Exception. In which
       case :class:`xoutil.data.adapt_exception` is used.
 
-    In these cases a KeyError is raised if the key is not found in the sources.
+    In these cases a KeyError is raised if the key is not found in the
+    sources.
 
     If `default` is an iterable and a key is not found in any of the sources,
     None is copied to `target`.
 
-    If `defaults` is a callable then it should receive one positional arguments
-    for the current `attribute name` and several keyword arguments (we pass
-    ``source``) and return either True or False if the attribute should be
-    copied.
+    If `defaults` is a callable then it should receive one positional
+    arguments for the current `attribute name` and several keyword arguments
+    (we pass ``source``) and return either True or False if the attribute
+    should be copied.
 
-    If `defaults` is False (or None) only the attributes that do not start with
-    a "_" are copied, if it's True all attributes are copied.
+    If `defaults` is False (or None) only the attributes that do not start
+    with a "_" are copied, if it's True all attributes are copied.
 
     When `target` is not a mapping only valid Python identifiers will be
     copied.
