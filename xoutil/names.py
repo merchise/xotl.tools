@@ -48,16 +48,16 @@ def _get_mappings(source):
 
 
 def _key_for_value(source, value, strict=True):
-    '''Returns the key that has the "value" in dictionary "source".
+    '''Returns the tuple (key, mapping) where the "value" is found.
 
     if strict is True, then look first for the same object::
         >>> x = {1}
         >>> y = {1}
         >>> src = {'x': x, 'y': y}
         >>> search = lambda o, strict=True: _key_for_value(src, o, strict)
-        >>> search(x) == search(y)
+        >>> search(x[0]) == search(y[0])
         False
-        >>> search(x, strict=False) == search(y, strict=False)
+        >>> search(x[0], strict=False) == search(y[0], strict=False)
         True
 
     This is mainly intended to find object names in stack frame variables.
@@ -67,7 +67,7 @@ def _key_for_value(source, value, strict=True):
 
     '''
     source = _get_mappings(source)
-    found, equal = _undef, None
+    found, equal = _undef, (None, {})
     i, mapping_count = 0, len(source)
     while found is _undef and (i < mapping_count):
         mapping = source[i]
@@ -77,12 +77,12 @@ def _key_for_value(source, value, strict=True):
             key = keys[j]
             item = mapping[key]
             if item is value:
-                found = key
+                found = key, mapping
             elif item == value:
                 if strict:
-                    equal = key
+                    equal = key, mapping
                 else:
-                    found = key
+                    found = key, mapping
             j += 1
         i += 1
     return found if found is not _undef else equal
@@ -261,7 +261,7 @@ def nameof(*args, **kwargs):
 
     '''
     from numbers import Number
-    from xoutil.inspect import get_attr_value, type_name
+    from xoutil.inspect import type_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
 
@@ -304,13 +304,13 @@ def nameof(*args, **kwargs):
             sf = sys._getframe(param('depth', 1))
             try:
                 i, LIMIT, res = 0, 5, _undef
+                _full = param('full')
                 while not res and sf and (i < LIMIT):
-                    key = _key_for_value(sf, item)
-                    if key and param('full'):
-                        head = _get_value(sf, '__name__')
+                    key, mapping = _key_for_value(sf, item)
+                    if key and _full:
+                        head = module_name(_get_value(mapping, '__name__'))
                         if not head:
-                            head = sf.f_code.co_name
-                        head = module_name(head)
+                            head = module_name(sf.f_code.co_name)
                         if not head:
                             head = module_name(item) or None
                     else:
