@@ -39,6 +39,8 @@ del _pm, _copy_python_module_members
 from xoutil._values import Unset as _unset
 from collections import Mapping
 
+# FIXME: [med] Reintroduce UnsetType or deprecate it here.
+from xoutil._values import UnsetType
 
 from xoutil.names import strlist as strs
 __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',

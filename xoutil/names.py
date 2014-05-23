@@ -179,6 +179,7 @@ def module_name(item):
     return str(res)
 
 
+# TODO: [med] Document the `safe` keyword argument.
 def nameof(*args, **kwargs):
     '''Obtain the name of each one of a set of objects.
 
@@ -261,7 +262,7 @@ def nameof(*args, **kwargs):
 
     '''
     from numbers import Number
-    from xoutil.inspect import get_attr_value, type_name
+    from xoutil.inspect import type_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
 

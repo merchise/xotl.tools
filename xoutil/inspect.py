@@ -48,7 +48,15 @@ except AttributeError:
                 _safe_search_bases(base, accum)
 
     def _typeof(obj):
-        old = isinstance(obj, types.InstanceType)
+        # FIXME: [med]  types.InstanceType does not exist in Py3.
+        try:
+            InstanceType = types.InstanceType
+        except AttributeError:
+            from xoutil.types import UnsetType
+
+            class InstanceType(UnsetType):
+                '''A type without any instance.'''
+        old = isinstance(obj, InstanceType)
         return obj.__class__ if old else type(obj)
 
     def _static_getmro(klass):
@@ -196,6 +204,7 @@ def get_attr_value(obj, name, *default):
         raise AttributeError(msg % (type(obj).__name__, name))
 
 
+# TODO: [med] URGENT Fix the docstring.
 def type_name(obj):
     '''Return the type or callable internal name.
 
