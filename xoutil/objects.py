@@ -74,17 +74,6 @@ class SafeDataItem(object):
         >>> f.mapping
         {}
 
-    Alias to constructor is defined with `property` static method in order to
-    allow the similar syntax sugar for the second scenario::
-
-        >>> class Foobar(object):
-        ...     @safe.property
-        ...     def mapping(self):
-        ...         return {'this': self}
-        >>> f = Foobar()
-        >>> f.mapping['this'] is f
-        True
-
     '''
 
     def __init__(self, *args, **kwargs):
@@ -181,7 +170,6 @@ class SafeDataItem(object):
         Additional keyword argument `kind` could be 'normal' (for normal
         methods), 'static' (for static methods), and 'class' (for class
         methods)::
-
 
         '''
         def inner(method):
