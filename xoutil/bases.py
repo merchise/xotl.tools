@@ -60,7 +60,8 @@ def _check_base(base):
 def int2str(number, base=_DEFAULT_BASE):
     '''Return the string representation of an integer using a base.
 
-    `base` could be an integer or a string with a custom table.
+    :param base: The base.
+    :type base: Either an integer or a string with a custom table.
 
     Examples::
 
@@ -90,7 +91,8 @@ def int2str(number, base=_DEFAULT_BASE):
 def str2int(src, base=_DEFAULT_BASE):
     '''Return the integer decoded from a string representation using a base.
 
-    `base` could be an integer or a string with a custom table.
+    :param base: The base.
+    :type base: Either an integer or a string with a custom table.
 
     Examples::
 
@@ -129,25 +131,20 @@ class BaseConvertor(object):
     '''Base class that implements conversion algorithms based on a simple
     lookup table and a bit mask.
 
-    It's supposed that the mask is a sigle string of set-up bits. And the
-    table should be of length 2**<bit-lenght>.
-
-    Derived classes *must* provide a `table` and `mask` attributes with those
-    values.
+    Derived classes *must* provide a `table` attribute with the table of
+    digits to use.
 
     '''
     @classmethod
     def inttobase(cls, num):
-        '''Converts an integer to a base representation using the class' table
-        and mask attributes.
+        '''Converts an integer to a base representation using the class' table.
 
         '''
         return int2str(num, base=cls.table)
 
     @classmethod
     def basetoint(cls, istr):
-        '''Converts a base representation to a integer using the class' table
-        and mask attributes.
+        '''Converts a base representation to a integer using the class' table.
 
         '''
         table = cls.table
@@ -160,7 +157,7 @@ class B32(BaseConvertor):
     '''Handles base-32 conversions.
 
     In base 32, each 5-bits chunks are represented by a single "digit". Digits
-    comprises all 0..9 and a..w.
+    comprises all symbols in 0..9 and a..v.
 
         >>> B32.inttobase(32) == '10'
         True
@@ -180,7 +177,8 @@ class B64(BaseConvertor):
     the use case of generating a short reference.
 
     In base 64, each 6-bits chunks are represented by a single "digit".
-    Digits comprises all 0..9, a..z, A..Z and the four symbols: `()[]`.
+    Digits comprises all symbols in 0..9, a..z, A..Z and the three symbols:
+    `()[`.
 
         >>> B64.inttobase(64) == '10'
         True
@@ -196,7 +194,7 @@ class B64(BaseConvertor):
           10
 
           >>> B64.basetoint('A')
-          35
+          36
 
     '''
     table = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ()['
