@@ -42,7 +42,8 @@ def _check_base(base):
     Return a tuple (base, table) if valid or raise an exception.
 
     '''
-    if isinstance(base, (int, long)):
+    from xoutil.six import integer_types
+    if isinstance(base, integer_types):
         table = _DEFAULT_TABLE
         if not (1 < base <= _MAX_BASE):
             raise ValueError('`base` must be between 2 and %s' % _MAX_BASE)
