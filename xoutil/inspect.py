@@ -31,6 +31,13 @@ types = _pm.types
 isdatadescriptor = _pm.isdatadescriptor
 
 
+# TODO: Generalize this in compatibility module
+try:
+    StandardException = StandardError
+except NameError:
+    StandardException = Exception
+
+
 try:
     getattr_static = _pm.getattr_static
 except AttributeError:
@@ -84,7 +91,7 @@ except AttributeError:
         try:
             _static_getmro(obj)
             return True
-        except StandardError:
+        except StandardException:
             return False
 
     def _shadowed_dict(klass):
@@ -183,10 +190,10 @@ def get_attr_value(obj, name, *default):
         if isdatadescriptor(res):
             try:
                 res = res.__get__(obj, cls)
-            except StandardError:
+            except StandardException:
                 try:
                     res = res.__get__(cls, type)
-                except StandardError:
+                except StandardException:
                     res = _undef
     if res is not _undef:
         return res
