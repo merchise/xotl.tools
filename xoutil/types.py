@@ -282,7 +282,8 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> is_iterable(xrange_(1))
+        >>> from xoutil.six.moves import range
+        >>> is_iterable(range(1))
         True
 
         >>> is_iterable({})
@@ -316,7 +317,8 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> is_collection(xrange_(1))
+        >>> from xoutil.six.moves import range
+        >>> is_collection(range(1))
         True
 
         >>> is_collection({})
@@ -328,7 +330,7 @@ def is_collection(maybe):
         >>> is_collection(set())
         True
 
-        >>> is_collection(a for a in xrange_(100))
+        >>> is_collection(a for a in range(100))
         True
 
     .. versionchanged:: 1.5.5 UserList are collections.
