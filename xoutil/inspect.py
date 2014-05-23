@@ -207,7 +207,8 @@ def get_attr_value(obj, name, *default):
 def type_name(obj):
     '''Return the type or callable internal name.
 
-    This function is saIf not a proper type, try a safe method.
+    This function is safe.  If ``obj`` is not a proper type, try other safe
+    methods.
 
     '''
     from xoutil.six import class_types, string_types
