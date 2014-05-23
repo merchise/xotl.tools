@@ -142,19 +142,7 @@ class BaseConvertor(object):
         and mask attributes.
 
         '''
-        mask = cls.mask
-        bl = mask.bit_length()
-        table = cls.table
-        assert mask and table
-        assert num >= 0
-        if num == 0:
-            return '0'
-        digits = []
-        while num > 0:
-            digit = num & mask
-            num = num >> bl
-            digits.append(digit)
-        return ''.join(table[digit] for digit in reversed(digits))
+        return int2str(num, base=cls.table)
 
     @classmethod
     def basetoint(cls, istr):
@@ -162,19 +150,10 @@ class BaseConvertor(object):
         and mask attributes.
 
         '''
-        mask = cls.mask
-        bl = mask.bit_length()
         table = cls.table
-        istr = istr.lstrip('0')
         if cls.case_insensitive:
-            istr = istr.lower()
-        if istr == '':
-            return 0
-        result = 0
-        for symbol in istr:
-            index = table.find(symbol)
-            result = (result << bl) | index
-        return result
+            table = table.lower()
+        return str2int(istr, base=table)
 
 
 class B32(BaseConvertor):
@@ -191,7 +170,6 @@ class B32(BaseConvertor):
 
     '''
     table = '0123456789abcdefghijklmnopqrstuv'
-    mask = 0b11111
     case_insensitive = True
 
 
@@ -221,12 +199,11 @@ class B64(BaseConvertor):
           35
 
     '''
-    table = '0123456789abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUVWXZ()[]'
-    mask = 0b111111
+    table = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ()['
     case_insensitive = False
 
 
 class B64symbolic(B64):
     '''Same as B64 but uses no capital letters and lots of symbols.'''
-    table = '0123456789abcdefghijklmnopqrstuwxyz:;><,.-_=+!@#$^*/?\{}%`|"()[]'
+    table = '0123456789abcdefghijklmnopqrstuvwxyz:;><,.-_=+!@#$^*/?\{}%`|"()['
     case_insensitive = True
