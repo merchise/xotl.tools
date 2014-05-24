@@ -42,7 +42,8 @@ def _check_base(base):
     Return a tuple (base, table) if valid or raise an exception.
 
     '''
-    if isinstance(base, (int, long)):
+    from xoutil.six import integer_types
+    if isinstance(base, integer_types):
         table = _DEFAULT_TABLE
         if not (1 < base <= _MAX_BASE):
             raise ValueError('`base` must be between 2 and %s' % _MAX_BASE)
@@ -59,7 +60,8 @@ def _check_base(base):
 def int2str(number, base=_DEFAULT_BASE):
     '''Return the string representation of an integer using a base.
 
-    `base` could be an integer or a string with a custom table.
+    :param base: The base.
+    :type base: Either an integer or a string with a custom table.
 
     Examples::
 
@@ -89,7 +91,8 @@ def int2str(number, base=_DEFAULT_BASE):
 def str2int(src, base=_DEFAULT_BASE):
     '''Return the integer decoded from a string representation using a base.
 
-    `base` could be an integer or a string with a custom table.
+    :param base: The base.
+    :type base: Either an integer or a string with a custom table.
 
     Examples::
 
@@ -128,59 +131,33 @@ class BaseConvertor(object):
     '''Base class that implements conversion algorithms based on a simple
     lookup table and a bit mask.
 
-    It's supposed that the mask is a sigle string of set-up bits. And the
-    table should be of length 2**<bit-lenght>.
-
-    Derived classes *must* provide a `table` and `mask` attributes with those
-    values.
+    Derived classes *must* provide a `table` attribute with the table of
+    digits to use.
 
     '''
     @classmethod
     def inttobase(cls, num):
-        '''Converts an integer to a base representation using the class' table
-        and mask attributes.
+        '''Converts an integer to a base representation using the class' table.
 
         '''
-        mask = cls.mask
-        bl = mask.bit_length()
-        table = cls.table
-        assert mask and table
-        assert num >= 0
-        if num == 0:
-            return '0'
-        digits = []
-        while num > 0:
-            digit = num & mask
-            num = num >> bl
-            digits.append(digit)
-        return ''.join(table[digit] for digit in reversed(digits))
+        return int2str(num, base=cls.table)
 
     @classmethod
     def basetoint(cls, istr):
-        '''Converts a base representation to a integer using the class' table
-        and mask attributes.
+        '''Converts a base representation to a integer using the class' table.
 
         '''
-        mask = cls.mask
-        bl = mask.bit_length()
         table = cls.table
-        istr = istr.lstrip('0')
         if cls.case_insensitive:
-            istr = istr.lower()
-        if istr == '':
-            return 0
-        result = 0
-        for symbol in istr:
-            index = table.find(symbol)
-            result = (result << bl) | index
-        return result
+            table = table.lower()
+        return str2int(istr, base=table)
 
 
 class B32(BaseConvertor):
     '''Handles base-32 conversions.
 
     In base 32, each 5-bits chunks are represented by a single "digit". Digits
-    comprises all 0..9 and a..w.
+    comprises all symbols in 0..9 and a..v.
 
         >>> B32.inttobase(32) == '10'
         True
@@ -190,7 +167,6 @@ class B32(BaseConvertor):
 
     '''
     table = '0123456789abcdefghijklmnopqrstuv'
-    mask = 0b11111
     case_insensitive = True
 
 
@@ -201,7 +177,8 @@ class B64(BaseConvertor):
     the use case of generating a short reference.
 
     In base 64, each 6-bits chunks are represented by a single "digit".
-    Digits comprises all 0..9, a..z, A..Z and the four symbols: `()[]`.
+    Digits comprises all symbols in 0..9, a..z, A..Z and the three symbols:
+    `()[`.
 
         >>> B64.inttobase(64) == '10'
         True
@@ -217,15 +194,14 @@ class B64(BaseConvertor):
           10
 
           >>> B64.basetoint('A')
-          35
+          36
 
     '''
-    table = '0123456789abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUVWXZ()[]'
-    mask = 0b111111
+    table = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ()['
     case_insensitive = False
 
 
 class B64symbolic(B64):
     '''Same as B64 but uses no capital letters and lots of symbols.'''
-    table = '0123456789abcdefghijklmnopqrstuwxyz:;><,.-_=+!@#$^*/?\{}%`|"()[]'
+    table = '0123456789abcdefghijklmnopqrstuvwxyz:;><,.-_=+!@#$^*/?\{}%`|"()['
     case_insensitive = True

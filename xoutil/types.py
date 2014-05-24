@@ -39,6 +39,8 @@ del _pm, _copy_python_module_members
 from xoutil._values import Unset as _unset
 from collections import Mapping
 
+# FIXME: [med] Reintroduce UnsetType or deprecate it here.
+from xoutil._values import UnsetType
 
 from xoutil.names import strlist as strs
 __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
@@ -282,7 +284,8 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> is_iterable(xrange_(1))
+        >>> from xoutil.six.moves import range
+        >>> is_iterable(range(1))
         True
 
         >>> is_iterable({})
@@ -316,7 +319,8 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> is_collection(xrange_(1))
+        >>> from xoutil.six.moves import range
+        >>> is_collection(range(1))
         True
 
         >>> is_collection({})
@@ -328,7 +332,7 @@ def is_collection(maybe):
         >>> is_collection(set())
         True
 
-        >>> is_collection(a for a in xrange_(100))
+        >>> is_collection(a for a in range(100))
         True
 
     .. versionchanged:: 1.5.5 UserList are collections.

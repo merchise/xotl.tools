@@ -40,6 +40,8 @@ _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
 
 
+# TODO: [med] Explain the meaning of "safe".  What's a "safe data descriptor"
+# anyway?
 class SafeDataItem(object):
     '''A data descriptor that is safe.
 
@@ -73,17 +75,6 @@ class SafeDataItem(object):
         >>> f = Foobar()
         >>> f.mapping
         {}
-
-    Alias to constructor is defined with `property` static method in order to
-    allow the similar syntax sugar for the second scenario::
-
-        >>> class Foobar(object):
-        ...     @safe.property
-        ...     def mapping(self):
-        ...         return {'this': self}
-        >>> f = Foobar()
-        >>> f.mapping['this'] is f
-        True
 
     '''
 
@@ -181,7 +172,6 @@ class SafeDataItem(object):
         Additional keyword argument `kind` could be 'normal' (for normal
         methods), 'static' (for static methods), and 'class' (for class
         methods)::
-
 
         '''
         def inner(method):

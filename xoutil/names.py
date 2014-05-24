@@ -179,6 +179,7 @@ def module_name(item):
     return str(res)
 
 
+# TODO: [med] Document the `safe` keyword argument.
 def nameof(*args, **kwargs):
     '''Obtain the name of each one of a set of objects.
 

@@ -155,16 +155,21 @@ def error_info(*args, **kwargs):
       ...         bar(x - 1)
       ...     else:
       ...         bar(x - 2)
+
       >>> def bar(x):
       ...     x -= 1//x
       ...     if x % 2:
       ...         foo(x//2)
       ...     else:
       ...         foo(x//3)
-      >>> try:
+
+      >>> try:    # doctest: +SKIP
       ...     foo(20)
       ... except:
       ...     print(printable_error_info('Example', foo=['x'], bar=['x']))
+      Example
+         ERROR: integer division or modulo by zero
+         ...
 
     '''
     import sys

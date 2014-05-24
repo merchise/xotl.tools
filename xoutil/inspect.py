@@ -12,9 +12,8 @@
 
 '''Extensions to Python's ``inspect`` module.
 
-You may use it as drop-in replacement of ``collections``. Although we don't
-document all items here. Refer to :mod:`collections <collections>`
-documentation.
+You may use it as drop-in replacement of ``inspect``.  Although we don't
+document all items here.  Refer to :mod:`inspect's <inspect>` documentation.
 
 '''
 
@@ -204,6 +203,7 @@ def get_attr_value(obj, name, *default):
         raise AttributeError(msg % (type(obj).__name__, name))
 
 
+# TODO: [med] URGENT Fix the docstring.
 def type_name(obj):
     '''Return the type or callable internal name.
 
