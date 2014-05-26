@@ -110,7 +110,7 @@ def _get_value(source, key, default=None):
 def _get_best_name(names, safe=False, full=False):
     '''Get the best name in the give list of `names`.
 
-    If `safe` is True, returned name must be a valid full identifier.
+    If `safe` is True, returned name must be a valid identifier.
 
     '''
     from xoutil.validators import (is_valid_full_identifier,
@@ -147,6 +147,7 @@ def _get_best_name(names, safe=False, full=False):
         return names[idx]
     res = inner()
     if safe:
+        # TODO: Improve these methods to return False of reserved identifiers
         is_valid = is_valid_full_identifier if full else is_valid_identifier
         if not is_valid(res):
             from xoutil.string import normalize_slug
@@ -156,6 +157,8 @@ def _get_best_name(names, safe=False, full=False):
             res = normalize_slug(res, '_')
             if full:
                 res = res.replace('dot_dot_dot', '.')
+            if not is_valid(res):
+                res = '_' + res
     return str(res)
 
 
@@ -179,7 +182,6 @@ def module_name(item):
     return str(res)
 
 
-# TODO: [med] Document the `safe` keyword argument.
 def nameof(*args, **kwargs):
     '''Obtain the name of each one of a set of objects.
 
@@ -257,6 +259,12 @@ def nameof(*args, **kwargs):
 
         >>> nameof(sd, inner=True, typed=True, full=True)
         'xoutil.names.OrderedDict'
+
+    If `safe` is True, returned value is converted -if not- into a valid
+    Python identifier, for example::
+
+        >>> nameof(5, safe=True) == '_5'
+        True
 
     :param depth: Amount of stack levels to skip if needed.
 
