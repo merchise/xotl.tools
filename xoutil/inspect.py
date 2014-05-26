@@ -55,11 +55,22 @@ except AttributeError:
                 _safe_search_bases(base, accum)
 
     def _typeof(obj):
-        old = isinstance(obj, types.InstanceType)
+        try:
+            old = isinstance(obj, types.InstanceType)
+        except AttributeError:
+            # This is the Python 3.1 case: No getattr_static but also no
+            # InstanceType
+            old = False
         return obj.__class__ if old else type(obj)
 
     def _static_getmro(klass):
-        old_class_type = types.ClassType
+        try:
+            old_class_type = types.ClassType
+        except AttributeError:
+            # Python 3.1 lacks both getattr_static and ClassType
+            class ClassType(type):
+                '''Impossible class type.'''
+            old_class_type = ClassType
         if isinstance(klass, type):
             return type.__dict__['__mro__'].__get__(klass)
         elif isinstance(klass, old_class_type):
