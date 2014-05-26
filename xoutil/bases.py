@@ -203,5 +203,5 @@ class B64(BaseConvertor):
 
 class B64symbolic(B64):
     '''Same as B64 but uses no capital letters and lots of symbols.'''
-    table = '0123456789abcdefghijklmnopqrstuvwxyz:;><,.-_=+!@#$^*/?\{}%`|"()['
+    table = '0123456789abcdefghijklmnopqrstuvwxyz:;><,._=!@#$^*/?\{}%`|"()[~\''
     case_insensitive = True
