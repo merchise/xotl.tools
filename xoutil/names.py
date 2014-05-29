@@ -268,8 +268,8 @@ def nameof(*args, **kwargs):
         >>> hex(id(sd)) in nameof(sd, inner=True)
         True
 
-    If `full` is True, then the module where the name if defined is
-    prefixed. Examples::
+    If `full` is True, then the module where the name is defined is prefixed.
+    Examples::
 
         >>> nameof(sd, full=True)
         'xoutil.names.sd'
