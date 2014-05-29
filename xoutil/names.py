@@ -368,7 +368,7 @@ def nameof(*args, **kwargs):
 def identifier_from(*args):
     '''Build an valid identifier from the name extracted from an object.
 
-    .. versionadded:: 1.5.5
+    .. versionadded:: 1.5.6
 
     First, check if argument is a type and then returns the name of the type
     prefixed with `_` if valid; otherwise calls `nameof` function repeatedly
