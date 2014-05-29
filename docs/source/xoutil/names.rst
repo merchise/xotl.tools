@@ -3,4 +3,7 @@
 ===========================================================
 
 .. automodule:: xoutil.names
-   :members:
+
+.. autofunction:: nameof(*objects, depth=1, inner=False, typed=False, full=False, safe=False)
+
+.. autofunction:: identifier_from(obj)

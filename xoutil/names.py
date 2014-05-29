@@ -113,7 +113,7 @@ def _get_best_name(names, safe=False, full=False):
     Best names are chosen in the following order (from worst to best):
 
     - Any string
-    - A valid slug string
+    - A valid slug
     - A valid protected identifier
     - A valid public identifier
     - A valid full identifier
@@ -207,80 +207,23 @@ def nameof(*args, **kwargs):
 
     .. versionadded:: 1.4.0
 
+    .. versionchanged:: 1.6.0  Support for several objects and improved the
+       semantics of parameter `full`.
+
     If no object is given, None is returned; if only one object is given, a
     single string is returned; otherwise a list of strings is returned.
 
-    The name of an object is normally the variable name in the calling stack::
+    The name of an object is normally the variable name in the calling stack.
 
-        >>> class OrderedDict(dict):
-        ...     pass
-        >>> sorted_dict = OrderedDict
-        >>> del OrderedDict
-        >>> nameof(sorted_dict)
-        'sorted_dict'
+    If the object is not present calling stack, up to five stacks levels are
+    searched.  Use the `depth`:param: argument to specify a different starting
+    point and the search will proceed five levels from this stack up.
 
-    If the `inner` flag is true, then the name is found by introspection
-    first::
+    If the same object has several good names a single one is arbitrarily
+    chosen.
 
-        >>> nameof(sorted_dict, inner=True)
-        'OrderedDict'
-
-    If the `typed` flag is true, returns the name of the type unless `target`
-    is already a type or it has a "__name__" attribute, but the "__name__" is
-    used only if `inner` is True.
-
-        >>> sd = sorted_dict(x=1, y=2)
-        >>> nameof(sd)
-        'sd'
-
-        >>> nameof(sd, typed=True)
-        'sorted_dict'
-
-        >>> nameof(sd, inner=True, typed=True)
-        'OrderedDict'
-
-    If `item` is an instance of a simple type (strings or numbers) and
-    `inner` is true, then the name is the standard representation of `item`::
-
-        >>> s = 'foobar'
-        >>> nameof(s)
-        's'
-
-        >>> nameof(s, inner=True)
-        'foobar'
-
-        >>> i = 1
-        >>> nameof(i)
-        'i'
-
-        >>> nameof(i, inner=True)
-        '1'
-
-        >>> nameof(i, typed=True)
-        'int'
-
-        >>> nameof(i, sd)
-        ['i', 'sd']
-
-    If `item` isn't an instance of a simple type (strings or numbers) and
-    `inner` is true, then the id of the object is used::
-
-        >>> hex(id(sd)) in nameof(sd, inner=True)
-        True
-
-    If `full` is True, then the module where the name is defined is prefixed.
-    Examples::
-
-        >>> nameof(sd, full=True)
-        'xoutil.names.sd'
-
-        >>> nameof(sd, typed=True, full=True)
-        'xoutil.names.sorted_dict'
-
-        >>> nameof(sd, inner=True, typed=True, full=True)
-        'xoutil.names.OrderedDict'
-
-    :param depth: Amount of stack levels to skip if needed.
+    Good names candidates are retrieved based on the keywords arguments
+    `full`, `inner`, `safe` and `typed`.
 
     '''
     from numbers import Number
