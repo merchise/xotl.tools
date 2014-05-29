@@ -2,4 +2,4 @@
 =========================================================================
 
 .. automodule:: xoutil.bases
-   :members: B32, B64
+   :members: int2str, str2int, B32, B64

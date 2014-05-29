@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
 
+# TODO:  Take this out of xoutil.
 from multiprocessing import Pool, cpu_count
-from itertools import count, islice, repeat, izip
+from itertools import count, islice, repeat
+from xoutil.six.moves import zip
 
 
 def gcd(a, b):
@@ -47,8 +49,8 @@ if __name__ == '__main__':
     start = datetime.now()
     try:
         print('Working...')
-        pool.imap(job, izip(islice(count(2 ** 1028 + 1), 10 ** args.magnitude),
-                            repeat(args.show)), chunksize=1024)
+        pool.imap(job, zip(islice(count(2 ** 1028 + 1), 10 ** args.magnitude),
+                           repeat(args.show)), chunksize=1024)
         pool.close()
         pool.join()
     except KeyboardInterrupt:

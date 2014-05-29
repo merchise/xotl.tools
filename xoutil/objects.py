@@ -3,8 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.objects
 #----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) 2012, 2014 Merchise Autrement
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -14,7 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Feb 17, 2012
+# Created 2012-02-17
 
 '''Several utilities for objects in general.'''
 
@@ -24,27 +23,295 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.six import PY3 as _py3k, callable
+from xoutil.six import PY3 as _py3k, callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
-from xoutil.names import strlist as slist
-__all__ = slist('smart_getter', 'smart_getter_and_deleter',
-                'xdir', 'fdir', 'validate_attrs', 'get_first_of',
-                'pop_first_of', 'smart_getattr', 'popattr',
-                'setdefaultattr', 'copy_class', 'smart_copy',
-                'extract_attrs')
-del slist
+
+__docstring_format__ = 'rst'
 
 
 _INVALID_CLASS_TYPE_MSG = '``cls`` must be a class not an instance'
 
-# === Helper functions ====
-
+# Safe length
 _len = lambda x: len(x) if x else 0
 
 # These two functions can be use to always return True or False
 _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
+
+
+# TODO: [med] Explain the meaning of "safe".  What's a "safe data descriptor"
+# anyway?
+class SafeDataItem(object):
+    '''A data descriptor that is safe.
+
+    This class only can be instanced inner a class context in one of the
+    following scenarios::
+
+    1. As a normal descriptor not associated with a constructor method::
+
+        >>> from xoutil.objects import SafeDataItem as safe
+        >>> class Foobar(object):
+        ...     safe('mapping', dict)
+        >>> f = Foobar()
+        >>> f.mapping
+        {}
+
+    2. As a normal descriptor but associated with a constructor method::
+
+        >>> class Foobar(object):
+        ...     @safe.property
+        ...     def mapping(self):
+        ...         return {'this': self}
+        >>> f = Foobar()
+        >>> f.mapping['this'] is f
+        True
+
+    3. As a slot.  In this case generate an internal slot and a safe
+       descriptor to access it::
+
+        >>> class Foobar(object):
+        ...     __slots__ = safe.slot('mapping', dict)
+        >>> f = Foobar()
+        >>> f.mapping
+        {}
+
+    '''
+
+    def __init__(self, *args, **kwargs):
+        '''Creates a new safe descriptor.
+
+        Arguments are parsed to discover:
+
+        - An attribute name if a string with a valid identifier is given as a
+          positional argument.
+
+        - A constructor for initial or default value when the descriptor is
+          read without being assigned.  Positional argument with a callable.
+
+        - Default literal value is given using a keyword argument with any of
+          the following names: `default`, `value` or `initial_value`.  If this
+          argument is given the constructor callable is invalid.
+
+        - A function to check value validity with the keyword argument with
+          any of the following names: `validator`, `checker` or `check`.
+
+        - Boolean `False` to avoid assigning the descriptor in the class
+          context with the keyword argument `do_assigning`.  Any other value
+          but `False` is invalid because this concept is implicitly required
+          and use a `False` value is allowed but discouraged.
+
+        '''
+        self.__parse_arguments(*args, **kwargs)
+        if self.do_assigning:
+            cls_locals = self._get_class_context()
+            current = cls_locals.get(self.attr_name)
+            if not isinstance(current, SafeDataItem):
+                cls_locals[self.attr_name] = self
+            else:
+                msg = ('class `%s` has already an assigned descriptor with '
+                       'the same name `%s`')
+                type_name = type(self).__name__
+                raise AttributeError(msg % (type_name, self.attr_name))
+
+    @staticmethod
+    def slot(slot_name, *args, **kwargs):
+        '''Generate an internal slot and this descriptor to access it.
+
+        This must appears in a slots declaration::
+
+          class Foobar(object):
+              __slots__ = (SafeDataItem.slot('mapping', dict), ...)
+
+        This method return the inner slot name, argument passed is used for
+        the safe descriptor.  In the example above the slot descriptor will be
+        `__mapping__` and `mapping` the safe descriptor.
+
+        '''
+        self = SafeDataItem(slot_name, *args, **kwargs)
+        return self.inner_name
+
+    @staticmethod
+    def property(*args, **kwargs):
+        '''Descriptor to access a property value based in a method.
+
+        There are two ways of use this method:
+
+        - With only one positional and no keyword arguments.  The positional
+          argument must be a method which is assumed as the constructor of the
+          original property value.  Method name is used as the attribute name.
+          In this case it returns a safe descriptor::
+
+            >>> from xoutil.objects import SafeDataItem as safe
+            >>> class Foobar(object):
+            ...     @safe.property
+            ...     def mapping(self):
+            ...         'To generate a safe `mapping` descriptor.'
+            ...         return {'this': self}
+            >>> f = Foobar()
+            >>> f.mapping['this'] is f
+            True
+
+        - With no positional and with keyword arguments.  In this case it
+          returns a decorator that receive one single argument (the method)
+          and return the safe descriptor::
+
+            >>> class Foobar(object):
+            ...     @safe.property(kind='class')
+            ...     def mapping(cls):
+            ...         'To generate a safe `mapping` descriptor.'
+            ...         return {'this': cls}
+            >>> f = Foobar()
+            >>> f.mapping['this'] is Foobar
+            True
+
+
+        Returns the safe descriptor instance if only the method is given, or a
+        closure if additional keyword arguments are given.
+
+        Additional keyword argument `kind` could be 'normal' (for normal
+        methods), 'static' (for static methods), and 'class' (for class
+        methods)::
+
+        '''
+        def inner(method):
+            from types import FunctionType as function
+            from xoutil.validators import check
+            FUNC_KINDS = ('normal', 'static', 'class')
+            FUNC_TYPES = (function, staticmethod, classmethod)
+            KIND_NAME = 'kind'
+            kind = kwargs.pop(KIND_NAME, FUNC_KINDS[0])
+            if (check(kind, lambda k: k in FUNC_KINDS)
+                    and check(method, FUNC_TYPES)):
+                kwargs['do_assigning'] = False
+
+                def init():
+                    from sys import _getframe
+                    obj = _getframe(1).f_locals['obj']
+                    if kind == FUNC_KINDS[0]:
+                        return method(obj)
+                    elif kind == FUNC_KINDS[1]:
+                        return method()
+                    else:
+                        return method(type(obj))
+
+                init.__name__ = method.__name__
+                return SafeDataItem(init, **kwargs)
+
+        if kwargs:
+            return inner
+        elif len(args) == 1:
+            return inner(args[0])
+        else:
+            msg = 'expected only one positional argument, got %s'
+            raise TypeError(msg % len(args))
+
+    def __get__(self, obj, owner):
+        if obj is not None:
+            from xoutil.inspect import get_attr_value
+            res = get_attr_value(obj, self.inner_name, Unset)
+            if res is not Unset:
+                return res
+            elif self.init is not Unset:
+                try:
+                    res = self.init()
+                except:
+                    print('>>>', self.init, '::', type(self.init))
+                    raise
+                self.__set__(obj, res)
+                return res
+            elif self.default is not Unset:
+                res = self.default
+                self.__set__(obj, res)
+                return res
+            else:
+                msg = "'%s' object has no attribute '%s'"
+                raise AttributeError(msg % (type(obj).__name__,
+                                            self.attr_name))
+        else:
+            return self
+
+    def __set__(self, obj, value):
+        object.__setattr__(obj, self.inner_name, value)
+
+    def __delete__(self, obj):
+        object.__delattr__(obj, self.inner_name)
+
+    def _get_class_context(self):
+        'Get the class variable context'
+        from sys import _getframe
+        frame = _getframe(1)
+        i, MAX = 0, 5
+        res = None
+        while not res and (i < MAX):
+            aux = frame.f_locals
+            if '__module__' in aux:
+                res = aux
+            else:
+                frame = frame.f_back
+                i += 1
+        if res:
+            return res
+        else:
+            msg = ('Invalid `SafeDataItem(%s)` call, must be used in a class '
+                   'context.')
+            raise TypeError(msg % self.attr_name)
+
+    def _unique_name(self):
+        '''Generate a unique new name.'''
+        from time import time
+        from xoutil.bases import int2str
+        return '_%s' % int2str(int(1000000*time()))
+
+    def __parse_arguments(self, *args, **kwargs):
+        '''Assign parsed arguments to the just created instance.'''
+        from xoutil.validators import (is_type, is_valid_identifier)
+        self.attr_name = Unset
+        self.init = Unset
+        self.default = Unset
+        self.do_assigning = True
+        self.validator = _true
+        for i, arg in enumerate(args):
+            if self.attr_name is Unset and is_valid_identifier(arg):
+                self.attr_name = arg
+            elif self.init is Unset and callable(arg):
+                self.init = arg
+            else:
+                msg = ('Invalid positional arguments: %s at %s\n'
+                       'Valid arguments are the attribute name and a '
+                       'callable constructor for initial value.')
+                raise ValueError(msg % (args[i:], i))
+        bads = {}
+        for key in kwargs:
+            value = kwargs[key]
+            if (self.default is Unset and self.init is Unset and
+                    key in ('default', 'value', 'initial_value')):
+                self.default = value
+            elif (self.validator is _true and callable(value) and
+                  key in ('validator', 'checker', 'check')):
+                if isinstance(value, type):
+                    self.validator = is_type(value)
+                else:
+                    self.validator = value
+            elif (self.do_assigning is True and key == 'do_assigning' and
+                  value is False):
+                self.do_assigning = False
+            else:
+                bads[key] = value
+        if bads:
+            msg = ('Invalid keyword arguments: %s\n'
+                   'See constructor documentation for more info.')
+            raise ValueError(msg % bads)
+        if self.attr_name is Unset:
+            from xoutil.names import nameof
+            if self.init is not Unset:
+                if isinstance(self.init, type):
+                    self.attr_name = str('_%s' % self.init.__name__)
+                else:
+                    self.attr_name = nameof(self.init, safe=True)
+            else:
+                self.attr_name = self._unique_name()
+        self.inner_name = str('__%s__' % self.attr_name.strip('_'))
 
 
 def smart_getter(obj, strict=False):
@@ -124,41 +391,6 @@ def fix_private_name(cls, name):
         return str('_%s%s' % (cls.__name__, name))
     else:
         return name
-
-
-def attrclass(obj, name):
-    '''Finds the class that has the definition of an attribute specified by
-    `name', return None if not found.
-
-    Classes are recursed in MRO until a definition or an assign was made at
-    that level.
-
-    If `name` is private according to Python's conventions it is rewritted to
-    the "real" attribute name before searching.
-
-    '''
-    attrs = getattr(obj, '__dict__', {})
-    if name in attrs:
-        return type(obj)
-    else:
-        def check(cls):
-            attr = fix_private_name(cls, name)
-            if attr in attrs:
-                return cls
-            else:
-                desc = getattr(cls, '__dict__', {}).get(attr)
-                if desc is not None:
-                    # For incompatibilities in module "types" between
-                    # Python 2.x and 3.x for method types, next is a nice try
-                    get = getattr(desc, '__get__', None)
-                    if callable(get) and not isinstance(desc, type):
-                        return cls
-                    else:
-                        return None
-                else:
-                    return None
-        cls_chcks = (check(cls) for cls in type(obj).mro())
-        return next((cls for cls in cls_chcks if cls is not None), None)
 
 
 # TODO: [med] [manu] Decide if it's best to create a 'xoutil.inspect' that
@@ -242,11 +474,13 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if _len(cls.__doc__) < min_length:
         ignore = ignore or ()
+
         def get_doc(c):
             if (c.__name__ not in ignore) and _len(c.__doc__) >= min_length:
                 return c.__doc__
             else:
                 return None
+
         doc = build_documentation(cls, get_doc, deep)
         if doc:
             cls.__doc__ = doc
@@ -275,6 +509,7 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
     method = get_method_function(cls, method_name)
     if method and _len(method.__doc__) < min_length:
         ignore = ignore or ()
+
         def get_doc(c):
             if (c.__name__ not in ignore):
                 method = c.__dict__.get(method_name)
@@ -284,6 +519,7 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
                     return None
             else:
                 return None
+
         doc = build_documentation(cls, get_doc, deep)
         if doc:
             method.__doc__ = doc
@@ -291,21 +527,14 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
             method.__doc__ = default(cls) if callable(default) else default
 
 
-# TODO: [med] Explain "valid" in documentation.
 def fulldir(obj):
-    '''Return a set with all valid attribute names defined in `obj`'''
+    '''Return a set with all attribute names defined in `obj`'''
     res = set()
     if isinstance(obj, type):
-        last = None
         for cls in type.mro(obj):
-            attrs = getattr(cls, '__dict__', {})
-            if attrs is not last:
-                for name in attrs:
-                    res.add(name)
-            last = attrs
+            res |= set(SafeDataItem.getattr(cls, '__dict__', {}))
     else:
-        for name in getattr(obj, '__dict__', {}):
-            res.add(name)
+        res |= set(SafeDataItem.getattr(obj, '__dict__', {}))
     cls = type(obj)
     if cls is not type:
         res |= set(dir(cls))
@@ -442,6 +671,7 @@ def iterate_over(source, *keys):
 
     '''
     from xoutil.types import is_collection
+
     def inner(source):
         get = smart_getter(source)
         for key in keys:
@@ -627,6 +857,21 @@ class lazy(object):
             return res
 
 
+def mixin(base):
+    '''Create a valid mixin base.
+
+    If several mixins with the same base are used all-together in a class
+    inheritance, Python generates ``TypeError: multiple bases have instance
+    lay-out conflict``.  To avoid that, inherit from the class this function
+    returns instead of desired :param:`base`.
+
+    '''
+    org = "\n\nOriginal doc:\n\n%s" % base.__doc__ if base.__doc__ else ''
+    doc = "Generated mixin base from %s.%s" % (repr(base), org)
+    name = str('%s_base_mixin' % base.__name__)
+    return type(name, (base,), {'__doc__': doc})
+
+
 class classproperty(object):
     '''A descriptor that behaves like property for instances but for classes.
 
@@ -727,7 +972,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
 
     '''
     from xoutil.fs import _get_regex
-    from xoutil.six import string_types as str_base, iteritems as iteritems_
+    from xoutil.six import iteritems as iteritems_
     # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
     #       isn't correct to depend on it. Migrate part of "_get_regex" to a
     #       module that can be imported logically without problems from both,
@@ -823,7 +1068,6 @@ def smart_copy(*args, **kwargs):
 
     '''
     from collections import Mapping, MutableMapping
-    from xoutil.six import callable, string_types as str_base
     from xoutil.types import FunctionType as function
     from xoutil.types import is_collection, Required
     from xoutil.types import DictProxyType

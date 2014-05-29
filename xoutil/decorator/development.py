@@ -57,6 +57,7 @@ def unstable(target, msg=None):
                                                       type(Interface)):
         class meta(type(target)):
             pass
+
         def new(*args, **kwargs):
             warnings.warn(message, stacklevel=2)
             return target.__new__(*args, **kwargs)

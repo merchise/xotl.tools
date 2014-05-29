@@ -32,7 +32,4 @@ elsewhere.
 '''
 
 
-from ._values import Unset, Ignored
-from xoutil.names import namelist
-__all__ = namelist(Unset, Ignored)
-del namelist
+from ._values import Unset, Undefined, Ignored

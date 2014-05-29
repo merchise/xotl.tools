@@ -24,11 +24,9 @@ from __future__ import (division as _py3_division,
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
-_pm_update_wrapper, wraps = _pm.update_wrapper, _pm.wraps
-
-from xoutil.names import strlist as strs
-__all__ = strs('ctuple', 'compose', 'power', 'lru_cache')
-del _pm, _copy_python_module_members, strs
+_pm_update_wrapper = _pm.update_wrapper
+wraps, partial = _pm.wraps, _pm.partial
+del _pm, _copy_python_module_members
 
 import sys
 py33 = sys.version_info >= (3, 3, 0)
@@ -88,6 +86,7 @@ def compose(*callables, **kwargs):
     math = kwargs.get('math', True)
     if not math:
         callables = list(reversed(callables))
+
     def _inner(*args):
         f, functions = callables[0], callables[1:]
         result = f(*args)
@@ -138,8 +137,8 @@ if not py33:
     from threading import RLock
     from xoutil.collections import namedtuple
 
-    _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
-
+    _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize",
+                                          "currsize"])
 
     # Back-ported lru_cache from py33. But take note that if running with at
     # least py3 we will use Python's version, so don't mess with internals.
@@ -147,10 +146,11 @@ if not py33:
     WRAPPER_ASSIGNMENTS = ('__module__', '__name__', '__qualname__', '__doc__',
                            '__annotations__')
     WRAPPER_UPDATES = ('__dict__',)
+
     def update_wrapper(wrapper,
                        wrapped,
-                       assigned = WRAPPER_ASSIGNMENTS,
-                       updated = WRAPPER_UPDATES):
+                       assigned=WRAPPER_ASSIGNMENTS,
+                       updated=WRAPPER_UPDATES):
         """Update a wrapper function to look like the wrapped function
 
            wrapper is the function to be updated
@@ -176,8 +176,8 @@ if not py33:
         return wrapper
 
     def wraps(wrapped,
-              assigned = WRAPPER_ASSIGNMENTS,
-              updated = WRAPPER_UPDATES):
+              assigned=WRAPPER_ASSIGNMENTS,
+              updated=WRAPPER_UPDATES):
         """Decorator factory to apply update_wrapper() to a wrapper function
 
            Returns a decorator that invokes update_wrapper() with the decorated
@@ -210,14 +210,15 @@ if not py33:
                   kwd_mark=(object(),),
                   fasttypes={int, str, frozenset, type(None)},
                   sorted=sorted, tuple=tuple, type=type, len=len):
-        """Make a cache key from optionally typed positional and keyword arguments
+        """Make a cache key from optionally typed positional and keyword
+        arguments.
 
         The key is constructed in a way that is flat as possible rather than
         as a nested structure that would take more memory.
 
         If there is only a single argument and its data type is known to cache
-        its hash value, then that argument is returned without a wrapper.  This
-        saves space and improves lookup speed.
+        its hash value, then that argument is returned without a wrapper.
+        This saves space and improves lookup speed.
 
         """
         key = args
@@ -235,9 +236,10 @@ if not py33:
         return _HashedSeq(key)
 
     def lru_cache(maxsize=128, typed=False):
-        """Decorator to wrap a function with a memoizing callable that saves up to the
-        `maxsize` most recent calls.  It can save time when an expensive or
-        I/O bound function is periodically called with the same arguments.
+        """Decorator to wrap a function with a memoizing callable that saves
+        up to the `maxsize` most recent calls.  It can save time when an
+        expensive or I/O bound function is periodically called with the same
+        arguments.
 
         Since a dictionary is used to cache results, the positional and
         keyword arguments to the function must be hashable.
@@ -287,17 +289,19 @@ if not py33:
         PREV, NEXT, KEY, RESULT = 0, 1, 2, 3   # names for the link fields
 
         def decorating_function(user_function):
-
             cache = {}
             hits = misses = 0
             _cache_vars = [hits, misses]  # hits, misses
             _HITS, _MISSES = 0, 1
             full = False
-            cache_get = cache.get    # bound method to lookup a key or return None
-            lock = RLock()           # because linkedlist updates aren't threadsafe
-            root = []                # root of the circular doubly linked list
-            root[:] = [root, root, None, None] # initialize by pointing to
-                                               # self
+            # bound method to lookup a key or return None
+            cache_get = cache.get
+            # because linkedlist updates aren't threadsafe
+            lock = RLock()
+            # root of the circular doubly linked list
+            root = []
+            # initialize by pointing to self
+            root[:] = [root, root, None, None]
             _cache_vars.extend([full, root])
             _FULL = 2
             _ROOT = 3
@@ -350,10 +354,11 @@ if not py33:
                     result = user_function(*args, **kwds)
                     with lock:
                         if key in cache:
-                            # Getting here means that this same key was added to the
-                            # cache while the lock was released.  Since the link
-                            # update is already done, we need only return the
-                            # computed result and update the count of misses.
+                            # Getting here means that this same key was added
+                            # to the cache while the lock was released.  Since
+                            # the link update is already done, we need only
+                            # return the computed result and update the count
+                            # of misses.
                             pass
                         elif _cache_vars[_FULL]:
                             # Use the old root to store the new key and result.
@@ -361,23 +366,25 @@ if not py33:
                             oldroot[KEY] = key
                             oldroot[RESULT] = result
                             # Empty the oldest link and make it the new root.
-                            # Keep a reference to the old key and old result to
-                            # prevent their ref counts from going to zero during the
-                            # update. That will prevent potentially arbitrary object
-                            # clean-up code (i.e. __del__) from running while we're
-                            # still adjusting the links.
+                            # Keep a reference to the old key and old result
+                            # to prevent their ref counts from going to zero
+                            # during the update. That will prevent potentially
+                            # arbitrary object clean-up code (i.e. __del__)
+                            # from running while we're still adjusting the
+                            # links.
                             root = _cache_vars[_ROOT] = oldroot[NEXT]
                             oldkey = root[KEY]
                             oldresult = root[RESULT]
                             root[KEY] = root[RESULT] = None
                             # Now update the cache dictionary.
                             del cache[oldkey]
-                            # Save the potentially reentrant cache[key] assignment
-                            # for last, after the root and links have been put in
-                            # a consistent state.
+                            # Save the potentially reentrant cache[key]
+                            # assignment for last, after the root and links
+                            # have been put in a consistent state.
                             cache[key] = oldroot
                         else:
-                            # Put result in a new link at the front of the queue.
+                            # Put result in a new link at the front of the
+                            # queue.
                             last = root[PREV]
                             link = [last, root, key, result]
                             last[NEXT] = root[PREV] = cache[key] = link

@@ -132,7 +132,6 @@ class MovedAttribute(_LazyDescr):
         return getattr(module, self.attr)
 
 
-
 class _MovedItems(types.ModuleType):
     """Lazy loading of moved objects"""
 
