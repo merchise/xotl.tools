@@ -110,7 +110,22 @@ def _get_value(source, key, default=None):
 def _get_best_name(names, safe=False, full=False):
     '''Get the best name in the give list of `names`.
 
-    If `safe` is True, returned name must be a valid full identifier.
+    Best names are chosen in the following order (from worst to best):
+
+    - Any string
+    - A valid slug string
+    - A valid protected identifier
+    - A valid public identifier
+    - A valid full identifier
+
+    If a string in the list `names` contains the substring "%(next)s", then
+    the algorithm recurses to find the best name of the remaining names first
+    and substitutes the substring with the result, the remaining names are
+    then pruned from the search.
+
+    If `safe` is True, returned name must be a valid identifier.  If `full` is
+    True (halted if `safe` is not True) then the returned name must a valid
+    full identifier.
 
     '''
     from xoutil.validators import (is_valid_full_identifier,
