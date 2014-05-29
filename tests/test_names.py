@@ -57,7 +57,6 @@ def test_nameof():
     assert hex(id(sd)) in nameof(sd, inner=True)
 
 
-
 def test_fullnameof():
     from xoutil.names import nameof
     from collections import OrderedDict as sorted_dict
@@ -74,6 +73,7 @@ def test_fullnameof_no_rename():
     from collections import OrderedDict
     assert nameof(OrderedDict, full=True) == 'test_fullnameof_no_rename.OrderedDict'
     assert nameof(OrderedDict, inner=True, full=True) == 'collections.OrderedDict'
+
 
 def test_module_level_name():
     from xoutil.names import nameof

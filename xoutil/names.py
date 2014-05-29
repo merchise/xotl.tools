@@ -533,3 +533,29 @@ class strlist(list):
 
         '''
         return list.remove(self, str(value))
+
+
+# Theses tests need to be defined in this module to test relative imports.
+# Otherwise the `tests/` directory would need to be a proper package.
+
+import unittest as _utest
+from ._values import Unset as _Unset   # Use a tier 0 module!
+
+
+class TestRelativeImports(_utest.TestCase):
+    RelativeUnset = _Unset
+    AbsoluteUndefined = _undef
+
+    def test_relative_imports(self):
+        self.assertEquals(nameof(self.RelativeUnset), '_Unset')
+        self.assertEquals(nameof(self.RelativeUnset, inner=True), 'Unset')
+        self.assertEquals(nameof(self.RelativeUnset, full=True),
+                          'xoutil.names._Unset')  # Even relative imports are
+                                                  # resolved properly with
+                                                  # `full=True`
+        self.assertEquals(nameof(self.AbsoluteUndefined, full=True),
+                          'xoutil.names._undef')
+
+# Don't delete the _Unset name, so that the nameof inside the test could find
+# them in the module.
+del _utest
