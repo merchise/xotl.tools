@@ -175,9 +175,16 @@ def _get_best_name(names, safe=False, full=False):
 
 
 def module_name(item):
-    '''Returns the module name where the given object is declared.
+    '''Returns the full module name where the given object is declared.
 
-    TODO: Declare doctests.
+    Examples::
+
+       >>> module_name(module_name)
+       'xoutil.names'
+
+       >>> from xoutil import Unset
+       >>> module_name(Unset)
+       'xoutil._values'
 
     '''
     from xoutil.inspect import get_attr_value
