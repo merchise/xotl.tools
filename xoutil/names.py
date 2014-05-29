@@ -131,8 +131,11 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> hex(id(sd)) in nameof(sd, inner=True)
         True
 
-    If `full` is True, then the module where the name if defined is
-    prefixed. Examples::
+    If `full` is True, then the module where the name is imported is prefixed.
+    If `inner` is True at the same time, then the full module where the item
+    is defined (if it's exists) is returned.
+
+    Examples::
 
         >>> nameof(sd, full=True)
         'xoutil.names.sd'
@@ -140,10 +143,27 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         >>> nameof(sd, typed=True, full=True)
         'xoutil.names.sorted_dict'
 
-        >>> nameof(sd, inner=True, typed=True, full=True)  # doctest: +ELLIPSIS
-        '...collections.OrderedDict'
-
     :param depth: Amount of stack levels to skip if needed.
+
+    .. warning:: Some times `full` True automatically implied `inner` to be
+       true as well.  For instance in our tests for this module we have
+       something like this::
+
+         from xoutil.collections import OrderedSmartDict
+
+         def test_module_level_name():
+             from xoutil.names import nameof
+             assert nameof(OrderedSmartDict, full=True) == 'xoutil.collections.OrderedSmartDict'
+
+       Notice that in that case the returned name contains where the name was
+       defined and not where it was imported as it documented before.
+
+       This actually happens in the case that the object is not imported in
+       the same frame stack calling `nameof`:func:.  We traverse the stack
+       forcing `inner` to be True to avoid infinite recursion.
+
+       In `xoutil 1.6.0` this has been corrected but then the behavior is not
+       backwards compatible.
 
     '''
     from numbers import Number
@@ -161,7 +181,8 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
         elif isinstance(target, (str_base, Number)):
             return str(target)
         else:
-            type_name = nameof(target, inner=True, typed=True, full=full)
+            type_name = nameof(target, depth=depth,
+                               inner=True, typed=True, full=full)
             return str('@'.join((type_name, hex(id(target)))))
     else:
         import sys
@@ -192,7 +213,7 @@ def nameof(target, depth=1, inner=False, typed=False, full=False):
                     res = key
                 else:
                     sf = sf.f_back
-                    i =+ 1
+                    i += 1
         finally:
             # TODO: on "del sf" Python says "SyntaxError: can not delete
             # variable 'sf' referenced in nested scope".
@@ -213,15 +234,7 @@ class namelist(list):
     * namelist(item, ...) -> new list initialized from severals items
 
     Instances can be used as decorators to store names of module items
-    (functions or classes)::
-
-        >>> __all__ = namelist()
-        >>> @__all__
-        ... def foobar(*args, **kwargs):
-        ...     'Automatically added to this module "__all__" names.'
-
-        >>> 'foobar' in __all__
-        True
+    (functions or classes).
 
     '''
     def __init__(self, *args):
@@ -284,6 +297,7 @@ class strlist(list):
     Last versions of Python 2.x has a feature to use unicode as standard
     strings, but some object names can be only ``str``. To be compatible with
     Python 3.x in an easy way, use this list.
+
     '''
     def __init__(self, *args):
         if len(args) == 1:
@@ -332,6 +346,3 @@ class strlist(list):
 
         '''
         return list.remove(self, str(value))
-
-
-__all__ = strlist('nameof', 'namelist', 'strlist')
