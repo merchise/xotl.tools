@@ -51,13 +51,13 @@ def _key_for_value(source, value, strict=True):
     '''Returns the tuple (key, mapping) where the "value" is found.
 
     if strict is True, then look first for the same object::
-        >>> x = {1}
-        >>> y = {1}
+        >>> x = [1]
+        >>> y = [1]  #  equal to `x` but not the same
         >>> src = {'x': x, 'y': y}
         >>> search = lambda o, strict=True: _key_for_value(src, o, strict)
-        >>> search(x[0]) == search(y[0])
+        >>> search(x) == search(y)
         False
-        >>> search(x[0], strict=False) == search(y[0], strict=False)
+        >>> search(x, strict=False) == search(y, strict=False)
         True
 
     This is mainly intended to find object names in stack frame variables.
