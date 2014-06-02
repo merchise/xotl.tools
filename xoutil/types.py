@@ -339,7 +339,6 @@ def is_collection(maybe):
 
     '''
     from xoutil.collections import UserList
-    from xoutil.six import string_types
     from xoutil.six.moves import range
     return isinstance(maybe, (tuple, range, list, set, frozenset,
                               GeneratorType, UserList))

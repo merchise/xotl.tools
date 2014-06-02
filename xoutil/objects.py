@@ -40,10 +40,13 @@ _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
 
 
-# TODO: [med] Explain the meaning of "safe".  What's a "safe data descriptor"
-# anyway?
 class SafeDataItem(object):
     '''A data descriptor that is safe.
+
+    A *safe descriptor* never uses internal special methods ``__getattr__``
+    and ``__getattribute__`` to obtain its value.  Also allow to define a
+    constructor or a default value for the first time the attribute is read
+    without a prior value assigned.
 
     This class only can be instanced inner a class context in one of the
     following scenarios::

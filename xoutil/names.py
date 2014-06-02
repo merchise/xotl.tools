@@ -162,6 +162,7 @@ def _get_best_name(names, safe=False, full=False):
         return names[idx]
     res = inner()
     if safe:
+        # TODO: Improve these methods to return False of reserved identifiers
         is_valid = is_valid_full_identifier if full else is_valid_identifier
         if not is_valid(res):
             from xoutil.string import normalize_slug
@@ -171,6 +172,8 @@ def _get_best_name(names, safe=False, full=False):
             res = normalize_slug(res, '_')
             if full:
                 res = res.replace('dot_dot_dot', '.')
+            if not is_valid(res):
+                res = '_' + res
     return str(res)
 
 
@@ -201,23 +204,29 @@ def module_name(item):
     return str(res)
 
 
-# TODO: [med] Document the `safe` keyword argument.
 def nameof(*args, **kwargs):
     '''Obtain the name of each one of a set of objects.
 
     .. versionadded:: 1.4.0
 
-    .. versionchanged:: 1.6.0  Support for several objects and improved the
-       semantics of parameter `full`.
+    .. versionchanged:: 1.6.0
+
+       - Keyword arguments are now keyword-only arguments.
+
+       - Support for several objects
+
+       - Improved the semantics of parameter `full`.
+
+       - Added the `safe` keyword argument.
 
     If no object is given, None is returned; if only one object is given, a
     single string is returned; otherwise a list of strings is returned.
 
     The name of an object is normally the variable name in the calling stack.
 
-    If the object is not present calling stack, up to five stacks levels are
-    searched.  Use the `depth`:param: argument to specify a different starting
-    point and the search will proceed five levels from this stack up.
+    If the object is not present calling frame, up to five frame levels are
+    searched.  Use the `depth` keyword argument to specify a different
+    starting point and the search will proceed five levels from this frame up.
 
     If the same object has several good names a single one is arbitrarily
     chosen.
@@ -225,7 +234,25 @@ def nameof(*args, **kwargs):
     Good names candidates are retrieved based on the keywords arguments
     `full`, `inner`, `safe` and `typed`.
 
+    If `typed` is True and the object is not a type name or a callable (see
+    `xoutil.inspect.type_name`:func:), then the `type` of the object is used
+    instead.
+
+    If `inner` is True we try to extract the name by introspection instead of
+    looking for the object in the frame stack::
+
+    If `full` is True the full identifier of the object is preferred.  In this
+    case if `inner` is False the local-name for the object is found.  If
+    `inner` is True, find the import-name.
+
+    If `safe` is True, returned value is converted -if it is not- into a valid
+    Python identifier, though you should not trust this identifier resolves to
+    the value.
+
+    See `the examples in the documentation <name-of-narrative>`:ref:.
+
     '''
+    # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
     from xoutil.inspect import type_name
     arg_count = len(args)

@@ -180,7 +180,7 @@ def get_attr_value(obj, name, *default):
 
     Similar to `getattr` but without triggering dynamic look-up via the
     descriptor protocol, `__getattr__` or `__getattribute__` by using
-    ``getattr_static``.
+    `getattr_static`:func:.
 
     '''
     from xoutil import Undefined as _undef
@@ -214,12 +214,11 @@ def get_attr_value(obj, name, *default):
         raise AttributeError(msg % (type(obj).__name__, name))
 
 
-# TODO: [med] URGENT Fix the docstring.
 def type_name(obj):
-    '''Return the type or callable internal name.
+    '''Return the internal name for a type or a callable.
 
-    This function is safe.  If ``obj`` is not a proper type, try other safe
-    methods.
+    This function is safe: it returns None if ``obj`` is not an instance of a
+    proper type.
 
     '''
     from xoutil.six import class_types, string_types

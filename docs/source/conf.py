@@ -291,3 +291,7 @@ intersphinx_mapping = {
 intersphinx_cache_limit = -1
 
 autosummary_generate = True
+
+
+# - doctesting
+doctest_test_doctest_blocks = None
