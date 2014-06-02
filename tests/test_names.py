@@ -83,4 +83,4 @@ def test_module_level_name():
 
 def test_module_level_name_isolated():
     from xoutil.names import nameof
-    assert nameof(OrderedSmartDict, full=True) == 'xoutil.collections.OrderedSmartDict'
+    assert nameof(OrderedSmartDict, full=True) == 'test_names.OrderedSmartDict'

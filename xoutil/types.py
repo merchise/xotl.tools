@@ -30,13 +30,17 @@ from xoutil.modules import copy_members as _copy_python_module_members
 
 _pm = _copy_python_module_members()
 GeneratorType = _pm.GeneratorType
+FunctionType = _pm.FunctionType
+ModuleType = _pm.ModuleType
 
 del _pm, _copy_python_module_members
 
 
-from xoutil._values import UnsetType, Unset as _Unset
+from xoutil._values import Unset as _unset
 from collections import Mapping
 
+# FIXME: [med] Reintroduce UnsetType or deprecate it here.
+from xoutil._values import UnsetType
 
 from xoutil.names import strlist as strs
 __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
@@ -242,11 +246,10 @@ class mro_dict(Mapping):
         self._target_mro = type_.mro()
 
     def __getitem__(self, name):
-
         from xoutil.objects import get_first_of
         probes = tuple(c.__dict__ for c in self._target_mro)
-        result = get_first_of(probes, name, default=_Unset)
-        if result is not _Unset:
+        result = get_first_of(probes, name, default=_unset)
+        if result is not _unset:
             return result
         else:
             raise KeyError(name)
@@ -281,7 +284,8 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> is_iterable(xrange_(1))
+        >>> from xoutil.six.moves import range
+        >>> is_iterable(range(1))
         True
 
         >>> is_iterable({})
@@ -315,7 +319,8 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> is_collection(xrange_(1))
+        >>> from xoutil.six.moves import range
+        >>> is_collection(range(1))
         True
 
         >>> is_collection({})
@@ -327,14 +332,13 @@ def is_collection(maybe):
         >>> is_collection(set())
         True
 
-        >>> is_collection(a for a in xrange_(100))
+        >>> is_collection(a for a in range(100))
         True
 
     .. versionchanged:: 1.5.5 UserList are collections.
 
     '''
     from xoutil.collections import UserList
-    from xoutil.six import string_types
     from xoutil.six.moves import range
     return isinstance(maybe, (tuple, range, list, set, frozenset,
                               GeneratorType, UserList))
@@ -358,7 +362,7 @@ def is_scalar(maybe):
     return is_string_like(maybe) or not is_iterable(maybe)
 
 
-def is_staticmethod(desc, name=_Unset):
+def is_staticmethod(desc, name=_unset):
     '''Returns true if a `method` is a static method.
 
     This function takes the same arguments as :func:`is_classmethod`.
@@ -369,7 +373,7 @@ def is_staticmethod(desc, name=_Unset):
     return isinstance(desc, staticmethod)
 
 
-def is_classmethod(desc, name=_Unset):
+def is_classmethod(desc, name=_unset):
     '''Returns true if a `method` is a class method.
 
     :param desc: This may be the method descriptor or the class that holds the
@@ -392,20 +396,19 @@ def is_classmethod(desc, name=_Unset):
     return isinstance(desc, classmethod)
 
 
-def is_instancemethod(desc, name=_Unset):
+def is_instancemethod(desc, name=_unset):
     '''Returns true if a given `method` is neither a static method nor a class
     method.
 
     This function takes the same arguments as :func:`is_classmethod`.
 
     '''
-    from types import FunctionType
     if name:
         desc = mro_dict(desc).get(name, None)
     return isinstance(desc, FunctionType)
 
 
-def is_slotwrapper(desc, name=_Unset):
+def is_slotwrapper(desc, name=_unset):
     '''Returns True if a given `method` is a slot wrapper (i.e. a method that
     is builtin in the `object` base class).
 
@@ -419,7 +422,6 @@ def is_slotwrapper(desc, name=_Unset):
 
 def is_module(maybe):
     '''Returns True if `maybe` is a module.'''
-    from types import ModuleType
     return isinstance(maybe, ModuleType)
 
 

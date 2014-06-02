@@ -281,7 +281,7 @@ texinfo_documents = [
 #texinfo_show_urls = 'footnote'
 
 
-# Example configuration for intersphinx: refer to the Python standard library.
+# Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'py2': ('http://docs.python.org/2.7/', None),
     'py3': ('http://docs.python.org/3.4/', None),
@@ -291,3 +291,7 @@ intersphinx_mapping = {
 intersphinx_cache_limit = -1
 
 autosummary_generate = True
+
+
+# - doctesting
+doctest_test_doctest_blocks = None
