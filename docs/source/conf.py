@@ -288,7 +288,7 @@ intersphinx_mapping = {
 }
 
 # Maintain the cache forever.
-intersphinx_cache_limit = -1
+intersphinx_cache_limit = 365
 
 autosummary_generate = True
 
