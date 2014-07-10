@@ -61,9 +61,25 @@ class TestModuleDecorators(unittest.TestCase):
         import customizetestbed as m
         self.assertIs(m, m.this)
         self.assertIs(None, m.store)
+        self.assertIsNone(m.prop)
         m.store = (1, 2)
+        m.prop = 'prop'
         self.assertEquals((1, 2), m.store)
         self.assertEquals((1, 2), m._store)
+        self.assertIs('prop', m.prop)
+
+        with self.assertRaises(AttributeError):
+            m.this = 1
+
+        del m.store
+        with self.assertRaises(AttributeError):
+            m._store == ()
+        self.assertIs(None, m.store)
+
+        del m.prop
+        with self.assertRaises(AttributeError):
+            m._prop == 'prop'
+        self.assertIsNone(m.prop)
 
 
 def test_get_module_path_by_module_object():
