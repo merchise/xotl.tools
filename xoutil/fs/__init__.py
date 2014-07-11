@@ -517,7 +517,7 @@ def ensure_filename(filename, yields=False):
       with ensure_filename('/tmp/good-name-87.txt', yields=True) as fh:
           fh.write('Do it!')
 
-    The file is open in mode 'r+b'.
+    The file is open in mode 'w+b'.
 
     .. versionadded:: 1.6.1  Added parameter `yield`.
 
@@ -527,7 +527,7 @@ def ensure_filename(filename, yields=False):
         dirname = os.path.dirname(filename)
         makedirs(dirname, exist_ok=True)
         # TODO: Better hanlding of mode for reading/writing.
-        fh = open(filename, 'wb')
+        fh = open(filename, 'w+b')
         if not yields:
             fh.close()
         else:
