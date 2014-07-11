@@ -50,3 +50,17 @@ prop = moduleproperty(prop, _prop_set, _prop_del)
 
 def otherfunction():
     return 1
+
+
+def memoized(self):
+    return self
+memoized = moduleproperty(memoized, base=memoized_property)
+
+try:
+    @memoized.setter
+    def memoized(self, value):
+        pass
+except AttributeError:
+    pass  # Ok
+else:
+    raise AssertionError('module-level memoized_property should be read-only')
