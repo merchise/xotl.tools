@@ -33,8 +33,6 @@ from re import compile as _rcompile
 from xoutil.fs.path import normalize_path
 from xoutil.six import string_types
 
-__py33 = sys.version_info >= (3, 3)
-
 
 re_magic = _rcompile('[*?[]')
 has_magic = lambda s: re_magic.search(s) is not None
@@ -443,7 +441,7 @@ def walk_up(start, sentinel):
     return current if found else None
 
 
-if not __py33:
+if sys.version_info < (3, 4, 1):
     def makedirs(name, mode=0o777, exist_ok=False):
         """makedirs(path [, mode=0o777][, exist_ok=False])
 
@@ -455,50 +453,32 @@ if not __py33:
         raised.  This is recursive.
 
         """
-        import stat as st
-        from xoutil.string import safe_encode
-        def _get_masked_mode(mode):
-            mask = os.umask(0)
-            os.umask(mask)
-            return mode & ~mask
         import errno
-        head, tail = os.path.split(name)
+        from os import path, mkdir
+        from os.path import curdir
+        from xoutil.string import safe_encode
+        head, tail = path.split(name)
         if not tail:
-            head, tail = os.path.split(head)
-        if head and tail and not os.path.exists(head):
+            head, tail = path.split(head)
+        if head and tail and not path.exists(head):
             try:
                 makedirs(head, mode, exist_ok)
             except OSError as e:
                 # be happy if someone already created the path
                 if e.errno != errno.EEXIST:
                     raise
-            cdir = os.curdir
-            if isinstance(tail, str):
-                cdir = safe_encode(os.curdir, 'ASCII')
-            if tail == cdir:     # xxx/newdir/. exists if xxx/newdir exists
+            cdir = curdir
+            if isinstance(tail, bytes):
+                cdir = safe_encode(curdir, 'ASCII')
+            if tail == cdir:      # xxx/newdir/. exists if xxx/newdir exists
                 return
         try:
-            os.mkdir(name, mode)
+            mkdir(name, mode)
         except OSError as e:
-            dir_exists = os.path.isdir(name)
-            expected_mode = _get_masked_mode(mode)
-            if dir_exists:
-                # S_ISGID is automatically copied by the OS from parent to
-                # child directories on mkdir.  Don't consider it being set to
-                # be a mode mismatch as mkdir does not unset it when not
-                # specified in mode.
-                actual_mode = st.S_IMODE(lstat(name).st_mode) & ~st.S_ISGID
-            else:
-                actual_mode = -1
-            if not (e.errno == errno.EEXIST and exist_ok and dir_exists and
-                    actual_mode == expected_mode):
-                if dir_exists and actual_mode != expected_mode:
-                    e.strerror += ' (mode %o != expected mode %o)' % (
-                        actual_mode, expected_mode)
+            if not exist_ok or e.errno != errno.EEXIST or not path.isdir(name):
                 raise
 else:
     from os import makedirs
-del __py33
 
 
 def ensure_filename(filename, yields=False):
@@ -536,3 +516,6 @@ def ensure_filename(filename, yields=False):
         if not os.path.isfile(filename):
             raise OSError('Expected a file but another thing is found \'%s\'' %
                           filename)
+
+
+del sys
