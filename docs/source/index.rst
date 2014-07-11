@@ -14,6 +14,11 @@ Welcome to xoutil's documentation!
 What's new in this version
 --------------------------
 
+.. include:: history/_changes-1.6.1.rst
+
+And since 1.6.0:
+
+
 .. include:: history/_changes-1.6.0.rst
 
 
