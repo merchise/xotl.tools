@@ -501,21 +501,37 @@ else:
 del __py33
 
 
-def ensure_filename(filename):
+def ensure_filename(filename, yields=False):
     '''Ensures the existence of a file with a given filename.
 
     If the filename is taken and is not pointing to a file (or a link to a
-    file) an OSError is raised.
+    file) an OSError is raised.  If `exist_ok` is False the filename must not
+    be taken; an OSError is raised otherwise.
 
     The function creates all directories if needed. See :func:`makedirs` for
     restrictions.
+
+    If `yields` is True, returns the file object.  This way you may open a
+    file for writing like this::
+
+      with ensure_filename('/tmp/good-name-87.txt', yields=True) as fh:
+          fh.write('Do it!')
+
+    The file is open in mode 'r+b'.
+
+    .. versionadded:: 1.6.1  Added parameter `yield`.
 
     '''
     if not os.path.exists(filename):
         filename = normalize_path(filename)
         dirname = os.path.dirname(filename)
         makedirs(dirname, exist_ok=True)
-        open(filename, 'wb').close()
+        # TODO: Better hanlding of mode for reading/writing.
+        fh = open(filename, 'wb')
+        if not yields:
+            fh.close()
+        else:
+            return fh
     else:
         if not os.path.isfile(filename):
             raise OSError('Expected a file but another thing is found \'%s\'' %
