@@ -518,4 +518,47 @@ def ensure_filename(filename, yields=False):
                           filename)
 
 
+def concatfiles(*files):
+    '''Concat several files to a single one.
+
+    Each positional argument must be either:
+
+    - a file-like object (ready to be passed to :func:`shutil.copyfileobj`)
+
+    - a string, the file path.
+
+    The last positional argument is the target.  If it's file-like object it
+    must be open for writing, and the caller is the responsible for closing
+    it.
+
+    Alternatively if there are only two positional arguments and the first is
+    a collection, the sources will be the members of the first argument.
+
+    '''
+    import shutil
+    from xoutil.types import is_collection
+    from xoutil.six import string_types
+    if len(files) < 2:
+        raise TypeError('At least 2 files must be passed to concatfiles.')
+    elif len(files) == 2:
+        files, target = files[0], files[1]
+        if not is_collection(files):
+            files = [files]
+    else:
+        files, target = files[:-1], files[-1]
+    if isinstance(target, string_types):
+        target, opened = open(target, 'wb'), True
+    else:
+        opened = False
+    try:
+        for f in files:
+            if isinstance(f, string_types):
+                fh = open(f, 'rb')
+            else:
+                fh = f
+            shutil.copyfileobj(fh, target)
+    finally:
+        if opened:
+            target.close()
+
 del sys
