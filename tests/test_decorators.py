@@ -118,5 +118,35 @@ class RegressionTests(unittest.TestCase):
 
         self.assertEqual(badguy, foobar(1))
 
+
+class Memoizations(unittest.TestCase):
+    def test_memoized_property(self):
+        from xoutil.inspect import getattr_static
+        from xoutil.decorator import memoized_property, reset_memoized
+
+        class Foobar(object):
+            @memoized_property
+            def prop(self):
+                return self
+
+            with self.assertRaises(AttributeError):
+                @prop.setter
+                def prop(self, value):
+                    pass
+
+            with self.assertRaises(AttributeError):
+                @prop.deleter
+                def prop(self, value):
+                    pass
+
+        foo = Foobar()
+        self.assertNotEquals(getattr_static(foo, 'prop'), foo)
+        self.assertIs(foo.prop, foo)
+        self.assertIs(getattr_static(foo, 'prop'), foo)
+        # After the first invocation, the static attr is the result.
+        reset_memoized(foo, 'prop')
+        self.assertNotEquals(getattr_static(foo, 'prop'), foo)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

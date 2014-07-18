@@ -17,6 +17,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.modules import moduleproperty
+from xoutil.decorator import memoized_property
 
 
 @moduleproperty
@@ -38,6 +39,28 @@ def store(self, value):
 def store(self):
     delattr(self, '_store')
 
+def prop(self):
+    return getattr(self, '_prop', None)
+def _prop_set(self, val):
+    setattr(self, '_prop', val)
+def _prop_del(self):
+    delattr(self, '_prop')
+prop = moduleproperty(prop, _prop_set, _prop_del)
+
 
 def otherfunction():
     return 1
+
+
+def memoized(self):
+    return self
+memoized = moduleproperty(memoized, base=memoized_property)
+
+try:
+    @memoized.setter
+    def memoized(self, value):
+        pass
+except AttributeError:
+    pass  # Ok
+else:
+    raise AssertionError('module-level memoized_property should be read-only')

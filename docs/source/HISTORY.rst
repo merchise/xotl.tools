@@ -4,7 +4,13 @@ Changelog
 1.6 series
 ----------
 
-Unreleased. Release 1.6.0
+2014-07-18. Release 1.6.1
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.6.1.rst
+
+
+2014-06-02. Release 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.6.0.rst

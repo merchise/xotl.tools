@@ -181,29 +181,48 @@ def modulemethod(func):
     return inner
 
 
-def moduleproperty(getter, setter=None, deleter=None, doc=None):
+def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
     '''Decorator that creates a module-level property.
 
     The module of the `getter` is replaced by a custom implementation of the
     module, and the property is injected to the custom module's class.
 
+    The parameter `base` serves the purpose of changing the base for the
+    property.  For instance, this allows you to have `memoized_properties
+    <xoutil.decorator.memoized_property>`:func: at the module-level::
+
+        def memoized(self):
+            return self
+        memoized = moduleproperty(memoized, base=memoized_property)
+
+
+    .. versionadded: 1.6.1 Added the `base` parameter.
+
     '''
     import sys
     module = sys.modules[getter.__module__]
     module, _created, cls = customize(module)
-    class prop(property):
-        def setter(self, func):
-            result = super(prop, self).setter(func)
-            setattr(cls, func.__name__, result)
-            return result
 
-        def deleter(self, func):
-            result = super(prop, self).deleter(func)
-            setattr(cls, func.__name__, result)
-            return result
+    class prop(base):
+        if getattr(base, 'setter', False):
+            def setter(self, func, _name=None):
+                result = super(prop, self).setter(func)
+                setattr(cls, _name or func.__name__, result)
+                return result
 
-    result = prop(getter, setter, deleter, doc)
+        if getattr(base, 'deleter', False):
+            def deleter(self, func, _name=None):
+                result = super(prop, self).deleter(func)
+                setattr(cls, _name or func.__name__, result)
+                return result
+
+    result = prop(getter, doc=doc)
+    name = getter.__name__
     setattr(cls, getter.__name__, result)
+    if setter:
+        result = result.setter(setter, _name=name)
+    if deleter:
+        result = result.deleter(deleter, _name=name)
     return result
 
 

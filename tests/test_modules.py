@@ -19,6 +19,7 @@ from __future__ import (division as _py3_division,
 import sys
 import unittest
 
+
 from xoutil.modules import customize, modulemethod, moduleproperty
 
 
@@ -56,14 +57,36 @@ class TestModuleDecorators(unittest.TestCase):
         current_module = sys.modules[__name__]
         self.assertEquals((current_module, (1, 2)), echo(1, 2))
 
-
     def test_moduleproperties(self):
         import customizetestbed as m
         self.assertIs(m, m.this)
         self.assertIs(None, m.store)
+        self.assertIsNone(m.prop)
         m.store = (1, 2)
+        m.prop = 'prop'
         self.assertEquals((1, 2), m.store)
         self.assertEquals((1, 2), m._store)
+        self.assertIs('prop', m.prop)
+
+        with self.assertRaises(AttributeError):
+            m.this = 1
+
+        del m.store
+        with self.assertRaises(AttributeError):
+            m._store == ()
+        self.assertIs(None, m.store)
+
+        del m.prop
+        with self.assertRaises(AttributeError):
+            m._prop == 'prop'
+        self.assertIsNone(m.prop)
+
+    def test_module_level_memoized_props(self):
+        import customizetestbed as m
+        from xoutil.inspect import getattr_static
+        self.assertNotEquals(getattr_static(m, 'memoized'), m)
+        self.assertIs(m.memoized, m)
+        self.assertIs(getattr_static(m, 'memoized'), m)
 
 
 def test_get_module_path_by_module_object():
