@@ -23,6 +23,14 @@ Standard predicates for bounded execution
 .. autofunction:: atmost
 
 
+Higher level predicates
+-----------------------
+
+.. autofunction:: whenany(*preds, **namedpreds)
+
+.. autofunction:: whenall(*preds, **namedpreds)
+
+
 An example: time bounded batch processing
 -----------------------------------------
 

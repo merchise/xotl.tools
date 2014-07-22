@@ -130,23 +130,135 @@ def atmost(cycles):
 
 @predicate
 def pred(func):
-    '''A predicate to allow lambdas a other less speciallized callabled to
-    engage in the predicate protocol.
+    '''Predicate to allow less speciallized callables to engage in the predicate
+    protocol.
 
     Example::
 
-    @bounded(pred=lambda x: True if isinstance(x, int) and x > 10 else False)
-    def fibonnaci():
-        a, b = 1, 1
-        while True:
-           yield a
-           a, b = b, a + b
+      >>> @bounded(pred=lambda x: True if isinstance(x, int) and x > 10 else False)
+      ... def fibonacci():
+      ...     a, b = 1, 1
+      ...     while True:
+      ...        yield a
+      ...        a, b = b, a + b
+
+      >>> fibonacci()
+      13
 
     '''
     data = yield False
     while not func(data):
         data = yield False
     yield True
+
+
+class _higherpred(object):
+    def __init__(self, *preds, **namedpreds):
+        if not preds and not namedpreds:
+            raise TypeError('At least a predicated must be set')
+        from types import GeneratorType
+        self.preds = predgens = [
+            pred if isinstance(pred, GeneratorType) else pred()
+            for pred in preds
+        ]
+        if not all(isinstance(pred, GeneratorType) for pred in predgens):
+            raise TypeError('There are invalid (not a generator) unnamed '
+                            'predicates.')
+        try:
+            predgens.extend(
+                _predicates[name](val) for name, val in namedpreds.items()
+            )
+        except KeyError:
+            msg = 'unregistered predicated in %r' % namedpreds.keys()
+            raise TypeError(msg)
+
+
+class _whenall(_higherpred):
+    def __iter__(self):
+        preds = list(self.preds)
+        for pred in preds:
+            next(pred)
+        while preds:  # When we are out of preds it means all have yielded
+                      # True
+            data = yield False
+            i = 0
+            while preds and i < len(preds):
+                pred = preds[i]
+                try:
+                    res = pred.send(data)
+                except StopIteration:
+                    raise RuntimeError('Invalid predicated in %r' % preds)
+                except GeneratorExit:
+                    i = len(preds)  # fake stop
+                else:
+                    if res is True:
+                        del preds[i]
+                    else:
+                        i += 1
+        yield True
+        for pred in self.preds:
+            pred.close()
+
+
+def whenall(*preds, **namedpreds):
+    '''An AND-like boundary condition.
+
+    This is a high level predicate.  It takes several predicates and yields
+    True only when all the subordinate predicates have yielded True.
+
+    This predicate will raise RuntimeError if any of its subordinate violate
+    the predicate protocol.
+
+    This predicate ensures that once a subordinate predicate yields True it
+    won't be sent anymore data and its ``close()`` method will be called when
+    all the other predicates reach their boundary condition.
+
+    '''
+    pred = _whenall(*preds, **namedpreds)
+    return iter(pred)
+
+
+class _whenany(_higherpred):
+    def __iter__(self):
+        preds = self.preds
+        for pred in preds:
+            next(pred)
+        stop = False
+        while not stop:
+            data = yield stop
+            i, top = 0, len(preds)
+            while not stop and i < top:
+                pred = preds[i]
+                try:
+                    stop = stop or pred.send(data)
+                except StopIteration:
+                    raise RuntimeError('Invalid predicated in %r' % preds)
+                except GeneratorExit:
+                    stop = True
+                else:
+                    i += 1
+        yield stop
+        for pred in preds:
+            pred.close()
+
+
+def whenany(*preds, **namedpreds):
+    '''An OR-like boundary condition.
+
+    This is a high level predicate.  It takes several predicates and returns a
+    single predicate that behaves like the logical OR, i.e, will yield True
+    when **any** of its subordinate predicates yields True.
+
+    This predicate will raise RuntimeError if any of its subordinate violate
+    the predicate protocol.
+
+    This is actually the default behavior of `bounded`:func:.  In fact,
+    `bounded`:func: calls `whenany`:func: to heavely simplify its
+    implementation.
+
+    '''
+    pred = _whenany(*preds, **namedpreds)
+    return iter(pred)
 
 
 def bounded(*preds, **namedpreds):
@@ -185,27 +297,7 @@ def bounded(*preds, **namedpreds):
     ``bounded(atmost(8))``.
 
     '''
-    if not preds and not namedpreds:
-        raise TypeError('At least a predicated must be set')
-    from types import GeneratorType
-    try:
-        predgens = [
-            pred if isinstance(pred, GeneratorType) else pred()
-            for pred in preds
-        ]
-        if not all(isinstance(pred, GeneratorType) for pred in predgens):
-            raise TypeError('There are invalid (not a generator) unnamed '
-                            'predicates.')
-        predgens.extend(
-            _predicates[name](val)
-            for name, val in namedpreds.items()
-        )
-    except KeyError as error:
-        key = getattr(error, 'message', None)
-        if key:
-            raise TypeError('Invalid predicate "%s"' % key)
-        else:
-            raise TypeError('Invalid predicate in "%r"' % preds.keys())
+    pred = whenany(*preds, **namedpreds)
 
     def bounder(func):
         from functools import wraps
@@ -214,19 +306,8 @@ def bounded(*preds, **namedpreds):
         def target(*args, **kwargs):
             from xoutil import Undefined
             generator = func(*args, **kwargs)
-            stop, uninitialized, data = False, list(predgens), Undefined
-            while not stop and uninitialized:
-                pred = uninitialized.pop(0)
-                try:
-                    next(pred)
-                    stop = stop or pred.send((args, kwargs))
-                except StopIteration:
-                    from xoutil.names import nameof
-                    raise RuntimeError(
-                        'Predicate %r is not compliant' % nameof(
-                            pred, inner=True, full=True
-                        )
-                    )
+            next(pred)
+            stop, data = pred.send((args, kwargs)), Undefined
             try:
                 while not stop:
                     try:
@@ -234,26 +315,10 @@ def bounded(*preds, **namedpreds):
                     except (GeneratorExit, StopIteration):
                         stop = True
                     else:
-                        # XXX: Can't use any(...) here cause it will
-                        # swallow StopIteration from pred.send()
-                        i, top = 0, len(predgens)
-                        while not stop and i < top:
-                            pred = predgens[i]
-                            try:
-                                stop = pred.send(data)
-                            except StopIteration:
-                                from xoutil.names import nameof
-                                raise RuntimeError(
-                                    'Predicate %r is not compliant' % nameof(
-                                        pred, inner=True, full=True
-                                    )
-                                )
-                            else:
-                                i += 1
+                        stop = pred.send(data)
             finally:
                 generator.close()
-                for pred in predgens:
-                    pred.close()
+                pred.close()
             if data is not Undefined:
                 return data
         return target

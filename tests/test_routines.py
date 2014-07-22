@@ -19,7 +19,7 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from xoutil.decorator.routines import predicate, bounded
+from xoutil.decorator.routines import predicate, bounded, whenall
 
 
 class TestRoutinesCase(unittest.TestCase):
@@ -75,6 +75,53 @@ class TestBoundedWithStandardPredicates(TestRoutinesCase):
         fib0ms = bounded(timed=0)(fibonacci)
         res = fib0ms()
         self.assertEquals(res, None)
+
+
+class TestHigherLevelPreds(TestRoutinesCase):
+    def test_whenall_with_invalid(self):
+        def invalid():
+            yield
+
+        fibinv = bounded(whenall(invalid, atmost=10))(fibonacci)
+        with self.assertRaises(RuntimeError):
+            fibinv()
+
+    def test_whenall_with_invalid_befored_terminated(self):
+        def invalid():
+            yield
+            yield False
+
+        fibinv = bounded(whenall(invalid, atmost=10))(fibonacci)
+        with self.assertRaises(RuntimeError):
+            fibinv()
+
+    def test_whenall_preds(self):
+        def accumulate(atleast):
+            acum = 0
+            yield False
+            while acum < atleast:
+                acum += yield False
+            yield True
+
+        # 1 + 1 + 2 + 3 + 5 + 8 + 13 + 21 + 34 + 55 + 89 + 144 = 376
+        # ^   ^        ...                                  ^
+        # |   |        ...                                  |
+        # 1   2   3   4   5   6    7    8    9   10   11    12    13
+        # |   |        ...                                  |     |
+        # V   V        ...                                  V     V
+        # 1 + 1 + 2 + 3 + 5 + 8 + 13 + 21 + 34 + 55 + 89 + 144 + 233 = 609
+        fib500 = bounded(accumulate(500))(
+            fibonacci
+        )
+        self.assertEqual(fib500(), 233)
+
+        fib500timed = bounded(whenall(accumulate(500), timed=0))(fibonacci)
+        self.assertEqual(fib500timed(), 233)
+
+        # Since 500 is reached at the 13th fib number, looping up to the 20th
+        # number must be bigger.
+        fib500at20 = bounded(whenall(accumulate(500), atmost=20))(fibonacci)
+        self.assertGreater(fib500at20(), 233)
 
 
 class TestBoundedUnnamedPredicates(TestRoutinesCase):
