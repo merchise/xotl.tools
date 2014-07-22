@@ -22,7 +22,7 @@ Standard predicates for bounded execution
 
 .. autofunction:: timed
 
-.. autofunction:: atmost
+.. autofunction:: times
 
 
 Higher level predicates

@@ -113,7 +113,7 @@ def timed(maxtime):
 
 
 @predicate
-def atmost(cycles):
+def times(cycles):
     '''A predicate that becomes True after a given amount of cycles.'''
     passed = 0
     yield False

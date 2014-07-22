@@ -54,11 +54,11 @@ class TestBoundedWithStandardPredicates(TestRoutinesCase):
     def test_assert_standard_predicates(self):
         from xoutil.decorator.routines import _predicates
         self.assertIn('timed', _predicates)
-        self.assertIn('atmost', _predicates)
+        self.assertIn('times', _predicates)
         self.assertIn('pred', _predicates)
 
-    def test_atmost(self):
-        fib8 = bounded(atmost=8)(fibonacci)
+    def test_times(self):
+        fib8 = bounded(times=8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
         self.assertEquals(fib8(), 21)
@@ -97,7 +97,7 @@ class TestHigherLevelPreds(TestRoutinesCase):
         def invalid():
             yield
 
-        fibinv = bounded(whenall(invalid, atmost=10))(fibonacci)
+        fibinv = bounded(whenall(invalid, times=10))(fibonacci)
         with self.assertRaises(RuntimeError):
             fibinv()
 
@@ -106,7 +106,7 @@ class TestHigherLevelPreds(TestRoutinesCase):
             yield
             yield False
 
-        fibinv = bounded(whenall(invalid, atmost=10))(fibonacci)
+        fibinv = bounded(whenall(invalid, times=10))(fibonacci)
         with self.assertRaises(RuntimeError):
             fibinv()
 
@@ -135,14 +135,14 @@ class TestHigherLevelPreds(TestRoutinesCase):
 
         # Since 500 is reached at the 13th fib number, looping up to the 20th
         # number must be bigger.
-        fib500at20 = bounded(whenall(accumulate(500), atmost=20))(fibonacci)
+        fib500at20 = bounded(whenall(accumulate(500), times=20))(fibonacci)
         self.assertGreater(fib500at20(), 233)
 
 
 class TestBoundedUnnamedPredicates(TestRoutinesCase):
     def test_atmost_unnamed(self):
-        from xoutil.decorator.routines import atmost
-        fib8 = bounded(atmost(8))(fibonacci)
+        from xoutil.decorator.routines import times
+        fib8 = bounded(times(8))(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
         self.assertEquals(fib8(), 21)
@@ -218,5 +218,5 @@ class TestMisc(TestRoutinesCase):
 
     def test_plain_generator(self):
         fibseq = fibonacci()
-        limited = bounded(atmost=5)(fibseq)
+        limited = bounded(times=5)(fibseq)
         self.assertEqual(limited(), 5)
