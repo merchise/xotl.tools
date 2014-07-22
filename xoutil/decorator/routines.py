@@ -31,35 +31,41 @@ _predicates = {}
 def predicate(target, name=None):
     '''Register a predicate for :func:`bounded`.
 
-    The `target` predicate will must a callable that accepts a single
-    positional argument (the value passed to `bounded`:func:) and returns a
-    object that implements the `generator protocol <342>`:pep:.
+    A predicate tests a `boundary condition`:term: each time the generator
+    passed decorate by `bounded`:func: yields a value.  The decorated function
+    in `bounded`:func: is called the bounded generator, and the object
+    returned by `bounded`:func: is called the bounded function.
 
-    The generator will be `sent` each value yielded by the bounded function
-    and it must yield back True if the boundary condition has been reached.
+    `target` must a callable that accepts a single positional argument (the
+    value passed to its corresponding keyword argument in `bounded`:func:) and
+    returns a generator object (:pep:`342`) with the following restrictions
+    (collectively called the "predicate protocol"):
 
-    .. todo::  Fix redaction
+    - The predicate is not allowed to stop (raise StopIteration) before
+      yielding True (ie. signaling that its boundary condition has been meet),
+      or before it's been closed via its ``close()`` method.
 
-    When the bounded function in `bounded`:func: is called all predicates will
-    be called its ``next()`` method and immediately will be called its
-    ``send()`` with a tuple of arguments ``(args, kwargs)`` passed to the
-    bounded function.  Predicates must be ready for this double calling
-    scheme.
+    - The predicate will be issued a ``next()`` immediately followed by a
+      ``send((args, kwargs))`` when the bounded function is invoked with
+      positional arguments ``args`` and keywords-arguments ``kwargs``.  The
+      value return by the first ``next()`` is ignored, whereas the value
+      returned by the following ``send()`` may be True to signal the up-front
+      termination of the bounded function.
 
-    The predicates are allowed to signal the boundary condition has been
-    reached even at the first call of ``send()``.
+    - The predicate will be issued a ``send(value)`` for each value yielded by
+      the bounded generator.  Then the predicate must yield back True only
+      when the boundary condition has been meet.
 
-    .. note:: Only the value ``True`` signals the boundary condition.
+      .. note:: Only the value ``True`` signals that the boundary condition
+         has been meet and thus the bounded function must return.  Any other
+         values indicate that the
 
-    Predicates are not allowed to raise StopIteration before informing its
-    boundary condition has been meet.
+    - The predicate will be called its ``close()`` method upon termination.
+      Termination happens whenever the bounded function raises StopIteration,
+      any of the predicates yield True or an error occurs inside the function
+      or predicates.
 
-    The generator will be called its ``close()`` method upon termination.
-    Termination happens whenever the bounded function raises StopIteration,
-    any of the predicates yield True or an error occurs inside the function or
-    predicates.
-
-    See the `timed`:func: predicated for an example.
+    See the `timed`:func: predicate for an example.
 
     '''
     if not name:
@@ -73,8 +79,11 @@ def predicate(target, name=None):
 
 
 @predicate
-def timed(val):
+def timed(maxtime):
     '''A soft-timing boundary for :func:`bounded`.
+
+    The bounded generator will be allowed to yields values until the `maxtime`
+    timeframe has ellapsed.
 
     Usage::
 
@@ -88,21 +97,18 @@ def timed(val):
                  `seconds` argument.
 
     '''
-    from xoutil.logger import debug
     from datetime import datetime, timedelta
-    if isinstance(val, timedelta):
-        boundary = val
+    if isinstance(maxtime, timedelta):
+        boundary = maxtime
     else:
-        boundary = timedelta(seconds=val)
+        boundary = timedelta(seconds=maxtime)
     yield False   # Only count time after the first call to next
     start = datetime.now()
-    debug('Starting to count at %r', start)
-    elapsed = False
-    while not elapsed:
-        yield elapsed
-        elapsed = datetime.now() - start >= boundary
-    debug('Signaling termination at %r', datetime.now())
-    yield elapsed   # Inform the boundary condition, or we're not compliant
+    ellapsed = False
+    while not ellapsed:
+        yield ellapsed
+        ellapsed = datetime.now() - start >= boundary
+    yield ellapsed   # Inform the boundary condition, or we're not compliant
                     # with the predicate protocol.
 
 
