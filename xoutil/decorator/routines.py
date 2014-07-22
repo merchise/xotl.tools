@@ -213,7 +213,7 @@ def bounded(*preds, **namedpreds):
                     from xoutil.names import nameof
                     raise RuntimeError(
                         'Predicate %r is not compliant' % nameof(
-                            pred, full=True
+                            pred, inner=True, full=True
                         )
                     )
             try:
@@ -223,21 +223,22 @@ def bounded(*preds, **namedpreds):
                     except (GeneratorExit, StopIteration):
                         stop = True
                     else:
-                        try:
-                            # XXX: Can't use any(...) here cause it will
-                            # swallow StopIteration from pred.send()
-                            i, top = 0, len(predgens)
-                            while not stop and i < top:
-                                pred = predgens[i]
+                        # XXX: Can't use any(...) here cause it will
+                        # swallow StopIteration from pred.send()
+                        i, top = 0, len(predgens)
+                        while not stop and i < top:
+                            pred = predgens[i]
+                            try:
                                 stop = pred.send(data)
-                                i += 1
-                        except StopIteration:
-                            from xoutil.names import nameof
-                            raise RuntimeError(
-                                'Predicate %r is not compliant' % nameof(
-                                    pred, full=True
+                            except StopIteration:
+                                from xoutil.names import nameof
+                                raise RuntimeError(
+                                    'Predicate %r is not compliant' % nameof(
+                                        pred, inner=True, full=True
+                                    )
                                 )
-                            )
+                            else:
+                                i += 1
             finally:
                 generator.close()
                 for pred in predgens:
