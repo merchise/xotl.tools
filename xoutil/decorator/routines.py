@@ -88,13 +88,20 @@ def timed(maxtime):
     Usage::
 
          @bounded(timed=timedelta(seconds=60))
-         def do_something_in_abount_60s():
+         def do_something_in_about_60s():
              while True:
                  yield
 
-    :param val:  The amount of time to allow the execution.  If it is a number
-                 is converted to a timedelta passing the value to the
-                 `seconds` argument.
+    Notice that this is a very soft limit.  We can't actually guarrant any
+    enforcement of the time limit.  If the bounded generator takes too much
+    time or never yields this predicated can't do much.  This usually helps
+    with batch processing that must not exceed (by too much) a given amount of
+    time.
+
+    The timer starts just after the ``next()`` function has been called for
+    the predicate initialization.  So if the `maxtime` given is too short this
+    predicated might halt the execution of the bounded function without
+    allowing any processing at all.
 
     '''
     from datetime import datetime, timedelta
@@ -102,14 +109,12 @@ def timed(maxtime):
         boundary = maxtime
     else:
         boundary = timedelta(seconds=maxtime)
-    yield False   # Only count time after the first call to next
     start = datetime.now()
-    ellapsed = False
-    while not ellapsed:
-        yield ellapsed
-        ellapsed = datetime.now() - start >= boundary
-    yield ellapsed   # Inform the boundary condition, or we're not compliant
-                    # with the predicate protocol.
+    yield False  # XXX: Deal with next-send calling scheme for predicates.
+    while datetime.now() - start < boundary:
+        yield False
+    yield True   # Inform the boundary condition, or we're not compliant with
+                 # the predicate protocol.
 
 
 @predicate

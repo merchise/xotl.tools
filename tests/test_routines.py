@@ -71,10 +71,10 @@ class TestBoundedWithStandardPredicates(TestRoutinesCase):
         res = fib10ms(wait=1/10)
         self.assertEquals(res, 1)
 
-        # If the time boundary is too low timed will allow a cycle
+        # If the time boundary is too low timed will allow not allow a cycle.
         fib0ms = bounded(timed=0)(fibonacci)
         res = fib0ms()
-        self.assertEquals(res, 1)
+        self.assertEquals(res, None)
 
 
 class TestBoundedUnnamedPredicates(TestRoutinesCase):
