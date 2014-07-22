@@ -178,24 +178,27 @@ class _whenall(_higherpred):
         preds = list(self.preds)
         for pred in preds:
             next(pred)
-        while preds:  # When we are out of preds it means all have yielded
-                      # True
-            data = yield False
-            i = 0
-            while preds and i < len(preds):
-                pred = preds[i]
-                try:
-                    res = pred.send(data)
-                except StopIteration:
-                    raise RuntimeError('Invalid predicated in %r' % preds)
-                except GeneratorExit:
-                    i = len(preds)  # fake stop
-                else:
-                    if res is True:
-                        del preds[i]
+        try:
+            while preds:  # When we are out of preds it means all have yielded
+                          # True
+                data = yield False
+                i = 0
+                while preds and i < len(preds):
+                    pred = preds[i]
+                    try:
+                        res = pred.send(data)
+                    except StopIteration:
+                        raise RuntimeError('Invalid predicated in %r' % preds)
+                    except GeneratorExit:
+                        i = len(preds)  # fake stop
                     else:
-                        i += 1
-        yield True
+                        if res is True:
+                            del preds[i]  # no more send() for this pred
+                        else:
+                            i += 1
+            yield True
+        except GeneratorExit:
+            pass
         for pred in self.preds:
             pred.close()
 
@@ -224,20 +227,23 @@ class _whenany(_higherpred):
         for pred in preds:
             next(pred)
         stop = False
-        while not stop:
-            data = yield stop
-            i, top = 0, len(preds)
-            while not stop and i < top:
-                pred = preds[i]
-                try:
-                    stop = stop or pred.send(data)
-                except StopIteration:
-                    raise RuntimeError('Invalid predicated in %r' % preds)
-                except GeneratorExit:
-                    stop = True
-                else:
-                    i += 1
-        yield stop
+        try:
+            while not stop:
+                data = yield stop
+                i, top = 0, len(preds)
+                while not stop and i < top:
+                    pred = preds[i]
+                    try:
+                        stop = stop or pred.send(data)
+                    except StopIteration:
+                        raise RuntimeError('Invalid predicated in %r' % preds)
+                    except GeneratorExit:
+                        stop = True
+                    else:
+                        i += 1
+            yield stop
+        except GeneratorExit:
+            pass
         for pred in preds:
             pred.close()
 
