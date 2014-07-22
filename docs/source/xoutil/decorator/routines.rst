@@ -10,7 +10,7 @@
 A bounded execution model
 =========================
 
-.. autofunction:: bounded(*preds, **namedpreds)(func)
+.. autofunction:: bounded(*preds, **namedpreds)(target)
 
 .. autofunction:: predicate([name])(func)
 

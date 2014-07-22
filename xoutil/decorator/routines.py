@@ -31,11 +31,6 @@ _predicates = {}
 def predicate(target, name=None):
     '''Register a predicate for :func:`bounded`.
 
-    A predicate tests a `boundary condition`:term: each time the generator
-    passed decorate by `bounded`:func: yields a value.  The decorated function
-    in `bounded`:func: is called the bounded generator, and the object
-    returned by `bounded`:func: is called the bounded function.
-
     `target` must a callable that accepts a single positional argument (the
     value passed to its corresponding keyword argument in `bounded`:func:) and
     returns a generator object (:pep:`342`) with the following restrictions
@@ -270,50 +265,44 @@ def whenany(*preds, **namedpreds):
 def bounded(*preds, **namedpreds):
     '''Run a generator in a bounded context.
 
-    The generator yields a unit of work one at a time and the bounded
-    decorator may call its ``close()`` method if any of the predicates
-    indicated a boundary condition.
+    The parameter `target` must either a generator-iterator object or a
+    function.  In the last case `bounded`:func: acts a decorator.  In either
+    case the, `bounded`:func: returns a function.  If `target` is a generator
+    no arguments are allowed when calling the returned function.  If `target`
+    is function arguments are expected to match the signature of the original
+    `target` function.  If `target` is function it must return a
+    generator-iterator object.
 
-    It is advisable not to use too many predicates specially not mixing
+    The generator should yield at the boundary of a `unit of work` and
+    `bounded`:func: might call its ``close()`` method if `any` of the
+    predicates yields True.
+
+    It is advisable not to use too many predicates; specially not mixing
     time-related predicated with others.
 
-    The order in which the predicates will be executed is not guarranted.
+    The order in which the predicates will be executed is not guarranted,
+    except for the positional arguments (the unnamed predicates "`preds`").
 
     If any predicate raises an exception upon initialization, it is propagated
     unchanged and the bounded generator won't stand a chance.  See
     `predicate`:func: for more details about how to write predicates.
 
     The bounded function returned by this decorator will return the last data
-    yielded by the wrapped function, if any was produced.
+    yielded by the generator if any was produced.
 
     .. warning::
 
        Since `bounded`:func: will consume (and not re-yield) data from the
-       wrapped function, you can't nest several calls to `bounded`:func:.
-
-    Each `pred` (unnamed predicate) is simply a generator-iterator that
-    complies with the predicate protocol described in `predicate`:func: or a
-    callable that evaluates to a predicate.
-
-    Each `namedpred` (nammed predicate) must have been properly registered
-    with :func:`predicate`.
-
-    This way you may choose to use named or unnamed as you please.  The
-    following signature are equivalent: ``bounded(atmost=8)`` and
-    ``bounded(atmost(8))``.
+       generator, you can't nest several calls to `bounded`:func:.
 
     '''
     pred = whenany(*preds, **namedpreds)
 
     def bounder(func):
-        from functools import wraps
-
-        @wraps(func)
-        def target(*args, **kwargs):
+        def execute(generator, args):
             from xoutil import Undefined
-            generator = func(*args, **kwargs)
             next(pred)
-            stop, data = pred.send((args, kwargs)), Undefined
+            stop, data = pred.send(args), Undefined
             try:
                 while not stop:
                     try:
@@ -327,5 +316,16 @@ def bounded(*preds, **namedpreds):
                 pred.close()
             if data is not Undefined:
                 return data
-        return target
+
+        from types import GeneratorType
+        if isinstance(func, GeneratorType):
+            return lambda: execute(func, None)
+        else:
+            from functools import wraps
+
+            @wraps(func)
+            def target(*args, **kwargs):
+                generator = func(*args, **kwargs)
+                return execute(generator, (args, kwargs))
+            return target
     return bounder

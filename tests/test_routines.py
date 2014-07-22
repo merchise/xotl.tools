@@ -199,3 +199,24 @@ class TestBoundedPredicates(TestRoutinesCase):
 
         with self.assertRaises(RuntimeError):
             foobar()
+
+
+class TestMisc(TestRoutinesCase):
+    def test_args_are_passed(self):
+        def pred():
+            args, kwargs = yield
+            self.assertEquals(args, (1, 2))
+            self.assertEquals(kwargs, {})
+            yield True
+
+        @bounded(pred)
+        def foobar(*args, **kwargs):
+            while True:
+                yield 1
+
+        foobar(1, 2)
+
+    def test_plain_generator(self):
+        fibseq = fibonacci()
+        limited = bounded(atmost=5)(fibseq)
+        self.assertEqual(limited(), 5)
