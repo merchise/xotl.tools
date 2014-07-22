@@ -19,7 +19,7 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from xoutil.decorator.routines import predicate, bounded, whenall
+from xoutil.decorator.routines import predicate, bounded, whenall, whenany
 
 
 class TestRoutinesCase(unittest.TestCase):
@@ -78,6 +78,21 @@ class TestBoundedWithStandardPredicates(TestRoutinesCase):
 
 
 class TestHigherLevelPreds(TestRoutinesCase):
+    def test_close_is_always_called(self):
+        def bailout():
+            yield
+            try:
+                yield False  # Let the first iteration
+                while True:
+                    yield True
+            except GeneratorExit:
+                pass
+            else:
+                raise AssertionError('close() must have been called')
+
+        fibnone = bounded(whenall(whenany(bailout)))(fibonacci)
+        self.assertEqual(fibnone(), 1)
+
     def test_whenall_with_invalid(self):
         def invalid():
             yield
