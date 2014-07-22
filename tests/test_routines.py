@@ -123,10 +123,8 @@ class TestBoundedPredicates(TestRoutinesCase):
     def test_invalid_predicate_early_at_cycle(self):
         @predicate(name='invalid')
         def invalid(_):
-            data = yield
-            print('First ', data)
-            data = yield False  # i.e never signal True
-            print('Second ', data)
+            yield
+            yield False  # i.e never signal True
 
         @bounded(invalid=1)
         def foobar():
