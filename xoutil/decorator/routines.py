@@ -184,8 +184,6 @@ class _whenall(_higherpred):
                         res = pred.send(data)
                     except StopIteration:
                         raise RuntimeError('Invalid predicated in %r' % preds)
-                    except GeneratorExit:
-                        i = len(preds)  # fake stop
                     else:
                         if res is True:
                             del preds[i]  # no more send() for this pred
@@ -232,8 +230,6 @@ class _whenany(_higherpred):
                         stop = stop or pred.send(data)
                     except StopIteration:
                         raise RuntimeError('Invalid predicated in %r' % preds)
-                    except GeneratorExit:
-                        stop = True
                     else:
                         i += 1
             yield stop
