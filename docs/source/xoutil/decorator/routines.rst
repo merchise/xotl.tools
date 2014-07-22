@@ -4,6 +4,8 @@
 
 .. module:: xoutil.decorator.routines
 
+.. versionadded:: 1.6.2
+
 
 A bounded execution model
 =========================
