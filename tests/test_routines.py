@@ -19,23 +19,20 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from xoutil.decorator.routines import predicate, bounded, whenall, whenany
+from xoutil.bound import predicate, bounded, whenall, whenany, _predicates
 
 
 class TestRoutinesCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        from xoutil.decorator.routines import _predicates
         cls._predicates = dict(_predicates)
 
     @classmethod
     def tearDownClass(cls):
-        from xoutil.decorator.routines import _predicates
         _predicates.clear()
         _predicates.update(cls._predicates)
 
     def setUp(self):
-        from xoutil.decorator.routines import _predicates
         _predicates.clear()
         _predicates.update(self._predicates)
 
@@ -52,7 +49,6 @@ def fibonacci(wait=None):
 
 class TestBoundedWithStandardPredicates(TestRoutinesCase):
     def test_assert_standard_predicates(self):
-        from xoutil.decorator.routines import _predicates
         self.assertIn('timed', _predicates)
         self.assertIn('times', _predicates)
         self.assertIn('pred', _predicates)
@@ -141,7 +137,7 @@ class TestHigherLevelPreds(TestRoutinesCase):
 
 class TestBoundedUnnamedPredicates(TestRoutinesCase):
     def test_atmost_unnamed(self):
-        from xoutil.decorator.routines import times
+        from xoutil.bound import times
         fib8 = bounded(times(8))(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21

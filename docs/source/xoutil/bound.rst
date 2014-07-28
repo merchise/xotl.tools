@@ -1,10 +1,12 @@
-===========================================================
-:mod:`xoutil.decorator.routines` -- Helpers for co-routines
-===========================================================
+======================================================================
+ :mod:`xoutil.bound` -- Helpers for bounded execution of co-routines.
+======================================================================
 
-.. module:: xoutil.decorator.routines
+.. module:: xoutil.bound
 
-.. versionadded:: 1.6.2
+.. versionadded:: 1.6.3
+
+.. warning:: This is a development.  The API is flux.
 
 
 A bounded execution model

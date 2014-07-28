@@ -1,2 +1,2 @@
-- Added the `xoutil.decorator.routines`:mod: and its
-  `~xoutil.decorator.routines.bounded`:func: function.
+- Added the `xoutil.bound`:mod: and its `~xoutil.bound.bounded`:func:
+  function.

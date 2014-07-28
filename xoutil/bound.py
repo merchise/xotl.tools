@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.decorator.routines
+# xoutil.bound
 #----------------------------------------------------------------------
 # Copyright (c) 2014 Merchise Autrement and Contributors
 # All rights reserved.
@@ -11,7 +11,7 @@
 #
 # Created on 2014-07-21
 
-'''Helpers for co-routines-like patterns.
+'''Helpers for bounded execution of co-routines.
 
 '''
 
@@ -21,7 +21,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from .meta import decorator
+from xoutil.decorator.meta import decorator
 
 
 _predicates = {}
@@ -325,3 +325,6 @@ def bounded(*preds, **namedpreds):
                 return execute(generator, (args, kwargs))
             return target
     return bounder
+
+
+del decorator
