@@ -124,6 +124,28 @@ def times(cycles):
 
 
 @predicate
+def accumulated(mass, *attrs):
+    '''A predicate that becomes True after accumulating an amount of "mass".
+
+    The `mass` argument must the maximum mass allowed to accumulate.  This is
+    usually a positive number.
+
+    If any `attrs` are provided, they will be considered attributes (or keys)
+    to search inside the yielded data from the bounded function.  If no
+    `attrs` are provided the whole data is accumulated, so it must allow
+    addition.
+
+    '''
+    from xoutil.objects import get_first_of
+    accum = 0
+    yield False
+    while accum < mass:
+        data = yield False
+        accum += get_first_of(data, *attrs, default=data)
+    yield True
+
+
+@predicate
 def pred(func):
     '''Predicate to allow less speciallized callables to engage in the predicate
     protocol.
