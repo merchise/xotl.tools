@@ -118,7 +118,7 @@ execution of the task::
           for message in outbox:
 	     emailbackend.send(message)
 	     outbox.remove(message)
-	     yield outgoing
+	     yield message
        finally:
           outbox.close()  # actually remove sent messages
 
