@@ -696,8 +696,8 @@ def iterate_over(source, *keys):
 
 
 def get_first_of(source, *keys, **kwargs):
-    '''Return the value of the first occurrence of any of the specified `keys` in
-    `source` that matches `pred` (if given).
+    '''Return the value of the first occurrence of any of the specified `keys`
+    in `source` that matches `pred` (if given).
 
     Both `source` and `keys` has the same meaning as in :func:`iterate_over`.
 
@@ -753,6 +753,7 @@ def pop_first_of(source, *keys, **kwargs):
 
     '''
     from xoutil.types import is_collection
+
     def inner(source):
         get = smart_getter_and_deleter(source)
         res, i = Unset, 0
@@ -989,9 +990,10 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
         ignored = lambda name: any(ignore.match(name) for ignore in ignores)
     else:
         ignored = None
+    valids = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
     attrs = {name: value
              for name, value in iteritems_(cls.__dict__)
-             if name not in ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
+             if name not in valids
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
              if not isinstance(value, MemberDescriptorType)
@@ -1352,6 +1354,7 @@ def get_traverser(*paths, **kw):
     def _traverser(path, default=Unset, sep='.', getter=None):
         if not getter:
             getter = lambda o, a, default=None: smart_getter(o)(a, default)
+
         def inner(obj):
             notfound = object()
             current = obj
@@ -1366,13 +1369,17 @@ def get_traverser(*paths, **kw):
                     return default
             else:
                 return current
+
         return inner
+
     if len(paths) == 1:
         result = _traverser(paths[0], **kw)
     elif len(paths) > 1:
         _traversers = tuple(_traverser(path, **kw) for path in paths)
+
         def _result(obj):
             return tuple(traverse(obj) for traverse in _traversers)
+
         result = _result
     else:
         raise TypeError('"get_traverser" requires at least a path')
