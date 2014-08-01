@@ -6,7 +6,8 @@
 
 .. versionadded:: 1.6.2
 
-.. warning:: This is a development.  The API is flux.
+.. warning:: This module is still in heavy development.  The API is flux.  It
+	     will be declared stable only after release 1.7.0.
 
 
 A bounded execution model
@@ -78,7 +79,7 @@ boundary condition yields True or when the generator itself is exhausted.
 
 
 Included boundary conditions
-----------------------------
+============================
 
 .. autofunction:: timed(maxtime)
 
@@ -90,7 +91,7 @@ Included boundary conditions
 
 
 Chaining several boundary conditions
-------------------------------------
+====================================
 
 To created a more complex boundary than the one provided by a single condition
 you could use the following high-level boundaries:
@@ -100,8 +101,121 @@ you could use the following high-level boundaries:
 .. autofunction:: whenall(*boundaries)
 
 
+
+Defining boundaries
+===================
+
+.. autofunction:: boundary(definition)
+
+
+Illustration of a boundary
+--------------------------
+
+Let's explain in detail the implementation of `times`:func: as an example of
+how a boundary condition could be implemented.
+
+
+.. code-block:: python
+   :linenos:
+
+   @boundary
+   def times(n):
+       '''Becomes True after a given after when `nth` have been produced.'''
+       passed = 0
+       yield False
+       while passed < n:
+	   yield False
+	   passed += 1
+       yield True
+
+We implemented the boundary condition via the `boundary`:func: helper.  This
+helpers allows to implement the boundary condition via a boundary definition
+(the function above).  Then the ``boundary`` helper takes the definition a
+builds a `BoundaryCondition`:class: instance.  This instance can then be used
+to decorate the `unbounded function`, this operation returns a `bounded
+function` (a `Bounded`:class: instance).
+
+When the `bounded function` is called, what actually happens is that:
+
+- First the boundary condition is invoked passing the ``n`` argument, and thus
+  we obtain the generator from the ``times`` function.
+
+- We also get the generator from the unbounded function.
+
+- Then we call ``next(boundary)`` to allow the ``times`` boundary to
+  initialize itself.  This runs the code of the ``times`` definition up to the
+  line 5 (the first ``yield`` statement).
+
+- The `bounded function` ignores the message from the boundary at this point.
+
+- Then it sends the arguments passed to original function via the ``send()``
+  method of the boundary condition generator.
+
+- This unfreezes the boundary condition that now tests whether ``passes`` is
+  less that ``n``.  If this is true, the boundary yields False and suspends
+  there at line 7.
+
+- The `bounded function` see that message is not True and asks the `unbounded
+  generator` for its next value.
+
+- Then it sends that value to the boundary condition generator, which resumes
+  execution at line 8.  The value sent is ignored and ``passes`` gets
+  incremented by 1.
+
+- Again the generator asks if ``passes`` is less that ``n``.  If passes has
+  reached ``n``, it will execute line 9, yielding True.
+
+- The `bounded function` see that the boundary condition is True and calls the
+  ``close()`` method to the boundary condition generator.
+
+- This is like raising a GeneratorExit just after resuming the ``times`` below
+  line 9.  The error is not trapped and propagates the ``close()`` method of
+  the generator knows this means the generator has properly finished.
+
+  .. note:: Other boundaries might need to deal with GeneratorExit explicitly.
+
+- Then the `bounded function` regains control and calls the ``close()`` method
+  of the `unbounded generator`, this effectively raises a GeneratorExit inside
+  the unbounded generator, which if untreated means everything went well.
+
+
+If you look at the implementation of the `included boundary conditions`_,
+you'll that all have the same pattern:
+
+a) Initialization code, followed by a ``yield False`` statement.  This is a
+   clear indicator that the included boundary conditions disregard the first
+   message (the arguments to the unbounded function).
+
+b) A looping structure that tests the condition has not been met and yields
+   False at each cycle.
+
+c) The ``yield True`` statement outside the loop to indicate the boundary
+   condition has been met.
+
+This pattern is not an accident.  As an exception see the code for
+`whenall`:func: and `whenany`:func:.  There lack the first standalone `yield
+False` because they must not assume all its subordinate predicates will ignore
+the first message.
+
+
+Internal API
+============
+
+.. autoclass:: Bounded
+   :members: __call__, generate
+
+   This class is actually subclassed inside the
+   `~BoundaryCondition.apply`:meth: so that the weaving boundary definition
+   with the `target` unbounded function is not exposed.
+
+.. autoclass:: BoundaryCondition
+   :members:
+
+.. _celery: http://docs.celeryproject.org/
+
+
 An example: time bounded batch processing
------------------------------------------
+=========================================
 
 We have a project in which we need to send emails inside a `cron` task
 (celery_ is not available).  Emails to be sent are placed inside an `Outbox`
@@ -119,8 +233,10 @@ execution of the task::
 	     emailbackend.send(message)
 	     outbox.remove(message)
 	     yield message
+       except GeneratorExit:
+          pass  # Avoid the propagation of this
        finally:
-          outbox.close()  # actually remove sent messages
+          outbox.close()  # commit the changes to the outbox
 
 Notice that you **must** enclose your batch-processing code in a ``try``
 statement if you need to somehow commit changes.  Since we may call the
@@ -133,64 +249,3 @@ place in the code above where an error could happen is the sending of the
 email, and the data is only touched for each email that is actually sent.  So
 we can safely close our outbox and commit the removal of previous message from
 the outbox.
-
-
-Defining boundaries
--------------------
-
-.. autofunction:: boundary(definition)
-
-
-Let's explain in detail the implementation of `timed`:func: as an example of
-how a boundary condition could be implemented.
-
-
-.. code-block:: python
-   :linenos:
-
-   @boundary
-   def timed(maxtime):
-       from datetime import datetime, timedelta
-       if isinstance(maxtime, timedelta):
-	   bound = maxtime
-       else:
-	   bound = timedelta(seconds=maxtime)
-       start = datetime.now()
-       yield False  # The first `sent` with args, kwargs
-       while datetime.now() - start < bound:
-	   yield False  # we still hace time
-       yield True   # Inform the boundary condition, or we're not compliant
-                    # with the boundary protocol.
-
-The `timed` function (before application of `boundary`:func:) is what we call
-a `boundary definition`:term:.  The generator returned by this function is the
-`boundary condition`:term:.  After the application of ``boundary()``, this is
-actually a `BoundaryCondition`:class: instance.
-
-When applied this boundary to, say, the `fibonacci` implementation:
-
-.. code-block:: python
-   :linenos:
-
-   def fibonacci():
-       a, b = 1, 1
-       while True:
-          yield a
-	  a, b = b, a + b
-
-
-
-Internal API
-============
-
-.. autoclass:: Bounded
-   :members: __call__, generate
-
-   This class is actually subclassed inside the
-   `~BoundaryCondition.apply`:meth: so that the weaving boundary definition
-   with the `target` unbounded function is not exposed.
-
-.. autoclass:: BoundaryCondition
-   :members:
-
-.. _celery: http://docs.celeryproject.org/
