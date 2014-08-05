@@ -2,4 +2,4 @@
 
 - Added the `base` parameter in `xoutil.modules.moduleproperty`:func:.
 
-- Added the function `xoutil.fs.concatfiles`.
+- Added the function `xoutil.fs.concatfiles`:func:.
