@@ -4,10 +4,11 @@
 
 .. module:: xoutil.bound
 
-.. versionadded:: 1.6.2
+.. versionadded:: 1.6.3  Pre-release version.
 
 .. warning:: This module is still in heavy development.  The API is flux.  It
-	     will be declared stable only after release 1.7.0.
+   will be declared stable only after release 1.7.0.  Even the module name
+   might change in the future.
 
 
 A bounded execution model
