@@ -14,10 +14,10 @@
 A bounded execution model
 =========================
 
-Some functions are easy to implement using a generator (:pep:`342`).  Or
-sometimes you'd want to "report units of work" one at a time.  These functions
-could be easily programmed without any `bounds` whatsoever, and then you might
-"weave" the bounds.
+Some features are easy to implement using a generator or co-routine
+(:pep:`342`).  For instance, you might want to "report units of work" one at a
+time.  These kind of features could be easily programmed without any `bounds`
+whatsoever, and then you might "weave" the bounds.
 
 This module helps to separate the work-doing function from the boundary-tests
 definitions.
@@ -29,7 +29,9 @@ This document uses the following terminology:
    unbounded function
 
       This is the function that does the actual work without testing for any
-      `boundary condition`:term:.
+      `boundary condition`:term:.  Boundary conditions are not
+      "natural-causes" of termination for the algorithm but conditions imposed
+      elsewhere: the environment, resource management, etc.
 
       This function *must* return a generator, called the `unbounded
       generator`:term:.
@@ -43,16 +45,18 @@ This document uses the following terminology:
 
    boundary condition
 
-      Is a condition that can be tested, when met it indicates that the
-      `unbounded generator`:term: should be closed.
+      Is a condition, imposed outside the logical description of any
+      algorithm, that can be tested, when met it indicates that the `unbounded
+      generator`:term: should be closed.  The boundary condition is tested
+      each time the unbounded generator yields.
 
       A boundary condition is usually implemented in a single function called
       a `boundary definition`:term:.
 
    boundary definition
 
-      A function that tests whether a boundary condition has met.  This
-      function must comply with the boundary protocol (see `boundary`:func:).
+      A function that implements a boundary condition.  This function must
+      comply with the boundary protocol (see `boundary`:func:).
 
       Sometime we identify the `boundary` with its `boundary definition`.
 
@@ -66,8 +70,6 @@ This document uses the following terminology:
       Is the result of applying a `boundary condition` to an `unbounded
       generator`.
 
-
-See below__ for clarification of these terms and why the matter.
 
 __ `Defining boundaries`_.
 
@@ -106,6 +108,10 @@ you could use the following high-level boundaries:
 Defining boundaries
 ===================
 
+If none of the boundaries defined deals with a boundary condition you have,
+you may create another one using `boundary`:func:.  This is usually employed
+as decorator on the `boundary definition`:term:.
+
 .. autofunction:: boundary(definition)
 
 
@@ -121,7 +127,7 @@ how a boundary condition could be implemented.
 
    @boundary
    def times(n):
-       '''Becomes True after a given after when `nth` have been produced.'''
+       '''Becomes True after a given the `nth` item have been produced.'''
        passed = 0
        yield False
        while passed < n:
@@ -131,7 +137,7 @@ how a boundary condition could be implemented.
 
 We implemented the boundary condition via the `boundary`:func: helper.  This
 helpers allows to implement the boundary condition via a boundary definition
-(the function above).  Then the ``boundary`` helper takes the definition a
+(the function above).  Then the ``boundary`` helper takes the definition it
 builds a `BoundaryCondition`:class: instance.  This instance can then be used
 to decorate the `unbounded function`, this operation returns a `bounded
 function` (a `Bounded`:class: instance).
@@ -181,7 +187,7 @@ When the `bounded function` is called, what actually happens is that:
 
 
 If you look at the implementation of the `included boundary conditions`_,
-you'll that all have the same pattern:
+you'll see that all have the same pattern:
 
 a) Initialization code, followed by a ``yield False`` statement.  This is a
    clear indicator that the included boundary conditions disregard the first
@@ -194,7 +200,7 @@ c) The ``yield True`` statement outside the loop to indicate the boundary
    condition has been met.
 
 This pattern is not an accident.  As an exception see the code for
-`whenall`:func: and `whenany`:func:.  There lack the first standalone `yield
+`whenall`:func: and `whenany`:func:.  They lack the first standalone `yield
 False` because they must not assume all its subordinate predicates will ignore
 the first message.
 

@@ -252,8 +252,8 @@ def boundary(definition, name=None, base=BoundaryCondition):
     - The `boundary definition` must deal with GeneratorExit exceptions
       properly, since we call the ``close()`` method of the generator upon
       termination.  Termination occurs when the `unbounded generator` stops by
-      any means (even an error), this cause the boundary condition yielded
-      True or the generator itself is exhausted or there's an error in the
+      any means (even an error), even when the boundary condition yielded True
+      or the generator itself is exhausted or there's an error in the
       generator.
 
       Both `whenall`:func: and `whenany`:func: call the ``close()`` method of
@@ -318,7 +318,7 @@ def timed(maxtime):
 
 @boundary
 def times(n):
-    '''Becomes True after a given after when `nth` have been produced.'''
+    '''Becomes True after a given after the `nth` item have been produced.'''
     passed = 0
     yield False
     while passed < n:
@@ -338,8 +338,9 @@ def accumulated(mass, *attrs, **kwargs):
     If any `attrs` are provided, they will be considered attributes (or keys)
     to search inside the yielded data from the bounded function.  If no
     `attrs` are provided the whole data is accumulated, so it must allow
-    addition.  The attributes are extracted with
-    `~xoutil.objects.get_first_of`:func:.
+    addition.  The attribute to be summed is extracted with
+    `~xoutil.objects.get_first_of`:func:, so only the first attribute found is
+    added.
 
     If the keyword argument `initial` is provided the accumulator is
     initialized with that value.  By default this is 0.
