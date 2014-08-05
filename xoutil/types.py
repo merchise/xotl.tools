@@ -70,6 +70,12 @@ if _pypy:
 del _pypy
 
 
+try:
+    from exceptions import StandardError
+except:
+    StandardError = Exception
+
+
 # In Py3.3 NoneType is not defined in the stdlib `types` module. This solves
 # the issue.
 NoneType = type(None)
