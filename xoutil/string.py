@@ -172,6 +172,11 @@ def cut_prefix(value, prefix):
     unchanged.
 
     '''
+    from xoutil.six import text_type as str, binary_type as bytes
+    if isinstance(value, str) and isinstance(prefix, bytes):
+        prefix = safe_decode(prefix)
+    elif isinstance(value, bytes) and isinstance(prefix, str):
+        prefix = safe_encode(prefix)
     return value[len(prefix):] if value.startswith(prefix) else value
 
 
@@ -180,6 +185,11 @@ def cut_suffix(value, suffix):
     unchanged.
 
     '''
+    from xoutil.six import text_type as str, binary_type as bytes
+    if isinstance(value, str) and isinstance(suffix, bytes):
+        suffix = safe_decode(suffix)
+    elif isinstance(value, bytes) and isinstance(suffix, str):
+        suffix = safe_encode(suffix)
     return value[:-len(suffix)] if value.endswith(suffix) else value
 
 
