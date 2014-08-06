@@ -299,3 +299,28 @@ class TestMisc(unittest.TestCase):
         fibseq = fibonacci()
         limited = times(5)(fibseq)
         self.assertEqual(limited(), 5)
+
+
+class TestTerminationCases(unittest.TestCase):
+    def test_termination_when_exception(self):
+        def magic_number(a):
+            if a < 1:
+                yield 0
+            else:
+                prev = next(magic_number(a - 1))
+                yield a + prev
+
+        @boundary
+        def forever():
+            try:
+                while True:
+                    yield False
+            except GeneratorExit:
+                pass  # ok
+            else:
+                raise AssertionError('close() not called to boundary')
+
+        bounded = forever()(magic_number)
+        bounded(0)  # No exception
+        with self.assertRaises(TypeError):
+            bounded('invalid')
