@@ -76,7 +76,6 @@ def compose(*callables, **kwargs):
                  first.
 
     '''
-    from xoutil.six import callable
     if not callables:
         raise TypeError('At least a function must be provided')
     if not all(callable(func) for func in callables):
@@ -205,7 +204,6 @@ if not py33:
         def __hash__(self):
             return self.hashvalue
 
-
     def _make_key(args, kwds, typed,
                   kwd_mark=(object(),),
                   fasttypes={int, str, frozenset, type(None)},
@@ -284,8 +282,8 @@ if not py33:
         # version).
 
         # Constants shared by all lru cache instances:
-        sentinel = object()          # unique object used to signal cache misses
-        make_key = _make_key         # build a key from the function arguments
+        sentinel = object()        # unique object used to signal cache misses
+        make_key = _make_key       # build a key from the function arguments
         PREV, NEXT, KEY, RESULT = 0, 1, 2, 3   # names for the link fields
 
         def decorating_function(user_function):
