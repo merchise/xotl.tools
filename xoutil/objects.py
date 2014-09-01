@@ -1443,3 +1443,34 @@ def dict_merge(*dicts, **others):
                                     % key)
                 result[key] = value
     return result
+
+
+def explode(*sources):
+    '''Injects locals in the caller scope.
+
+    Each source should be a mapping.  The caller then will have locals for
+    each valid mapping.
+
+    Example::
+
+       >>>  explode(dict(a=1))
+       >>>  a
+       1
+
+    .. warning:: Experimental use only.
+
+    '''
+    import sys
+    from xoutil.validators import is_valid_identifier
+    from xoutil.collections import Mapping
+    f = sys._getframe(1)
+    try:
+        for source in sources:
+            items = getattr(source, 'items')
+            if isinstance(source, Mapping) or items:
+                l = f.f_locals
+                for name, val in items():
+                    if is_valid_identifier(name):
+                        l[name] = val
+    finally:
+        f = None  # Give the GC a chance
