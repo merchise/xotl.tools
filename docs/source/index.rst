@@ -11,17 +11,10 @@ Welcome to xoutil's documentation!
    :members:
 
 
-What's new in this version
---------------------------
+What's new in version |release|
+-------------------------------
 
-.. include:: history/_changes-1.6.2.rst
-
-And since 1.6.0:
-
-
-.. include:: history/_changes-1.6.1.rst
-.. include:: history/_changes-1.6.0.rst
-
+.. include:: history/_changes-1.6.4.rst
 
 Contents:
 ---------

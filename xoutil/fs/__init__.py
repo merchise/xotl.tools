@@ -554,9 +554,15 @@ def concatfiles(*files):
         for f in files:
             if isinstance(f, string_types):
                 fh = open(f, 'rb')
+                closefh = True
             else:
                 fh = f
-            shutil.copyfileobj(fh, target)
+                closefh = False
+            try:
+                shutil.copyfileobj(fh, target)
+            finally:
+                if closefh:
+                    fh.close()
     finally:
         if opened:
             target.close()
