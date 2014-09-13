@@ -2,8 +2,10 @@
 =========================================
 
 .. automodule:: xoutil.fs
-   :members: ensure_filename, concatfiles, imap, iter_dirs, iter_files,
+   :members: ensure_filename, imap, iter_dirs, iter_files,
 	     listdir, rmdirs, stat, walk_up
+
+.. autofunction:: concatfiles(*files, target)
 
 .. function:: makedirs(path, mode=0o777, exist_ok=False)
 
