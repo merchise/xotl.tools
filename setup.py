@@ -40,6 +40,8 @@ setup(name=project_name,
       url='http://github.com/merchise-autrement/',
       license='GPLv3+',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      pymodules=['six'],
+      provides=['six (1.4.1)'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[

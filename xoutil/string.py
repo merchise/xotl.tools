@@ -43,10 +43,10 @@ from __future__ import (division as _py3_division,
 from re import compile as _regex_compile
 
 from xoutil.deprecation import deprecated as _deprecated
-from xoutil.six import (string_types as _str_base,
-                        text_type as _unicode,
-                        binary_type as _bytes,
-                        PY3 as _py3k)
+from six import (string_types as _str_base,
+                 text_type as _unicode,
+                 binary_type as _bytes,
+                 PY3 as _py3k)
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -172,7 +172,7 @@ def cut_prefix(value, prefix):
     unchanged.
 
     '''
-    from xoutil.six import text_type as str, binary_type as bytes
+    from six import text_type as str, binary_type as bytes
     if isinstance(value, str) and isinstance(prefix, bytes):
         prefix = safe_decode(prefix)
     elif isinstance(value, bytes) and isinstance(prefix, str):
@@ -185,7 +185,7 @@ def cut_suffix(value, suffix):
     unchanged.
 
     '''
-    from xoutil.six import text_type as str, binary_type as bytes
+    from six import text_type as str, binary_type as bytes
     if isinstance(value, str) and isinstance(suffix, bytes):
         suffix = safe_decode(suffix)
     elif isinstance(value, bytes) and isinstance(suffix, str):

@@ -21,7 +21,7 @@ import types
 import warnings
 
 from functools import wraps
-from xoutil.six import class_types as _class_types
+from six import class_types as _class_types
 
 
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
@@ -76,7 +76,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
 
     def raise_if_deprecated(target, target_version):
         import pkg_resources
-        from xoutil.six import string_types
+        from six import string_types
         pkg = nameof(target, inner=True, typed=True, full=True)
         pkg, _obj = pkg.rsplit('.', 1)
         dist = None
@@ -126,7 +126,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             # done so because this module *must* not depends on any other,
             # otherwise an import cycle might be formed when deprecating a
             # class in xoutil.objects.
-            from xoutil.six import iteritems as iteritems_
+            from six import iteritems as iteritems_
             from xoutil.types import MemberDescriptorType
             meta = type(target)
             attrs = {name: value

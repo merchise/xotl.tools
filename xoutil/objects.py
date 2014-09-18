@@ -23,7 +23,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from xoutil.six import PY3 as _py3k, callable, string_types as str_base
+from six import PY3 as _py3k, callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
 
@@ -683,7 +683,7 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from xoutil.six.moves import map
+        from six.moves import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val
@@ -853,7 +853,7 @@ class lazy(object):
         self.kwargs = kwargs
 
     def __call__(self):
-        from xoutil.six import callable
+        from six import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -976,7 +976,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
 
     '''
     from xoutil.fs import _get_regex
-    from xoutil.six import iteritems as iteritems_
+    from six import iteritems as iteritems_
     # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
     #       isn't correct to depend on it. Migrate part of "_get_regex" to a
     #       module that can be imported logically without problems from both,
@@ -1411,7 +1411,7 @@ def dict_merge(*dicts, **others):
 
     '''
     from collections import Mapping, Sequence, Set
-    from xoutil.six import iteritems as iteritems_
+    from six import iteritems as iteritems_
     from xoutil.objects import get_first_of
     from xoutil.types import are_instances, no_instances
     if others:

@@ -21,7 +21,7 @@ from __future__ import (division as _py3_division,
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
 
-from xoutil.six import string_types as _str_base
+from six import string_types as _str_base
 from xoutil.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
@@ -113,7 +113,7 @@ def _parse_signature(signature):
         def __getitem__(self, key):
             from xoutil import Unset
             from xoutil.iterators import dict_update_new
-            from xoutil.six import PY3
+            from six import PY3
             d = self.d
             res = d.get(key, Unset)
             f = self.f

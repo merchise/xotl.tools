@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.six import PY3
+from six import PY3
 assert PY3, 'This module should be loaded in Py3k only'
 
 

@@ -221,7 +221,7 @@ def type_name(obj):
     proper type.
 
     '''
-    from xoutil.six import class_types, string_types
+    from six import class_types, string_types
     named_types = class_types + (types.FunctionType, types.MethodType)
     name = '__name__'
     if isinstance(obj, named_types):

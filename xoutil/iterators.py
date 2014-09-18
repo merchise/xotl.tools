@@ -44,7 +44,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     '''Flattens out a sequence. It takes care of everything deemed a collection
     (i.e, not a scalar according to the callabled passed in `is_scalar`)::
 
-        >>> from xoutil.six.moves import range
+        >>> from six.moves import range
         >>> range_ = lambda *a: list(range(*a))
         >>> tuple(flatten((1, range_(2, 5), range(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -241,4 +241,4 @@ def first_n(iterable, n=1, fill=Unset):
 
 
 # Compatible zip and map
-from xoutil.six.moves import zip, map, zip_longest
+from six.moves import zip, map, zip_longest

@@ -31,7 +31,7 @@ import sys
 import os
 from re import compile as _rcompile
 from xoutil.fs.path import normalize_path
-from xoutil.six import string_types
+from six import string_types
 
 
 re_magic = _rcompile('[*?[]')
@@ -537,7 +537,7 @@ def concatfiles(*files):
     '''
     import shutil
     from xoutil.types import is_collection
-    from xoutil.six import string_types
+    from six import string_types
     if len(files) < 2:
         raise TypeError('At least 2 files must be passed to concatfiles.')
     elif len(files) == 2:

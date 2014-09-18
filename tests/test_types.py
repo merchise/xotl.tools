@@ -30,8 +30,8 @@ def test_NoneType_exists():
 
 
 def test_iscollection():
+    from six.moves import range
     from xoutil.types import is_collection
-    from xoutil.six.moves import range
     from xoutil.collections import UserList, UserDict
     assert is_collection('all strings are iterable') is False
     assert is_collection(1) is False

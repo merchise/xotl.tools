@@ -57,7 +57,7 @@ def _update(attrs, *sources):
     - For every source that is a class, it's public attributes and all methods
       are updated into attrs.
     '''
-    from xoutil.six import class_types, iteritems as iteritems_
+    from six import class_types, iteritems as iteritems_
     attrs.update({str(f.__name__): f for f in sources
                   if (not isinstance(f, class_types) and
                       getattr(f, '__name__', False))})
@@ -97,7 +97,7 @@ def complementor(*sources, **attrs):
         ...    print('Hacked')
         ...    self._super___init__(*args, **kw)
 
-        >>> from xoutil.six.moves import range
+        >>> from six.moves import range
         >>> range_ = lambda *a: list(range(*a))
         >>> @complementor(somedict={'a': 1, 'b': 2}, somelist=range_(5, 10),
         ...               __init__=hacked_init)
@@ -151,7 +151,7 @@ def complementor(*sources, **attrs):
                                  MutableSequence as List,
                                  Set)
         from xoutil import Unset
-        from xoutil.six import iteritems as iteritems_
+        from six import iteritems as iteritems_
         for attr, value in iteritems_(attrs):
             attr = str(attr)
             assigned = attr in cls.__dict__

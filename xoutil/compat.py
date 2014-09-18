@@ -19,7 +19,7 @@ from __future__ import (division as _py3_division,
 
 import warnings
 warnings.warn('The xoutil.compat module is being deprecated in favor of '
-              'xoutil.six')
+              'six')
 import sys
 
 # TODO: Changes in Python 3
