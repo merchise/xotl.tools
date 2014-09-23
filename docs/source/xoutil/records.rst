@@ -42,14 +42,14 @@ concept.  For instance, if you need readers that parse dates in diferent
 locales you may do::
 
     def date_reader(nullable=False, default=None, locale=None):
-	from xoutil.records import _check_nullable
+	from xoutil.records import check_nullable
 	from babel.dates import parse_date, LC_TIME
 	from datetime import datetime
 	if not locale:
 	    locale = LC_TIME
 
 	def reader(value):
-	    if _check_nullable(value, nullable):
+	    if check_nullable(value, nullable):
 	        return parse_date(value, locale=locale)
 	    else:
 		return default
