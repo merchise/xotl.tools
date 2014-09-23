@@ -98,8 +98,12 @@ class _record_type(type):
         return result
 
     def get_field(self, raw_data, field):
+        from xoutil import Undefined
         field_name = self._rec_index[field]
-        value = raw_data[field]
+        try:
+            value = raw_data[field]
+        except (IndexError, KeyError):
+            value = Undefined
         reader_name = '_%s_reader' % field_name.lower()
         reader = getattr(self, reader_name, None)
         if reader:
@@ -199,14 +203,15 @@ def _check_nullable(val, nullable):
     null returns False.
 
     '''
-    if val or nullable:
-        return bool(val)
+    from xoutil._values import UnsetType
+    if val not in (None, '') or not isinstance(val, UnsetType) or nullable:
+        return val not in (None, '') and not isinstance(val, UnsetType)
     else:
         raise ValueError('NULL value was not expected here')
 
 
 @lru_cache()
-def datetime_reader(format, nullable=False):
+def datetime_reader(format, nullable=False, default=None):
     '''Returns a datetime reader.
 
     :param format: The format the datetime is expected to be in the external
@@ -218,12 +223,12 @@ def datetime_reader(format, nullable=False):
             from datetime import datetime
             return datetime.strptime(val, format)
         else:
-            return None
+            return default
     return reader
 
 
 @lru_cache()
-def boolean_reader(true=('1', ), nullable=False):
+def boolean_reader(true=('1', ), nullable=False, default=None):
     '''Returns a boolean reader.
 
     :param true: A collection of raw values considered to be True.  Only the
@@ -234,7 +239,7 @@ def boolean_reader(true=('1', ), nullable=False):
         if _check_nullable(val, nullable):
             return val in true
         else:
-            return None
+            return default
     return reader
 
 
@@ -245,30 +250,30 @@ def integer_reader(nullable=False):
         if _check_nullable(val, nullable):
             return int(val)
         else:
-            return None
+            return default
     return reader
 
 
 @lru_cache()
-def decimal_reader(nullable=False):
+def decimal_reader(nullable=False, default=None):
     '''Returns a Decimal reader.'''
     def reader(val):
         if _check_nullable(val, nullable):
             from decimal import Decimal
             return Decimal(val)
         else:
-            return None
+            return default
     return reader
 
 
 @lru_cache()
-def float_reader(nullable=True):
+def float_reader(nullable=False, default=None):
     '''Returns a float reader.'''
     def reader(val):
         if _check_nullable(val, nullable):
             return float(val)
         else:
-            return None
+            return default
     return reader
 
 

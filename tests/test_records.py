@@ -107,3 +107,21 @@ class TestRecords(unittest.TestCase):
         invoice = INVOICE(line)
         self.assertEqual(invoice.created_datetime, yesterday)
         self.assertEqual(invoice.update_datetime, tomorrow)
+
+    def test_default_values(self):
+        from xoutil.records import float_reader
+
+        class LINE(record):
+            DEBIT = 'Debit'
+            CREDIT = 'Credit'
+            _debit_reader = float_reader(nullable=True, default=0)
+            _credit_reader = float_reader(nullable=True)
+
+        nodata = {}
+        partialdata = {'Credit': 0}
+        nulls = {'Debit': ''}
+        self.assertEqual(LINE.get_field(nodata, LINE.DEBIT), 0)
+        self.assertIsNone(LINE.get_field(nodata, LINE.CREDIT))
+        self.assertEqual(LINE.get_field(partialdata, LINE.DEBIT), 0)
+        self.assertEqual(LINE.get_field(partialdata, LINE.CREDIT), 0)
+        self.assertEqual(LINE.get_field(nulls, LINE.DEBIT), 0)
