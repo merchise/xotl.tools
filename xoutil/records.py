@@ -196,11 +196,19 @@ class record(metaclass(_record_type)):
 
 
 # Standard readers
-def _check_nullable(val, nullable):
-    '''Checks the restriction of nullable.
+def check_nullable(val, nullable):
+    '''Check the restriction of nullable.
 
-    Returns True if the val is non-null.  If nullable is True and the val is
-    null returns False.
+    Return True if the val is non-null.  If nullable is True and the val is
+    null returns False.  If `nullable` is False and `val` in null, raise a
+    ValueError.
+
+    .. note:: Null values are the empty string, None and instances of
+       `xoutil.types.UnsetType`:class:.  Notice that 0, the empty list and
+       other false values in Python not considered null.  This allows that the
+       CSV null (the empty string) is correctly treated while other sources
+       that provide numbers (and 0 is a valid number) are not
+       misinterpreted as null.
 
     '''
     from xoutil._values import UnsetType
@@ -219,7 +227,7 @@ def datetime_reader(format, nullable=False, default=None):
 
     '''
     def reader(val):
-        if _check_nullable(val, nullable):
+        if check_nullable(val, nullable):
             from datetime import datetime
             return datetime.strptime(val, format)
         else:
@@ -236,7 +244,7 @@ def boolean_reader(true=('1', ), nullable=False, default=None):
 
     '''
     def reader(val):
-        if _check_nullable(val, nullable):
+        if check_nullable(val, nullable):
             return val in true
         else:
             return default
@@ -244,10 +252,10 @@ def boolean_reader(true=('1', ), nullable=False, default=None):
 
 
 @lru_cache()
-def integer_reader(nullable=False):
+def integer_reader(nullable=False, default=None):
     '''Returns an integer reader.'''
     def reader(val):
-        if _check_nullable(val, nullable):
+        if check_nullable(val, nullable):
             return int(val)
         else:
             return default
@@ -258,7 +266,7 @@ def integer_reader(nullable=False):
 def decimal_reader(nullable=False, default=None):
     '''Returns a Decimal reader.'''
     def reader(val):
-        if _check_nullable(val, nullable):
+        if check_nullable(val, nullable):
             from decimal import Decimal
             return Decimal(val)
         else:
@@ -270,7 +278,7 @@ def decimal_reader(nullable=False, default=None):
 def float_reader(nullable=False, default=None):
     '''Returns a float reader.'''
     def reader(val):
-        if _check_nullable(val, nullable):
+        if check_nullable(val, nullable):
             return float(val)
         else:
             return default

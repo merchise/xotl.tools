@@ -18,14 +18,8 @@ The following functions *build* readers for standards types.
 
 All these functions have a pair of keywords arguments `nullable` and
 `default`.  The argument `nullable` indicates whether the value must be
-present or not.  If `nullable` is True and the value is null-like, then the
-default is returned by the readers.
-
-.. note:: Null values are the empty string, None and any instance of
-   `xoutil.types.UnsetType`:class:.  Notice that 0, the empty list and tuple
-   are not considered null in this regards.  This allows that CSV nulls (the
-   empty string) are correctly treated while other sources that provide
-   numbers are not miss-interpreted.
+present or not.  The function `check_nullable`:func: implements this check and
+allows other to create their own builders with the same semantic.
 
 .. autofunction:: datetime_reader(format, nullable=False, default=None)
 
@@ -36,3 +30,27 @@ default is returned by the readers.
 .. autofunction:: decimal_reader(nullable=False, default=None)
 
 .. autofunction:: float_reader(nullable=False, default=None)
+
+Checking for null values
+------------------------
+
+.. autofunction:: check_nullable(val, nullable)
+
+
+This function allows you to define new builders that use the same null
+concept.  For instance, if you need readers that parse dates in diferent
+locales you may do::
+
+    def date_reader(nullable=False, default=None, locale=None):
+	from xoutil.records import _check_nullable
+	from babel.dates import parse_date, LC_TIME
+	from datetime import datetime
+	if not locale:
+	    locale = LC_TIME
+
+	def reader(value):
+	    if _check_nullable(value, nullable):
+	        return parse_date(value, locale=locale)
+	    else:
+		return default
+	return reader
