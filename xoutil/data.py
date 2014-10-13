@@ -39,7 +39,7 @@ def adapt_exception(value, **kwargs):
     if isi(value, ebc) or isi(value, type) and issc(value, ebc):
         return value
     elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
-        from xoutil.six import string_types as str_base
+        from six import string_types as str_base
         iss = lambda s: isinstance(s, str_base)
         ecls = value[0]
         args = ((x.format(**kwargs) if iss(x) else x) for x in value[1:])

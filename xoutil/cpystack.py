@@ -23,7 +23,7 @@ from __future__ import (division as _py3_division,
 import inspect
 
 from xoutil.names import strlist as strs
-from xoutil.six import PY3 as _py3k
+from six import PY3 as _py3k
 
 
 __all__ = strs('MAX_DEEP', 'getargvalues', 'error_info',

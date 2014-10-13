@@ -5,7 +5,7 @@
 # TODO:  Take this out of xoutil.
 from multiprocessing import Pool, cpu_count
 from itertools import count, islice, repeat
-from xoutil.six.moves import zip
+from six.moves import zip
 
 
 def gcd(a, b):

@@ -18,7 +18,7 @@ from __future__ import (division as _py3_division,
 
 import warnings
 
-from xoutil.six import class_types as _class_types
+from six import class_types as _class_types
 from xoutil.names import nameof
 
 from .meta import decorator as _decorator

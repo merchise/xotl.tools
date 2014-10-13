@@ -82,7 +82,7 @@ def test_stacked_dict():
 
 
 # Backported from Python 3.3.0 standard library
-from xoutil.six import PY3
+from six import PY3
 from xoutil.collections import ChainMap, Counter, OrderedDict, Mapping
 from xoutil.collections import MutableMapping
 import copy, pickle, inspect

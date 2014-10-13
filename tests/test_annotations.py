@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
 import pytest
 
 from xoutil.annotate import annotate
-from xoutil.six import class_types
+from six import class_types
 
 
 def test_keywords():
@@ -60,7 +60,7 @@ def test_invalid_nonsense_signature():
 
 
 def test_mixed_annotations():
-    from xoutil.six import text_type
+    from six import text_type
 
     @annotate('(a: str, b:text_type) -> bool', a=text_type,
               return_annotation=True)

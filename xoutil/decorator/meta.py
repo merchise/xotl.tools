@@ -67,7 +67,7 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-from xoutil.six import string_types as _str_base, PY3 as _PY3
+from six import string_types as _str_base, PY3 as _PY3
 
 
 if _PY3:

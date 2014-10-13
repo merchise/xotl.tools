@@ -101,7 +101,7 @@ class TestCompose(unittest.TestCase):
         self.assertEqual(3, add_3(0))
 
     def test_ctuple(self):
-        from xoutil.six.moves import range
+        from six.moves import range
         from xoutil.functools import ctuple
 
         def echo(*args):

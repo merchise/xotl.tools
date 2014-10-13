@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.six import PY3 as _py3k, iteritems as iteritems_
+from six import PY3 as _py3k, iteritems as iteritems_
 from xoutil.string import safe_decode
 
 
@@ -80,7 +80,7 @@ if not _py32:
         also translated.
 
         """
-        from xoutil.six import text_type
+        from six import text_type
         from xoutil.string import safe_decode, safe_encode
         if not isinstance(s, text_type):
             arg = safe_decode(s)

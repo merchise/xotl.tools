@@ -290,7 +290,7 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> from xoutil.six.moves import range
+        >>> from six.moves import range
         >>> is_iterable(range(1))
         True
 
@@ -325,7 +325,7 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> from xoutil.six.moves import range
+        >>> from six.moves import range
         >>> is_collection(range(1))
         True
 
@@ -345,7 +345,7 @@ def is_collection(maybe):
 
     '''
     from xoutil.collections import UserList
-    from xoutil.six.moves import range
+    from six.moves import range
     return isinstance(maybe, (tuple, range, list, set, frozenset,
                               GeneratorType, UserList))
 

@@ -19,6 +19,6 @@ from __future__ import (division as _py3_division,
 
 def test_ppformat_rtype():
     from xoutil.pprint import ppformat
-    from xoutil.six import text_type
+    from six import text_type
     o = [list(range(i+1)) for i in range(10)]
     assert type(ppformat(o)) is text_type
