@@ -180,6 +180,24 @@ def cut_prefix(value, prefix):
     return value[len(prefix):] if value.startswith(prefix) else value
 
 
+def cut_any_prefix(value, *prefixes):
+    '''Apply `cut_prefix`:func: for the first matching prefix.'''
+    result = prev = value
+    i, top = 0, len(prefixes)
+    while i < top and result == prev:
+        prefix, i = prefixes[i], i + 1
+        prev, result = result, cut_prefix(prev, prefix)
+    return result
+
+
+def cut_prefixes(value, *prefixes):
+    '''Apply `cut_prefix`:func: for all provided prefixes in order.'''
+    result = value
+    for prefix in prefixes:
+        result = cut_prefix(result, prefix)
+    return result
+
+
 def cut_suffix(value, suffix):
     '''Removes the tailing `suffix` if exists, else return `value`
     unchanged.
@@ -191,6 +209,24 @@ def cut_suffix(value, suffix):
     elif isinstance(value, bytes) and isinstance(suffix, str):
         suffix = safe_encode(suffix)
     return value[:-len(suffix)] if value.endswith(suffix) else value
+
+
+def cut_any_suffix(value, *suffixes):
+    '''Apply `cut_suffix`:func: for the first matching suffix.'''
+    result = prev = value
+    i, top = 0, len(suffixes)
+    while i < top and result == prev:
+        suffix, i = suffixes[i], i + 1
+        prev, result = result, cut_suffix(prev, suffix)
+    return result
+
+
+def cut_suffixes(value, *suffixes):
+    '''Apply `cut_suffix`:func: for all provided suffixes in order.'''
+    result = value
+    for suffix in suffixes:
+        result = cut_suffix(result, suffix)
+    return result
 
 
 def capitalize_word(value):
