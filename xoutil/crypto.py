@@ -126,7 +126,7 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
     required = min(max(level, 1)*BASIC_PASSWORD_SIZE, MAX_PASSWORD_SIZE)
     if pass_phrase:
         # PASS_PHRASE_LEVEL_BASIC
-        res = normalize_slug(pass_phrase, '', True)
+        res = normalize_slug(pass_phrase, '', invalids='_')
         if level >= PASS_PHRASE_LEVEL_MAPPED:
             for (old, new) in ('e3', 'i1', 'o0', 's5'):
                 res = res.replace(old, new)

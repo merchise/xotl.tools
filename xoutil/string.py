@@ -40,8 +40,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from re import compile as _regex_compile
-
 from xoutil.deprecation import deprecated as _deprecated
 from six import (string_types as _str_base,
                  text_type as _unicode,
@@ -257,24 +255,71 @@ def normalize_title(value):
 
 
 def normalize_str(value):
+    import re
     is_bytes = isinstance(value, bytes)
-    regex, sep = (b'(\S+)\s*', b' ') if is_bytes else ('(\S+)\s*', ' ')
-    regex = _regex_compile(regex)
+    regex, sep = r'(\S+)\s*', ' '
+    if is_bytes:
+        regex, sep = bytes(regex), bytes(sep)
+    regex = re.compile(regex)
     matches = regex.findall(value)
     names = (m.capitalize() if len(m) >= 3 else m.lower() for m in matches)
     return sep.join(names)
 
 
-def normalize_slug(value, unwanted_replacement='-', invalid_underscore=False):
+def normalize_ascii(value):
     '''Return the string normal form for the :param:`value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
-    normalization form or replace by :param:`unwanted_replacement` in cases
-    where unwanted characters for slugs are found.
+    normalization.
+    '''
+    import unicodedata
+    if not isinstance(value, _unicode):
+        value = safe_decode(value)
+    res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    return safe_decode(res)
 
-    If :param:`invalid_underscore` is True, '_' is not allowed in result.
 
-    This function converts any type to a valid string.  For example::
+def normalize_slug(value, replacement='-', invalids=None, valids=None):
+    '''Return the string normal form, valid for slugs, for the :param:`value`
+
+    Convert all non-ascii to valid characters using unicode 'NFKC'
+    normalization.
+
+    Lower-case the result.
+
+    Replace unwanted characters by :param:`replacement`, repetition of given
+    pattern will be converted to only one instance.
+
+    ``[_a-z0-9]`` are assumed as valid characters.  Extra arguments can modify
+    this standard behaviour:
+
+      :param invalids: Any collection of characters added to these that are
+                       normally invalids (non-ascii or not included in valid
+                       characters).  Boolean ``True`` can be passed as a
+                       synonymous of ``"_"`` for compatibility with old
+                       ``invalid_underscore`` argument.  ``False`` or ``None``
+                       are assumed as an empty set for invalid characters.
+
+      :param valids: A collection of extra valid characters (all non-ascii
+                     characters are ignored).  This parameter could be either
+                     a valid string, any iterator of valid strings of
+                     characters, or ``None`` to use only default valid
+                     characters (See above).
+
+    Parameters :param:`value` and :param:`replacement` could be of any
+    (non-string) type, these values are normalized and converted to lower-case
+    ASCII strings.
+
+    Examples::
+
+      >>> normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
+      True
+
+      >>> normalize_slug('  Á.e i  Ó  u  ', '.', invalids='AU') == 'e.i.o'
+      True
+
+      >>> normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
+      True
 
       >>> normalize_slug(None) == 'none'
       True
@@ -288,27 +333,54 @@ def normalize_slug(value, unwanted_replacement='-', invalid_underscore=False):
       >>> normalize_slug(135) == '135'
       True
 
+      >>> normalize_slug(123456, '', invalids='52') == '1346'
+      True
+
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
 
     '''
-    import unicodedata
-    if not isinstance(value, _unicode):
-        value = safe_decode(value)
-    res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    res = safe_decode(res.lower())
-    regex = r'[^_a-z0-9]+'
-    if invalid_underscore:
-        regex = regex.replace(r'_', r'')
-    if unwanted_replacement:
-        regex = r'(%s|%s{2,})' % (regex, unwanted_replacement)
-    regex = _regex_compile(regex)
-    res = regex.sub(unwanted_replacement, res)
-    if unwanted_replacement:
-        sgl = unwanted_replacement
-        dbl = sgl + sgl
-        res = res.strip(sgl)
-        while dbl in res:
-            res = res.replace(dbl, sgl)
+    import re
+    # local functions
+    _normalize = lambda v: normalize_ascii(v).lower()
+    _set = lambda v: ''.join(set(v))
+    _esc = lambda v: re.escape(_set(v))
+    _from_iter = lambda v: ''.join(i for i in v)
+    # check and adjust arguments
+    if replacement in (None, False):
+        replacement = ''
+    elif isinstance(replacement, _str_base):
+        replacement = normalize_ascii(replacement)    # TODO: or _normalize?
+    else:
+        msg = '`replacement` (%s) must be a string or None, not `%s`.'
+        raise TypeError(msg % (replacement, type(replacement)))
+    if invalids is True:
+        # Backward compatibility with former `invalid_underscore` argument
+        invalids = '_'
+    elif invalids in {None, False}:
+        invalids = ''
+    else:
+        if not isinstance(invalids, _str_base):
+            invalids = _from_iter(invalids)
+        invalids = _esc(_normalize(invalids))
+    if valids is None:
+        valids = ''
+    else:
+        if not isinstance(valids, _str_base):
+            valids = _from_iter(valids)
+        valids = _esc(re.sub(r'[0-9a-b]+', '', _normalize(valids)))
+    # calculate result
+    res = _normalize(value)
+    regex = re.compile(r'[^_a-z0-9%s]+' % valids)
+    res = regex.sub(replacement, res)
+    if invalids:
+        regex = re.compile(r'[%s]+' % invalids)
+        res = regex.sub(replacement, res)
+    if replacement:
+        r = {'r': r'%s' % re.escape(replacement)}
+        regex = re.compile(r'(%(r)s){2,}' % r)
+        res = regex.sub(replacement, res)
+        regex = re.compile(r'(^%(r)s+|%(r)s+$)' % r)
+        res = regex.sub('', res)
     return res
 
 
