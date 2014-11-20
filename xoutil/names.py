@@ -166,12 +166,13 @@ def _get_best_name(names, safe=False, full=False):
         is_valid = is_valid_full_identifier if full else is_valid_identifier
         if not is_valid(res):
             from xoutil.string import normalize_slug
+            _mark = 'dot_dot_dot'
             full = full and '.' in res
             if full:
-                res = res.replace('.', 'dot_dot_dot')
+                res = res.replace('.', _mark)
             res = normalize_slug(res, '_')
             if full:
-                res = res.replace('dot_dot_dot', '.')
+                res = res.replace(_mark, '.')
             if not is_valid(res):
                 res = '_' + res
     return str(res)
