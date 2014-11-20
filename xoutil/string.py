@@ -329,18 +329,18 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     ``[_a-z0-9]`` are assumed as valid characters.  Extra arguments can modify
     this standard behaviour:
 
-      :param invalids: Any collection of characters added to these that are
-                       normally invalids (non-ascii or not included in valid
-                       characters).  Boolean ``True`` can be passed as a
-                       synonymous of ``"_"`` for compatibility with old
-                       ``invalid_underscore`` argument.  ``False`` or ``None``
-                       are assumed as an empty set for invalid characters.
+    :param invalids: Any collection of characters added to these that are
+                     normally invalids (non-ascii or not included in valid
+                     characters).  Boolean ``True`` can be passed as a
+                     synonymous of ``"_"`` for compatibility with old
+                     ``invalid_underscore`` argument.  ``False`` or ``None``
+                     are assumed as an empty set for invalid characters.
 
-      :param valids: A collection of extra valid characters (all non-ascii
-                     characters are ignored).  This parameter could be either
-                     a valid string, any iterator of valid strings of
-                     characters, or ``None`` to use only default valid
-                     characters (See above).
+    :param valids: A collection of extra valid characters (all non-ascii
+                   characters are ignored).  This parameter could be either a
+                   valid string, any iterator of valid strings of characters,
+                   or ``None`` to use only default valid characters (See
+                   above).
 
     Parameters :param:`value` and :param:`replacement` could be of any
     (non-string) type, these values are normalized and converted to lower-case
