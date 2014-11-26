@@ -330,17 +330,15 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     this standard behaviour:
 
     :param invalids: Any collection of characters added to these that are
-                     normally invalids (non-ascii or not included in valid
-                     characters).  Boolean ``True`` can be passed as a
-                     synonymous of ``"_"`` for compatibility with old
-                     ``invalid_underscore`` argument.  ``False`` or ``None``
-                     are assumed as an empty set for invalid characters.
+           normally invalids (non-ascii or not included in valid characters).
+           Boolean ``True`` can be passed as a synonymous of ``"_"`` for
+           compatibility with old ``invalid_underscore`` argument.  ``False``
+           or ``None`` are assumed as an empty set for invalid characters.
 
     :param valids: A collection of extra valid characters (all non-ascii
-                   characters are ignored).  This parameter could be either a
-                   valid string, any iterator of valid strings of characters,
-                   or ``None`` to use only default valid characters (See
-                   above).
+           characters are ignored).  This parameter could be either a valid
+           string, any iterator of valid strings of characters, or ``None`` to
+           use only default valid characters (See above).
 
     Parameters :param:`value` and :param:`replacement` could be of any
     (non-string) type, these values are normalized and converted to lower-case
@@ -373,6 +371,9 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       True
 
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
+
+    .. versionchanged:: 1.6.6 Replaced the `invalid_underscore` paremeter by
+       `invalids`.  Added the `valids` parameter.
 
     '''
     import re
