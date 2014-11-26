@@ -41,13 +41,15 @@ class Progress(object):
             progress()
     '''
 
-    def __init__(self, max_value=100, delta=1, first_message=None):
+    def __init__(self, max_value=100, delta=1, first_message=None,
+                 display_width=None):
         from xoutil.datetime import datetime
         self.max_value = max_value
         self.delta = delta
         self.percent = self.value = 0
         self.start_time = datetime.now()
         self.first_message = first_message
+        self.display_width = display_width
 
     def __call__(self, progress=None, message='...'):
         if self.first_message is not None:
@@ -70,7 +72,7 @@ class Progress(object):
                          percent=percent,
                          elapsed=strfdelta(elapsed),
                          total=strfdelta(total))
-            max_width = self._get_terminal_width()
+            max_width = self.display_width or self._get_terminal_width()
             progress_line += ('{message: >%d}' % (max_width - len(progress_line) - 1)).format(message=message)
             print(progress_line, end=('' if percent != 100 else '\n\r'))
             sys.stdout.flush()
