@@ -38,10 +38,18 @@ from xoutil.collections import defaultdict
 
 class TestCollections(unittest.TestCase):
     def test_defaultdict(self):
-        d = defaultdict(lambda key, d: 'a')
+        d = defaultdict(lambda key, _: 'a')
         self.assertEqual('a', d['abc'])
         d['abc'] = 1
         self.assertEqual(1, d['abc'])
+
+    def test_defaultdict_clone(self):
+        d = defaultdict(lambda key, d: d['a'], {'a': 'default'})
+        self.assertEqual('default', d['abc'])
+
+        d = defaultdict(lambda key, d: d[key])
+        with self.assertRaises(KeyError):
+            d['abc']
 
 
 def test_stacked_dict():
