@@ -828,20 +828,6 @@ def popattr(obj, name, default=None):
 get_and_del_attr = deprecated(popattr)(popattr)
 
 
-@deprecated('pop', 'Use dict.pop() with default=None.')
-def get_and_del_key(d, key, default=None):
-    '''Looks for a key in the dict `d` and returns its value and removes the
-    key. If the attribute is not found, `default` is returned instead.
-
-    This is the same as ``d.pop(key, default)``.
-
-    .. warning:: Deprecated since 1.5.2.  Use :meth:`d.pop(key, default)
-       <dict.pop>`.
-
-    '''
-    return d.pop(key, default)
-
-
 class lazy(object):
     '''Marks a value as a lazily evaluated value. See
     :func:`setdefaultattr`.
