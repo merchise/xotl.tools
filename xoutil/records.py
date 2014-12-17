@@ -219,17 +219,48 @@ def check_nullable(val, nullable):
 
 
 @lru_cache()
-def datetime_reader(format, nullable=False, default=None):
+def datetime_reader(format, nullable=False, default=None, strict=True):
     '''Returns a datetime reader.
 
     :param format: The format the datetime is expected to be in the external
-                   data.  This is passed to `datetime.strptime`:func:.
+       data.  This is passed to `datetime.datetime.strptime`:func:.
+
+    :param strict: Whether to be strict about datetime format.
+
+    The reader works first by passing the value to strict
+    `datetime.datetime.strptime`:func: function.  If that fails with a
+    ValueError and strict is True the reader fails entirely.
+
+    If strict is False, the worker applies different rules.  First if the
+    `dateutil` package is installed its parser module is tried.  If `dateutil`
+    is not available and nullable is True, return None; if nullable is False
+    and default is not None, return `default`, otherwise raise a ValueError.
+
+    .. versionadded: 1.6.7  Add the `strict` argument.
 
     '''
+    try:
+        from dateutil.parser import parse
+    except ImportError:
+        parse = None
+
     def reader(val):
         if check_nullable(val, nullable):
             from datetime import datetime
-            return datetime.strptime(val, format)
+            try:
+                return datetime.strptime(val, format)
+            except ValueError:
+                if strict:
+                    raise
+                elif parse:
+                    return parse(val)
+                else:
+                    if nullable:
+                        return None
+                    elif default is not None:
+                        return default
+                    else:
+                        raise ValueError
         else:
             return default
     return reader

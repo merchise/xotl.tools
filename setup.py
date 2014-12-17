@@ -45,6 +45,9 @@ setup(name=project_name,
       install_requires=[
           'six>=1.5.0,<2',
       ],
+      extras_require={
+          'extra': ['python-dateutil', ],
+      },
       entry_points="""
       """,
       )

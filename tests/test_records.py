@@ -18,6 +18,10 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
+from mock import patch
+from contextlib import contextmanager
+from datetime import datetime
+
 from xoutil.records import record, datetime_reader
 
 
@@ -125,3 +129,52 @@ class TestRecords(unittest.TestCase):
         self.assertEqual(LINE.get_field(partialdata, LINE.DEBIT), 0)
         self.assertEqual(LINE.get_field(partialdata, LINE.CREDIT), 0)
         self.assertEqual(LINE.get_field(nulls, LINE.DEBIT), 0)
+
+
+FMT = '%Y-%m-%d'
+
+
+class TestDateTimeReader(unittest.TestCase):
+    def setUp(self):
+        # clear lru caches for each test... Needed so that imports done inside
+        # datetime_reader are mockable.
+        datetime_reader.cache_clear()
+
+    def test_strict(self):
+        class rec(record):
+            MOMENT = 0
+            _moment_reader = datetime_reader(FMT)
+
+        inst = rec(['2014-12-17'])
+        self.assertEquals('2014-12-17', inst.moment.strftime(FMT))
+
+        inst = rec(['201-12-17'])
+        with self.assertRaises(ValueError):
+            self.assertEquals('201-12-17', inst.moment.strftime(FMT))
+
+    def test_relaxed_but_nonnullable_with_dateutil(self):
+        class rec(record):
+            MOMENT = 0
+            _moment_reader = datetime_reader(FMT, nullable=False, strict=False)
+
+        inst = rec(['201-12-17'])
+        self.assertEquals(inst.moment, datetime(201, 12, 17))
+
+    @patch('dateutil.parser.parse', None)
+    def test_relaxed_but_nonnullable_without_dateutil(self):
+        class rec(record):
+            MOMENT = 0
+            _moment_reader = datetime_reader(FMT, nullable=False, strict=False)
+
+        inst = rec(['201-12-17'])
+        with self.assertRaises(ValueError):
+            self.assertIsNone(inst.moment)
+
+    @patch('dateutil.parser.parse', None)
+    def test_relax_with_default(self):
+        class rec(record):
+            MOMENT = 0
+            _moment_reader = datetime_reader(FMT, default=0, strict=False)
+
+        inst = rec(['201-12-17'])
+        self.assertEquals(inst.moment, 0)

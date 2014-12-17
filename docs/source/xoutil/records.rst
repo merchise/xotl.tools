@@ -21,7 +21,7 @@ All these functions have a pair of keywords arguments `nullable` and
 present or not.  The function `check_nullable`:func: implements this check and
 allows other to create their own builders with the same semantic.
 
-.. autofunction:: datetime_reader(format, nullable=False, default=None)
+.. autofunction:: datetime_reader(format, nullable=False, default=None, strict=True)
 
 .. autofunction:: boolean_reader(true=('1', ), nullable=False, default=None)
 
