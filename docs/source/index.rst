@@ -14,7 +14,7 @@ Welcome to xoutil's documentation!
 What's new in version |release|
 -------------------------------
 
-.. include:: history/_changes-1.6.6.rst
+.. include:: history/_changes-1.6.7.rst
 
 Contents:
 ---------
