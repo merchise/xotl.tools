@@ -195,25 +195,36 @@ class record(metaclass(_record_type)):
         return type(self).get_field(self._raw_data, field_index)
 
 
+def isnull(val):
+    '''Return True if `val` is null.
+
+    Null values are None, the empty string and any instance of
+    `xoutil.types.UnsetType`:class:.
+
+    Notice that 0, the empty list and other false values in Python are not
+    considered null.  This allows that the CSV null (the empty string) is
+    correctly treated while other sources that provide numbers (and 0 is a
+    valid number) are not misinterpreted as null.
+
+    '''
+    from xoutil._values import UnsetType
+    return val in (None, '') or isinstance(val, UnsetType)
+
+
 # Standard readers
 def check_nullable(val, nullable):
     '''Check the restriction of nullable.
 
     Return True if the val is non-null.  If nullable is True and the val is
-    null returns False.  If `nullable` is False and `val` in null, raise a
+    null returns False.  If `nullable` is False and `val` is null, raise a
     ValueError.
 
-    .. note:: Null values are the empty string, None and instances of
-       `xoutil.types.UnsetType`:class:.  Notice that 0, the empty list and
-       other false values in Python not considered null.  This allows that the
-       CSV null (the empty string) is correctly treated while other sources
-       that provide numbers (and 0 is a valid number) are not
-       misinterpreted as null.
+    Test for null is done with function `isnull`:func:.
 
     '''
-    from xoutil._values import UnsetType
-    if val not in (None, '') or not isinstance(val, UnsetType) or nullable:
-        return val not in (None, '') and not isinstance(val, UnsetType)
+    null = isnull(val)
+    if not null or nullable:
+        return not null
     else:
         raise ValueError('NULL value was not expected here')
 
