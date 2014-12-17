@@ -56,6 +56,17 @@ PASS_PHRASE_LEVEL_STRICT = 4
 DEFAULT_PASS_PHRASE_LEVEL = PASS_PHRASE_LEVEL_MAPPED_DATED
 
 
+#: A mapping from names to standards levels.  You may use these strings as
+#: arguments for `level` in `generate_password`:func:.
+PASS_LEVEL_NAME_MAPPING = {
+    'basic': PASS_PHRASE_LEVEL_BASIC,
+    'mapped': PASS_PHRASE_LEVEL_MAPPED,
+    'mixed': PASS_PHRASE_LEVEL_MAPPED_MIXED,
+    'dated': PASS_PHRASE_LEVEL_MAPPED_DATED,
+    'random': PASS_PHRASE_LEVEL_STRICT
+}
+
+
 BASIC_PASSWORD_SIZE = 4    # bytes
 
 #: An upper limit for generated password length.
@@ -63,6 +74,20 @@ MAX_PASSWORD_SIZE = 512
 
 
 SAMPLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+
+def _normalize_level(level):
+    '''Normalize the `level` argument.
+
+    If passed a string, it must be a key in `PASS_LEVEL_NAME_MAPPING`:obj:.
+    Otherwise it must be a valid level number.
+
+    '''
+    from six import string_types
+    if isinstance(level, string_types):
+        return PASS_LEVEL_NAME_MAPPING[level]
+    else:
+        return level
 
 
 def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
@@ -122,6 +147,7 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
     '''
     from random import sample, randint
     from xoutil.string import normalize_slug
+    level = _normalize_level(level)
     size = MAX_PASSWORD_SIZE + 1    # means, return all calculated
     required = min(max(level, 1)*BASIC_PASSWORD_SIZE, MAX_PASSWORD_SIZE)
     if pass_phrase:

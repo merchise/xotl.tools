@@ -78,7 +78,6 @@ class defaultdict(_defaultdict):
         >>> d['abc']
         'a'
 
-        >>> d['abc'] = 1
         >>> d['abc']
         1
 

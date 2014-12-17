@@ -21,7 +21,7 @@ All these functions have a pair of keywords arguments `nullable` and
 present or not.  The function `check_nullable`:func: implements this check and
 allows other to create their own builders with the same semantic.
 
-.. autofunction:: datetime_reader(format, nullable=False, default=None)
+.. autofunction:: datetime_reader(format, nullable=False, default=None, strict=True)
 
 .. autofunction:: boolean_reader(true=('1', ), nullable=False, default=None)
 
@@ -34,11 +34,12 @@ allows other to create their own builders with the same semantic.
 Checking for null values
 ------------------------
 
+.. autofunction:: isnull
 .. autofunction:: check_nullable(val, nullable)
 
 
-This function allows you to define new builders that use the same null
-concept.  For instance, if you need readers that parse dates in diferent
+These couple of functions allows you to define new builders that use the same
+null concept.  For instance, if you need readers that parse dates in diferent
 locales you may do::
 
     def date_reader(nullable=False, default=None, locale=None):

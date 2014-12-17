@@ -459,7 +459,8 @@ def are_instances(*args):
         >>> are_instances(int)
         True
 
-    See also :func:`no_instances`.
+    .. seealso:: The function :func:`no_instances` allows to test for subjects
+                 not being instances of types.
 
     '''
     if not args:
@@ -490,7 +491,11 @@ def no_instances(*args):
         >>> no_instances(int)
         True
 
-    See also :func:`are_instances`.
+    .. note:: This is not the same as ``not are_instances(...)``.
+
+       This function requires that *no* subject is an instance of `types`.
+       Negating :func:`are_instances` would be True if *any* subject is not an
+       instance of `types`.
 
     '''
     if not args:

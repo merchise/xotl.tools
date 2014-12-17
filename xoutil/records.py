@@ -195,41 +195,83 @@ class record(metaclass(_record_type)):
         return type(self).get_field(self._raw_data, field_index)
 
 
+def isnull(val):
+    '''Return True if `val` is null.
+
+    Null values are None, the empty string and any instance of
+    `xoutil.types.UnsetType`:class:.
+
+    Notice that 0, the empty list and other false values in Python are not
+    considered null.  This allows that the CSV null (the empty string) is
+    correctly treated while other sources that provide numbers (and 0 is a
+    valid number) are not misinterpreted as null.
+
+    '''
+    from xoutil._values import UnsetType
+    return val in (None, '') or isinstance(val, UnsetType)
+
+
 # Standard readers
 def check_nullable(val, nullable):
     '''Check the restriction of nullable.
 
     Return True if the val is non-null.  If nullable is True and the val is
-    null returns False.  If `nullable` is False and `val` in null, raise a
+    null returns False.  If `nullable` is False and `val` is null, raise a
     ValueError.
 
-    .. note:: Null values are the empty string, None and instances of
-       `xoutil.types.UnsetType`:class:.  Notice that 0, the empty list and
-       other false values in Python not considered null.  This allows that the
-       CSV null (the empty string) is correctly treated while other sources
-       that provide numbers (and 0 is a valid number) are not
-       misinterpreted as null.
+    Test for null is done with function `isnull`:func:.
 
     '''
-    from xoutil._values import UnsetType
-    if val not in (None, '') or not isinstance(val, UnsetType) or nullable:
-        return val not in (None, '') and not isinstance(val, UnsetType)
+    null = isnull(val)
+    if not null or nullable:
+        return not null
     else:
         raise ValueError('NULL value was not expected here')
 
 
 @lru_cache()
-def datetime_reader(format, nullable=False, default=None):
+def datetime_reader(format, nullable=False, default=None, strict=True):
     '''Returns a datetime reader.
 
     :param format: The format the datetime is expected to be in the external
-                   data.  This is passed to `datetime.strptime`:func:.
+       data.  This is passed to `datetime.datetime.strptime`:func:.
+
+    :param strict: Whether to be strict about datetime format.
+
+    The reader works first by passing the value to strict
+    `datetime.datetime.strptime`:func: function.  If that fails with a
+    ValueError and strict is True the reader fails entirely.
+
+    If strict is False, the worker applies different rules.  First if the
+    `dateutil` package is installed its parser module is tried.  If `dateutil`
+    is not available and nullable is True, return None; if nullable is False
+    and default is not None, return `default`, otherwise raise a ValueError.
+
+    .. versionadded: 1.6.7  Add the `strict` argument.
 
     '''
+    try:
+        from dateutil.parser import parse
+    except ImportError:
+        parse = None
+
     def reader(val):
         if check_nullable(val, nullable):
             from datetime import datetime
-            return datetime.strptime(val, format)
+            try:
+                return datetime.strptime(val, format)
+            except ValueError:
+                if strict:
+                    raise
+                elif parse:
+                    return parse(val)
+                else:
+                    if nullable:
+                        return None
+                    elif default is not None:
+                        return default
+                    else:
+                        raise ValueError
         else:
             return default
     return reader
