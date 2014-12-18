@@ -245,9 +245,13 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
     If strict is False, the worker applies different rules.  First if the
     `dateutil` package is installed its parser module is tried.  If `dateutil`
     is not available and nullable is True, return None; if nullable is False
-    and default is not None, return `default`, otherwise raise a ValueError.
+    and default is not null (as in `isnull`:func:), return `default`,
+    otherwise raise a ValueError.
 
     .. versionadded: 1.6.7  Add the `strict` argument.
+
+    .. versionchanged: 1.6.7.1  Keep the meaning of null when testing for
+       `default` if strict is False and dateutil is not available.
 
     '''
     try:
@@ -268,7 +272,7 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
                 else:
                     if nullable:
                         return None
-                    elif default is not None:
+                    elif not isnull(default):
                         return default
                     else:
                         raise ValueError
