@@ -282,7 +282,33 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
 
 
 @lru_cache()
+def date_reader(format, nullable=False, default=None, strict=True):
+    '''Return a date reader.
+
+    This is similar to `datetime_reader`:func: but instead of returning a
+    `~datetime.datetime`:class: it returns a `~datetime.date`.
+
+    Actually this function delegates to `datetime_reader` most of its
+    functionality.
+
+    .. versionadded: 1.6.8
+
+    '''
+    reader = datetime_reader(format, nullable=nullable, default=default,
+                             strict=strict)
+
+    def res(val):
+        result = reader(val)
+        if not isnull(result) and result is not default:
+            return result.date()
+        else:
+            return result
+    return res
+
+
+@lru_cache()
 def boolean_reader(true=('1', ), nullable=False, default=None):
+
     '''Returns a boolean reader.
 
     :param true: A collection of raw values considered to be True.  Only the
