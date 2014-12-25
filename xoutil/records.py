@@ -52,7 +52,7 @@ class _record_type(type):
         if val is not Unset:
             from numbers import Integral
             try:
-                from xoutil.six import string_types
+                from six import string_types
             except ImportError:
                 from xoutil.compat import str_base as string_types
             isi = isinstance
