@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_metaclass
 #----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013, 2014, 2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -163,4 +163,11 @@ def test_prepare_a_class():
         pass
 
     class Eggbag(metaclass(SubmetaLight)):
+        pass
+
+
+def test_type():
+    from xoutil.objects import metaclass
+
+    class x(metaclass(type)):
         pass
