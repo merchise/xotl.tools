@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.string
-#----------------------------------------------------------------------
-# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2012-2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodríguez

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.functools
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 #
 # Most of the code of this file is backported from Python 3.2 standard library
 # with minor modifications to make it work on Python 2.7. So, this file is

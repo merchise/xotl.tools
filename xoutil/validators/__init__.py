@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.validators
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2015 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -26,8 +26,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-
-from .identifiers import (is_valid_identifier,
+from .identifiers import (is_valid_identifier,   # noqa
                           is_valid_full_identifier,
                           is_valid_public_identifier,
                           is_valid_slug)

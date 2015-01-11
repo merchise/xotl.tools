@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
-# xoutil._values
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement
+# ---------------------------------------------------------------------
+# xoutil.tools
+# ---------------------------------------------------------------------
+# Copyright (c) 2014, 2015 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -26,8 +26,8 @@ from __future__ import (division as _py3_division,
 def get_default(args, default=None):
     '''Get a default value passed as last positional argument.
 
-    Several functions that get values uses to define an optional default value
-    parameter.  Use a construction ``def get_foobar(name, default=None)``
+    Several functions that get values define an optional default value
+    parameter.  To use a construction ``def get_foobar(name, default=None)``
     sometimes is not possible because `None` could be a possible valid
     "foobar" value.  In these cases it's better to construct something like::
 
@@ -38,7 +38,7 @@ def get_default(args, default=None):
     value, like: ``res = get_foobar('egg', Undefined)`` (see `xoutil.values`).
 
     This function receive the tuple as received by the function, and which
-    value to return is none is given::
+    value to return if None is given::
 
       def get_foobar(name, *default):
           from xoutil.tools import get_default

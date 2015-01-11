@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.decorator
-#----------------------------------------------------------------------
-# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2012-2015 Merchise Autrement and Contributors
 # Copyright (c) 2009-2011 Medardo Rodríguez
 #
 # Author: Medardo Rodriguez

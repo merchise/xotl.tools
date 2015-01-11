@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.records
-#----------------------------------------------------------------------
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2014, 2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -308,7 +308,6 @@ def date_reader(format, nullable=False, default=None, strict=True):
 
 @lru_cache()
 def boolean_reader(true=('1', ), nullable=False, default=None):
-
     '''Returns a boolean reader.
 
     :param true: A collection of raw values considered to be True.  Only the
