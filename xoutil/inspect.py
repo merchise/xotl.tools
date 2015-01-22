@@ -237,6 +237,22 @@ def type_name(obj):
 
 # TODO: Implement a safe version for `attrgetter`
 
+if not getattr(_pm, 'getfullargspec', None):
+    from xoutil.collections import namedtuple
+    FullArgSpec = namedtuple(
+        'FullArgSpec',
+        'args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults,'
+        'annotations'
+    )
+
+    def getfullargspec(func):
+        import inspect
+        spec = inspect.getargspec(func)
+        return FullArgSpec(
+            spec.args, spec.varargs, spec.keywords, spec.defaults,
+            None, None, None
+        )
+
 
 # get rid of unused global variables
 del _pm, _copy_python_module_members
