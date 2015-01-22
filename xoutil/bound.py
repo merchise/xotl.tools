@@ -15,11 +15,11 @@
 
 Example::
 
-    def fibonacci():
-       a, b = 1, 1
-       while True:
-           yield a
-           a, b = b, a + b
+    >>> def fibonacci():
+    ...   a, b = 1, 1
+    ...   while True:
+    ...       yield a
+    ...       a, b = b, a + b
 
 This function yields forever.  This module allows to get instances that run
 until a boundary condition is met.  For instance, the `times`:func: boundary

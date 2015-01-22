@@ -164,12 +164,12 @@ class record(metaclass(_record_type)):
 
         >>> from dateutil import parser
         >>> class BETTER_INVOICE(INVOICE):
-        ...     CREATED_TIME = 1
+        ...     CREATED_TIME = 2
         ...     _created_time_reader = lambda val: parser.parse(val)
         ...
 
         >>> line = (1, 'AA20X138874Z012', '2014-02-17T17:29:21.965053')
-        >>> INVOICE.get_field(line, INVOICE.CREATED_TIME)
+        >>> BETTER_INVOICE.get_field(line, BETTER_INVOICE.CREATED_TIME)
         datetime.datetime(2014, 2, 17, 17, 29, 21, 965053)
 
 

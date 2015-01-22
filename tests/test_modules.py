@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.tests.test_modules
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,7 @@ import sys
 import unittest
 
 
-from xoutil.modules import customize, modulemethod, moduleproperty
+from xoutil.modules import customize, modulemethod
 
 
 class TestModulesCustomization(unittest.TestCase):
@@ -42,7 +42,8 @@ class TestModulesCustomization(unittest.TestCase):
             return mod
 
         import testbed
-        module, created, klass = customize(testbed, custom_attrs={'this':this})
+        module, created, klass = customize(testbed,
+                                           custom_attrs={'this': this})
         self.assertEqual(module, module.this)
 
 

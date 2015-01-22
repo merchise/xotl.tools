@@ -78,9 +78,6 @@ class defaultdict(_defaultdict):
         >>> d['abc']
         'a'
 
-        >>> d['abc']
-        1
-
     Since the second parameter is actually a dict-copy, you may (naively) do
     the following::
 
