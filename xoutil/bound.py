@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.bound
-#----------------------------------------------------------------------
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2014, 2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -15,11 +15,11 @@
 
 Example::
 
-    def fibonacci():
-       a, b = 1, 1
-       while True:
-           yield a
-           a, b = b, a + b
+    >>> def fibonacci():
+    ...   a, b = 1, 1
+    ...   while True:
+    ...       yield a
+    ...       a, b = b, a + b
 
 This function yields forever.  This module allows to get instances that run
 until a boundary condition is met.  For instance, the `times`:func: boundary

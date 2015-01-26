@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.inspect
 # ----------------------------------------------------------------------
-# Copyright 2014 Merchise Autrement
+# Copyright 2014, 2015 Merchise Autrement
 #
 # This file is distributed under the terms of the LICENCE distributed
 # with this package.
@@ -236,6 +236,22 @@ def type_name(obj):
 
 
 # TODO: Implement a safe version for `attrgetter`
+
+if not getattr(_pm, 'getfullargspec', None):
+    from xoutil.collections import namedtuple
+    FullArgSpec = namedtuple(
+        'FullArgSpec',
+        'args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults,'
+        'annotations'
+    )
+
+    def getfullargspec(func):
+        import inspect
+        spec = inspect.getargspec(func)
+        return FullArgSpec(
+            spec.args, spec.varargs, spec.keywords, spec.defaults,
+            None, None, None
+        )
 
 
 # get rid of unused global variables

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil._meta3
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -28,7 +28,11 @@ def metaclass(meta, **kwargs):
     class base:
         pass
 
-    class inner_meta(meta.__base__):
+    metabase = meta.__base__
+    if metabase is object:  # when meta is type
+        metabase = type
+
+    class inner_meta(metabase):
         @classmethod
         def __prepare__(cls, name, bases, **kwargs):
             prepare = getattr(meta, '__prepare__', None)

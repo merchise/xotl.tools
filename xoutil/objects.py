@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.objects
-#----------------------------------------------------------------------
-# Copyright (c) 2012, 2014 Merchise Autrement
+# ---------------------------------------------------------------------
+# Copyright (c) 2012-2015 Merchise Autrement
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -1305,12 +1305,12 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
 
        traverse(request, 'session.somevalue')
 
-    If `default` is not provided and any component in the path is not found
-    an AttributeError exceptions is raised.
+    If `default` is not provided (i.e is `~xoutil.Unset`:obj:) and any
+    component in the path is not found an AttributeError exceptions is raised.
 
     You may provide `sep` to change the default separator.
 
-    You may provide a custom `getter`. By default, does an
+    You may provide a custom `getter`.  By default, does an
     :func:`smart_getter` over the objects. If provided `getter` should have
     the signature of `getattr`:func:.
 
@@ -1343,13 +1343,13 @@ def get_traverser(*paths, **kw):
             getter = lambda o, a, default=None: smart_getter(o)(a, default)
 
         def inner(obj):
-            notfound = object()
+            found = object()
             current = obj
             attrs = path.split(sep)
-            while current is not notfound and attrs:
+            while current is not found and attrs:
                 attr = attrs.pop(0)
-                current = getter(current, attr, notfound)
-            if current is notfound:
+                current = getter(current, attr, found)
+            if current is found:
                 if default is Unset:
                     raise AttributeError(attr)
                 else:
@@ -1430,34 +1430,3 @@ def dict_merge(*dicts, **others):
                                     % key)
                 result[key] = value
     return result
-
-
-def explode(*sources):
-    '''Injects locals in the caller scope.
-
-    Each source should be a mapping.  The caller then will have locals for
-    each valid mapping.
-
-    Example::
-
-       >>>  explode(dict(a=1))
-       >>>  a
-       1
-
-    .. warning:: Experimental use only.
-
-    '''
-    import sys
-    from xoutil.validators import is_valid_identifier
-    from xoutil.collections import Mapping
-    f = sys._getframe(1)
-    try:
-        for source in sources:
-            items = getattr(source, 'items')
-            if isinstance(source, Mapping) or items:
-                l = f.f_locals
-                for name, val in items():
-                    if is_valid_identifier(name):
-                        l[name] = val
-    finally:
-        f = None  # Give the GC a chance

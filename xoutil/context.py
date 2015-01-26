@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.context
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2015 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -29,7 +29,11 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from threading import local
+try:
+    from gevent.local import local
+except ImportError:
+    from threading import local
+
 from xoutil.objects import metaclass
 from xoutil.collections import StackedDict
 
@@ -77,15 +81,17 @@ class Context(metaclass(MetaContext), StackedDict):
     code is being executed inside a context you should use `context[name]`;
     you may also use the syntax `name in context`.
 
-    When an existing context is entering, the former one is reused.
+    When an existing context is re-enter, the former one is reused.
     Nevertheless, the data stored in each context is local to each level.
 
     For example::
 
         >>> with context('A', b=1) as a1:
         ...   with context('A', b=2) as a2:
+        ...       print(a1 is a2)
         ...       print(a2['b'])
         ...   print(a1['b'])
+        True
         2
         1
 

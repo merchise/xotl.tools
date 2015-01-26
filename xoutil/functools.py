@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.functools
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 #
 # Most of the code of this file is backported from Python 3.2 standard library
 # with minor modifications to make it work on Python 2.7. So, this file is
@@ -43,11 +43,12 @@ class ctuple(tuple):
 
        >>> def compat_print(*args):
        ...     for arg in args:
-       ...         print arg,
-       ...     print
+       ...         print(arg)
 
-       >>> compose(compat_print, ctuple, list, range, math=False)(10)
-       0 1 2 3 4 5 6 7 8 9
+       >>> compose(compat_print, ctuple, list, range, math=False)(3)
+       0
+       1
+       2
 
        # Without ctuple prints the list
        >>> compose(compat_print, list, range, math=False)(10)

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.types
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2015 Merchise Autrement and Contributors
 # Copyright (c) 2010-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -40,7 +40,7 @@ from xoutil._values import Unset as _unset
 from collections import Mapping
 
 # FIXME: [med] Reintroduce UnsetType or deprecate it here.
-from xoutil._values import UnsetType
+from xoutil._values import UnsetType  # noqa
 
 from xoutil.names import strlist as strs
 __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2013, 2014 Merchise Autrement and Contributors for the
+# Copyright 2013-2015 Merchise Autrement and Contributors for the
 # defaultdict and opendict implementations.
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
@@ -77,9 +77,6 @@ class defaultdict(_defaultdict):
         >>> d = defaultdict(lambda key, d: 'a')
         >>> d['abc']
         'a'
-
-        >>> d['abc']
-        1
 
     Since the second parameter is actually a dict-copy, you may (naively) do
     the following::

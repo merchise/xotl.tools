@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
-# xoutil.mdeco
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# xoutil.meta
+# ---------------------------------------------------------------------
 #
-# Copyright (c) 2012, 2013, 2014 Merchise Autrement and contributors for the
+# Copyright (c) 2013-2015 Merchise Autrement and contributors for the
 # decorator function.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -152,14 +152,14 @@ class FunctionMaker(object):
 
     def make(self, src_templ, evaldict=None, addsource=False, **attrs):
         "Make a new function from a given template and update the signature"
-        src = src_templ % vars(self) # expand name and signature
+        src = src_templ % vars(self)  # expand name and signature
         evaldict = evaldict or {}
         mo = DEF.match(src)
         if mo is None:
             raise SyntaxError('not a valid function template\n%s' % src)
         name = mo.group(1)  # extract the function name
         names = set([name] + [arg.strip(' *') for arg in
-                             self.shortsignature.split(',')])
+                              self.shortsignature.split(',')])
         for n in names:
             if n in ('_func_', '_call_'):
                 raise NameError('%s is overridden in\n%s' % (n, src))
@@ -201,7 +201,7 @@ class FunctionMaker(object):
         self = cls(func, name, signature, defaults, doc, module)
         ibody = '\n'.join('    ' + line for line in body.splitlines())
         return self.make('def %(name)s(%(signature)s):\n' + ibody,
-                        evaldict, addsource, **attrs)
+                         evaldict, addsource, **attrs)
 
 
 def flat_decorator(caller, func=None):

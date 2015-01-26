@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.proxy
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2015 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -41,8 +41,8 @@ __all__ = strs('SUPPORTED_OPERATIONS', 'proxify')
 class UNPROXIFING_CONTEXT(object):
     '''Mark for an :mod:`execution context <xoutil.context>` in which you don't
     want to proxy to the target's attributes. When in this context all
-    attribute access will return the proxy's own attributes instead of target's
-    ones.
+    attribute access will return the proxy's own attributes instead of
+    target's ones.
 
     '''
 
@@ -51,18 +51,22 @@ SUPPORTED_UNARY_OPERATIONS = strs('__pos__', '__abs__', '__neg__',
                                   '__invert__',)
 
 
-SUPPORTED_BINARY_LOGICAL_OPERATIONS = strs('__and__', '__or__', '__xor__',
+SUPPORTED_BINARY_LOGICAL_OPERATIONS = strs(
+    '__and__', '__or__', '__xor__',
     '__lt__', '__le__', '__gt__', '__ge__', '__eq__', '__ne__', '__rand__',
-    '__ror__', '__rxor__', '__iand__', '__ior__', '__ixor__')
+    '__ror__', '__rxor__', '__iand__', '__ior__', '__ixor__'
+)
 
 
-SUPPORTED_BINARY_ARITH_OPERATIONS = strs('__add__', '__sub__', '__mul__',
+SUPPORTED_BINARY_ARITH_OPERATIONS = strs(
+    '__add__', '__sub__', '__mul__',
     '__div__', '__mod__', '__pow__', '__truediv__', '__floordiv__',
     '__lshift__', '__rshift__', '__radd__', '__rsub__', '__rmul__',
     '__rdiv__', '__rmod__', '__rpow__', '__rtruediv__', '__rfloordiv__',
     '__rlshift__', '__rrshift__', '__iadd__', '__isub__', '__imul__',
     '__idiv__', '__imod__', '__ipow__', '__itruediv__', '__ifloordiv__',
-    '__ilshift__', '__irshift__')
+    '__ilshift__', '__irshift__'
+)
 
 
 SUPPORTED_BINARY_OPERATIONS = strs('__contains__')
@@ -99,7 +103,7 @@ def build_binary_operator(method_name):
 
 
 _supported_methods = {str(mname): build_self_operator(mname)
-                        for mname in SUPPORTED_UNARY_OPERATIONS}
+                      for mname in SUPPORTED_UNARY_OPERATIONS}
 _supported_methods.update({str(mname): build_binary_operator(mname)
                            for mname in SUPPORTED_BINARY_ARITH_OPERATIONS})
 _supported_methods.update({str(mname): build_binary_operator(mname)

@@ -19,10 +19,9 @@ from __future__ import (division as _py3_division,
 
 import unittest
 from mock import patch
-from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, date
 
-from xoutil.records import record, datetime_reader
+from xoutil.records import record, datetime_reader, date_reader
 
 
 class _table(record):
@@ -178,3 +177,53 @@ class TestDateTimeReader(unittest.TestCase):
 
         inst = rec(['201-12-17'])
         self.assertEquals(inst.moment, 0)
+
+
+class TestDateReader(unittest.TestCase):
+    def setUp(self):
+        # clear lru caches for each test... Needed so that imports done inside
+        # date_reader are mockable.
+        date_reader.cache_clear()
+        datetime_reader.cache_clear()
+
+    def test_date_reader_nullable(self):
+        class rec(record):
+            WHEN = 'date'
+            _when_reader = date_reader(FMT, nullable=True)
+
+        inst = rec({'date': '2015-01-01'})
+        self.assertEquals(inst.when, date(2015, 1, 1))
+
+        inst = rec({})
+        self.assertIsNone(inst.when)
+
+        inst = rec({'date': '201-01-01'})
+        with self.assertRaises(ValueError):
+            inst.when
+
+    def test_date_reader_relaxed_with_dateutil(self):
+        class rec(record):
+            WHEN = 'date'
+            _when_reader = date_reader(FMT, strict=False)
+
+        inst = rec({'date': '201-01-01'})
+        self.assertEquals(inst.when, date(201, 1, 1))
+
+    @patch('dateutil.parser.parse', None)
+    def test_date_reader_relaxed_nullable_no_dateutil(self):
+        class rec(record):
+            WHEN = 'date'
+            _when_reader = date_reader(FMT, nullable=True, strict=False)
+
+        inst = rec({'date': '201-01-01'})
+        self.assertIsNone(inst.when)
+
+    @patch('dateutil.parser.parse', None)
+    def test_date_reader_relaxed_no_dateutil(self):
+        class rec(record):
+            WHEN = 'date'
+            _when_reader = date_reader(FMT, strict=False)
+
+        inst = rec({'date': '201-01-01'})
+        with self.assertRaises(ValueError):
+            self.assertIsNone(inst.when)

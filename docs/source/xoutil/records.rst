@@ -31,6 +31,8 @@ allows other to create their own builders with the same semantic.
 
 .. autofunction:: float_reader(nullable=False, default=None)
 
+.. autofunction:: date_reader(format, nullable=False, default=None, strict=True)
+
 Checking for null values
 ------------------------
 

@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.records
-#----------------------------------------------------------------------
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2014, 2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -52,7 +52,7 @@ class _record_type(type):
         if val is not Unset:
             from numbers import Integral
             try:
-                from xoutil.six import string_types
+                from six import string_types
             except ImportError:
                 from xoutil.compat import str_base as string_types
             isi = isinstance
@@ -164,12 +164,12 @@ class record(metaclass(_record_type)):
 
         >>> from dateutil import parser
         >>> class BETTER_INVOICE(INVOICE):
-        ...     CREATED_TIME = 1
+        ...     CREATED_TIME = 2
         ...     _created_time_reader = lambda val: parser.parse(val)
         ...
 
         >>> line = (1, 'AA20X138874Z012', '2014-02-17T17:29:21.965053')
-        >>> INVOICE.get_field(line, INVOICE.CREATED_TIME)
+        >>> BETTER_INVOICE.get_field(line, BETTER_INVOICE.CREATED_TIME)
         datetime.datetime(2014, 2, 17, 17, 29, 21, 965053)
 
 
@@ -279,6 +279,31 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
         else:
             return default
     return reader
+
+
+@lru_cache()
+def date_reader(format, nullable=False, default=None, strict=True):
+    '''Return a date reader.
+
+    This is similar to `datetime_reader`:func: but instead of returning a
+    `datetime.datetime`:class: it returns a `datetime.date`.
+
+    Actually this function delegates to `datetime_reader`:func: most of its
+    functionality.
+
+    .. versionadded: 1.6.8
+
+    '''
+    reader = datetime_reader(format, nullable=nullable, default=default,
+                             strict=strict)
+
+    def res(val):
+        result = reader(val)
+        if not isnull(result) and result is not default:
+            return result.date()
+        else:
+            return result
+    return res
 
 
 @lru_cache()
