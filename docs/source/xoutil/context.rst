@@ -5,6 +5,8 @@
    :members: context, Context
 
 
+.. _context-greenlets:
+
 .. note:: About thread-locals and contexts.
 
    The `context`:class: uses internally a "thread-local" variable to keep

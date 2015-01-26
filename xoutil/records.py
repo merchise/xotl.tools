@@ -286,9 +286,9 @@ def date_reader(format, nullable=False, default=None, strict=True):
     '''Return a date reader.
 
     This is similar to `datetime_reader`:func: but instead of returning a
-    `~datetime.datetime`:class: it returns a `~datetime.date`.
+    `datetime.datetime`:class: it returns a `datetime.date`.
 
-    Actually this function delegates to `datetime_reader` most of its
+    Actually this function delegates to `datetime_reader`:func: most of its
     functionality.
 
     .. versionadded: 1.6.8

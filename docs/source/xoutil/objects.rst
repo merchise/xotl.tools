@@ -33,5 +33,3 @@
 .. function:: get_and_del_first_of(source, *keys, default=None)
 
    Deprecated alias for :func:`pop_first_of`.
-
-.. autofunction:: get_and_del_key(d, key, default=None)

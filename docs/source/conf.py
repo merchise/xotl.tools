@@ -285,6 +285,7 @@ texinfo_documents = [
 intersphinx_mapping = {
     'py2': ('http://docs.python.org/2.7/', None),
     'py3': ('http://docs.python.org/3.4/', None),
+    'gevent': ('http://gevent.org', None),
 }
 
 # Maintain the cache forever.
