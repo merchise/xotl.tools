@@ -92,9 +92,9 @@ class TestModuleDecorators(unittest.TestCase):
 
 def test_get_module_path_by_module_object():
     import xoutil, xoutil.iterators
-    from os.path import dirname, join
+    from os.path import join
     from xoutil.modules import get_module_path
-    top = join(dirname(dirname(__file__)), 'xoutil')
+    top = xoutil.__path__[0]
     expected = top
     assert get_module_path(xoutil) == expected
 
@@ -105,9 +105,10 @@ def test_get_module_path_by_module_object():
 
 
 def test_get_module_path_by_module_string_abs():
-    from os.path import dirname, join
+    import xoutil
+    from os.path import join
     from xoutil.modules import get_module_path
-    top = join(dirname(dirname(__file__)), 'xoutil')
+    top = xoutil.__path__[0]
     expected = top
     assert get_module_path('xoutil') == expected
 
