@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.json
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2013-2015 Merchise and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -44,8 +44,7 @@ del strs, _copy_python_module_members
 
 
 class JSONEncoder(_pm.JSONEncoder):
-    __doc__ = (_pm.JSONEncoder.__doc__ +
-    '''
+    __doc__ = (_pm.JSONEncoder.__doc__ + '''
     Datetimes:
 
     We also support `datetime` values, which are translated to strings using

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.decorator
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise Autrement and Contributors
+# Copyright (c) 2012-2015 Merchise and Contributors
 # Copyright (c) 2009-2011 Medardo Rodríguez
 #
 # Author: Medardo Rodriguez
@@ -267,6 +267,7 @@ class memoized_instancemethod(object):
     def __get__(self, obj, cls):
         if obj is None:
             return self
+
         def oneshot(*args, **kw):
             result = self.fget(obj, *args, **kw)
             memo = lambda *a, **kw: result
@@ -274,6 +275,7 @@ class memoized_instancemethod(object):
             memo.__doc__ = self.__doc__
             obj.__dict__[self.__name__] = memo
             return result
+
         oneshot.__name__ = self.__name__
         oneshot.__doc__ = self.__doc__
         return oneshot

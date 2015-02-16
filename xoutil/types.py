@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.types
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2013-2015 Merchise and Contributors
 # Copyright (c) 2010-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -204,7 +204,8 @@ if sys.version_info < (3, 4):
             self.__doc__ = doc or fget.__doc__
             self.overwrite_doc = doc is None
             # support for abstract methods
-            self.__isabstractmethod__ = bool(getattr(fget, '__isabstractmethod__', False))
+            _has_method = bool(getattr(fget, '__isabstractmethod__', False))
+            self.__isabstractmethod__ = _has_method
 
         def __get__(self, instance, ownerclass=None):
             if instance is None:
@@ -227,7 +228,8 @@ if sys.version_info < (3, 4):
 
         def getter(self, fget):
             fdoc = fget.__doc__ if self.overwrite_doc else None
-            result = type(self)(fget, self.fset, self.fdel, fdoc or self.__doc__)
+            cls = type(self)
+            result = cls(fget, self.fset, self.fdel, fdoc or self.__doc__)
             result.overwrite_doc = self.overwrite_doc
             return result
 

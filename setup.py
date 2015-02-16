@@ -35,8 +35,10 @@ setup(name=project_name,
 
       ],
       keywords='',
-      author='Merchise Autrement',
+      author='Merchise',
       author_email='merchise.h8@gmail.com',
+      # TODO: Negotiate with Maykel Moya to obtain plain "Merchise" folder at
+      #       "http://github.com"
       url='http://github.com/merchise-autrement/',
       license='GPLv3+',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),

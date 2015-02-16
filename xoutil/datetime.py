@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.datetime
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2013-2015 Merchise and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -143,7 +143,6 @@ def new_datetime(d):
     return datetime(*args)
 
 
-
 # This library does not support strftime's "%s" or "%y" format strings.
 # Allowed if there's an even number of "%"s because they are escaped.
 _illegal_formatting = _regex_compile(br"((^|[^%])(%%)*%[sy])")
@@ -153,7 +152,6 @@ def _year_find_all(fmt, year, no_year_tuple):
     text = _time_strftime(fmt, (year,) + no_year_tuple)
     regex = _regex_compile(str(year))
     return {match.start() for match in regex.finditer(text)}
-
 
 
 _TD_LABELS = 'dhms'    # days, hours, minutes, seconds
@@ -283,11 +281,12 @@ class flextime(timedelta):
         first = None
         if args:
             first, rest = args[0], args[1:]
+        _super = super(flextime, cls).__new__
         if first and not rest and not kwargs:
             hour, minutes, seconds = cls.parse_simple_timeformat(first)
-            return super(flextime, cls).__new__(cls, hours=hour, minutes=minutes, seconds=seconds)
+            return _super(cls, hours=hour, minutes=minutes, seconds=seconds)
         else:
-            return super(flextime, cls).__new__(cls, *args, **kwargs)
+            return _super(cls, *args, **kwargs)
 
 
 def daterange(*args):

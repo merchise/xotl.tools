@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.iterators
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2013-2015 Merchise and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -25,7 +25,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil import Unset
 from xoutil.types import is_scalar
-from xoutil.deprecation import deprecated
+from xoutil.deprecation import deprecated    # TODO: Not used
 
 
 def first_non_null(iterable, default=None):
@@ -242,3 +242,5 @@ def first_n(iterable, n=1, fill=Unset):
 
 # Compatible zip and map
 from six.moves import zip, map, zip_longest
+
+# XXX: How to avoid "imported but unused"

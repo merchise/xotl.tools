@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.modules
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement
+# Copyright (c) 2013-2015 Merchise
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -162,9 +162,11 @@ def modulemethod(func):
     import sys
     from functools import wraps
     self, _created, cls = customize(sys.modules[func.__module__])
+
     @wraps(func)
     def inner(*args, **kwargs):
         return func(self, *args, **kwargs)
+
     setattr(cls, func.__name__, func)
     return inner
 

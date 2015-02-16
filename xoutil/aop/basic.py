@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.basic
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2012-2015 Merchise and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -68,8 +68,8 @@ def _update(attrs, *sources):
                   # getattr(cls, attr) would not yield the classmethod and
                   # staticmethod wrappers.
                   for name, member in iteritems_(cls.__dict__)
-                  if not name.startswith('_') or
-                     isinstance(member, FunctionType)})
+                  if (not name.startswith('_') or
+                      isinstance(member, FunctionType))})
     return attrs
 
 
@@ -157,6 +157,7 @@ def complementor(*sources, **attrs):
             assigned = attr in cls.__dict__
             if assigned:
                 ok = isinstance
+                functions = (FunctionType, classmethod, staticmethod)
                 # XXX: [manu] In order to be Python 2 and 3 compatible is best
                 # to get things from the class' dictionary, then current would
                 # be a function for methods, a classmethod for classmethods and
@@ -172,7 +173,7 @@ def complementor(*sources, **attrs):
                     value = current + value
                 elif ok(value, Set) and ok(current, Set):
                     value = current | value
-                elif ok(value, (FunctionType, classmethod, staticmethod)) and current:
+                elif ok(value, functions) and current:
                     setattr(cls, str('_super_%s') % attr, current)
             else:
                 current = None

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.inspect
 # ----------------------------------------------------------------------
-# Copyright 2014, 2015 Merchise Autrement
+# Copyright 2014, 2015 Merchise
 #
 # This file is distributed under the terms of the LICENCE distributed
 # with this package.

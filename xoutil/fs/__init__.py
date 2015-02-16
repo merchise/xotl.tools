@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.fs
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2013-2015 Merchise and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -194,6 +194,7 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
     if confirm is None:
         confirm = lambda _: True
     for path, _dirs, _files in os.walk(normalize_path(top)):
+        # XXX: Make clearest next condition
         if ((regex is None or regex.search(path)) and
             (exclude is None or not exclude.search(path)) and
             not _dirs and not _files and confirm(path) and
@@ -282,24 +283,30 @@ def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
     if isinstance(regex, string_types):
         regex = _rcompile(regex)
+
     def _filter(path, stat_info):
         return regex.match(os.path.basename(path)) is not None
+
     return _filter
 
 
 def get_wildcard_filter(pattern):
     '''Return a filter for "walk" based on a wildcard pattern a la fnmatch.'''
     regex = _get_regex(pattern)
+
     def _filter(path, stat_info):
         return regex.match(os.path.basename(path)) is not None
+
     return _filter
 
 
 def get_mime_filter(mime_start):
     import mimetypes
+
     def _filter(path, stat_info):
         t = mimetypes.guess_type(path)[0]
         return t.startswith(mime_start) if t else False
+
     return _filter
 
 

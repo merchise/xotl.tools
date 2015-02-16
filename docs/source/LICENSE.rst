@@ -3,7 +3,7 @@ Copyright and Licence
 
 Copyright (c) 2012 Medardo Rodríguez.
 
-Copyright (c) 2013, 2014 Merchise Autrement and Contributors.
+Copyright (c) 2013-2015 Merchise and Contributors.
 
 This software is released under terms similar to the Python Software
 Foundation (PSF) licence for Python 3.2 as stated :ref:`below
@@ -14,7 +14,7 @@ library and the PSF retains the copyright.
 
 .. |project| replace:: xoutil
 
-.. |copyright| replace:: Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+.. |copyright| replace:: Copyright (c) 2013-2015 Merchise and Contributors
 
 .. _merchise-license-psf:
 

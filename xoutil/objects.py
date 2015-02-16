@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.objects
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise Autrement
+# Copyright (c) 2012-2015 Merchise
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -971,8 +971,8 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
     if not meta:
         meta = type(cls)
     if isinstance(ignores, str_base):
-        ignores = (ignores, )
-        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i) for i in ignores)
+        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i)
+                        for i in (ignores, ))
         ignored = lambda name: any(ignore.match(name) for ignore in ignores)
     else:
         ignored = None

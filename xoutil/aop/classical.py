@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.aop.classical
 #----------------------------------------------------------------------
-# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2012-2015 Merchise and Contributors
 # All rights reserved.
 #
 # Author: Manuel Vázquez Acosta
@@ -112,6 +112,7 @@ def bind_method(method, *args, **kwargs):
     '''Returns the method to be called already bound to self if needed'''
     from xoutil.types import is_instancemethod, is_classmethod, is_staticmethod
     if args and is_instancemethod(method):
+        # XXX: Fix syntax of next assignments.
         self = args[0]
         args = args[1:]
         bound_method = _wraps(method)(lambda *args, **kwargs: method(self,
@@ -391,7 +392,7 @@ def _weave_before_method(target, aspect, method_name,
 
 
 def _weave_around_method(cls, aspect, method_name,
-                          around_method_name='_around_{method_name}'):
+                         around_method_name='_around_{method_name}'):
     '''Simply put, replaces a method by another::
 
         >>> class OriginalClass(object):
@@ -444,9 +445,9 @@ _or = lambda *preds: (lambda *a, **kw: any(p(*a, **kw) for p in preds))
 
 _private = lambda attr: attr.startswith('_')
 _aspect_method = lambda attr: any(attr.startswith(prefix) and attr != prefix
-                                    for prefix in ('_after_',
-                                                   '_before_',
-                                                   '_around_'))
+                                  for prefix in ('_after_',
+                                                 '_before_',
+                                                 '_around_'))
 #_public = _not(_private)
 _public = lambda attr: not attr.startswith('_')
 

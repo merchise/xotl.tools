@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.crypto
 # ---------------------------------------------------------------------
-# Copyright (c) 2014, 2015 Merchise Autrement
+# Copyright (c) 2014-2015 Merchise
 # All rights reserved.
 #
 # Author: Medardo Rodriguez

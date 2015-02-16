@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cli
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement
+# Copyright (c) 2013-2015 Merchise
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
