@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.validators.identifiers
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #

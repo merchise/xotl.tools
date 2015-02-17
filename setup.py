@@ -36,10 +36,12 @@ setup(name=project_name,
       ],
       keywords='',
       author='Merchise',
-      author_email='merchise.h8@gmail.com',
+      # TODO: [taqchi] create these accounts
+      author_email='project+xoutil@merchise.com',
       # TODO: Negotiate with Maykel Moya to obtain plain "Merchise" folder at
-      #       "http://github.com"
-      url='http://github.com/merchise-autrement/',
+      #       "https://github.com"
+      # TODO: [taqchi] manage these accounts
+      url='https://github.com/merchise/xoutil/',
       license='GPLv3+',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,

@@ -51,11 +51,16 @@ master_doc = 'index'
 project = u'xoutil'
 
 year = datetime.datetime.now().year
-if year > 2012:
-    copyright = u'2012-{year}, Merchise and Contributors'.format(year=year)
+if year >= 2015:
+    year = u'' if year == 2015 else u'-{year}'.format(year=year)
+    copyright = u'2015{year}, Merchise and Contributors'
+elif year > 2012:
+    copyright = u'2012-{year}, Merchise Autrement and Contributors'
 else:
-    copyright = u'2012, Medardo Rodríguez'
-
+    if year < 2012:
+        year = u'{year}-2012'.format(year=year)
+    copyright = u'{year}, Medardo Rodríguez'
+copyright = copyright.format(year=year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

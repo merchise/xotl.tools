@@ -2,7 +2,9 @@
 # ----------------------------------------------------------------------
 # xoutil.inspect
 # ----------------------------------------------------------------------
-# Copyright 2014, 2015 Merchise
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# All rights reserved
 #
 # This file is distributed under the terms of the LICENCE distributed
 # with this package.

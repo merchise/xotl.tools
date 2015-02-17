@@ -2,8 +2,9 @@
 # ---------------------------------------------------------------------
 # xoutil.decorator
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise and Contributors
-# Copyright (c) 2009-2011 Medardo Rodríguez
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2009-2012 Medardo Rodríguez
 #
 # Author: Medardo Rodriguez
 # Contributors: see CONTRIBUTORS and HISTORY file

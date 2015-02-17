@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil._meta2
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
