@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012, 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2012-2015 Merchise Autrement and Contributors
 
 # TODO:  Take this out of xoutil.
 from multiprocessing import Pool, cpu_count
 from itertools import count, islice, repeat
-from six.moves import zip
+
+try:
+    from itertools import izip as zip
+except ImportError:
+    pass
 
 
 def gcd(a, b):
