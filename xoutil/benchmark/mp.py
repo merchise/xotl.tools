@@ -7,10 +7,12 @@
 # TODO:  Take this out of xoutil.
 from multiprocessing import Pool, cpu_count
 from itertools import count, islice, repeat
+
 try:
     from itertools import izip as zip
 except ImportError:
     pass
+
 
 def gcd(a, b):
     while a % b != 0:
