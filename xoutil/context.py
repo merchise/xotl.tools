@@ -67,11 +67,12 @@ class Context(metaclass(MetaContext), StackedDict):
 
     Use as::
 
+        >>> SOME_CONTEXT = object()
         >>> from xoutil.context import context
-        >>> with context('somename'):
-        ...     if context['somename']:
-        ...         print('In context somename')
-        In context somename
+        >>> with context(SOME_CONTEXT):
+        ...     if context[SOME_CONTEXT]:
+        ...         print('In context SOME_CONTEXT')
+        In context SOME_CONTEXT
 
     Note the difference creating the context and checking it: for entering a
     context you should use `context(name)` for testing whether some piece of
