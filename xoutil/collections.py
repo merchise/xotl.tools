@@ -1486,7 +1486,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     The property :attr:`level` returns the actual number of levels.
 
-    When accessing keys they are searched from the lastest level "upwards", if
+    When accessing keys they are searched from the latest level "upwards", if
     such a key does not exists in any level a KeyError is raised.
 
     Deleting a key only works in the *current level*; if it's not defined there
@@ -1588,8 +1588,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
 
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
-    '''A combination of the the OrderedDict with the
-    :class:`SmartDictMixin`.
+    '''A combination of the `OrderedDict` with the `SmartDictMixin`.
 
     .. warning:: Initializing with kwargs does not ensure any initial ordering,
                  since Python's keyword dict is not ordered. Use a list/tuple
