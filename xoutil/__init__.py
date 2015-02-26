@@ -33,4 +33,23 @@ elsewhere.
 '''
 
 
-from ._values import Unset, Undefined, Ignored  # noqa
+# from ._values import Unset, Undefined, Ignored  # noqa
+
+from .logical import Logical
+
+
+# False value where None could be a valid value
+Unset = Logical('Unset')
+
+
+# False value for local scope use or where Unset could be a valid value
+Undefined = Logical('Undefined')
+
+
+# To be used in arguments that are currently ignored cause they are being
+# deprecated. The only valid reason to use `ignored` is to signal ignored
+# arguments in method's/function's signature
+Ignored = Logical('Ignored')
+
+
+del Logical
