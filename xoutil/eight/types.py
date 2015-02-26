@@ -35,9 +35,9 @@ try:
 except ImportError:
     DictProxyType = type(object.__dict__)
 
-try:
-    from types import MemberDescriptorType
-except ImportError:
+
+from types import MemberDescriptorType, GetSetDescriptorType
+if MemberDescriptorType is GetSetDescriptorType:    # As in pypy
     class _foo(object):
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)

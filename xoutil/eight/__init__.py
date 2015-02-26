@@ -19,6 +19,8 @@ There is an existing library written by "Benjamin Peterson" named `six`_, both
 (`xoutil.eight` and `six`) can be used together since this module don't claim
 to be a replacement of `six`, just some extra extensions.
 
+This module also fixes some issues from PyPy interpreter.
+
 .. _six: https://pypi.python.org/pypi/six
 
 '''
