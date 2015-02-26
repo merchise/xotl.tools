@@ -35,3 +35,9 @@ _py3 = sys.version_info[0] == 3
 _pypy = sys.version.find('PyPy') >= 0
 
 del sys
+
+
+try:
+    intern = intern
+except NameError:
+    from sys import intern    # noqa
