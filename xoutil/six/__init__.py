@@ -1,7 +1,9 @@
 from __future__ import absolute_import as _
-import warnings
+# import warnings
 
-warnings.warn('xoutil.six is deprecated, use six directly.', stacklevel=2)
+# warnings.warn('xoutil.six is deprecated, use six directly.', stacklevel=2)
+
+# TODO: Instead deprecating this, removes these imports
 
 from six import *
 from six import moves

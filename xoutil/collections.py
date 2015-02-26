@@ -58,6 +58,7 @@ del _pm, _copy_python_module_members
 
 
 from collections import defaultdict as _defaultdict
+from xoutil import Unset
 from xoutil.names import strlist as slist
 from xoutil.objects import SafeDataItem as safe
 
@@ -175,7 +176,6 @@ class OpenDictMixin(object):
         return list(set(~self) | fulldir(self))
 
     def __getattr__(self, name):
-        from xoutil import Unset
         from xoutil.inspect import get_attr_value
         res = get_attr_value(self, name, Unset)
         if res is not Unset:
@@ -499,9 +499,7 @@ if not _py33:
         items = MutableMapping.items
         __ne__ = MutableMapping.__ne__
 
-        __marker = object()    # TODO: Change for some UnsetType instance
-
-        def pop(self, key, default=__marker):
+        def pop(self, key, default=Unset):
             '''od.pop(k[,d]) -> v, remove specified key and return the
             corresponding value.
 
@@ -513,9 +511,10 @@ if not _py33:
                 result = self[key]
                 del self[key]
                 return result
-            if default is self.__marker:
+            elif default is not Unset:
+                return default
+            else:
                 raise KeyError(key)
-            return default
 
         def setdefault(self, key, default=None):
             '''``od.setdefault(k[, d])`` -> ``od.get(k, d)`` also set

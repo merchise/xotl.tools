@@ -189,7 +189,7 @@ def module_name(item):
 
        >>> from xoutil import Unset
        >>> module_name(Unset)
-       'xoutil._values'
+       'xoutil.logical'
 
     '''
     from xoutil.inspect import get_attr_value
@@ -511,7 +511,7 @@ class strlist(list):
 # Otherwise the `tests/` directory would need to be a proper package.
 
 import unittest as _utest
-from ._values import Unset as _Unset   # Use a tier 0 module!
+from xoutil import Unset as _Unset   # Use a tier 0 module!
 
 
 class TestRelativeImports(_utest.TestCase):

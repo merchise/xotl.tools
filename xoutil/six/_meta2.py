@@ -50,7 +50,7 @@ def metaclass(meta, **kwargs):
                 bases = tuple(b for b in bases if not issubclass(b, base))
                 if not bases:
                     bases = (object,)
-                from xoutil.types import prepare_class
+                from .types import prepare_class
                 kwds = dict(kwargs, metaclass=meta)
                 basemeta, _ns, kwds = prepare_class(name, bases, kwds=kwds)
                 ns = copy(_ns)

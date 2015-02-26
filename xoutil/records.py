@@ -199,8 +199,8 @@ class record(metaclass(_record_type)):
 def isnull(val):
     '''Return True if `val` is null.
 
-    Null values are None, the empty string and any instance of
-    `xoutil.types.UnsetType`:class:.
+    Null values are None, the empty string and any False instance of
+    `xoutil.logical.Logical`:class:.
 
     Notice that 0, the empty list and other false values in Python are not
     considered null.  This allows that the CSV null (the empty string) is
@@ -208,8 +208,8 @@ def isnull(val):
     valid number) are not misinterpreted as null.
 
     '''
-    from xoutil._values import UnsetType
-    return val in (None, '') or isinstance(val, UnsetType)
+    from xoutil.logical import Logical
+    return val in (None, '') or (isinstance(val, Logical) and not val)
 
 
 # Standard readers
