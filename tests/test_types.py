@@ -404,4 +404,4 @@ class SimpleNamespaceTests(unittest.TestCase):
 
 class TestDynamicClassAttribute(unittest.TestCase):
     def test_isimportable(self):
-        from xoutil.types import DynamicClassAttribute
+        from xoutil.types import DynamicClassAttribute    # noqa
