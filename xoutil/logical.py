@@ -56,10 +56,7 @@ class MetaLogical(ABCMeta):
         method implementations.
 
         '''
-        try:
-            unique = intern
-        except NameError:
-            from sys import intern as unique    # Python 3
+        from .eight import intern as unique
         name = unique(str(str() + name))
         if name:
             value = bool(value)
