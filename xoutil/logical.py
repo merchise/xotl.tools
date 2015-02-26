@@ -57,7 +57,7 @@ class MetaLogical(ABCMeta):
 
         '''
         from .eight import intern as unique
-        name = unique(str(str() + name))
+        name = unique(name)
         if name:
             value = bool(value)
             res = self.__instances__.get(name)

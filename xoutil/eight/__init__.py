@@ -38,6 +38,11 @@ del sys
 
 
 try:
-    intern = intern
+    __intern = intern
+
+    def intern(string):
+        return __intern(str(str() + string))
+
+    intern.__doc__ = __intern.__doc__
 except NameError:
     from sys import intern    # noqa
