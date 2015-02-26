@@ -96,7 +96,7 @@ if not _py32:
         return res
 
 else:
-    from html import escape
+    from html import escape    # noqa
 
 
 del _py3k, _py32

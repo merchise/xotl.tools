@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.six.types
+# xoutil.eight.types
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -63,6 +63,7 @@ except ImportError:
             super(MappingProxyType, self).__init__(mapping)
 
         def items(self):
+            # TODO: migrate to `xoutil.eight.collections`
             from xoutil.collections import ItemsView
             try:
                 items = type(self._mapping).__dict__['items']
@@ -74,6 +75,7 @@ except ImportError:
                 return ItemsView(self)
 
         def keys(self):
+            # TODO: migrate to `xoutil.eight.collections`
             from xoutil.collections import KeysView
             try:
                 keys = type(self._mapping).__dict__['keys']
@@ -85,6 +87,7 @@ except ImportError:
                 return KeysView(self)
 
         def values(self):
+            # TODO: migrate to `xoutil.eight.collections`
             from xoutil.collections import ValuesView
             try:
                 values = type(self._mapping).__dict__['values']
@@ -135,7 +138,7 @@ except ImportError:
 try:
     from types import SimpleNamespace
 except ImportError:
-    # TODO: migrate to `xoutil.six.reprlib`
+    # TODO: migrate to `xoutil.eight.reprlib`
     from xoutil.reprlib import recursive_repr
 
     class SimpleNamespace(object):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.six.meta
+# xoutil.eight.meta
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -15,10 +15,10 @@
 
 '''
 
-from six import PY3 as _py3k
+from . import _py3
 
 
-if _py3k:
+if _py3:
     from ._meta3 import metaclass
 else:
     from ._meta2 import metaclass

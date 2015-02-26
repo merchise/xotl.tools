@@ -27,7 +27,7 @@ from __future__ import (division as _py3_division,
 # TODO: Maybe `UnsetType` can be deprecated after this module.
 
 from abc import ABCMeta
-from .six.meta import metaclass
+from .eight.meta import metaclass
 
 
 class MetaLogical(ABCMeta):

@@ -41,7 +41,7 @@ from xoutil import Unset as _unset
 from collections import Mapping
 
 # FIXME: [med] Reintroduce UnsetType or deprecate it here.
-from xoutil.logical import Logical as UnsetType  # noqa
+from xoutil.logical import Logical as UnsetType    # noqa
 
 from xoutil.names import strlist as strs
 __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
@@ -53,10 +53,10 @@ __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
 del strs
 
 
-from .six.types import (DictProxyType, MemberDescriptorType, NoneType,
-                        MappingProxyType, SimpleNamespace,
-                        DynamicClassAttribute, new_class, prepare_class,
-                        _calculate_meta)
+from .eight.types import (DictProxyType, MemberDescriptorType,    # noqa
+                          NoneType, MappingProxyType, SimpleNamespace,
+                          DynamicClassAttribute, new_class, prepare_class,
+                          _calculate_meta)
 
 
 #: The type of methods that are builtin in Python.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.six._meta3
+# xoutil.eight._meta3
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -21,8 +21,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from six import PY3
-assert PY3, 'This module should be loaded in Py3k only'
+from . import _py3
+assert _py3, 'This module should be loaded in Py3k only'
 
 
 def metaclass(meta, **kwargs):

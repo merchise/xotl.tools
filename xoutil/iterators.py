@@ -242,6 +242,6 @@ def first_n(iterable, n=1, fill=Unset):
 
 
 # Compatible zip and map
-from six.moves import zip, map, zip_longest
+from six.moves import zip, map, zip_longest    # noqa
 
 # XXX: How to avoid "imported but unused"

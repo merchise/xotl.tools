@@ -27,7 +27,10 @@ from __future__ import (division as _py3_division,
 from xoutil import Unset
 from six import callable, string_types as str_base
 from xoutil.deprecation import deprecated
-from .six.meta import metaclass
+
+# TODO: Deprecate all use of `metaclass` from `xoutil.objects`, instead use it
+#       directly from `xoutil.eight.meta`.
+from .eight.meta import metaclass    # noqa
 
 __docstring_format__ = 'rst'
 

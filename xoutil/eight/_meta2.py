@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.six._meta2
+# xoutil.eight._meta2
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -21,8 +21,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from six import PY3
-assert not PY3, 'This module should not be loaded in Py3k'
+from . import _py3
+assert not _py3, 'This module should not be loaded in Py3k'
 
 
 METACLASS_ATTR = str('__metaclass__')
