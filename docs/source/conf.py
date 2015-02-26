@@ -300,3 +300,7 @@ autosummary_generate = True
 
 # - doctesting
 doctest_test_doctest_blocks = None
+
+
+# Produce output for todo and todolist
+todo_include_todos = True
