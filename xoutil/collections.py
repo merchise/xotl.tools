@@ -281,6 +281,9 @@ class SmartDictMixin(object):
         for key in kwargs:
             self[key] = kwargs[key]
 
+    # TODO: Include new argument ``full=True`` to also search in string
+    #       values.  Maybe this kind of feature will be better in a function
+    #       instead a method.
     def search(self, pattern):
         '''Return new mapping with items which key match a `pattern` regexp.
 
@@ -288,7 +291,7 @@ class SmartDictMixin(object):
         type of the caller instance.  If the constructor of corresponding type
         can't be called without arguments, then look up for a class
         variable named `__search_result_type__` or return a standard
-        Python dictionary if not found
+        Python dictionary if not found.
 
         '''
         from re import compile
