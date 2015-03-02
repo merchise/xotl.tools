@@ -47,7 +47,8 @@ class MetaLogical(ABCMeta):
         '''Get or create a new logical instance.
 
         :param name: String representing the internal name.  Logical instances
-               are unique (singletons) in the context of this argument.
+               are unique (singletons) in the context of this argument.  ``#``
+               and spaces are invalid characters to allow comments.
 
         :param value: Any value compatible with Python `bool` (Always is
                converted to this type before using it).  Default is `False`.
@@ -90,6 +91,8 @@ class MetaLogical(ABCMeta):
         Standard Python Boolean values are parsed too.
 
         '''
+        if '#' in value:    # Remove comment
+            value = value.split('#')[0].strip()
         key = next((key for key in self.__instances__ if key == value), None)
         if key is not None:
             return self.__instances__[key]
@@ -150,6 +153,8 @@ class Logical(int, metaclass(MetaLogical)):
 
     def __repr__(self):
         return type(self).get_name(self)
+
+    __str__ = __repr__
 
 
 del ABCMeta, metaclass

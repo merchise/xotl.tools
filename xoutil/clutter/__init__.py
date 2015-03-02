@@ -182,6 +182,8 @@ class Clutter(object):
         from base64 import b64decode
         from pickle import loads
         try:
+            if '#' in value:    # Remove comment
+                value = value.split('#')[0].strip()
             s = b64decode(value)
             return loads(s)
         except:

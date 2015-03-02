@@ -62,7 +62,10 @@ class Prefixed(object):
         '''
         prefix = '%s ' % cls.__name__
         if value.startswith(prefix):
-            return cls(value[len(prefix):].strip())
+            value = value[len(prefix):].strip()
+            if '#' in value:    # Remove comment
+                value = value.split('#')[0].strip()
+            return cls(value)
         else:
             return Unset
 

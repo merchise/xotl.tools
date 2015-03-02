@@ -17,9 +17,11 @@ The name comes from (Manu's idea') "2 raised to the power of 3".
 
 There is an existing library written by "Benjamin Peterson" named `six`_, both
 (`xoutil.eight` and `six`) can be used together since this module don't claim
-to be a replacement of `six`, just some extra extensions.
+to be a replacement of `six`, just some extra extensions.  Nevertheless, there
+are some simple definitions that even when are in `six` also are defined also
+here.
 
-This module also fixes some issues from PyPy interpreter.
+This package also fixes some issues from PyPy interpreter.
 
 .. _six: https://pypi.python.org/pypi/six
 
@@ -38,9 +40,15 @@ del sys
 
 
 try:
+    base_string = basestring
+except NameError:
+    base_string = str
+
+try:
     __intern = intern
 
     def intern(string):
+        # Avoid problems in Python 2.x when using unicode by default.
         return __intern(str(str() + string))
 
     intern.__doc__ = __intern.__doc__
