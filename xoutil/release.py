@@ -22,41 +22,14 @@ from __future__ import (division as _py3_division,
 VERSION = '1.6.9'
 
 
-def dev_tag():
-    result = ''
-    import os
-    fn = os.path.abspath(os.path.join(__file__, '..', '..', 'setup.cfg'))
-    if os.path.exists(fn):
-        try:
-            import configparser
-        except:
-            # Python 2.7
-            import ConfigParser as configparser
-        parser = configparser.SafeConfigParser()
-        parser.read([fn])
-        try:
-            res = parser.get(str('egg_info'), str('tag_build'))
-        except:
-            res = None
-        if res:
-            result = res
-    return result
-
-
 def dev_tag_installed():
-    import re
     import pkg_resources
-    tag_start_regex = re.compile(r'[^\d\.]')
     try:
         dist = pkg_resources.get_distribution('xoutil')
-        version = dist.version
-        match = tag_start_regex.search(version)
-        if match:
-            return version[match.start():]
-        else:
-            return None
+        full_version = dist.version
+        base = dist.parsed_version.base_version
+        return full_version[len(base):]
     except:
         return None
 
-
-RELEASE_TAG = dev_tag_installed() or dev_tag()
+RELEASE_TAG = dev_tag_installed() or ''
