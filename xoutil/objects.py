@@ -990,7 +990,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
     return result
 
 
-# Real signature is (*sources, target, filter=None) where target is a
+# Real signature is (*sources, target, *, default=None) where target is a
 # positional argument, and not a keyword.
 # TODO: First look up "target" in keywords and then in positional arguments.
 def smart_copy(*args, **kwargs):
@@ -1008,18 +1008,7 @@ def smart_copy(*args, **kwargs):
 
     Every `sources` and `target` are always positional arguments. There should
     be at least one source. `target` will always be the last positional
-    argument, unless:
-
-    - `defaults` is not provided as a keyword argument, and
-
-    - there are at least 3 positional arguments and
-
-    - the last positional argument is either None, True, False or a *function*,
-
-    then `target` is the next-to-last positional argument and `defaults` is the
-    last positional argument. Notice that passing a callable that is not a
-    function is possible only with a keyword argument. If this is too
-    confusing, pass `defaults` as a keyword argument.
+    argument.
 
     If `defaults` is a dictionary or an iterable then only the names provided
     by itering over `defaults` will be copied. If `defaults` is a dictionary,
@@ -1057,28 +1046,19 @@ def smart_copy(*args, **kwargs):
 
     :returns: `target`.
 
+    .. versionchanged:: 1.6.9 `defaults` is now keyword only.
+
     '''
     from collections import Mapping, MutableMapping
-    from xoutil.types import FunctionType as function
     from xoutil.types import is_collection, Required
     from xoutil.types import DictProxyType
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
-    defaults = kwargs.pop('defaults', Unset)
+    defaults = kwargs.pop('defaults', False)
     if kwargs:
         raise TypeError('smart_copy does not accept a "%s" keyword argument'
                         % kwargs.keys()[0])
-    if defaults is Unset and len(args) >= 3:
-        args, last = args[:-1], args[-1]
-        if isinstance(last, bool) or isinstance(last, function) or last is None:
-            defaults = last if last is not None else False
-            sources, target = args[:-1], args[-1]
-        else:
-            sources, target, defaults = args, last, False
-    else:
-        if defaults is Unset:
-            defaults = False
-        sources, target = args[:-1], args[-1]
+    sources, target = args[:-1], args[-1]
     if not sources:
         raise TypeError('smart_copy requires at least one source')
     if isinstance(target, (bool, type(None), int, float, str_base)):
@@ -1114,7 +1094,7 @@ def smart_copy(*args, **kwargs):
                 items = dir(source)
             for key in items:
                 private = isinstance(key, str_base) and key.startswith('_')
-                if defaults is False and private:
+                if (defaults is False or defaults is None) and private:
                     copy = False
                 elif callable(defaults):
                     copy = defaults(key, source=source)

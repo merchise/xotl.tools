@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # tests.test_objects
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013, 2014, 2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -28,16 +28,16 @@ def test_smart_copy():
 
     source = new(a=1, b=2, c=4, _d=5)
     target = {}
-    smart_copy(source, target, False)
+    smart_copy(source, target, defaults=False)
     assert target == dict(a=1, b=2, c=4)
 
     source = new(a=1, b=2, c=4, _d=5)
     target = {}
-    smart_copy(source, target, None)
+    smart_copy(source, target, defaults=None)
     assert target == dict(a=1, b=2, c=4)
 
     target = {}
-    smart_copy(source, target, True)
+    smart_copy(source, target, defaults=True)
     assert target['_d'] == 5
 
 
@@ -57,8 +57,6 @@ def test_smart_copy_with_defaults():
 def test_smart_copy_signature():
     with pytest.raises(TypeError):
         smart_copy({}, defaults=False)
-    with pytest.raises(TypeError):
-        smart_copy({}, False)
 
 
 def test_smart_copy_from_dict_to_dict():
