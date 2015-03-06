@@ -12,7 +12,7 @@
 
 .. autofunction:: fdir(obj, filter=None, attr_filter=None, value_filter=None, getattr=None)
 
-.. autofunction:: smart_copy(*sources, target, defaults=False)
+.. autofunction:: smart_copy(*sources, target, *, defaults=False)
 
 .. autofunction:: extract_attrs(obj, *names, default=Unset)
 
