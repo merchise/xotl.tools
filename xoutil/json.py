@@ -21,8 +21,9 @@
 It just adds the ability to encode/decode datetimes. But you should use the
 JSONEncoder yourself.
 
-
-You may use this module as drop-in replacement to Python's `json`.
+You may use this module as drop-in replacement to Python's `json`.  Also it
+contains definitions to use C library JSON speedups or Python replacements in
+case that library is not installed in your system.
 
 '''
 
@@ -58,19 +59,16 @@ class JSONEncoder(_pm.JSONEncoder):
     def default(self, o):
         from decimal import Decimal as _Decimal
         from xoutil.types import is_iterable
-        from xoutil.datetime import (is_datetime as _is_datetime,
-                                     new_datetime as _new_datetime,
-                                     is_date as _is_date,
-                                     new_date as __new_date,
-                                     is_time as _is_time)
+        from xoutil.datetime import (is_datetime, new_datetime,
+                                     is_date, new_date, is_time)
 
-        if _is_datetime(o):
-            d = _new_datetime(o)
+        if is_datetime(o):
+            d = new_datetime(o)
             return d.strftime("%s %s" % (self.DATE_FORMAT, self.TIME_FORMAT))
-        elif _is_date(o):
-            d = __new_date(o)
+        elif is_date(o):
+            d = new_date(o)
             return d.strftime(self.DATE_FORMAT)
-        elif _is_time(o):
+        elif is_time(o):
             return o.strftime(self.TIME_FORMAT)
         elif isinstance(o, _Decimal):
             return str(o)
@@ -82,6 +80,30 @@ class JSONEncoder(_pm.JSONEncoder):
 def file_load(filename):
     with file(filename, 'r') as f:
         return load(f)
+
+
+# --- encode strings ---
+
+from json.encoder import encode_basestring    # noqa
+
+try:
+    from _json import encode_basestring_ascii
+except ImportError:
+    from json.encoder import (py_encode_basestring_ascii as    # noqa
+                              encode_basestring_ascii)
+
+
+def encode_string(string, ensure_ascii=True):
+    '''Return a JSON representation of a Python string.
+
+     :param ensure_ascii: If True, the output is guaranteed to be of type
+         `str` with all incoming non-ASCII characters escaped.  If False, the
+         output can contain non-ASCII characters.
+
+    '''
+    encode = encode_basestring_ascii if ensure_ascii else encode_basestring
+    return encode(string)
+
 
 
 del _pm
