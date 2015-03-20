@@ -26,7 +26,6 @@ from __future__ import (division as _py3_division,
 
 from xoutil import Unset
 from xoutil.types import is_scalar
-from xoutil.deprecation import deprecated    # TODO: Not used
 
 
 def first_non_null(iterable, default=None):
@@ -77,10 +76,27 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
                 yield subitem
 
 
+def multi_pop(source, *keys):
+    '''Pop values from `source` of all given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Keys to pop.
+
+    All keys that are not found are ignored.
+
+    Examples::
+
+      >>> next()
+
+    '''
+    for key in keys:
+        if key in source:
+            yield source.pop(key)
+
+
 def dict_update_new(target, source):
-    '''
-    Update values in "source" that are new (not currently present) in "target".
-    '''
+    '''Update values in `source` that are new (not present) in `target`.'''
     for key in source:
         if key not in target:
             target[key] = source[key]
