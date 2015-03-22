@@ -81,18 +81,50 @@ def multi_pop(source, *keys):
 
     :param source: Any compatible mapping.
 
-    :param keys: Keys to pop.
+    :param keys: Keys to pop values.
 
     All keys that are not found are ignored.
 
     Examples::
 
-      >>> next()
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      1
+
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      '---'
 
     '''
-    for key in keys:
-        if key in source:
-            yield source.pop(key)
+    return (source.pop(key) for key in keys if key in source)
+
+
+def multi_get(source, *keys):
+    '''Get values from `source` of all given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Keys to get values.
+
+    All keys that are not found are ignored.
+
+    Examples::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> next(multi_get(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_get(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_get(d, 'a', 'b'), '---')
+      '---'
+
+
+    '''
+    return (source.get(key) for key in keys if key in source)
 
 
 def dict_update_new(target, source):
