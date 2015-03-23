@@ -79,11 +79,13 @@ def is_type(cls):
 def predicate(*checkers, **kwargs):
     '''Return a validation checker for types and simple conditions.
 
-    :param checkers: A variable number of checkers (at least one), each one
-        could be a type, a tuple of types, a callable that receives the value
-        and returns if the value is valid, or a list of other inner checkers.
-        In order the value is considered valid, all checkers must validate the
-        value.
+    :param checkers: A variable number of checkers, each one could be a type,
+        a tuple of types, a callable that receives the value and returns if
+        the value is valid, or a list of other inner checkers.  In order the
+        value is considered valid, all checkers must validate the value.  True
+        and False could be used as checkers always validating or invalidating
+        the value.  An empty list or no checker is synonym of True, an empty
+        tuple is synonym of False.
 
     :param name: Keyword argument to be used in case of error; will be the
         argument of `ValueError` exception; could contain the placeholders
@@ -101,18 +103,39 @@ def predicate(*checkers, **kwargs):
       >>> is_valid_age(130)
       False
 
+      >>> always_true = predicate(True)
+      >>> always_true(False)
+      True
+
+      >>> always_false = predicate(False)
+      >>> always_false(True)
+      False
+
+      >>> always_true = predicate()
+      >>> always_true(1)
+      True
+
+      >>> always_true('any string')
+      True
+
+      >>> always_false = predicate(())
+      >>> always_false(1)
+      False
+
+      >>> always_false('any string')
+      False
+
     '''
-
-    assert len(checkers) > 0
-
     def inner(obj):
         '''Check is `obj` is a valid instance for a set of checkers.'''
 
         def fail(chk):
-            if isinstance(chk, (type, tuple)):
+            if isinstance(chk, bool):
+                res = chk
+            elif isinstance(chk, (type, tuple)):
                 res = isinstance(obj, chk)
             elif isinstance(chk, list):
-                res = predicate(*list)(obj)
+                res = predicate(*chk)(obj)
             else:
                 res = chk(obj)
             return not res
