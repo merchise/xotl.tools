@@ -541,12 +541,13 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
+    from xoutil.inspect import get_attr_value
     res = set()
     if isinstance(obj, type):
         for cls in type.mro(obj):
-            res |= set(SafeDataItem.getattr(cls, '__dict__', {}))
+            res |= set(get_attr_value(cls, '__dict__', {}))
     else:
-        res |= set(SafeDataItem.getattr(obj, '__dict__', {}))
+        res |= set(get_attr_value(obj, '__dict__', {}))
     cls = type(obj)
     if cls is not type:
         res |= set(dir(cls))
