@@ -41,6 +41,7 @@ _INVALID_CLASS_TYPE_MSG = '``cls`` must be a class not an instance'
 _len = lambda x: len(x) if x else 0
 
 # These two functions can be use to always return True or False
+# TODO: Deprecate both.
 _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
 
@@ -101,13 +102,18 @@ class SafeDataItem(object):
           the following names: `default`, `value` or `initial_value`.  If this
           argument is given the constructor callable is invalid.
 
-        - A function to check value validity with the keyword argument with
-          any of the following names: `validator`, `checker` or `check`.
+        - A checker for value validity with the keyword argument with any of
+          the following names: `validator`, `checker` or `check`.  The checker
+          could be a type, a tuple of types, a function receiving the value
+          and return True or False, or a list containing arguments to use
+          :func:`xoutil.validators.check`.
 
         - Boolean `False` to avoid assigning the descriptor in the class
           context with the keyword argument `do_assigning`.  Any other value
           but `False` is invalid because this concept is implicitly required
           and use a `False` value is allowed but discouraged.
+
+        See :meth:`__parse_arguments` for more information.
 
         '''
         self.__parse_arguments(*args, **kwargs)
@@ -273,12 +279,12 @@ class SafeDataItem(object):
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
-        from xoutil.validators import (is_type, is_valid_identifier)
+        from xoutil.validators import (is_valid_identifier, predicate)
         self.attr_name = Unset
         self.init = Unset
         self.default = Unset
         self.do_assigning = True
-        self.validator = _true
+        self.validator = True
         for i, arg in enumerate(args):
             if self.attr_name is Unset and is_valid_identifier(arg):
                 self.attr_name = arg
@@ -295,17 +301,15 @@ class SafeDataItem(object):
             if (self.default is Unset and self.init is Unset and
                     key in ('default', 'value', 'initial_value')):
                 self.default = value
-            elif (self.validator is _true and callable(value) and
+            elif (self.validator is True and
                   key in ('validator', 'checker', 'check')):
-                if isinstance(value, type):
-                    self.validator = is_type(value)
-                else:
-                    self.validator = value
+                self.validator = value
             elif (self.do_assigning is True and key == 'do_assigning' and
                   value is False):
                 self.do_assigning = False
             else:
                 bads[key] = value
+        self.validator = predicate(self.validator)
         if bads:
             msg = ('Invalid keyword arguments: %s\n'
                    'See constructor documentation for more info.')
@@ -858,7 +862,7 @@ def mixin(base):
     If several mixins with the same base are used all-together in a class
     inheritance, Python generates ``TypeError: multiple bases have instance
     lay-out conflict``.  To avoid that, inherit from the class this function
-    returns instead of desired :param:`base`.
+    returns instead of desired `base`.
 
     '''
     org = "\n\nOriginal doc:\n\n%s" % base.__doc__ if base.__doc__ else ''
