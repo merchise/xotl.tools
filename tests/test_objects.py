@@ -98,6 +98,11 @@ def test_smart_copy_with_callable_default():
     assert d == dict(a=1, b='2')
 
 
+def test_fulldir():
+    from xoutil.objects import fulldir
+    assert {'__getitem__', 'get', 'items', 'keys'} < fulldir({})
+
+
 def test_newstyle_metaclass():
     from xoutil.objects import metaclass
 
