@@ -105,5 +105,4 @@ def encode_string(string, ensure_ascii=True):
     return encode(string)
 
 
-
 del _pm
