@@ -44,7 +44,7 @@ from collections import Mapping
 from xoutil.logical import Logical as UnsetType    # noqa
 
 from xoutil.names import strlist as strs
-__all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
+__all__ = strs('mro_dict', 'UnsetType', 'MappingProxyType',
                'SlotWrapperType', 'is_iterable', 'is_collection',
                'is_string_like', 'is_scalar', 'is_staticmethod',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
@@ -53,7 +53,7 @@ __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
 del strs
 
 
-from .eight.types import (DictProxyType, MemberDescriptorType,    # noqa
+from .eight.types import (MappingProxyType, MemberDescriptorType,    # noqa
                           NoneType, MappingProxyType, SimpleNamespace,
                           DynamicClassAttribute, new_class, prepare_class,
                           _calculate_meta)
@@ -177,6 +177,11 @@ def is_collection(maybe):
     from six.moves import range
     return isinstance(maybe, (tuple, range, list, set, frozenset,
                               GeneratorType, UserList))
+
+
+def is_mapping(maybe):
+    '''Test `maybe` to see if it is a valid mapping.'''
+    return isinstance(maybe, (Mapping, MappingProxyType))
 
 
 def is_string_like(maybe):

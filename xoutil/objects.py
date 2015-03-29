@@ -340,9 +340,8 @@ def smart_getter(obj, strict=False):
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     '''
-    from collections import Mapping
-    from xoutil.types import DictProxyType
-    if isinstance(obj, (DictProxyType, Mapping)):
+    from .types import is_mapping
+    if is_mapping(obj):
         if not strict:
             return obj.get
         else:
@@ -1060,7 +1059,7 @@ def smart_copy(*args, **kwargs):
     copied.
 
     Each `source` is considered a mapping if it's an instance of
-    `collections.Mapping` or a DictProxyType.
+    `collections.Mapping` or a `MappingProxyType`.
 
     The `target` is considered a mapping if it's an instance of
     `collections.MutableMapping`.
@@ -1068,10 +1067,9 @@ def smart_copy(*args, **kwargs):
     :returns: `target`.
 
     '''
-    from collections import Mapping, MutableMapping
+    from collections import MutableMapping
     from xoutil.types import FunctionType as function
-    from xoutil.types import is_collection, Required
-    from xoutil.types import DictProxyType
+    from xoutil.types import is_collection, is_mapping, Required
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
     defaults = kwargs.pop('defaults', Unset)
@@ -1080,7 +1078,7 @@ def smart_copy(*args, **kwargs):
                         % kwargs.keys()[0])
     if defaults is Unset and len(args) >= 3:
         args, last = args[:-1], args[-1]
-        if isinstance(last, bool) or isinstance(last, function) or last is None:
+        if isinstance(last, (bool, function)) or last is None:
             defaults = last if last is not None else False
             sources, target = args[:-1], args[-1]
         else:
@@ -1101,12 +1099,12 @@ def smart_copy(*args, **kwargs):
         def setter(key, val):
             if is_valid_identifier(key):
                 setattr(target, key, val)
-    is_mapping = isinstance(defaults, Mapping)
-    if is_mapping or is_collection(defaults):
+    _mapping = is_mapping(defaults)
+    if _mapping or is_collection(defaults):
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:
-                if is_mapping:
+                if _mapping:
                     val = defaults.get(key, None)
                 else:
                     val = None
@@ -1118,7 +1116,7 @@ def smart_copy(*args, **kwargs):
         keys = []
         for source in sources:
             get = smart_getter(source)
-            if isinstance(source, (Mapping, DictProxyType)):
+            if is_mapping(source):
                 items = (name for name in source)
             else:
                 items = dir(source)

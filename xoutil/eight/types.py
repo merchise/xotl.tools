@@ -30,12 +30,6 @@ __all__ = [str(name) for name in ('DictProxyType', 'MemberDescriptorType',
                                   'new_class', 'prepare_class', )]
 
 
-try:
-    from types import DictProxyType
-except ImportError:
-    DictProxyType = type(object.__dict__)
-
-
 from types import MemberDescriptorType, GetSetDescriptorType
 if MemberDescriptorType is GetSetDescriptorType:    # As in pypy
     class _foo(object):
@@ -51,88 +45,18 @@ except ImportError:
 
 
 try:
+    from types import DictProxyType
+except ImportError:
+    DictProxyType = type(object.__dict__)
+
+
+try:
     from types import MappingProxyType
 except ImportError:
-    from collections import MappingView, MutableMapping
-
-    class MappingProxyType(MappingView, MutableMapping):
-        def __init__(self, mapping):
-            from collections import Mapping
-            if not isinstance(mapping, Mapping):
-                raise TypeError
-            super(MappingProxyType, self).__init__(mapping)
-
-        def items(self):
-            # TODO: migrate to `xoutil.eight.collections`
-            from xoutil.collections import ItemsView
-            try:
-                items = type(self._mapping).__dict__['items']
-                if items is not dict.__dict__['items']:
-                    return items(self._mapping)
-                else:
-                    return ItemsView(self)
-            except KeyError:
-                return ItemsView(self)
-
-        def keys(self):
-            # TODO: migrate to `xoutil.eight.collections`
-            from xoutil.collections import KeysView
-            try:
-                keys = type(self._mapping).__dict__['keys']
-                if keys is not dict.__dict__['keys']:
-                    return keys(self._mapping)
-                else:
-                    return KeysView(self)
-            except KeyError:
-                return KeysView(self)
-
-        def values(self):
-            # TODO: migrate to `xoutil.eight.collections`
-            from xoutil.collections import ValuesView
-            try:
-                values = type(self._mapping).__dict__['values']
-                if values is not dict.__dict__['values']:
-                    return values(self._mapping)
-                else:
-                    return ValuesView(self)
-            except KeyError:
-                return ValuesView(self)
-
-        def __iter__(self):
-            return iter(self._mapping)
-
-        def get(self, key, default=None):
-            return self._mapping.get(key, default)
-
-        def __contains__(self, key):
-            return key in self._mapping
-
-        def copy(self):
-            return self._mapping.copy()
-
-        def __dir__(self):
-            return [
-                '__contains__',
-                '__getitem__',
-                '__iter__',
-                '__len__',
-                'copy',
-                'get',
-                'items',
-                'keys',
-                'values',
-            ]
-
-        def __getitem__(self, key):
-            return self._mapping[key]
-
-        def __setitem__(self, key, value):
-            self._mapping[key] = value
-
-        def __delitem__(self, key):
-            del self._mapping[key]
-
-    del MappingView, MutableMapping
+    # TODO: There was an unnecessary implementation here.  But it wasn't used
+    # at all and wrong.  "MappingProxyType"" is named "DictProxyType" in
+    # Python 2.x.  Deprecate "DictProxyType" in favor of "MappingProxyType".
+    from types import DictProxyType as MappingProxyType    # noqa
 
 
 try:
