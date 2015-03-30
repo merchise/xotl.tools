@@ -33,6 +33,8 @@ You may use this module as a drop-in replacement of the standard library
 
 # TODO: consider use IoC to extend python datetime module
 
+# TODO: Remove most of this module since Python 2.7 is updated properly
+
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
