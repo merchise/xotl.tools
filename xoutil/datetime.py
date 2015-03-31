@@ -31,7 +31,7 @@ You may use this module as a drop-in replacement of the standard library
 
 '''
 
-# TODO: consider use IoC to extend python datetime module
+# TODO: Consider use IoC to extend python datetime module
 
 
 from __future__ import (division as _py3_division,
@@ -39,10 +39,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
+from datetime import *    # noqa
 
-time = _pm.time
 
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
@@ -69,15 +67,15 @@ class ISOWEEKDAY:
     SUNDAY = 7
 
 
-class date(_pm.date):
-    __doc__ = _pm.date.__doc__
+class date(date):
+    __doc__ = date.__doc__
 
     def strftime(self, fmt):
         return strftime(self, fmt)
 
 
-class datetime(_pm.datetime):
-    __doc__ = _pm.datetime.__doc__
+class datetime(datetime):
+    __doc__ = datetime.__doc__
 
     def strftime(self, fmt):
         return strftime(self, fmt)
@@ -317,5 +315,3 @@ def daterange(*args):
             yield current
             current += step
     return _generator()
-
-del _pm, _copy_python_module_members
