@@ -33,8 +33,6 @@ You may use this module as a drop-in replacement of the standard library
 
 # TODO: consider use IoC to extend python datetime module
 
-# TODO: Remove most of this module since Python 2.7 is updated properly
-
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -71,30 +69,11 @@ class ISOWEEKDAY:
     SUNDAY = 7
 
 
-if hasattr(_pm.timedelta, 'total_seconds'):
-    _NEW_TIME_DELTA = False
-else:
-    _NEW_TIME_DELTA = True
-
-    class timedelta(_pm.timedelta):
-        __doc__ = _pm.timedelta.__doc__
-
-        def total_seconds(self):
-            return (self.microseconds +
-                    (self.seconds + self.days * 24 * 3600) * 10 ** 6) / 10 ** 6
-
-
 class date(_pm.date):
     __doc__ = _pm.date.__doc__
 
     def strftime(self, fmt):
         return strftime(self, fmt)
-
-    if _NEW_TIME_DELTA:
-        def __sub__(self, other):
-            res = super(date, self).__sub__(other)
-            return timedelta(days=res.days, seconds=res.seconds,
-                             microseconds=res.microseconds)
 
 
 class datetime(_pm.datetime):
@@ -116,12 +95,6 @@ class datetime(_pm.datetime):
         res = super(datetime, datetime).now(tz=tz)
         return datetime(res.year, res.month, res.day, res.hour, res.minute,
                         res.second, res.microsecond, res.tzinfo)
-
-    if _NEW_TIME_DELTA:
-        def __sub__(self, other):
-            res = super(datetime, self).__sub__(other)
-            return timedelta(days=res.days, seconds=res.seconds,
-                             microseconds=res.microseconds)
 
 
 # FIXME: "__instancecheck__", "__subclasscheck__", module "abc"
