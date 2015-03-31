@@ -56,6 +56,7 @@ def force_module(ref=None):
         return __import__(ref, fromlist=[ref], level=0)
 
 
+# TODO: Deprecate this method in favor of ``from <module> import *``
 def copy_members(source=None, target=None):
     '''Copy module members from `source` to `target`.
 
