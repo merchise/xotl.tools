@@ -40,7 +40,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from datetime import *    # noqa
-
+from xoutil.deprecation import deprecated
 
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
@@ -70,11 +70,19 @@ class ISOWEEKDAY:
 try:
     date(1800, 1, 1).strftime("%Y")
 except ValueError:
+    # This happens in Pytnon 2.7, I was considering to replace `strftime`
+    # function from `time` module, that is used for all `strftime` methods;
+    # but (WTF), Python double checks the year (in each method and then again
+    # in `time.strftime` function).
+
     class date(date):
         __doc__ = date.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
+
+        def __sub__(self, other):
+            return clone(super(datetime, self).__sub__(other))
 
     class datetime(datetime):
         __doc__ = datetime.__doc__
@@ -82,26 +90,53 @@ except ValueError:
         def strftime(self, fmt):
             return strftime(self, fmt)
 
+        def __sub__(self, other):
+            return clone(super(datetime, self).__sub__(other))
+
         def combine(self, date, time):
-            return datetime(date.year, date.month, date.day, time.hour,
-                            time.minute, time.second, time.microsecond,
-                            time.tzinfo)
+            return clone(super(datetime, self).combine(date, time))
 
         def date(self):
-            return date(self.year, self.month, self.day)
+            return clone(super(datetime, self).date())
 
         @staticmethod
         def now(tz=None):
-            res = super(datetime, datetime).now(tz=tz)
-            return datetime(res.year, res.month, res.day, res.hour, res.minute,
-                            res.second, res.microsecond, res.tzinfo)
+            return clone(super(datetime, datetime).now(tz=tz))
 
 
+def clone(obj):
+    '''Copy a `date` or `datetime` instance to a safe version.
+
+    With safe it's mean that will use the adapted subclass on this module or
+    the standard if these weren't generated.
+
+    Classes that could be cloned are: `date`, `datetime`, `time` and
+    `timedelta`.
+
+    '''
+    name = type(obj).__name__
+    if name == date.__name__:
+        return date(obj.year, obj.month, obj.day)
+    elif name == datetime.__name__:
+        return datetime(obj.year, obj.month, obj.day,
+                        obj.hour, obj.minute, obj.second, obj.microsecond,
+                        obj.tzinfo)
+    elif name == time.__name__:
+        return time(obj.hour, obj.minute, obj.second, obj.microsecond,
+                    obj.tzinfo)
+    elif name == timedelta.__name__:
+        return timedelta(obj.days, obj.seconds, obj.microseconds)
+    else:
+        raise TypeError('Not valid type for datetime clone: %s' % name)
+
+
+@deprecated(clone)
 def new_date(d):
     '''Generate a safe date from a legacy datetime date object.'''
     return date(d.year, d.month, d.day)
 
 
+@deprecated(clone)
 def new_datetime(d):
     '''Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
     object.
