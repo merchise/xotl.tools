@@ -53,6 +53,10 @@ def test_iscollection():
     assert is_collection(Foobar()) is False
 
 
+# TODO: Next tests failed in py27 and pypy configurations (not in py34).  I
+# don't understand why we must create instances from `MappingProxyType`.  If a
+# clone of a dictionary is needed, ``.copy`` method must be used. [manu]
+# remove all this tests class or explain why this is necessary.
 class MappingProxyTests(unittest.TestCase):
     mappingproxy = xoutil.types.MappingProxyType
 
