@@ -67,38 +67,34 @@ class ISOWEEKDAY:
     SUNDAY = 7
 
 
-class date(date):
-    __doc__ = date.__doc__
+try:
+    date(1800, 1, 1).strftime("%Y")
+except ValueError:
+    class date(date):
+        __doc__ = date.__doc__
 
-    def strftime(self, fmt):
-        return strftime(self, fmt)
+        def strftime(self, fmt):
+            return strftime(self, fmt)
 
+    class datetime(datetime):
+        __doc__ = datetime.__doc__
 
-class datetime(datetime):
-    __doc__ = datetime.__doc__
+        def strftime(self, fmt):
+            return strftime(self, fmt)
 
-    def strftime(self, fmt):
-        return strftime(self, fmt)
+        def combine(self, date, time):
+            return datetime(date.year, date.month, date.day, time.hour,
+                            time.minute, time.second, time.microsecond,
+                            time.tzinfo)
 
-    def combine(self, date, time):
-        return datetime(date.year, date.month, date.day, time.hour,
-                        time.minute, time.second, time.microsecond,
-                        time.tzinfo)
+        def date(self):
+            return date(self.year, self.month, self.day)
 
-    def date(self):
-        return date(self.year, self.month, self.day)
-
-    @staticmethod
-    def now(tz=None):
-        res = super(datetime, datetime).now(tz=tz)
-        return datetime(res.year, res.month, res.day, res.hour, res.minute,
-                        res.second, res.microsecond, res.tzinfo)
-
-
-# FIXME: "__instancecheck__", "__subclasscheck__", module "abc"
-is_date = lambda obj: isinstance(obj, date.__base__)
-is_datetime = lambda obj: isinstance(obj, datetime.__base__)
-is_time = lambda obj: isinstance(obj, time)
+        @staticmethod
+        def now(tz=None):
+            res = super(datetime, datetime).now(tz=tz)
+            return datetime(res.year, res.month, res.day, res.hour, res.minute,
+                            res.second, res.microsecond, res.tzinfo)
 
 
 def new_date(d):
