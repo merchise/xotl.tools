@@ -18,7 +18,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-
 def test_first_n_no_filling():
     from xoutil.iterators import first_n
     try:
@@ -28,6 +27,7 @@ def test_first_n_no_filling():
         pass
     except:
         assert False, 'Should have raised an StopIteration'
+
 
 def test_first_n_filling_by_cycling():
     from xoutil.iterators import first_n
@@ -53,6 +53,7 @@ def test_slides():
                                           (7, 8),
                                           (9, 10)]
 
+
 def test_slides_filling():
     from xoutil.iterators import slides
     assert list(slides(range(1, 5), 3)) == [(1, 2, 3), (4, None, None)]
@@ -60,16 +61,20 @@ def test_slides_filling():
 
 def test_slides_with_repeating_filling():
     from xoutil.iterators import slides
-    assert list(slides(range(1, 11), width=3, fill=None)) == [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, None, None)]
+    aux = [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, None, None)]
+    assert list(slides(range(1, 11), width=3, fill=None)) == aux
+
 
 def test_slides_with_cycling_filling():
     from xoutil.iterators import slides
-    assert list(slides(range(1, 12), width=5, fill=(1, 2))) == [(1, 2, 3, 4, 5), (6, 7, 8, 9, 10), (11, 1, 2, 1, 2)]
+    aux = [(1, 2, 3, 4, 5), (6, 7, 8, 9, 10), (11, 1, 2, 1, 2)]
+    assert list(slides(range(1, 12), width=5, fill=(1, 2))) == aux
 
 
 def test_continuously_slides():
     from xoutil.iterators import continuously_slides
-    trigrams = list(''.join(x) for x in continuously_slides('maupasant', 3, ''))
+    aux = continuously_slides('maupasant', 3, '')
+    trigrams = list(''.join(x) for x in aux)
     assert 'mau' in trigrams
     assert 'aup' in trigrams
     assert 'upa' in trigrams

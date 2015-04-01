@@ -57,7 +57,8 @@ class TestExtendedWeaving(unittest.TestCase):
         class Aspect(object):
             @classmethod
             def _before_weave(cls, target):
-                print('Weaving {target} with {aspect}'.format(target=target.__name__, aspect=cls.__name__))
+                msg = 'Weaving {target} with {aspect}'
+                print(msg.format(target=target.__name__, aspect=cls.__name__))
 
             def _before_echo(self, method):
                 print('Echoing....')

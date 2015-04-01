@@ -21,7 +21,7 @@ import sys
 import unittest
 
 
-from xoutil.modules import customize, modulemethod, moduleproperty
+from xoutil.modules import customize, modulemethod
 
 
 class TestModulesCustomization(unittest.TestCase):

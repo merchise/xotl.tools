@@ -70,7 +70,7 @@ class TestProxy(unittest.TestCase):
         self.assertEqual(1 + r, r)
 
         with self.assertRaises(AttributeError):
-            _q = r / 1
+            _q = r / 1    # noqa
 
     def test_unproxifing_addition(self):
         @proxify

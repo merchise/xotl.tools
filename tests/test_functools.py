@@ -46,6 +46,7 @@ def fib(n):
 def takes_no_more_than(duration, msg=None):
     if not msg:
         msg = 'It took longer than {s} seconds'.format(s=duration)
+
     @contextmanager
     def inner():
         start = datetime.now()

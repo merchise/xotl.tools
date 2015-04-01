@@ -20,14 +20,7 @@ from __future__ import (division as _py3_division,
 import unittest
 import pickle
 
-import xoutil.types
 from xoutil import types
-from xoutil import collections
-
-
-def test_NoneType_exists():
-    from xoutil.types import NoneType
-    assert NoneType is type(None)
 
 
 def test_iscollection():
@@ -51,6 +44,13 @@ def test_iscollection():
         pass
 
     assert is_collection(Foobar()) is False
+
+
+class NoneTypeTests(unittest.TestCase):
+    'To avoid FlyCheck errors'
+    def test_identity(self):
+        from xoutil.types import NoneType
+        self.assertIs(NoneType, type(None))
 
 
 class SimpleNamespaceTests(unittest.TestCase):

@@ -1,7 +1,6 @@
 # Copied from Python 3.3 base code
 #
-# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
-# 2012 Python Software Foundation.  All rights reserved.
+# Copyright (c) 2001-2012 Python Software Foundation.  All rights reserved.
 #
 
 from xoutil import functools
@@ -109,13 +108,18 @@ class TestLRU(unittest.TestCase):
             if n < 2:
                 return n
             return fib(n-1) + fib(n-2)
-        self.assertEqual([fib(n) for n in range(16)],
-            [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610])
-        self.assertEqual(fib.cache_info(),
-            functools._CacheInfo(hits=28, misses=16, maxsize=None, currsize=16))
+        self.assertEqual([fib(n) for n in range(16)], [0, 1, 1, 2, 3, 5, 8,
+                                                       13, 21, 34, 55, 89,
+                                                       144, 233, 377, 610])
+        self.assertEqual(fib.cache_info(), functools._CacheInfo(hits=28,
+                                                                misses=16,
+                                                                maxsize=None,
+                                                                currsize=16))
         fib.cache_clear()
-        self.assertEqual(fib.cache_info(),
-            functools._CacheInfo(hits=0, misses=0, maxsize=None, currsize=0))
+        self.assertEqual(fib.cache_info(), functools._CacheInfo(hits=0,
+                                                                misses=0,
+                                                                maxsize=None,
+                                                                currsize=0))
 
     def test_lru_with_exceptions(self):
         # Verify that user_function exceptions get passed through without
@@ -126,12 +130,13 @@ class TestLRU(unittest.TestCase):
             def func(i):
                 return 'abc'[i]
             self.assertEqual(func(0), 'a')
-            with self.assertRaises(IndexError) as cm:
+            with self.assertRaises(IndexError) as cm:    # noqa
                 func(15)
             #  The following is only valid in Py33 PEP 3143
             ##  self.assertIsNone(cm.exception.__context__)
 
-            # Verify that the previous exception did not result in a cached entry
+            # Verify that the previous exception did not result in a cached
+            # entry
             with self.assertRaises(IndexError):
                 func(15)
 

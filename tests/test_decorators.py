@@ -59,7 +59,6 @@ class TestAssignable(unittest.TestCase):
         for which in (union(1, 2),):
             self.assertEqual((None, 1, 2), which)
 
-
     def test_argsless_decorator(self):
         @decorator
         def log(func, fmt='Calling function %s'):
@@ -101,11 +100,12 @@ class TestAssignable(unittest.TestCase):
 
 class RegressionTests(unittest.TestCase):
     def test_with_kwargs(self):
-        '''When passing a function as first positional argument, kwargs should be
-        tested empty.
+        '''When passing a function as first positional argument, kwargs should
+        be tested empty.
 
         '''
         from xoutil.functools import partial
+
         @decorator
         def ditmoi(target, *args, **kwargs):
             return partial(target, *args, **kwargs)
