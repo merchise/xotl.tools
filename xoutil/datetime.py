@@ -82,7 +82,7 @@ except ValueError:
             return strftime(self, fmt)
 
         def __sub__(self, other):
-            return clone(super(datetime, self).__sub__(other))
+            return assure(super(datetime, self).__sub__(other))
 
     class datetime(datetime):
         __doc__ = datetime.__doc__
@@ -91,52 +91,62 @@ except ValueError:
             return strftime(self, fmt)
 
         def __sub__(self, other):
-            return clone(super(datetime, self).__sub__(other))
+            return assure(super(datetime, self).__sub__(other))
 
         def combine(self, date, time):
-            return clone(super(datetime, self).combine(date, time))
+            return assure(super(datetime, self).combine(date, time))
 
         def date(self):
-            return clone(super(datetime, self).date())
+            return assure(super(datetime, self).date())
 
         @staticmethod
         def now(tz=None):
-            return clone(super(datetime, datetime).now(tz=tz))
+            return assure(super(datetime, datetime).now(tz=tz))
+
+    def assure(obj):
+        '''Make sure that a `date` or `datetime` instance is a safe version.
+
+        With safe it's meant that will use the adapted subclass on this module
+        or the standard if these weren't generated.
+
+        Classes that could be assured are: `date`, `datetime`, `time` and
+        `timedelta`.
+
+        '''
+        t = type(obj)
+        name = t.__name__
+        if name == date.__name__:
+            return obj if t is date else date(*obj.timetuple()[:3])
+        elif name == datetime.__name__:
+            if t is datetime:
+                return obj
+            else:
+                args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
+                return datetime(*args)
+        elif isinstance(obj, (time, timedelta)):
+            return obj
+        else:
+            raise TypeError('Not valid type for datetime assuring: %s' % name)
+else:
+    def assure(obj):
+        '''Make sure that a `date` or `datetime` instance is a safe version.
+
+        This is only a type checker alternative to standard library.
+
+        '''
+        if isinstance(obj, (date, datetime, time, timedelta)):
+            return obj
+        else:
+            raise TypeError('Not valid type for datetime assuring: %s' % name)
 
 
-def clone(obj):
-    '''Copy a `date` or `datetime` instance to a safe version.
-
-    With safe it's mean that will use the adapted subclass on this module or
-    the standard if these weren't generated.
-
-    Classes that could be cloned are: `date`, `datetime`, `time` and
-    `timedelta`.
-
-    '''
-    name = type(obj).__name__
-    if name == date.__name__:
-        return date(obj.year, obj.month, obj.day)
-    elif name == datetime.__name__:
-        return datetime(obj.year, obj.month, obj.day,
-                        obj.hour, obj.minute, obj.second, obj.microsecond,
-                        obj.tzinfo)
-    elif name == time.__name__:
-        return time(obj.hour, obj.minute, obj.second, obj.microsecond,
-                    obj.tzinfo)
-    elif name == timedelta.__name__:
-        return timedelta(obj.days, obj.seconds, obj.microseconds)
-    else:
-        raise TypeError('Not valid type for datetime clone: %s' % name)
-
-
-@deprecated(clone)
+@deprecated(assure)
 def new_date(d):
     '''Generate a safe date from a legacy datetime date object.'''
     return date(d.year, d.month, d.day)
 
 
-@deprecated(clone)
+@deprecated(assure)
 def new_datetime(d):
     '''Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
     object.
