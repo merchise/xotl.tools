@@ -29,10 +29,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-try:
-    from gevent.local import local
-except ImportError:
-    from threading import local
+from xoutil._local import local as _local
 
 from xoutil.objects import metaclass
 from xoutil.collections import StackedDict
@@ -42,7 +39,7 @@ __all__ = strs('Context', 'context', 'NulContext')
 del strs
 
 
-class LocalData(local):
+class LocalData(_local):
     def __init__(self):
         super(LocalData, self).__init__()
         self.contexts = {}

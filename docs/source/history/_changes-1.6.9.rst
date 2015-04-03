@@ -1,0 +1,1 @@
+- `xoutil.context`:mod: is now greenlet-safe without depending of `gevent`.

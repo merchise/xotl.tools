@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.test_context
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2015 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -17,6 +17,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 import unittest
+import pytest
 from xoutil.context import context
 
 
@@ -94,3 +95,60 @@ def test_reusing_raises():
             pass
         except:
             assert False, 'It should have raised a RuntimeError'
+
+
+# Test concurrent access to context by several greenlets.  Verify isolation in
+# the greenlets.  We don't test isolation for threads cause that depends on
+# python's thread locals and we *rely* on its correctness.
+try:
+    import greenlet
+except ImportError:
+    GREENLETS = False
+else:
+    GREENLETS = True
+
+
+@pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')
+def test_greenlet_contexts():
+    import random
+    from xoutil import Unset
+
+    class nonlocals:
+        calls = 0
+        switches = 0
+
+    class GreenletProg(object):
+        def __init__(self, arg):
+            self.arg = arg
+
+        def __call__(self):
+            nonlocals.calls += 1
+            nonlocals.switches += 1
+            with context('GREEN CONTEXT') as ctx:
+                assert ctx.get('greenvar', Unset) is Unset
+                ctx['greenvar'] = self.arg
+                root.switch()
+                nonlocals.switches += 1
+                assert ctx['greenvar'] == self.arg
+                # list() makes KeyViews pass in Python 3+
+                assert list(ctx.keys()) == ['greenvar']
+
+    def loop(n):
+        greenlets = [greenlet.greenlet(run=GreenletProg(i))
+                     for i in range(n)]
+        while greenlets:
+            pos = random.randrange(0, len(greenlets))
+            gl = greenlets[pos]
+            print('Switching to greenlet %d' % pos)
+            gl.switch()
+            # The gl has relinquished control, so if its dead removed from the
+            # list, otherwise let it be for another round.
+            if gl.dead:
+                del greenlets[pos]
+        print('Loop ended')
+
+    root = greenlet.greenlet(run=loop)
+    N = 10
+    root.switch(N)
+    assert nonlocals.calls == N, "There should be N calls to greenlets."
+    assert nonlocals.switches == 2*N, "There should be 2*N switches."
