@@ -97,10 +97,10 @@ class Command(metaclass(ABCMeta)):
     __default_command__ = None
 
     def __str__(self):
-        return command_name(self)
+        return command_name(type(self))
 
     def __repr__(self):
-        return '<command: %s>' % command_name(self)
+        return '<command: %s>' % command_name(type(self))
 
     @classproperty
     def registry(cls):
