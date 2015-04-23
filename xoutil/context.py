@@ -63,7 +63,7 @@ class MetaContext(type(StackedDict)):
 
 
 class Context(metaclass(MetaContext), StackedDict):
-    '''A context manager for execution context flags.
+    '''An execution context manager with parameters (or flags).
 
     Use as::
 
