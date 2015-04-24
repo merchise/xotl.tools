@@ -74,8 +74,8 @@ class Context(metaclass(MetaContext), StackedDict):
         In context somename
 
     Note the difference creating the context and checking it: for entering a
-    context you should use `context(name)` for testing whether some piece of
-    code is being executed inside a context you should use `context[name]`;
+    context you should use ` context(name)`` for testing whether some piece of
+    code is being executed inside a context you should use ``context[name]``;
     you may also use the syntax `name in context`.
 
     When an existing context is entering, the former one is reused.
@@ -183,7 +183,7 @@ class NullContext(object):
         return 0
 
     def __iter__(self):
-        return ()
+        return iter(())
 
     def __getitem__(self, key):
         raise KeyError(key)
