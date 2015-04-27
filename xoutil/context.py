@@ -128,7 +128,7 @@ class Context(metaclass(MetaContext), StackedDict):
         return self
 
     def __init__(self, name, **data):
-        pass
+        '''Must be defined empty for parameters compatibility.'''
 
     def __nonzero__(self):
         return bool(self.count)
@@ -172,7 +172,10 @@ class NullContext(object):
 
     '''
 
+    __slots__ = ()
+
     instance = None
+    name = ''
 
     def __new__(cls):
         if cls.instance is None:
@@ -200,6 +203,14 @@ class NullContext(object):
 
     def get(self, name, default=None):
         return default
+
+    @property
+    def level(self):
+        return 0
+
+    @property
+    def events(self):
+        return ()
 
 
 _null_context = NullContext()
