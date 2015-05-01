@@ -1518,6 +1518,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         '''
         return len(self.inner.maps) - 1
 
+    # TODO: Plan to rename to `push_level`.
     def push(self, *args, **kwargs):
         '''Pushes a whole new level to the stacked dict.
 
@@ -1533,6 +1534,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         self.update(*args, **kwargs)
         return self.level
 
+    # TODO: Plan to rename to `pop_level`.
     def pop(self):
         '''Pops the last pushed level and returns the whole level.
 
