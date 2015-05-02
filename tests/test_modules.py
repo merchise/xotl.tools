@@ -111,6 +111,9 @@ def test_get_module_path_by_module_string_abs():
     from xoutil.modules import get_module_path
     top = join(dirname(dirname(__file__)), 'xoutil')
     expected = top
+    # TODO: For some reason this fails to me: ...=/home/med/tests/xoutil
+    # - .../.tox/py34/lib/python3.4/site-packages/xoutil
+    # + .../home/med/tests/xoutil/xoutil
     assert get_module_path('xoutil') == expected
 
     expected = (join(top, 'iterators.py'),
