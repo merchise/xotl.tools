@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.context
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -63,7 +64,7 @@ class MetaContext(type(StackedDict)):
 
 
 class Context(metaclass(MetaContext), StackedDict):
-    '''A context manager for execution context flags.
+    '''An execution context manager with parameters (or flags).
 
     Use as::
 
@@ -75,8 +76,8 @@ class Context(metaclass(MetaContext), StackedDict):
         In context SOME_CONTEXT
 
     Note the difference creating the context and checking it: for entering a
-    context you should use `context(name)` for testing whether some piece of
-    code is being executed inside a context you should use `context[name]`;
+    context you should use ` context(name)`` for testing whether some piece of
+    code is being executed inside a context you should use ``context[name]``;
     you may also use the syntax `name in context`.
 
     When an existing context is re-enter, the former one is reused.
@@ -131,7 +132,7 @@ class Context(metaclass(MetaContext), StackedDict):
         return self
 
     def __init__(self, name, **data):
-        pass
+        '''Must be defined empty for parameters compatibility.'''
 
     def __nonzero__(self):
         return bool(self.count)
@@ -175,7 +176,10 @@ class NullContext(object):
 
     '''
 
+    __slots__ = ()
+
     instance = None
+    name = ''
 
     def __new__(cls):
         if cls.instance is None:
@@ -186,7 +190,7 @@ class NullContext(object):
         return 0
 
     def __iter__(self):
-        return ()
+        return iter(())
 
     def __getitem__(self, key):
         raise KeyError(key)
@@ -203,6 +207,14 @@ class NullContext(object):
 
     def get(self, name, default=None):
         return default
+
+    @property
+    def level(self):
+        return 0
+
+    @property
+    def events(self):
+        return ()
 
 
 _null_context = NullContext()

@@ -2,8 +2,9 @@
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
 # tests.test_objects
-# ---------------------------------------------------------------------
-# Copyright (c) 2013, 2014, 2015 Merchise Autrement and Contributors
+#----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -95,6 +96,11 @@ def test_smart_copy_with_callable_default():
     assert d == dict(a=1, b='2')
 
 
+def test_fulldir():
+    from xoutil.objects import fulldir
+    assert {'__getitem__', 'get', 'items', 'keys'} < fulldir({})
+
+
 def test_newstyle_metaclass():
     from xoutil.objects import metaclass
 
@@ -182,7 +188,10 @@ def test_new_style_metaclass_registration():
 
 def test_lazy():
     from xoutil.objects import lazy, setdefaultattr
-    class new(object): pass
+
+    class new(object):
+        pass
+
     inst = new()
     setter = lambda a: -a
     setdefaultattr(inst, 'c', lazy(setter, 10))
@@ -284,7 +293,9 @@ def test_get_first_of():
     somedict = {"foo": "bar", "spam": "eggs"}
     assert get_first_of(somedict, "eggs") is None
 
-    class Someobject(object): pass
+    class Someobject(object):
+        pass
+
     inst = Someobject()
     inst.foo = 'bar'
     inst.eggs = 'spam'
@@ -292,7 +303,10 @@ def test_get_first_of():
     assert get_first_of(inst, 'invalid') is None
 
     somedict = {"foo": "bar", "spam": "eggs"}
-    class Someobject(object): pass
+
+    class Someobject(object):
+        pass
+
     inst = Someobject()
     inst.foo = 'bar2'
     inst.eggs = 'spam'
@@ -303,8 +317,10 @@ def test_get_first_of():
 
     none = object()
     assert get_first_of((inst, somedict), 'foobar', default=none) is none
-    assert get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 3) == 'eggs'
-    assert get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 4) is None
+    _eggs = get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 3)
+    assert _eggs == 'eggs'
+    _none = get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 4)
+    assert _none is None
 
     with pytest.raises(TypeError):
         get_first_of(None, anything=1)
@@ -312,7 +328,10 @@ def test_get_first_of():
 
 def test_smart_getter():
     from xoutil.objects import smart_getter
-    class new(object): pass
+
+    class new(object):
+        pass
+
     o = new()
     o.attr1 = 1
     o.attr2 = 1

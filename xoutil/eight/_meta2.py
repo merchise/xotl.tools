@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil._meta2
+# xoutil.eight._meta2
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -20,8 +21,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from six import PY3
-assert not PY3, 'This module should not be loaded in Py3k'
+from . import _py3
+assert not _py3, 'This module should not be loaded in Py3k'
 
 
 METACLASS_ATTR = str('__metaclass__')
@@ -49,7 +50,7 @@ def metaclass(meta, **kwargs):
                 bases = tuple(b for b in bases if not issubclass(b, base))
                 if not bases:
                     bases = (object,)
-                from xoutil.types import prepare_class
+                from .types import prepare_class
                 kwds = dict(kwargs, metaclass=meta)
                 basemeta, _ns, kwds = prepare_class(name, bases, kwds=kwds)
                 ns = copy(_ns)
@@ -65,7 +66,7 @@ def metaclass(meta, **kwargs):
             else:
                 return type.__new__(cls, name, bases, attrs)
 
-    from xoutil.types import new_class
+    from .types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)
 
     def exec_body(ns):

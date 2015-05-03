@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_string
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -17,6 +18,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 import pytest
+
 
 @pytest.mark.skipif()
 def test_normal_safe_formatter():

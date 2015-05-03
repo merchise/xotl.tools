@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.iterators
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -25,7 +26,6 @@ from __future__ import (division as _py3_division,
 
 from xoutil import Unset
 from xoutil.types import is_scalar
-from xoutil.deprecation import deprecated
 
 
 def first_non_null(iterable, default=None):
@@ -76,10 +76,59 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
                 yield subitem
 
 
+def multi_pop(source, *keys):
+    '''Pop values from `source` of all given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Keys to pop values.
+
+    All keys that are not found are ignored.
+
+    Examples::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      1
+
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      '---'
+
+    '''
+    return (source.pop(key) for key in keys if key in source)
+
+
+def multi_get(source, *keys):
+    '''Get values from `source` of all given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Keys to get values.
+
+    All keys that are not found are ignored.
+
+    Examples::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> next(multi_get(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_get(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_get(d, 'a', 'b'), '---')
+      '---'
+
+
+    '''
+    return (source.get(key) for key in keys if key in source)
+
+
 def dict_update_new(target, source):
-    '''
-    Update values in "source" that are new (not currently present) in "target".
-    '''
+    '''Update values in `source` that are new (not present) in `target`.'''
     for key in source:
         if key not in target:
             target[key] = source[key]
@@ -241,4 +290,6 @@ def first_n(iterable, n=1, fill=Unset):
 
 
 # Compatible zip and map
-from six.moves import zip, map, zip_longest
+from six.moves import zip, map, zip_longest    # noqa
+
+# XXX: How to avoid "imported but unused"

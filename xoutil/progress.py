@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.progress
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -66,14 +67,15 @@ class Progress(object):
             self.percent = percent
             helix = _HELIX[percent % len(_HELIX)]
             elapsed = self.start_time.now() - self.start_time
-            total = type(elapsed)(seconds=elapsed.total_seconds() * 100 / self.percent)
-            progress_line = '\r{helix} {percent}% - "{elapsed}" of about "{total}"'.format(
-                         helix=helix,
-                         percent=percent,
-                         elapsed=strfdelta(elapsed),
-                         total=strfdelta(total))
+            _cls = type(elapsed)
+            total = _cls(seconds=elapsed.total_seconds() * 100 / self.percent)
+            _fmt = '\r{helix} {percent}% - "{elapsed}" of about "{total}"'
+            progress_line = _fmt.format(helix=helix, percent=percent,
+                                        elapsed=strfdelta(elapsed),
+                                        total=strfdelta(total))
             max_width = self.display_width or self._get_terminal_width()
-            progress_line += ('{message: >%d}' % (max_width - len(progress_line) - 1)).format(message=message)
+            _fmt = ('{message: >%d}' % (max_width - len(progress_line) - 1))
+            progress_line += _fmt.format(message=message)
             print(progress_line, end=('' if percent != 100 else '\n\r'))
             sys.stdout.flush()
 

@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_functools
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
@@ -45,6 +46,7 @@ def fib(n):
 def takes_no_more_than(duration, msg=None):
     if not msg:
         msg = 'It took longer than {s} seconds'.format(s=duration)
+
     @contextmanager
     def inner():
         start = datetime.now()

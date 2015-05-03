@@ -192,7 +192,7 @@ Changelog
 - Adds function :func:`xoutil.cpystack.iter_frames`.
 
 2012-07-11. Release 1.1.2
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Fixes all copyrights notices and chooses the PSF License for Python 3.2.3
   as the license model for xoutil releases.
@@ -201,15 +201,17 @@ Changelog
 
 .. _github: https://github.com/merchise-autrement/xoutil/
 
+.. TODO: Migrate some stuffs from "/merchise-autrement/" by "/merchise/"
+
 2012-07-06. Release 1.1.1
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Improves deprecation warnings by pointing to the real calling filename
 - Removes all internal use of simple_memoize since it's deprecated. We now use
   :func:`~xoutil.functools.lru_cache`.
 
 2012-07-03. Release 1.1.0
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Created the whole documentation Sphinx directory.
 
@@ -232,7 +234,7 @@ Changelog
 ----------
 
 2012-06-15. Release 1.0.30
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Introduces a new module :py:mod:`xoutil.proxy`.
 
@@ -240,12 +242,12 @@ Changelog
   a decent documentation.
 
 2012-06-01. Release 1.0.29.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Introduces `xoutil.iterators.slides` and `xoutil.aop.basic.contextualized`
 
 2012-05-28. Release 1.0.28.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Fixes normalize path and other details
 - Makes validate_attrs to work with mappings as well as objects
@@ -254,12 +256,12 @@ Changelog
 - PEP8
 
 2012-05-22. Release 1.0.27.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Removes bugs that were not checked (tested) in the previous release.
 
 2012-05-21. Release 1.0.26.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Changes in AOP classic. Now you have to rename after, before and around methods
   to _after, _before and _around.
@@ -271,7 +273,7 @@ Changelog
 - Other minor additions in the code. Refactoring and the like.
 
 2012-04-30. Release 1.0.25.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Extends the classical AOP approach to modules. Implements an extended version
   with hooks.
@@ -284,12 +286,12 @@ Changelog
 - Introduces a classical AOP implementation: xoutil.aop.classical.
 
 2012-04-10. Release 1.0.23.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Introduces decorators: xoutil.decorators.instantiate and xoutil.aop.complementor
 
 2012-04-05. Release 1.0.22
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Allows annotation's expressions to use defined local variables.  Before this
   release the following code raised an error::
@@ -307,7 +309,7 @@ Changelog
 
 
 2012-04-03. Release 1.0.21
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Includes a new module :mod:`xoutil.annotate` that provides a way to place
   Python annotations in forward-compatible way.

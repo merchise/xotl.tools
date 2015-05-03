@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.modules
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -55,6 +56,7 @@ def force_module(ref=None):
         return __import__(ref, fromlist=[ref], level=0)
 
 
+# TODO: Deprecate this method in favor of ``from <module> import *``
 def copy_members(source=None, target=None):
     '''Copy module members from `source` to `target`.
 
@@ -162,9 +164,11 @@ def modulemethod(func):
     import sys
     from functools import wraps
     self, _created, cls = customize(sys.modules[func.__module__])
+
     @wraps(func)
     def inner(*args, **kwargs):
         return func(self, *args, **kwargs)
+
     setattr(cls, func.__name__, func)
     return inner
 

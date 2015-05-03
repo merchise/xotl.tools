@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.customizetestbed
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -39,10 +40,15 @@ def store(self, value):
 def store(self):
     delattr(self, '_store')
 
+
 def prop(self):
     return getattr(self, '_prop', None)
+
+
 def _prop_set(self, val):
     setattr(self, '_prop', val)
+
+
 def _prop_del(self):
     delattr(self, '_prop')
 prop = moduleproperty(prop, _prop_set, _prop_del)

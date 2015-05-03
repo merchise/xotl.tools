@@ -3,7 +3,9 @@
 # ---------------------------------------------------------------------
 # xoutil.string
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -99,6 +101,8 @@ def safe_encode(u, encoding=None):
     .. versionadded:: 1.1.3
 
     '''
+    # TODO: This is not nice for Python 3, bytes is not valid string any more
+    #       See :func:`json.encoder.py_encode_basestring_ascii` of Python 2.x
     if isinstance(u, bytes):
         return u
     else:

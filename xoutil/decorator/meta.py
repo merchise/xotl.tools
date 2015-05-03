@@ -4,7 +4,8 @@
 # xoutil.meta
 # ---------------------------------------------------------------------
 #
-# Copyright (c) 2013-2015 Merchise Autrement and contributors for the
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # decorator function.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -26,8 +27,7 @@ implement the decorator :func:`~xoutil.deprecation.deprecated` more easily.
 
 
 This module is an adapted work from the decorator version 3.3.2 package and is
-copyright of its owner as stated below. Adaptation work is done by Merchise
-Autrement.
+copyright of its owner as stated below. Adaptation work is done by Merchise.
 
 Original copyright and license notices from decorator package:
 

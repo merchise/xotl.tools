@@ -2,7 +2,8 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2013-2015 Merchise Autrement and Contributors for the
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # defaultdict and opendict implementations.
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
@@ -57,6 +58,7 @@ del _pm, _copy_python_module_members
 
 
 from collections import defaultdict as _defaultdict
+from xoutil import Unset
 from xoutil.names import strlist as slist
 from xoutil.objects import SafeDataItem as safe
 
@@ -171,7 +173,6 @@ class OpenDictMixin(object):
         return list(set(~self) | fulldir(self))
 
     def __getattr__(self, name):
-        from xoutil import Unset
         from xoutil.inspect import get_attr_value
         res = get_attr_value(self, name, Unset)
         if res is not Unset:
@@ -277,6 +278,9 @@ class SmartDictMixin(object):
         for key in kwargs:
             self[key] = kwargs[key]
 
+    # TODO: Include new argument ``full=True`` to also search in string
+    #       values.  Maybe this kind of feature will be better in a function
+    #       instead a method.
     def search(self, pattern):
         '''Return new mapping with items which key match a `pattern` regexp.
 
@@ -284,7 +288,7 @@ class SmartDictMixin(object):
         type of the caller instance.  If the constructor of corresponding type
         can't be called without arguments, then look up for a class
         variable named `__search_result_type__` or return a standard
-        Python dictionary if not found
+        Python dictionary if not found.
 
         '''
         from re import compile
@@ -495,9 +499,7 @@ if not _py33:
         items = MutableMapping.items
         __ne__ = MutableMapping.__ne__
 
-        __marker = object()    # TODO: Change for some UnsetType instance
-
-        def pop(self, key, default=__marker):
+        def pop(self, key, default=Unset):
             '''od.pop(k[,d]) -> v, remove specified key and return the
             corresponding value.
 
@@ -509,9 +511,10 @@ if not _py33:
                 result = self[key]
                 del self[key]
                 return result
-            if default is self.__marker:
+            elif default is not Unset:
+                return default
+            else:
                 raise KeyError(key)
-            return default
 
         def setdefault(self, key, default=None):
             '''``od.setdefault(k[, d])`` -> ``od.get(k, d)`` also set
@@ -1482,7 +1485,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     The property :attr:`level` returns the actual number of levels.
 
-    When accessing keys they are searched from the lastest level "upwards", if
+    When accessing keys they are searched from the latest level "upwards", if
     such a key does not exists in any level a KeyError is raised.
 
     Deleting a key only works in the *current level*; if it's not defined there
@@ -1512,6 +1515,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         '''
         return len(self.inner.maps) - 1
 
+    # TODO: Plan to rename to `push_level`.
     def push(self, *args, **kwargs):
         '''Pushes a whole new level to the stacked dict.
 
@@ -1527,6 +1531,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         self.update(*args, **kwargs)
         return self.level
 
+    # TODO: Plan to rename to `pop_level`.
     def pop(self):
         '''Pops the last pushed level and returns the whole level.
 
@@ -1584,8 +1589,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
 
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
-    '''A combination of the the OrderedDict with the
-    :class:`SmartDictMixin`.
+    '''A combination of the `OrderedDict` with the `SmartDictMixin`.
 
     .. warning:: Initializing with kwargs does not ensure any initial ordering,
                  since Python's keyword dict is not ordered. Use a list/tuple

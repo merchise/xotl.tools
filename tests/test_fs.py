@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_fs
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
@@ -15,13 +16,14 @@
 'Tests for xoutil.fs module'
 
 import os
-import sys
 import unittest
 import tempfile
 import shutil
 
 # Makes sure our package is always importable
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+#                                              '..', '..')))
+
 
 class TestFs(unittest.TestCase):
     def setUp(self):

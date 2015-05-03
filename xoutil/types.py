@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.types
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2010-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -36,14 +37,14 @@ ModuleType = _pm.ModuleType
 del _pm, _copy_python_module_members
 
 
-from xoutil._values import Unset as _unset
+from xoutil import Unset as _unset
 from collections import Mapping
 
 # FIXME: [med] Reintroduce UnsetType or deprecate it here.
-from xoutil._values import UnsetType  # noqa
+from xoutil.logical import Logical as UnsetType    # noqa
 
 from xoutil.names import strlist as strs
-__all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
+__all__ = strs('mro_dict', 'UnsetType', 'MappingProxyType',
                'SlotWrapperType', 'is_iterable', 'is_collection',
                'is_string_like', 'is_scalar', 'is_staticmethod',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
@@ -51,195 +52,23 @@ __all__ = strs('mro_dict', 'UnsetType', 'DictProxyType',
                'prepare_class')
 del strs
 
+
+from .eight.types import (MappingProxyType, MemberDescriptorType,    # noqa
+                          NoneType, MappingProxyType, SimpleNamespace,
+                          DynamicClassAttribute, new_class, prepare_class,
+                          _calculate_meta)
+
+
 #: The type of methods that are builtin in Python.
 #:
 #: This is roughly the type of the ``object.__getattribute__`` method.
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
-#: A compatible Py2 and Py3k DictProxyType, since it does not exists in Py3k.
-DictProxyType = type(object.__dict__)
-
-import sys
-_pypy = hasattr(sys, 'pypy_version_info')
-if _pypy:
-    class _foo(object):
-        __slots__ = 'bar'
-    MemberDescriptorType = type(_foo.bar)
-    del _foo
-del _pypy
-
-
 try:
     from exceptions import StandardError
 except:
     StandardError = Exception
-
-
-# In Py3.3 NoneType is not defined in the stdlib `types` module. This solves
-# the issue.
-NoneType = type(None)
-
-if sys.version_info < (3, 3):
-    from xoutil.collections import MappingView, MutableMapping
-
-    class MappingProxyType(MappingView, MutableMapping):
-        def __init__(self, mapping):
-            if not isinstance(mapping, Mapping):
-                raise TypeError
-            super(MappingProxyType, self).__init__(mapping)
-
-        def items(self):
-            from xoutil.collections import ItemsView
-            try:
-                items = type(self._mapping).__dict__['items']
-                if items is not dict.__dict__['items']:
-                    return items(self._mapping)
-                else:
-                    return ItemsView(self)
-            except KeyError:
-                return ItemsView(self)
-
-        def keys(self):
-            from xoutil.collections import KeysView
-            try:
-                keys = type(self._mapping).__dict__['keys']
-                if keys is not dict.__dict__['keys']:
-                    return keys(self._mapping)
-                else:
-                    return KeysView(self)
-            except KeyError:
-                return KeysView(self)
-
-        def values(self):
-            from xoutil.collections import ValuesView
-            try:
-                values = type(self._mapping).__dict__['values']
-                if values is not dict.__dict__['values']:
-                    return values(self._mapping)
-                else:
-                    return ValuesView(self)
-            except KeyError:
-                return ValuesView(self)
-
-        def __iter__(self):
-            return iter(self._mapping)
-
-        def get(self, key, default=None):
-            return self._mapping.get(key, default)
-
-        def __contains__(self, key):
-            return key in self._mapping
-
-        def copy(self):
-            return self._mapping.copy()
-
-        def __dir__(self):
-            return [
-                '__contains__',
-                '__getitem__',
-                '__iter__',
-                '__len__',
-                'copy',
-                'get',
-                'items',
-                'keys',
-                'values',
-            ]
-
-        def __getitem__(self, key):
-            return self._mapping[key]
-
-        def __setitem__(self, key, value):
-            self._mapping[key] = value
-
-        def __delitem__(self, key):
-            del self._mapping[key]
-
-
-if sys.version_info < (3, 4):
-    class SimpleNamespace(object):
-        def __init__(self, **kwargs):
-            self.__dict__.update(kwargs)
-
-        def __eq__(self, other):
-            return self.__dict__ == other.__dict__
-
-        from xoutil.reprlib import recursive_repr
-
-        @recursive_repr(str('namespace(...)'))
-        def __repr__(self):
-            keys = sorted(self.__dict__)
-            items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
-            return "{}({})".format('namespace', ", ".join(items))
-
-    class DynamicClassAttribute(object):
-        """Route attribute access on a class to :meth:`~object.__getattr__`.
-
-        This is a descriptor, used to define attributes that act differently
-        when accessed through an instance and through a class.  Instance
-        access remains normal, but access to an attribute through a class will
-        be routed to the class's :meth:`~object.__getattr__` method; this is
-        done by raising AttributeError.
-
-        This allows one to have properties active on an instance, and have
-        virtual attributes on the class with the same name (see
-        :class:`~py3:enum.Enum` for an example).
-
-        .. versionadded:: 1.5.5
-
-        .. note:: The class Enum mentioned has not yet been backported.
-
-        .. note:: In Python 3.4+ this is an alias to
-                  :func:`types.DynamicClassAttribute
-                  <py3:types.DynamicClassAttribute>`.
-
-        """
-        def __init__(self, fget=None, fset=None, fdel=None, doc=None):
-            self.fget = fget
-            self.fset = fset
-            self.fdel = fdel
-            # next two lines make DynamicClassAttribute act the same as
-            # property
-            self.__doc__ = doc or fget.__doc__
-            self.overwrite_doc = doc is None
-            # support for abstract methods
-            self.__isabstractmethod__ = bool(getattr(fget, '__isabstractmethod__', False))
-
-        def __get__(self, instance, ownerclass=None):
-            if instance is None:
-                if self.__isabstractmethod__:
-                    return self
-                raise AttributeError()
-            elif self.fget is None:
-                raise AttributeError("unreadable attribute")
-            return self.fget(instance)
-
-        def __set__(self, instance, value):
-            if self.fset is None:
-                raise AttributeError("can't set attribute")
-            self.fset(instance, value)
-
-        def __delete__(self, instance):
-            if self.fdel is None:
-                raise AttributeError("can't delete attribute")
-            self.fdel(instance)
-
-        def getter(self, fget):
-            fdoc = fget.__doc__ if self.overwrite_doc else None
-            result = type(self)(fget, self.fset, self.fdel, fdoc or self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
-
-        def setter(self, fset):
-            result = type(self)(self.fget, fset, self.fdel, self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
-
-        def deleter(self, fdel):
-            result = type(self)(self.fget, self.fset, fdel, self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
 
 
 class mro_dict(Mapping):
@@ -348,6 +177,11 @@ def is_collection(maybe):
     from six.moves import range
     return isinstance(maybe, (tuple, range, list, set, frozenset,
                               GeneratorType, UserList))
+
+
+def is_mapping(maybe):
+    '''Test `maybe` to see if it is a valid mapping.'''
+    return isinstance(maybe, (Mapping, MappingProxyType))
 
 
 def is_string_like(maybe):
@@ -504,74 +338,3 @@ def no_instances(*args):
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.
     return all(not isinstance(subject, types) for subject in subjects)
-
-
-if sys.version_info < (3, 3):
-    # PEP 3115 compliant dynamic class creation.  Used in
-    # xoutil.objects.metaclass
-    #
-    # Taken from Python 3.3 code-base.
-    #
-    def new_class(name, bases=(), kwds=None, exec_body=None):
-        """Create a class object dynamically using the appropriate metaclass.
-
-        """
-        import sys
-        meta, ns, kwds = prepare_class(name, bases, kwds)
-        if exec_body is not None:
-            exec_body(ns)
-        if sys.version_info >= (3, 0):
-            return meta(name, bases, ns, **kwds)
-        else:
-            return meta(name, bases, ns)
-
-    def prepare_class(name, bases=(), kwds=None):
-        """Call the __prepare__ method of the appropriate metaclass.
-
-        Returns (metaclass, namespace, kwds) as a 3-tuple
-
-        *metaclass* is the appropriate metaclass
-        *namespace* is the prepared class namespace
-        *kwds* is an updated copy of the passed in kwds argument with any
-        'metaclass' entry removed. If no kwds argument is passed in, this will
-        be an empty dict.
-
-        """
-        if kwds is None:
-            kwds = {}
-        else:
-            kwds = dict(kwds)  # Don't alter the provided mapping
-        meta = kwds.pop('metaclass', None)
-        if not meta:
-            if bases:
-                meta = type(bases[0])
-            else:
-                meta = type
-        if isinstance(meta, type):
-            # when meta is a type, we first determine the most-derived
-            # metaclass instead of invoking the initial candidate directly
-            meta = _calculate_meta(meta, bases)
-        if hasattr(meta, '__prepare__'):
-            ns = meta.__prepare__(name, bases, **kwds)
-        else:
-            ns = {}
-        return meta, ns, kwds
-
-    def _calculate_meta(meta, bases):
-        """Calculate the most derived metaclass."""
-        winner = meta
-        for base in bases:
-            base_meta = type(base)
-            if issubclass(winner, base_meta):
-                continue
-            if issubclass(base_meta, winner):
-                winner = base_meta
-                continue
-            # else:
-            raise TypeError("metaclass conflict: "
-                            "the metaclass of a derived class "
-                            "must be a (non-strict) subclass "
-                            "of the metaclasses of all its bases")
-        return winner
-
-del sys

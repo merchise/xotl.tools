@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.testbed
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
@@ -32,6 +33,7 @@ def echo(what):
 
 from xoutil.modules import moduleproperty, modulemethod
 
+
 @moduleproperty
 def this(self):
     return self
@@ -39,6 +41,7 @@ def this(self):
 
 def rien():
     return 1
+
 
 @modulemethod
 def method(self, *args, **kwargs):

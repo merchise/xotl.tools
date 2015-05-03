@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2012 Manuel Vazquez
 
 # TODO:  Take this out of xoutil.
 from multiprocessing import Pool, cpu_count

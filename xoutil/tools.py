@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.tools
 # ---------------------------------------------------------------------
-# Copyright (c) 2014, 2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under

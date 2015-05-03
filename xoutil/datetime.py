@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.datetime
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -30,7 +31,7 @@ You may use this module as a drop-in replacement of the standard library
 
 '''
 
-# TODO: consider use IoC to extend python datetime module
+# TODO: Consider use IoC to extend python datetime module
 
 
 from __future__ import (division as _py3_division,
@@ -38,10 +39,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
-
-time = _pm.time
+from datetime import *    # noqa
+from xoutil.deprecation import deprecated
 
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
@@ -68,70 +67,86 @@ class ISOWEEKDAY:
     SUNDAY = 7
 
 
-if hasattr(_pm.timedelta, 'total_seconds'):
-    _NEW_TIME_DELTA = False
+try:
+    date(1800, 1, 1).strftime("%Y")
+except ValueError:
+    # This happens in Pytnon 2.7, I was considering to replace `strftime`
+    # function from `time` module, that is used for all `strftime` methods;
+    # but (WTF), Python double checks the year (in each method and then again
+    # in `time.strftime` function).
+
+    class date(date):
+        __doc__ = date.__doc__
+
+        def strftime(self, fmt):
+            return strftime(self, fmt)
+
+        def __sub__(self, other):
+            return assure(super(datetime, self).__sub__(other))
+
+    class datetime(datetime):
+        __doc__ = datetime.__doc__
+
+        def strftime(self, fmt):
+            return strftime(self, fmt)
+
+        def __sub__(self, other):
+            return assure(super(datetime, self).__sub__(other))
+
+        def combine(self, date, time):
+            return assure(super(datetime, self).combine(date, time))
+
+        def date(self):
+            return assure(super(datetime, self).date())
+
+        @staticmethod
+        def now(tz=None):
+            return assure(super(datetime, datetime).now(tz=tz))
+
+    def assure(obj):
+        '''Make sure that a `date` or `datetime` instance is a safe version.
+
+        With safe it's meant that will use the adapted subclass on this module
+        or the standard if these weren't generated.
+
+        Classes that could be assured are: `date`, `datetime`, `time` and
+        `timedelta`.
+
+        '''
+        t = type(obj)
+        name = t.__name__
+        if name == date.__name__:
+            return obj if t is date else date(*obj.timetuple()[:3])
+        elif name == datetime.__name__:
+            if t is datetime:
+                return obj
+            else:
+                args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
+                return datetime(*args)
+        elif isinstance(obj, (time, timedelta)):
+            return obj
+        else:
+            raise TypeError('Not valid type for datetime assuring: %s' % name)
 else:
-    _NEW_TIME_DELTA = True
+    def assure(obj):
+        '''Make sure that a `date` or `datetime` instance is a safe version.
 
-    class timedelta(_pm.timedelta):
-        __doc__ = _pm.timedelta.__doc__
+        This is only a type checker alternative to standard library.
 
-        def total_seconds(self):
-            return (self.microseconds +
-                    (self.seconds + self.days * 24 * 3600) * 10 ** 6) / 10 ** 6
-
-
-class date(_pm.date):
-    __doc__ = _pm.date.__doc__
-
-    def strftime(self, fmt):
-        return strftime(self, fmt)
-
-    if _NEW_TIME_DELTA:
-        def __sub__(self, other):
-            res = super(date, self).__sub__(other)
-            return timedelta(days=res.days, seconds=res.seconds,
-                             microseconds=res.microseconds)
+        '''
+        if isinstance(obj, (date, datetime, time, timedelta)):
+            return obj
+        else:
+            raise TypeError('Not valid type for datetime assuring: %s' % name)
 
 
-class datetime(_pm.datetime):
-    __doc__ = _pm.datetime.__doc__
-
-    def strftime(self, fmt):
-        return strftime(self, fmt)
-
-    def combine(self, date, time):
-        return datetime(date.year, date.month, date.day, time.hour,
-                        time.minute, time.second, time.microsecond,
-                        time.tzinfo)
-
-    def date(self):
-        return date(self.year, self.month, self.day)
-
-    @staticmethod
-    def now(tz=None):
-        res = super(datetime, datetime).now(tz=tz)
-        return datetime(res.year, res.month, res.day, res.hour, res.minute,
-                        res.second, res.microsecond, res.tzinfo)
-
-    if _NEW_TIME_DELTA:
-        def __sub__(self, other):
-            res = super(datetime, self).__sub__(other)
-            return timedelta(days=res.days, seconds=res.seconds,
-                             microseconds=res.microseconds)
-
-
-# FIXME: "__instancecheck__", "__subclasscheck__", module "abc"
-is_date = lambda obj: isinstance(obj, date.__base__)
-is_datetime = lambda obj: isinstance(obj, datetime.__base__)
-is_time = lambda obj: isinstance(obj, time)
-
-
+@deprecated(assure)
 def new_date(d):
     '''Generate a safe date from a legacy datetime date object.'''
     return date(d.year, d.month, d.day)
 
 
+@deprecated(assure)
 def new_datetime(d):
     '''Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
     object.
@@ -143,7 +158,6 @@ def new_datetime(d):
     return datetime(*args)
 
 
-
 # This library does not support strftime's "%s" or "%y" format strings.
 # Allowed if there's an even number of "%"s because they are escaped.
 _illegal_formatting = _regex_compile(br"((^|[^%])(%%)*%[sy])")
@@ -153,7 +167,6 @@ def _year_find_all(fmt, year, no_year_tuple):
     text = _time_strftime(fmt, (year,) + no_year_tuple)
     regex = _regex_compile(str(year))
     return {match.start() for match in regex.finditer(text)}
-
 
 
 _TD_LABELS = 'dhms'    # days, hours, minutes, seconds
@@ -283,11 +296,12 @@ class flextime(timedelta):
         first = None
         if args:
             first, rest = args[0], args[1:]
+        _super = super(flextime, cls).__new__
         if first and not rest and not kwargs:
             hour, minutes, seconds = cls.parse_simple_timeformat(first)
-            return super(flextime, cls).__new__(cls, hours=hour, minutes=minutes, seconds=seconds)
+            return _super(cls, hours=hour, minutes=minutes, seconds=seconds)
         else:
-            return super(flextime, cls).__new__(cls, *args, **kwargs)
+            return _super(cls, *args, **kwargs)
 
 
 def daterange(*args):
@@ -342,5 +356,3 @@ def daterange(*args):
             yield current
             current += step
     return _generator()
-
-del _pm, _copy_python_module_members

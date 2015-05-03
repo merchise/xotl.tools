@@ -3,7 +3,9 @@
 # ---------------------------------------------------------------------
 # xoutil.objects
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
 #
 # Author: Medardo Rodríguez
@@ -23,9 +25,12 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from six import PY3 as _py3k, callable, string_types as str_base
+from six import callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
+# TODO: Deprecate all use of `metaclass` from `xoutil.objects`, instead use it
+#       directly from `xoutil.eight.meta`.
+from .eight.meta import metaclass    # noqa
 
 __docstring_format__ = 'rst'
 
@@ -36,6 +41,7 @@ _INVALID_CLASS_TYPE_MSG = '``cls`` must be a class not an instance'
 _len = lambda x: len(x) if x else 0
 
 # These two functions can be use to always return True or False
+# TODO: Deprecate both.
 _true = lambda *args, **kwargs: True
 _false = lambda *args, **kwargs: False
 
@@ -96,13 +102,18 @@ class SafeDataItem(object):
           the following names: `default`, `value` or `initial_value`.  If this
           argument is given the constructor callable is invalid.
 
-        - A function to check value validity with the keyword argument with
-          any of the following names: `validator`, `checker` or `check`.
+        - A checker for value validity with the keyword argument with any of
+          the following names: `validator`, `checker` or `check`.  The checker
+          could be a type, a tuple of types, a function receiving the value
+          and return True or False, or a list containing arguments to use
+          :func:`xoutil.validators.check`.
 
         - Boolean `False` to avoid assigning the descriptor in the class
           context with the keyword argument `do_assigning`.  Any other value
           but `False` is invalid because this concept is implicitly required
           and use a `False` value is allowed but discouraged.
+
+        See :meth:`__parse_arguments` for more information.
 
         '''
         self.__parse_arguments(*args, **kwargs)
@@ -268,12 +279,12 @@ class SafeDataItem(object):
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
-        from xoutil.validators import (is_type, is_valid_identifier)
+        from xoutil.validators import (is_valid_identifier, predicate)
         self.attr_name = Unset
         self.init = Unset
         self.default = Unset
         self.do_assigning = True
-        self.validator = _true
+        self.validator = True
         for i, arg in enumerate(args):
             if self.attr_name is Unset and is_valid_identifier(arg):
                 self.attr_name = arg
@@ -290,17 +301,15 @@ class SafeDataItem(object):
             if (self.default is Unset and self.init is Unset and
                     key in ('default', 'value', 'initial_value')):
                 self.default = value
-            elif (self.validator is _true and callable(value) and
+            elif (self.validator is True and
                   key in ('validator', 'checker', 'check')):
-                if isinstance(value, type):
-                    self.validator = is_type(value)
-                else:
-                    self.validator = value
+                self.validator = value
             elif (self.do_assigning is True and key == 'do_assigning' and
                   value is False):
                 self.do_assigning = False
             else:
                 bads[key] = value
+        self.validator = predicate(self.validator)
         if bads:
             msg = ('Invalid keyword arguments: %s\n'
                    'See constructor documentation for more info.')
@@ -331,9 +340,8 @@ def smart_getter(obj, strict=False):
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     '''
-    from collections import Mapping
-    from xoutil.types import DictProxyType
-    if isinstance(obj, (DictProxyType, Mapping)):
+    from .types import is_mapping
+    if is_mapping(obj):
         if not strict:
             return obj.get
         else:
@@ -532,12 +540,13 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
+    from xoutil.inspect import get_attr_value
     res = set()
     if isinstance(obj, type):
         for cls in type.mro(obj):
-            res |= set(SafeDataItem.getattr(cls, '__dict__', {}))
+            res |= set(get_attr_value(cls, '__dict__', {}))
     else:
-        res |= set(SafeDataItem.getattr(obj, '__dict__', {}))
+        res |= set(get_attr_value(obj, '__dict__', {}))
     cls = type(obj)
     if cls is not type:
         res |= set(dir(cls))
@@ -853,7 +862,7 @@ def mixin(base):
     If several mixins with the same base are used all-together in a class
     inheritance, Python generates ``TypeError: multiple bases have instance
     lay-out conflict``.  To avoid that, inherit from the class this function
-    returns instead of desired :param:`base`.
+    returns instead of desired `base`.
 
     '''
     org = "\n\nOriginal doc:\n\n%s" % base.__doc__ if base.__doc__ else ''
@@ -971,8 +980,8 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
     if not meta:
         meta = type(cls)
     if isinstance(ignores, str_base):
-        ignores = (ignores, )
-        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i) for i in ignores)
+        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i)
+                        for i in (ignores, ))
         ignored = lambda name: any(ignore.match(name) for ignore in ignores)
     else:
         ignored = None
@@ -1039,7 +1048,7 @@ def smart_copy(*args, **kwargs):
     copied.
 
     Each `source` is considered a mapping if it's an instance of
-    `collections.Mapping` or a DictProxyType.
+    `collections.Mapping` or a `MappingProxyType`.
 
     The `target` is considered a mapping if it's an instance of
     `collections.MutableMapping`.
@@ -1049,9 +1058,8 @@ def smart_copy(*args, **kwargs):
     .. versionchanged:: 1.6.9 `defaults` is now keyword only.
 
     '''
-    from collections import Mapping, MutableMapping
-    from xoutil.types import is_collection, Required
-    from xoutil.types import DictProxyType
+    from collections import MutableMapping
+    from xoutil.types import is_collection, is_mapping, Required
     from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
     defaults = kwargs.pop('defaults', False)
@@ -1071,12 +1079,12 @@ def smart_copy(*args, **kwargs):
         def setter(key, val):
             if is_valid_identifier(key):
                 setattr(target, key, val)
-    is_mapping = isinstance(defaults, Mapping)
-    if is_mapping or is_collection(defaults):
+    _mapping = is_mapping(defaults)
+    if _mapping or is_collection(defaults):
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:
-                if is_mapping:
+                if _mapping:
                     val = defaults.get(key, None)
                 else:
                     val = None
@@ -1088,7 +1096,7 @@ def smart_copy(*args, **kwargs):
         keys = []
         for source in sources:
             get = smart_getter(source)
-            if isinstance(source, (Mapping, DictProxyType)):
+            if is_mapping(source):
                 items = (name for name in source)
             else:
                 items = dir(source)
@@ -1130,129 +1138,6 @@ def extract_attrs(obj, *names, **kwargs):
         raise TypeError('Invalid keyword arguments for `extract_attrs`')
     getter = get_traverser(*names, default=default)
     return getter(obj)
-
-
-if _py3k:
-    from xoutil import _meta3
-    __m = _meta3
-else:
-    from xoutil import _meta2
-    __m = _meta2
-
-metaclass = __m.metaclass
-
-
-metaclass.__doc__ = '''Define the metaclass of a class.
-
-    .. versionadded:: 1.4.1
-
-    This function allows to define the metaclass of a class equally in Python
-    2 and 3.
-
-    Usage::
-
-       >>> class Meta(type):
-       ...   pass
-
-       >>> class Foobar(metaclass(Meta)):
-       ...   pass
-
-       >>> class Spam(metaclass(Meta), dict):
-       ...   pass
-
-       >>> type(Spam) is Meta
-       True
-
-       >>> Spam.__bases__ == (dict, )
-       True
-
-    .. versionadded:: 1.5.5 The `kwargs` keywords arguments with support for
-       ``__prepare__``.
-
-    Metaclasses are allowed to have a ``__prepare__`` classmethod to return
-    the namespace into which the body of the class should be evaluated.  See
-    :pep:`3115`.
-
-    .. warning:: The :pep:`3115` is not possible to implement in Python 2.7.
-
-       Despite our best efforts to have a truly compatible way of creating
-       meta classes in both Python 2.7 and 3.0+, there is an inescapable
-       difference in Python 2.7.  The :pep:`3115` states that ``__prepare__``
-       should be called before evaluating the body of the class.  This is not
-       possible in Python 2.7, since ``__new__`` already receives the
-       attributes collected in the body of the class.  So it's always too late
-       to call ``__prepare__`` at this point and the Python 2.7 interpreter
-       does not call it.
-
-       Our approach for Python 2.7 is calling it inside the ``__new__`` of a
-       "side" metaclass that is used for the base class returned.  This means
-       that ``__prepare__`` is called **only** for classes that use the
-       `metaclass`:func: directly.  In the following hierarchy::
-
-           class Meta(type):
-                @classmethod
-                def __prepare__(cls, name, bases, **kwargs):
-                    from xoutil.collections import OrderedDict
-                    return OrderedDict()
-
-           class Foo(metaclass(Meta)):
-                pass
-
-           class Bar(Foo):
-                pass
-
-       when creating the class ``Bar`` the ``__prepare__()`` class method is
-       not called in Python 2.7!
-
-    .. seealso:: `xoutil.types.prepare_class`:func: and
-       `xoutil.types.new_class`:func:.
-
-    .. warning::
-
-       You should always place your metaclass declaration *first* in the list
-       of bases. Doing otherwise triggers *twice* the metaclass' constructors
-       in Python 3.1 or less.
-
-       If your metaclass has some non-idempotent side-effect (such as
-       registration of classes), then this would lead to unwanted double
-       registration of the class::
-
-          >>> class BaseMeta(type):
-          ...     classes = []
-          ...     def __new__(cls, name, bases, attrs):
-          ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
-          ...         cls.classes.append(res)   # <-- side effect
-          ...         return res
-
-          >>> class Base(metaclass(BaseMeta)):
-          ...     pass
-
-          >>> class SubType(BaseMeta):
-          ...     pass
-
-          >>> class Egg(metaclass(SubType), Base):   # <-- metaclass first
-          ...     pass
-
-          >>> Egg.__base__ is Base   # <-- but the base is Base
-          True
-
-          >>> len(BaseMeta.classes) == 2
-          True
-
-          >>> class Spam(Base, metaclass(SubType)):
-          ...     'Like "Egg" but it will be registered twice in Python 2.x.'
-
-       In this case the registration of Spam ocurred twice::
-
-          >>> BaseMeta.classes  # doctest: +SKIP
-          [<class Base>, <class Egg>, <class Spam>, <class Spam>]
-
-       Bases, however, are just fine::
-
-          >>> Spam.__bases__ == (Base, )
-          True
-
-'''
 
 
 def register_with(abc):

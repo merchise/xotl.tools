@@ -23,6 +23,7 @@ Contents:
    xoutil/**
    others
    HISTORY
+   BACKLOG
    CONTRIBUTING
    CONTRIBUTORS
    LICENSE

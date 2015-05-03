@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.tests.test_annotations
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2012-2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -77,8 +78,10 @@ def test_mixed_annotations():
 @pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
 def test_locals_vars():
     args = (1, 2)
+
     def ns():
         args = (3, 4)
+
         @annotate('(a: args)')
         def dummy():
             pass
@@ -119,6 +122,7 @@ def test_closures_with_locals():
         NameError: global name 'args' is not defined
     '''
     args = (1, 2)
+
     @annotate('(a: lambda: args)')
     def dummy():
         pass

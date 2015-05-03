@@ -2,8 +2,9 @@
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
 # xoutil.tests.test_modules
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+#----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -42,8 +43,8 @@ class TestModulesCustomization(unittest.TestCase):
             return mod
 
         import testbed
-        module, created, klass = customize(testbed,
-                                           custom_attrs={'this': this})
+        attrs = {'this': this}
+        module, created, klass = customize(testbed, custom_attrs=attrs)
         self.assertEqual(module, module.this)
 
 
@@ -91,7 +92,8 @@ class TestModuleDecorators(unittest.TestCase):
 
 
 def test_get_module_path_by_module_object():
-    import xoutil, xoutil.iterators
+    import xoutil
+    import xoutil.iterators
     from os.path import join
     from xoutil.modules import get_module_path
     top = xoutil.__path__[0]
@@ -122,6 +124,7 @@ def test_get_module_path_by_module_string_rel():
     import pytest
     from xoutil.modules import get_module_path
     with pytest.raises(TypeError):
+        # TODO: Next "expected" variable is not defined
         assert get_module_path('.iterators') == expected
 
 

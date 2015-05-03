@@ -2,7 +2,9 @@
 # ----------------------------------------------------------------------
 # xoutil.inspect
 # ----------------------------------------------------------------------
-# Copyright 2014, 2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# All rights reserved
 #
 # This file is distributed under the terms of the LICENCE distributed
 # with this package.
@@ -214,11 +216,34 @@ def get_attr_value(obj, name, *default):
         raise AttributeError(msg % (type(obj).__name__, name))
 
 
-def type_name(obj):
+def type_name(obj, affirm=False):
     '''Return the internal name for a type or a callable.
 
-    This function is safe: it returns None if ``obj`` is not an instance of a
-    proper type.
+    This function is safe.  If :param obj: is not an instance of a proper type
+    then returns the following depending on :param affirm:
+
+    - If False returns None.
+
+    - If True convert a single object to its type before returns the name, but
+      if is a tuple, list or set; returns a string with a representation of
+      contained types.
+
+    Examples::
+
+      >>> type_name(int)
+      'int'
+
+      >>> type_name(0) is None
+      True
+
+      >>> type_name(0, affirm=True)
+      'int'
+
+      >>> type_name((0, 1.1)) is None
+      True
+
+      >>> type_name((0, 1.1), affirm=True)
+      '(int, float)'
 
     '''
     from six import class_types, string_types
@@ -232,7 +257,22 @@ def type_name(obj):
         res = getattr_static(obj, name, None)
         if res and isdatadescriptor(res):
             res = res.__get__(obj, type(obj))
-    return res if isinstance(res, string_types) else None
+    if isinstance(res, string_types):
+        return res
+    elif affirm:
+        if isinstance(obj, (tuple, list, set)):
+            if isinstance(obj, tuple):
+                head, tail = '()'
+            elif isinstance(obj, list):
+                head, tail = '[]'
+            else:
+                head, tail = '{}'
+            items = ', '.join(type_name(t, affirm) for t in obj)
+            return str('%s%s%s' % (head, items, tail))
+        else:
+            return type_name(type(obj))
+    else:
+        return None
 
 
 # TODO: Implement a safe version for `attrgetter`

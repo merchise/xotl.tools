@@ -3,7 +3,8 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_metaclass
 #----------------------------------------------------------------------
-# Copyright (c) 2013, 2014, 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -18,7 +19,7 @@ from __future__ import (division as _py3_division,
 
 
 def test_basic_inline_metaclass():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class Meta(type):
         pass
@@ -37,7 +38,7 @@ def test_basic_inline_metaclass():
 
 def test_no_double_registration_with_inlinemetaclass():
     import sys
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
     py32 = sys.version_info >= (3, 2)
 
     class RegisteringType(type):
@@ -66,7 +67,7 @@ def test_no_double_registration_with_inlinemetaclass():
 
 
 def test_inlinemetaclass_decorator_with_slots():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
     from xoutil.types import MemberDescriptorType
 
     class Meta(type):
@@ -113,7 +114,7 @@ def test_inlinemetaclass_decorator_with_slots():
 
 def test_prepare_a_class():
     import sys
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class ClassDict(dict):
         pass
@@ -167,7 +168,7 @@ def test_prepare_a_class():
 
 
 def test_type():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class x(metaclass(type)):
         pass

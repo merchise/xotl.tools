@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.html
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -95,7 +96,7 @@ if not _py32:
         return res
 
 else:
-    from html import escape
+    from html import escape    # noqa
 
 
 del _py3k, _py32

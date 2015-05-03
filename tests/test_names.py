@@ -3,7 +3,8 @@
 #----------------------------------------------------------------------
 # tests.test_names
 #----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -59,20 +60,23 @@ def test_nameof():
 
 def test_fullnameof():
     from xoutil.names import nameof
+    _name = 'collections.OrderedDict'
     from collections import OrderedDict as sorted_dict
     assert nameof(sorted_dict, full=True) == 'test_fullnameof.sorted_dict'
-    assert nameof(sorted_dict, inner=True, full=True) == 'collections.OrderedDict'
+    assert nameof(sorted_dict, inner=True, full=True) == _name
     sd = sorted_dict(x=1, y=2)
     assert nameof(sd, full=True) == 'test_fullnameof.sd'
     assert nameof(sd, typed=True, full=True) == 'test_fullnameof.sorted_dict'
-    assert nameof(sd, inner=True, typed=True, full=True) == 'collections.OrderedDict'
+    assert nameof(sd, inner=True, typed=True, full=True) == _name
 
 
 def test_fullnameof_no_rename():
     from xoutil.names import nameof
     from collections import OrderedDict
-    assert nameof(OrderedDict, full=True) == 'test_fullnameof_no_rename.OrderedDict'
-    assert nameof(OrderedDict, inner=True, full=True) == 'collections.OrderedDict'
+    _full_name = 'test_fullnameof_no_rename.OrderedDict'
+    _name = 'collections.OrderedDict'
+    assert nameof(OrderedDict, full=True) == _full_name
+    assert nameof(OrderedDict, inner=True, full=True) == _name
 
 
 def test_module_level_name():
