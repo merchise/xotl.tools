@@ -39,6 +39,8 @@ import sys
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 
+from xoutil.deprecation import deprecated
+
 if sys.version_info >= (3, 3):
     _copy_python_module_members('collections.abc')
 del sys
@@ -1515,8 +1517,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         '''
         return len(self.inner.maps) - 1
 
-    # TODO: Plan to rename to `push_level`.
-    def push(self, *args, **kwargs):
+    def push_level(self, *args, **kwargs):
         '''Pushes a whole new level to the stacked dict.
 
         :param args: Several mappings from which the new level will be
@@ -1531,8 +1532,11 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         self.update(*args, **kwargs)
         return self.level
 
-    # TODO: Plan to rename to `pop_level`.
-    def pop(self):
+    push = deprecated('StackedDict.push_level', removed_in_version='1.7.1')(
+        push_level
+    )
+
+    def pop_level(self):
         '''Pops the last pushed level and returns the whole level.
 
         If there are no levels in the stacked dict, a TypeError is raised.
@@ -1547,6 +1551,10 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
             return res
         else:
             raise TypeError('Cannot pop from StackedDict without any levels')
+
+    pop = deprecated('StackedDict.pop_level', removed_in_version='1.7.1')(
+        pop_level
+    )
 
     def peek(self):
         '''Peeks the top level of the stack.
@@ -1609,3 +1617,4 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
 
 # get rid of unused global variables
 del slist, _py33, _py34
+del deprecated

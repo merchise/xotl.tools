@@ -128,7 +128,7 @@ class Context(metaclass(MetaContext), StackedDict):
             self.count = 0
             # TODO: Redefine all event management
             self._events = []
-        self.push(**data)
+        self.push_level(**data)
         return self
 
     def __init__(self, name, **data):
@@ -154,7 +154,7 @@ class Context(metaclass(MetaContext), StackedDict):
             for event in self.events:
                 event(self)
             del _data.contexts[self.name]
-        self.pop()
+        self.pop_level()
         return False
 
     @property

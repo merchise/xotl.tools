@@ -23,18 +23,15 @@ from __future__ import (division as _py3_division,
                         absolute_import as _absolute_import)
 import sys
 import unittest
+import pytest
+
 from random import shuffle
+from xoutil.collections import defaultdict
 
 try:
-    import pytest
-except:
-    class pytest(object):
-        class _mark(object):
-            def __getattr__(self, attr):
-                return lambda *a, **kw: (lambda f: f)
-        mark = _mark()
-
-from xoutil.collections import defaultdict
+    from xoutil.release import VERSION_INFO
+except ImportError:
+    VERSION_INFO = (1, 6, 10)  # Latest version without VERSION_INFO
 
 
 class TestCollections(unittest.TestCase):
@@ -53,14 +50,30 @@ class TestCollections(unittest.TestCase):
             d['abc']
 
 
+@pytest.mark.skipif(VERSION_INFO < (1, 7, 1),
+                    reason='.pop() has old semantics')
+def test_stacked_dict_with_newpop():
+    '''Test that stacked.pop has the same semantics has dict.pop.'''
+    from xoutil.collections import StackedDict
+    sd = StackedDict(a='level-0', b=1)
+    assert sd.pop('a') == 'level-0'
+    assert sd.pop('non', sd) is sd
+    try:
+        sd.pop('non')
+    except KeyError:
+        pass
+    else:
+        assert False, 'Should have raised a KeyError'
+
+
 def test_stacked_dict():
     from xoutil.collections import StackedDict
     sd = StackedDict(a='level-0')
     assert sd.peek() == dict(a='level-0')
-    sd.push(a=1, b=2, c=10)
+    sd.push_level(a=1, b=2, c=10)
     assert sd.level == 1
     assert sd.peek() == dict(a=1, b=2, c=10)
-    sd.push(b=4, c=5)
+    sd.push_level(b=4, c=5)
     assert sd.peek() == dict(b=4, c=5)
     assert sd.level == 2
     assert sd['b'] == 4
@@ -75,14 +88,14 @@ def test_stacked_dict():
         pass
     except:
         assert False, 'Should have raise KeyError'
-    assert sd.pop() == {'b': 4}
+    assert sd.pop_level() == {'b': 4}
     assert sd['b'] == 2
     assert sd['a'] == 1
     assert len(sd) == 3
-    sd.pop()
+    sd.pop_level()
     assert sd['a'] == 'level-0'
     try:
-        sd.pop()
+        sd.pop_level()
         assert False, ('Level 0 cannot be poped. '
                        'It should have raised a TypeError')
     except TypeError:
