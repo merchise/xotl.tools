@@ -13,6 +13,13 @@ Unreleased. Release 1.7.0
 1.6 series
 ----------
 
+
+Unreleased. Release 1.6.11
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.6.11.rst
+
+
 2015-04-15. Release 1.6.10
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
