@@ -26,7 +26,7 @@ else:
 
 metaclass.__doc__ = '''Define the metaclass of a class.
 
-    .. versionadded:: 1.4.1
+    .. versionadded:: 1.4.1  But moved to this module since 1.7.0.
 
     This function allows to define the metaclass of a class equally in Python
     2 and 3.

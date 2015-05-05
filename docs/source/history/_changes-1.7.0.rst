@@ -14,3 +14,5 @@ The following is the list of changes:
   `~xoutil.collections.StackedDict.pop_level`:meth: is provided to explicitly
   pop a stack level.  The same is done for the
   `~xoutil.collections.StackedDict.pop`:meth: method.
+
+- Deprecates `xoutil.objects.metaclass`:class:
