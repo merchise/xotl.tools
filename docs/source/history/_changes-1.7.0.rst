@@ -8,3 +8,9 @@ The following is the list of changes:
 
 - The `defaults` `xoutil.objects.smart_copy`:func: has being made keyword
   only.
+
+- Deprecates the `~xoutil.collections.StackedDict.pop`:meth: semantics, they
+  shadow the `dict.pop`:func:.  A new
+  `~xoutil.collections.StackedDict.pop_level`:meth: is provided to explicitly
+  pop a stack level.  The same is done for the
+  `~xoutil.collections.StackedDict.pop`:meth: method.
