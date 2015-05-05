@@ -1055,7 +1055,7 @@ def smart_copy(*args, **kwargs):
 
     :returns: `target`.
 
-    .. versionchanged:: 1.6.9 `defaults` is now keyword only.
+    .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
     from collections import MutableMapping

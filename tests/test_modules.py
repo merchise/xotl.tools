@@ -113,7 +113,6 @@ def test_get_module_path_by_module_string_abs():
     top = xoutil.__path__[0]
     expected = top
     assert get_module_path('xoutil') == expected
-
     expected = (join(top, 'iterators.py'),
                 join(top, 'iterators.pyc'),
                 join(top, 'iterators.pyo'))
@@ -124,8 +123,7 @@ def test_get_module_path_by_module_string_rel():
     import pytest
     from xoutil.modules import get_module_path
     with pytest.raises(TypeError):
-        # TODO: Next "expected" variable is not defined
-        assert get_module_path('.iterators') == expected
+        assert get_module_path('.iterators')
 
 
 def test_object_stability():
