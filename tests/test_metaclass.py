@@ -18,6 +18,22 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
+try:
+    from xoutil.release import VERSION_INFO
+except ImportError:
+    VERSION_INFO = (1, 6, 10)  # Latest release without this attribute.
+
+
+def test_older_import():
+    try:
+        from xoutil.objects import metaclass  # noqa
+    except ImportError:
+        assert VERSION_INFO > (1, 7, 0), \
+            'xoutil.objects.metaclass should still exists in 1.7.0'
+    else:
+        assert VERSION_INFO <= (1, 7, 0), \
+            'xoutil.object.metaclass should be removed from 1.7.1'
+
 def test_basic_inline_metaclass():
     from xoutil.eight.meta import metaclass
 

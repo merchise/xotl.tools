@@ -28,9 +28,9 @@ from xoutil import Unset
 from six import callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
-# TODO: Deprecate all use of `metaclass` from `xoutil.objects`, instead use it
-#       directly from `xoutil.eight.meta`.
-from .eight.meta import metaclass    # noqa
+from .eight.meta import metaclass as _metaclass    # noqa
+metaclass = deprecated('xoutil.eight.meta.metaclass')(_metaclass)
+
 
 __docstring_format__ = 'rst'
 
