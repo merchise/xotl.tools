@@ -53,10 +53,11 @@ except ImportError:
 try:
     from types import MappingProxyType
 except ImportError:
-    # TODO: There was an unnecessary implementation here.  But it wasn't used
-    # at all and wrong.  "MappingProxyType"" is named "DictProxyType" in
-    # Python 2.x.  Deprecate "DictProxyType" in favor of "MappingProxyType".
-    from types import DictProxyType as MappingProxyType    # noqa
+    MappingProxyType = DictProxyType
+
+# TODO: "MappingProxyType"" is named "DictProxyType" in Python 2.x.  Deprecate
+# "DictProxyType" in favor of "MappingProxyType".
+
 
 
 try:
