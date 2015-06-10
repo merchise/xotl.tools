@@ -54,6 +54,9 @@ class SafeDataItem(object):
     constructor or a default value for the first time the attribute is read
     without a prior value assigned.
 
+    Need to be used only in scenarios where descriptor instance values must be
+    accessed safely in '__getattr__' implementations.
+
     This class only can be instanced inner a class context in one of the
     following scenarios::
 
