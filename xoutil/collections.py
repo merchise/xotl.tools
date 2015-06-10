@@ -347,6 +347,7 @@ if not _py33:
     class _Link(object):
         __slots__ = 'prev', 'next', 'key', '__weakref__'
 
+    # TODO: This class is implemented in all Python versions I have.
     class OrderedDict(dict):
         'Dictionary that remembers insertion order'
         # An inherited dict maps keys to values. The inherited dict provides
