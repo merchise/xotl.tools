@@ -50,7 +50,7 @@ def metaclass(meta, **kwargs):
                 bases = tuple(b for b in bases if not issubclass(b, base))
                 if not bases:
                     bases = (object,)
-                from .types import prepare_class
+                from ._types import prepare_class
                 kwds = dict(kwargs, metaclass=meta)
                 basemeta, _ns, kwds = prepare_class(name, bases, kwds=kwds)
                 ns = copy(_ns)
@@ -66,7 +66,7 @@ def metaclass(meta, **kwargs):
             else:
                 return type.__new__(cls, name, bases, attrs)
 
-    from .types import new_class
+    from ._types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)
 
     def exec_body(ns):

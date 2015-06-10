@@ -54,6 +54,6 @@ def metaclass(meta, **kwargs):
         def __init__(self, name, bases, attrs, **kw):
             pass
 
-    from .types import new_class
+    from ._types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)
     return new_class('__inner__', (base, ), kwds=kwds)
