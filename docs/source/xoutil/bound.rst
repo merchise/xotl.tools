@@ -280,7 +280,7 @@ This can be accomplished like this:
 .. code-block:: python
    :linenos:
 
-   def communicate(interval, bandwidth=None):
+   def communicate(interval, bandwidth):
        from itertools import chain as meld
        def receive():
            for message in Inbox.receive():
@@ -313,8 +313,8 @@ Let's break this into its parts:
   sent.  That's why we need to call the `~Bounded.generate`:meth: so that the
   time boundary is also applied to the sending process.
 
-.. note:: This example actually taken from a real program, although simplified
-   to serve better for learning.  For instance, in our real-world program
-   `bandwidth` could be None to indicate to size limit should be applied to
-   the sending process.  Also in the example we're not actually saving nor
-   sending messages!
+.. note:: The structure from this example is actually taken from a real
+   program, although simplified to serve better for learning.  For instance,
+   in our real-world program `bandwidth` could be None to indicate no size
+   limit should be applied to the sending process.  Also in the example we're
+   not actually saving nor sending messages!
