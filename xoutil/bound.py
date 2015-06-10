@@ -21,9 +21,9 @@ Example::
     ...       yield a
     ...       a, b = b, a + b
 
-This function yields forever.  This module allows to get instances that run
-until a boundary condition is met.  For instance, the `times`:func: boundary
-stops after a given numbers of results are generated::
+This function yields forever.  This module allows to get instances of that
+function that run until a boundary condition is met.  For instance, the
+`times`:func: boundary stops after a given numbers of results are generated::
 
     >>> fib8 = times(8)(fibonacci)
     >>> fib8()   # the 8th fibonacci number is
@@ -67,7 +67,7 @@ class BoundedType(type):
 class Bounded(metaclass(BoundedType)):
     '''The bounded function.
 
-    This is result of applying a `boundary definition` to an `unbounded
+    This is the result of applying a `boundary definition` to an `unbounded
     function` (or generator).
 
     If `target` is a function this instance can be called several times.  If
@@ -114,7 +114,7 @@ class BoundaryCondition(object):
 
     If the `definition` takes no arguments for initialization you may pass the
     `target` directly.  This is means that if `__call__`:func: receives
-    arguments they will be used to instantiated the `Bounded`:class: subclass,
+    arguments they will be used to instantiate the `Bounded`:class: subclass,
     ie. this case allows only a single argument `target`.
 
     '''
@@ -149,10 +149,24 @@ class BoundaryCondition(object):
         return self.args or self.defaults or self.varargs or self.varkwargs
 
     def apply(self, args, kwargs):
-        def execute(pred, unboundedgen, initial):
+        def execute(boundary, unbounded, initial):
+            '''Executes the unbounded generator guarded by a boundary condition.
+
+            `boundary` is the boundary condition. `unbounded` is the unbounded
+            generator.  Both must be generators.
+
+            `initial` is the tuple of ``(args, kwargs)`` passed when calling
+            the unbounded function or None.
+
+            This function is used in the (closure) `generate` method of the
+            Bounded subclass returned by `apply`.  It contains the core
+            algorithm that interleaves the boundary condition with the
+            unbounded generator.
+
+            '''
             try:
-                next(pred)
-                stop = pred.send(initial)
+                next(boundary)  # Initialize the boundary condition
+                stop = boundary.send(initial)
             except StopIteration:
                 raise RuntimeError(
                     'Invalid boundary definition "%r"' % self.definition
@@ -160,21 +174,21 @@ class BoundaryCondition(object):
             try:
                 while stop is not True:
                     try:
-                        data = next(unboundedgen)
+                        data = next(unbounded)
                         yield data
                     except (GeneratorExit, StopIteration):
                         stop = True
                     else:
                         try:
-                            stop = pred.send(data)
+                            stop = boundary.send(data)
                         except StopIteration:
                             raise RuntimeError(
                                 'Invalid boundary definition "%r"' %
                                 self.definition
                             )
             finally:
-                pred.close()
-                unboundedgen.close()
+                boundary.close()
+                unbounded.close()
 
         class bounded(Bounded):
             @classmethod
@@ -231,10 +245,10 @@ def boundary(definition, name=None, base=BoundaryCondition):
 
     - The `boundary definition` must yield at least 2 times:
 
-      - First it will be called is ``next()`` method to allow for
+      - First it will be called its ``next()`` method to allow for
         initialization of internal state.
 
-      - Immediately after, it will be called is ``send()`` passing the tuple
+      - Immediately after, it will be called its ``send()`` passing the tuple
         ``(args, kwargs)`` with the arguments passed to the `unbounded
         function`.  At this point the boundary definition may yield True to
         halt the execution.  In this case, the `unbounded generator` won't be
@@ -250,11 +264,10 @@ def boundary(definition, name=None, base=BoundaryCondition):
               yield False
 
     - The `boundary definition` must deal with GeneratorExit exceptions
-      properly, since we call the ``close()`` method of the generator upon
+      properly since we call the ``close()`` method of the generator upon
       termination.  Termination occurs when the `unbounded generator` stops by
-      any means (even an error), even when the boundary condition yielded True
-      or the generator itself is exhausted or there's an error in the
-      generator.
+      any means, even when the boundary condition yielded True or the
+      generator itself is exhausted or there's an error in the generator.
 
       Both `whenall`:func: and `whenany`:func: call the ``close()`` method of
       all their subordinate boundary conditions.
@@ -278,7 +291,7 @@ def timed(maxtime):
     '''Becomes True after a given amount of time.
 
     The bounded generator will be allowed to yields values until the `maxtime`
-    timeframe has ellapsed.
+    time frame has elapsed.
 
     Usage::
 
@@ -309,11 +322,10 @@ def timed(maxtime):
     else:
         bound = timedelta(seconds=maxtime)
     start = datetime.now()
-    yield False  # XXX: Deal with next-send calling scheme for predicates.
+    yield False  # Deal with next-send calling scheme for boundaries
     while datetime.now() - start < bound:
         yield False
-    yield True   # Inform the boundary condition, or we're not compliant with
-                 # the predicate protocol.
+    yield True   # Or we're not compliant with the boundary protocol.
 
 
 @boundary
@@ -359,15 +371,17 @@ def accumulated(mass, *attrs, **kwargs):
 
 @boundary
 def pred(func, skipargs=True):
-    '''Predicate to allow "normal" functions to engage within the boundary
-    protocol.
+    '''Allow "normal" functions to engage within the boundary protocol.
 
     `func` should take a single argument and return True if the boundary
-    condition has been met.  Unlike boundary definitions themselves, this
-    function will not be called with the tuple ``(args, kwargs)`` if
-    `skipargs` is True, in that case only yielded values from the `unbounded
-    generator` are passed.  If you need to get the original arguments, set
-    `skipargs` to False.
+    condition has been met.
+
+    If `skipargs` is True then function `func` will not be called with the
+    tuple ``(args, kwargs)`` upon initialization of the boundary, in that case
+    only yielded values from the `unbounded generator` are passed.  If you
+    need to get the original arguments, set `skipargs` to False, in this case
+    the first time `func` is called will be passed a single argument ``(arg,
+    kwargs)``.
 
     Example::
 
@@ -439,8 +453,8 @@ def whenall(*subordinates):
     logical AND i.e, will yield True when **all** of its subordinate boundary
     conditions have yielded True.
 
-    It ensures that once a subordinate yields True it won't be sent anymore
-    data, no matter if other subordinates keep on running and consuming data.
+    It ensures that once a subordinate yields True it won't be sent more data,
+    no matter if other subordinates keep on running and consuming data.
 
     Calls ``close()`` of all subordinates upon termination.
 
