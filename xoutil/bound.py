@@ -212,7 +212,7 @@ class BoundaryCondition(object):
             if len(args) == 1:
                 from functools import update_wrapper
                 update_wrapper(result, args[0])
-                return result
+            return result
         else:
             return self.apply((), {})
 
