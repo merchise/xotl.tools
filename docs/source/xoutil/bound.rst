@@ -14,8 +14,6 @@
 A bounded execution model
 =========================
 
-.. default-role:: term
-
 Some features are easy to implement using a generator or co-routine
 (:pep:`342`).  For instance, you might want to "report units of work" one at a
 time.  These kind of features could be easily programmed without any `bounds`
