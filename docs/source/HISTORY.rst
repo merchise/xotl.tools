@@ -5,7 +5,7 @@ Changelog
 ----------
 
 Unreleased. Release 1.7.0
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.7.0.rst
 
