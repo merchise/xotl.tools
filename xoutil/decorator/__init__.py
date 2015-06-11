@@ -76,8 +76,8 @@ def settle(**kwargs):
 
     '''
     def inner(target):
-        from six import iteritems as iteritems_
-        for key, value in iteritems_(kwargs):
+        from xoutil.eight import iteritems
+        for key, value in iteritems(kwargs):
             setattr(target, key, value)
         return target
     return inner

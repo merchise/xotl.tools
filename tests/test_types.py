@@ -24,7 +24,7 @@ from xoutil import types
 
 
 def test_iscollection():
-    from six.moves import range
+    from xoutil.eight import range
     from xoutil.types import is_collection
     from xoutil.collections import UserList, UserDict
     assert is_collection('all strings are iterable') is False

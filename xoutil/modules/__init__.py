@@ -233,7 +233,7 @@ def get_module_path(module):
     '''
     from importlib import import_module
     from xoutil.fs.path import normalize_path
-    from six import string_types as strs
+    from xoutil.eight import string_types as strs
     mod = import_module(module) if isinstance(module, strs) else module
     # The __path__ only exists for packages and does not include the
     # __init__.py

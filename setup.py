@@ -25,7 +25,8 @@ setup(name=project_name,
           # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
           dev_classifier,
           'Intended Audience :: Developers',
-          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+          ('License :: OSI Approved :: '
+           'GNU General Public License v3 or later (GPLv3+)'),
           'Operating System :: POSIX :: Linux',  # This is where we are
                                                  # testing. Don't promise
                                                  # anything else.
@@ -47,7 +48,7 @@ setup(name=project_name,
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'six>=1.5.0,<2',
+          # TODO: 'six>=1.5.0,<2', removed
       ],
       extras_require={
           'extra': ['python-dateutil', ],

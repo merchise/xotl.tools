@@ -43,10 +43,10 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.deprecation import deprecated as _deprecated
-from six import (string_types as _str_base,
-                 text_type as _unicode,
-                 binary_type as _bytes,
-                 PY3 as _py3k)
+from xoutil.eight import (string_types as _str_base,
+                          text_type as _unicode,
+                          binary_type as _bytes,    # TODO: Not necessary
+                          _py3)
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -153,7 +153,7 @@ def safe_join(separator, iterable, encoding=None):
 
 
 # Makes explicit the deprecation warning for py3k.
-if _py3k:
+if _py3:
     safe_join = _deprecated('builtin join method of str',
                             'safe_join is deprecated for Python 3. Use '
                             'builtin join method of str.')(safe_join)
@@ -174,7 +174,7 @@ def cut_prefix(value, prefix):
     unchanged.
 
     '''
-    from six import text_type as str, binary_type as bytes
+    from xoutil.eight import text_type as str, binary_type as bytes
     if isinstance(value, str) and isinstance(prefix, bytes):
         prefix = safe_decode(prefix)
     elif isinstance(value, bytes) and isinstance(prefix, str):
@@ -205,7 +205,7 @@ def cut_suffix(value, suffix):
     unchanged.
 
     '''
-    from six import text_type as str, binary_type as bytes
+    from xoutil.eight import text_type as str, binary_type as bytes
     if isinstance(value, str) and isinstance(suffix, bytes):
         suffix = safe_decode(suffix)
     elif isinstance(value, bytes) and isinstance(suffix, str):
@@ -508,9 +508,9 @@ def make_a10z(string):
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 
-from six.moves import input
+from xoutil.eight import input
 
 input = _deprecated(
     input,
-    "xoutil.string.input is deprecated.  Use six.moves.input"
+    "xoutil.string.input is deprecated.  Use xoutil.eight.input"
 )(input)

@@ -38,7 +38,7 @@ def _check_base(base):
     Return a tuple (base, table) if valid or raise an exception.
 
     '''
-    from six import integer_types
+    from xoutil.eight import integer_types
     if isinstance(base, integer_types):
         table = _DEFAULT_TABLE
         if not (1 < base <= _MAX_BASE):

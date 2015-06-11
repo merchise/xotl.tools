@@ -25,7 +25,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from six import callable, string_types as str_base
+from xoutil.eight import callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
 from .eight.meta import metaclass as _metaclass    # noqa
@@ -695,7 +695,7 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from six.moves import map
+        from xoutil.iterators import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val
@@ -851,7 +851,6 @@ class lazy(object):
         self.kwargs = kwargs
 
     def __call__(self):
-        from six import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -974,7 +973,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
 
     '''
     from xoutil.fs import _get_regex
-    from six import iteritems as iteritems_
+    from xoutil.eight import iteritems
     # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
     #       isn't correct to depend on it. Migrate part of "_get_regex" to a
     #       module that can be imported logically without problems from both,
@@ -990,7 +989,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
         ignored = None
     valids = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
     attrs = {name: value
-             for name, value in iteritems_(cls.__dict__)
+             for name, value in iteritems(cls.__dict__)
              if name not in valids
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
@@ -1265,7 +1264,7 @@ def dict_merge(*dicts, **others):
 
     '''
     from collections import Mapping, Sequence, Set
-    from six import iteritems as iteritems_
+    from xoutil.eight import iteritems
     from xoutil.objects import get_first_of
     from xoutil.types import are_instances, no_instances
     if others:
@@ -1275,7 +1274,7 @@ def dict_merge(*dicts, **others):
     collections = (Set, Sequence)
     while dicts:
         current = dicts.pop(0)
-        for key, val in iteritems_(current):
+        for key, val in iteritems(current):
             if isinstance(val, Mapping):
                 val = {key: val[key] for key in val}
             value = result.setdefault(key, val)

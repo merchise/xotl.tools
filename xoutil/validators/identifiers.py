@@ -26,7 +26,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 from re import compile as _regex_compile
-from six import string_types
+from xoutil.eight import string_types
 
 
 from xoutil.names import strlist as strs
