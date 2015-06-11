@@ -52,11 +52,7 @@ class _record_type(type):
         result = not attr.startswith('_') and attr.upper() == attr
         if val is not Unset:
             from numbers import Integral
-            try:
-                from xoutil.eight import string_types
-            except ImportError:
-                # TODO: 'xoutil.compat' doesn't exists any more.
-                from xoutil.compat import str_base as string_types
+            from xoutil.eight import string_types
             isi = isinstance
             result = result and (isi(val, Integral) or isi(val, string_types))
         return result
