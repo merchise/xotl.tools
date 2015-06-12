@@ -32,7 +32,7 @@ import sys
 py33 = sys.version_info >= (3, 3, 0)
 del sys
 
-from six import callable
+from xoutil.eight import callable
 
 
 class ctuple(tuple):

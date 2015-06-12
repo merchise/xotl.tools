@@ -23,11 +23,11 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from six import PY3 as _py3k, iteritems as iteritems_
+from xoutil.eight import _py3, iteritems as iteritems_
 from xoutil.string import safe_decode
 
 
-if _py3k:
+if _py3:
     from html import entities
     from html import parser
 else:
@@ -81,7 +81,7 @@ if not _py32:
         also translated.
 
         """
-        from six import text_type
+        from xoutil.eight import text_type
         from xoutil.string import safe_decode, safe_encode
         if not isinstance(s, text_type):
             arg = safe_decode(s)
@@ -99,7 +99,7 @@ else:
     from html import escape    # noqa
 
 
-del _py3k, _py32
+del _py3, _py32
 
 
 __all__ = (str('entities'), str('parser'), str('escape'))

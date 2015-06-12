@@ -246,7 +246,7 @@ def type_name(obj, affirm=False):
       '(int, float)'
 
     '''
-    from six import class_types, string_types
+    from xoutil.eight import class_types, string_types
     named_types = class_types + (types.FunctionType, types.MethodType)
     name = '__name__'
     if isinstance(obj, named_types):

@@ -27,6 +27,10 @@ This package also fixes some issues from PyPy interpreter.
 
 '''
 
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode,
+                        absolute_import)
 
 import sys
 
@@ -45,10 +49,22 @@ except NameError:
     base_string = str
 
 
-try:
+if _py3:
+    string_types = str,
+    integer_types = int,
+    class_types = type,
+    text_type = str
+    unichr = chr
+else:
+    from types import ClassType
+    string_types = basestring,
     integer_types = (int, long)
-except NameError:
-    integer_types = (int,)
+    class_types = (type, ClassType)
+    text_type = unicode
+    unichr = unichr
+    del ClassType
+
+binary_type = bytes
 
 try:
     __intern = intern
@@ -60,3 +76,33 @@ try:
     intern.__doc__ = __intern.__doc__
 except NameError:
     from sys import intern    # noqa
+
+
+if _py3:
+    input = input
+    range = range
+else:
+    range = xrange
+    input = raw_input
+
+
+def iterkeys(d):
+    '''Return an iterator over the keys of a dictionary.'''
+    return (d.keys if _py3 else d.iterkeys)()
+
+
+def itervalues(d):
+    '''Return an iterator over the values of a dictionary.'''
+    return (d.values if _py3 else d.itervalues)()
+
+
+def iteritems(d):
+    '''Return an iterator over the (key, value) pairs of a dictionary.'''
+    return (d.items if _py3 else d.iteritems)()
+
+
+try:
+    callable = callable
+except NameError:
+    def callable(obj):
+        return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)

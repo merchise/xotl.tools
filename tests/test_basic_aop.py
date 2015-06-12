@@ -26,7 +26,7 @@ import unittest
 from datetime import timedelta
 from xoutil.aop import weaved
 from xoutil.aop.basic import contextualized, complementor
-from six.moves import range
+from xoutil.eight import range
 
 
 range_ = lambda *args: list(range(*args))

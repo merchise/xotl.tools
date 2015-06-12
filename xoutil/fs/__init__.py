@@ -32,7 +32,6 @@ import sys
 import os
 from re import compile as _rcompile
 from xoutil.fs.path import normalize_path
-from six import string_types
 
 
 re_magic = _rcompile('[*?[]')
@@ -127,6 +126,7 @@ def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
 
     '''
     if regex:
+        from xoutil.eight import string_types
         if isinstance(regex, string_types):
             regex = _rcompile(regex)
     else:
@@ -220,6 +220,7 @@ def regex_rename(top, pattern, repl, maxdepth=None):
 
     '''
     from re import subn as _re_subn
+    from xoutil.eight import string_types
     if isinstance(pattern, string_types):
         pattern = _rcompile(pattern)
     depth = 0
@@ -282,6 +283,7 @@ filter_false = lambda path, stat_info: False
 
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
+    from xoutil.eight import string_types
     if isinstance(regex, string_types):
         regex = _rcompile(regex)
 
@@ -544,8 +546,8 @@ def concatfiles(*files):
 
     '''
     import shutil
+    from xoutil.eight import string_types
     from xoutil.types import is_collection
-    from six import string_types
     if len(files) < 2:
         raise TypeError('At least 2 files must be passed to concatfiles.')
     elif len(files) == 2:
