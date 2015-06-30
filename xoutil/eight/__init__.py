@@ -81,9 +81,11 @@ except NameError:
 if _py3:
     input = input
     range = range
+    zip = zip
 else:
     range = xrange
     input = raw_input
+    from itertools import izip as zip    # noqa
 
 
 def iterkeys(d):

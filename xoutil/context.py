@@ -32,7 +32,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil._local import local as _local
 
-from xoutil.objects import metaclass
+from xoutil.eight.meta import metaclass
 from xoutil.collections import StackedDict
 
 from xoutil.names import strlist as strs
