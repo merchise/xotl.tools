@@ -51,6 +51,18 @@ def is_valid_identifier(name):
     return isinstance(name, string_types) and _IDENTIFIER_REGEX.match(name)
 
 
+def check_identifier(name):
+    '''Checks if `name` a valid Python identifier.
+
+    If not, an exception is raised.
+
+    '''
+    if is_valid_identifier(name):
+        return name
+    else:
+        raise ValueError('"%s" is not a valid identifier!' % name)
+
+
 _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 
 

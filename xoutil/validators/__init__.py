@@ -28,6 +28,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from .identifiers import (is_valid_identifier,   # noqa
+                          check_identifier,
                           is_valid_full_identifier,
                           is_valid_public_identifier,
                           is_valid_slug)
