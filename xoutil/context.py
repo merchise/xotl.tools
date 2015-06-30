@@ -131,8 +131,13 @@ class Context(metaclass(MetaContext), StackedDict):
         self.push_level(**data)
         return self
 
-    def __init__(self, name, **data):
-        '''Must be defined empty for parameters compatibility.'''
+    def __init__(self, *args, **kwargs):
+        '''Must be defined empty for `__new__` parameters compatibility.
+
+        Using generic parameters definition allow any redefinition of this
+        class can use this `__init__`.
+
+        '''
 
     def __nonzero__(self):
         return bool(self.count)
