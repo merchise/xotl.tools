@@ -249,11 +249,25 @@ def type_name(obj, affirm=False):
     from xoutil.eight import class_types, string_types
     named_types = class_types + (types.FunctionType, types.MethodType)
     name = '__name__'
+    if isinstance(obj, (staticmethod, classmethod)):
+        fn = get_attr_value(obj, '__func__', None)
+        if fn:
+            obj = fn
     if isinstance(obj, named_types):
+        # TODO: Why not use directly `get_attr_value``
         res = getattr_static(obj, name, None)
-        if res and isdatadescriptor(res):
-            res = res.__get__(obj, type)
+        if res:
+            if isdatadescriptor(res):
+                res = res.__get__(obj, type)
+        else:
+            try:
+                res = obj.__name__
+            except AttributeError:
+                res = None
     else:
+        res = None
+    if res is None:
+        # TODO: Why not use directly `get_attr_value``
         res = getattr_static(obj, name, None)
         if res and isdatadescriptor(res):
             res = res.__get__(obj, type(obj))

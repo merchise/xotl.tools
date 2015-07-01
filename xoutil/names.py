@@ -21,11 +21,7 @@ from __future__ import (division as _py3_division,
 
 
 from xoutil import Undefined as _undef
-
-try:
-    str_base = basestring
-except NameError:
-    str_base = str
+from .eight import base_string
 
 
 def _get_mappings(source):
@@ -195,7 +191,7 @@ def module_name(item):
     from xoutil.inspect import get_attr_value
     if item is None:
         res = ''
-    elif isinstance(item, str_base):
+    elif isinstance(item, base_string):
         res = item
     else:
         res = get_attr_value(item, '__module__', None)
@@ -290,7 +286,7 @@ def nameof(*args, **kwargs):
                     if head:
                         res = '.'.join((head, res))
                 grant(res)
-            elif isinstance(item, (str_base, Number)):
+            elif isinstance(item, (base_string, Number)):
                 grant(str(item))
             else:
                 grant('@'.join(('%(next)s', hex(id(item)))), typed=True)
