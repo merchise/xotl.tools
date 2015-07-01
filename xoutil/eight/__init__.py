@@ -48,16 +48,15 @@ try:
 except NameError:
     base_string = str
 
+string_types = base_string,
 
 if _py3:
-    string_types = str,
     integer_types = int,
     class_types = type,
     text_type = str
     unichr = chr
 else:
     from types import ClassType
-    string_types = basestring,
     integer_types = (int, long)
     class_types = (type, ClassType)
     text_type = unicode
