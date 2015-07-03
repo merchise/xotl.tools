@@ -28,8 +28,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-
-from xoutil._local import local as _local
+from threading import local as _local
 
 from xoutil.objects import metaclass
 from xoutil.collections import StackedDict

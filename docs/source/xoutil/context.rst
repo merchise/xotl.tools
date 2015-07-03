@@ -9,22 +9,12 @@
 
 .. note:: About thread-locals and contexts.
 
-   The `context`:class: uses internally a `thread-local
-   <threading.local>`:class: instance to keep context stacks in different
-   threads from seeing each other.
+   This version (``xoutil-1.6.10+threaded``) does not use the greenlet
+   isolation provided by the standard ``1.6.10``.
 
-   If `greenlet`:mod: is installed greenlet isolation is also warranted (which
-   implies thread isolation).
+   In some environments we have found the greenlet module installed (even
+   required by some packages) but unused (no loop that holds a reference to
+   all greenlets).  In this cases our current implementation fails when the
+   greenlets are garbage-collected.
 
-   If you use collaborative multi-tasking based in other framework other than
-   `greenlet`, you must ensure to monkey patch the `threading.local` class so
-   that isolation is kept.
-
-   In future releases of xoutil, we plan to provide a way to inject a
-   "process" identity manager so that other frameworks be easily integrated.
-
-   .. versionchanged:: 1.6.9 Added direct greenlet isolation and removed the
-      need for `gevent.local`:mod:.
-
-   .. versionadded:: 1.6.8 Uses `gevent.local`:mod: if available to isolate
-      greenlets.
+   This release will always use the ``thread.local``.
