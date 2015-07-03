@@ -359,6 +359,12 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       >>> normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
       True
 
+      >>> normalize_slug('_x', '_') == '_x'
+      True
+
+      >>> normalize_slug('-x', '_') == 'x'
+      True
+
       >>> normalize_slug(None) == 'none'
       True
 
@@ -372,6 +378,9 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       True
 
       >>> normalize_slug(123456, '', invalids='52') == '1346'
+      True
+
+      >>> normalize_slug('_x', '_') == '_x'
       True
 
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
@@ -412,16 +421,19 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     # calculate result
     res = _normalize(value)
     regex = re.compile(r'[^_a-z0-9%s]+' % valids)
-    res = regex.sub(replacement, res)
+    repl = '\t' if replacement else ''
+    res = regex.sub(repl, res)
     if invalids:
         regex = re.compile(r'[%s]+' % invalids)
-        res = regex.sub(replacement, res)
-    if replacement:
-        r = {'r': r'%s' % re.escape(replacement)}
+        res = regex.sub(repl, res)
+    if repl:
+        r = {'r': r'%s' % re.escape(repl)}
         regex = re.compile(r'(%(r)s){2,}' % r)
-        res = regex.sub(replacement, res)
+        res = regex.sub(repl, res)
         regex = re.compile(r'(^%(r)s+|%(r)s+$)' % r)
         res = regex.sub('', res)
+        regex = re.compile(r'[\t]' % r)
+        res = regex.sub(replacement, res)
     return res
 
 

@@ -244,7 +244,8 @@ class OpenDictMixin(object):
 
         '''
         from xoutil.string import normalize_slug
-        return normalize_slug(key, '_')
+        from xoutil.validators import is_valid_identifier
+        return key if is_valid_identifier(key) else normalize_slug(key, '_')
 
 
 class SmartDictMixin(object):

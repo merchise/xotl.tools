@@ -28,3 +28,19 @@ def test_normal_safe_formatter():
     result = f.format(safe_encode('CWD: "{cwd}"; "x+d["x"]": {x+d["x"]}.'),
                       cwd=safe_encode('~/tmp/foóbar'), d=dict(x=1))
     assert 'CWD: "~/tmp/foóbar"; "x+d["x"]": 2.' == result
+
+
+def test_normalize_slug():
+    from xoutil.string import normalize_slug
+    assert normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
+    assert normalize_slug('  Á.e i  Ó  u  ', '.', invalids='AU') == 'e.i.o'
+    assert normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
+    assert normalize_slug('_x', '_') == '_x'
+    assert normalize_slug('-x', '_') == 'x'
+    assert normalize_slug('-x-y-', '_') == 'x_y'
+    assert normalize_slug(None) == 'none'
+    assert normalize_slug(1 == 1)  == 'true'
+    assert normalize_slug(1.0) == '1-0'
+    assert normalize_slug(135) == '135'
+    assert normalize_slug(123456, '', invalids='52') == '1346'
+    assert normalize_slug('_x', '_') == '_x'
