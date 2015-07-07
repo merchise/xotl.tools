@@ -773,6 +773,39 @@ class TestOrderedDict(unittest.TestCase):
         self.assertEqual(list(MyOD(items).items()), items)
 
 
+class TestPascalSet(unittest.TestCase):
+    def test_consistency(self):
+        from random import randint
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        count = 5
+        for test in range(count):
+            size = randint(20, 60)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s1 = PascalSet(*ranges)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s2 = PascalSet(*ranges)
+            ss1 = set(s1)
+            ss2 = set(s2)
+            self.assertEqual(s1, ss1)
+            self.assertEqual(s1 - s2, ss1 - ss2)
+            self.assertEqual(s2 - s1, ss2 - ss1)
+            self.assertEqual(s1 & s2, ss1 & ss2)
+            self.assertEqual(s2 & s1, ss2 & ss1)
+            self.assertEqual(s1 | s2, ss1 | ss2)
+            self.assertEqual(s2 | s1, ss2 | ss1)
+            self.assertEqual(s1 ^ s2, ss1 ^ ss2)
+            self.assertEqual(s2 ^ s1, ss2 ^ ss1)
+            self.assertLess(s1 - s2, s1)
+            self.assertLess(s1 - s2, ss1)
+            self.assertLessEqual(s1 - s2, s1)
+            self.assertLessEqual(s1 - s2, ss1)
+            self.assertGreater(s1, s1 - s2)
+            self.assertGreater(s1, ss1 - ss2)
+            self.assertGreaterEqual(s1, s1 - s2)
+            self.assertGreaterEqual(s1, ss1 - ss2)
+
+
 def test_abcs():
     from xoutil.collections import Container    # noqa
     from xoutil.collections import Iterable    # noqa

@@ -35,21 +35,27 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _absolute_import)
 
-import sys
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 
 from xoutil.deprecation import deprecated
 
-if sys.version_info >= (3, 3):
-    _copy_python_module_members('collections.abc')
+import sys
+_py2 = sys.version_info < (3, 0, 0)
+_py33 = sys.version_info >= (3, 3, 0)
+_py34 = sys.version_info >= (3, 4, 0)
 del sys
+
+if _py33:
+    _copy_python_module_members('collections.abc')
 
 namedtuple = _pm.namedtuple
 MutableMapping = _pm.MutableMapping
 Mapping = _pm.Mapping
 MutableSequence = _pm.MutableSequence
 Sequence = _pm.Sequence
+Set = _pm.Set
+MutableSet = _pm.MutableSet
 _itemgetter = _pm._itemgetter
 _heapq = _pm._heapq
 _chain = _pm._chain
@@ -63,12 +69,6 @@ from collections import defaultdict as _defaultdict
 from xoutil import Unset
 from xoutil.names import strlist as slist
 from xoutil.objects import SafeDataItem as safe
-
-
-import sys
-_py33 = sys.version_info >= (3, 3, 0)
-_py34 = sys.version_info >= (3, 4, 0)
-del sys
 
 
 class defaultdict(_defaultdict):
@@ -1616,6 +1616,554 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         '''
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)
+
+
+class PascalSet(object):
+    '''Collection of unique integer elements.
+
+    PascalSet(*others) -> new set object
+      Each arg could be an integer or any iterable of integers.
+
+    '''
+    __slots__ = ('_items',)
+
+    def __init__(self, *others):
+        '''Initialize self.
+
+        See :class:`PascalSet` help for accurate signature.
+
+        '''
+
+        self.clear()
+        self.update(*others)
+
+    def __str__(self):
+        from xoutil.eight import range
+
+        def aux(s, e):
+            if s == e:
+                return str(s)
+            elif s + 1 == e:
+                return '%s, %s' % (s, e)
+            else:
+                return '%s..%s' % (s, e)
+
+        l = self._items
+        ranges = ((l[i], l[i + 1]) for i in range(0, len(l), 2))
+        return str('{%s}' % ', '.join((aux(s, e) for (s, e) in ranges)))
+
+    def __repr__(self):
+        from xoutil.names import nameof
+        cls = nameof(type(self))
+        return str('%s([%s])' % (cls, ', '.join((str(i) for i in self))))
+
+    def __iter__(self):
+        l = self._items
+        i, count = 0, len(l)
+        while i < count:
+            s, e = l[i], l[i + 1]
+            while s <= e:
+                yield s
+                s += 1
+            i += 2
+
+    def __len__(self):
+        res = 0
+        l = self._items
+        i, count = 0, len(l)
+        while i < count:
+            res += l[i + 1] - l[i] + 1
+            i += 2
+        return res
+
+    def __nonzero__(self):
+        return bool(self._items)
+    __bool__ = __nonzero__
+
+    def __contains__(self, other):
+        '''True if set has an element ``other``, else False.'''
+        return self._search(other)[0]
+
+    def __hash__(self):
+        '''Compute the hash value of a set.'''
+        return Set._hash(self)
+
+    def __eq__(self, other):
+        if isinstance(other, Set):
+            if other:
+                if not isinstance(other, PascalSet):
+                    other = PascalSet(other)
+                return self._items == other._items
+            else:
+                return not self._items
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __gt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                if not isinstance(other, PascalSet):
+                    other = PascalSet(other)
+                ne = not (self._items == other._items)
+                return ne and self.issuperset(other)
+            else:
+                return bool(self._items)
+        else:
+            raise TypeError('can only compare to a set!')
+
+    def __ge__(self, other):
+        if isinstance(other, Set):
+            if other:
+                if not isinstance(other, PascalSet):
+                    other = PascalSet(other)
+                return self.issuperset(other)
+            else:
+                return bool(self._items)
+        else:
+            raise TypeError('can only compare to a set!')
+
+    def __lt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                if not isinstance(other, PascalSet):
+                    other = PascalSet(other)
+                ne = not (self._items == other._items)
+                return ne and self.issubset(other)
+            else:
+                return not self._items
+        else:
+            raise TypeError('can only compare to a set!')
+
+    def __le__(self, other):
+        if isinstance(other, Set):
+            if other:
+                if not isinstance(other, PascalSet):
+                    other = PascalSet(other)
+                return self.issubset(other)
+            else:
+                return not self._items
+        else:
+            raise TypeError('can only compare to a set!')
+
+    def __sub__(self, other):
+        if isinstance(other, Set):
+            return self.difference(other)
+        else:
+            msg = "Unsupported operand type(s) for -: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __isub__(self, other):
+        if isinstance(other, Set):
+            self.difference_update(other)
+            return self
+        else:
+            msg = "Unsupported operand type(s) for -=: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __rsub__(self, other):
+        if isinstance(other, Set):
+            return other - type(other)(self)
+        else:
+            msg = "Unsupported operand type(s) for -: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __and__(self, other):
+        if isinstance(other, Set):
+            return self.intersection(other)
+        else:
+            msg = "Unsupported operand type(s) for &: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __iand__(self, other):
+        if isinstance(other, Set):
+            self.intersection_update(other)
+            return self
+        else:
+            msg = "Unsupported operand type(s) for &=: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __rand__(self, other):
+        if isinstance(other, Set):
+            return other & type(other)(self)
+        else:
+            msg = "Unsupported operand type(s) for &: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __or__(self, other):
+        if isinstance(other, Set):
+            return self.union(other)
+        else:
+            msg = "Unsupported operand type(s) for |: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __ior__(self, other):
+        if isinstance(other, Set):
+            self.update(other)
+            return self
+        else:
+            msg = "Unsupported operand type(s) for |=: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __ror__(self, other):
+        if isinstance(other, Set):
+            return other | type(other)(self)
+        else:
+            msg = "Unsupported operand type(s) for |: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __xor__(self, other):
+        if isinstance(other, Set):
+            return self.symmetric_difference(other)
+        else:
+            msg = "Unsupported operand type(s) for ^: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __ixor__(self, other):
+        if isinstance(other, Set):
+            self.symmetric_difference_update(other)
+            return self
+        else:
+            msg = "Unsupported operand type(s) for ^=: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def __rxor__(self, other):
+        if isinstance(other, Set):
+            return other ^ type(other)(self)
+        else:
+            msg = "Unsupported operand type(s) for ^: 'PascalSet' and '%s'"
+            raise TypeError(msg % type(other).__name__)
+
+    def add(self, other):
+        '''Add an element to a set.
+
+        This has no effect if the element is already present.
+
+        '''
+        self._insert(other)
+
+    def union(self, *others):
+        '''Return the union of sets as a new set.
+
+        (i.e. all elements that are in either set.)
+
+        '''
+        res = PascalSet(self)
+        res.update(*others)
+        return res
+
+    def update(self, *others):
+        '''Update a set with the union of itself and others.'''
+        from xoutil.eight import integer_types
+        for other in others:
+            if isinstance(other, PascalSet):
+                l = other._items
+                if self._items:
+                    count = len(l)
+                    i = 0
+                    while i < count:
+                        self._insert(l[i], l[i + 1])
+                        i += 2
+                else:
+                    self._items = l[:]
+            elif isinstance(other, integer_types):
+                self._insert(other)
+            else:
+                for i in other:
+                    self._insert(i)
+
+    def intersection(self, *others):
+        '''Return the intersection of two or more sets as a new set.
+
+        (i.e. elements that are common to all of the sets.)
+
+        '''
+        res = self.copy()
+        res.intersection_update(*others)
+        return res
+
+    def intersection_update(self, *others):
+        '''Update a set with the intersection of itself and another.'''
+        l = self._items
+        for other in others:
+            if l:
+                if not isinstance(other, PascalSet):
+                    other = PascalSet(other)
+                o = other._items
+                if o:
+                    sl, el = l[0], l[-1]
+                    so, eo = o[0], o[-1]
+                    if sl < so:
+                        self._remove(sl, so - 1)
+                    if eo < el:
+                        self._remove(eo + 1, el)
+                    i = 2
+                    while l and i < len(o):
+                        s, e = o[i - 1] + 1, o[i] - 1
+                        if s <= e:
+                            self._remove(s, e)
+                        i += 2
+                else:
+                    del l[:]
+
+    def difference(self, *others):
+        '''Return the difference of two or more sets as a new set.
+
+        (i.e. all elements that are in this set but not the others.)
+
+        '''
+        res = self.copy()
+        res.difference_update(*others)
+        return res
+
+    def difference_update(self, *others):
+        '''Remove all elements of another set from this set.'''
+        for other in others:
+            if isinstance(other, PascalSet):
+                l = other._items
+                count = len(l)
+                i = 0
+                while i < count:
+                    self._remove(l[i], l[i + 1])
+                    i += 2
+            else:
+                for i in other:
+                    self._remove(i)
+
+    def symmetric_difference(self, other):
+        '''Return the symmetric difference of two sets as a new set.
+
+        (i.e. all elements that are in exactly one of the sets.)
+
+        '''
+        res = self.copy()
+        res.symmetric_difference_update(other)
+        return res
+
+    def symmetric_difference_update(self, other):
+        'Update a set with the symmetric difference of itself and another.'
+        if not isinstance(other, PascalSet):
+            other = PascalSet(other)
+        if self:
+            if other:
+                # TODO: Implement more efficiently
+                aux = other - self
+                self -= other
+                self |= aux
+        else:
+            self._items = other._items[:]
+
+    def discard(self, other):
+        '''Remove an element from a set if it is a member.
+
+        If the element is not a member, do nothing.
+
+        '''
+        self._remove(other)
+
+    def remove(self, other):
+        '''Remove an element from a set; it must be a member.
+
+        If the element is not a member, raise a KeyError.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            if other in self:
+                self._remove(other)
+            else:
+                raise KeyError('"%s" is not a member!' % other)
+        else:
+            msg = 'Unsupported type for argument "%s", must be an integer!'
+            raise TypeError(msg % other)
+
+    def pop(self):
+        '''Remove and return an arbitrary set element.
+
+        Raises KeyError if the set is empty.
+
+        '''
+        l = self._items
+        if l:
+            res = l[0]
+            if l[0] < l[1]:
+                l[0] += 1
+            else:
+                del l[0:2]
+            return res
+        else:
+            raise KeyError('pop from an empty set!')
+
+    def clear(self):
+        '''Remove all elements from this set.'''
+        self._items = []    # a list of list of two elements
+
+    def copy(self):
+        '''Return a shallow copy of a set.'''
+        res = type(self)()
+        res._items = self._items[:]
+        return res
+
+    def isdisjoint(self, other):
+        '''Return True if two sets have a null intersection.'''
+        if isinstance(other, PascalSet):
+            if self and other:
+                l, o = self._items, other._items
+                i, lcount, ocount = 0, len(l), len(o)
+                maybe = True
+                while maybe and i < lcount:
+                    found, idx = other._search(l[i])
+                    if idx == ocount:    # exhausted
+                        # assert not found
+                        i = lcount
+                    elif found or l[i + 1] >= o[idx]:
+                        maybe = False
+                    else:
+                        i += 2
+                return maybe
+            else:
+                return True
+        else:
+            return not any(i in self for i in other)
+
+    def issubset(self, other):
+        '''Report whether another set contains this set.'''
+        if not isinstance(other, PascalSet):
+            other = PascalSet(other)
+        if self:
+            if other:
+                l, o = self._items, other._items
+                i, lcount = 0, len(l)
+                maybe = True
+                while maybe and i < lcount:
+                    found, idx = other._search(l[i])
+                    if found and l[i + 1] <= o[idx + 1]:
+                        i += 2
+                    else:
+                        maybe = False
+                return maybe
+            else:
+                return False
+        else:
+            return True
+
+    def issuperset(self, other):
+        '''Report whether this set contains another set.'''
+        if not isinstance(other, PascalSet):
+            other = PascalSet(other)
+        if other:
+            if self:
+                l, o = self._items, other._items
+                i, ocount = 0, len(o)
+                maybe = True
+                while maybe and i < ocount:
+                    found, idx = self._search(o[i])
+                    if found and o[i + 1] <= l[idx + 1]:
+                        i += 2
+                    else:
+                        maybe = False
+                return maybe
+            else:
+                return False
+        else:
+            return True
+
+    def _search(self, other):
+        '''Search the pair where ``other`` is placed.
+
+        Return a duple :``(if found or not, index)``.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            l = self._items
+            start, end = 0, len(l)
+            res, pivot = False, 2*(end // 4)
+            while not res and start < end:
+                s, e = l[pivot], l[pivot + 1]
+                if other < s:
+                    end = pivot
+                elif other > e:
+                    start = pivot + 2
+                else:
+                    res = True
+                pivot = start + 2*((end - start) // 4)
+            return res, pivot
+        else:
+            msg = 'set elements must be integers, not %s!'
+            raise TypeError(msg % type(other))
+
+    def _insert(self, start, end=None):
+        '''Insert an interval of integers.'''
+        if not end:
+            end = start
+        assert start <= end
+        l = self._items
+        count = len(l)
+        found, idx = self._search(start)
+        if not found:
+            if idx > 0 and start == l[idx - 1] + 1:
+                found = True
+                idx -= 2
+                l[idx + 1] = start
+                if idx < count - 2 and end == l[idx + 2] - 1:
+                    end = l[idx + 3]
+            elif idx < count and end >= l[idx] - 1:
+                found = True
+                l[idx] = start
+        if found:
+            while end > l[idx + 1]:
+                if idx < count - 2 and end >= l[idx + 2] - 1:
+                    if end <= l[idx + 3]:
+                        l[idx + 1] = l[idx + 3]
+                    del l[idx + 2:idx + 4]
+                    count -= 2
+                else:
+                    l[idx + 1] = end
+        else:
+            if idx < count:
+                l.insert(idx, start)
+                l.insert(idx + 1, end)
+            else:
+                l.extend((start, end))
+            count += 2
+
+    def _remove(self, start, end=None):
+        '''Remove an interval of integers.'''
+        if not end:
+            end = start
+        assert start <= end
+        l = self._items
+        sfound, sidx = self._search(start)
+        efound, eidx = self._search(end)
+        if sfound and efound and sidx == eidx:
+            first = l[sidx] < start
+            last = l[eidx + 1] > end
+            if first and last:
+                l.insert(eidx + 1, end + 1)
+                l.insert(sidx + 1, start - 1)
+            elif first:
+                l[sidx + 1] = start - 1
+            elif last:
+                l[eidx] = end + 1
+            else:
+                del l[sidx:eidx + 2]
+        else:
+            if sfound and l[sidx] < start:
+                l[sidx + 1] = start - 1
+                sidx += 2
+            if efound:
+                if l[eidx + 1] > end:
+                    l[eidx] = end + 1
+                else:
+                    eidx += 2
+            if sidx < eidx:
+                del l[sidx:eidx]
+
+
+MutableSet.register(PascalSet)
 
 # get rid of unused global variables
 del slist, _py33, _py34
