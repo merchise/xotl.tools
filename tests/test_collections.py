@@ -774,6 +774,7 @@ class TestOrderedDict(unittest.TestCase):
 
 
 class TestPascalSet(unittest.TestCase):
+
     def test_consistency(self):
         from random import randint
         from xoutil.eight import range
@@ -804,6 +805,15 @@ class TestPascalSet(unittest.TestCase):
             self.assertGreater(s1, ss1 - ss2)
             self.assertGreaterEqual(s1, s1 - s2)
             self.assertGreaterEqual(s1, ss1 - ss2)
+
+    def test_syntax_sugar(self):
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet as srange
+        s1 = srange[1:4, 9, 15:18]
+        s2 = srange[3:18]
+        self.assertEqual(str(s1), '{1..3, 9, 15..17}')
+        self.assertEqual(str(s1 ^ s2), '{1, 2, 4..8, 10..14}')
+        self.assertEqual(list(srange[3:18]), list(range(3, 18)))
 
 
 def test_abcs():

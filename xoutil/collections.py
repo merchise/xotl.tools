@@ -69,6 +69,7 @@ from collections import defaultdict as _defaultdict
 from xoutil import Unset
 from xoutil.names import strlist as slist
 from xoutil.objects import SafeDataItem as safe
+from xoutil.eight.meta import metaclass
 
 
 class defaultdict(_defaultdict):
@@ -1618,11 +1619,25 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         self.update(*args, **kwds)
 
 
-class PascalSet(object):
+class MetaSet(type):
+    '''Allow syntax sugar creating sets.
+
+    This is pythonic syntax (stop limit is never included), for example::
+
+        >>> from xoutil.collections import Pascalset as srange
+        >>> [i for i in srange[1:4, 15, 20:23]]
+        [1, 2, 3, 15, 20, 21, 22, 23]
+
+    '''
+    def __getitem__(cls, ranges):
+        return cls(*ranges) if isinstance(ranges, tuple) else cls(ranges)
+
+
+class PascalSet(object, metaclass(MetaSet)):
     '''Collection of unique integer elements.
 
     PascalSet(*others) -> new set object
-      Each arg could be an integer or any iterable of integers.
+      Each arg could be an integer, slice or any iterable of integers.
 
     '''
     __slots__ = ('_items',)
@@ -1653,9 +1668,9 @@ class PascalSet(object):
         return str('{%s}' % ', '.join((aux(s, e) for (s, e) in ranges)))
 
     def __repr__(self):
-        from xoutil.names import nameof
-        cls = nameof(type(self))
-        return str('%s([%s])' % (cls, ', '.join((str(i) for i in self))))
+        cls = type(self)
+        cname = cls.__name__
+        return str('%s([%s])' % (cname, ', '.join((str(i) for i in self))))
 
     def __iter__(self):
         l = self._items
@@ -1856,7 +1871,7 @@ class PascalSet(object):
 
     def update(self, *others):
         '''Update a set with the union of itself and others.'''
-        from xoutil.eight import integer_types
+        from xoutil.eight import integer_types, range
         for other in others:
             if isinstance(other, PascalSet):
                 l = other._items
@@ -1870,6 +1885,18 @@ class PascalSet(object):
                     self._items = l[:]
             elif isinstance(other, integer_types):
                 self._insert(other)
+            elif isinstance(other, slice):
+                start, stop, step = other.start, other.stop, other.step
+                if step is None:
+                    step = 1
+                if step in (1, -1):
+                    stop -= step
+                    if step == -1:
+                        start, stop = stop, start
+                    self._insert(start, stop)
+                else:
+                    for i in range(start, stop, step):
+                        self._insert(i)
             else:
                 for i in other:
                     self._insert(i)
@@ -2166,5 +2193,5 @@ class PascalSet(object):
 MutableSet.register(PascalSet)
 
 # get rid of unused global variables
-del slist, _py33, _py34
+del slist, _py2, _py33, _py34, metaclass
 del deprecated
