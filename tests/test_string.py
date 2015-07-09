@@ -30,6 +30,16 @@ def test_normal_safe_formatter():
     assert 'CWD: "~/tmp/foóbar"; "x+d["x"]": 2.' == result
 
 
+def test_safe_string():
+    from xoutil.string import safe_str
+    from xoutil.eight import _py2
+    aux = lambda x: 2*x + 1
+    name = 'λ x: 2*x + 1'
+    aux.__name__ = safe_str(name)
+    delta = 1 if _py2 else 0
+    assert len(aux.__name__) == len(name) + delta
+
+
 def test_normalize_slug():
     from xoutil.string import normalize_slug
     assert normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
@@ -39,7 +49,7 @@ def test_normalize_slug():
     assert normalize_slug('-x', '_') == 'x'
     assert normalize_slug('-x-y-', '_') == 'x_y'
     assert normalize_slug(None) == 'none'
-    assert normalize_slug(1 == 1)  == 'true'
+    assert normalize_slug(1 == 1) == 'true'
     assert normalize_slug(1.0) == '1-0'
     assert normalize_slug(135) == '135'
     assert normalize_slug(123456, '', invalids='52') == '1346'

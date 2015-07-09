@@ -46,7 +46,7 @@ from xoutil.deprecation import deprecated as _deprecated
 from xoutil.eight import (string_types as _str_base,
                           text_type as _unicode,
                           binary_type as _bytes,    # TODO: Not necessary
-                          _py3)
+                          _py2, _py3)
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -115,6 +115,35 @@ def safe_encode(u, encoding=None):
                 return _unicode(u).encode(encoding, 'replace')
         except:
             return _unicode(u).encode(encoding, 'replace')
+
+
+if _py3:
+    safe_str = str
+else:
+    def safe_str(value):
+        '''Our code uses unicode as normal string in Python 2.x.
+
+        There are some scenarios the require `str` type (for example attribute
+        ``__name__`` in functions and types).
+
+        As ``str is bytes`` in Python2, using str(value) assures correct these
+        scenarios in most cases, for example::
+
+          >>> from xoutil.string import safe_str as sstr
+          >>> def inverted_partial(func, *args, **keywords):
+          ...     def inner(*a, **kw):
+          ...         a += args
+          ...         kw.update(keywords)
+          ...         return func(*a, **kw)
+          ...     inner.__name__ = sstr(func.__name__.replace('lambda', 'λ'))
+          ...     return inner
+
+        '''
+        try:
+            return str(value)
+        except UnicodeEncodeError:
+            # assert isinstance(value, unicode)
+            return safe_encode(value)
 
 
 def safe_join(separator, iterable, encoding=None):
