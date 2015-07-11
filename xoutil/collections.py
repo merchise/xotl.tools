@@ -50,6 +50,9 @@ if _py33:
     _copy_python_module_members('collections.abc')
 
 namedtuple = _pm.namedtuple
+Sized = _pm.Sized
+Container = _pm.Container
+Iterable = _pm.Iterable
 MutableMapping = _pm.MutableMapping
 Mapping = _pm.Mapping
 MutableSequence = _pm.MutableSequence
@@ -1624,7 +1627,7 @@ class MetaSet(type):
 
     This is pythonic syntax (stop limit is never included), for example::
 
-        >>> from xoutil.collections import Pascalset as srange
+        >>> from xoutil.collections import PascalSet as srange
         >>> [i for i in srange[1:4, 15, 20:23]]
         [1, 2, 3, 15, 20, 21, 22, 23]
 
@@ -1637,7 +1640,6 @@ class PascalSet(object, metaclass(MetaSet)):
     '''Collection of unique integer elements.
 
     PascalSet(*others) -> new set object
-      Each arg could be an integer, slice or any iterable of integers.
 
     '''
     __slots__ = ('_items',)
@@ -1645,11 +1647,11 @@ class PascalSet(object, metaclass(MetaSet)):
     def __init__(self, *others):
         '''Initialize self.
 
-        See :class:`PascalSet` help for accurate signature.
+        :param others: Any number of integer or collection of integers that
+               will be the set members.
 
         '''
-
-        self.clear()
+        self._items = []    # a list of list of two elements
         self.update(*others)
 
     def __str__(self):
@@ -1697,20 +1699,41 @@ class PascalSet(object, metaclass(MetaSet)):
 
     def __contains__(self, other):
         '''True if set has an element ``other``, else False.'''
-        return self._search(other)[0]
+        from xoutil.eight import integer_types
+        return isinstance(other, integer_types) and self._search(other)[0]
 
     def __hash__(self):
         '''Compute the hash value of a set.'''
         return Set._hash(self)
 
+    if _py2:
+        def __cmp__(self, other):
+            # Python 3 automatically generate a TypeError when no mechanism is
+            # found by returning `NotImplemented` special value.  In Python 2
+            # this patch method must be generated
+            sname = type(self).__name__
+            oname = type(other).__name__
+            msg = 'unorderable types: "%s" and "%s"!'
+            raise TypeError(msg % (sname, oname))
+
     def __eq__(self, other):
+        '''Python 2 and 3 have several differences in operator definitions.
+
+        For example::
+
+          >>> from xoutil.collections import PascalSet
+          >>> s1 = PascalSet[0:10]
+          >>> assert s1 == set(s1)    # OK (True) in 2 and 3
+          >>> assert set(s1) == s1    # OK in 3, fails in 2
+
+        '''
         if isinstance(other, Set):
-            if other:
-                if not isinstance(other, PascalSet):
-                    other = PascalSet(other)
-                return self._items == other._items
-            else:
-                return not self._items
+            ls, lo = len(self), len(other)
+            if ls == lo:
+                if isinstance(other, PascalSet):
+                    return self._items == other._items
+                else:
+                    return self.count(other) == ls
         else:
             return False
 
@@ -1720,136 +1743,129 @@ class PascalSet(object, metaclass(MetaSet)):
     def __gt__(self, other):
         if isinstance(other, Set):
             if other:
-                if not isinstance(other, PascalSet):
-                    other = PascalSet(other)
-                ne = not (self._items == other._items)
-                return ne and self.issuperset(other)
+                return self.issuperset(other) and len(self) > len(other)
             else:
                 return bool(self._items)
         else:
-            raise TypeError('can only compare to a set!')
+            return NotImplemented
 
     def __ge__(self, other):
         if isinstance(other, Set):
             if other:
-                if not isinstance(other, PascalSet):
-                    other = PascalSet(other)
                 return self.issuperset(other)
             else:
                 return bool(self._items)
         else:
-            raise TypeError('can only compare to a set!')
+            return NotImplemented
 
     def __lt__(self, other):
         if isinstance(other, Set):
             if other:
-                if not isinstance(other, PascalSet):
-                    other = PascalSet(other)
-                ne = not (self._items == other._items)
-                return ne and self.issubset(other)
+                return self.issubset(other) and len(self) < len(other)
             else:
                 return not self._items
         else:
-            raise TypeError('can only compare to a set!')
+            return NotImplemented
 
     def __le__(self, other):
         if isinstance(other, Set):
             if other:
-                if not isinstance(other, PascalSet):
-                    other = PascalSet(other)
                 return self.issubset(other)
             else:
                 return not self._items
         else:
-            raise TypeError('can only compare to a set!')
+            return NotImplemented
 
     def __sub__(self, other):
         if isinstance(other, Set):
             return self.difference(other)
         else:
-            msg = "Unsupported operand type(s) for -: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __isub__(self, other):
         if isinstance(other, Set):
             self.difference_update(other)
             return self
         else:
-            msg = "Unsupported operand type(s) for -=: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __rsub__(self, other):
         if isinstance(other, Set):
             return other - type(other)(self)
         else:
-            msg = "Unsupported operand type(s) for -: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __and__(self, other):
         if isinstance(other, Set):
             return self.intersection(other)
         else:
-            msg = "Unsupported operand type(s) for &: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __iand__(self, other):
         if isinstance(other, Set):
             self.intersection_update(other)
             return self
         else:
-            msg = "Unsupported operand type(s) for &=: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __rand__(self, other):
         if isinstance(other, Set):
             return other & type(other)(self)
         else:
-            msg = "Unsupported operand type(s) for &: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __or__(self, other):
         if isinstance(other, Set):
             return self.union(other)
         else:
-            msg = "Unsupported operand type(s) for |: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __ior__(self, other):
         if isinstance(other, Set):
             self.update(other)
             return self
         else:
-            msg = "Unsupported operand type(s) for |=: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __ror__(self, other):
         if isinstance(other, Set):
             return other | type(other)(self)
         else:
-            msg = "Unsupported operand type(s) for |: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __xor__(self, other):
         if isinstance(other, Set):
             return self.symmetric_difference(other)
         else:
-            msg = "Unsupported operand type(s) for ^: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __ixor__(self, other):
         if isinstance(other, Set):
             self.symmetric_difference_update(other)
             return self
         else:
-            msg = "Unsupported operand type(s) for ^=: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
 
     def __rxor__(self, other):
         if isinstance(other, Set):
             return other ^ type(other)(self)
         else:
-            msg = "Unsupported operand type(s) for ^: 'PascalSet' and '%s'"
-            raise TypeError(msg % type(other).__name__)
+            return NotImplemented
+
+    def count(self, other):
+
+        '''Number of occurrences of any member of other in this set.
+
+        If other is an integer, return 1 if present, 0 if not.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            return 1 if other in self else 0
+        else:
+            from operator import add
+            from functools import reduce
+            return reduce(add, (i in self for i in other), 0)
 
     def add(self, other):
         '''Add an element to a set.
@@ -1865,7 +1881,7 @@ class PascalSet(object, metaclass(MetaSet)):
         (i.e. all elements that are in either set.)
 
         '''
-        res = PascalSet(self)
+        res = self.copy()
         res.update(*others)
         return res
 
@@ -1885,6 +1901,9 @@ class PascalSet(object, metaclass(MetaSet)):
                     self._items = l[:]
             elif isinstance(other, integer_types):
                 self._insert(other)
+            elif isinstance(other, Iterable):
+                for i in other:
+                    self._insert(i)
             elif isinstance(other, slice):
                 start, stop, step = other.start, other.stop, other.step
                 if step is None:
@@ -1898,8 +1917,7 @@ class PascalSet(object, metaclass(MetaSet)):
                     for i in range(start, stop, step):
                         self._insert(i)
             else:
-                for i in other:
-                    self._insert(i)
+                raise self._invalid_value(other)
 
     def intersection(self, *others):
         '''Return the intersection of two or more sets as a new set.
@@ -1913,11 +1931,13 @@ class PascalSet(object, metaclass(MetaSet)):
 
     def intersection_update(self, *others):
         '''Update a set with the intersection of itself and another.'''
+        from xoutil.eight import integer_types as ints
         l = self._items
         for other in others:
             if l:
                 if not isinstance(other, PascalSet):
-                    other = PascalSet(other)
+                    # safe mode of safe for intersection
+                    other = PascalSet(i for i in other if isinstance(i, ints))
                 o = other._items
                 if o:
                     sl, el = l[0], l[-1]
@@ -1956,8 +1976,10 @@ class PascalSet(object, metaclass(MetaSet)):
                     self._remove(l[i], l[i + 1])
                     i += 2
             else:
+                from xoutil.eight import integer_types
                 for i in other:
-                    self._remove(i)
+                    if isinstance(i, integer_types):
+                        self._remove(i)
 
     def symmetric_difference(self, other):
         '''Return the symmetric difference of two sets as a new set.
@@ -1996,15 +2018,10 @@ class PascalSet(object, metaclass(MetaSet)):
         If the element is not a member, raise a KeyError.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
-            if other in self:
-                self._remove(other)
-            else:
-                raise KeyError('"%s" is not a member!' % other)
+        if other in self:
+            self._remove(other)
         else:
-            msg = 'Unsupported type for argument "%s", must be an integer!'
-            raise TypeError(msg % other)
+            raise KeyError('"%s" is not a member!' % other)
 
     def pop(self):
         '''Remove and return an arbitrary set element.
@@ -2025,13 +2042,11 @@ class PascalSet(object, metaclass(MetaSet)):
 
     def clear(self):
         '''Remove all elements from this set.'''
-        self._items = []    # a list of list of two elements
+        self._items = []
 
     def copy(self):
         '''Return a shallow copy of a set.'''
-        res = type(self)()
-        res._items = self._items[:]
-        return res
+        return type(self)(self)
 
     def isdisjoint(self, other):
         '''Return True if two sets have a null intersection.'''
@@ -2057,45 +2072,63 @@ class PascalSet(object, metaclass(MetaSet)):
 
     def issubset(self, other):
         '''Report whether another set contains this set.'''
-        if not isinstance(other, PascalSet):
-            other = PascalSet(other)
-        if self:
-            if other:
-                l, o = self._items, other._items
-                i, lcount = 0, len(l)
-                maybe = True
-                while maybe and i < lcount:
-                    found, idx = other._search(l[i])
-                    if found and l[i + 1] <= o[idx + 1]:
-                        i += 2
-                    else:
-                        maybe = False
-                return maybe
+        ls = len(self)
+        if isinstance(other, PascalSet):
+            if self:
+                if ls > len(other):  # Fast check for obvious cases
+                    return False
+                else:
+                    l, o = self._items, other._items
+                    i, lcount = 0, len(l)
+                    maybe = True
+                    while maybe and i < lcount:
+                        found, idx = other._search(l[i])
+                        if found and l[i + 1] <= o[idx + 1]:
+                            i += 2
+                        else:
+                            maybe = False
+                    return maybe
             else:
-                return False
+                return True
+        elif isinstance(other, Sized) and ls > len(other):
+            # Fast check for obvious cases
+            return False
+        elif isinstance(other, Container):
+            aux = next((i for i in self if i not in other), Unset)
+            return aux is Unset
         else:
-            return True
+            # Generator cases
+            from operator import add
+            from functools import reduce
+            lo = reduce(add, (i in self for i in other), 0)
+            return lo == ls
 
     def issuperset(self, other):
         '''Report whether this set contains another set.'''
-        if not isinstance(other, PascalSet):
-            other = PascalSet(other)
-        if other:
-            if self:
-                l, o = self._items, other._items
-                i, ocount = 0, len(o)
-                maybe = True
-                while maybe and i < ocount:
-                    found, idx = self._search(o[i])
-                    if found and o[i + 1] <= l[idx + 1]:
-                        i += 2
-                    else:
-                        maybe = False
-                return maybe
+        ls = len(self)
+        if isinstance(other, PascalSet):
+            if other:
+                if ls < len(other):  # Fast check for obvious cases
+                    return False
+                else:
+                    l, o = self._items, other._items
+                    i, ocount = 0, len(o)
+                    maybe = True
+                    while maybe and i < ocount:
+                        found, idx = self._search(o[i])
+                        if found and o[i + 1] <= l[idx + 1]:
+                            i += 2
+                        else:
+                            maybe = False
+                    return maybe
             else:
-                return False
+                return True
+        elif isinstance(other, Sized) and ls < len(other):
+            # Fast check for obvious cases
+            return False
         else:
-            return True
+            aux = next((i for i in other if i not in self), Unset)
+            return aux is Unset
 
     def _search(self, other):
         '''Search the pair where ``other`` is placed.
@@ -2119,8 +2152,7 @@ class PascalSet(object, metaclass(MetaSet)):
                 pivot = start + 2*((end - start) // 4)
             return res, pivot
         else:
-            msg = 'set elements must be integers, not %s!'
-            raise TypeError(msg % type(other))
+            raise self._invalid_value(other)
 
     def _insert(self, start, end=None):
         '''Insert an interval of integers.'''
@@ -2188,6 +2220,13 @@ class PascalSet(object, metaclass(MetaSet)):
                     eidx += 2
             if sidx < eidx:
                 del l[sidx:eidx]
+
+    def _invalid_value(self, value):
+        cls_name = type(self).__name__
+        vname = type(value).__name__
+        msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
+               'must be an integer!')
+        return TypeError(msg % (value, vname, cls_name))
 
 
 MutableSet.register(PascalSet)

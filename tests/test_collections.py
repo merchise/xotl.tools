@@ -808,12 +808,69 @@ class TestPascalSet(unittest.TestCase):
 
     def test_syntax_sugar(self):
         from xoutil.eight import range
-        from xoutil.collections import PascalSet as srange
-        s1 = srange[1:4, 9, 15:18]
-        s2 = srange[3:18]
+        from xoutil.collections import PascalSet
+        s1 = PascalSet[1:4, 9, 15:18]
+        s2 = PascalSet[3:18]
         self.assertEqual(str(s1), '{1..3, 9, 15..17}')
         self.assertEqual(str(s1 ^ s2), '{1, 2, 4..8, 10..14}')
-        self.assertEqual(list(srange[3:18]), list(range(3, 18)))
+        self.assertEqual(list(PascalSet[3:18]), list(range(3, 18)))
+
+    def test_operators(self):
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        g = lambda s: (i for i in s)
+        s1 = PascalSet[1:4, 9, 15:18]
+        r1 = range(1, 18)
+        s2 = PascalSet(s1, 20)
+        self.assertTrue(s1.issubset(s1))
+        self.assertTrue(s1.issubset(set(s1)))
+        self.assertTrue(s1.issubset(list(s1)))
+        self.assertTrue(s1.issubset(g(s1)))
+        self.assertTrue(s1.issubset(r1))
+        self.assertTrue(s1.issubset(set(r1)))
+        self.assertTrue(s1.issubset(list(r1)))
+        self.assertTrue(s1.issubset(g(r1)))
+        self.assertTrue(s2.issuperset(s2))
+        self.assertTrue(s2.issuperset(s1))
+        self.assertTrue(s2.issuperset(set(s1)))
+        self.assertTrue(s2.issuperset(list(s1)))
+        self.assertTrue(s2.issuperset(g(s1)))
+        self.assertTrue(s1 <= set(s1))
+        self.assertTrue(s1 < s2)
+        self.assertTrue(s1 <= s2)
+        self.assertTrue(s1 < set(s2))
+        self.assertTrue(s1 <= set(s2))
+        self.assertTrue(s1 < set(r1))
+        self.assertTrue(s1 <= set(r1))
+        self.assertTrue(s2 >= s2)
+        self.assertTrue(s2 >= set(s2))
+        self.assertTrue(s2 > s1)
+        self.assertTrue(s2 > set(s1))
+        self.assertTrue(s2 >= s1)
+        self.assertTrue(s2 >= set(s1))
+
+    def test_errors(self):
+        '''Test that stacked.pop has the same semantics has dict.pop.'''
+        from xoutil.collections import PascalSet
+        s1 = PascalSet[1:4, 9, 15:18]
+        s2 = PascalSet(s1, 20)
+        self.assertLess(s1, s2)
+        try:
+            if s1 < list(s2):
+                state = 'less'
+            else:
+                state = 'not-less'
+        except TypeError:
+            state = 'TypeError'
+        self.assertEqual(state, 'TypeError')
+        with self.assertRaises(TypeError):
+            if s1 < set(s2):
+                state = 'ok'
+            if s1 < list(s2):
+                state = 'safe-less'
+            else:
+                state = 'safe-not-less'
+        self.assertEqual(state, 'ok')
 
 
 def test_abcs():
