@@ -48,7 +48,7 @@ def _get_checker_name(checker):
         return l('_OR_')
     else:
         from xoutil.inspect import type_name
-        res = type_name(checker)
+        res = type_name(checker, affirm=True)
         if not isinstance(checker, type):
             assert callable(checker)
             if 'lambda' in res:
@@ -93,7 +93,7 @@ def predicate(*checkers, **kwargs):
         ``{value}`` and ``{type}``; a default value is used if this argument
         is not given.
 
-    :param force_name: Keyword argument to force a name is not given.
+    :param force_name: Keyword argument to force a name if not given.
 
     With this function could be built real type checkers, for example::
 
@@ -202,11 +202,14 @@ def ok(value, *checkers, **kwargs):
         considered valid, all checkers must validate the value.
 
     :param message: keyword argument to be used in case of error; will be the
-        argument of `ValueError` exception; could contain the placeholders
-        ``{value}`` and ``{type}``; a default value is used if this argument
-        is not given.
+           argument of `ValueError` exception; could contain the placeholders
+           ``{value}`` and ``{type}``; a default value is used if this
+           argument is not given.
 
     :param msg: an alias for "message"
+
+    :param extra_checkers: In order to create validators using `partial`.
+           Must be a tuple.
 
     Keyword arguments are not validated to be correct.
 
@@ -235,7 +238,8 @@ def ok(value, *checkers, **kwargs):
       '---'
 
     '''
-    pred = predicate(*checkers)
+    extra_checkers = kwargs.get('extra_checkers', ())
+    pred = predicate(*(checkers + extra_checkers))
     if pred(value):
         return value
     else:
@@ -244,3 +248,21 @@ def ok(value, *checkers, **kwargs):
         msg = next(get(kwargs, 'message', 'msg'), 'Invalid {type}: {value}!')
         msg = msg.format(value=value, type=type_name(value, affirm=True))
         raise ValueError(msg)
+
+
+def check_no_extra_kwargs(kwargs):
+    '''Check that no extra keyword arguments are still not processed.
+
+    For example::
+
+      >>> from xoutil.validators import check_no_extra_kwargs
+      >>> def only_safe_arg(**kwargs):
+      ...     safe = kwargs.pop('safe', False)
+      ...     check_no_extra_kwargs(kwargs)
+      ...     print('OK for safe:', safe)
+
+    '''
+    if kwargs:
+        plural = '' if len(kwargs) == 1 else 's'
+        msg = 'Unexpected keyword argument%s: "%s"!'
+        raise TypeError(msg % (plural, ', '.join(kwargs)))
