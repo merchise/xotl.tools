@@ -66,6 +66,11 @@ except AttributeError:
         return obj.__class__ if old else type(obj)
 
     def _static_getmro(klass):
+        '''Get a reasonable method resolution order of a class.
+
+        Works well for both old-style and new-style classes.
+
+        '''
         try:
             old_class_type = types.ClassType
         except AttributeError:
