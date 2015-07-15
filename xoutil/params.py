@@ -71,14 +71,11 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
-from xoutil.logical import Logical as InvalidType
-
-Invalid = InvalidType('Invalid')
+ xoutil.values import Invalid
 
 
 # Scheme concept validators: Each one checks if a value is compliant or not
 # with determined scheme concept.
-
 
 def _is_checker(value):
     '''Determine if a value is a position definition or not.'''
