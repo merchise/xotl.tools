@@ -107,3 +107,9 @@ try:
 except NameError:
     def callable(obj):
         return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
+
+
+if _py3:
+    from io import StringIO
+else:
+    from StringIO import StringIO    # noqa
