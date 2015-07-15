@@ -119,6 +119,7 @@ def safe_encode(u, encoding=None):
 
 if _py3:
     safe_str = str
+    safe_repr = repr
 else:
     def safe_str(value):
         '''Our code uses unicode as normal string in Python 2.x.
@@ -144,6 +145,18 @@ else:
         except UnicodeEncodeError:
             # assert isinstance(value, unicode)
             return safe_encode(value)
+
+    def safe_repr(value):
+        '''Our code uses unicode as normal string in Python 2.x.
+
+        This will convert all results of standard Python `repr` function, to
+        safe string (`str` type) if returned as unicode value.
+
+        '''
+        res = safe_str(repr(value))
+        if res.startswith('u"') or res.startswith("u'"):
+            res = res[1:]
+        return res
 
 
 def safe_join(separator, iterable, encoding=None):
