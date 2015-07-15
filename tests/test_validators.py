@@ -17,7 +17,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 import sys
-from xoutil.validators.args import ParamConformer, Invalid
+from xoutil.params import ParamConformer, Invalid
 
 
 from xoutil.eight import string_types

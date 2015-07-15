@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.validators.args
+# xoutil.params
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -15,7 +15,7 @@
 # Created 2015-07-13
 
 
-'''This validator will check for function parameter passing.
+'''Conformer for function parameter passing.
 
 It's usual to declare functions with generic prototypes::
 
@@ -114,7 +114,7 @@ def _is_pos(value):
 
 def _is_aliases(value):
     '''Determine if a value is an aliases definition or not.'''
-    from .identifiers import is_valid_identifier as valid
+    from xoutil.validators.identifiers import is_valid_identifier as valid
     if isinstance(value, set) and all(valid(a) for a in value):
         return value
     else:
@@ -154,7 +154,7 @@ class ParamConformer(object):
         from xoutil import Unset
         from xoutil.collections import Mapping
         from xoutil.eight import zip
-        from .identifiers import is_valid_identifier
+        from xoutil.validators.identifiers import is_valid_identifier
         parsers = {n: c for n, c in zip(_CONCEPT_NAMES, _CONCEPT_VALIDATORS)}
         defaults = {n: c for n, c in zip(_CONCEPT_NAMES, _CONCEPT_DEFAULTS)}
         if scheme and isinstance(scheme, Mapping):
@@ -365,7 +365,7 @@ class ParamConformer(object):
 
 
 if __name__ == '__main__':
-    print('Testing module "xoutil.validators.args"')
+    print('Testing module "xoutil.params"')
 
     import sys
     from xoutil.eight import string_types
