@@ -1734,6 +1734,8 @@ class PascalSet(object, metaclass(MetaSet)):
                     return self._items == other._items
                 else:
                     return self.count(other) == ls
+            else:
+                return False
         else:
             return False
 
