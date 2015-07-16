@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# tests.test_validators
+# tests.test_params
 #----------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -17,40 +17,22 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 import sys
-from xoutil.params import ParamConformer, Invalid
+from xoutil.params import ParamConformer
 
 
 from xoutil.eight import string_types
-
-
-def check_file_like(arg):
-    from xoutil.eight.io import is_file_like
-    return arg if is_file_like(arg) else Invalid
-
-
-def check_positive_int(arg):
-    from xoutil.eight import integer_types, string_types
-    if isinstance(arg, integer_types):
-        return arg if arg >= 0 else Invalid
-    elif isinstance(arg, string_types):
-        try:
-            arg = int(arg)
-            return arg if arg >= 0 else Invalid
-        except ValueError:
-            return Invalid
-    else:
-        return Invalid
+from xoutil.values import file_coerce, positive_int_coerce
 
 sample_scheme = {
-    'stream': (check_file_like, {0, 3}, {'output'}, sys.stdout),
-    'indent': (check_positive_int, {1}, 1),
-    'width': (check_positive_int, {2}, {'max_width'}, 79),
+    'stream': (file_coerce, {0, 3}, {'output'}, sys.stdout),
+    'indent': (positive_int_coerce, {1}, 1),
+    'width': (positive_int_coerce, {2}, {'max_width'}, 79),
     'newline': (string_types, '\n'), }
 
-del check_file_like, check_positive_int, string_types
+del file_coerce, positive_int_coerce, string_types
 
 
-def test_basic_args():
+def test_basic_params():
     conformer = ParamConformer(sample_scheme)
 
     def get_values(*args, **kwargs):
@@ -64,7 +46,6 @@ def test_basic_args():
             res[key] = value
         return res
 
-    res = get_values(4, 80)
     assert get_values(4, 80) == foobar(indent=4, width=80)
     assert get_values(2) == foobar(indent=2)
     assert get_values(80, indent=4,
@@ -81,7 +62,7 @@ def test_basic_args():
     assert get_values(4, max_width=80) == foobar(indent=4, width=80)
 
 
-def test_args_errors():
+def test_param_errors():
     conformer = ParamConformer(sample_scheme)
 
     def get_values(*args, **kwargs):
@@ -102,9 +83,9 @@ def test_args_errors():
         pass
     except:
         assert False, 'Should have raised an TypeError'
-    conformer = ParamConformer(sample_scheme, strict=True)
+    conformer = ParamConformer(sample_scheme, __strict__=True)
     try:
-        get_values(80, indent=4, extra="I'm OK!")
+        get_values(80, indent=4, extra="I'm not OK!")
         assert False, 'Should raise ValueError'
     except ValueError:
         pass

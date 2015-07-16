@@ -97,6 +97,9 @@ class Predicate(object):
 
     Any other value will return False (fail).
 
+    .. note:: Above definition is controversial, maybe a exception must be
+              raised if a invalid checker is used.
+
     With this class, it could be built real type checkers, for example::
 
       >>> from xoutil.predicate import Predicate as pp

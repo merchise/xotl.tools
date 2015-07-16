@@ -53,18 +53,22 @@ def coercer(func):
     return func
 
 
-def check(coercer, arg):
+def check(coerce, arg):
     '''Coerce `arg`; if invalid raises a TypeError.
 
     See `create_int_range_coerce`:func: for an example.
 
     '''
-    res = coercer(arg)
+    res = coerce(arg)
     if res is not Invalid:
         return res
     else:
+        suffix = str('_coerce')
+        name = coerce.__name__
+        if name.endswith(suffix):
+            name = name[:-len(suffix)]
         msg = 'Value "{}" is not coerced by "{}".'
-        raise TypeError(msg.format(arg, coercer.__name__))
+        raise TypeError(msg.format(arg, name))
 
 
 @coercer
@@ -192,7 +196,7 @@ def full_identifier_coerce(arg):
     return str(arg) if ok else Invalid
 
 
-class CoercerType(type):
+class MetaCoercer(type):
     '''Meta-class for `Coercer`.
 
     This allow that a function marker with the decorator `coercer` is
@@ -211,7 +215,7 @@ class CoercerType(type):
         return getattr(instance, '__coercer__', False)
 
 
-class Coercer(metaclass(CoercerType)):
+class Coercer(metaclass(MetaCoercer)):
     '''Create a coercer from a set of checker sources.
 
     Possible sources are:
@@ -225,6 +229,9 @@ class Coercer(metaclass(CoercerType)):
 
     When `Invalid` is returned caused by an exception, that is saved in
     `last_exception` variable.
+
+    This class also serves to check where any callable is a coercer or not.
+    See `MetaCoercer`:class: for more information.
 
     .. [#pred] See `xoutil.connote.Predicate`:class: on how to define rich
                checkers.
@@ -247,14 +254,12 @@ class Coercer(metaclass(CoercerType)):
                 self.last_exception = None
                 return self
             else:
-                msg = 'Checker must be a callable, a type or tuple of types.'
-                raise TypeError(msg)
+                return Invalid
 
     def __init__(self, checker):
         pass
 
     def __call__(self, arg):
-        self.last_exception = None
         checker = self.checker
         if isinstance(checker, tuple):
             return arg if isinstance(arg, checker) else Invalid
@@ -262,7 +267,7 @@ class Coercer(metaclass(CoercerType)):
             try:
                 return arg if checker(arg) else Invalid
             except BaseException as error:
-                self.last_exception = error
+                self.last_exception = (error, arg)
                 return Invalid
 
 

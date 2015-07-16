@@ -47,7 +47,7 @@ tool to solve argument identification from a definition in a dictionary::
   could be used as keyword names.
 
 - default: The default value to use if the argument is not given. The special
-  value `Invalid` is used to specify that the parameter is required.
+  value `Undefined` is used to specify that the parameter is required.
 
 The value with each definition could miss several elements, each concept is
 identified by its type, but ambiguities must be avoided; if default value is
@@ -70,37 +70,17 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import)
 
-
- xoutil.values import Invalid
+from xoutil import Undefined
+from xoutil.eight import zip
+from xoutil.values import Invalid
+from xoutil.values import Coercer, coercer
 
 
 # Scheme concept validators: Each one checks if a value is compliant or not
 # with determined scheme concept.
 
-def _is_checker(value):
-    '''Determine if a value is a position definition or not.'''
-    from xoutil.eight import callable
-    if isinstance(value, type):
-        value = (value, )
-    if isinstance(value, tuple) and all(isinstance(v, type) for v in value):
-        def inner(arg):
-            return arg if isinstance(arg, value) else Invalid
-        types = '_'.join(t.__name__ for t in value)
-        inner.__name__ = str('type_checker__{}'.format(types))
-        return inner
-    elif callable(value):
-        def inner(arg):
-            try:
-                return value(arg)
-            except BaseException:
-                return Invalid
-        inner.__name__ = getattr(value, '__name__', str('callable'))
-        return inner
-    else:
-        return Invalid
-
-
-def _is_pos(value):
+@coercer
+def pos_coerce(value):
     '''Determine if a value is a position definition or not.'''
     valid = lambda p: isinstance(p, int) and p >= 0
     if isinstance(value, set) and all(valid(p) for p in value):
@@ -109,97 +89,123 @@ def _is_pos(value):
         return Invalid
 
 
-def _is_aliases(value):
+@coercer
+def alias_coerce(value):
     '''Determine if a value is an aliases definition or not.'''
-    from xoutil.validators.identifiers import is_valid_identifier as valid
-    if isinstance(value, set) and all(valid(a) for a in value):
+    from xoutil.values import identifier_coerce as chk
+    if isinstance(value, set) and all(chk(a) is not Invalid for a in value):
         return value
     else:
         return Invalid
 
 
-_identity = lambda arg: arg
-_is_def = _identity
+_identity = coercer(lambda arg: arg)
+def_coerce = _identity
 
-_CONCEPT_NAMES = ('checker', 'pos', 'aliases', 'default')
-_CONCEPT_VALIDATORS = (_is_checker, _is_pos, _is_aliases, _is_def)
-_CONCEPT_DEFAULTS = (_identity, set(), set(), Invalid)
+# Elements that can be in a scheme definition
+_NAMES = ('checker', 'pos', 'aliases', 'default')
+_COERCERS = dict(zip(_NAMES, (Coercer, pos_coerce, alias_coerce, def_coerce)))
+_DEFAULTS = dict(zip(_NAMES, (_identity, set(), set(), Undefined)))
 
-del _is_checker, _is_pos, _is_aliases, _is_def
+
+@coercer
+def scheme_coerce(arg):
+    '''Coerce a scheme definition into a precise formalized dictionary.'''
+    if arg is Invalid:
+        res = arg
+    elif isinstance(arg, dict):
+        res = arg
+        i = 0
+        keys = tuple(res)
+        while res is not Invalid and i < len(keys):
+            concept = keys[i]
+            if concept in _COERCERS:
+                coercer = _COERCERS[concept]
+                value = coercer(res[concept])
+                if value is not Invalid:
+                    res[concept] = value
+                    i += 1
+                else:
+                    res = Invalid
+            else:
+                res = Invalid
+    else:
+        if not isinstance(arg, tuple):
+            arg = (arg,)
+        res = {}
+        i = 0
+        while res is not Invalid and i < len(arg):
+            value = arg[i]
+            j, found = 0, False
+            while j < len(_NAMES) and not found:
+                concept = _NAMES[j]
+                if concept not in res:
+                    coercer = _COERCERS[concept]
+                    v = coercer(value)
+                    if v is not Invalid:
+                        found = True
+                        res[concept] = v
+                j += 1
+            if found:
+                i += 1
+            else:
+                res = Invalid
+    if res is not Invalid:
+        # Complete and check default value
+        for concept in _DEFAULTS:
+            if concept not in res:
+                res[concept] = _DEFAULTS[concept]
+        concept = 'default'
+        default = res[concept]
+        if default is not _DEFAULTS[concept]:
+            coercer = res['checker']
+            value = coercer(default)
+            if value is not Invalid:
+                res[concept] = value
+            else:
+                res = Invalid
+    return res
+
+
+del Coercer, pos_coerce, alias_coerce, def_coerce, zip
 
 
 class ParamConformer(object):
     '''Standardize actual parameters using a scheme.'''
     __slots__ = ('scheme', 'positions', 'strict')
 
-    def __init__(self, scheme, strict=False):
+    def __init__(self, *schemes, **kwargs):
         '''Create the conformer.
 
-        :param scheme: The parameters scheme definition.  See the module
-               documentation for more information.
+        :param schemes: Each item must be a dictionary with a scheme portion.
+               See the module documentation for more information.
 
-        :param strict: If True, only scheme definitions could be used as
-               actual arguments.
+        :param kwargs: Except by the below special keyword argument, represent
+               additional scheme definition, each keyword argument will
+               represent the schema of a parameter with the same name.
+
+        :param __strict__: Special keyword argument; if True, only scheme
+               definitions could be used as actual arguments.
 
         '''
-        self._formalize_scheme(scheme)
+        self.strict = kwargs.pop('__strict__', False)
+        self._formalize_schemes(schemes, kwargs)
         self._normalize_positions()
-        self.strict = strict
 
-    def _formalize_scheme(self, scheme):
+    def _formalize_schemes(self, schemes, kwargs):
         '''Formalize scheme in a more precise internal dictionary.'''
-        from xoutil import Unset
-        from xoutil.collections import Mapping
-        from xoutil.eight import zip
-        from xoutil.validators.identifiers import is_valid_identifier
-        parsers = {n: c for n, c in zip(_CONCEPT_NAMES, _CONCEPT_VALIDATORS)}
-        defaults = {n: c for n, c in zip(_CONCEPT_NAMES, _CONCEPT_DEFAULTS)}
-        if scheme and isinstance(scheme, Mapping):
-            scheme = dict(scheme)
-            self.scheme = scheme
+        from itertools import chain
+        from xoutil.values import identifier_coerce, check as ok
+        self.scheme = {}
+        for scheme in chain((kwargs,), reversed(schemes)):
             for par in scheme:
-                if is_valid_identifier(par):
-                    par = str(par)
-                    new = dict.fromkeys(_CONCEPT_NAMES, Unset)
-                    ps = scheme[par]
-                    if not isinstance(ps, tuple):
-                        ps = (ps,)
-                    for value in ps:
-                        i, ok = 0, False
-                        while i < len(_CONCEPT_NAMES) and not ok:
-                            concept = _CONCEPT_NAMES[i]
-                            if new[concept] is Unset:
-                                parser = parsers[concept]
-                                v = parser(value)
-                                if v is not Invalid:
-                                    ok = True
-                                    new[concept] = v
-                            i += 1
-                        if not ok:
-                            bads = ps[i - 1:]
-                            msg = ('Invalid values "{}" for parameter "{}".')
-                            raise ValueError(msg.format(bads, par))
-                    # Complete values
-                    for concept in _CONCEPT_NAMES:
-                        if new[concept] is Unset:
-                            new[concept] = defaults[concept]
-                    default = new['default']
-                    if default is not Invalid:
-                        checker = new['checker']
-                        checked = checker(default)
-                        if checked is Invalid:
-                            msg = ('Default value "{}" for parameter "{}" is '
-                                   'checked invalid.')
-                            raise ValueError(msg.format(default, par))
-                    scheme[par] = new
-                else:
-                    msg = ('Keyword argument must be a valid Python '
-                           'identifier, not "{}".')
-                    raise ValueError(msg.format(par))
+                par = ok(identifier_coerce, par)
+                if par not in self.scheme:
+                    self.scheme[par] = ok(scheme_coerce, scheme[par])
+        if self.scheme:
             self._check_duplicate_aliases()
         else:
-            msg = 'Invalid scheme definition "{}": expecting a dictionary.'
-            raise ValueError(msg.format(scheme))
+            raise TypeError('Invalid empty scheme definition!')
 
     def _check_duplicate_aliases(self):
         '''Check if there are duplicate aliases and parameter names.'''
@@ -360,34 +366,20 @@ class ParamConformer(object):
             msg = 'Expecting at most {} positional arguments ({} given)!'
             raise TypeError(msg.format(max_args, count))
 
+del coercer
+
 
 if __name__ == '__main__':
     print('Testing module "xoutil.params"')
 
     import sys
     from xoutil.eight import string_types
-
-    def check_file_like(arg):
-        from xoutil.eight.io import is_file_like
-        return arg if is_file_like(arg) else Invalid
-
-    def check_positive_int(arg):
-        from xoutil.eight import integer_types, string_types
-        if isinstance(arg, integer_types):
-            return arg if arg >= 0 else Invalid
-        elif isinstance(arg, string_types):
-            try:
-                arg = int(arg)
-                return arg if arg >= 0 else Invalid
-            except ValueError:
-                return Invalid
-        else:
-            return Invalid
+    from xoutil.values import file_coerce, positive_int_coerce
 
     sample_scheme = {
-        'stream': (check_file_like, {0, 3}, {'output'}, sys.stdout),
-        'indent': (check_positive_int, {1}, 1),
-        'width': (check_positive_int, {2}, {'max_width'}, 79),
+        'stream': (file_coerce, {0, 3}, {'output'}, sys.stdout),
+        'indent': (positive_int_coerce, {1}, 1),
+        'width': (positive_int_coerce, {2}, {'max_width'}, 79),
         'newline': (string_types, '\n'), }
 
     def test(*args, **kwargs):
@@ -412,6 +404,6 @@ if __name__ == '__main__':
     test(sys.stderr, 4, 80, output=sys.stderr)
     test(4, -79)
 
-    conformer = ParamConformer(sample_scheme, strict=True)
+    conformer = ParamConformer(sample_scheme, __strict__=True)
 
-    test(80, indent=4, extra="I'm OK!")
+    test(80, indent=4, extra="I'm not OK!")
