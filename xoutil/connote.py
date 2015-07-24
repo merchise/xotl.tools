@@ -21,6 +21,8 @@ moving" is true of those things that are moving.
 
 The main class of this module is :class:`Predicate`.
 
+.. versionadded:: 1.7.0
+
 '''
 
 from __future__ import (division as _py3_division,

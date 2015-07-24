@@ -1641,6 +1641,8 @@ class PascalSet(object, metaclass(MetaSet)):
 
     PascalSet(*others) -> new set object
 
+    .. versionadded:: 1.7.0
+
     '''
     __slots__ = ('_items',)
 

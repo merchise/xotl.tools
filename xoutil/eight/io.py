@@ -35,6 +35,8 @@ Another incompatibilities:
   better to use any of the standards classes (`StringIO.StringIO`:class:,
   `cStringIO.StringIO`:class: or `open`:func: built-in).
 
+.. versionadded:: 1.7.0
+
 '''
 
 from __future__ import (division as _py3_division,
