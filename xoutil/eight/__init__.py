@@ -45,10 +45,10 @@ del sys
 
 try:
     base_string = basestring
+    string_types = (str, unicode)
 except NameError:
     base_string = str
-
-string_types = base_string,
+    string_types = (str, )
 
 if _py3:
     integer_types = int,
