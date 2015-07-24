@@ -121,7 +121,7 @@ if _py3:
     safe_str = str
     safe_repr = repr
 else:
-    def safe_str(value):
+    def safe_str(obj=str()):
         '''Our code uses unicode as normal string in Python 2.x.
 
         There are some scenarios the require `str` type (for example attribute
@@ -139,18 +139,22 @@ else:
           ...     inner.__name__ = sstr(func.__name__.replace('lambda', 'λ'))
           ...     return inner
 
+        .. versionadded:: 1.7.0
+
         '''
         try:
-            return str(value)
+            return str(obj)
         except UnicodeEncodeError:
             # assert isinstance(value, unicode)
-            return safe_encode(value)
+            return safe_encode(obj)
 
     def safe_repr(value):
         '''Our code uses unicode as normal string in Python 2.x.
 
         This will convert all results of standard Python `repr` function, to
         safe string (`str` type) if returned as unicode value.
+
+        .. versionadded:: 1.7.0
 
         '''
         res = safe_str(repr(value))
