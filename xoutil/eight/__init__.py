@@ -45,19 +45,18 @@ del sys
 
 try:
     base_string = basestring
+    string_types = (str, unicode)
 except NameError:
     base_string = str
-
+    string_types = (str, )
 
 if _py3:
-    string_types = str,
     integer_types = int,
     class_types = type,
     text_type = str
     unichr = chr
 else:
     from types import ClassType
-    string_types = basestring,
     integer_types = (int, long)
     class_types = (type, ClassType)
     text_type = unicode
@@ -81,9 +80,11 @@ except NameError:
 if _py3:
     input = input
     range = range
+    zip = zip
 else:
     range = xrange
     input = raw_input
+    from itertools import izip as zip    # noqa
 
 
 def iterkeys(d):
@@ -106,3 +107,9 @@ try:
 except NameError:
     def callable(obj):
         return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
+
+
+if _py3:
+    from io import StringIO
+else:
+    from StringIO import StringIO    # noqa

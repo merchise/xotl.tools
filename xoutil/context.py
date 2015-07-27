@@ -32,7 +32,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil._local import local as _local
 
-from xoutil.objects import metaclass
+from xoutil.eight.meta import metaclass
 from xoutil.collections import StackedDict
 
 from xoutil.names import strlist as strs
@@ -131,8 +131,13 @@ class Context(metaclass(MetaContext), StackedDict):
         self.push_level(**data)
         return self
 
-    def __init__(self, name, **data):
-        '''Must be defined empty for parameters compatibility.'''
+    def __init__(self, *args, **kwargs):
+        '''Must be defined empty for `__new__` parameters compatibility.
+
+        Using generic parameters definition allow any redefinition of this
+        class can use this `__init__`.
+
+        '''
 
     def __nonzero__(self):
         return bool(self.count)

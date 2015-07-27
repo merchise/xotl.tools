@@ -58,6 +58,33 @@ def test_nameof():
     assert hex(id(sd)) in nameof(sd, inner=True)
 
 
+def test_nameof_methods():
+    from xoutil.eight import callable
+    from xoutil.names import nameof
+
+    class Foobar(object):
+        def __init__(self):
+            self.attr = 'foobar'
+
+        def first(self):
+            pass
+
+        @staticmethod
+        def second():
+            pass
+
+        @classmethod
+        def third(cls):
+            pass
+
+    obj = Foobar()
+    attrs = (getattr(obj, n) for n in dir(obj) if not n.startswith('_'))
+    attrs = (v for v in attrs if callable(v))
+    names = nameof(*attrs)
+    names.sort()
+    assert names == ['first', 'second', 'third']
+
+
 def test_fullnameof():
     from xoutil.names import nameof
     _name = 'collections.OrderedDict'

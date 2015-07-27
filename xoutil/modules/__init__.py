@@ -127,7 +127,7 @@ def customize(module, custom_attrs=None, meta=None):
     '''
     if not isinstance(module, _CustomModuleBase):
         import sys
-        from xoutil.objects import metaclass
+        from xoutil.eight.meta import metaclass
         meta_base = meta if meta else type
 
         class CustomModuleType(meta_base):

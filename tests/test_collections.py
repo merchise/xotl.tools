@@ -773,6 +773,106 @@ class TestOrderedDict(unittest.TestCase):
         self.assertEqual(list(MyOD(items).items()), items)
 
 
+class TestPascalSet(unittest.TestCase):
+
+    def test_consistency(self):
+        from random import randint
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        count = 5
+        for test in range(count):
+            size = randint(20, 60)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s1 = PascalSet(*ranges)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s2 = PascalSet(*ranges)
+            ss1 = set(s1)
+            ss2 = set(s2)
+            self.assertEqual(s1, ss1)
+            self.assertEqual(s1 - s2, ss1 - ss2)
+            self.assertEqual(s2 - s1, ss2 - ss1)
+            self.assertEqual(s1 & s2, ss1 & ss2)
+            self.assertEqual(s2 & s1, ss2 & ss1)
+            self.assertEqual(s1 | s2, ss1 | ss2)
+            self.assertEqual(s2 | s1, ss2 | ss1)
+            self.assertEqual(s1 ^ s2, ss1 ^ ss2)
+            self.assertEqual(s2 ^ s1, ss2 ^ ss1)
+            self.assertLess(s1 - s2, s1)
+            self.assertLess(s1 - s2, ss1)
+            self.assertLessEqual(s1 - s2, s1)
+            self.assertLessEqual(s1 - s2, ss1)
+            self.assertGreater(s1, s1 - s2)
+            self.assertGreater(s1, ss1 - ss2)
+            self.assertGreaterEqual(s1, s1 - s2)
+            self.assertGreaterEqual(s1, ss1 - ss2)
+
+    def test_syntax_sugar(self):
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        s1 = PascalSet[1:4, 9, 15:18]
+        s2 = PascalSet[3:18]
+        self.assertEqual(str(s1), '{1..3, 9, 15..17}')
+        self.assertEqual(str(s1 ^ s2), '{1, 2, 4..8, 10..14}')
+        self.assertEqual(list(PascalSet[3:18]), list(range(3, 18)))
+
+    def test_operators(self):
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        g = lambda s: (i for i in s)
+        s1 = PascalSet[1:4, 9, 15:18]
+        r1 = range(1, 18)
+        s2 = PascalSet(s1, 20)
+        self.assertTrue(s1.issubset(s1))
+        self.assertTrue(s1.issubset(set(s1)))
+        self.assertTrue(s1.issubset(list(s1)))
+        self.assertTrue(s1.issubset(g(s1)))
+        self.assertTrue(s1.issubset(r1))
+        self.assertTrue(s1.issubset(set(r1)))
+        self.assertTrue(s1.issubset(list(r1)))
+        self.assertTrue(s1.issubset(g(r1)))
+        self.assertTrue(s2.issuperset(s2))
+        self.assertTrue(s2.issuperset(s1))
+        self.assertTrue(s2.issuperset(set(s1)))
+        self.assertTrue(s2.issuperset(list(s1)))
+        self.assertTrue(s2.issuperset(g(s1)))
+        self.assertTrue(s1 <= set(s1))
+        self.assertTrue(s1 < s2)
+        self.assertTrue(s1 <= s2)
+        self.assertTrue(s1 < set(s2))
+        self.assertTrue(s1 <= set(s2))
+        self.assertTrue(s1 < set(r1))
+        self.assertTrue(s1 <= set(r1))
+        self.assertTrue(s2 >= s2)
+        self.assertTrue(s2 >= set(s2))
+        self.assertTrue(s2 > s1)
+        self.assertTrue(s2 > set(s1))
+        self.assertTrue(s2 >= s1)
+        self.assertTrue(s2 >= set(s1))
+
+    def test_errors(self):
+        '''Test that stacked.pop has the same semantics has dict.pop.'''
+        from xoutil.collections import PascalSet
+        s1 = PascalSet[1:4, 9, 15:18]
+        s2 = PascalSet(s1, 20)
+        self.assertLess(s1, s2)
+        try:
+            if s1 < list(s2):
+                state = 'less'
+            else:
+                state = 'not-less'
+        except TypeError:
+            state = 'TypeError'
+        self.assertEqual(state, 'TypeError')
+        with self.assertRaises(TypeError):
+            if s1 < set(s2):
+                state = 'ok'
+            if s1 < list(s2):
+                state = 'safe-less'
+            else:
+                state = 'safe-not-less'
+        self.assertEqual(state, 'ok')
+
+
 def test_abcs():
     from xoutil.collections import Container    # noqa
     from xoutil.collections import Iterable    # noqa

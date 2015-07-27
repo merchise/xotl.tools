@@ -46,7 +46,7 @@ from xoutil.deprecation import deprecated as _deprecated
 from xoutil.eight import (string_types as _str_base,
                           text_type as _unicode,
                           binary_type as _bytes,    # TODO: Not necessary
-                          _py3)
+                          _py2, _py3)
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -115,6 +115,52 @@ def safe_encode(u, encoding=None):
                 return _unicode(u).encode(encoding, 'replace')
         except:
             return _unicode(u).encode(encoding, 'replace')
+
+
+if _py3:
+    safe_str = str
+    safe_repr = repr
+else:
+    def safe_str(obj=str()):
+        '''Our code uses unicode as normal string in Python 2.x.
+
+        There are some scenarios the require `str` type (for example attribute
+        ``__name__`` in functions and types).
+
+        As ``str is bytes`` in Python2, using str(value) assures correct these
+        scenarios in most cases, for example::
+
+          >>> from xoutil.string import safe_str as sstr
+          >>> def inverted_partial(func, *args, **keywords):
+          ...     def inner(*a, **kw):
+          ...         a += args
+          ...         kw.update(keywords)
+          ...         return func(*a, **kw)
+          ...     inner.__name__ = sstr(func.__name__.replace('lambda', 'λ'))
+          ...     return inner
+
+        .. versionadded:: 1.7.0
+
+        '''
+        try:
+            return str(obj)
+        except UnicodeEncodeError:
+            # assert isinstance(value, unicode)
+            return safe_encode(obj)
+
+    def safe_repr(value):
+        '''Our code uses unicode as normal string in Python 2.x.
+
+        This will convert all results of standard Python `repr` function, to
+        safe string (`str` type) if returned as unicode value.
+
+        .. versionadded:: 1.7.0
+
+        '''
+        res = safe_str(repr(value))
+        if res.startswith('u"') or res.startswith("u'"):
+            res = res[1:]
+        return res
 
 
 def safe_join(separator, iterable, encoding=None):
@@ -359,6 +405,12 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       >>> normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
       True
 
+      >>> normalize_slug('_x', '_') == '_x'
+      True
+
+      >>> normalize_slug('-x', '_') == 'x'
+      True
+
       >>> normalize_slug(None) == 'none'
       True
 
@@ -372,6 +424,9 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       True
 
       >>> normalize_slug(123456, '', invalids='52') == '1346'
+      True
+
+      >>> normalize_slug('_x', '_') == '_x'
       True
 
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
@@ -412,16 +467,19 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     # calculate result
     res = _normalize(value)
     regex = re.compile(r'[^_a-z0-9%s]+' % valids)
-    res = regex.sub(replacement, res)
+    repl = '\t' if replacement else ''
+    res = regex.sub(repl, res)
     if invalids:
         regex = re.compile(r'[%s]+' % invalids)
-        res = regex.sub(replacement, res)
-    if replacement:
-        r = {'r': r'%s' % re.escape(replacement)}
+        res = regex.sub(repl, res)
+    if repl:
+        r = {'r': r'%s' % re.escape(repl)}
         regex = re.compile(r'(%(r)s){2,}' % r)
-        res = regex.sub(replacement, res)
+        res = regex.sub(repl, res)
         regex = re.compile(r'(^%(r)s+|%(r)s+$)' % r)
         res = regex.sub('', res)
+        regex = re.compile(r'[\t]' % r)
+        res = regex.sub(replacement, res)
     return res
 
 
