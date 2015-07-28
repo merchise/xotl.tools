@@ -69,8 +69,22 @@ class TestValues(unittest.TestCase):
 
     def test_compound_coercers(self):
         from xoutil.eight import string_types
-        from xoutil.values import (identity_coerce, void_coerce, coercer,
-                                   compose, check, valid, int_coerce,
-                                   float_coerce, identifier_coerce,
-                                   Invalid)
-        compose(coercer)
+        from xoutil.values import (coercer, compose, some, combo, iterable,
+                                   check, valid, typecast, int_coerce,
+                                   float_coerce, identifier_coerce, Invalid)
+        isstr = coercer(string_types)
+        strcast = typecast(string_types)
+        toint = compose(isstr, int_coerce)
+        isint = some(isstr, int_coerce)
+        hyphenjoin = coercer(lambda arg: '-'.join(arg))
+        intjoin = compose(iterable(strcast), hyphenjoin)
+        cb = combo(strcast, int_coerce, float_coerce)
+        self.assertEqual(toint('10'), 10)
+        self.assertIs(toint(10), Invalid)
+        self.assertEqual(toint.scope, (10, isstr))
+        self.assertEqual(isint('10'), '10')
+        self.assertEqual(isint.scope, isstr)
+        self.assertEqual(isint(10), 10)
+        self.assertEqual(isint.scope, int_coerce)
+        self.assertEqual(intjoin(2*i + 1 for i in range(5)), '1-3-5-7-9')
+        self.assertEqual(cb([1, '2.0', 3, 4]), ['1', 2, 3.0])

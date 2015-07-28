@@ -642,9 +642,11 @@ class some(custom):
         i = 0
         res = Invalid
         while res is Invalid and i < len(coercers):
-            value = coercers[i](arg)
+            coercer = coercers[i]
+            value = coercer(arg)
             if valid(value):
                 res = value
+                self.scope = coercer
             else:
                 i += 1
         return res
@@ -877,7 +879,9 @@ class iterable(custom):
         from xoutil.collections import (Set, Sequence, MutableSequence)
         member_coerce, outer_coerce = self.inner
         modified = False
-        if outer_coerce(arg):
+        aux = outer_coerce(arg)
+        if valid(aux):
+            arg = aux
             if isinstance(arg, Sequence):
                 res = arg
                 retyped = False
