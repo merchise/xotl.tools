@@ -31,28 +31,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
-def lw(name, func, doc=None):
-    '''Lambda wrapper.
-
-    Useful for decorate lambda functions with name and documentation.
-
-    For example::
-
-      >>> from xoutil.validators.connote import lw
-      >>> is_valid_age = lw('is-valid-human-age', lambda age: 0 < age <= 120)
-
-      >>> is_valid_age(100)
-      True
-
-      >>> is_valid_age(200)
-      False
-
-    '''
-    from xoutil.string import safe_str
-    func.__name__ = safe_str(name)
-    if doc:
-        func.__doc__ = doc
-    return func
+from xoutil.functools import lwraps as lw
 
 
 class Predicate(object):
