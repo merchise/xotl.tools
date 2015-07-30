@@ -76,6 +76,13 @@ except NameError:
     ExceptionBase = StandardError
 
 
+from re import compile as _regex_compile
+
+RegexPattern = type(_regex_compile(''))
+
+del _regex_compile
+
+
 class mro_dict(Mapping):
     '''An utility class that behaves like a read-only dict to query the
     attributes in the MRO chain of a `target` class (or an object's class).
