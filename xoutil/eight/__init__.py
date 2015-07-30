@@ -42,7 +42,6 @@ _pypy = sys.version.find('PyPy') >= 0
 
 del sys
 
-
 try:
     base_string = basestring
     string_types = (str, unicode)

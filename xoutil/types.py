@@ -67,8 +67,13 @@ WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 try:
     from exceptions import StandardError
-except:
+except ImportError:
     StandardError = Exception
+
+try:
+    ExceptionBase = BaseException
+except NameError:
+    ExceptionBase = StandardError
 
 
 class mro_dict(Mapping):
