@@ -28,6 +28,7 @@ def dev_tag_installed():
     try:
         dist = pkg_resources.get_distribution('xoutil')
         full_version = dist.version
+        # FIX: Below line is not working anymore
         base = dist.parsed_version.base_version
         return full_version[len(base):]
     except:

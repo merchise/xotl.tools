@@ -67,6 +67,9 @@ For example::
 '''
 
 
+# TODO: Make a decorator to annotate function from a scheme.  See
+# `xoutil.annotate`:mod: for more information.
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
