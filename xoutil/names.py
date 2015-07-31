@@ -197,9 +197,60 @@ def module_name(item):
         res = get_attr_value(item, '__module__', None)
         if res is None:
             res = get_attr_value(type(item), '__module__', '')
-    if res.startswith('__') or (res in ('builtins', '<module>')):
+    if res.startswith('__') or res in ('builtins', 'exceptions', '<module>'):
         res = ''
     return str(res)
+
+
+def simple_name(item, join=True):
+    '''Returns the simple name for the given object.
+
+    :param join: If False, only the object inner name is returned; if it is a
+           callable is used similar to a string join receiving a tuple of
+           (module-name, inner-name) as argument; True means (is equivalent
+           to)::
+
+             join = lambda arg: '.'.join(arg).strip('.')
+
+           For example, use ``lambda arg: arg`` to return the 2-tuple itself.
+
+           See `module_name`:func: for more information when a not False value
+           is used.
+
+    Examples::
+
+       >>> simple_name(simple_name)
+       'xoutil.names.simple_name'
+
+       >>> from xoutil import Unset
+       >>> simple_name(Unset)
+       'xoutil.logical.Unset'
+
+    This function is intended for named objects (those with the `__name__`
+    attribute), if an object without standard name is used, the type name is
+    returned instead; for example::
+
+        >>> simple_name(0)
+        'int'
+
+    To get a name in a more precise way, use `nameof`:func:.
+
+    '''
+    # TODO: Use this function in `nameof`
+    from xoutil.eight import callable
+    from xoutil.inspect import type_name
+    singletons = (None, True, False, Ellipsis, NotImplemented)
+    res = next((str(s) for s in singletons if s is item), None)
+    if res is None:
+        res = type_name(item)
+        if res is None:
+            item = type(item)
+            res = type_name(item)
+        if join:
+            if join is True:
+                join = lambda arg: str('.'.join(arg).strip('.'))
+            res = join((module_name(item), res))
+    return res
 
 
 def nameof(*args, **kwargs):
