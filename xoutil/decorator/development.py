@@ -17,14 +17,11 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import warnings
 
-from xoutil.names import nameof
-
-from .meta import decorator as _decorator
+from .meta import decorator
 
 
-@_decorator
+@decorator
 def unstable(target, msg=None):
     '''Declares that a method, class or interface is unstable.
 
@@ -37,6 +34,8 @@ def unstable(target, msg=None):
     second matches `target's` full name.
 
     '''
+    import warnings
+    from xoutil.names import nameof
     from xoutil.eight import class_types
     if msg is None:
         msg = ('The {0} `{1}` is declared unstable. '
@@ -70,3 +69,6 @@ def unstable(target, msg=None):
             warnings.warn(message, stacklevel=2)
             return target(*args, **kwargs)
         return _unstable
+
+
+del decorator
