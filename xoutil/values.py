@@ -140,7 +140,6 @@ class coercer(metaclass(MetaCoercer)):
     __slots__ = ()
 
     def __new__(cls, source):
-        from xoutil import Unset
         from types import FunctionType as function
         if source is None:
             return identity_coerce
@@ -457,7 +456,6 @@ class custom(object):
     '''
     __slots__ = ('inner', 'scope')
 
-
     _str_join = '_'
     _repr_join = ', '
 
@@ -565,7 +563,7 @@ class safe(custom):
 
     def __call__(self, arg):
         try:
-            return arg if inner(arg) else Invalid
+            return arg if self.inner(arg) else Invalid
         except BaseException as error:
             self.scope = (arg, error)
             return Invalid
@@ -596,7 +594,6 @@ class compose(custom):
             return identity_coerce
 
     def __call__(self, arg):
-        from xoutil import Unset
         coercers = self.inner
         i = 0
         res = arg
@@ -679,7 +676,6 @@ class combo(custom):
     '''
 
     def __init__(self, *coercers):
-        from xoutil import Unset
         super(combo, self).__init__()
         self.inner = tuple(check(coercer, c) for c in coercers)
 
@@ -778,7 +774,6 @@ class pargs(custom):
     '''
 
     def __init__(self, arg_coerce):
-        from xoutil import Unset
         super(pargs, self).__init__()
         self.inner = check(coercer, arg_coerce)
 
@@ -869,7 +864,6 @@ class iterable(custom):
                ``collections.Iterable``.
 
         '''
-        from xoutil import Unset
         super(iterable, self).__init__()
         member_coerce = check(coercer, member_coerce)
         outer_coerce = compose(coercer(outer_coerce), sized_coerce)
@@ -965,7 +959,6 @@ class mapping(custom):
                mapping values.
 
         '''
-        from xoutil import Unset
         from xoutil.collections import Mapping
         if key_coercer is value_coercer is None:
             return coercer(Mapping)
