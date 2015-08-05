@@ -300,6 +300,25 @@ def int_coerce(arg):
 
 
 @coercer
+def number_coerce(arg):
+    '''Check if `arg` is a valid number (integer or float).
+
+    Types that are checked (string, int, float, complex).
+
+    '''
+    from xoutil.eight import integer_types
+    if isinstance(arg, integer_types):
+        return arg
+    else:
+        f = float_coerce(arg)
+        if valid(f):
+            i = int(f)
+            return i if f - i == 0 else f
+        else:
+            return Invalid
+
+
+@coercer
 def positive_int_coerce(arg):
     '''Check if `arg` is a valid positive integer.'''
     res = int_coerce(arg)
