@@ -83,6 +83,12 @@ RegexPattern = type(_regex_compile(''))
 del _regex_compile
 
 
+def type_coerce(obj):
+    '''Ensure return a valid type from `obj`.'''
+    from xoutil.eight import class_types as ctypes
+    return obj if isinstance(obj, ctypes) else obj.__class__
+
+
 class mro_dict(Mapping):
     '''An utility class that behaves like a read-only dict to query the
     attributes in the MRO chain of a `target` class (or an object's class).
@@ -91,9 +97,8 @@ class mro_dict(Mapping):
     __slots__ = ('_probes', '_keys')
 
     def __init__(self, target):
-        from xoutil.eight import class_types as ctypes
         from xoutil.inspect import _static_getmro
-        type_ = target if isinstance(target, ctypes) else target.__class__
+        type_ = type_coerce(target)
         target_mro = _static_getmro(type_)
         self._probes = tuple(c.__dict__ for c in target_mro)
         self._keys = set()
@@ -121,6 +126,34 @@ class mro_dict(Mapping):
             for key in probe:
                 if key not in self._keys:
                     self._keys.add(key)
+
+
+def mro_get_value_list(cls, name):
+    '''Return a list with all `cls` class attributes in MRO.'''
+    from xoutil.inspect import _static_getmro
+    mro = _static_getmro(type_coerce(cls))
+    return [t.__dict__[name] for t in mro if name in t.__dict__]
+
+
+def mro_get_full_mapping(cls, name):
+    '''Return a dictionary with all items from `cls` in MRO.
+
+    All values corresponding to `name` must be valid mappings.
+
+    '''
+    aux = mro_get_value_list(cls, name)
+    count = len(aux)
+    if count == 0:
+        return {}
+    elif count == 1:
+        return aux[0]
+    else:
+        res = {}
+        for m in aux:
+            for key in m:
+                if key not in res:
+                    res[key] = m[key]
+        return res
 
 
 # TODO: Many of is_*method methods here are needed to be compared against the
