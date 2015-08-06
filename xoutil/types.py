@@ -88,30 +88,39 @@ class mro_dict(Mapping):
     attributes in the MRO chain of a `target` class (or an object's class).
 
     '''
+    __slots__ = ('_probes', '_keys')
+
     def __init__(self, target):
-        type_ = target if hasattr(target, 'mro') else type(target)
-        self._target_mro = type_.mro()
+        from xoutil.eight import class_types as ctypes
+        from xoutil.inspect import _static_getmro
+        type_ = target if isinstance(target, ctypes) else target.__class__
+        target_mro = _static_getmro(type_)
+        self._probes = tuple(c.__dict__ for c in target_mro)
+        self._keys = set()
 
     def __getitem__(self, name):
         from xoutil.objects import get_first_of
-        probes = tuple(c.__dict__ for c in self._target_mro)
-        result = get_first_of(probes, name, default=_unset)
+        result = get_first_of(self._probes, name, default=_unset)
         if result is not _unset:
             return result
         else:
             raise KeyError(name)
 
     def __iter__(self):
-        res = []
-        probes = tuple(c.__dict__ for c in self._target_mro)
-        for probe in probes:
-            for key in probe:
-                if key not in res:
-                    res.append(key)
-                    yield key
+        if not self._keys:
+            self._settle_keys()
+        return iter(self._keys)
 
     def __len__(self):
-        return sum(1 for _ in self)
+        if not self._keys:
+            self._settle_keys()
+        return len(self._keys)
+
+    def _settle_keys(self):
+        for probe in self._probes:
+            for key in probe:
+                if key not in self._keys:
+                    self._keys.add(key)
 
 
 # TODO: Many of is_*method methods here are needed to be compared against the
@@ -229,16 +238,16 @@ def is_classmethod(desc, name=_unset):
     '''Returns true if a `method` is a class method.
 
     :param desc: This may be the method descriptor or the class that holds the
-                 method, in the second case you must provide the `name` of the
-                 method.
+           method, in the second case you must provide the `name` of the
+           method.
 
-                 .. note::
+           .. note::
 
-                    Notice that in the first case what is needed is the
-                    **method descriptor**, i.e, taken from the class'
-                    `__dict__` attribute. If instead you pass something like
-                    ``cls.methodname``, this method will return False whilst
-                    :func:`is_instancemethod` will return True.
+              Notice that in the first case what is needed is the **method
+              descriptor**, i.e, taken from the class' `__dict__`
+              attribute. If instead you pass something like
+              ``cls.methodname``, this method will return False whilst
+              :func:`is_instancemethod` will return True.
 
     :param name: The name of the method, if the first argument is the class.
 
