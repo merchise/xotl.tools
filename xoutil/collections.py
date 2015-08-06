@@ -2232,6 +2232,20 @@ class PascalSet(object, metaclass(MetaSet)):
                'must be an integer!')
         return TypeError(msg % (value, vname, cls_name))
 
+    @classmethod
+    def _prime_numbers_until(cls, limit):
+        '''This is totally a funny test method.'''
+        from xoutil.eight import range
+        res = cls[2:limit]
+        for i in range(2, limit//2 + 1):
+            if i in res:
+                aux = i
+                while aux < limit:
+                    if aux in res:
+                        res.remove(aux)
+                    aux += i
+        return res
+
 
 MutableSet.register(PascalSet)
 
