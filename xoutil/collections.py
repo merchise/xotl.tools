@@ -1701,7 +1701,7 @@ class MetaSet(type):
 
 
 class PascalSet(object, metaclass(MetaSet)):
-    '''Collection of unique integer elements.
+    '''Collection of unique integer elements (implemented with intervals).
 
     PascalSet(*others) -> new set object
 
@@ -1921,7 +1921,6 @@ class PascalSet(object, metaclass(MetaSet)):
             return NotImplemented
 
     def count(self, other):
-
         '''Number of occurrences of any member of other in this set.
 
         If other is an integer, return 1 if present, 0 if not.
@@ -1931,9 +1930,7 @@ class PascalSet(object, metaclass(MetaSet)):
         if isinstance(other, integer_types):
             return 1 if other in self else 0
         else:
-            from operator import add
-            from functools import reduce
-            return reduce(add, (i in self for i in other), 0)
+            return sum((i in self for i in other), 0)
 
     def add(self, other):
         '''Add an element to a set.
@@ -2001,27 +1998,29 @@ class PascalSet(object, metaclass(MetaSet)):
         '''Update a set with the intersection of itself and another.'''
         from xoutil.eight import integer_types as ints
         l = self._items
-        for other in others:
-            if l:
-                if not isinstance(other, PascalSet):
-                    # safe mode of safe for intersection
-                    other = PascalSet(i for i in other if isinstance(i, ints))
-                o = other._items
-                if o:
-                    sl, el = l[0], l[-1]
-                    so, eo = o[0], o[-1]
-                    if sl < so:
-                        self._remove(sl, so - 1)
-                    if eo < el:
-                        self._remove(eo + 1, el)
-                    i = 2
-                    while l and i < len(o):
-                        s, e = o[i - 1] + 1, o[i] - 1
-                        if s <= e:
-                            self._remove(s, e)
-                        i += 2
-                else:
-                    del l[:]
+        oi, count = 0, len(others)
+        while l and oi < count:
+            other = others[oi]
+            if not isinstance(other, PascalSet):
+                # safe mode for intersection
+                other = PascalSet(i for i in other if isinstance(i, ints))
+            o = other._items
+            if o:
+                sl, el = l[0], l[-1]
+                so, eo = o[0], o[-1]
+                if sl < so:
+                    self._remove(sl, so - 1)
+                if eo < el:
+                    self._remove(eo + 1, el)
+                i = 2
+                while l and i < len(o):
+                    s, e = o[i - 1] + 1, o[i] - 1
+                    if s <= e:
+                        self._remove(s, e)
+                    i += 2
+            else:
+                del l[:]
+            oi += 1
 
     def difference(self, *others):
         '''Return the difference of two or more sets as a new set.
@@ -2303,7 +2302,7 @@ class PascalSet(object, metaclass(MetaSet)):
         res = cls[2:limit]
         for i in range(2, limit//2 + 1):
             if i in res:
-                aux = i
+                aux = i + i
                 while aux < limit:
                     if aux in res:
                         res.remove(aux)
@@ -2312,6 +2311,515 @@ class PascalSet(object, metaclass(MetaSet)):
 
 
 MutableSet.register(PascalSet)
+
+
+class BitPascalSet(object, metaclass(MetaSet)):
+    '''Collection of unique integer elements (implemented with bit-wise sets).
+
+    BitPascalSet(*others) -> new bit-set object
+
+    .. versionadded:: 1.7.0
+
+    '''
+    __slots__ = ('_items',)
+    _bit_length = 62    # How many values are stored in each item
+
+    def __init__(self, *others):
+        '''Initialize self.
+
+        :param others: Any number of integer or collection of integers that
+               will be the set members.
+
+        In this case `_items` is a dictionary with keys containing number
+        division seeds and values bit-wise integers (each bit is the division
+        modulus position).
+
+        '''
+        self._items = {}
+        self.update(*others)
+
+    def __str__(self):
+        if self:
+            return str(PascalSet(self))
+        else:
+            cname = type(self).__name__
+            return str('%s([])') % cname
+
+    def __repr__(self):
+        cname = type(self).__name__
+        res = str(', ').join(str(i) for i in self)
+        return str('%s([%s])') % (cname, res)
+
+    def __iter__(self):
+        bl = self._bit_length
+        sm = self._items
+        for k in sorted(sm):
+            v = sm[k]
+            base = k*bl
+            i = 0
+            ref = 1
+            while i < bl:
+                if ref & v:
+                    yield base + i
+                ref <<= 1
+                i += 1
+
+    def __len__(self):
+        return sum((1 for i in self), 0)
+
+    def __nonzero__(self):
+        return bool(self._items)
+    __bool__ = __nonzero__
+
+    def __contains__(self, other):
+        '''True if this bit-set has the element ``other``, else False.'''
+        res = self._search(other)
+        if res:
+            k, ref, v = res
+            return bool(v & (1 << ref))
+        else:
+            return False
+
+    def __hash__(self):
+        '''Compute the hash value of a set.'''
+        return Set._hash(self)
+
+    if _py2:
+        def __cmp__(self, other):
+            # Python 3 automatically generate a TypeError when no mechanism is
+            # found by returning `NotImplemented` special value.  In Python 2
+            # this patch method must be generated
+            sname = type(self).__name__
+            oname = type(other).__name__
+            msg = 'unorderable types: "%s" and "%s"!'
+            raise TypeError(msg % (sname, oname))
+
+    def __eq__(self, other):
+        '''Python 2 and 3 have several differences in operator definitions.
+
+        For example::
+
+          >>> from xoutil.collections import BitPascalSet
+          >>> s1 = BitPascalSet[0:10]
+          >>> assert s1 == set(s1)    # OK (True) in 2 and 3
+          >>> assert set(s1) == s1    # OK in 3, fails in 2
+
+        '''
+        if isinstance(other, Set):
+            if isinstance(other, BitPascalSet):
+                return self._items == other._items
+            else:
+                ls, lo = len(self), len(other)
+                return ls == lo == self.count(other)
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __gt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issuperset(other) and len(self) > len(other)
+            else:
+                return bool(self._items)
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Set):
+            return self.issuperset(other) if other else bool(self._items)
+        else:
+            return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issubset(other) and len(self) < len(other)
+            else:
+                return not self._items
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, Set):
+            return self.issubset(other) if other else not self._items
+        else:
+            return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, Set):
+            return self.difference(other)
+        else:
+            return NotImplemented
+
+    def __isub__(self, other):
+        if isinstance(other, Set):
+            self.difference_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rsub__(self, other):
+        if isinstance(other, Set):
+            return other - type(other)(self)
+        else:
+            return NotImplemented
+
+    def __and__(self, other):
+        if isinstance(other, Set):
+            return self.intersection(other)
+        else:
+            return NotImplemented
+
+    def __iand__(self, other):
+        if isinstance(other, Set):
+            self.intersection_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rand__(self, other):
+        if isinstance(other, Set):
+            return other & type(other)(self)
+        else:
+            return NotImplemented
+
+    def __or__(self, other):
+        if isinstance(other, Set):
+            return self.union(other)
+        else:
+            return NotImplemented
+
+    def __ior__(self, other):
+        if isinstance(other, Set):
+            self.update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __ror__(self, other):
+        if isinstance(other, Set):
+            return other | type(other)(self)
+        else:
+            return NotImplemented
+
+    def __xor__(self, other):
+        if isinstance(other, Set):
+            return self.symmetric_difference(other)
+        else:
+            return NotImplemented
+
+    def __ixor__(self, other):
+        if isinstance(other, Set):
+            self.symmetric_difference_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rxor__(self, other):
+        if isinstance(other, Set):
+            return other ^ type(other)(self)
+        else:
+            return NotImplemented
+
+    def count(self, other):
+        '''Number of occurrences of any member of other in this set.
+
+        If other is an integer, return 1 if present, 0 if not.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            return 1 if other in self else 0
+        else:
+            return sum((i in self for i in other), 0)
+
+    def add(self, other):
+        '''Add an element to a bit-set.
+
+        This has no effect if the element is already present.
+
+        '''
+        self._insert(other)
+
+    def union(self, *others):
+        '''Return the union of bit-sets as a new set.
+
+        (i.e. all elements that are in either set.)
+
+        '''
+        res = self.copy()
+        res.update(*others)
+        return res
+
+    def update(self, *others):
+        '''Update a bit-set with the union of itself and others.'''
+        from xoutil.eight import integer_types, range
+        for other in others:
+            if isinstance(other, BitPascalSet):
+                sm = self._items
+                om = other._items
+                for k, v in safe_dict_iter(om).items():
+                    if k in sm:
+                        sm[k] |= v
+                    else:
+                        sm[k] = v
+            elif isinstance(other, integer_types):
+                self._insert(other)
+            elif isinstance(other, Iterable):
+                for i in other:
+                    self._insert(i)
+            elif isinstance(other, slice):
+                start, stop, step = other.start, other.stop, other.step
+                if step is None:
+                    step = 1
+                for i in range(start, stop, step):
+                    self._insert(i)
+            else:
+                raise self._invalid_value(other)
+
+    def intersection(self, *others):
+        '''Return the intersection of two or more bit-sets as a new set.
+
+        (i.e. elements that are common to all of the sets.)
+
+        '''
+        res = self.copy()
+        res.intersection_update(*others)
+        return res
+
+    def intersection_update(self, *others):
+        '''Update a bit-set with the intersection of itself and another.'''
+        from xoutil.eight import integer_types as ints
+        sm = self._items
+        oi, count = 0, len(others)
+        while sm and oi < count:
+            other = others[oi]
+            if not isinstance(other, BitPascalSet):
+                # safe mode for intersection
+                other = PascalSet(i for i in other if isinstance(i, ints))
+            om = other._items
+            for k, v in safe_dict_iter(sm).items():
+                v &= om.get(k, 0)
+                if v:
+                    sm[k] = v
+                else:
+                    del sm[k]
+            oi += 1
+
+    def difference(self, *others):
+        '''Return the difference of two or more bit-sets as a new set.
+
+        (i.e. all elements that are in this set but not the others.)
+
+        '''
+        res = self.copy()
+        res.difference_update(*others)
+        return res
+
+    def difference_update(self, *others):
+        '''Remove all elements of another bit-set from this set.'''
+        for other in others:
+            if isinstance(other, BitPascalSet):
+                sm = self._items
+                om = other._items
+                for k, v in safe_dict_iter(om).items():
+                    if k in sm:
+                        v = sm[k] & ~v
+                        if v:
+                            sm[k] = v
+                        else:
+                            del sm[k]
+            else:
+                from xoutil.eight import integer_types
+                for i in other:
+                    if isinstance(i, integer_types):
+                        self._remove(i)
+
+    def symmetric_difference(self, other):
+        '''Return the symmetric difference of two bit-sets as a new set.
+
+        (i.e. all elements that are in exactly one of the sets.)
+
+        '''
+        res = self.copy()
+        res.symmetric_difference_update(other)
+        return res
+
+    def symmetric_difference_update(self, other):
+        'Update a bit-set with the symmetric difference of itself and another.'
+        if not isinstance(other, BitPascalSet):
+            other = BitPascalSet(other)
+        if self:
+            if other:
+                # TODO: Implement more efficiently
+                aux = other - self
+                self -= other
+                self |= aux
+        else:
+            self._items = other._items[:]
+
+    def discard(self, other):
+        '''Remove an element from a bit-set if it is a member.
+
+        If the element is not a member, do nothing.
+
+        '''
+        self._remove(other)
+
+    def remove(self, other):
+        '''Remove an element from a bit-set; it must be a member.
+
+        If the element is not a member, raise a KeyError.
+
+        '''
+        self._remove(other, fail=True)
+
+    def pop(self):
+        '''Remove and return an arbitrary bit-set element.
+
+        Raises KeyError if the set is empty.
+
+        '''
+        from xoutil.eight import iteritems
+        sm = self._items
+        if sm:
+            bl = self._bit_length
+            k, v = next(iteritems(sm))
+            assert v
+            base = k*bl
+            i = 0
+            ref = 1
+            res = None
+            while res is None:
+                if ref & v:
+                    res = base + i
+                else:
+                    ref <<= 1
+                    i += 1
+            v &= ~ref
+            if v:
+                sm[k] = v
+            else:
+                del sm[k]
+            return res
+        else:
+            raise KeyError('pop from an empty set!')
+
+    def clear(self):
+        '''Remove all elements from this bit-set.'''
+        self._items = {}
+
+    def copy(self):
+        '''Return a shallow copy of a set.'''
+        return type(self)(self)
+
+    def isdisjoint(self, other):
+        '''Return True if two bit-sets have a null intersection.'''
+        from xoutil.eight import iteritems
+        if isinstance(other, BitPascalSet):
+            sm, om = self._items, other._items
+            if sm and om:
+                return all(sm.get(k, 0) & v == 0 for k, v in iteritems(om))
+            else:
+                return True
+        else:
+            return not any(i in self for i in other)
+
+    def issubset(self, other):
+        '''Report whether another set contains this bit-set.'''
+        from xoutil.eight import iteritems
+        if isinstance(other, BitPascalSet):
+            sm, om = self._items, other._items
+            if sm:
+                return all(om.get(k, 0) & v == v for k, v in iteritems(sm))
+            else:
+                return True
+        elif isinstance(other, Container):
+            return not any(i not in other for i in self)
+        else:
+            # Generator cases
+            return sum((i in self for i in other), 0) == len(self)
+
+    def issuperset(self, other):
+        '''Report whether this bit set contains another set.'''
+        from xoutil.eight import iteritems
+        if isinstance(other, BitPascalSet):
+            sm, om = self._items, other._items
+            if om:
+                return all(sm.get(k, 0) & v == v for k, v in iteritems(om))
+            else:
+                return True
+        else:
+            return not any(i not in self for i in other)
+
+    def _search(self, other):
+        '''Search the bit-wise value where ``other`` could be placed.
+
+        Return a duple :``(seed, bits to shift left)``.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            sm = self._items
+            bl = self._bit_length
+            k, ref = divmod(other, bl)
+            return k, ref, sm.get(k, 0)
+        else:
+            return None
+
+    def _insert(self, other):
+        '''Add a member in this bit-set.'''
+        aux = self._search(other)
+        if aux:
+            k, ref, v = aux
+            self._items[k] = v | (1 << ref)
+        else:
+            raise self._invalid_value(other)
+
+    def _remove(self, other, fail=False):
+        '''Remove an interval of integers from this bit-set.'''
+        aux = self._search(other)
+        ok = False
+        if aux:
+            k, ref, v = aux
+            if v:
+                aux = v & ~(1 << ref)
+                if v != aux:
+                    ok = True
+                    sm = self._items
+                    if aux:
+                        sm[k] = aux
+                    else:
+                        del sm[k]
+        if not ok and fail:
+            raise KeyError('"%s" is not a member!' % other)
+
+    def _invalid_value(self, value):
+        cls_name = type(self).__name__
+        vname = type(value).__name__
+        msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
+               'must be an integer!')
+        return TypeError(msg % (value, vname, cls_name))
+
+    @classmethod
+    def _prime_numbers_until(cls, limit):
+        '''This is totally a funny test method.'''
+        from xoutil.eight import range
+        res = cls[2:limit]
+        for i in range(2, limit//2 + 1):
+            if i in res:
+                aux = i + i
+                while aux < limit:
+                    if aux in res:
+                        res.remove(aux)
+                    aux += i
+        return res
+
+
+MutableSet.register(BitPascalSet)
+
 
 # get rid of unused global variables
 del slist, _py2, _py33, _py34, metaclass
