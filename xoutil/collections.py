@@ -75,6 +75,70 @@ from xoutil.objects import SafeDataItem as safe
 from xoutil.eight.meta import metaclass
 
 
+class safe_dict_iter(tuple):
+    '''Iterate a dictionary in a safe way.
+
+    This is useful when a dictionary can be modified while iterating on it,
+    for example::
+
+      >>> d = {1: 2, 3: 4, 5: 6}
+      >>> di = safe_dict_iter(d)
+
+      >>> for k, v in di.items():
+      ...     d[v] = k
+
+      >>> [(k, v) for (k, v) in di.items()]
+      [(1, 2), (3, 4), (5, 6)]
+
+      >>> del d[1]
+
+      >>> [(k, v) for (k, v) in di.items()]
+      [(3, 4), (5, 6)]
+
+      >>> [k for k in di]
+      [3, 5]
+
+    '''
+
+    def __new__(cls, mapping):
+        self = super(safe_dict_iter, cls).__new__(cls, mapping)
+        self._mapping = mapping
+        return self
+
+    def __str__(self):
+        cls_name = type(self).__name__
+        res = str(', ').join(str(i) for i in self)
+        return str('{}({})').format(cls_name, res)
+    __repr__ = __str__
+
+    def __len__(self):
+        return sum(1 for key in self)
+
+    def __contains__(self, key):
+        res = super(safe_dict_iter, self).__contains__(key)
+        return res and key in self.mapping
+
+    def __nonzero__(self):
+        return bool(len(self))
+    __bool__ = __nonzero__
+
+    def __iter__(self):
+        for key in super(safe_dict_iter, self).__iter__():
+            if key in self._mapping:
+                yield key
+    keys = __iter__
+
+    def values(self):
+        for key in self:
+            if key in self._mapping:
+                yield self._mapping[key]
+
+    def items(self):
+        for key in self:
+            if key in self._mapping:
+                yield (key, self._mapping[key])
+
+
 class defaultdict(_defaultdict):
     '''A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
