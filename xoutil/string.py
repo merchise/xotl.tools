@@ -319,6 +319,33 @@ def capitalize(value, title=True):
         return empty
 
 
+def hyphen_name(name):
+    '''Convert a name, normally an identifier, to a hyphened slug.
+
+    All transitions from lower to upper capitals (or from digits to letters)
+    are joined with a hyphen.
+
+    Also, all invalid characters (those invalid in Python identifiers) are
+    converted to hyphens.
+
+    For example::
+
+      >>> hyphen_name('BaseNode') == 'base-node'
+      True
+
+    '''
+    import re
+    regex = re.compile('([a-z0-9][A-Z]|[a-zA-Z][0-9]|[0-9][a-z])')
+    parts = []
+    for m in reversed(list(regex.finditer(name))):
+        i, f = m.span()
+        name, tail = name[:i + 1], name[i + 1:]
+        parts.insert(0, tail)
+    parts.insert(0, name)
+    name = '-'.join(parts)
+    return safe_str(normalize_slug(name, '-', '_'))
+
+
 # TODO: Document and fix all these "normalize_..." functions
 def normalize_unicode(value):
     # FIXME: i18n
