@@ -380,6 +380,19 @@ def full_identifier_coerce(arg):
     return str(arg) if ok else Invalid
 
 
+@coercer
+def names_coerce(arg):
+    '''Check if `arg` is a valid tuple of valid object names (identifiers).
+
+    If only one string is given, is returned as the only member of the
+    resulting tuple.
+
+    '''
+    from xoutil.eight import string_types
+    arg = (arg,) if isinstance(arg, string_types) else tuple(arg)
+    return iterable(identifier_coerce)(arg)
+
+
 # == Iterators ==
 
 def create_unique_member_coerce(coerce, container):
