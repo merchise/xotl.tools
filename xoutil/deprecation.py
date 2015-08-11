@@ -90,7 +90,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                 if '.' in pkg:
                     pkg, _obj = pkg.rsplit('.', 1)
                 else:
-                    pkg, _obj = None, None
+                    pkg, _obj = None, None    # noqa
         assert dist
         if isinstance(target_version, string_types):
             target_version = pkg_resources.parse_version(target_version)

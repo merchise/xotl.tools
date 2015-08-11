@@ -46,7 +46,7 @@ from xoutil.deprecation import deprecated as _deprecated
 from xoutil.eight import (string_types as _str_base,
                           text_type as _unicode,
                           binary_type as _bytes,    # TODO: Not necessary
-                          _py2, _py3)
+                          _py3)
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -552,6 +552,7 @@ def parse_url_int(value, default=None):
     arguments as a list of one element.
 
     '''
+    # TODO: Move to `xoutil.web`
     if isinstance(value, (list, tuple, set)) and len(value) > 0:
         value = value[0]
     try:
@@ -560,6 +561,7 @@ def parse_url_int(value, default=None):
         return default
 
 
+@_deprecated(safe_str)
 def force_str(value, encoding=None):
     '''Force to string, the type is different in Python 2 or 3 (bytes or
     unicode).
