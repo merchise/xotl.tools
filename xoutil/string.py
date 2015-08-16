@@ -21,17 +21,14 @@
 additions.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
-Python 3.x treats strings differently, `bytes` and `_unicode` will be used
+Python 3.x treats strings differently.  `bytes` and `text_type` will be used
 instead with the following conventions:
 
 - In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str') are
-  both string types inheriting form `basestring`.  `_unicode` is synonym of
-  `unicode`.
+  both string types inheriting form `basestring`.
 
 - In Python 3.x `str` is always unicode but `unicode` and `basestring` types
   doesn't exists. `bytes` type can be used as an array of one byte each item.
-
-  `_unicode` is synonym of `str`.
 
   Many methods are readjusted to these conditions.
 
@@ -43,10 +40,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.deprecation import deprecated as _deprecated
-from xoutil.eight import (string_types as _str_base,
-                          text_type as _unicode,
-                          binary_type as _bytes,    # TODO: Not necessary
-                          _py3)
+from xoutil.eight import _py3
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -78,17 +72,18 @@ def safe_decode(s, encoding=None):
     .. versionadded:: 1.1.3
 
     '''
-    if isinstance(s, _unicode):
+    from xoutil.eight import text_type
+    if isinstance(s, text_type):
         return s
     else:
         encoding = force_encoding(encoding)
         try:
             # In Python 3 str(b'm') returns the string "b'm'" and not just "m",
             # this fixes this.
-            return _unicode(s, encoding, 'replace')
+            return text_type(s, encoding, 'replace')
         except:
             # For numbers and other stuff.
-            return _unicode(s)
+            return text_type(s)
 
 
 def safe_encode(u, encoding=None):
@@ -103,18 +98,19 @@ def safe_encode(u, encoding=None):
     '''
     # TODO: This is not nice for Python 3, bytes is not valid string any more
     #       See :func:`json.encoder.py_encode_basestring_ascii` of Python 2.x
+    from xoutil.eight import string_types, text_type
     if isinstance(u, bytes):
         return u
     else:
         encoding = force_encoding(encoding)
         try:
-            if isinstance(u, _str_base):
+            if isinstance(u, string_types):
                 # In Python 2.x bytes does not allows an encoding argument.
                 return bytes(u)
             else:
-                return _unicode(u).encode(encoding, 'replace')
+                return text_type(u).encode(encoding, 'replace')
         except:
-            return _unicode(u).encode(encoding, 'replace')
+            return text_type(u).encode(encoding, 'replace')
 
 
 if _py3:
@@ -212,7 +208,8 @@ def safe_strip(value):
     .. versionadded:: 1.1.3
 
     '''
-    return value.strip() if isinstance(value, (_unicode, _bytes)) else value
+    from xoutil.eight import string_types
+    return value.strip() if isinstance(value, string_types) else value
 
 
 def cut_prefix(value, prefix):
@@ -298,14 +295,16 @@ def capitalize(value, title=True):
 
     Return bytes or unicode depending on type of `value`.
 
-        >>> type(capitalize(_unicode('something'))) is _unicode
+        >>> from xoutil.eight import text_type
+        >>> type(capitalize(text_type('something'))) is text_type
         True
 
         >>> type(capitalize(str('something'))) is str
         True
 
     '''
-    space, empty = (' ', '') if isinstance(value, _unicode) else (b' ', b'')
+    text = type(value)
+    space, empty = text(' '), text('')
     words = value.split() if value else None
     if words:
         count = len(words) if title else 1
@@ -386,7 +385,8 @@ def normalize_ascii(value):
     normalization.
     '''
     import unicodedata
-    if not isinstance(value, _unicode):
+    from xoutil.eight import text_type
+    if not isinstance(value, text_type):
         value = safe_decode(value)
     res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     return safe_decode(res)
@@ -463,6 +463,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
 
     '''
     import re
+    from xoutil.eight import string_types
     # local functions
     _normalize = lambda v: normalize_ascii(v).lower()
     _set = lambda v: ''.join(set(v))
@@ -471,7 +472,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     # check and adjust arguments
     if replacement in (None, False):
         replacement = ''
-    elif isinstance(replacement, _str_base):
+    elif isinstance(replacement, string_types):
         replacement = normalize_ascii(replacement)    # TODO: or _normalize?
     else:
         msg = '`replacement` (%s) must be a string or None, not `%s`.'
@@ -482,13 +483,13 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     elif invalids in {None, False}:
         invalids = ''
     else:
-        if not isinstance(invalids, _str_base):
+        if not isinstance(invalids, string_types):
             invalids = _from_iter(invalids)
         invalids = _esc(_normalize(invalids))
     if valids is None:
         valids = ''
     else:
-        if not isinstance(valids, _str_base):
+        if not isinstance(valids, string_types):
             valids = _from_iter(valids)
         valids = _esc(re.sub(r'[0-9a-b]+', '', _normalize(valids)))
     # calculate result
@@ -530,7 +531,8 @@ def parse_boolean(value):
     False
 
     '''
-    if isinstance(value, _str_base):
+    from xoutil.eight import string_types
+    if isinstance(value, string_types):
         value = value.strip()
         if value:
             if value.isdigit():
