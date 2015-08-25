@@ -14,28 +14,18 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Feb 17, 2012
+# Created on 2015-08-25
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.names import strlist as strs
-__all__ = strs('uuid', )
-del strs
 
-from xoutil.deprecation import deprecated
-from xoutil.values.uuid import uuid as _uuid
-
-
-@deprecated(_uuid)
 def uuid(random=False):
     '''Return a "Global Unique ID" as a string.
 
     :param random: If True, a random uuid is generated (does not use host id).
 
     '''
-    return _uuid(random)
-
-
-del deprecated
+    from uuid import uuid1, uuid4
+    return '%s' % (uuid4 if random else uuid1)()
