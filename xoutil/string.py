@@ -36,7 +36,7 @@ instead with the following conventions:
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.deprecation import deprecated as _deprecated
@@ -303,8 +303,8 @@ def capitalize(value, title=True):
         True
 
     '''
-    text = type(value)
-    space, empty = text(' '), text('')
+    tstr = type(value)
+    space, empty = tstr(' '), tstr('')
     words = value.split() if value else None
     if words:
         count = len(words) if title else 1
@@ -351,9 +351,9 @@ def normalize_unicode(value):
     if (value is None) or (value is str('')):
         return ''
     elif value is True:
-        return 'Sí'
+        return safe_decode('Sí')
     elif value is False:
-        return 'No'
+        return safe_decode('No')
     else:
         return safe_decode(value)
 
