@@ -28,13 +28,14 @@ python feature, are similar to a combination of object mold/check:
 A custom coercer could be created with closures, for an example see
 `create_int_range_coerce`:func:.
 
+Also contains sub-modules to obtain, convert and check values of common types.
+
 .. versionadded:: 1.7.0
 
 '''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
 

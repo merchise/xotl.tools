@@ -113,50 +113,42 @@ def safe_encode(u, encoding=None):
             return text_type(u).encode(encoding, 'replace')
 
 
-if _py3:
-    safe_str = str
-    safe_repr = repr
-else:
-    def safe_str(obj=str()):
-        '''Our code uses unicode as normal string in Python 2.x.
+def safe_str(obj=str()):
+    '''Convert to normal string type in a safe way.
 
-        There are some scenarios the require `str` type (for example attribute
-        ``__name__`` in functions and types).
+    Most of our Python 2.x code uses unicode as normal string, also in
+    Python 3 converting bytes or byte-arrays to strings includes the "b"
+    prefix in the resulting value.
 
-        As ``str is bytes`` in Python2, using str(value) assures correct these
-        scenarios in most cases, for example::
+    This function is useful in some scenarios that require `str` type (for
+    example attribute ``__name__`` in functions and types).
 
-          >>> from xoutil.string import safe_str as sstr
-          >>> def inverted_partial(func, *args, **keywords):
-          ...     def inner(*a, **kw):
-          ...         a += args
-          ...         kw.update(keywords)
-          ...         return func(*a, **kw)
-          ...     inner.__name__ = sstr(func.__name__.replace('lambda', 'λ'))
-          ...     return inner
+    As ``str is bytes`` in Python2, using str(value) assures correct these
+    scenarios in most cases, but in other is not enough, for example::
 
-        .. versionadded:: 1.7.0
+      >>> from xoutil.string import safe_str as sstr
+      >>> def inverted_partial(func, *args, **keywords):
+      ...     def inner(*a, **kw):
+      ...         a += args
+      ...         kw.update(keywords)
+      ...         return func(*a, **kw)
+      ...     inner.__name__ = sstr(func.__name__.replace('lambda', u'λ'))
+      ...     return inner
 
-        '''
+    .. versionadded:: 1.7.0
+
+    '''
+    if _py3:
+        if isinstance(obj, (bytes, bytearray)):
+            return safe_decode(obj)
+        else:
+            return str(obj)
+    else:
         try:
             return str(obj)
         except UnicodeEncodeError:
             # assert isinstance(value, unicode)
             return safe_encode(obj)
-
-    def safe_repr(value):
-        '''Our code uses unicode as normal string in Python 2.x.
-
-        This will convert all results of standard Python `repr` function, to
-        safe string (`str` type) if returned as unicode value.
-
-        .. versionadded:: 1.7.0
-
-        '''
-        res = safe_str(repr(value))
-        if res.startswith('u"') or res.startswith("u'"):
-            res = res[1:]
-        return res
 
 
 def safe_join(separator, iterable, encoding=None):
@@ -383,13 +375,14 @@ def normalize_ascii(value):
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization.
+
     '''
     import unicodedata
     from xoutil.eight import text_type
     if not isinstance(value, text_type):
         value = safe_decode(value)
     res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    return safe_decode(res)
+    return safe_str(res)
 
 
 def normalize_slug(value, replacement='-', invalids=None, valids=None):
