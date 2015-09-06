@@ -74,13 +74,13 @@ def decode_coerce(arg):
     '''Decode objects implementing the buffer protocol.'''
     import locale
     from . import Invalid
-    from xoutil.eight import text_type as text, callable
+    from xoutil.eight import text_type, callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     decode = getattr(arg, 'decode', None)
     if callable(decode):
         try:
             res = decode(encoding, 'replace')
-            if not isinstance(res, text):
+            if not isinstance(res, text_type):
                 res = None
         except BaseException:
             res = None
@@ -124,28 +124,6 @@ def encode_coerce(arg):
 
 
 @coercer
-def simple_bytes_coerce(arg):
-    '''Extract possible character (bytes) from `arg`.
-
-    There are several source types:
-
-    - byte buffers.
-
-    - strings.
-
-    - integers between 0 and 0x10ffff0 (unicode set of characters).
-
-    '''
-    from xoutil.eight import _py3, integer_types
-    if isinstance(arg, (bytes, bytearray)):
-        return arg
-    else:
-        if isinstance(arg, integer_types):
-            arg = (chr if _py3 else unichr)(arg)
-        return encode_coerce(arg)
-
-
-@coercer
 def unicode_coerce(arg):
     '''Decode a buffer or any object returning unicode text.
 
@@ -165,11 +143,11 @@ def unicode_coerce(arg):
     '''
     from array import array
     from . import Invalid
-    from xoutil.eight import text_type as text
+    from xoutil.eight import text_type
     aux = name_coerce(arg)
     if aux is not Invalid:
         arg = aux
-    if isinstance(arg, text):
+    if isinstance(arg, text_type):
         return arg
     elif isinstance(arg, bytearray):
         arg = bytes(arg)
@@ -183,11 +161,11 @@ def unicode_coerce(arg):
                 arg = bytes(bytearray(arg.tolist()))
             except BaseException:
                 arg = str(arg)
-                if str is text:
+                if str is text_type:
                     return arg
 
     res = decode_coerce(arg)
-    return text(arg) if res is Invalid else res
+    return text_type(arg) if res is Invalid else res
 
 
 @coercer
@@ -220,7 +198,7 @@ def bytes_coerce(arg):
     '''
     from array import array
     from . import Invalid
-    from xoutil.eight import text_type as text
+    from xoutil.eight import text_type
     aux = name_coerce(arg)
     if aux is not Invalid:
         arg = aux
@@ -237,9 +215,9 @@ def bytes_coerce(arg):
             try:
                 return bytes(bytearray(arg.tolist()))
             except BaseException:
-                arg = text(arg)
+                arg = text_type(arg)
     res = encode_coerce(arg)
-    return encode_coerce(text(arg)) if res is Invalid else res
+    return encode_coerce(text_type(arg)) if res is Invalid else res
 
 
 @coercer
@@ -304,3 +282,77 @@ def lower_ascii_set_coerce(arg):
 
     '''
     return str().join(set(lower_ascii_coerce(arg)))
+
+
+def chars_coerce(arg):
+    '''Convert to unicode characters.
+
+    If `arg` is an integer between ``0`` and ``0x10ffff`` is converted
+    assuming it as ordinal unicode code, else is converted with
+    `unicode_coerce`:meth:.
+
+    '''
+    from xoutil.eight import _py3, integer_types as ints
+    if isinstance(arg, ints) and 0 <= arg <= 0x10ffff:
+        return (chr if _py3 else unichr)(arg)
+    else:
+        return unicode_coerce(arg)
+
+
+from xoutil.eight import text_type as text
+
+
+class text(text):
+    '''Return a nice text representation of one object.
+
+    text(obj='') -> text
+
+    text(bytes_or_buffer[, encoding[, errors]]) -> text
+
+    Create a new string object from the given object.  If `encoding` or
+    `errors` is specified, then the object must expose a data buffer that will
+    be decoded using the given encoding and error handler.  Otherwise, returns
+    the result of object text representation.
+
+    :param encoding: defaults to ``sys.getdefaultencoding()``.
+
+    :param errors: defaults to 'strict'.
+
+    Method join is improved, in order to receive any collection of objects,
+    as variable number of arguments or as one iterable.
+
+    '''
+    def __new__(cls, obj='', *args, **kwargs):
+        if not (args or kwargs):
+            obj = unicode_coerce(obj)
+        return super(text, cls).__new__(cls, obj, *args, **kwargs)
+
+    def join(self, *args):
+        '''S.join(variable_number_args or iterable) -> text
+
+        Return a text which is the concatenation of the objects (converted to
+        text) in argument items.  The separator between elements is `S`.
+
+        See `chr_join`:meth: for other vertion of this functionality.
+
+        '''
+        return self._join(unicode_coerce, args)
+
+    def chr_join(self, *args):
+        '''S.chr_join(variable_number_args or iterable) -> text
+
+        Return a text which is the concatenation of the objects (converted to
+        text) in argument items.  The separator between elements is `S`.
+
+        Difference with `join`:meth: is that integers between ``0`` and
+        ``0x10ffff`` are converted to characters as unicode ordinal.
+
+        '''
+        return self._join(chars_coerce, args)
+
+    def _join(self, coercer, args):
+        '''Protected method to implement `join`:meth: and `chr_join`:meth:.'''
+        from collections import Iterable
+        if len(args) == 1 and isinstance(args[0], Iterable):
+            args = args[0]
+        return super(text, self).join(coercer(obj) for obj in args)
