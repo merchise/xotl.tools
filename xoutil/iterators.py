@@ -27,6 +27,8 @@ from __future__ import (division as _py3_division,
 from xoutil import Unset
 from xoutil.types import is_scalar
 
+from xoutil.deprecation import deprecated
+
 
 def first_non_null(iterable, default=None):
     '''Returns the first value from iterable which is non-null.
@@ -134,14 +136,13 @@ def dict_update_new(target, source):
             target[key] = source[key]
 
 
+@deprecated('generator expression')
 def fake_dict_iteritems(source):
     '''Iterate (key, value) in a source that have defined method "keys" and
      :meth:`~object.__getitem__`.
 
-    .. warning::
-
-       *In risk since 1.4.0*. Most of the time is enough to use the generator
-       expression ``((key, source[key]) for key in source.keys())``.
+    .. warning:: Deprecated since 1.7.0.  This was actually in risk since
+                 1.4.0.
 
     '''
     import warnings
