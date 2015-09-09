@@ -124,7 +124,6 @@ def multi_get(source, *keys):
       >>> next(multi_get(d, 'a', 'b'), '---')
       '---'
 
-
     '''
     return (source.get(key) for key in keys if key in source)
 
@@ -301,5 +300,3 @@ if _py3:
 else:
     from itertools import (imap as map, izip as zip,    # noqa
                            izip_longest as zip_longest)
-
-# XXX: How to avoid "imported but unused"
