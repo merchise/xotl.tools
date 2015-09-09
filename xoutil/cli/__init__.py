@@ -28,7 +28,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from abc import abstractmethod, ABCMeta
-from xoutil.objects import metaclass, classproperty
+from xoutil.eight.meta import metaclass
+from xoutil.objects import classproperty
 from .tools import command_name, program_name
 
 
