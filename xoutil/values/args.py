@@ -19,13 +19,43 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def param_get(args, kwargs, idx, name, default=None):
-    '''Get an argument value that could be given by order or by name.'''
-    if idx < len(args):
-        if name not in kwargs:
-            return args[idx]
-        else:
-            msg = 'Argument repeated in order "{}" and with name ""'
-            raise TypeError(msg.format(idx, name))
+from xoutil import Unset
+
+
+def param_get(args, kwargs, idx, name, default=Unset, coercer=Unset):
+    '''Get an argument value that could be given by order or by name.
+
+    :param args: A tuple -or list- with positional arguments as received in a
+           function for a parameter declared as ``*args``.
+
+    :param kwargs: A dictionary with named arguments as received in a function
+           for a parameter declared as ``**kwargs``.
+
+    :param idx: Index of positional argument.  If None, the requested argument
+           value could only be given as a named argument.
+
+    :param name: The name of a named argument.  if None, this argument could
+           only be given as a positional argument.
+
+    :param default: Optional default value to return it if no positional or
+           named argument is found.
+
+    :param coercer: Optional function to transform or validate the value being
+           returned.
+
+    '''
+    in_args = idx is not None and (0 <= idx < len(args))
+    in_kwargs = name in kwargs
+    count = in_args + in_kwargs
+    if count == 1:
+        res = args[idx] if in_args else kwargs[name]
+    elif count == 2:
+        res = Unset
+    else:    # count == 0
+        res = default
+    if res is not Unset:
+        return res if coercer is Unset else coercer(res)
     else:
-        return kwargs.get(name, default)
+        msg = ('Expecting exactly one occurrence for argument '
+               '(idx: {}, name: {!r}); but {} was processed.')
+        raise TypeError(msg.format(idx, name, count))
