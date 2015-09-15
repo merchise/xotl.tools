@@ -25,17 +25,17 @@ __all__ = strs('uuid', )
 del strs
 
 from xoutil.deprecation import deprecated
-from xoutil.values.uuid import uuid as _uuid
+from xoutil.values.ids import uuid as str_uuid
 
 
-@deprecated(_uuid)
+@deprecated(str_uuid)
 def uuid(random=False):
     '''Return a "Global Unique ID" as a string.
 
     :param random: If True, a random uuid is generated (does not use host id).
 
     '''
-    return _uuid(random)
+    return str_uuid(random)
 
 
 del deprecated
