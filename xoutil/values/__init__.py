@@ -616,6 +616,7 @@ class compose(custom):
     '''
 
     def __new__(cls, *coercers):
+        coercers = pargs(coercer)(coercers)
         inner = tuple(check(coercer, c) for c in coercers
                       if c is not identity_coerce)
         if inner:
@@ -654,6 +655,7 @@ class some(custom):
     '''
 
     def __new__(cls, *coercers):
+        coercers = pargs(coercer)(coercers)
         inner = tuple(check(coercer, c) for c in coercers
                       if c is not void_coerce)
         if inner:
@@ -710,6 +712,7 @@ class combo(custom):
 
     def __init__(self, *coercers):
         super(combo, self).__init__()
+        coercers = pargs(coercer)(coercers)
         self.inner = tuple(check(coercer, c) for c in coercers)
 
     def __call__(self, arg):
