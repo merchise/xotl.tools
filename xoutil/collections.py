@@ -1602,9 +1602,30 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         self.update(*args, **kwargs)
         return self.level
 
-    push = deprecated('StackedDict.push_level', removed_in_version='1.7.1')(
-        push_level
-    )
+    @deprecated(push_level)
+    def push(self, *args, **kwargs):
+        '''Don't use thid method, use new `push_level`:meth: instead.'''
+        return self.push_level(*args, **kwargs)
+
+    def pop(self, *args):
+        '''Remove this, always use original `MutableMapping.pop`:meth:.
+
+        If none arguments are given, `pop_level`:meth: is called and a
+        deprecation warning is printed in `sys.stderr` the first time.  If one
+        or two arguments are given, those are interpreted as (key, default)
+        values of the super class `pop`:meth:.
+
+        '''
+        if len(args) == 0:
+            cls = type(self)
+            if not hasattr(cls, '_bad_pop_called'):
+                import sys
+                setattr(cls, '_bad_pop_called', True)
+                print(('Deprecation warning: this use of `pop` is deprecated,'
+                       ' use `pop_level` instead.'), file=sys.stderr)
+            return self.pop_level()
+        else:
+            return super(StackedDict, self).pop(*args)
 
     def pop_level(self):
         '''Pops the last pushed level and returns the whole level.
@@ -1621,10 +1642,6 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
             return res
         else:
             raise TypeError('Cannot pop from StackedDict without any levels')
-
-    pop = deprecated('StackedDict.pop_level', removed_in_version='1.7.1')(
-        pop_level
-    )
 
     def peek(self):
         '''Peeks the top level of the stack.

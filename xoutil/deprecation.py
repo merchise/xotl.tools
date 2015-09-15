@@ -16,7 +16,6 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import types
@@ -33,7 +32,15 @@ class DeprecationError(Exception):
     pass
 
 
-# WARNING!!! Don't make deprecated depends upon anything more than six.
+def _nameof(item):
+    '''Version of `xoutil.names.nameof`:func: to avoid importing it here.'''
+    singletons = (None, True, False, Ellipsis, NotImplemented)
+    res = next((str(s) for s in singletons if s is item), None)
+    if res is None:
+        res = '.'.join([item.__module__, item.__name__])
+    return res
+
+
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                removed_in_version=None, check_version=False):
     '''Small decorator for deprecated functions.
@@ -73,13 +80,12 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
     .. versionchanged:: 1.4.1 Introduces removed_in_version and check_version.
 
     '''
-    from xoutil.names import nameof
 
     def raise_if_deprecated(target, target_version):
         import sys
         import pkg_resources
         string_types = (str,) if sys.version_info[0] == 3 else (basestring,)
-        pkg = nameof(target, inner=True, typed=True, full=True)
+        pkg = _nameof(target)
         pkg, _obj = pkg.rsplit('.', 1)
         dist = None
         while not dist and pkg:
@@ -97,7 +103,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
         if dist.parsed_version >= target_version:
             msg = ('A deprecated feature %r was scheduled to be '
                    'removed in version %r and it is still '
-                   'alive in %r!' % (nameof(target, inner=True, full=True),
+                   'alive in %r!' % (_nameof(target),
                                      str(removed_in_version),
                                      str(dist.version)))
             raise DeprecationError(msg)
