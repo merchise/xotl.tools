@@ -1619,10 +1619,11 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         if len(args) == 0:
             cls = type(self)
             if not hasattr(cls, '_bad_pop_called'):
-                import sys
+                import warnings
                 setattr(cls, '_bad_pop_called', True)
-                print(('Deprecation warning: this use of `pop` is deprecated,'
-                       ' use `pop_level` instead.'), file=sys.stderr)
+                msg = ('Use `pop` method without parameters is deprecated, '
+                       'use `pop_level` instead')
+                warnings.warn(msg, stacklevel=2)
             return self.pop_level()
         else:
             return super(StackedDict, self).pop(*args)
