@@ -33,20 +33,20 @@ metaclass.__doc__ = '''Define the metaclass of a class.
 
     Usage::
 
-       >>> class Meta(type):
-       ...   pass
+     >>> class Meta(type):
+     ...   pass
 
-       >>> class Foobar(metaclass(Meta)):
-       ...   pass
+     >>> class Foobar(metaclass(Meta)):
+     ...   pass
 
-       >>> class Spam(metaclass(Meta), dict):
-       ...   pass
+     >>> class Spam(metaclass(Meta), dict):
+     ...   pass
 
-       >>> type(Spam) is Meta
-       True
+     >>> type(Spam) is Meta
+     True
 
-       >>> Spam.__bases__ == (dict, )
-       True
+     >>> Spam.__bases__ == (dict, )
+     True
 
     .. versionadded:: 1.5.5 The `kwargs` keywords arguments with support for
        ``__prepare__``.
@@ -71,17 +71,17 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        that ``__prepare__`` is called **only** for classes that use the
        `metaclass`:func: directly.  In the following hierarchy::
 
-           class Meta(type):
-                @classmethod
-                def __prepare__(cls, name, bases, **kwargs):
-                    from xoutil.collections import OrderedDict
-                    return OrderedDict()
+         class Meta(type):
+              @classmethod
+              def __prepare__(cls, name, bases, **kwargs):
+                  from xoutil.collections import OrderedDict
+                  return OrderedDict()
 
-           class Foo(metaclass(Meta)):
-                pass
+         class Foo(metaclass(Meta)):
+              pass
 
-           class Bar(Foo):
-                pass
+         class Bar(Foo):
+              pass
 
        when creating the class ``Bar`` the ``__prepare__()`` class method is
        not called in Python 2.7!
@@ -99,39 +99,51 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        registration of classes), then this would lead to unwanted double
        registration of the class::
 
-          >>> class BaseMeta(type):
-          ...     classes = []
-          ...     def __new__(cls, name, bases, attrs):
-          ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
-          ...         cls.classes.append(res)   # <-- side effect
-          ...         return res
+        >>> class BaseMeta(type):
+        ...     classes = []
+        ...     def __new__(cls, name, bases, attrs):
+        ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
+        ...         cls.classes.append(res)   # <-- side effect
+        ...         return res
 
-          >>> class Base(metaclass(BaseMeta)):
-          ...     pass
+        >>> class Base(metaclass(BaseMeta)):
+        ...     pass
 
-          >>> class SubType(BaseMeta):
-          ...     pass
+        >>> class SubType(BaseMeta):
+        ...     pass
 
-          >>> class Egg(metaclass(SubType), Base):   # <-- metaclass first
-          ...     pass
+        >>> class Egg(metaclass(SubType), Base):   # <-- metaclass first
+        ...     pass
 
-          >>> Egg.__base__ is Base   # <-- but the base is Base
-          True
+        >>> Egg.__base__ is Base   # <-- but the base is Base
+        True
 
-          >>> len(BaseMeta.classes) == 2
-          True
+        >>> len(BaseMeta.classes) == 2
+        True
 
-          >>> class Spam(Base, metaclass(SubType)):
-          ...     'Like "Egg" but it will be registered twice in Python 2.x.'
+        >>> class Spam(Base, metaclass(SubType)):
+        ...     'Like "Egg" but it will be registered twice in Python 2.x.'
 
        In this case the registration of Spam ocurred twice::
 
-          >>> BaseMeta.classes  # doctest: +SKIP
-          [<class Base>, <class Egg>, <class Spam>, <class Spam>]
+        >>> BaseMeta.classes  # doctest: +SKIP
+        [<class Base>, <class Egg>, <class Spam>, <class Spam>]
 
        Bases, however, are just fine::
 
-          >>> Spam.__bases__ == (Base, )
-          True
+        >>> Spam.__bases__ == (Base, )
+        True
 
 '''
+
+# FIX: In the book "Expert Python Programming", page 86 (103) it's expressed:
+#
+# The __metaclass__ attribute must be set to something that will:
+#
+# 1. Accept the same arguments as those that type accepts (namely, a class
+#    name, a tuple of base classes, and a mapping of attributes)
+#
+# 2. Return a class object
+#
+# The first point is not implemented in xoutil.  In the book there is an
+# example using a function.
