@@ -134,16 +134,8 @@ metaclass.__doc__ = '''Define the metaclass of a class.
         >>> Spam.__bases__ == (Base, )
         True
 
-'''
+    .. versionadded:: 1.7.1 Now are accepted atypical meta-classes, for
+       example functions or any callable with the same arguments as those that
+       type accepts (class name, tuple of base classes, attributes mapping).
 
-# FIX: In the book "Expert Python Programming", page 86 (103) it's expressed:
-#
-# The __metaclass__ attribute must be set to something that will:
-#
-# 1. Accept the same arguments as those that type accepts (namely, a class
-#    name, a tuple of base classes, and a mapping of attributes)
-#
-# 2. Return a class object
-#
-# The first point is not implemented in xoutil.  In the book there is an
-# example using a function.
+'''
