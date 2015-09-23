@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
 from xoutil import Unset
 
 
-def param_get(args, kwargs, idx, name, default=Unset, coercer=Unset):
+def param_get(args, kwargs, idx, name, default=Unset, coercers=Unset):
     '''Get an argument value that could be given by order or by name.
 
     :param args: A tuple -or list- with positional arguments as received in a
@@ -40,21 +40,26 @@ def param_get(args, kwargs, idx, name, default=Unset, coercer=Unset):
     :param default: Optional default value to return it if no positional or
            named argument is found.
 
-    :param coercer: Optional function to transform or validate the value being
-           returned.
+    :param coercers: A collection of functions, each one to transform or
+           validate the value being returned.
 
     '''
     in_args = idx is not None and (0 <= idx < len(args))
     in_kwargs = name in kwargs
     count = in_args + in_kwargs
-    if count == 1:
-        res = args[idx] if in_args else kwargs[name]
-    elif count == 2:
-        res = Unset
-    else:    # count == 0
+    if count == 0:
         res = default
+    elif count == 1:
+        res = args[idx] if in_args else kwargs[name]
+    else:    # count == 2: error; both, positional and by name, are given
+        res = Unset
     if res is not Unset:
-        return res if coercer is Unset else coercer(res)
+        if coercers is Unset:
+            return res
+        else:
+            from . import compose
+            coercer = compose(coercers)
+            return coercer(res)
     else:
         msg = ('Expecting exactly one occurrence for argument '
                '(idx: {}, name: {!r}); but {} was processed.')
