@@ -619,11 +619,13 @@ class compose(custom):
         coercers = pargs(coercer)(coercers)
         inner = tuple(check(coercer, c) for c in coercers
                       if c is not identity_coerce)
-        if inner:
+        if len(inner) > 1:
             self = super(compose, cls).__new__(cls)
             super(compose, self).__init__()
             self.inner = inner
             return self
+        elif len(inner) == 1:
+            return inner[0]
         else:
             return identity_coerce
 
@@ -658,11 +660,13 @@ class some(custom):
         coercers = pargs(coercer)(coercers)
         inner = tuple(check(coercer, c) for c in coercers
                       if c is not void_coerce)
-        if inner:
+        if len(inner) > 1:
             self = super(some, cls).__new__(cls)
             super(some, self).__init__()
             self.inner = inner
             return self
+        elif len(inner) == 1:
+            return inner[0]
         else:
             return void_coerce
 
