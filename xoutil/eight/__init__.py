@@ -43,6 +43,11 @@ _pypy = sys.version.find('PyPy') >= 0
 del sys
 
 try:
+    from hashlib import sha1 as sha
+except ImportError:
+    from sha import sha    # noqa
+
+try:
     base_string = basestring
     string_types = (str, unicode)
 except NameError:

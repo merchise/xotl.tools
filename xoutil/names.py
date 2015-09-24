@@ -237,7 +237,6 @@ def simple_name(item, join=True):
 
     '''
     # TODO: Use this function in `nameof`
-    from xoutil.eight import callable
     from xoutil.inspect import type_name
     singletons = (None, True, False, Ellipsis, NotImplemented)
     res = next((str(s) for s in singletons if s is item), None)

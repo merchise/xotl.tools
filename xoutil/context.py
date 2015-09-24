@@ -128,8 +128,7 @@ class Context(metaclass(MetaContext), StackedDict):
             self.count = 0
             # TODO: Redefine all event management
             self._events = []
-        self.push_level(**data)
-        return self
+        return self(**data)
 
     def __init__(self, *args, **kwargs):
         '''Must be defined empty for `__new__` parameters compatibility.
@@ -138,6 +137,11 @@ class Context(metaclass(MetaContext), StackedDict):
         class can use this `__init__`.
 
         '''
+
+    def __call__(self, **data):
+        '''Allow re-enter in a new level to an already assigned context.'''
+        self.push_level(**data)
+        return self
 
     def __nonzero__(self):
         return bool(self.count)

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.values
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -28,13 +28,14 @@ python feature, are similar to a combination of object mold/check:
 A custom coercer could be created with closures, for an example see
 `create_int_range_coerce`:func:.
 
+Also contains sub-modules to obtain, convert and check values of common types.
+
 .. versionadded:: 1.7.0
 
 '''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
 
@@ -380,6 +381,19 @@ def full_identifier_coerce(arg):
     return str(arg) if ok else Invalid
 
 
+@coercer
+def names_coerce(arg):
+    '''Check if `arg` is a valid tuple of valid object names (identifiers).
+
+    If only one string is given, is returned as the only member of the
+    resulting tuple.
+
+    '''
+    from xoutil.eight import string_types
+    arg = (arg,) if isinstance(arg, string_types) else tuple(arg)
+    return iterable(identifier_coerce)(arg)
+
+
 # == Iterators ==
 
 def create_unique_member_coerce(coerce, container):
@@ -602,13 +616,16 @@ class compose(custom):
     '''
 
     def __new__(cls, *coercers):
+        coercers = pargs(coercer)(coercers)
         inner = tuple(check(coercer, c) for c in coercers
                       if c is not identity_coerce)
-        if inner:
+        if len(inner) > 1:
             self = super(compose, cls).__new__(cls)
             super(compose, self).__init__()
             self.inner = inner
             return self
+        elif len(inner) == 1:
+            return inner[0]
         else:
             return identity_coerce
 
@@ -640,13 +657,16 @@ class some(custom):
     '''
 
     def __new__(cls, *coercers):
+        coercers = pargs(coercer)(coercers)
         inner = tuple(check(coercer, c) for c in coercers
                       if c is not void_coerce)
-        if inner:
+        if len(inner) > 1:
             self = super(some, cls).__new__(cls)
             super(some, self).__init__()
             self.inner = inner
             return self
+        elif len(inner) == 1:
+            return inner[0]
         else:
             return void_coerce
 
@@ -696,6 +716,7 @@ class combo(custom):
 
     def __init__(self, *coercers):
         super(combo, self).__init__()
+        coercers = pargs(coercer)(coercers)
         self.inner = tuple(check(coercer, c) for c in coercers)
 
     def __call__(self, arg):

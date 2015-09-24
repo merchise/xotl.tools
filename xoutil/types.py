@@ -90,10 +90,31 @@ def type_coerce(obj):
 
 
 class mro_dict(Mapping):
-    '''An utility class that behaves like a read-only dict to query the
-    attributes in the MRO chain of a `target` class (or an object's class).
+    '''Utility behaving like a read-only dict of `target` MRO attributes.
+
+    For example::
+
+      >>> class A(object):
+      ...     x = 12
+      ...     y = 34
+
+      >>> class B(A):
+      ...     y = 56
+      ...     z = 78
+
+      >>> d = mro_dict(B)
+
+      >>> d['x']
+      12
+
+      >>> d['y']
+      56
+
+      >>> d['z']
+      78
 
     '''
+    # TODO: What is the application for this utility?
     __slots__ = ('_probes', '_keys')
 
     def __init__(self, target):
