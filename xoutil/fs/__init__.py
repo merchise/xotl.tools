@@ -197,9 +197,11 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
     for path, _dirs, _files in os.walk(normalize_path(top)):
         # XXX: Make clearest next condition
         if ((regex is None or regex.search(path)) and
-            (exclude is None or not exclude.search(path)) and
-            not _dirs and not _files and confirm(path) and
-            not os.path.ismount(path)):
+                (exclude is None or not exclude.search(path)) and
+                not _dirs and
+                not _files and
+                confirm(path) and
+                not os.path.ismount(path)):
             os.rmdir(path)
 
 
