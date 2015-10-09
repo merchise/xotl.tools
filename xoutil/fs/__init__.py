@@ -148,6 +148,7 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
 
     The params have analagous meaning that in :func:`iter_files` and the same
     restrictions.
+
     '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     for path, _dirs, _files in os.walk(normalize_path(top)):
@@ -465,29 +466,27 @@ if sys.version_info < (3, 4, 1):
         raised.  This is recursive.
 
         """
-        import errno
-        from os import path, mkdir
-        from os.path import curdir
+        from errno import EEXIST
         from xoutil.string import safe_encode
-        head, tail = path.split(name)
+        head, tail = os.path.split(name)
         if not tail:
-            head, tail = path.split(head)
-        if head and tail and not path.exists(head):
+            head, tail = os.path.split(head)
+        if head and tail and not os.path.exists(head):
             try:
                 makedirs(head, mode, exist_ok)
             except OSError as e:
                 # be happy if someone already created the path
-                if e.errno != errno.EEXIST:
+                if e.errno != EEXIST:
                     raise
-            cdir = curdir
+            cdir = os.path.curdir
             if isinstance(tail, bytes):
-                cdir = safe_encode(curdir, 'ASCII')
+                cdir = safe_encode(os.path.curdir, 'ASCII')
             if tail == cdir:      # xxx/newdir/. exists if xxx/newdir exists
                 return
         try:
-            mkdir(name, mode)
+            os.mkdir(name, mode)
         except OSError as e:
-            if not exist_ok or e.errno != errno.EEXIST or not path.isdir(name):
+            if not exist_ok or e.errno != EEXIST or not os.path.isdir(name):
                 raise
 else:
     from os import makedirs
