@@ -260,7 +260,4 @@ def test_recursion_detected():
         def __init__(self, **attrs):
             pass
 
-    class Place(Entity):
-        pass
-
-    Place()  # infinite recursion
+    Entity()  # infinite recursion
