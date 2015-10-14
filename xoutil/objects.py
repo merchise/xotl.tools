@@ -941,50 +941,54 @@ def setdefaultattr(obj, name, value):
     return res
 
 
-def copy_class(cls, meta=None, ignores=None, new_attrs=None):
+def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     '''Copies a class definition to a new class.
 
     The returned class will have the same name, bases and module of `cls`.
 
-    :param meta: If None, the `type(cls)` of the class is used to build the new
-                 class, otherwise this must be a *proper* metaclass.
+    :param meta: If None, the `type(cls)` of the class is used to build the
+                 new class, otherwise this must be a *proper* metaclass.
 
 
-    :param ignores: A (sequence of) string, glob-pattern, or regexp for
-                    attributes names that should not be copied to new class.
+    :param ignores: A sequence of attributes names that should not be copied
+        to the new class.
 
-                    If the strings begins with "(?" it will be considered a
-                    regular expression string representation, if it does not
-                    but it contains any wild-char it will be considered a
-                    glob-pattern, otherwise is the exact name of the ignored
-                    attribute.
-
-                    Any ignored that is not a string **must** be an object with
-                    a `match(attr)` method that must return a non-null value if
-                    the the `attr` should be ignored. For instance, a regular
-                    expression object.
+        An item may be callable accepting a single argument `attr` that must
+        return a non-null value if the the `attr` should be ignored.
 
     :param new_attrs: New attributes the class must have. These will take
                       precedence over the attributes in the original class.
 
     :type new_attrs: dict
 
+    :param new_name: The name for the copy.  If not provided the name will
+                     copied.
+
     .. versionadded:: 1.4.0
 
+    .. versionchanged:: 1.7.1 The `ignores` argument must an iterable of
+       strings or callables.  Removed the glob-pattern and regular expressions
+       as possible values.  They are all possible via the callable variant.
+
+    .. versionadded:: 1.7.1 The `new_name` argument.
+
     '''
-    from xoutil.fs import _get_regex
-    from xoutil.eight import iteritems
-    # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
-    #       isn't correct to depend on it. Migrate part of "_get_regex" to a
-    #       module that can be imported logically without problems from both,
-    #       this and "xoutil.fs".
-    from xoutil.types import MemberDescriptorType
+    from xoutil.eight import iteritems, callable
+    from xoutil.eight._types import new_class
+    from xoutil.eight.types import MemberDescriptorType
+    from xoutil.string import safe_str
+
+    def _get_ignored(what):
+        if callable(what):
+            return what
+        else:
+            return lambda s: s == what
+
     if not meta:
         meta = type(cls)
-    if isinstance(ignores, str_base):
-        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i)
-                        for i in (ignores, ))
-        ignored = lambda name: any(ignore.match(name) for ignore in ignores)
+    if ignores:
+        ignores = tuple(_get_ignored(i) for i in ignores)
+        ignored = lambda name: any(ignore(name) for ignore in ignores)
     else:
         ignored = None
     valids = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
@@ -997,7 +1001,12 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
              if ignored is None or not ignored(name)}
     if new_attrs:
         attrs.update(new_attrs)
-    result = meta(cls.__name__, cls.__bases__, attrs)
+    exec_body = lambda ns: ns.update(attrs)
+    if new_name:
+        name = safe_str(new_name)
+    else:
+        name = cls.__name__
+    result = new_class(name, cls.__bases__, {'metaclass': meta}, exec_body)
     return result
 
 

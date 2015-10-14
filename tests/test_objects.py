@@ -14,7 +14,6 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import pytest
@@ -377,3 +376,52 @@ def test_extract_attrs():
     with pytest.raises(AttributeError):
         assert extract_attrs(d, 'y')
     assert extract_attrs(d, 'y', default=None) is None
+
+
+def test_copy_class():
+    from xoutil import Unset
+    from xoutil.eight import _py3
+    from xoutil.eight.meta import metaclass
+    from xoutil.objects import copy_class
+
+    u = str if _py3 else unicode
+
+    class MetaFoo(type):
+        pass
+
+    class Foo(metaclass(MetaFoo)):
+        a = 1
+        b = 2
+        c = 3
+        d = 4
+
+    class Baz(Foo):
+        e = 5
+
+    index = {k: getattr(Foo, k) for k in 'abcd'}
+    Bar = copy_class(Foo)
+    assert Bar.a == Foo.a and Bar.b and Bar.c and Bar.d
+
+    Egg = copy_class(Foo, ignores=['b', 'c'])
+    assert getattr(Egg, 'b', Unset) is Unset
+
+    Egg = copy_class(Foo, ignores=[lambda k: index.get(k) and index.get(k) > 2])
+    assert Egg.a == Foo.a
+    assert getattr(Egg, 'c', Unset) is Unset
+
+    Named = copy_class(Foo, new_name='Named')
+    assert Named.__name__ == 'Named'
+
+    Named = copy_class(Foo, new_name=u('Named'))
+    assert Named.__name__ == 'Named'
+
+    import fnmatch
+    pattern = lambda attr: fnmatch.fnmatch(attr, 'a*')
+    Egg = copy_class(Foo, ignores=[pattern])
+    assert getattr(Egg, 'a', Unset) is Unset
+
+    import re
+    _pattern = re.compile('^a')
+    pattern = lambda attr: _pattern.match(attr)
+    Egg = copy_class(Foo, ignores=[pattern])
+    assert getattr(Egg, 'a', Unset) is Unset
