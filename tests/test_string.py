@@ -17,18 +17,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import pytest
-
-
-@pytest.mark.skipif()
-def test_normal_safe_formatter():
-    from xoutil.string import SafeFormatter, safe_encode
-
-    f = SafeFormatter(x=1, y=2)
-    result = f.format(safe_encode('CWD: "{cwd}"; "x+d["x"]": {x+d["x"]}.'),
-                      cwd=safe_encode('~/tmp/foóbar'), d=dict(x=1))
-    assert 'CWD: "~/tmp/foóbar"; "x+d["x"]": 2.' == result
-
 
 def test_safe_string():
     from xoutil.string import safe_str
