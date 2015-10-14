@@ -584,7 +584,6 @@ def error2str(error):
         return prefix + res
 
 
-@_deprecated(safe_str)
 def force_str(value, encoding=None):
     '''Force to string, the type is different in Python 2 or 3 (bytes or
     unicode).

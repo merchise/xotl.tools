@@ -18,7 +18,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-import pytest
 try:
     from xoutil.release import VERSION_INFO
 except ImportError:
@@ -234,32 +233,3 @@ def test_type():
 
     class x(metaclass(type)):
         pass
-
-
-@pytest.mark.xfail()
-def test_recursion_detected():
-    def rebase(target):
-        class new_meta(type(target)):
-            def __new__(cls, name, bases, attrs):
-                return super(new_meta, cls).__new__(cls, name, bases, attrs)
-
-            @property
-            def rebased(cls):
-                return target
-
-        from xoutil.eight.meta import metaclass
-
-        class new_class(metaclass(new_meta), target):
-            pass
-
-        return new_class
-
-    @rebase
-    class Entity(object):
-        def __new__(cls, **attrs):
-            return super(Entity, cls).__new__(cls, **attrs)
-
-        def __init__(self, **attrs):
-            pass
-
-    Entity()  # infinite recursion
