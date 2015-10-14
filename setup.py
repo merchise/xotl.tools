@@ -44,11 +44,8 @@ setup(name=project_name,
       # TODO: [taqchi] manage these accounts
       url='https://github.com/merchise/xoutil/',
       license='GPLv3+',
-      # TODO: These two lines are added because when xoutil is tested with the
-      # command ``python setup.py test``, it reports several errors not
-      # reported with `tox`.
-      test_suite='nose.collector',
-      test_requires=['Nose'],
+      test_suite='pytest.collect',
+      test_requires=['pytest'],
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=False,
