@@ -242,8 +242,7 @@ def regex_rename(top, pattern, repl, maxdepth=None):
 
 def rename_wrong(top='.', current_encoding=None, target_encoding=None,
                  verbose=False):
-    '''Converts filenames from one encoding to another if the current is wrong.
-    '''
+    '''Converts wrong filenames from one encoding to another.'''
     # FIXME: Not finished
     raise NotImplementedError
     import sys

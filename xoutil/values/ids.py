@@ -104,16 +104,16 @@ def slugify(value, *args, **kwargs):
            set.
 
     :param smalls: Management for small parts, those with 3 or less
-           characters.  There are several possible values for this argument:
+           characters.  Next, all possible values for this argument:
 
-           1. ``None``, ``False`` or the string ``"crop"``: remove.
+           1. ``None``, ``False`` or the string ``"crop"``: remove small
+              parts.
 
-           2. ``True``: Keep; this is the default value.
+           2. ``True`` or the string ``"keep"``: maintain small parts; this is
+              the default value.
 
-           3. The string ``"join"``: These small parts are joined with one of
-              its consecutive parts (the smallest one).
-
-           4. Any callable:
+           3. The string ``"join"``: small parts are joined to the smallest
+              of its consecutive parts.
 
     Parameters `value` and `replacement` could be of any (non-string) type,
     these values are normalized and converted to lower-case ASCII strings.
