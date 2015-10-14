@@ -13,8 +13,8 @@
    <threading.local>`:class: instance to keep context stacks in different
    threads from seeing each other.
 
-   If `greenlet`:mod: is installed greenlet isolation is also warranted (which
-   implies thread isolation).
+   If, when this module is imported, `greenlet`:mod: is **imported** already,
+   greenlet isolation is also warranted (which implies thread isolation).
 
    If you use collaborative multi-tasking based in other framework other than
    `greenlet`, you must ensure to monkey patch the `threading.local` class so
@@ -22,6 +22,9 @@
 
    In future releases of xoutil, we plan to provide a way to inject a
    "process" identity manager so that other frameworks be easily integrated.
+
+   .. versionchanged:: 1.7.1 Changed the test about ``greenlet``.  Instead of
+      testing for `greenlet` to be importable, test it is imported already.
 
    .. versionchanged:: 1.6.9 Added direct greenlet isolation and removed the
       need for `gevent.local`:mod:.

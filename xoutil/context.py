@@ -30,7 +30,11 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil._local import local as _local
+import sys
+if 'greenlet' in sys.modules:
+    from xoutil._local import local as _local
+else:
+    from threading import local as _local
 
 from xoutil.eight.meta import metaclass
 from xoutil.collections import StackedDict

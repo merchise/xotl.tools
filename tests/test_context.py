@@ -19,6 +19,21 @@ from __future__ import (division as _py3_division,
 
 import unittest
 import pytest
+
+# Test concurrent access to context by several greenlets.  Verify isolation in
+# the greenlets.  We don't test isolation for threads cause that depends on
+# python's thread locals and we *rely* on its correctness.
+#
+# Since xoutil.context inspect sys.modules to test for greenlet presence we
+# need to import greenlets before importing context.
+#
+try:
+    import greenlet
+except ImportError:
+    GREENLETS = False
+else:
+    GREENLETS = True
+
 from xoutil.context import context
 
 
@@ -96,17 +111,6 @@ def test_reusing_raises():
             pass
         except:
             assert False, 'It should have raised a RuntimeError'
-
-
-# Test concurrent access to context by several greenlets.  Verify isolation in
-# the greenlets.  We don't test isolation for threads cause that depends on
-# python's thread locals and we *rely* on its correctness.
-try:
-    import greenlet
-except ImportError:
-    GREENLETS = False
-else:
-    GREENLETS = True
 
 
 @pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')
