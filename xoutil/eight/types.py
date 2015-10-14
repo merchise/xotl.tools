@@ -43,7 +43,7 @@ if MemberDescriptorType is GetSetDescriptorType:    # As in pypy
     del _foo
 
 
-from ._types import new_class, prepare_class, _calculate_meta
+from ._types import new_class, prepare_class, _calculate_meta  # noqa
 
 
 try:
