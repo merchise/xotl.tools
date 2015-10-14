@@ -18,6 +18,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
+import pytest
 try:
     from xoutil.release import VERSION_INFO
 except ImportError:
@@ -235,6 +236,7 @@ def test_type():
         pass
 
 
+@pytest.mark.xfail()
 def test_recursion_detected():
     def rebase(target):
         class new_meta(type(target)):
