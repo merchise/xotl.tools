@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.tests.test_collections
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
@@ -111,7 +111,6 @@ from xoutil.collections import ChainMap, Counter, OrderedDict, Mapping
 from xoutil.collections import MutableMapping
 import copy
 import pickle
-import inspect
 from random import randrange
 
 
@@ -496,10 +495,6 @@ class TestOrderedDict(unittest.TestCase):
         self.assertEqual(list(OrderedDict([('a', 1), ('b', 2), ('c', 9),
                                            ('d', 4)], c=3, e=5).items()),
                          pairs)
-
-        # make sure no positional args conflict with possible kwdargs
-        _argspec = inspect.getargspec(OrderedDict.__dict__['__init__']).args
-        self.assertEqual(_argspec, ['self'])
 
         # Make sure that direct calls to __init__ do not clear previous
         # contents
