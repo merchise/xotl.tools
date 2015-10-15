@@ -858,6 +858,7 @@ class lazy(object):
             return res
 
 
+# TODO: Implement this as an ABC
 def mixin(base):
     '''Create a valid mixin base.
 
@@ -871,6 +872,22 @@ def mixin(base):
     doc = "Generated mixin base from %s.%s" % (repr(base), org)
     name = str('%s_base_mixin' % base.__name__)
     return type(name, (base,), {'__doc__': doc})
+
+
+def iter_branch_subclasses(cls):
+    '''Similar to `type.__subclasses__`:meth: but recursive.
+
+    Only return sub-classes in branches (those with no sub-classes).  Instead
+    of returning a list, yield each valid value.
+
+    '''
+    res = type.__subclasses__(cls)
+    if res:
+        for i in res:
+            for j in get_branch_subclasses(i):
+                yield j
+    else:
+        yield cls
 
 
 class classproperty(object):
