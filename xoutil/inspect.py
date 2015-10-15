@@ -38,6 +38,7 @@ try:
     getattr_static = _pm.getattr_static
 except AttributeError:
     # Copied from `/usr/lib/python3.3/inspect.py`
+    # TODO: Maybe all these function must be moved to eight
     from xoutil.eight import typeof as _typeof
     _sentinel = object()
 
@@ -203,8 +204,9 @@ def get_attr_value(obj, name, *default):
     elif default is not _undef:
         return default
     else:
+        from xoutil.eight import typeof
         msg = "'%s' object has no attribute '%s'"
-        raise AttributeError(msg % (type(obj).__name__, name))
+        raise AttributeError(msg % (typeof(obj).__name__, name))
 
 
 def type_name(obj, affirm=False):

@@ -242,8 +242,9 @@ class SafeDataItem(object):
                 self.__set__(obj, res)
                 return res
             else:
+                from xoutil.eight import typeof
                 msg = "'%s' object has no attribute '%s'"
-                raise AttributeError(msg % (type(obj).__name__,
+                raise AttributeError(msg % (typeof(obj).__name__,
                                             self.attr_name))
         else:
             return self

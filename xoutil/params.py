@@ -359,11 +359,12 @@ class ParamConformer(object):
             if i == count:
                 solve_results()
             else:
+                from xoutil.eight import typeof
                 dup = get_duplicate()
                 extra = 'duplicate "{}" '.format(dup) if dup else ''
                 msg = ('Invalid {}argument "{}" at position "{}" of type '
                        '"{}".')
-                tname = type(arg).__name__
+                tname = typeof(arg).__name__
                 raise TypeError(msg.format(extra, arg, i, tname))
         else:
             msg = 'Expecting at most {} positional arguments ({} given)!'

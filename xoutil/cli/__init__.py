@@ -49,8 +49,9 @@ class RegistryDescriptor(object):
             return self.cache
         else:
             if instance:
+                from xoutil.eight import typeof
                 obj = 'Instance %s of class %s' % (id(instance),
-                                                   type(instance).__name__)
+                                                   typeof(instance).__name__)
             else:
                 obj = 'Class %s' % owner.__name__
             msg = 'Only allowed in class "Command"; used invalidly from "%s"!'

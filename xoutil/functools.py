@@ -204,8 +204,9 @@ def lwraps(*args, **kwargs):
                 else:
                     repeated(name)
             else:
+                from xoutil.eight import typeof
                 msg = 'lwraps() expecting string for "{}", {} found'
-                raise TypeError(msg.format(name, type(value).__name__))
+                raise TypeError(msg.format(name, typeof(value).__name__))
 
     decorables = (FunctionType, staticmethod, classmethod)
     name_key = str('__name__')
@@ -261,8 +262,9 @@ def lwraps(*args, **kwargs):
                     setattr(target, key, value)
                 return target
             else:
+                from xoutil.eight import typeof
                 msg = 'Only decorate functions, not {}'
-                raise TypeError(msg.format(type(target).__name__))
+                raise TypeError(msg.format(typeof(target).__name__))
 
         return wrapper(target) if target else wrapper
     else:

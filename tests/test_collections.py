@@ -116,6 +116,7 @@ from random import randrange
 
 class TestChainMap(unittest.TestCase):
     def test_basics(self):
+        from xoutil.eight import typeof
         c = ChainMap()
         c['a'] = 1
         c['b'] = 2
@@ -152,14 +153,14 @@ class TestChainMap(unittest.TestCase):
         if not PY3:
             # check repr
             self.assertIn(repr(d), [
-                type(d).__name__ + "({u'c': 30}, {u'a': 1, u'b': 2})",
-                type(d).__name__ + "({u'c': 30}, {u'b': 2, u'a': 1})"
+                typeof(d).__name__ + "({u'c': 30}, {u'a': 1, u'b': 2})",
+                typeof(d).__name__ + "({u'c': 30}, {u'b': 2, u'a': 1})"
             ])
         else:
             # check repr
             self.assertIn(repr(d), [
-                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+                typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+                typeof(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
             ])
 
         # check shallow copies
