@@ -31,13 +31,8 @@ types = _pm.types
 
 isdatadescriptor = _pm.isdatadescriptor
 
-
-# TODO: Generalize this in compatibility module
-try:
-    StandardException = StandardError
-except NameError:
-    StandardException = Exception
-
+# TODO: Rename all use of `StandardException`
+from xoutil.eight.exceptions import StandardError as StandardException
 
 try:
     getattr_static = _pm.getattr_static
@@ -86,7 +81,7 @@ except AttributeError:
             return res
         else:
             msg = "doesn't apply to '%s' object"
-            raise TypeError(msg % type_name(_typeof(klass)))
+            raise TypeError(msg % _typeof(klass).__name__)
 
     def _check_instance(obj, attr):
         try:
@@ -199,7 +194,7 @@ def get_attr_value(obj, name, *default):
         try:
             owner = type if is_type else type(obj)
             res = res.__get__(obj, owner)
-        except AttributeError:
+        except BaseException:
             res = _undef
     if res is _undef and not is_type:
         cls = type(obj)
@@ -260,11 +255,14 @@ def type_name(obj, affirm=False):
             obj = fn
     if isinstance(obj, named_types):
         # TODO: Why not use directly `get_attr_value``
-        res = getattr_static(obj, name, None)
-        if res:
-            if isdatadescriptor(res):
-                res = res.__get__(obj, type)
-        else:
+        try:
+            res = getattr_static(obj, name, None)
+            if res:
+                if isdatadescriptor(res):
+                    res = res.__get__(obj, type)
+        except BaseException:
+            res = None
+        if res is None:
             try:
                 res = obj.__name__
             except AttributeError:
@@ -273,6 +271,7 @@ def type_name(obj, affirm=False):
         res = None
     if res is None:
         # TODO: Why not use directly `get_attr_value``
+        # FIX: Improve and standardize the combination of next code
         res = getattr_static(obj, name, None)
         if res and isdatadescriptor(res):
             res = res.__get__(obj, type(obj))

@@ -302,6 +302,7 @@ def nameof(*args, **kwargs):
     '''
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
+    from xoutil.eight import range
     from xoutil.inspect import type_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
