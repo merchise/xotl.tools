@@ -64,17 +64,10 @@ from .eight.types import (MappingProxyType, MemberDescriptorType,    # noqa
 #: This is roughly the type of the ``object.__getattribute__`` method.
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
+from xoutil.eight.exceptions import StandardError, BaseException    # noqa
 
-try:
-    from exceptions import StandardError
-except ImportError:
-    StandardError = Exception
-
-try:
-    ExceptionBase = BaseException
-except NameError:
-    ExceptionBase = StandardError
-
+# TODO: deprecate next
+ExceptionBase = BaseException
 
 from re import compile as _regex_compile
 
