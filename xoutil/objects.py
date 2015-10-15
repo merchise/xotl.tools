@@ -875,20 +875,25 @@ def mixin(base):
     return type(name, (base,), {'__doc__': doc})
 
 
-def iter_branch_subclasses(cls):
+def iter_branch_subclasses(cls, include_this=True):
+    '''Internal function, see `get_branch_subclasses`:func:.'''
+    children = type.__subclasses__(cls)
+    if children:
+        for sc in children:
+            for item in iter_branch_subclasses(sc):
+                yield item
+    elif include_this:
+        yield cls
+
+
+def get_branch_subclasses(cls):
     '''Similar to `type.__subclasses__`:meth: but recursive.
 
     Only return sub-classes in branches (those with no sub-classes).  Instead
     of returning a list, yield each valid value.
 
     '''
-    res = type.__subclasses__(cls)
-    if res:
-        for i in res:
-            for j in get_branch_subclasses(i):
-                yield j
-    else:
-        yield cls
+    return list(iter_branch_subclasses(cls, include_this=False))
 
 
 class classproperty(object):
