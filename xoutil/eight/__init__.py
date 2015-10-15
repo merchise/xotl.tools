@@ -69,6 +69,16 @@ else:
 
 binary_type = bytes
 
+
+def typeof(obj):
+    '''Obtain the object's type compatible with Py 2**3.'''
+    if _py3:
+        return type(obj)
+    else:
+        from types import InstanceType as OldClass
+        return obj.__class__ if isinstance(obj, OldClass) else type(obj)
+
+
 try:
     __intern = intern
 

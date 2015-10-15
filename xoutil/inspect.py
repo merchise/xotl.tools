@@ -38,7 +38,7 @@ try:
     getattr_static = _pm.getattr_static
 except AttributeError:
     # Copied from `/usr/lib/python3.3/inspect.py`
-
+    from xoutil.eight import typeof as _typeof
     _sentinel = object()
 
     def _safe_search_bases(cls, accum):
@@ -50,15 +50,6 @@ except AttributeError:
             accum.append(cls)
             for base in cls.__bases__:
                 _safe_search_bases(base, accum)
-
-    def _typeof(obj):
-        try:
-            old = isinstance(obj, types.InstanceType)
-        except AttributeError:
-            # This is the Python 3.1 case: No getattr_static but also no
-            # InstanceType
-            old = False
-        return obj.__class__ if old else type(obj)
 
     def _static_getmro(klass):
         '''Get a reasonable method resolution order of a class.
