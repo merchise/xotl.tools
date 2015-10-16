@@ -19,7 +19,7 @@ A record allows to describe plain external data and a simplified model to
 *read* it.  The main use of records is to represent data that is read from a
 CSV file.
 
-See the `record`:class: class to see how to use it.
+See the `record`:class: class to find out how to use it.
 
 '''
 
