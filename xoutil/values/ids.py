@@ -29,7 +29,7 @@ This module also contains:
 - `uuid`:func:\ : Return a string with a GUID representation, random if the
   argument is True, or a host ID if not.
 
-- `slugify`:funct:\ : Convert any object to a valid slug (mainly used with
+- `slugify`:func:\ : Convert any object to a valid slug (mainly used with
   string parameters).
 
 .. versionadded:: 1.7.0
