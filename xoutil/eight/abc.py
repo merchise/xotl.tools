@@ -16,6 +16,17 @@
 
 Compatibility module between Python 2 and 3.
 
+This module defines one symbol that is defined in Python 3 as a class:
+
+  class ABC(metaclass=ABCMeta):
+      """Helper class that provides a standard way to create an ABC using
+      inheritance.
+      """
+      pass
+
+In our case it's defined as ``ABC = metaclass(ABCMeta)``, that is a little
+tricky (see `xoutil.eight.meta.metaclass`:func`).
+
 `abstractclassmethod` is deprecated.  Use `classmethod` with `abstractmethod`
 instead.
 
@@ -28,17 +39,14 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from .meta import metaclass
-
 
 from abc import ABCMeta, abstractmethod, abstractproperty    # noqa
+from .meta import helper_class
 
 
-try:
-    from abc import ABC
-except ImportError:
-    class ABC(metaclass(ABCMeta)):
-        '''Provide a standard way to create an ABC using inheritance.'''
+ABC = helper_class(ABCMeta)
+
+del helper_class
 
 
 try:
