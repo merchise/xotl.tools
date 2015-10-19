@@ -333,9 +333,8 @@ class SafeDataItem(object):
 def smart_getter(obj, strict=False):
     '''Returns a smart getter for `obj`.
 
-    If obj is Mapping, it returns the ``.get()`` method bound to the object
-    `obj`.  Otherwise it returns a partial of `getattr` on `obj` with default
-    set to None (if `strict` is False).
+    If `obj` is a mapping, it returns the ``.get()`` method bound to the
+    object `obj`, otherwise it returns a partial of ``getattr`` on `obj`.
 
     :param strict: Set this to True so that the returned getter checks that
                    keys/attrs exists.  If `strict` is True the getter may
@@ -389,6 +388,44 @@ def smart_getter_and_deleter(obj):
         return lambda key, default=None: obj.pop(key, default)
     else:
         return partial(popattr, obj)
+
+
+def multi_getter(source, *ids):
+    '''Get values from `source` of all given `ids`.
+
+    :param source: Any object but dealing with differences between mappings
+           and other object types.
+
+    :param ids: Identifiers to get values from `source`.
+
+           An ID item could be:
+
+           - a string: is considered a key, if `source` is a mapping, or an
+             attribute name if `source` is an instance of any other type.
+
+           - a collection of strings: find the first valid value in `source`
+             evaluating each item in this collection using the above logic.
+
+    Example::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> list(multi_getter(d, 'a', ('y', 'x'), ('x', 'y'), ('a', 'z', 'x')))
+      [None, 2, 1, 3]
+
+      >>> next(multi_getter(d, ('y', 'x'), ('x', 'y')), '---')
+      2
+
+      >>> next(multi_getter(d, 'a', ('b', 'c'), ('e', 'f')), '---') is None
+      True
+
+    '''
+    from collections import Iterable as multi
+    from xoutil.eight import string_types as strs
+    getter = smart_getter(source)
+    many = lambda a: isinstance(a, multi) and not isinstance(a, strs)
+    first = lambda a: next((i for i in map(getter, a) if i is not None), None)
+    get = lambda a: first(a) if many(a) else getter(a)
+    return (get(aux) for aux in ids)
 
 
 def is_private_name(name):
