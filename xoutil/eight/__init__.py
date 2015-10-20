@@ -38,6 +38,7 @@ import sys
 
 _py2 = sys.version_info[0] == 2
 _py3 = sys.version_info[0] == 3
+_py33 = sys.version_info >= (3, 3, 0)
 _pypy = sys.version.find('PyPy') >= 0
 
 del sys
