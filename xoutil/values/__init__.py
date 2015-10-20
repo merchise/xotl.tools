@@ -41,13 +41,10 @@ from __future__ import (division as _py3_division,
 
 import sys
 from re import compile as regex_compile
-from abc import ABCMeta
+from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.functools import lwraps
 from xoutil.logical import Logical as InvalidType
-
-
-_py33 = sys.version_info >= (3, 3, 0)
 
 
 Invalid = InvalidType('Invalid')
@@ -97,17 +94,6 @@ class MetaCoercer(ABCMeta):
     def __instancecheck__(self, instance):
         return (getattr(instance, '__coercer__', False) or
                 super(MetaCoercer, self).__instancecheck__(instance))
-
-    if not _py33:
-        # TODO: Do this upgrade to `xoutil.collections.ABCMeta`:class:
-        def register(cls, subclass):
-            '''Register a virtual subclass of a coercer.
-
-            Returns the subclass, to allow usage as a class decorator.
-
-            '''
-            super(MetaCoercer, cls).register(subclass)
-            return subclass
 
 
 class coercer(metaclass(MetaCoercer)):
