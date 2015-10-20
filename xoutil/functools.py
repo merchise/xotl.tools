@@ -132,6 +132,7 @@ def power(*args):
         base = (funcs[0], )
     return compose(*(base * times))
 
+
 def lwraps(*args, **kwargs):
     '''Lambda wrapper.
 
@@ -271,10 +272,11 @@ def lwraps(*args, **kwargs):
         msg = 'lwraps() takes at most 2 arguments ({} given)'
         raise TypeError(msg.format(len(args)))
 
-    func.__name__ = safe_str(name)
-    if doc:
-        func.__doc__ = doc
-    return func
+    # TODO: Next code could be removed.
+    # func.__name__ = safe_str(name)
+    # if doc:
+    #     func.__doc__ = doc
+    # return func
 
 
 if not py33:
