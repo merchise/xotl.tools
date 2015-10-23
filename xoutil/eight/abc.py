@@ -41,31 +41,22 @@ from __future__ import (division as _py3_division,
 
 
 from abc import ABCMeta, abstractmethod, abstractproperty    # noqa
-from . import _py33
 from .meta import helper_class
 
-if not _py33:
-    class ABCMeta(ABCMeta):
-        '''Meta-class for defining Abstract Base Classes (ABCs).
 
-        Use this meta-class to create an ABC.  An ABC can be sub-classed
-        directly, and then acts as a mix-in class.  You can also register
-        unrelated concrete classes (even built-in classes) and unrelated ABCs
-        as 'virtual subclasses' -- these and their descendants will be
-        considered subclasses of the registering ABC by the built-in
-        issubclass() function, but the registering ABC won't show up in their
-        MRO (Method Resolution Order) nor will method implementations defined
-        by the registering ABC be callable (not even via `super`).
+# TODO: Develop tests for next method
+def adopt(cls, subclass):
+    '''Register a virtual subclass of an ABC.
 
-        '''
-        def register(cls, subclass):
-            '''Register a virtual subclass of a coercer.
+    Returns the subclass, to allow usage as a class decorator.  Using this
+    method, difference in Python versions from 3.3 of `register`:meth: method
+    is fixed.
 
-            Returns the subclass, to allow usage as a class decorator.
+    '''
+    return cls.register(subclass) or subclass
 
-            '''
-            super(ABCMeta, cls).register(subclass)
-            return subclass
+
+ABCMeta.adopt = adopt
 
 
 ABC = helper_class(ABCMeta)

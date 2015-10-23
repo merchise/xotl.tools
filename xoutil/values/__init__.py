@@ -445,7 +445,7 @@ def sized_coerce(arg):
         return Invalid
 
 
-@coercer.register
+@coercer.adopt
 class custom(object):
     '''Base class for any custom coercer.
 

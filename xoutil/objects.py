@@ -1202,6 +1202,7 @@ def extract_attrs(obj, *names, **kwargs):
     return getter(obj)
 
 
+# TODO: deprecate thid, use instead `xoutil.eight.abc.ABCMeta.adopt`
 def register_with(abc):
     '''Register a virtual `subclass` of an ABC.
 
