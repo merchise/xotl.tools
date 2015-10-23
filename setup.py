@@ -4,6 +4,18 @@ import os
 import sys
 from setuptools import setup, find_packages
 
+try:
+    execfile = execfile
+except NameError:
+    def execfile(filename):
+        'To run in Python 3'
+        import builtins
+        exec_ = getattr(builtins, 'exec')
+        with open(filename, "r") as f:
+            code = compile(f.read(), filename, 'exec')
+            return exec_(code, globals())
+
+
 # Import the version from the release module
 project_name = 'xoutil'
 _current_dir = os.path.dirname(os.path.abspath(__file__))
