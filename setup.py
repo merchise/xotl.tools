@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-import os, sys
+import os
+import sys
 from setuptools import setup, find_packages
 
 # Import the version from the release module
 project_name = 'xoutil'
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(_current_dir, project_name))
-from release import VERSION as version
-from release import RELEASE_TAG
+release = os.path.join(_current_dir, project_name, 'release.py')
+execfile(release)
+version = VERSION  # noqa
 
-if RELEASE_TAG != '':
+if RELEASE_TAG != '':   # noqa
     dev_classifier = 'Development Status :: 4 - Beta'
 else:
     dev_classifier = 'Development Status :: 5 - Production/Stable'
@@ -58,7 +59,7 @@ setup(
     # TODO: [taqchi] manage these accounts
     url='https://github.com/merchise/xoutil/',
     license='GPLv3+',
-    test_requires=['pytest'],
+    tests_require=['pytest'],
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     include_package_data=True,
     zip_safe=False,
