@@ -30,7 +30,7 @@ from __future__ import (division as _py3_division,
 
 
 from xoutil.eight.meta import metaclass
-from xoutil.eight.abc import ABC, ABCMeta
+from xoutil.eight.abc import ABC
 
 
 class BaseError(Exception, ABC):
@@ -40,29 +40,8 @@ class BaseError(Exception, ABC):
     exceptions.
 
     This class is an ABC in order to allow drivers to map concrete error
-    classes using `adopt`:meth: method.
-
-    For example::
-
-      # --- In a general layer module (myapi) ---
-
-      >>> from xoutil import api
-      >>> @api.error
-      ... class ResourceNotFoundError(Exception):
-      ...    pass
-
-      # --- In a driver implementation ---
-
-      >>> import couchdb
-      >>> myapi.ResourceNotFoundError.adopt(couchdb.http.ResourceNotFound)
-
-      # --- In any code managing this exception (drivers) ---
-
-      try:
-          ...
-      except api.error.ResourceNotFoundError:
-          # catch registered exceptions (e.g. couchdb.http.ResourceNotFound)
-          pass
+    classes using `adopt`:meth: method.  See `xoutil.api.error`:class:
+    documentation for an example.
 
     '''
     pass
@@ -106,7 +85,7 @@ class _bag_assign(object):
         return bool(context[cls])
 
 
-class ErrorBagMeta(ABCMeta):
+class ErrorBagMeta(type):
     '''Meta-class for a bag of errors that need adaption.'''
     def __new__(cls, name, bases, attrs):
         if name == 'ErrorBag' and attrs.get('__module__') == __name__:
@@ -134,6 +113,10 @@ class ErrorBagMeta(ABCMeta):
 class ErrorBag(metaclass(ErrorBagMeta)):
     '''Singleton for API error definitions (the bag).
 
+    Unfortunately, the ABCs mapping mechanism doesn't work for exceptions in
+    some Python versions, this class define an extension could be used
+    transparently if needed.
+
     An API Error is something declared at a generic level and is mapped to
     concrete errors in specific implementations.  See `BaseError`:class: class
     for more information.
@@ -141,13 +124,46 @@ class ErrorBag(metaclass(ErrorBagMeta)):
     Don't use this class directly with its name, use instead the declared
     alias "error".
 
-    To adopt a generic error base, just use this class as a decorator; for
-    example::
+    For example::
 
-      >>> from xoutil import api
-      >>> @api.error
-      ... class ResourceNotFoundError(Exception):
-      ...     pass
+      # myapi: In a general layer module.
+
+      from xoutil import api
+      @api.error
+      class ResourceNotFoundError(BaseError):
+          pass
+
+      # --- managed-code: In any place managing this API error.
+
+      try:
+          ...
+      except api.error.ResourceNotFoundError:
+          # catch registered exceptions (e.g. couchdb.http.ResourceNotFound)
+          pass
+
+      # --- driver: In a concrete implementation.
+
+      >>> import couchdb
+      >>> myapi.ResourceNotFoundError.adopt(couchdb.http.ResourceNotFound)
+
+    If the section "managed-code" is executed and inner the ``try`` part is
+    raised ``couchdb.http.ResourceNotFound``, the ``except`` part is executed
+    in all Python versions.  To do the magic, always define ``except`` clauses
+    using API errors with `error` as a object prefix.  That is, the above
+    example doesn't work in all Python versions with the next form::
+
+      # --- managed-code: In any place managing this API error.
+
+      ResNotFoundError = api.error.ResourceNotFoundError
+      try:
+          ...
+      except ResNotFoundError:
+          # catch registered exceptions (e.g. couchdb.http.ResourceNotFound)
+          pass
+
+    When issue #\ 12029_ is solved, it will work nicely.
+
+    .. _12029: http://bugs.python.org/issue12029
 
     '''
     def __new__(cls, wrapped):

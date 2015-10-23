@@ -14,15 +14,29 @@
 
 '''Support the abstraction layer intended for API definitions.
 
-There are two base classes for API definition:
+There are architectures that need to split solutions in interfaces and general
+tools in low-level layers (foundation and common systems) and to adapt them in
+concrete layers (industry and organization-specific).
+
+Concrete implementations could use the same API interfaces and common tools
+but disparate technologies and frameworks.
+
+There are two base classes that allow such definitions:
 
 - `Handler`:class:`\ : A base class -or ABC register- that allow to define
   interfaces and tools (in foundation and common layers) representing specific
   driver implementations.
 
 - `BaseError`:class:`\ : Base to sub-class generic errors that could adopt
-  different shapes in specific handler driver implementations.  See
-  `xoutil.api._errors`:mod: module for more information.
+  different shapes in specific handler driver implementations.
+
+Mapping mechanisms allow to fix the corresponding specific class for a general
+concept of a kind defined in the API layer.
+
+In Python there is a very nice mechanism for this kind of mapping: "Abstract
+Base Classes (ABCs)".  Unfortunately it doesn't work for exceptions in some
+Python versions.  Because of that, this mechanism is extended for API errors
+in  internal module `xoutil.api._errors`:mod:.
 
 '''
 
