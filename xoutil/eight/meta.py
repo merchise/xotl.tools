@@ -165,15 +165,15 @@ def helper_class(meta, name=None, doc=None, adjust_module=True):
 
       >>> from abc import ABCMeta
       >>> ABC = helper_class(ABCMeta)    # better than Python 3's abc.ABC :(
-      >>> class MyError(BaseException, ABC):
+      >>> class MyError(Exception, ABC):
       ...     pass
-      >>> (MyError.__bases__ == (BaseException,), hasattr(MyError, 'register'))
+      >>> (MyError.__bases__ == (Exception,), hasattr(MyError, 'register'))
       (True, True)
 
     This function calls `metaclass`:func: internally.  So, in the example
     anterior, `MyError` declaration is equivalent to::
 
-      >>> class MyError(BaseException, metaclass(ABCMeta)):
+      >>> class MyError(Exception, metaclass(ABCMeta)):
       ...     pass
 
     '''
