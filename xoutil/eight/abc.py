@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight.
+# xoutil.eight.abc
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -44,7 +44,8 @@ from abc import ABCMeta, abstractmethod, abstractproperty    # noqa
 from .meta import helper_class
 
 
-# TODO: Develop tests for next method
+# TODO: Develop tests in order to demonstrate next method runs properly in all
+# Python versions.
 def adopt(cls, subclass):
     '''Register a virtual subclass of an ABC.
 
