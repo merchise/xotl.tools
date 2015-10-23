@@ -34,6 +34,10 @@ except ImportError:
 else:
     GREENLETS = True
 
+import sys
+sys.modules.pop('xoutil.context', None)
+del sys
+
 from xoutil.context import context
 
 
