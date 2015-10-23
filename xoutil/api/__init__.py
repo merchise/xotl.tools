@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.api
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -20,8 +20,8 @@ There are two base classes for API definition:
   interfaces and tools (in foundation and common layers) representing specific
   driver implementations.
 
-- `Error`:class:`\ : Generic error bases that adopt different shapes in
-  specific handler driver implementations.
+- `BaseError`:class:`\ : Base to sub-class generic errors that could adopt
+  different shapes in specific handler driver implementations.
 
 WTF: Unfortunately, exception management don't work with ABCs in Python 3.
 (See issue #\ 12029_).
@@ -199,7 +199,7 @@ class Handler(ABC):
             return hex(id(self))
 
 
-class Error(Exception, ABC):
+class BaseError(Exception, ABC):
     '''Base class for all Xoutil API Exceptions.
 
     Allow to register concrete driver error classes in generic Xoutil
@@ -240,12 +240,12 @@ def is_error_class(value):
 
 def _is_abc_nice_with_errors():
     '''See if ABCs works nice or not in this Python version.'''
-    @Error.adopt
+    @BaseError.adopt
     class TestError(Exception):
         pass
     try:
         raise TestError('Any msg.')
-    except Error:
+    except BaseError:
         return True
     except Exception:
         return False
@@ -301,8 +301,8 @@ class ErrorBag(metaclass(ErrorBagMeta)):
     '''Singleton for API error definitions (the bag).
 
     An API Error is something declared at a generic level and is mapped to
-    concrete errors in specific implementations.  See `Error`:class: class for
-    more information.
+    concrete errors in specific implementations.  See `BaseError`:class: class
+    for more information.
 
     Don't use this class directly with its name, use instead the declared
     alias "error".
