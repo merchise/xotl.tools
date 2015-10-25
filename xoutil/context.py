@@ -23,7 +23,6 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
 
@@ -36,9 +35,7 @@ else:
 from xoutil.eight.meta import metaclass
 from xoutil.collections import StackedDict
 
-from xoutil.names import strlist as strs
-__all__ = strs('Context', 'context', 'NullContext')
-del strs
+__all__ = ('Context', 'context', 'NullContext')
 
 
 class LocalData(_local):
@@ -97,8 +94,8 @@ class Context(metaclass(MetaContext), StackedDict):
 
     For data access, a mapping interface is provided for all contexts. If a
     data slot is deleted at some level, upper level is used to read
-    values. Each new written value is stored in current level without affecting
-    upper levels.
+    values. Each new written value is stored in current level without
+    affecting upper levels.
 
     For example::
 

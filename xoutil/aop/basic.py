@@ -36,7 +36,6 @@ members or parents.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from types import MethodType, FunctionType
@@ -243,7 +242,7 @@ def inject_dependencies(target, *sources, **attrs):
     _merchise_extended = cls.__dict__.get('_merchise_extended',
                                           {'depth': 0}).copy()
     _merchise_extended['depth'] += 1
-    attrs.update({b'__doc__': cls.__doc__, b'__module__': b'merchise.builtin',
+    attrs.update({'__doc__': cls.__doc__, '__module__': 'merchise.builtin',
                   '_merchise_extended': _merchise_extended})
     _update(attrs, *sources)
     extended_class = type(cls.__name__, (cls,), attrs)
