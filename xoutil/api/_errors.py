@@ -66,23 +66,7 @@ def _is_abc_nice_with_errors():
 _ABC_NICE_WITH_ERRORS = _is_abc_nice_with_errors()
 
 
-class _bag_assign(object):
-    '''An execution context to block direct `ErrorBag` error assignments.'''
-    @classmethod
-    def enter(cls):
-        '''Enter the context.
-
-        Use as ``with _bag_assign.enter()``: ...
-
-        '''
-        from xoutil.context import context
-        return context(cls)
-
-    @classmethod
-    def check(cls):
-        '''Check if inner the context.'''
-        from xoutil.context import context
-        return bool(context[cls])
+from xoutil.lock import context_lock as _bag_assign
 
 
 class ErrorBagMeta(type):
@@ -97,7 +81,7 @@ class ErrorBagMeta(type):
 
     def __setattr__(self, name, value):
         is_err = is_error_class(value)
-        if _bag_assign.check() or not (is_err or isinstance(value, self)):
+        if _bag_assign.locked or not (is_err or isinstance(value, self)):
             super(ErrorBagMeta, self).__setattr__(name, value)
         else:
             if is_err:
