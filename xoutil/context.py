@@ -18,10 +18,7 @@
 #
 
 
-'''
-A context manager for execution context flags.
-
-'''
+'''A context manager for execution context flags.'''
 
 
 from __future__ import (division as _py3_division,
@@ -40,7 +37,7 @@ from xoutil.eight.meta import metaclass
 from xoutil.collections import StackedDict
 
 from xoutil.names import strlist as strs
-__all__ = strs('Context', 'context', 'NulContext')
+__all__ = strs('Context', 'context', 'NullContext')
 del strs
 
 
