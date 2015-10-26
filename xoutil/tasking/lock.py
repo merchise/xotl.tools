@@ -37,17 +37,17 @@ For example::
 Locks are implemented using module-property; this means that each time you
 import it, a different lock is returned::
 
-  >>> from xoutil.lock import context_lock as one
-  >>> from xoutil.lock import context_lock as two
+  >>> from xoutil.tasking.lock import context_lock as one
+  >>> from xoutil.tasking.lock import context_lock as two
   >>> one is two
   False
 
-There are two variants of locks in this module:
+The function `context_lock`:func: implement a module property to create a
+class that use an execution context, see `xoutil.context`:mod: module for more
+information.
 
-- `context_lock`: Use an execution context, see `xoutil.context`:mod: module
-  for more information.
-
-- `thread_lock`: Use `threading`:mod: Python standard module.
+If other lock mechanisms are going to be implementing, for example using
+threading, this is the place.
 
 '''
 
@@ -87,10 +87,5 @@ def context_lock(self):
 
     return ContextLock
 
-
-# @moduleproperty
-# def thread_lock(self):
-#     '''Allocate a lock based on `threading`:mod: Python standard module.'''
-#     return None    # TODO: Use `_lock` module
 
 del moduleproperty

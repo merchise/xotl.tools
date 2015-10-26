@@ -66,7 +66,7 @@ def _is_abc_nice_with_errors():
 _ABC_NICE_WITH_ERRORS = _is_abc_nice_with_errors()
 
 
-from xoutil.lock import context_lock as _bag_assign
+from xoutil.tasking.lock import context_lock as _bag_assign
 
 
 class ErrorBagMeta(type):
