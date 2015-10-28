@@ -327,7 +327,7 @@ def is_module(maybe):
     return isinstance(maybe, ModuleType)
 
 
-# TODO: deprecate this
+@deprecated(type(_unset), 'This is only used in `~objects.smart_copy`.')
 class Required(object):
     '''A type for required fields in scenarios where a default is not
     possible.
