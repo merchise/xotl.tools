@@ -24,8 +24,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-# TODO: Maybe `UnsetType` can be deprecated after this module.
-
 from abc import ABCMeta
 from .eight.meta import metaclass
 

@@ -40,11 +40,8 @@ del _pm, _copy_python_module_members
 from xoutil import Unset as _unset
 from collections import Mapping
 
-# FIXME: [med] Reintroduce UnsetType or deprecate it here.
-from xoutil.logical import Logical as UnsetType    # noqa
-
 from xoutil.names import strlist as strs
-__all__ = strs('mro_dict', 'UnsetType', 'MappingProxyType',
+__all__ = strs('mro_dict', 'MappingProxyType',
                'SlotWrapperType', 'is_iterable', 'is_collection',
                'is_string_like', 'is_scalar', 'is_staticmethod',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
@@ -333,6 +330,7 @@ def is_module(maybe):
     return isinstance(maybe, ModuleType)
 
 
+# TODO: deprecate this
 class Required(object):
     '''A type for required fields in scenarios where a default is not
     possible.
