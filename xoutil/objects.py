@@ -1001,6 +1001,29 @@ def setdefaultattr(obj, name, value):
     return res
 
 
+def adapt_exception(value, **kwargs):
+    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,
+    None)``.
+
+    If the value is not an exception is expected to be a tuple/list which
+    contains an Exception type as its first item.
+
+    .. versionchanged:: 1.7.1 Moved from `xoutil.data`:mod: module.
+
+    '''
+    isi, ebc = isinstance, Exception    # TODO: Maybe must be `BaseException`
+    issc = lambda maybe, cls: isi(maybe, type) and issubclass(maybe, cls)
+    if isi(value, ebc) or issc(value, ebc):
+        return value
+    elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
+        from xoutil.eight import string_types as strs
+        map = lambda x: x.format(**kwargs) if isinstance(x, strs) else x
+        ecls = value[0]
+        return ecls(*(map(x) for x in value[1:]))
+    else:
+        return None
+
+
 def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     '''Copies a class definition to a new class.
 
@@ -1100,7 +1123,7 @@ def smart_copy(*args, **kwargs):
     - An exception object
 
     - A sequence with is first value being a subclass of Exception. In which
-      case :class:`xoutil.data.adapt_exception` is used.
+      case :class:`adapt_exception` is used.
 
     In these cases a KeyError is raised if the key is not found in the sources.
 
@@ -1131,7 +1154,6 @@ def smart_copy(*args, **kwargs):
     '''
     from collections import MutableMapping
     from xoutil.types import is_collection, is_mapping, Required
-    from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
     defaults = kwargs.pop('defaults', False)
     if kwargs:
