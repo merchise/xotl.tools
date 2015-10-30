@@ -17,7 +17,7 @@ from __future__ import (division as _py3_division,
 
 
 from xoutil.eight.abc import ABCMeta, ABC
-from xoutil.eight.mixins import mixin
+from xoutil.eight.mixins import mixin, Mixin
 
 
 def test_mixins():
@@ -44,9 +44,10 @@ def test_mixins():
     # Several bases and several meta-classes
     Test = mixin(One, Two, meta=[OneMeta, TwoMeta, ABCMeta], name='Test1')
     assert Test.__name__ == 'Test1'
-    assert Test.__bases__ == (One, Two)
+    assert Test.__bases__ == (One, Two, Mixin)
     assert Test.test_one_meta() == 1
     assert Test.test_two_meta() == 2
+    assert issubclass(Test, Mixin)
     assert isinstance(Test, OneMeta)
     assert isinstance(Test, TwoMeta)
     assert isinstance(Test, ABCMeta)
@@ -60,30 +61,30 @@ def test_mixins():
     # Bases canonization and generated name
     Test = mixin(object, One, dict, Two, ABC)
     assert Test.__name__ == 'OneMixin'
-    assert Test.__bases__ == (One, Two)
+    assert Test.__bases__ == (One, Two, Mixin)
     assert isinstance(Test, ABCMeta)
 
     # No bases or no meta-classes
     Test = mixin()
-    assert Test.__name__ == 'object_mixin'
-    assert Test.__bases__ == (object, )
+    assert Test.__name__ == 'BasicMixin'
+    assert Test.__bases__ == (Mixin, )
     Test = mixin(metaclass=ABCMeta)
-    assert Test.__name__ == 'object_mixin'
-    assert Test.__bases__ == (object, )
+    assert Test.__name__ == 'BasicMixin'
+    assert Test.__bases__ == (Mixin, )
     assert isinstance(Test, ABCMeta)
     Test = mixin(metaclass=ABCMeta)
-    assert Test.__name__ == 'object_mixin'
-    assert Test.__bases__ == (object, )
+    assert Test.__name__ == 'BasicMixin'
+    assert Test.__bases__ == (Mixin, )
     assert type(Test) == ABCMeta
     Test = mixin(One)
     assert Test.__name__ == 'OneMixin'
-    assert Test.__bases__ == (One, )
+    assert Test.__bases__ == (One, Mixin)
     assert type(Test) == type
 
     # Class attributes
     Test = mixin(One, Two, metaclass=OneMeta, name='Test', one='1')
     assert Test.__name__ == 'Test'
-    assert Test.__bases__ == (One, Two)
+    assert Test.__bases__ == (One, Two, Mixin)
     assert Test.test_one_meta() == '1'
     assert Test.one == '1'
     obj = Test()
@@ -103,3 +104,8 @@ def test_mixins():
     Test = mixin('TestPos', doc, One)
     assert Test.__name__ == 'TestPos'
     assert doc in Test.__doc__
+
+    # Real Mixin
+    class Foobar(One, mixin(Two, meta=[TwoMeta, ABCMeta])):
+        pass
+    assert issubclass(Foobar, Mixin)

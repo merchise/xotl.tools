@@ -27,6 +27,10 @@ assert not _py3, 'This module should not be loaded in Py3k'
 METACLASS_ATTR = '__metaclass__'
 
 
+class Mixin(object):
+    '''Base-class to register with it all created mix-ins.'''
+
+
 def metaclass(meta, **kwargs):
     prepare = getattr(meta, '__prepare__', None)
     if prepare:
@@ -35,8 +39,7 @@ def metaclass(meta, **kwargs):
                       'the metaclass "%s" seems to needs it.' % meta,
                       stacklevel=2)
 
-    class base(object):
-        pass
+    base = Mixin
 
     if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
         metabase = meta.__base__
@@ -47,7 +50,7 @@ def metaclass(meta, **kwargs):
         def __new__(cls, name, bases, attrs):
             from copy import copy
             if name != '__inner__':
-                bases = tuple(b for b in bases if not issubclass(b, base))
+                bases = tuple(b for b in bases if b.__base__ is not base)
                 if not bases:
                     bases = (object,)
                 from ._types import prepare_class

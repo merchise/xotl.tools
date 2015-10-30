@@ -66,11 +66,15 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from xoutil.eight.meta import Mixin
 
 from re import compile
 
 _META_STRIP = compile('(?i)(^(meta(class)?|type)_{0,2}|'
                       '_{0,2}(meta(class)?|type)$)')
+
+_MIXIN_STRIP = compile('(?i)(^mixin_{0,2}|_{0,2}mixin$)')
+
 
 del compile
 
@@ -162,12 +166,14 @@ def mixin(*args, **kwargs):
         if len(metas) == 1:
             meta = metas[0]
         else:
-            meta = mixin(*metas, name='MultiMixinMeta', **kw)
+            meta = mixin(*metas, name='MultiMixinMeta', __nobase__=True, **kw)
         bases = bases + (helper_class(meta, **kw), )
     attrs = dict(kwargs, __doc__=doc)
     if mod:
         attrs['__module__'] = mod
-    return type(name, bases, attrs)
+    res = type(name, bases, attrs)
+    # Mixin.register(type(res))
+    return res
 
 
 def _isname(s):
@@ -181,7 +187,6 @@ def _isname(s):
         else:
             msg = '''Reserved keyword "{}" can't be used as name'''
             raise ValueError(msg.format(res))
-
     else:
         return False
 
@@ -213,14 +218,16 @@ def _name_doc_and_bases(args, kwargs):
                 raise ValueError('Invalid empty `mixin` documentation.')
         else:
             i += 1
-    bases = _get_canonical_bases(args)
+    bases = _get_canonical_bases(args, kwargs)
     if not name:
         name = _get_kwarg(('__name__', 'name'), kwargs)
         if name:
             name = str(name)
         else:
             if bases:
-                aux = bases[0].__name__
+                base = bases[0]
+                aux = 'Basic' if base is Mixin else base.__name__
+                aux = _MIXIN_STRIP.sub('', aux)
                 suffix = '_mixin' if aux[0].islower() else 'Mixin'
                 name = aux + suffix
             else:
@@ -228,7 +235,7 @@ def _name_doc_and_bases(args, kwargs):
     if not doc:
         doc = _get_kwarg(('__doc__', 'doc'), kwargs)
         if not doc:
-            names = ', '.join(b.__name__ for b in bases)
+            names = ', '.join(b.__name__ for b in bases if b is not Mixin)
             if names:
                 doc = 'Generated mixin base from ({}).'.format(names)
                 aux = bases[0].__doc__
@@ -251,8 +258,9 @@ def _check_repeated(kwargs):
         raise ValueError('Repeated keyword arguments: {}'.format(aux))
 
 
-def _get_canonical_bases(args):
+def _get_canonical_bases(args, kwargs):
     res = []
+    abm = not kwargs.pop('__nobase__', False)
     for arg in args:
         i, count = 0, len(res)
         found = False
@@ -266,7 +274,11 @@ def _get_canonical_bases(args):
                 i += 1
         if not found:
             res.append(arg)
-    return tuple(res) if res else (object, )
+        if not abm and Mixin in type.mro(arg):
+            abm = False
+    if abm:
+        res.append(Mixin)
+    return tuple(res)
 
 
 def _get_metaclasses(kwargs):

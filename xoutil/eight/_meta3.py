@@ -24,9 +24,12 @@ from . import _py3
 assert _py3, 'This module should be loaded in Py3k only'
 
 
+class Mixin(object):
+    '''Base-class to register with it all created mix-ins.'''
+
+
 def metaclass(meta, **kwargs):
-    class base:
-        pass
+    base = Mixin
 
     if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
         metabase = meta.__base__
@@ -44,7 +47,7 @@ def metaclass(meta, **kwargs):
 
         def __new__(cls, name, bases, attrs, **kw):
             if name != '__inner__':
-                bases = tuple(b for b in bases if not issubclass(b, base))
+                bases = tuple(b for b in bases if b.__base__ is not base)
                 if not bases:
                     bases = (object,)
                 return meta(name, bases, attrs)

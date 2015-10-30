@@ -19,9 +19,9 @@ from . import _py3
 
 
 if _py3:
-    from ._meta3 import metaclass
+    from ._meta3 import metaclass, Mixin
 else:
-    from ._meta2 import metaclass
+    from ._meta2 import metaclass, Mixin
 
 
 metaclass.__doc__ = '''Define the metaclass of a class.
