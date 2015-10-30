@@ -63,7 +63,7 @@ def test_mixins():
     assert Test.__bases__ == (One, Two)
     assert isinstance(Test, ABCMeta)
 
-    # No bases
+    # No bases or no meta-classes
     Test = mixin()
     assert Test.__name__ == 'object_mixin'
     assert Test.__bases__ == (object, )
@@ -71,12 +71,21 @@ def test_mixins():
     assert Test.__name__ == 'object_mixin'
     assert Test.__bases__ == (object, )
     assert isinstance(Test, ABCMeta)
+    Test = mixin(metaclass=ABCMeta)
+    assert Test.__name__ == 'object_mixin'
+    assert Test.__bases__ == (object, )
+    assert type(Test) == ABCMeta
+    Test = mixin(One)
+    assert Test.__name__ == 'OneMixin'
+    assert Test.__bases__ == (One, )
+    assert type(Test) == type
 
     # Class attributes
     Test = mixin(One, Two, metaclass=OneMeta, name='Test', one='1')
     assert Test.__name__ == 'Test'
     assert Test.__bases__ == (One, Two)
     assert Test.test_one_meta() == '1'
+    assert Test.one == '1'
     obj = Test()
     assert obj.test_one() == '1'
     assert obj.test_two() == 2
@@ -88,3 +97,9 @@ def test_mixins():
     assert Test.__module__ == '<mixin>'
     Test = mixin(One, metaclass=OneMeta, name='Test', module='<-{}->')
     assert Test.__module__ == '<-{}->'.format(__name__)
+
+    # Name and doc as positional arguments
+    doc = 'This is a test'
+    Test = mixin('TestPos', doc, One)
+    assert Test.__name__ == 'TestPos'
+    assert doc in Test.__doc__
