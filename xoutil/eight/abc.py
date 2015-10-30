@@ -42,7 +42,7 @@ from __future__ import (division as _py3_division,
 
 from abc import ABCMeta, abstractmethod, abstractproperty    # noqa
 
-from .meta import helper_class
+from .mixins import helper_class
 
 ABC = helper_class(ABCMeta)
 

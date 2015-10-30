@@ -896,22 +896,6 @@ class lazy(object):
             return res
 
 
-# TODO: Implement this as an ABC
-def mixin(base):
-    '''Create a valid mixin base.
-
-    If several mixins with the same base are used all-together in a class
-    inheritance, Python generates ``TypeError: multiple bases have instance
-    lay-out conflict``.  To avoid that, inherit from the class this function
-    returns instead of desired `base`.
-
-    '''
-    org = "\n\nOriginal doc:\n\n%s" % base.__doc__ if base.__doc__ else ''
-    doc = "Generated mixin base from %s.%s" % (repr(base), org)
-    name = str('%s_base_mixin' % base.__name__)
-    return type(name, (base,), {'__doc__': doc})
-
-
 def iter_branch_subclasses(cls, include_this=True):
     '''Internal function, see `get_branch_subclasses`:func:.'''
     children = type.__subclasses__(cls)
