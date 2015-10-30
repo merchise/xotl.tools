@@ -58,7 +58,7 @@ del regex_compile
 if getattr(str, 'isidentifier', None):
     def isidentifier(s):
         'If `s` is a valid identifier according to the language definition.'
-        return s.isidentifier()
+        return str(s) if s.isidentifier() else False
 else:
     isidentifier = is_python2_identifier
 
