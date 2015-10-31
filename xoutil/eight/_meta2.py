@@ -27,19 +27,14 @@ assert not _py3, 'This module should not be loaded in Py3k'
 METACLASS_ATTR = '__metaclass__'
 
 
-class Mixin(object):
-    '''Base-class to register with it all created mix-ins.'''
-
-
 def metaclass(meta, **kwargs):
+    from ._mixin import Mixin as base
     prepare = getattr(meta, '__prepare__', None)
     if prepare:
         import warnings
         warnings.warn('Python 2.7 does not have the __prepare__ stuff and '
                       'the metaclass "%s" seems to needs it.' % meta,
                       stacklevel=2)
-
-    base = Mixin
 
     if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
         metabase = meta.__base__

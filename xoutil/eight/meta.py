@@ -16,12 +16,12 @@
 '''
 
 from . import _py3
-
+from ._mixin import Mixin    # noqa
 
 if _py3:
-    from ._meta3 import metaclass, Mixin
+    from ._meta3 import metaclass
 else:
-    from ._meta2 import metaclass, Mixin
+    from ._meta2 import metaclass
 
 
 metaclass.__doc__ = '''Define the metaclass of a class.
