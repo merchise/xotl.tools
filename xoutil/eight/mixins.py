@@ -99,23 +99,13 @@ _MIXIN_STRIP = compile('(?i)(^mixin_{0,2}|_{0,2}mixin$)')
 del compile
 
 
-def helper_class(meta, name=None, doc=None, module=True):
+def helper_class(meta, name=None):
     '''Create a helper class based in the meta-class concept.
 
     :param meta: The meta-class type to base returned helper-class on it.
 
     :param name: The name (``__name__``) to assign to the returned class; if
            None is given, a nice name is calculated.
-
-    :param doc: The documentation (``__doc__``) to assign to the returned
-           class; if None is given, a nice one is calculated.
-
-    :param module: Could be a string to use it directly, True to obtain the
-           value from the calling stack, a string with a formater (``{}``) it
-           is a True synonym but using the obtained value as `str.format`
-           argument, a class to use it as a reference, or False to leave empty
-           the ``__module__`` field definition.
-
     For example::
 
       >>> from abc import ABCMeta
@@ -134,17 +124,16 @@ def helper_class(meta, name=None, doc=None, module=True):
     '''
     from .meta import metaclass
     res = metaclass(meta)
+    doc = ('Helper class.\n\nProvide a standard way to create classes with '
+           'the meta-class `{meta}` using inheritance.\n\nFor example::\n\n'
+           '  class My{name}({name}):\n      pass')
+    if name and meta.__doc__:
+        doc += ('\n\n`{meta}` is: ' + meta.__doc__)
     name = name or _META_STRIP.sub('', meta.__name__)
-    doc = doc or ('Helper class.\n\nProvide a standard way to create `{name}`'
-                  ' sub-classes using inheritance.\n\n'
-                  'For example::\n\n'
-                  '  class My{name}({name}):\n'
-                  '      pass\n\n').format(name=name)
     res.__name__ = name
-    res.__doc__ = doc
-    mod = _calc_module('<helper::{}>' if module is True else module)
-    if mod:
-        res.__module__ = mod
+    res.__doc__ = (doc.strip() + '\n\n').format(name=name, meta=meta.__doc__)
+    if meta.__module__:
+        res.__module__ = meta.__module__
     return res
 
 
@@ -176,6 +165,7 @@ def mixin(*args, **kwargs):
     returns instead of desired `base`.
 
     '''
+    from .meta import metaclass
     name, doc, bases = _name_doc_and_bases(args, kwargs)
     metas = _get_metaclasses(kwargs)
     mod = _get_module(bases, kwargs)
@@ -187,7 +177,7 @@ def mixin(*args, **kwargs):
             meta = metas[0]
         else:
             meta = mixin(*metas, name='MultiMixinMeta', __nobase__=True, **kw)
-        bases = bases + (helper_class(meta, **kw), )
+        bases = bases + (metaclass(meta, **kw), )
     attrs = dict(kwargs, __doc__=doc)
     if mod:
         attrs['__module__'] = mod
