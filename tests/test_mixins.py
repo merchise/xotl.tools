@@ -20,7 +20,8 @@ from xoutil.eight.abc import ABCMeta, ABC
 from xoutil.eight.mixins import mixin, Mixin
 
 
-def test_mixins():
+def _get_test_classes():
+    '''Return "One, Two, OneMeta, TwoMeta, Test" classes.'''
     class One(dict):
         one = 1
 
@@ -41,28 +42,33 @@ def test_mixins():
         def test_two_meta(self):
             return self.two
 
+    Test = mixin(One, Two, meta=[OneMeta, TwoMeta], name='Test')
+    return One, Two, OneMeta, TwoMeta, Test
+
+
+def test_mixins():
+    One, Two, OneMeta, TwoMeta, Test = _get_test_classes()
+
     # Several bases and several meta-classes
-    Test = mixin(One, Two, meta=[OneMeta, TwoMeta, ABCMeta], name='Test1')
-    assert Test.__name__ == 'Test1'
+    assert Test.__name__ == 'Test'
     assert Test.__bases__ == (One, Two, Mixin)
     assert Test.test_one_meta() == 1
     assert Test.test_two_meta() == 2
     assert issubclass(Test, Mixin)
     assert isinstance(Test, OneMeta)
     assert isinstance(Test, TwoMeta)
-    assert isinstance(Test, ABCMeta)
     obj = Test(one='1')
     assert obj.test_one() == 1
     assert obj.test_two() == 2
     assert obj['one'] == '1'
-    assert Test.register(int) is int
-    assert isinstance(1, Test)
 
     # Bases canonization and generated name
     Test = mixin(object, One, dict, Two, ABC)
     assert Test.__name__ == 'OneMixin'
     assert Test.__bases__ == (One, Two, Mixin)
     assert isinstance(Test, ABCMeta)
+    assert Test.register(int) is int
+    assert isinstance(1, Test)
 
     # No bases or no meta-classes
     Test = mixin()

@@ -26,7 +26,7 @@ several concepts that are different in Python 2 and 3.
     ...     pass
     >>> One.__bases__ == (ABC, )
     False
-    >>> One.__bases__ == (object, )
+    >>> One.__bases__ == (Mixin, )
     True
 
     >>> from abc import ABC
@@ -34,7 +34,7 @@ several concepts that are different in Python 2 and 3.
     ...     pass
     >>> Two.__bases__ == (ABC, )
     True
-    >>> Two.__bases__ == (object, )
+    >>> Two.__bases__ == (Mixin, )
     False
 
 - `mixin`:func: create a base-class tha consolidate several mix-ins and
@@ -59,6 +59,26 @@ several concepts that are different in Python 2 and 3.
     True
     >>> isinstance(Test, ABCMeta)
     True
+
+These modules (this one and `meta`) must have four utilities:
+
+- `metaclass` to use a unique syntax to declare meta-classes between Python 2
+  and 3.
+
+- `helper_class` to build a class that when used as a base impose a meta-class
+  and not is found in resulting bases of defined class.  For example
+  `xoutil.eight.abc.ABC`.
+
+- `mixin` build a mixin-base composing several parts and meta-classes.
+
+- `compose` specify the use of a mixin as one of the bases, but the new
+  defined class will not be a mixin, this is not implemented yet because will
+  require a big architecture re-factoring; for example::
+
+    class Foobar(MyBase, compose(MyMixin)):
+        pass
+
+Maybe the last two names must be interchanged.
 
 '''
 
@@ -129,7 +149,7 @@ def helper_class(meta, name=None, doc=None, module=True):
 
 
 def mixin(*args, **kwargs):
-    '''Create a mixin base.
+    '''Weave a `mixin`.
 
     Parameters of this function are a little tricky.
 
