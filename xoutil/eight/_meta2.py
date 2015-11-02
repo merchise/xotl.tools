@@ -27,6 +27,14 @@ assert not _py3, 'This module should not be loaded in Py3k'
 METACLASS_ATTR = '__metaclass__'
 
 
+def _base(cls):
+    try:
+        return cls.__base__
+    except AttributeError:
+        res = cls.__bases__
+        return res[0] if res else None
+
+
 def metaclass(meta, **kwargs):
     from ._mixin import Mixin as base
     prepare = getattr(meta, '__prepare__', None)
@@ -45,7 +53,7 @@ def metaclass(meta, **kwargs):
         def __new__(cls, name, bases, attrs):
             from copy import copy
             if name != '__inner__':
-                bases = tuple(b for b in bases if b.__base__ is not base)
+                bases = tuple(b for b in bases if _base(b) is not base)
                 if not bases:
                     bases = (object,)
                 from ._types import prepare_class
