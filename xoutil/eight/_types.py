@@ -86,11 +86,21 @@ except ImportError:
 try:
     from types import _calculate_meta
 except ImportError:
+    # XXX: Remove all these `continue` statements
     def _calculate_meta(meta, bases):
         """Calculate the most derived metaclass."""
+        from . import typeof, _py3
+        if _py3:
+            old_cls = None
+        else:
+            from types import ClassType as old_cls
+        old_count = 0
         winner = meta
         for base in bases:
-            base_meta = type(base)
+            base_meta = typeof(base)
+            if base_meta is old_cls:
+                old_count += 1
+                continue
             if issubclass(winner, base_meta):
                 continue
             if issubclass(base_meta, winner):
@@ -100,4 +110,9 @@ except ImportError:
             raise TypeError("metaclass conflict: the metaclass of a derived "
                             "class must be a (non-strict) subclass of the "
                             "metaclasses of all its bases")
-        return winner
+        if old_count < len(bases):
+            return winner
+        else:
+            msg = ("Error when calling the metaclass bases\n\t"
+                   "a new-style class can't have only classic bases")
+            raise TypeError(msg)
