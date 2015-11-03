@@ -68,15 +68,3 @@ class Mixin(object):
         ...     pass
 
     '''
-    @classmethod
-    def ismetaclass(cls):
-        return cls.__bases__ == (Mixin, ) and type(cls) is not type
-
-    @classmethod
-    def ishelperclass(cls):
-        return cls.ismetaclass() and cls.__doc__ is not None
-
-    @classmethod
-    def isweaver(cls):
-        bases = cls.__bases__
-        return len(bases) > 1 and bases[-1] == Mixin
