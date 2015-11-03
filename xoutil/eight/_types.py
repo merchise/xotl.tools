@@ -62,16 +62,14 @@ except ImportError:
         be an empty dict.
 
         """
+        from . import typeof
         if kwds is None:
             kwds = {}
         else:
             kwds = dict(kwds)  # Don't alter the provided mapping
         meta = kwds.pop('metaclass', None)
         if not meta:
-            if bases:
-                meta = type(bases[0])
-            else:
-                meta = type
+            meta = typeof(bases[0]) if bases else type
         if isinstance(meta, type):
             # when meta is a type, we first determine the most-derived
             # metaclass instead of invoking the initial candidate directly
@@ -89,18 +87,11 @@ except ImportError:
     # XXX: Remove all these `continue` statements
     def _calculate_meta(meta, bases):
         """Calculate the most derived metaclass."""
-        from . import typeof, _py3
-        if _py3:
-            old_cls = None
-        else:
-            from types import ClassType as old_cls
-        old_count = 0
+        from . import typeof, class_types
+        old_cls = next((cls for cls in class_types if cls is not type), None)
         winner = meta
         for base in bases:
             base_meta = typeof(base)
-            if base_meta is old_cls:
-                old_count += 1
-                continue
             if issubclass(winner, base_meta):
                 continue
             if issubclass(base_meta, winner):
@@ -110,7 +101,7 @@ except ImportError:
             raise TypeError("metaclass conflict: the metaclass of a derived "
                             "class must be a (non-strict) subclass of the "
                             "metaclasses of all its bases")
-        if old_count < len(bases):
+        if winner is not old_cls:
             return winner
         else:
             msg = ("Error when calling the metaclass bases\n\t"
