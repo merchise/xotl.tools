@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight._mixin
+# xoutil.eight._meta
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -10,7 +10,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on 2015-11-03
+# Created on 2015-10-30
 
 '''Private module for all mix-ins definitions.
 
@@ -22,10 +22,6 @@ concept.  See `Mixin`:class: for more information.
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
-
-
-MIXIN_NAME = '__mixin__'
-MIXIN_SLOTS = ('bases', 'metas', 'attrs')
 
 
 class Mixin(object):
@@ -72,30 +68,3 @@ class Mixin(object):
         ...     pass
 
     '''
-    __slots__ = ()
-
-    @classmethod
-    def formalize_args(cls, args, kwargs):
-        pass
-
-    @staticmethod
-    def extract_bases(bases, kwargs):
-        '''In a meta-mixin, splits real-bases from mixins.
-
-        Return a tuple with the bases and a list with the mixins.
-
-        '''
-        from xoutil.inspect import _static_getmro as getmro
-        res, mixins = [], []
-        for b in bases:
-            if b.__bases__ == (Mixin, ):
-                mixins.append(b)
-            elif Mixin not in getmro(b):
-                res.append(b)
-            else:
-                msg = '`{}` inherits directly from `Mixin` class.'
-                raise TypeError(msg.format(b.__name__))
-        if mixins:
-            return res
-        else:
-            raise TypeError('Unexpected meta-mixin without any `Mixin` base.')

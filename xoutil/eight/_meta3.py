@@ -25,7 +25,7 @@ assert _py3, 'This module should be loaded in Py3k only'
 
 
 def metaclass(meta, **kwargs):
-    from ._mixin import Mixin as base
+    from ._meta import Mixin as base
 
     if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
         metabase = meta.__base__

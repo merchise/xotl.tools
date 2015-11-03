@@ -36,7 +36,7 @@ def _base(cls):
 
 
 def metaclass(meta, **kwargs):
-    from ._mixin import Mixin as base
+    from ._meta import Mixin as base
     prepare = getattr(meta, '__prepare__', None)
     if prepare:
         import warnings

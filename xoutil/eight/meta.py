@@ -16,7 +16,7 @@
 '''
 
 from . import _py3
-from ._mixin import Mixin    # noqa
+from ._meta import Mixin    # noqa
 
 if _py3:
     from ._meta3 import metaclass
