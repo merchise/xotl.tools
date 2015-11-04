@@ -27,16 +27,8 @@ assert not _py3, 'This module should not be loaded in Py3k'
 METACLASS_ATTR = '__metaclass__'
 
 
-def _base(cls):
-    try:
-        return cls.__base__
-    except AttributeError:
-        res = cls.__bases__
-        return res[0] if res else None
-
-
 def metaclass(meta, **kwargs):
-    from ._meta import Mixin as base
+    from ._meta import Mixin
     prepare = getattr(meta, '__prepare__', None)
     if prepare:
         import warnings
@@ -53,9 +45,7 @@ def metaclass(meta, **kwargs):
         def __new__(cls, name, bases, attrs):
             from copy import copy
             if name != '__inner__':
-                bases = tuple(b for b in bases if _base(b) is not base)
-                if not bases:
-                    bases = (object,)
+                bases = tuple(b for b in bases if Mixin not in b.__bases__)
                 from ._types import prepare_class
                 kwds = dict(kwargs, metaclass=meta)
                 basemeta, _ns, kwds = prepare_class(name, bases, kwds=kwds)
@@ -66,8 +56,8 @@ def metaclass(meta, **kwargs):
                 else:
                     for attr, val in attrs.items():
                         ns[attr] = val
-                if METACLASS_ATTR not in attrs:
-                    attrs[METACLASS_ATTR] = meta
+                if METACLASS_ATTR not in ns:
+                    ns[METACLASS_ATTR] = meta
                 return basemeta(name, bases, ns)
             else:
                 return type.__new__(cls, name, bases, attrs)
@@ -78,4 +68,4 @@ def metaclass(meta, **kwargs):
     def exec_body(ns):
         return ns
 
-    return new_class('__inner__', (base, ), kwds=kwds, exec_body=exec_body)
+    return new_class('__inner__', (Mixin, ), kwds=kwds, exec_body=exec_body)

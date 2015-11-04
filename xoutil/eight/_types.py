@@ -23,7 +23,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-__all__ = [str(name) for name in ('new_class', 'prepare_class', )]
+__all__ = ['new_class', 'prepare_class']
 
 
 try:
@@ -37,14 +37,10 @@ except ImportError:
         """Create a class object dynamically using the appropriate metaclass.
 
         """
-        import sys
         meta, ns, kwds = prepare_class(name, bases, kwds)
         if exec_body is not None:
             exec_body(ns)
-        if sys.version_info >= (3, 0):
-            return meta(name, bases, ns, **kwds)
-        else:
-            return meta(name, bases, ns)
+        return meta(name, bases, ns, **kwds)
 
 
 try:
