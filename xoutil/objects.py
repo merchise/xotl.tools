@@ -692,21 +692,24 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     '''
     from operator import eq, ne
     res = True
-    tests = ((ne, force_equals), (eq, force_differents))
+    tests = ((eq, force_equals), (ne, force_differents))
     j = 0
     get_from_source = smart_getter(source)
     get_from_target = smart_getter(target)
     while res and (j < len(tests)):
-        fail, attrs = tests[j]
+        passed, attrs = tests[j]
         i = 0
         while res and (i < len(attrs)):
             attr = attrs[i]
-            if fail(get_from_source(attr), get_from_target(attr)):
-                res = False
-            else:
+            if passed(get_from_source(attr), get_from_target(attr)):
                 i += 1
+            else:
+                res = False
         j += 1
     return res
+
+# Mark this so that informed people may use it.
+validate_attrs._positive_testing = True
 
 
 def iterate_over(source, *keys):
