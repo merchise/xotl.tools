@@ -425,3 +425,20 @@ def test_copy_class():
     pattern = lambda attr: _pattern.match(attr)
     Egg = copy_class(Foo, ignores=[pattern])
     assert getattr(Egg, 'a', Unset) is Unset
+
+
+def test_validate_attrs():
+    from xoutil.objects import validate_attrs
+
+    class Person(object):
+        def __init__(self, **kwargs):
+            for which in kwargs:
+                setattr(self, which, kwargs[which])
+
+    source = Person(name='Manuel', age=33, sex='male')
+    target = {'name': 'Manuel', 'age': 4, 'sex': 'male'}
+
+    assert validate_attrs(source, target, force_equals=('sex',),
+                          force_differents=('age',))
+
+    assert not validate_attrs(source, target, force_equals=('age',))
