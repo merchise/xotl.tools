@@ -47,20 +47,18 @@ from re import compile as regex_compile
 
 _PY2_IDENTIFIER_REGEX = regex_compile('(?i)^[_a-z][_a-z0-9]*$')
 
-
-def is_python2_identifier(s):
-    'If `s` is a valid identifier according to the language definition.'
-    return str(s) if _PY2_IDENTIFIER_REGEX.match(s) else False
-
 del regex_compile
 
 
-if getattr(str, 'isidentifier', None):
+if hasattr(str, 'isidentifier'):
     def isidentifier(s):
-        'If `s` is a valid identifier according to the language definition.'
         return str(s) if s.isidentifier() else False
 else:
-    isidentifier = is_python2_identifier
+    def isidentifier(s):
+        return str(s) if _PY2_IDENTIFIER_REGEX.match(s) else False
+
+isidentifier.__doc__ = ('If `s` is a valid identifier according to the '
+                        'language definition.')
 
 
 def isfullidentifier(s):
