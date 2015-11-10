@@ -56,10 +56,18 @@ def name_coerce(arg):
 
 
 @coercer
-def strict_iterable_coerce(arg):
+def iterable_coerce(arg):
+    '''Return the same argument if it is an iterable.'''
+    from collections import Iterable
+    from . import Invalid
+    return arg if isinstance(arg, Iterable) else Invalid
+
+
+@coercer
+def logic_iterable_coerce(arg):
     '''Return the same argument if it is a strict iterable.
 
-    Strings are excluded.
+    Strings are not considered an iterable in this case.
 
     '''
     from xoutil.eight import string_types
@@ -67,6 +75,20 @@ def strict_iterable_coerce(arg):
     from . import Invalid
     ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
     return arg if ok else Invalid
+
+
+@coercer
+def force_iterable_coerce(arg):
+    '''Return always an iterable.
+
+    Like in `logic_iterable_coerce`:func:, strings are not considered an
+    iterable, all values not iterables are wrapped inner a list.
+
+    '''
+    from xoutil.eight import string_types
+    from collections import Iterable
+    ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
+    return arg if ok else [arg]
 
 
 @coercer
