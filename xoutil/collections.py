@@ -1718,7 +1718,7 @@ class MetaSet(type):
         return cls(*ranges) if isinstance(ranges, tuple) else cls(ranges)
 
 
-class PascalSet(object, metaclass(MetaSet)):
+class PascalSet(metaclass(MetaSet)):
     '''Collection of unique integer elements (implemented with intervals).
 
     PascalSet(*others) -> new set object
