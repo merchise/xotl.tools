@@ -42,7 +42,7 @@ def metaclass(meta, **kwargs):
         metabase = type
 
     class inner_meta(metabase):
-        def __new__(cls, name, bases, attrs):
+        def __new__(cls, name, bases, attrs, **kw):
             from copy import copy
             if name != '__inner__':
                 bases = tuple(b for b in bases if Mixin not in b.__bases__)
@@ -61,6 +61,9 @@ def metaclass(meta, **kwargs):
                 return basemeta(name, bases, ns)
             else:
                 return type.__new__(cls, name, bases, attrs)
+
+        def __init__(self, name, bases, attrs, **kw):
+            pass
 
     from ._types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)

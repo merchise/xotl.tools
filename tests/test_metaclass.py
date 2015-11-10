@@ -190,6 +190,9 @@ def test_prepare_a_class():
             assert attrs['__prepared__'] is True
             return super(Meta, cls).__new__(cls, name, bases, attrs)
 
+        def __init__(self, name, bases, attrs, **kwargs):
+            pass
+
     class AnotherClassDict(ClassDict):
         pass
 
@@ -204,6 +207,9 @@ def test_prepare_a_class():
                                               **kwargs)
             assert isinstance(attrs, AnotherClassDict)
             return res
+
+        def __init__(self, name, bases, attrs, **kwargs):
+            pass
 
     class SubmetaLight(Meta):
         pass
