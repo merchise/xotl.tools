@@ -27,8 +27,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-from abc import abstractmethod, ABCMeta
-from xoutil.eight.meta import metaclass
+from xoutil.eight.abc import abstractmethod, ABC
 from xoutil.objects import classproperty
 from .tools import command_name, program_name
 
@@ -76,7 +75,7 @@ class RegistryDescriptor(object):
             raise ValueError('Reused class name "%s"!' % name)
 
 
-class Command(metaclass(ABCMeta)):
+class Command(ABC):
     '''A command base registry.
 
     There are several methods to register new commands:
@@ -273,5 +272,5 @@ HELP_NAME = command_name(Help)
 # TODO: Create "xoutil.config" here
 
 del RegistryDescriptor
-del abstractmethod, ABCMeta
-del metaclass, classproperty
+del abstractmethod, ABC
+del classproperty

@@ -29,6 +29,7 @@ def program_name():
     return basename(sys.argv[0])
 
 
+# XXX: Very odd implementation, improve it
 def command_name(cls):
     '''Command names are calculated as class names in lower case inserting a
     hyphen before each new capital letter. For example "MyCommand" will be
