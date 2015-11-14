@@ -285,6 +285,28 @@ def type_name(obj, affirm=False):
         return None
 
 
+def _static_issubclass(C, B):
+    '''like ``issubclass(C, B) -> bool`` but without using ABCs.
+
+    Return whether class C is a strict subclass (i.e., a derived class) of
+    class B.
+
+    When using a tuple as the second argument it's a shortcut for::
+
+      any(_static_issubclass(C, b) for b in B)
+
+    This function returns False instead raising "TypeError: issubclass() arg 2
+    must be a class or tuple of classes" if `B` any tuple member) is not
+    instance of `type`.
+
+    '''
+    mro = _static_getmro(C)
+    if isinstance(B, tuple):
+        return any(b in mro for b in B)
+    else:
+        return B in mro
+
+
 # TODO: Implement a safe version for `attrgetter`
 
 if not getattr(_pm, 'getfullargspec', None):
