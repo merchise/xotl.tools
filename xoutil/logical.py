@@ -23,23 +23,35 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-
+# TODO: See `sqlalchemy.util.langhelpers.symbol` class
 from abc import ABCMeta
 from .eight.meta import metaclass
+
+from xoutil.tasking import local
+
+
+class _local_data(local):
+    def __init__(self):
+        # from weakref import WeakValueDictionary as maptype
+        maptype = dict    # TODO: weak refs not working with slots in Python3
+        super(_local_data, self).__init__()
+        self.instances = maptype()
+
+_ldata = _local_data()
+
+del local
 
 
 class MetaLogical(ABCMeta):
     '''Metaclass for logical types.'''
 
     def __init__(self, name, bases, attrs):
-        # from weakref import WeakValueDictionary as maptype
-        maptype = dict    # TODO: weak refs not working with slots in Python3
-        if issubclass(self, int):    # ``bool`` is not allowed as a base class
+        if bases == (int,):
             super(MetaLogical, self).__init__(name, bases, attrs)
-            self.__instances__ = maptype()
             self.register(bool)
         else:
-            raise TypeError('Only `int` sub-classes are allowed!')
+            msg = 'only `int` sub-classes are allowed, "{}" used'
+            raise TypeError(msg.format(tuple(b.__name__ for b in bases)))
 
     def _get_instance(self, name, value):
         '''Get or create a new logical instance.
@@ -59,10 +71,10 @@ class MetaLogical(ABCMeta):
         name = unique(name)
         if name:
             value = bool(value)
-            res = self.__instances__.get(name)
+            res = _ldata.instances.get(name)
             if res is None:    # Create the new instance
                 res = super(self, self).__new__(self, value)
-                self.__instances__[name] = res
+                _ldata.instances[name] = res
             elif res != value:    # Check existing instance
                 msg = 'Incorrect value for existing instance: %s '
                 raise ValueError(msg % name)
@@ -77,7 +89,7 @@ class MetaLogical(ABCMeta):
 
         '''
         try:
-            d = self.__instances__
+            d = _ldata.instances
             items = ((name, d[name]) for name in d)
             return next(name for name, obj in items if obj is value)
         except StopIteration:
@@ -91,9 +103,9 @@ class MetaLogical(ABCMeta):
         '''
         if '#' in value:    # Remove comment
             value = value.split('#')[0].strip()
-        key = next((key for key in self.__instances__ if key == value), None)
+        key = next((key for key in _ldata.instances if key == value), None)
         if key is not None:
-            return self.__instances__[key]
+            return _ldata.instances[key]
         else:
             try:    # Standard Python Boolean values
                 res = eval(value)
@@ -104,7 +116,7 @@ class MetaLogical(ABCMeta):
             return res
 
 
-class Logical(int, metaclass(MetaLogical)):
+class Logical(metaclass(MetaLogical), int):
     '''Instances are custom logical values (`True` or `False`).
 
     See :meth:`~MetaLogical._get_instance` method for information on
