@@ -24,7 +24,13 @@ from __future__ import (division as _py3_division,
 # TODO: Next must be implemented using `xoutil.api` mechanisms for fixing
 # correct driver for a concept, in this case "thread-local data".
 import sys
+
 if 'greenlet' in sys.modules:
     from ._greenlet_local import local    # noqa
 else:
-    from threading import local    # noqa
+    try:
+        from threading import local    # noqa
+    except ImportError:
+        from dummy_threading import local    # noqa
+
+del sys

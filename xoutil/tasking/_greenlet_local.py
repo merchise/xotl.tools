@@ -59,7 +59,8 @@ class _localbase(object):
         object.__setattr__(self, '_local__dicts', dicts)
 
         if args or kw:
-            if (PYPY and cls.__init__ == object.__init__) or (not PYPY and cls.__init__ is object.__init__):
+            clsi, obji = cls.__init__, object.__init__
+            if (PYPY and clsi == obji) or (not PYPY and clsi is obji):
                 raise TypeError("Initialization arguments are not supported")
 
         # We need to create the greenlet dict in anticipation of
