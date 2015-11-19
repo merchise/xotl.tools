@@ -35,21 +35,21 @@ elsewhere.
 
 # from ._values import Unset, Undefined, Ignored  # noqa
 
-from .logical import Logical
+from .symbols import boolean
 
 
 # False value where None could be a valid value
-Unset = Logical('Unset')
+Unset = boolean('Unset')
 
 
 # False value for local scope use or where Unset could be a valid value
-Undefined = Logical('Undefined')
+Undefined = boolean('Undefined')
 
 
 # To be used in arguments that are currently ignored cause they are being
 # deprecated. The only valid reason to use `ignored` is to signal ignored
 # arguments in method's/function's signature
-Ignored = Logical('Ignored')
+Ignored = boolean('Ignored')
 
 
-del Logical
+del boolean

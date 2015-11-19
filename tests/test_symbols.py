@@ -18,18 +18,18 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from xoutil.logical import Logical
+from xoutil.symbols import boolean, symbol
 
 
-class LogicalTests(unittest.TestCase):
+class BooleanTests(unittest.TestCase):
     def test_singletons(self):
         from xoutil import Unset
         from xoutil.eight import intern
         foo = 'Un'
         bar = 'set'
-        a = Logical('Unset')
-        b = Logical(foo + 'set')
-        c = Logical('Un' + bar)
+        a = boolean('Unset')
+        b = boolean(foo + 'set')
+        c = boolean('Un' + bar)
 
         self.assertIs(intern(foo + bar), repr(Unset))
         self.assertIs(repr(a), repr(b))
@@ -38,28 +38,28 @@ class LogicalTests(unittest.TestCase):
         self.assertIs(c, Unset)
 
     def test_equality(self):
-        a = Logical('false')
-        b = Logical('true', True)
+        a = boolean('false')
+        b = boolean('true', True)
         self.assertEqual(a, False)
         self.assertEqual(b, True)
         self.assertEqual(not b, False)
 
     def test_parse(self):
-        a = Logical('false')
-        b = Logical('true', True)
-        c = Logical.parse(repr(a))
-        self.assertIs(Logical.parse('false'), a)
-        self.assertIs(Logical.parse('true'), b)
+        a = boolean('false')
+        b = boolean('true', True)
+        c = boolean.parse(repr(a))
+        self.assertIs(boolean.parse('false'), a)
+        self.assertIs(boolean.parse('true'), b)
         self.assertIs(a, c)
 
     def test_int_compatibility(self):
-        a = Logical('false')
-        b = Logical('true', True)
+        a = boolean('false')
+        b = boolean('true', True)
         self.assertEqual(a + 1, 1)
         self.assertEqual(b + 1, 2)
 
     def test_comments(self):
-        a = Logical('false')
+        a = boolean('false')
         value = '%s    # This is a comment' % a
-        b = Logical.parse(value)
+        b = boolean.parse(value)
         self.assertIs(a, b)

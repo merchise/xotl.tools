@@ -70,8 +70,8 @@ class Predicate(object):
     - A callable that receives the value and returns True if the value is
       valid.
 
-    - ``True``, ``False`` or any instance of `Logical` could be used as
-      checkers always validating or invalidating the value.
+    - ``True``, ``False`` or any instance of `boolean` (in `symbol` module)
+      could be used as checkers always validating or invalidating the value.
 
     - An empty list is synonym of ``True``, an empty tuple, set or mapping is
       synonym of ``False``.
@@ -152,12 +152,12 @@ class Predicate(object):
 
     def __call__(self, obj):
         '''Check is `obj` is a valid instance for a set of checkers.'''
-        from xoutil.logical import Logical
+        from xoutil.symbols import boolean
         from xoutil.collections import Set, Mapping
         from xoutil.eight import callable
 
         def valid(chk, stack=True):
-            if isinstance(chk, (bool, Logical)):
+            if isinstance(chk, boolean):
                 res = bool(chk)
             elif isinstance(chk, type):
                 res = isinstance(obj, chk)
@@ -195,13 +195,13 @@ def _get_checker_name(checker, full=False):
     See :class:`Predicate` for possible checker kinds.
 
     '''
-    from xoutil.logical import Logical
+    from xoutil.symbols import boolean
     from xoutil.collections import Set, Mapping, PascalSet
     from xoutil.eight import callable
     from xoutil.inspect import type_name
     from xoutil.string import safe_str as sstr    # , safe_repr as srepr
     srepr = repr
-    if isinstance(checker, (bool, Logical)):
+    if isinstance(checker, boolean):
         return str(checker)
     elif isinstance(checker, Predicate):
         return str('p(%s)') % checker.get_name()

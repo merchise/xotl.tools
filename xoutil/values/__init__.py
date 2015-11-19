@@ -44,10 +44,10 @@ from re import compile as regex_compile
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.functools import lwraps
-from xoutil.logical import Logical as InvalidType
+from xoutil.symbols import boolean
 
 
-Invalid = InvalidType('Invalid')
+Invalid = boolean('Invalid')
 
 
 _coercer_decorator = lwraps(__coercer__=True)
