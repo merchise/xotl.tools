@@ -28,6 +28,8 @@ from .eight.meta import metaclass
 SYMBOL = 'symbol'
 BOOLEAN = 'boolean'
 
+TIMEOUT = 2.0
+
 
 class MetaSymbol(type):
     '''Meta-class for symbol types.'''
@@ -37,7 +39,7 @@ class MetaSymbol(type):
             self = super(MetaSymbol, cls).__new__(cls, name, bases, ns)
             if name == SYMBOL:
                 cache = {str(v): v for v in (False, True)}
-                self._instances = SafeData(cache, timeout=10.0)
+                self._instances = SafeData(cache, timeout=TIMEOUT)
             return self
         else:
             msg = 'only classes declared in "{}" module are allowed'
