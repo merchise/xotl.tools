@@ -25,50 +25,20 @@ from __future__ import (division as _py3_division,
 
 from .eight.meta import metaclass
 
-from xoutil.tasking import local
-
-
-class _local(local):
-    def __init__(self):
-        super(_local, self).__init__()
-        # `weakref.WeakValueDictionary` must be used, but forbidden with slots
-        self.instances = {str(v): v for v in (False, True)}
-
-    def nameof(self, s):
-        '''Get the name of a symbol instance (`s`).'''
-        from xoutil.eight import iteritems
-        items = iteritems(self.instances)
-        return next((name for name, value in items if value is s), None)
-
-    def __call__(self, name, value):
-        '''Get or create a new symbol instance.
-
-        :param name: String representing the internal name.  `symbol`
-               instances are unique (singletons) in the context of this
-               argument.  ``#`` and spaces are invalid characters to allow
-               comments.
-
-        :param value: Any value compatible with Python `bool` (Always is
-               converted to this type before using it).  Default is `False`.
-
-        This method is only intended to be called from `__new__` special
-        method implementations.
-
-        '''
-        cls = boolean if value is False or value is True else symbol
-        return cls(name, value)
-
-
-_symbol = _local()
-
-del local
+SYMBOL = 'symbol'
+BOOLEAN = 'boolean'
 
 
 class MetaSymbol(type):
     '''Meta-class for symbol types.'''
     def __new__(cls, name, bases, ns):
-        if name in {'symbol', 'boolean'} and ns['__module__'] == __name__:
-            return super(MetaSymbol, cls).__new__(cls, name, bases, ns)
+        from xoutil.tasking.safe import SafeData
+        if name in {SYMBOL, BOOLEAN} and ns['__module__'] == __name__:
+            self = super(MetaSymbol, cls).__new__(cls, name, bases, ns)
+            if name == SYMBOL:
+                cache = {str(v): v for v in (False, True)}
+                self._instances = SafeData(cache, timeout=10.0)
+            return self
         else:
             msg = 'only classes declared in "{}" module are allowed'
             raise TypeError(msg.format(__name__))
@@ -87,6 +57,13 @@ class MetaSymbol(type):
         else:
             return super(MetaSymbol, self).__subclasscheck__(subclass)
 
+    def nameof(self, s):
+        '''Get the name of a symbol instance (`s`).'''
+        from xoutil.eight import iteritems
+        with self._instances as cache:
+            items = iteritems(cache)
+        return next((name for name, value in items if value is s), None)
+
     def parse(self, name):
         '''Returns instance from a string.
 
@@ -95,7 +72,8 @@ class MetaSymbol(type):
         '''
         if '#' in name:    # Remove comment
             name = name.split('#')[0].strip()
-        res = _symbol.instances.get(name, None)
+        with self._instances as cache:
+            res = cache.get(name, None)
         if res is not None:
             if isinstance(res, self):
                 return res
@@ -141,23 +119,24 @@ class symbol(metaclass(MetaSymbol), int):
         from .eight import intern as unique
         name = unique(name)
         if name:
-            instances = _symbol.instances
-            res = instances.get(name)
-            if res is None:    # Create the new instance
-                if value is None:
-                    value = hash(name)
-                valid = {symbol: lambda v: isinstance(v, int),
-                         boolean: lambda v: v is False or v is True}
-                if not valid[cls](value):
-                    msg = ('instancing "{}" with name "{}" and incorrect '
-                           'value "{}" of type "{}"')
-                    cn, vt = cls.__name__, type(value).__name__
-                    raise TypeError(msg.format(cn, name, value, vt))
-                res = super(symbol, cls).__new__(cls, value)
-                instances[name] = res
-            elif res != value:    # Check existing instance
-                msg = 'value "{}" mismatch for existing instance: "%s"'
-                raise ValueError(msg.format(value, name))
+            valid = {symbol: lambda v: isinstance(v, int),
+                     boolean: lambda v: v is False or v is True}
+            with cls._instances as cache:
+                res = cache.get(name)
+                if res is None:    # Create the new instance
+                    if value is None:
+                        value = hash(name)
+                    if valid[cls](value):
+                        res = super(symbol, cls).__new__(cls, value)
+                        cache[name] = res
+                    else:
+                        msg = ('instancing "{}" with name "{}" and incorrect '
+                               'value "{}" of type "{}"')
+                        cn, vt = cls.__name__, type(value).__name__
+                        raise TypeError(msg.format(cn, name, value, vt))
+                elif res != value:    # Check existing instance
+                    msg = 'value "{}" mismatch for existing instance: "{}"'
+                    raise ValueError(msg.format(value, name))
             return res
         else:
             raise ValueError('name must be a valid non empty string')
@@ -166,7 +145,7 @@ class symbol(metaclass(MetaSymbol), int):
         pass
 
     def __repr__(self):
-        return _symbol.nameof(self)
+        return symbol.nameof(self)
 
     __str__ = __repr__
 
