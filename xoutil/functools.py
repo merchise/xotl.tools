@@ -464,8 +464,8 @@ if not py33:
             elif maxsize is None:
 
                 def wrapper(*args, **kwds):
-                    # Simple caching without ordering or size limit
-                    #nonlocal hits, misses
+                    # Simple caching without ordering or size limit nonlocal
+                    # hits, misses
                     key = make_key(args, kwds, typed)
                     result = cache_get(key, sentinel)
                     if result is not sentinel:
@@ -480,7 +480,7 @@ if not py33:
 
                 def wrapper(*args, **kwds):
                     # Size limited caching that tracks accesses by recency
-                    #nonlocal root, hits, misses, full
+                    # nonlocal root, hits, misses, full
                     root = _cache_vars[_ROOT]
                     key = make_key(args, kwds, typed)
                     with lock:

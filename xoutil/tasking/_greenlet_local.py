@@ -84,7 +84,7 @@ def _init_locals(self):
 
 
 class local(_localbase):
-
+    '''Greenlet-local data.'''
     def __getattribute__(self, name):
         d = object.__getattribute__(self, '_local__dicts').get(getcurrent())
         if d is None:
