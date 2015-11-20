@@ -21,6 +21,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+# TODO: Optimize this by using standard threading locks
 class SafeData(object):
     '''Python context with queued data.'''
     __slots__ = ('queue', 'timeout', 'data',)
