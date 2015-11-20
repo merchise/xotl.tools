@@ -51,6 +51,11 @@ def setkwd(obj, name, value):
     setattr(obj, suffix_kwd(name), value)
 
 
+def delkwd(obj, name):
+    '''Like `delattr` but taking into account Python keywords.'''
+    delattr(obj, suffix_kwd(name))
+
+
 def kwd_getter(obj):
     '''partial(getkwd, obj)'''
     from functools import partial
@@ -61,3 +66,9 @@ def kwd_setter(obj):
     '''partial(setkwd, obj)'''
     from functools import partial
     return partial(setkwd, obj)
+
+
+def kwd_deleter(obj):
+    '''partial(delkwd, obj)'''
+    from functools import partial
+    return partial(delkwd, obj)
