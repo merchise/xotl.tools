@@ -27,3 +27,10 @@ try:
     from heapq import (heappop, heappush)    # noqa
 except ImportError:
     from queue import (heappop, heappush)    # noqa
+
+# best available implementation of current time in seconds
+import time as _time
+
+time = getattr(_time, 'monotonic', _time.time)
+
+del _time
