@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+# ---------------------------------------------------------------------
+# test_safe
+# ---------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
+# All rights reserved.
+#
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
+#
+# Created on 2015-11-19
+
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        absolute_import as _py3_abs_import)
+
+
+from xoutil.tasking.safe import SafeData
+
+
+def test_safe():
+    from xoutil.threading import async_call
+    from time import sleep
+
+    data = {}
+    qd = SafeData(data, timeout=5.0)
+
+    def inner(name, start, end):
+        step = 1 if start < end else -1
+        for i in range(start, end, step):
+            with qd as d:
+                d[i] = d.get(i, 0) + 1
+            sleep(0.001*i)
+        with qd as d:
+            d[name] = True
+    one, two = 'one', 'two'
+    async_call(inner, args=[one, 1, 6])
+    async_call(inner, args=[two, 8, 3])
+    finish = {one: False, two: False}
+    while not (finish[one] and finish[two]):
+        with qd as d:
+            for k in (one, two):
+                if d.get(k):
+                    finish[k] = True
+        sleep(0.001)
+    aux = {i: 1 for i in range(1, 6)}
+    for i in range(8, 3, -1):
+        aux[i] = aux.get(i, 0) + 1
+    aux[one] = aux[two] = True
+    assert data == aux
