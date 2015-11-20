@@ -68,3 +68,14 @@ def isfullidentifier(s):
 
     '''
     return str(s) if all(isidentifier(p) for p in s.split('.')) else False
+
+
+def check_identifier(s):
+    '''Check if `s` is a valid identifier.'''
+    from xoutil.eight.values import isidentifier
+    res = isidentifier(s)
+    if res:
+        return res
+    else:
+        msg = 'invalid identifier "{}"'
+        raise TypeError(msg.format(s))
