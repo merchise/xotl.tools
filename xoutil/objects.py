@@ -233,7 +233,6 @@ class SafeDataItem(object):
                 try:
                     res = self.init()
                 except:
-                    print('>>>', self.init, '::', type(self.init))
                     raise
                 self.__set__(obj, res)
                 return res
