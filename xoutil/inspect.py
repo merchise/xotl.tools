@@ -164,7 +164,6 @@ except AttributeError:
         if default is not _sentinel:
             return default
         else:
-            print('>>>', default)
             raise AttributeError(attr)
 
 
@@ -176,31 +175,31 @@ def get_attr_value(obj, name, *default):
     `getattr_static`:func:.
 
     '''
-    from xoutil import Undefined as _undef
+    from xoutil import Undefined
     from xoutil.tools import get_default
-    default = get_default(default, _undef)
+    default = get_default(default, Undefined)
     is_type = isinstance(obj, type)
-    res = getattr_static(obj, name, _undef)
+    res = getattr_static(obj, name, Undefined)
     if isdatadescriptor(res):
         try:
             owner = type if is_type else type(obj)
             res = res.__get__(obj, owner)
-        except BaseException:
-            res = _undef
-    if res is _undef and not is_type:
+        except:
+            res = Undefined
+    if res is Undefined and not is_type:
         cls = type(obj)
-        res = getattr_static(cls, name, _undef)
+        res = getattr_static(cls, name, Undefined)
         if isdatadescriptor(res):
             try:
                 res = res.__get__(obj, cls)
-            except StandardException:
+            except:
                 try:
                     res = res.__get__(cls, type)
-                except StandardException:
-                    res = _undef
-    if res is not _undef:
+                except:
+                    res = Undefined
+    if res is not Undefined:
         return res
-    elif default is not _undef:
+    elif default is not Undefined:
         return default
     else:
         from xoutil.eight import typeof
