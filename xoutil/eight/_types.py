@@ -103,3 +103,11 @@ except ImportError:
             msg = ("Error when calling the metaclass bases\n\t"
                    "a new-style class can't have only classic bases")
             raise TypeError(msg)
+
+
+def get_exec_body(**kwargs):
+    '''Return an `exec_body` function that update `ns` with `kwargs`.'''
+    def exec_body(ns):
+        ns.update(kwargs)
+        return ns
+    return exec_body
