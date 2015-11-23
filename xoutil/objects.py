@@ -580,17 +580,15 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
-    from xoutil.inspect import get_attr_value
-    res = set()
-    if isinstance(obj, type):
-        for cls in type.mro(obj):
-            res |= set(get_attr_value(cls, '__dict__', {}))
+    from xoutil.eight import typeof, class_types
+    from xoutil.inspect import get_attr_value, _static_getmro as getmro
+    getdir = lambda o: set(get_attr_value(o, '__dict__', {}))
+    if isinstance(obj, class_types):
+        res = set.union(getdir(cls) for cls in getmro(obj))
     else:
-        res |= set(get_attr_value(obj, '__dict__', {}))
-    cls = type(obj)
-    if cls is not type:
-        res |= set(dir(cls))
-    return res
+        res = getdir(obj)
+    cls = typeof(obj)
+    return res if cls in class_types else res | set(dir(cls))
 
 
 # TODO: Fix signature after removal of attr_filter and value_filter
