@@ -86,9 +86,9 @@ except ImportError:
         except TypeError:
             return False
 
-    def _objclass(cd, entry):
+    def _objclass(class_dict, entry):
         try:
-            return cd.__objclass__ is entry
+            return class_dict.__objclass__ is entry
         except AttributeError:
             # FIX: to avoid error in pypy
             return True
@@ -133,7 +133,7 @@ except ImportError:
             from xoutil.eight.types import MemberDescriptorType as mdt
             klass = typeof(obj)
             dict_attr = _shadowed_dict(klass)
-            if dict_attr is _sentinel or isinstance(dict_attr, mdt):
+            if dict_attr is _sentinel or type(dict_attr) is mdt:
                 instance_result = _check_instance(obj, attr)
         else:
             klass = obj
