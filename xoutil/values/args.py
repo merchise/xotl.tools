@@ -37,30 +37,37 @@ def param_get(args, kwargs, idx, name, default=Unset, coercers=Unset):
     :param name: The name of a named argument.  if None, this argument could
            only be given as a positional argument.
 
-    :param default: Optional default value to return it if no positional or
-           named argument is found.
+    :param default: Default value to return it if no positional or named
+           argument is found (in `options` as a keyword argument).
 
     :param coercers: A collection of functions, each one to transform or
            validate the value being returned.
 
     '''
-    in_args = idx is not None and (0 <= idx < len(args))
     in_kwargs = name in kwargs
-    count = in_args + in_kwargs
-    if count == 0:
-        res = default
-    elif count == 1:
-        res = args[idx] if in_args else kwargs[name]
-    else:    # count == 2: error; both, positional and by name, are given
-        res = Unset
-    if res is not Unset:
-        if coercers is Unset:
-            return res
+    if idx is not None and (0 <= idx < len(args)):
+        if not in_kwargs:
+            res = args[idx]
         else:
-            from . import compose
-            coercer = compose(coercers)
-            return coercer(res)
+            msg = ('got multiple values for argument with keyword "{}" and '
+                   'index "{}"')
+            raise TypeError(msg.format(name, idx))
+    elif in_kwargs:
+        res = kwargs[name]
+    elif default is not Unset:
+        res = default() if callable(default) else default
     else:
-        msg = ('Expecting exactly one occurrence for argument '
-               '(idx: {}, name: {!r}); but {} was processed.')
-        raise TypeError(msg.format(idx, name, count))
+        msg = 'required value for argument "{}" is not given'
+        raise TypeError(msg.format(name))
+    if coercers:
+        from xoutil.values import compose
+        coercer = compose(coercers)
+        return coercer(res)
+    else:
+        return res
+
+
+def partial_param_get(args, kwargs):
+    '''A `param_get` with partial function arguments.'''
+    from functools import partial
+    return partial(param_get, args, kwargs)
