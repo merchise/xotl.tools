@@ -158,21 +158,21 @@ def slugify(value, *args, **kwargs):
 
     '''
     import re
-    from xoutil.eight import string_types
-    from xoutil.string import normalize_ascii as ascii
+    from xoutil.eight import typeof, string_types
+    from . import check, compose, istype
+    from .simple import (not_false, ascii_coerce, lower_ascii_coerce)
+    from .args import partial_param_get
     # local functions
-    lascii = lambda v: ascii(v).lower()
-    _set = lambda v: ''.join(set(v))
-    _esc = lambda v: re.escape(_set(v))
+    getarg = partial_param_get(args, kwargs)
+    _str = compose(not_false(''), istype(string_types))
+    _ascii = compose(_str, ascii_coerce)
+    _lascii = compose(_str, lower_ascii_coerce)
+    _set = compose(_ascii, lambda v: ''.join(set(v)))
+    _esc = compose(_set, lambda v: re.escape(v))
     _from_iter = lambda v: ''.join(i for i in v)
-    # check and adjust arguments
-    if replacement in (None, False):
-        replacement = ''
-    elif isinstance(replacement, string_types):
-        replacement = ascii(replacement)    # TODO: or lascii?
-    else:
-        msg = '`replacement` (%s) must be a string or None, not `%s`.'
-        raise TypeError(msg % (replacement, type(replacement)))
+
+    replacement = getarg('replacement', 0, default='', coercers=_ascii)
+    invalids = getarg('invalids', 0, default='', coercers=_ascii)
     if invalids is True:
         # Backward compatibility with former `invalid_underscore` argument
         invalids = '_'

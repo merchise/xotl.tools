@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.values.simple
+# xoutil.cl.simple
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -32,8 +32,46 @@ from . import coercer
 
 
 @coercer
+def not_false_coercer(arg):
+    '''Validate that `arg` is not a false value.
+
+    Python convention for values considered True or False is not used here,
+    our false values are only `None` or any false instance of
+    `xoutil.symbols.boolean`:class: (of course including `False` itself).
+
+    '''
+    from . import nil
+    from xoutil.symbols import boolean
+    false = arg is None or (not arg and isinstance(arg, boolean))
+    return arg if not false else nil
+
+
+def not_false(default):
+    '''Create a coercer that returns `default` if `arg` is considered false.
+
+    See `not_false_coercer`:func: for more information on values considered
+    false.
+
+    '''
+    @coercer
+    def inner_coercer(arg):
+        coercer = not_false_coercer
+        return arg if coercer(arg) is arg else coercer(default)
+    return inner_coercer
+
+
+def isnot(value):
+    '''Create a coercer that returns `arg` if `arg` is not `value`.'''
+    @coercer
+    def inner_coercer(arg):
+        from . import nil
+        return arg if arg is not value else nil
+    return inner_coercer
+
+
+@coercer
 def name_coerce(arg):
-    '''If `arg` is a named object, return its name, else `Invalid`.
+    '''If `arg` is a named object, return its name, else `nil`.
 
     Object names are always of `str` type, other types are considered
     invalids.
@@ -43,37 +81,59 @@ def name_coerce(arg):
 
     '''
     from types import GeneratorType
-    from . import Invalid
+    from . import nil
     if isinstance(arg, GeneratorType):
-        return Invalid
+        return nil
     else:
         if isinstance(arg, (staticmethod, classmethod)):
             fn = getattr(arg, '__func__', None)
             if fn:
                 arg = fn
         res = getattr(arg, '__name__', None)
-        return res if isinstance(res, str) else Invalid
+        return res if isinstance(res, str) else nil
 
 
 @coercer
-def strict_iterable_coerce(arg):
+def iterable_coerce(arg):
+    '''Return the same argument if it is an iterable.'''
+    from collections import Iterable
+    from . import nil
+    return arg if isinstance(arg, Iterable) else nil
+
+
+@coercer
+def logic_iterable_coerce(arg):
     '''Return the same argument if it is a strict iterable.
 
-    Strings are excluded.
+    Strings are not considered an iterable in this case.
 
     '''
     from xoutil.eight import string_types
     from collections import Iterable
-    from . import Invalid
+    from . import nil
     ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
-    return arg if ok else Invalid
+    return arg if ok else nil
+
+
+@coercer
+def force_iterable_coerce(arg):
+    '''Return always an iterable.
+
+    Like in `logic_iterable_coerce`:func:, strings are not considered an
+    iterable, all values not iterables are wrapped inner a list.
+
+    '''
+    from xoutil.eight import string_types
+    from collections import Iterable
+    ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
+    return arg if ok else [arg]
 
 
 @coercer
 def decode_coerce(arg):
     '''Decode objects implementing the buffer protocol.'''
     import locale
-    from . import Invalid
+    from . import nil
     from xoutil.eight import text_type, callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     decode = getattr(arg, 'decode', None)
@@ -93,7 +153,7 @@ def decode_coerce(arg):
             import codecs
             res = codecs.decode(arg, encoding, 'replace')
         except BaseException:
-            res = Invalid
+            res = nil
     return res
 
 
@@ -101,7 +161,7 @@ def decode_coerce(arg):
 def encode_coerce(arg):
     '''Encode string objects.'''
     import locale
-    from . import Invalid
+    from . import nil
     from xoutil.eight import callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     encode = getattr(arg, 'encode', None)
@@ -119,7 +179,7 @@ def encode_coerce(arg):
             import codecs
             res = codecs.encode(arg, encoding, 'replace')
         except BaseException:
-            res = Invalid
+            res = nil
     return res
 
 
@@ -142,10 +202,10 @@ def unicode_coerce(arg):
 
     '''
     from array import array
-    from . import Invalid
+    from . import nil
     from xoutil.eight import text_type
     aux = name_coerce(arg)
-    if aux is not Invalid:
+    if aux is not nil:
         arg = aux
     if isinstance(arg, text_type):
         return arg
@@ -165,7 +225,7 @@ def unicode_coerce(arg):
                     return arg
 
     res = decode_coerce(arg)
-    return text_type(arg) if res is Invalid else res
+    return text_type(arg) if res is nil else res
 
 
 @coercer
@@ -197,10 +257,10 @@ def bytes_coerce(arg):
 
     '''
     from array import array
-    from . import Invalid
+    from . import nil
     from xoutil.eight import text_type
     aux = name_coerce(arg)
-    if aux is not Invalid:
+    if aux is not nil:
         arg = aux
     if isinstance(arg, bytes):
         return arg
@@ -217,7 +277,7 @@ def bytes_coerce(arg):
             except BaseException:
                 arg = text_type(arg)
     res = encode_coerce(arg)
-    return encode_coerce(text_type(arg)) if res is Invalid else res
+    return encode_coerce(text_type(arg)) if res is nil else res
 
 
 @coercer
@@ -259,7 +319,7 @@ def ascii_set_coerce(arg):
     normalization.
 
     '''
-    return str().join(set(ascii_coerce(arg)))
+    return ''.join(set(ascii_coerce(arg)))
 
 
 @coercer
@@ -281,9 +341,10 @@ def lower_ascii_set_coerce(arg):
     normalization.
 
     '''
-    return str().join(set(lower_ascii_coerce(arg)))
+    return ''.join(set(lower_ascii_coerce(arg)))
 
 
+@coercer
 def chars_coerce(arg):
     '''Convert to unicode characters.
 
@@ -297,6 +358,14 @@ def chars_coerce(arg):
         return (chr if _py3 else unichr)(arg)
     else:
         return unicode_coerce(arg)
+
+
+@coercer
+def strict_string_coerce(arg):
+    '''Coerce to string only if argument is a valid string type.'''
+    from . import nil
+    from xoutil.eight import string_types
+    return str_coerce(arg) if isinstance(arg, string_types) else nil
 
 
 from xoutil.eight import text_type as text

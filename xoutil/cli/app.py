@@ -26,8 +26,10 @@ from __future__ import (division as _py3_division,
 
 
 def main(default=None):
-    '''Execute a command, it can be given as the first program argument or it's
-    the default command is defined.
+    '''Execute a command.
+
+    It can be given as the first program argument or it's the `default`
+    command is defined.
 
     '''
     import sys

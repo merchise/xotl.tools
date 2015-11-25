@@ -188,7 +188,7 @@ def lwraps(*args, **kwargs):
     .. versionadded:: 1.7.0
 
     '''
-    from types import FunctionType
+    from types import FunctionType, MethodType
     from xoutil import Unset
     from xoutil.eight import string_types, iteritems
     from xoutil.string import safe_str
@@ -209,7 +209,7 @@ def lwraps(*args, **kwargs):
                 msg = 'lwraps() expecting string for "{}", {} found'
                 raise TypeError(msg.format(name, typeof(value).__name__))
 
-    decorables = (FunctionType, staticmethod, classmethod)
+    decorables = (FunctionType, MethodType, staticmethod, classmethod)
     name_key = str('__name__')
     doc_key = str('__doc__')
     mod_key = str('__module__')
@@ -248,7 +248,7 @@ def lwraps(*args, **kwargs):
 
         def wrapper(target):
             if isinstance(target, decorables):
-                if isinstance(target, (staticmethod, classmethod)):
+                if isinstance(target, (staticmethod, classmethod, MethodType)):
                     target = target.__func__
                 for name in (mod_key, name_key, doc_key):
                     if name in source:
@@ -464,8 +464,8 @@ if not py33:
             elif maxsize is None:
 
                 def wrapper(*args, **kwds):
-                    # Simple caching without ordering or size limit
-                    #nonlocal hits, misses
+                    # Simple caching without ordering or size limit nonlocal
+                    # hits, misses
                     key = make_key(args, kwds, typed)
                     result = cache_get(key, sentinel)
                     if result is not sentinel:
@@ -480,7 +480,7 @@ if not py33:
 
                 def wrapper(*args, **kwds):
                     # Size limited caching that tracks accesses by recency
-                    #nonlocal root, hits, misses, full
+                    # nonlocal root, hits, misses, full
                     root = _cache_vars[_ROOT]
                     key = make_key(args, kwds, typed)
                     with lock:

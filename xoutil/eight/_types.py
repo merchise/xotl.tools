@@ -23,7 +23,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-__all__ = [str(name) for name in ('new_class', 'prepare_class', )]
+__all__ = ['new_class', 'prepare_class']
 
 
 try:
@@ -37,14 +37,10 @@ except ImportError:
         """Create a class object dynamically using the appropriate metaclass.
 
         """
-        import sys
         meta, ns, kwds = prepare_class(name, bases, kwds)
         if exec_body is not None:
             exec_body(ns)
-        if sys.version_info >= (3, 0):
-            return meta(name, bases, ns, **kwds)
-        else:
-            return meta(name, bases, ns)
+        return meta(name, bases, ns, **kwds)
 
 
 try:
@@ -62,16 +58,14 @@ except ImportError:
         be an empty dict.
 
         """
+        from . import typeof
         if kwds is None:
             kwds = {}
         else:
             kwds = dict(kwds)  # Don't alter the provided mapping
         meta = kwds.pop('metaclass', None)
         if not meta:
-            if bases:
-                meta = type(bases[0])
-            else:
-                meta = type
+            meta = typeof(bases[0]) if bases else type
         if isinstance(meta, type):
             # when meta is a type, we first determine the most-derived
             # metaclass instead of invoking the initial candidate directly
@@ -86,11 +80,14 @@ except ImportError:
 try:
     from types import _calculate_meta
 except ImportError:
+    # XXX: Remove all these `continue` statements
     def _calculate_meta(meta, bases):
         """Calculate the most derived metaclass."""
+        from . import typeof, class_types
+        old_cls = next((cls for cls in class_types if cls is not type), None)
         winner = meta
         for base in bases:
-            base_meta = type(base)
+            base_meta = typeof(base)
             if issubclass(winner, base_meta):
                 continue
             if issubclass(base_meta, winner):
@@ -100,4 +97,17 @@ except ImportError:
             raise TypeError("metaclass conflict: the metaclass of a derived "
                             "class must be a (non-strict) subclass of the "
                             "metaclasses of all its bases")
-        return winner
+        if winner is not old_cls:
+            return winner
+        else:
+            msg = ("Error when calling the metaclass bases\n\t"
+                   "a new-style class can't have only classic bases")
+            raise TypeError(msg)
+
+
+def get_exec_body(**kwargs):
+    '''Return an `exec_body` function that update `ns` with `kwargs`.'''
+    def exec_body(ns):
+        ns.update(kwargs)
+        return ns
+    return exec_body

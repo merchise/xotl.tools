@@ -32,7 +32,7 @@ tool to solve argument identification from a definition in a dictionary::
 
 
 - checker: A function that must validate a value; if valid return the same or
-  a coerced value; if invalid must return the special value `Invalid`.  If not
+  a coerced value; if invalid must return the special value `nil`.  If not
   given, identity function is used (check as valid all values, avoid this).
 
 - pos-definition: Define if the parameter could appear as a positional
@@ -76,17 +76,16 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
-from xoutil.values import coercer
+from xoutil.cl import coercer
 
 
 def _prepare_schema_coercer_global_cache():
     '''Prepare global cache for scheme coercer.'''
     from xoutil import Undefined
     from xoutil.eight import zip
-    from xoutil.values import (coercer as checker_coerce,
-                               iterable,
-                               identity_coerce, identifier_coerce,
-                               positive_int_coerce)
+    from xoutil.cl import (coercer as checker_coerce, iterable,
+                           identity_coerce, identifier_coerce,
+                           positive_int_coerce)
     pos_coerce = iterable(positive_int_coerce, outer_coerce=set)
     alias_coerce = iterable(identifier_coerce, outer_coerce=set)
     default_coerce = identity_coerce
@@ -108,32 +107,32 @@ _SCHEME_COERCER_CACHE = _prepare_schema_coercer_global_cache()
 @coercer
 def scheme_coerce(arg):
     '''Coerce a scheme definition into a precise formalized dictionary.'''
-    from xoutil.values import valid, Invalid
+    from xoutil.cl import t, nil
     names, coercers, defaults = _SCHEME_COERCER_CACHE
-    if arg is Invalid:
+    if arg is nil:
         res = arg
     elif isinstance(arg, dict):
         res = arg
         i = 0
         keys = tuple(res)
-        while valid(res) and i < len(keys):
+        while t(res) and i < len(keys):
             concept = keys[i]
             if concept in coercers:
                 coercer = coercers[concept]
                 value = coercer(res[concept])
-                if valid(value):
+                if t(value):
                     res[concept] = value
                     i += 1
                 else:
-                    res = Invalid
+                    res = nil
             else:
-                res = Invalid
+                res = nil
     else:
         if not isinstance(arg, tuple):
             arg = (arg,)
         res = {}
         i = 0
-        while valid(res) and i < len(arg):
+        while t(res) and i < len(arg):
             value = arg[i]
             j, found = 0, False
             while j < len(names) and not found:
@@ -141,15 +140,15 @@ def scheme_coerce(arg):
                 if concept not in res:
                     coercer = coercers[concept]
                     v = coercer(value)
-                    if valid(v):
+                    if t(v):
                         found = True
                         res[concept] = v
                 j += 1
             if found:
                 i += 1
             else:
-                res = Invalid
-    if valid(res):
+                res = nil
+    if t(res):
         # Complete and check default value
         for concept in defaults:
             if concept not in res:
@@ -159,10 +158,10 @@ def scheme_coerce(arg):
         if default is not defaults[concept]:
             coercer = res['checker']
             value = coercer(default)
-            if valid(value):
+            if t(value):
                 res[concept] = value
             else:
-                res = Invalid
+                res = nil
     return res
 
 
@@ -194,7 +193,7 @@ class ParamConformer(object):
     def _formalize_schemes(self, schemes, kwargs):
         '''Formalize scheme in a more precise internal dictionary.'''
         from itertools import chain
-        from xoutil.values import identifier_coerce, check as ok
+        from xoutil.cl import identifier_coerce, check as ok
         self.scheme = {}
         for scheme in chain((kwargs,), reversed(schemes)):
             for par in scheme:
@@ -270,12 +269,12 @@ class ParamConformer(object):
 
         def check_kwargs():
             '''Check all formal keyword arguments.'''
-            from xoutil.values import valid
+            from xoutil.cl import t
             for key, arg in iteritems(kwargs):
                 if key in self.scheme:
                     checker = self.scheme[key]['checker']
                     value = checker(arg)
-                    if valid(value):
+                    if t(value):
                         kwargs[str(key)] = value
                     else:
                         msg = 'Invalid argument value "{}": "{}"!'
@@ -286,11 +285,11 @@ class ParamConformer(object):
 
         def solve_results():
             '''Assign default values for missing arguments.'''
-            from xoutil.values import valid
+            from xoutil.cl import t
             for par, ps in iteritems(self.scheme):
                 if clean(par):
                     default = ps['default']
-                    if valid(default):
+                    if t(default):
                         kwargs[str(par)] = default
                     else:
                         msg = 'Missing required argument "{}"!'
@@ -302,7 +301,7 @@ class ParamConformer(object):
             Return a tuple (name, value) if valid.
 
             '''
-            from xoutil.values import valid
+            from xoutil.cl import t
             names = positions[pivot]
             i, count = 0, len(names)
             res = ()
@@ -311,14 +310,14 @@ class ParamConformer(object):
                 if clean(name):
                     checker = self.scheme[name]['checker']
                     value = checker(arg)
-                    if valid(value):
+                    if t(value):
                         res = (name, value)
                 i += 1
             return res
 
         def get_duplicate():
             '''Get a possible all not settled valid parameter names.'''
-            from xoutil.values import valid
+            from xoutil.cl import t
             res = None
             pos = last_pivot
             while not res and pos < len(positions):
@@ -329,7 +328,7 @@ class ParamConformer(object):
                     if name not in settled:
                         checker = self.scheme[name]['checker']
                         value = checker(arg)
-                        if valid(value):
+                        if t(value):
                             res = name
                     i += 1
                 pos += 1
@@ -376,7 +375,7 @@ if __name__ == '__main__':
 
     import sys
     from xoutil.eight import string_types
-    from xoutil.values import file_coerce, positive_int_coerce
+    from xoutil.cl import file_coerce, positive_int_coerce
 
     sample_scheme = {
         'stream': (file_coerce, {0, 3}, {'output'}, sys.stdout),

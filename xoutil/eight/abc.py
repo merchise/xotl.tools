@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight.
+# xoutil.eight.abc
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -41,27 +41,36 @@ from __future__ import (division as _py3_division,
 
 
 from abc import ABCMeta, abstractmethod, abstractproperty    # noqa
-from .meta import helper_class
 
-
-# TODO: Develop tests for next method
-def adopt(cls, subclass):
-    '''Register a virtual subclass of an ABC.
-
-    Returns the subclass, to allow usage as a class decorator.  Using this
-    method, difference in Python versions from 3.3 of `register`:meth: method
-    is fixed.
-
-    '''
-    return cls.register(subclass) or subclass
-
-
-ABCMeta.adopt = adopt
-
+from .mixins import helper_class
 
 ABC = helper_class(ABCMeta)
 
 del helper_class
+
+
+# TODO: Develop tests in order to demonstrate next method runs properly in all
+# Python versions.
+
+if ABCMeta('A', (object,), {}).register(int) is not int:
+    ABCMeta.__old_register__ = ABCMeta.register
+
+    def register(cls, subclass):
+        '''
+
+        Returns the subclass, to allow usage as a class decorator.  Using this
+        method, difference in Python versions from 3.3 of `register`:meth:
+        method is fixed.
+
+        '''
+        ABCMeta.__old_register__(cls, subclass)
+        return subclass
+    register.__doc__ = ABCMeta.__old_register__.__doc__ + register.__doc__
+    ABCMeta.register = register
+    del register
+
+
+ABCMeta.adopt = ABCMeta.register
 
 
 try:

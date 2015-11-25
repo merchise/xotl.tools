@@ -28,6 +28,7 @@ METACLASS_ATTR = '__metaclass__'
 
 
 def metaclass(meta, **kwargs):
+    from ._meta import Mixin
     prepare = getattr(meta, '__prepare__', None)
     if prepare:
         import warnings
@@ -35,21 +36,16 @@ def metaclass(meta, **kwargs):
                       'the metaclass "%s" seems to needs it.' % meta,
                       stacklevel=2)
 
-    class base(object):
-        pass
-
     if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
         metabase = meta.__base__
     else:
         metabase = type
 
     class inner_meta(metabase):
-        def __new__(cls, name, bases, attrs):
+        def __new__(cls, name, bases, attrs, **kw):
             from copy import copy
             if name != '__inner__':
-                bases = tuple(b for b in bases if not issubclass(b, base))
-                if not bases:
-                    bases = (object,)
+                bases = tuple(b for b in bases if Mixin not in b.__bases__)
                 from ._types import prepare_class
                 kwds = dict(kwargs, metaclass=meta)
                 basemeta, _ns, kwds = prepare_class(name, bases, kwds=kwds)
@@ -60,11 +56,14 @@ def metaclass(meta, **kwargs):
                 else:
                     for attr, val in attrs.items():
                         ns[attr] = val
-                if METACLASS_ATTR not in attrs:
-                    attrs[METACLASS_ATTR] = meta
+                if METACLASS_ATTR not in ns:
+                    ns[METACLASS_ATTR] = meta
                 return basemeta(name, bases, ns)
             else:
                 return type.__new__(cls, name, bases, attrs)
+
+        def __init__(self, name, bases, attrs, **kw):
+            pass
 
     from ._types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)
@@ -72,4 +71,4 @@ def metaclass(meta, **kwargs):
     def exec_body(ns):
         return ns
 
-    return new_class('__inner__', (base, ), kwds=kwds, exec_body=exec_body)
+    return new_class('__inner__', (Mixin, ), kwds=kwds, exec_body=exec_body)

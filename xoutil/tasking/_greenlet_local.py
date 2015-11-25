@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.local
+# xoutil.tasking._greenlet_local
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -59,7 +59,8 @@ class _localbase(object):
         object.__setattr__(self, '_local__dicts', dicts)
 
         if args or kw:
-            if (PYPY and cls.__init__ == object.__init__) or (not PYPY and cls.__init__ is object.__init__):
+            clsi, obji = cls.__init__, object.__init__
+            if (PYPY and clsi == obji) or (not PYPY and clsi is obji):
                 raise TypeError("Initialization arguments are not supported")
 
         # We need to create the greenlet dict in anticipation of
@@ -83,7 +84,7 @@ def _init_locals(self):
 
 
 class local(_localbase):
-
+    '''Greenlet-local data.'''
     def __getattribute__(self, name):
         d = object.__getattribute__(self, '_local__dicts').get(getcurrent())
         if d is None:

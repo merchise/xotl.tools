@@ -256,6 +256,13 @@ class OpenDictMixin(object):
                 raise AttributeError(msg % (type(self).__name__, name))
 
     def __setattr__(self, name, value):
+        cls = type(self)
+        desc = getattr(cls, name, None)
+        if desc is not None:    # Prioritize descriptors
+            try:
+                desc.__set__(self, value)
+            except:
+                pass
         key = (~self).get(name)
         if key:
             self[key] = value
@@ -311,9 +318,11 @@ class OpenDictMixin(object):
         is not possible.
 
         '''
+        from xoutil.keywords import suffix_kwd
         from xoutil.string import normalize_slug
         from xoutil.validators import is_valid_identifier
-        return key if is_valid_identifier(key) else normalize_slug(key, '_')
+        res = key if is_valid_identifier(key) else normalize_slug(key, '_')
+        return suffix_kwd(res)
 
 
 class SmartDictMixin(object):
@@ -1718,7 +1727,7 @@ class MetaSet(type):
         return cls(*ranges) if isinstance(ranges, tuple) else cls(ranges)
 
 
-class PascalSet(object, metaclass(MetaSet)):
+class PascalSet(metaclass(MetaSet)):
     '''Collection of unique integer elements (implemented with intervals).
 
     PascalSet(*others) -> new set object

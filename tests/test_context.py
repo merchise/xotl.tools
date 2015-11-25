@@ -35,6 +35,7 @@ else:
     GREENLETS = True
 
 import sys
+sys.modules.pop('xoutil.tasking', None)
 sys.modules.pop('xoutil.context', None)
 del sys
 

@@ -76,8 +76,8 @@ def typeof(obj):
     if _py3:
         return type(obj)
     else:
-        from types import InstanceType as OldClass
-        return obj.__class__ if isinstance(obj, OldClass) else type(obj)
+        from types import InstanceType
+        return obj.__class__ if isinstance(obj, InstanceType) else type(obj)
 
 
 try:

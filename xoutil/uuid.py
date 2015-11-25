@@ -25,7 +25,7 @@ __all__ = strs('uuid', )
 del strs
 
 from xoutil.deprecation import deprecated
-from xoutil.values.ids import uuid as str_uuid
+from xoutil.cl.ids import uuid as str_uuid
 
 
 @deprecated(str_uuid)

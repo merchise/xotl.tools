@@ -25,8 +25,7 @@ assert _py3, 'This module should be loaded in Py3k only'
 
 
 def metaclass(meta, **kwargs):
-    class base:
-        pass
+    from ._meta import Mixin
 
     if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
         metabase = meta.__base__
@@ -36,17 +35,13 @@ def metaclass(meta, **kwargs):
     class inner_meta(metabase):
         @classmethod
         def __prepare__(cls, name, bases, **kwargs):
-            prepare = getattr(meta, '__prepare__', None)
-            if prepare:
-                return prepare(name, bases, **kwargs)
-            else:
-                return dict()
+            real = name != '__inner__'
+            prepare = getattr(meta, '__prepare__', None) if real else None
+            return prepare(name, bases, **kwargs) if prepare else dict()
 
         def __new__(cls, name, bases, attrs, **kw):
             if name != '__inner__':
-                bases = tuple(b for b in bases if not issubclass(b, base))
-                if not bases:
-                    bases = (object,)
+                bases = tuple(b for b in bases if Mixin not in b.__bases__)
                 return meta(name, bases, attrs)
             else:
                 return type.__new__(cls, name, bases, attrs)
@@ -56,4 +51,4 @@ def metaclass(meta, **kwargs):
 
     from ._types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)
-    return new_class('__inner__', (base, ), kwds=kwds)
+    return new_class('__inner__', (Mixin, ), kwds=kwds)

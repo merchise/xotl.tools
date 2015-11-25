@@ -24,9 +24,9 @@ type-related functions.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from xoutil.deprecation import deprecated
 from xoutil.modules import copy_members as _copy_python_module_members
 
 _pm = _copy_python_module_members()
@@ -40,11 +40,8 @@ del _pm, _copy_python_module_members
 from xoutil import Unset as _unset
 from collections import Mapping
 
-# FIXME: [med] Reintroduce UnsetType or deprecate it here.
-from xoutil.logical import Logical as UnsetType    # noqa
-
 from xoutil.names import strlist as strs
-__all__ = strs('mro_dict', 'UnsetType', 'MappingProxyType',
+__all__ = strs('mro_dict', 'MappingProxyType',
                'SlotWrapperType', 'is_iterable', 'is_collection',
                'is_string_like', 'is_scalar', 'is_staticmethod',
                'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
@@ -65,9 +62,6 @@ from .eight.types import (MappingProxyType, MemberDescriptorType,    # noqa
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 from xoutil.eight.exceptions import StandardError, BaseException    # noqa
-
-# TODO: deprecate next
-ExceptionBase = BaseException
 
 from re import compile as _regex_compile
 
@@ -333,6 +327,7 @@ def is_module(maybe):
     return isinstance(maybe, ModuleType)
 
 
+@deprecated(type(_unset), 'This is only used in `~objects.smart_copy`.')
 class Required(object):
     '''A type for required fields in scenarios where a default is not
     possible.
@@ -406,3 +401,6 @@ def no_instances(*args):
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.
     return all(not isinstance(subject, types) for subject in subjects)
+
+
+del deprecated

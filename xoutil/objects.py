@@ -233,7 +233,6 @@ class SafeDataItem(object):
                 try:
                     res = self.init()
                 except:
-                    print('>>>', self.init, '::', type(self.init))
                     raise
                 self.__set__(obj, res)
                 return res
@@ -581,17 +580,15 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
-    from xoutil.inspect import get_attr_value
-    res = set()
-    if isinstance(obj, type):
-        for cls in type.mro(obj):
-            res |= set(get_attr_value(cls, '__dict__', {}))
+    from xoutil.eight import typeof, class_types
+    from xoutil.inspect import get_attr_value, _static_getmro as getmro
+    getdir = lambda o: set(get_attr_value(o, '__dict__', {}))
+    if isinstance(obj, class_types):
+        res = set.union(getdir(cls) for cls in getmro(obj))
     else:
-        res |= set(get_attr_value(obj, '__dict__', {}))
-    cls = type(obj)
-    if cls is not type:
-        res |= set(dir(cls))
-    return res
+        res = getdir(obj)
+    cls = typeof(obj)
+    return res if cls in class_types else res | set(dir(cls))
 
 
 # TODO: Fix signature after removal of attr_filter and value_filter
@@ -899,22 +896,6 @@ class lazy(object):
             return res
 
 
-# TODO: Implement this as an ABC
-def mixin(base):
-    '''Create a valid mixin base.
-
-    If several mixins with the same base are used all-together in a class
-    inheritance, Python generates ``TypeError: multiple bases have instance
-    lay-out conflict``.  To avoid that, inherit from the class this function
-    returns instead of desired `base`.
-
-    '''
-    org = "\n\nOriginal doc:\n\n%s" % base.__doc__ if base.__doc__ else ''
-    doc = "Generated mixin base from %s.%s" % (repr(base), org)
-    name = str('%s_base_mixin' % base.__name__)
-    return type(name, (base,), {'__doc__': doc})
-
-
 def iter_branch_subclasses(cls, include_this=True):
     '''Internal function, see `get_branch_subclasses`:func:.'''
     children = type.__subclasses__(cls)
@@ -1002,6 +983,29 @@ def setdefaultattr(obj, name, value):
         setattr(obj, name, value)
         res = value
     return res
+
+
+def adapt_exception(value, **kwargs):
+    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,
+    None)``.
+
+    If the value is not an exception is expected to be a tuple/list which
+    contains an Exception type as its first item.
+
+    .. versionchanged:: 1.7.1 Moved from `xoutil.data`:mod: module.
+
+    '''
+    isi, ebc = isinstance, Exception    # TODO: Maybe must be `BaseException`
+    issc = lambda maybe, cls: isi(maybe, type) and issubclass(maybe, cls)
+    if isi(value, ebc) or issc(value, ebc):
+        return value
+    elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
+        from xoutil.eight import string_types as strs
+        map = lambda x: x.format(**kwargs) if isinstance(x, strs) else x
+        ecls = value[0]
+        return ecls(*(map(x) for x in value[1:]))
+    else:
+        return None
 
 
 def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
@@ -1103,7 +1107,7 @@ def smart_copy(*args, **kwargs):
     - An exception object
 
     - A sequence with is first value being a subclass of Exception. In which
-      case :class:`xoutil.data.adapt_exception` is used.
+      case :class:`adapt_exception` is used.
 
     In these cases a KeyError is raised if the key is not found in the sources.
 
@@ -1134,7 +1138,6 @@ def smart_copy(*args, **kwargs):
     '''
     from collections import MutableMapping
     from xoutil.types import is_collection, is_mapping, Required
-    from xoutil.data import adapt_exception
     from xoutil.validators.identifiers import is_valid_identifier
     defaults = kwargs.pop('defaults', False)
     if kwargs:

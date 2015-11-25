@@ -21,7 +21,7 @@ from xoutil.params import ParamConformer
 
 
 from xoutil.eight import string_types
-from xoutil.values import file_coerce, positive_int_coerce
+from xoutil.cl import file_coerce, positive_int_coerce
 
 sample_scheme = {
     'stream': (file_coerce, {0, 3}, {'output'}, sys.stdout),

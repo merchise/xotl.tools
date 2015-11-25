@@ -185,7 +185,7 @@ def module_name(item):
 
        >>> from xoutil import Unset
        >>> module_name(Unset)
-       'xoutil.logical'
+       'xoutil.symbols'
 
     '''
     from xoutil.inspect import get_attr_value
@@ -224,7 +224,7 @@ def simple_name(item, join=True):
 
        >>> from xoutil import Unset
        >>> simple_name(Unset)
-       'xoutil.logical.Unset'
+       'xoutil.symbols.Unset'
 
     This function is intended for named objects (those with the `__name__`
     attribute), if an object without standard name is used, the type name is
