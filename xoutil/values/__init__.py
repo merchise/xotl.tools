@@ -125,6 +125,7 @@ class coercer(metaclass(MetaCoercer)):
 
     '''
     __slots__ = ()
+    __coercer__ = True
 
     def __new__(cls, source):
         from types import FunctionType as function
@@ -499,6 +500,50 @@ class custom(object):
     def __call__(self, arg):
         return Invalid
 
+    @classmethod
+    @coercer
+    def inward(cls, c):
+        '''Traverse inner if `c` is an instance of this class.
+
+        if not, check if `c` is a valid coercer.
+
+        '''
+        return c.inner if isinstance(c, cls) else c
+
+
+class flatten(custom):
+    '''Flatten a coercer set.
+
+    There are several custom coercers or types that contain or represent other
+    inner coercers; i.g. tuples, lists, `compose`:class:, `some`:class:, etc.
+
+    An `inward` instance can break-up recursively any coercer collection
+    fulfilling the argument coercer to validate that there are other inner
+    coercers.
+
+    :param itemize: A coercer that will check if an item is a collection of
+           other items or must to be check as a single coercer.  This will
+           return a `tuple` or `list` if the argument can be iterated over, or
+           the same value is not.
+
+    :param checker: A coercer that check if an item is valid to append to the
+           resulting list.
+
+    '''
+    __slots__ = 'checker'
+
+    def __init__(self, itemize=None, checker=None):
+        super(flatten, self).__init__()
+        self.inner = check(coercer, itemize)
+        self.checker = check(coercer, checker or coercer)
+
+    def __call__(self, arg):
+        aux = self.inner(arg)
+        if isinstance(aux, (tuple, list)):
+            return [i for l in map(self, aux) for i in l]
+        else:
+            return [check(self.checker, aux)]
+
 
 class istype(custom):
     '''Pure type-checker.
@@ -525,7 +570,7 @@ class istype(custom):
         Invalid
 
     '''
-    __slots__ = ('inner', 'scope')
+    __slots__ = ()
 
     def __init__(self, types):
         super(istype, self).__init__()
@@ -553,6 +598,8 @@ class typecast(istype):
         Invalid
 
     '''
+    __slots__ = ()
+
     def __call__(self, arg):
         res = super(typecast, self).__call__(arg)
         i = 0
@@ -561,7 +608,7 @@ class typecast(istype):
                 tp = self.inner[i]
                 res = tp(arg)
                 self.scope = tp
-            except BaseException:
+            except Exception:
                 i += 1
         return res
 
@@ -578,6 +625,8 @@ class safe(custom):
     instance field `scope`.
 
     '''
+    __slots__ = ()
+
     def __init__(self, func):
         super(safe, self).__init__()
         self.inner = check(func, callable_coerce)
@@ -602,10 +651,10 @@ class compose(custom):
     modify (adapt) original values.
 
     '''
+    __slots__ = ()
 
     def __new__(cls, *coercers):
-        coercers = pargs(coercer)(coercers)
-        inner = tuple(check(coercer, c) for c in coercers
+        inner = tuple(c for c in flatten(cls.inward)(coercers)
                       if c is not identity_coerce)
         if len(inner) > 1:
             self = super(compose, cls).__new__(cls)
@@ -643,10 +692,10 @@ class some(custom):
     If no coercer is given return `void_coerce`:func:.
 
     '''
+    __slots__ = ()
 
     def __new__(cls, *coercers):
-        coercers = pargs(coercer)(coercers)
-        inner = tuple(check(coercer, c) for c in coercers
+        inner = tuple(c for c in flatten(cls.inward)(coercers)
                       if c is not void_coerce)
         if len(inner) > 1:
             self = super(some, cls).__new__(cls)
@@ -701,6 +750,7 @@ class combo(custom):
                sequence if possible.
 
     '''
+    __slots__ = ()
 
     def __init__(self, *coercers):
         super(combo, self).__init__()
@@ -800,6 +850,7 @@ class pargs(custom):
     a separate member coercer.
 
     '''
+    __slots__ = ()
 
     def __init__(self, arg_coerce):
         super(pargs, self).__init__()
@@ -881,6 +932,7 @@ class iterable(custom):
     ones but conserving its type, and (3) those that are returned in a list.
 
     '''
+    __slots__ = ()
 
     def __init__(self, member_coerce, outer_coerce=None):
         '''Constructor for `iterable`:class: coercers.
@@ -976,6 +1028,7 @@ class mapping(custom):
       True
 
     '''
+    __slots__ = ()
     _str_join = _repr_join = ':'
 
     def __new__(cls, key_coercer=None, value_coercer=None):

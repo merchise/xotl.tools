@@ -32,6 +32,44 @@ from . import coercer
 
 
 @coercer
+def not_false_coercer(arg):
+    '''Validate that `arg` is not a false value.
+
+    Python convention for values considered True or False is not used here,
+    our false values are only `None` or any false instance of
+    `xoutil.symbols.boolean`:class: (of course including `False` itself).
+
+    '''
+    from . import Invalid
+    from xoutil.symbols import boolean
+    false = arg is None or (not arg and isinstance(arg, boolean))
+    return arg if not false else Invalid
+
+
+def not_false(default):
+    '''Create a coercer that returns `default` if `arg` is considered false.
+
+    See `not_false_coercer`:func: for more information on values considered
+    false.
+
+    '''
+    @coercer
+    def inner_coercer(arg):
+        coercer = not_false_coercer
+        return arg if coercer(arg) is arg else coercer(default)
+    return inner_coercer
+
+
+def isnot(value):
+    '''Create a coercer that returns `arg` if `arg` is not `value`.'''
+    @coercer
+    def inner_coercer(arg):
+        from . import Invalid
+        return arg if arg is not value else Invalid
+    return inner_coercer
+
+
+@coercer
 def name_coerce(arg):
     '''If `arg` is a named object, return its name, else `Invalid`.
 
@@ -281,7 +319,7 @@ def ascii_set_coerce(arg):
     normalization.
 
     '''
-    return str().join(set(ascii_coerce(arg)))
+    return ''.join(set(ascii_coerce(arg)))
 
 
 @coercer
@@ -303,7 +341,7 @@ def lower_ascii_set_coerce(arg):
     normalization.
 
     '''
-    return str().join(set(lower_ascii_coerce(arg)))
+    return ''.join(set(lower_ascii_coerce(arg)))
 
 
 def chars_coerce(arg):
