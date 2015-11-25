@@ -183,6 +183,7 @@ class Predicate(object):
             return res
 
         self.failed_stack = []
+        # XXX: WTF, maybe must be ``all(valid(chk) for chk in self.checkers)
         aux = (chk for chk in self.checkers if not valid(chk))
         return next(aux, None) is None
 

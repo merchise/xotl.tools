@@ -177,6 +177,7 @@ def predicate(*checkers, **kwargs):
                 res = chk(obj)
             return res
 
+        # XXX: WTF, must be ``all(valid(chk) for chk in checkers)``
         return next((chk for chk in checkers if not valid(chk)), None) is None
 
     name = kwargs.get('name')
