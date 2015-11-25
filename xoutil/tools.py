@@ -36,7 +36,7 @@ def get_default(args, default=None):
           ...
 
     and in client code you can call this function with a impossible "foobar"
-    value, like: ``res = get_foobar('egg', Undefined)`` (see `xoutil.values`).
+    value, like: ``res = get_foobar('egg', Undefined)`` (see `xoutil.cl`).
 
     This function receive the tuple as received by the function, and which
     value to return if None is given::

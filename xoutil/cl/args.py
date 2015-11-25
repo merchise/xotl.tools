@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.values.args
+# xoutil.cl.args
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -60,7 +60,7 @@ def param_get(args, kwargs, idx, name, default=Unset, coercers=Unset):
         msg = 'required value for argument "{}" is not given'
         raise TypeError(msg.format(name))
     if coercers:
-        from xoutil.values import compose
+        from xoutil.cl import compose
         coercer = compose(coercers)
         return coercer(res)
     else:
