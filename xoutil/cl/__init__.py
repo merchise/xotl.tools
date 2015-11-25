@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.values
+# xoutil.cl
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
