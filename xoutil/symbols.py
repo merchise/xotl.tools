@@ -35,15 +35,15 @@ class MetaSymbol(type):
     '''Meta-class for symbol types.'''
     def __new__(cls, name, bases, ns):
         from xoutil.tasking.safe import SafeData
-        if name in {SYMBOL, BOOLEAN} and ns['__module__'] == __name__:
+        if ns['__module__'] == __name__ or name not in {SYMBOL, BOOLEAN}:
             self = super(MetaSymbol, cls).__new__(cls, name, bases, ns)
             if name == SYMBOL:
                 cache = {str(v): v for v in (False, True)}
                 self._instances = SafeData(cache, timeout=TIMEOUT)
             return self
         else:
-            msg = 'only classes declared in "{}" module are allowed'
-            raise TypeError(msg.format(__name__))
+            raise TypeError('invalid class "{}" declared outside of "{}" '
+                            'module'.format(name, __name__))
 
     def __instancecheck__(self, instance):
         '''Override for isinstance(instance, self).'''
@@ -128,7 +128,11 @@ class symbol(metaclass(MetaSymbol), int):
                 if res is None:    # Create the new instance
                     if value is None:
                         value = hash(name)
-                    if valid[cls](value):
+                    if cls in valid:
+                        aux = cls
+                    else:
+                        aux = next(b for b in cls.mro() if b in valid)
+                    if valid[aux](value):
                         res = super(symbol, cls).__new__(cls, value)
                         cache[name] = res
                     else:
