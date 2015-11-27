@@ -240,6 +240,8 @@ def lwraps(*args, **kwargs):
         for key, value in iteritems(kwargs):
             source[key] = value
         if wrapped is not Unset:
+            # TODO: Check the type of `wrapped` to find these attributes in
+            # disparate callable objects similarly with functions.
             for name in (mod_key, '__name__', '__doc__'):
                 if name not in source:
                     source[str(name)] = getattr(wrapped, name)

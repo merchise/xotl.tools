@@ -11,7 +11,7 @@
 #
 # Created on 2015-11-18
 
-'''Fixed special logical values like Unset, Ignored, Required, etc...
+'''Special logical values like Unset, Ignored, Required, etc...
 
 All values only could be `True` or `False` but are intended in places where
 `None` is expected to be a valid value or for special Boolean formats.

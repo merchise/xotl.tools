@@ -159,7 +159,7 @@ def slugify(value, *args, **kwargs):
     '''
     import re
     from xoutil.eight import typeof, string_types
-    from . import check, compose, istype
+    from . import compose, istype
     from .simple import (not_false, ascii_coerce, lower_ascii_coerce)
     from .args import partial_param_get
     # local functions

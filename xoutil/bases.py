@@ -17,12 +17,6 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-try:
-    _strs = basestring
-except:
-    _strs = str
-
-
 _DEFAULT_TABLE = ("0123456789"
                   "abcdefghijklmnopqrstuvwxyz"
                   "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -38,12 +32,12 @@ def _check_base(base):
     Return a tuple (base, table) if valid or raise an exception.
 
     '''
-    from xoutil.eight import integer_types
+    from xoutil.eight import integer_types, string_types
     if isinstance(base, integer_types):
         table = _DEFAULT_TABLE
         if not (1 < base <= _MAX_BASE):
             raise ValueError('`base` must be between 2 and %s' % _MAX_BASE)
-    elif isinstance(base, _strs):
+    elif isinstance(base, string_types):
         table = base
         base = len(table)
     else:

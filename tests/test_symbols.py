@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #----------------------------------------------------------------------
-# xoutil.tests.test_logical
+# xoutil.tests.test_symbols
 #----------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -18,7 +18,7 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from xoutil.symbols import boolean, symbol
+from xoutil.symbols import boolean
 
 
 class BooleanTests(unittest.TestCase):

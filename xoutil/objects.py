@@ -879,8 +879,7 @@ get_and_del_attr = deprecated(popattr)(popattr)
 
 
 class lazy(object):
-    '''Marks a value as a lazily evaluated value. See
-    :func:`setdefaultattr`.
+    '''Marks a value as a lazily evaluated value. See :func:`setdefaultattr`.
 
     '''
     def __init__(self, value, *args, **kwargs):
@@ -1217,7 +1216,7 @@ def extract_attrs(obj, *names, **kwargs):
     return getter(obj)
 
 
-# TODO: deprecate thid, use instead `xoutil.eight.abc.ABCMeta.adopt`
+@deprecated('xoutil.eight.abc.ABCMeta.register')
 def register_with(abc):
     '''Register a virtual `subclass` of an ABC.
 
