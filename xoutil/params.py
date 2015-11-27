@@ -72,7 +72,6 @@ For example::
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import)
 
 
@@ -193,7 +192,7 @@ class ParamConformer(object):
     def _formalize_schemes(self, schemes, kwargs):
         '''Formalize scheme in a more precise internal dictionary.'''
         from itertools import chain
-        from xoutil.cl import identifier_coerce, check as ok
+        from xoutil.cl import identifier_coerce, vouch as ok
         self.scheme = {}
         for scheme in chain((kwargs,), reversed(schemes)):
             for par in scheme:

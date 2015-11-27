@@ -26,7 +26,7 @@ class TestCLisp(unittest.TestCase):
     def test_basic_coercers(self):
         from xoutil.eight import string_types
         from xoutil.cl import (identity_coerce, void_coerce, coercer,
-                               coercer_name, check, t, int_coerce,
+                               coercer_name, vouch, t, int_coerce,
                                float_coerce, create_int_range_coerce,
                                istype, typecast, iterable, mapping,
                                create_unique_member_coerce, nil)
@@ -55,13 +55,13 @@ class TestCLisp(unittest.TestCase):
         self.assertEqual(l, [1, 2, 3, 1, 'x10'])
         self.assertIs(age_coerce(80), 80)
         self.assertFalse(t(age_coerce(120)))
-        self.assertIs(check(age_coerce, 80), 80)
+        self.assertIs(vouch(age_coerce, 80), 80)
         with self.assertRaises(TypeError):
-            check(age_coerce, 120)
+            vouch(age_coerce, 120)
         self.assertIs(isnumber(5), 5)
         self.assertIs(isnumber(5.1), 5.1)
         with self.assertRaises(TypeError):
-            check(isnumber, '5.1')
+            vouch(isnumber, '5.1')
         self.assertIs(numbercast(5), 5)
         self.assertIs(numbercast(5.1), 5.1)
         self.assertEqual(numbercast('5.1'), 5.1)
@@ -70,8 +70,7 @@ class TestCLisp(unittest.TestCase):
     def test_compound_coercers(self):
         from xoutil.eight import string_types
         from xoutil.cl import (coercer, compose, some, combo, iterable,
-                               check, t, typecast, int_coerce,
-                               float_coerce, identifier_coerce, nil)
+                               typecast, int_coerce, float_coerce, nil)
         isstr = coercer(string_types)
         strcast = typecast(string_types)
         toint = compose(isstr, int_coerce)

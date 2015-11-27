@@ -34,16 +34,16 @@ class whether(custom):
     __slots__ = ()
 
     def __new__(cls, cond, right, *wrongs):
-        from . import check, coercer, compose, identity_coerce, void_coerce
-        cond = check(coercer, cond)
+        from . import vouch, coercer, compose, identity_coerce, void_coerce
+        cond = vouch(coercer, cond)
         if cond is identity_coerce:
-            return check(coercer, right)
+            return vouch(coercer, right)
         elif cond is void_coerce:
             return compose(wrongs, default=void_coerce)
         else:
             self = super(whether, cls).__new__(cls)
             self.inner = (cond,
-                          check(coercer, right),
+                          vouch(coercer, right),
                           compose(wrongs, default=void_coerce))
             return self
 
@@ -76,8 +76,8 @@ class every(custom):
     __slots__ = ()
 
     def __new__(cls, predicate):
-        from . import check, coercer, identity_coerce, void_coerce
-        predicate = check(coercer, predicate)
+        from . import vouch, coercer, identity_coerce, void_coerce
+        predicate = vouch(coercer, predicate)
         if predicate is identity_coerce:
             return identity_coerce
         elif predicate is void_coerce:

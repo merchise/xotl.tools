@@ -50,32 +50,88 @@ from xoutil.functools import lwraps
 from xoutil.symbols import boolean
 from xoutil import Unset
 
-nil = boolean('nil')
 
-_coercer_decorator = lwraps(__coercer__=True)
+class logical(boolean):
+    '''Represent Common Lisp two special values `t` and `nil`.
 
+    Include redefinition of `__call__`:meth: to check values with special
+    semantic:
 
-def t(arg):
-    '''True if `arg` is not nil.'''
-    return arg is not nil
+    - When called as ``t(arg)``, check if `arg` is not `nil` returning a
+      logical true: the same argument if `arg` is nil or a true boolean value,
+      else return `t`.  That means that `False` or `0` are valid true values
+      for Common Lisp but not for Python.
 
-
-def check(coerce, arg):
-    '''Coerce `arg`; raises a TypeError if `nil` is returned.
-
-    See `compose`:class: and `some`:class: on how to combine "AND" and "OR"
-    coercers; and `whether`:class: for an ``if ... then ... [else ...]``
-    coercer.
-
-    See `create_int_range_coerce`:func: for an example.
+    - When called as ``nil(arg)``, check if `arg` is `nil` returning `t` or
+      `nil` if not.
 
     '''
-    res = coerce(arg)
-    if t(res):
-        return res
+    __slots__ = ()
+    _valids = {'nil': False, 't': True}
+
+    def __new__(cls, name):
+        from xoutil import Undefined as wrong
+        value = cls._valids.get(name, wrong)
+        if value is not wrong:
+            return super(logical, cls).__new__(cls, name, value)
+        else:
+            msg = 'creating invalid logical instance "{}"'
+            raise TypeError(msg.format(name))
+
+    def __call__(self, arg):
+        if self:    # self is t
+            return arg if arg or arg is nil else self
+        else:    # self is nil
+            return t if arg is self else self
+
+
+nil, t = logical('nil'), logical('t')
+
+_coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
+
+
+def vouch(fn, *args, **kwargs):
+    '''Execute function `fn` and ensure that don't fail.
+
+    A function fails if it returns `nil`, in that case `vouch` raises
+    `TypeError`.
+
+    This function can be used directly or as a decorator::
+
+      >>> vouch(int_coerce, 1)
+      1
+
+      >>> @vouch
+      ... def my_fn(arg):
+      ...     return int_coerce(arg)
+
+    To vouch a function declared in Python without arguments use `nil` as
+    single positional argument::
+
+     res = vouch(noargs, nil)
+
+    '''
+    from xoutil.tools import both_args_repr as _bar
+    if args or kwargs:
+        if len(args) == 1 and args[0] is nil:
+            args = ()
+        res = fn(*args, **kwargs)
+        if t(res):
+            return res
+        else:
+            msg = '"{}" fails with when called with: ({})'
+            raise TypeError(msg.format(coercer_name(fn), _bar(args, kwargs)))
     else:
-        msg = 'Value "{}" is not coerced by "{}".'
-        raise TypeError(msg.format(arg, coercer_name(arg)))
+        # TODO: Transform `lwraps` and use here
+        res = lambda *a, **kw: vouch(fn, *a, **kw)
+        try:
+            res.__name__ = coercer_name(fn)
+            doc = fn.__doc__
+            if doc:
+                res.__doc__ = doc
+        except BaseException:
+            pass
+        return res
 
 
 class MetaCoercer(ABCMeta):
@@ -147,7 +203,16 @@ class coercer(metaclass(MetaCoercer)):
 
 
 def coercer_name(arg, join=None):
-    '''Get the name of a coercer.
+    '''
+    - (object-name OBJ &optional EXTRA)
+
+    - (object-class-name OBJ)
+
+    - (subr-name SUBR)
+
+    - (symbol-name SYMBOL)
+
+    Get the name of a coercer.
 
     :param arg: Coercer to get the name.  Also processes collections (tuple,
            list or set) of coercers.  Any other value is considered invalid
@@ -319,7 +384,7 @@ def positive_int_coerce(arg):
 
 def create_int_range_coerce(min, max):
     '''Create a coercer to check integers between a range.'''
-    min, max = check(int_coerce, min), check(int_coerce, max)
+    min, max = vouch(int_coerce, min), vouch(int_coerce, max)
     if min < max:
         @coercer
         def inner(arg):
@@ -414,7 +479,7 @@ def create_unique_member_coerce(coerce, container):
       nil
 
     '''
-    coerce = check(coercer, coerce)
+    coerce = vouch(coercer, coerce)
 
     @coercer
     def inner(arg):
@@ -537,15 +602,15 @@ class flatten(custom):
 
     def __init__(self, itemize=Unset, checker=Unset):
         super(flatten, self).__init__()
-        self.inner = check(coercer, itemize or True)
-        self.checker = check(coercer, checker or coercer)
+        self.inner = vouch(coercer, itemize or True)
+        self.checker = vouch(coercer, checker or coercer)
 
     def __call__(self, arg):
         aux = self.inner(arg)
         if isinstance(aux, (tuple, list)):
             return [i for l in map(self, aux) for i in l]
         else:
-            return [check(self.checker, aux)]
+            return [vouch(self.checker, aux)]
 
 
 class istype(custom):
@@ -578,7 +643,7 @@ class istype(custom):
     def __new__(cls, types):
         if types:
             self = super(istype, cls).__new__(cls)
-            self.inner = check(types_tuple_coerce, types)
+            self.inner = vouch(types_tuple_coerce, types)
             return self
         else:
             return void_coerce
@@ -636,7 +701,7 @@ class safe(custom):
 
     def __init__(self, func):
         super(safe, self).__init__()
-        self.inner = check(func, callable_coerce)
+        self.inner = vouch(func, callable_coerce)
 
     def __call__(self, arg):
         try:
@@ -765,7 +830,7 @@ class combo(custom):
     def __init__(self, *coercers):
         super(combo, self).__init__()
         coercers = pargs(coercer)(coercers)
-        self.inner = tuple(check(coercer, c) for c in coercers)
+        self.inner = tuple(vouch(coercer, c) for c in coercers)
 
     def __call__(self, arg):
         from xoutil.collections import Iterable
@@ -863,7 +928,7 @@ class pargs(custom):
 
     def __init__(self, arg_coerce):
         super(pargs, self).__init__()
-        self.inner = check(coercer, arg_coerce)
+        self.inner = vouch(coercer, arg_coerce)
 
     def __call__(self, arg):
         from xoutil.collections import Iterable
@@ -953,7 +1018,7 @@ class iterable(custom):
 
         '''
         super(iterable, self).__init__()
-        member_coerce = check(coercer, member_coerce)
+        member_coerce = vouch(coercer, member_coerce)
         outer_coerce = compose(coercer(outer_coerce), sized_coerce)
         self.inner = (member_coerce, outer_coerce)
 
@@ -1053,8 +1118,8 @@ class mapping(custom):
             return coercer(Mapping)
         else:
             self = super(mapping, cls).__new__(cls)
-            key_coercer = check(coercer, key_coercer or True)
-            value_coercer = check(coercer, value_coercer or True)
+            key_coercer = vouch(coercer, key_coercer or True)
+            value_coercer = vouch(coercer, value_coercer or True)
             self.inner = (key_coercer, value_coercer)
             return self
 
