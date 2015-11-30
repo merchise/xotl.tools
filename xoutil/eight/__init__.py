@@ -131,6 +131,7 @@ else:
 
 
 if _py3:
+    import builtins
     exec_ = getattr(builtins, 'exec')  # noqa
 else:
     def exec_(_code_, _globs_=None, _locs_=None):
