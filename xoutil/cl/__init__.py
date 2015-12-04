@@ -418,7 +418,7 @@ def identifier_coerce(arg):
 
     '''
     # TODO: Consider use ``is_python2_identifier(arg) or nil`` in module
-    # `xoutil.eight.values`.
+    # `xoutil.eight.string`.
     from xoutil.eight import string_types
     ok = isinstance(arg, string_types) and _IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil

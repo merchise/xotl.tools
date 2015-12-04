@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight.values
+# xoutil.eight.string
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
@@ -72,7 +72,7 @@ def isfullidentifier(s):
 
 def check_identifier(s):
     '''Check if `s` is a valid identifier.'''
-    from xoutil.eight.values import isidentifier
+    from xoutil.eight.string import isidentifier
     res = isidentifier(s)
     if res:
         return res

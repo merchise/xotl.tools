@@ -189,7 +189,7 @@ def mixin(*args, **kwargs):
 def _isname(s):
     '''Determine if `s` is a `mixin` name or not.'''
     from . import string_types
-    from .values import isidentifier, iskeyword
+    from .string import isidentifier, iskeyword
     if isinstance(s, string_types):
         res = isidentifier(s)
         if not (res and iskeyword(res)):

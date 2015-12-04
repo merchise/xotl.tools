@@ -458,7 +458,7 @@ class ParamSchemeRow(object):
     def __init__(self, *ids, **options):
         from collections import Counter
         from xoutil.eight import iteritems, string_types as strs
-        from xoutil.eight.values import isidentifier
+        from xoutil.eight.string import isidentifier
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
