@@ -2,9 +2,9 @@
 
 - Changes involving :mod:`xoutil.collections`:
 
-  - Moves SmartDict and SortedSmartDict from :mod:`xoutil.data` to
-    :mod:`xoutil.collections`. They are still accessible from :mod:`!xoutil.data`
-    but deprecated there.
+  - Moves SmartDict and SortedSmartDict from `xoutil.data` to
+  :mod:`xoutil.collections` module.  They are still accessible -in version
+  previous to 1.7.2- from `!xoutil.data` but deprecated there.
 
   - Also there is now a :class:`xoutil.collections.SmartDictMixin` that
     implements the `update` behind all smart dicts in xoutil.
@@ -27,7 +27,7 @@
   - Deprecates :func:`xoutil.iterators.obtain`.
 
   - Deprecates :func:`xoutil.iterators.smart_dict` and
-    :func:`xoutil.data.smart_copy` in favor of :func:`xoutil.objects.smart_copy`.
+    `xoutil.data.smart_copy` in favor of :func:`xoutil.objects.smart_copy`.
 
 - New features:
 
