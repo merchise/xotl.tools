@@ -572,7 +572,7 @@ class ParamScheme(object):
         return res
 
     @property
-    def defauls(self):
+    def defaults(self):
         '''Return a mapping with all valid default values.'''
         aux = ((row.key, row.default) for row in self)
         return {k: d for k, d in aux if d is not _false}

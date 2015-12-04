@@ -37,7 +37,7 @@ def test_basic_params():
 
     def foobar(**kwargs):
         from xoutil.eight import iteritems
-        res = sample_scheme.defauls
+        res = sample_scheme.defaults
         for key, value in iteritems(kwargs):
             res[key] = value
         return res
