@@ -501,10 +501,24 @@ class ParamSchemeRow(object):
 
     @property
     def default(self):
+        '''Returned value if parameter value is absent.
+
+        If not defined, special value `_false` is returned.
+
+        '''
         return self.options.get('default', _false)
 
     @property
     def key(self):
+        '''The primary key for this scheme-row definition.
+
+        This concept is a little tricky (the first string identifier if some
+        is given, if not then the first integer).  This definition is useful,
+        for example, to return remainder not consumed values after a scheme
+        process is completed (see `ParamManager.remainder`:meth: for more
+        information).
+
+        '''
         from xoutil.eight import string_types as strs
         res = next((k for k in self.ids if isinstance(k, strs)), None)
         if res is None:
@@ -549,16 +563,19 @@ class ParamScheme(object):
         return '{}({} rows)'.format(_tname(self), len(self))
 
     def __len__(self):
+        '''The defined scheme-rows number.'''
         return len(self.rows)
 
     def __getitem__(self, idx):
+        '''Obtain the scheme-row by a given index.'''
         return self.rows[idx]
 
     def __iter__(self):
+        '''Iterate over all defined scheme-rows.'''
         return iter(self.rows)
 
     def get(self, args, kwds, strict=False):
-        '''Get a mappings for all values.'''
+        '''Get a mapping with all resulting values.'''
         pm = ParamManager(args, kwds)
         res = {row.key: row(pm) for row in self}
         aux = pm.remainder()
