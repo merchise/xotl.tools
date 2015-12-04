@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.params
+# xoutil.values
 # ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # All rights reserved.
-#
-# Author: Medardo Rodriguez
-# Contributors: see CONTRIBUTORS and HISTORY file
 #
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
@@ -14,384 +12,595 @@
 #
 # Created 2015-07-13
 
+'''Basic function argument manager.
 
-'''Conformer for function parameter passing.
+This module depends only on `xoutil.eight`:mod: basic module, it doesn't
+depend on any other allowing to used it from any place without dependencies
+problems.
 
-It's usual to declare functions with generic prototypes::
+A `Coercer`:class: is a concept that combine two elements: validity check and
+value moulding.  Most times only the first part is needed because the original
+value is in the correct shape if valid.
+
+It's usual to declare functions or methods with generic prototypes::
 
   def func(*args, **kwargs):
       ...
 
 Actual parameters must be identified in a smart way.  This module provide a
-tool to solve argument identification from a definition in a dictionary::
+tool to solve argument identification from scheme definition::
 
-  {
-    'main-name': (checker, pos-definition, aliases, default-value),
-    ...
-  }
+  scheme, row = ParamScheme, ParamSchemeRow
+  sample_scheme = scheme(
+      row('stream', 0, -1, 'output', default=sys.stdout, coerce=file_coerce),
+      row('indent', 0, 1, default=1, coerce=positive_int),
+      row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
+      row('newline', default='\n', coerce=string_types))
 
-
-- checker: A function that must validate a value; if valid return the same or
-  a coerced value; if invalid must return the special value `nil`.  If not
-  given, identity function is used (check as valid all values, avoid this).
-
-- pos-definition: Define if the parameter could appear as a positional
-  argument or not.  Must be a set of positive integers defining priority
-  orders, parameters with minor values must appear first.  More than value
-  means several alternatives.
-
-  If not given, means that the parameter could not appear in positional
-  arguments.
-
-- aliases: A set of strings (valid Python identifiers), alternatives that
-  could be used as keyword names.
-
-- default: The default value to use if the argument is not given. The special
-  value `Undefined` is used to specify that the parameter is required.
-
-The value with each definition could miss several elements, each concept is
-identified by its type, but ambiguities must be avoided; if default value is
-confusing with some concept, must be the last one.
-
-For example::
-
-  scheme = {
-      'stream': (check_file_like, {0, 3}, {'output'}, sys.stdout),
-      'indent': (check_positive_int, {1}, 1),
-      'width': (check_positive_int, {2}, {'max_width'}, 79),
-      'newline': (check_str, '\n'),
-  }
+A scheme-row can be used in an independent way using a `ParamManager`:class:
+instance.
 
 .. versionadded:: 1.7.0
 
+.. versionchanged:: 1.7.2 Migrated to a completely new shape forgetting
+       initially created `ParamConformer` class.
+
 '''
-
-
-# TODO: Make a decorator to annotate function from a scheme.  See
-# `xoutil.annotate`:mod: for more information.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        absolute_import)
+                        absolute_import as _py3_abs_import)
 
 
-from xoutil.cl import coercer
+class BooleanWrapper(object):
+    '''A wrapper for valid results.'''
+    __slots__ = 'inner'
+
+    def __new__(cls, *args):
+        default = cls is Right
+        if len(args) == 0:
+            arg = default
+        elif len(args) == 1:
+            arg = args[0]
+        else:
+            msg = '{}: receive too many arguments "{}"'
+            raise TypeError(msg.format(cls.__name__, len(args)))
+        if arg is default:
+            if cls._singleton is None:
+                self = super(BooleanWrapper, cls).__new__(cls)
+                self.inner = arg
+                cls._singleton = self
+            return cls._singleton
+        elif cls is BooleanWrapper:
+            return (Right if arg else Wrong)(arg)
+        elif isinstance(arg, cls):
+            return arg
+        elif not isinstance(arg, BooleanWrapper):
+            self = super(BooleanWrapper, cls).__new__(cls)
+            self.inner = arg
+            return self
+        else:
+            msg = 're-wrapping inverted value: {}({})'
+            raise ValueError(msg.format(cls.__name__, arg))
+
+    def __init__(self, *args):
+        pass
+
+    def __nonzero__(self):
+        return isinstance(self, Right)
+    __bool__ = __nonzero__
+
+    def __str__(self):
+        return '{}({!r})'.format(type(self).__name__, self.inner)
+    __repr__ = __str__
+
+    def __eq__(self, other):
+        return (isinstance(other, type(self)) and self.inner == other.inner or
+                self.inner is other)    # TODO: check if `==` instead `is`
+
+    def __ne__(self, other):
+        return not (self == other)
 
 
-def _prepare_schema_coercer_global_cache():
-    '''Prepare global cache for scheme coercer.'''
-    from xoutil import Undefined
-    from xoutil.eight import zip
-    from xoutil.cl import (coercer as checker_coerce, iterable,
-                           identity_coerce, identifier_coerce,
-                           positive_int_coerce)
-    pos_coerce = iterable(positive_int_coerce, outer_coerce=set)
-    alias_coerce = iterable(identifier_coerce, outer_coerce=set)
-    default_coerce = identity_coerce
-    checker_default = identity_coerce
-    pos_default = set()
-    alias_default = set()
-    default_default = Undefined
-    names = ('checker', 'pos', 'aliases', 'default')
-    coercers = dict(zip(names, (checker_coerce, pos_coerce, alias_coerce,
-                                default_coerce)))
-    defaults = dict(zip(names, (checker_default, pos_default, alias_default,
-                                default_default)))
-    return (names, coercers, defaults)
+class Right(BooleanWrapper):
+    '''A wrapper for valid results.'''
+    __slots__ = ()
+    _singleton = None
 
 
-_SCHEME_COERCER_CACHE = _prepare_schema_coercer_global_cache()
+class Wrong(BooleanWrapper):
+    '''A wrapper for invalid results.'''
+    __slots__ = ()
+    _singleton = None
 
 
-@coercer
-def scheme_coerce(arg):
-    '''Coerce a scheme definition into a precise formalized dictionary.'''
-    from xoutil.cl import t, nil
-    names, coercers, defaults = _SCHEME_COERCER_CACHE
-    if arg is nil:
-        res = arg
-    elif isinstance(arg, dict):
-        res = arg
-        i = 0
-        keys = tuple(res)
-        while t(res) and i < len(keys):
-            concept = keys[i]
-            if concept in coercers:
-                coercer = coercers[concept]
-                value = coercer(res[concept])
-                if t(value):
-                    res[concept] = value
-                    i += 1
+_false, _true = Wrong(), Right()
+
+
+def _tname(arg):
+    'Return the type name.'
+    from xoutil.eight import typeof
+    return typeof(arg).__name__
+
+
+def _nameof(arg):
+    'Obtain a nice name in a safe way.'
+    try:
+        res = arg.__name__
+        _lambda_name = (lambda x: x).__name__
+        return 'λ' if res == _lambda_name else res
+    except AttributeError:
+        if isinstance(arg, Coercer):
+            return str(arg)
+        else:
+            return '{}(…)'.format(_tname(arg))
+
+
+class Coercer(object):
+    '''Wrapper for value-coercing definitions.
+
+    A coercer combine check for validity and value mould (casting).  Could be
+    defined from a type (or tuple of types), a callable or a list containing
+    two parts with both concepts.
+
+    To signal that value as invalid, a coercer must return the special value
+    `_wrong`.  Types work as in `isinstance`:func: standard function; callable
+    functions mould a parameter value into a definitive form.
+
+    To use normal functions as a callable coercer, use `SafeCheck`:class: or
+    `LogicalCheck`:class` to wrap them.
+
+    When using a list to combine explicitly the two concepts, result of the
+    check part is considered Boolean (True or False), and the second part
+    alwasy return a moulded value.
+
+    When use a coercer, several definitions will be tried until one succeed.
+
+    '''
+    __slots__ = ('inner',)
+
+    def __new__(cls, *args):
+        from xoutil.eight import class_types, callable
+        if cls is Coercer:    # Parse the right sub-type
+            _type_def = class_types + (tuple,)
+            if len(args) == 0:
+                msg = 'a {} takes at least 1 argument (0 given)'
+                raise TypeError(cls.__name__, msg)
+            elif len(args) == 1:
+                arg = args[0]
+                if isinstance(arg, cls):
+                    return arg
+                elif isinstance(arg, _type_def):
+                    return TypeCheck(arg)
+                elif isinstance(arg, list):
+                    return CheckAndCast(*arg)
+                elif callable(arg):
+                    return LogicalCheck(arg)
                 else:
-                    res = nil
+                    msg = '''can't parse a {} definition of type: "{}"'''
+                    raise TypeError(msg.format(cls.__name__, _tname(arg)))
             else:
-                res = nil
-    else:
-        if not isinstance(arg, tuple):
-            arg = (arg,)
-        res = {}
-        i = 0
-        while t(res) and i < len(arg):
-            value = arg[i]
-            j, found = 0, False
-            while j < len(names) and not found:
-                concept = names[j]
-                if concept not in res:
-                    coercer = coercers[concept]
-                    v = coercer(value)
-                    if t(v):
-                        found = True
-                        res[concept] = v
-                j += 1
-            if found:
+                return MultiCheck(*args)
+        else:
+            return super(Coercer, cls).__new__(cls)
+
+    def __init__(self, *args):
+        pass
+
+    def __repr__(self):
+        return str(self)
+
+
+class TypeCheck(Coercer):
+    '''Check if value is instance of given types.'''
+    __slots__ = ()
+
+    def __new__(cls, *args):
+        from xoutil.eight import class_types as _types
+        if args:
+            if len(args) == 1 and isinstance(args[0], tuple):
+                args = args[0]
+            if all(isinstance(arg, _types) for arg in args):
+                self = super(TypeCheck, cls).__new__(cls)
+                self.inner = args
+                return self
+            else:
+                wrong = (arg for arg in args if not isinstance(arg, _types))
+                wnames = ', or '.join(_tname(w) for w in wrong)
+                msg = '`TypeChecker` allows only valid types, not: ({})'
+                raise TypeError(msg.format(wnames))
+        else:
+            msg = '{}() takes at least 1 argument (0 given)'
+            raise TypeError(_tname(self), msg)
+
+    def __call__(self, value):
+        ok = isinstance(value, self.inner)
+        return (value if value else Right(value)) if ok else Wrong(value)
+
+    def __str__(self):
+        aux = ', '.join(t.__name__ for t in self.inner)
+        return 'instance-of({})'.format(aux)
+
+
+class NoneOrTypeCheck(TypeCheck):
+    '''Check if value is None or instance of given types.'''
+    __slots__ = ()
+
+    def __call__(self, value):
+        if value is None:
+            _types = self.inner
+            i, res = 0, None
+            while res is None and i < len(_types):
+                try:
+                    res = _types[i]()
+                except BaseException:
+                    pass
                 i += 1
+            return res if res is not None else Wrong(None)
+        else:
+            return super(NoneOrTypeCheck, self).__call__(value)
+
+    def __str__(self):
+        aux = super(NoneOrTypeCheck, self).__str__()
+        return 'none-or-{}'.format(aux)
+
+
+class CheckAndCast(Coercer):
+    '''Check if value is instance of given types.'''
+    __slots__ = ()
+
+    def __new__(cls, check, cast):
+        from xoutil.eight import callable
+        check = Coercer(check)
+        if callable(cast):
+            self = super(CheckAndCast, cls).__new__(cls)
+            self.inner = (check, SafeCheck(cast))
+            return self
+        else:
+            msg = '{}() expects a callable for cast, "{}" given'
+            raise TypeError(msg.format(_tname(self), _tname(cast)))
+
+    def __call__(self, value):
+        check, cast = self.inner
+        aux = check(value)
+        if aux:
+            return cast(value)
+        elif isinstance(aux, Wrong):
+            return aux
+        else:
+            return Wrong(value)
+
+    def __str__(self):
+        check, cast = self.inner
+        fmt = '({}(…) if {}(…) else _wrong)'
+        return fmt.format(_nameof(cast), check)
+
+
+class FunctionalCheck(Coercer):
+    '''Check if value is valid with a callable function.'''
+    __slots__ = ()
+
+    def __new__(cls, check):
+        from xoutil.eight import callable
+        if isinstance(check, Coercer):
+            return check
+        elif callable(check):
+            self = super(FunctionalCheck, cls).__new__(cls)
+            self.inner = check
+            return self
+        else:
+            msg = 'a functional check expects a callable but "{}" is given'
+            raise TypeError(msg.format(_tname(check)))
+
+    def __str__(self):
+        suffix = 'check'
+        kind = _tname(self).lower()
+        if kind.endswith(suffix):
+            kind = kind[:-len(suffix)]
+        inner = _nameof(self.inner)
+        return '{}({})()'.format(kind, inner)
+
+
+class LogicalCheck(FunctionalCheck):
+    '''Check if value is valid with a callable function.'''
+    __slots__ = ()
+
+    def __call__(self, value):
+        try:
+            res = self.inner(value)
+            if res:
+                if isinstance(res, Right):
+                    return res
+                elif res is True:
+                    return Right(value)
+                else:
+                    return res
+            elif isinstance(res, Wrong):
+                return res
+            elif res is False or res is None:    # XXX: None?
+                return Wrong(value)
             else:
-                res = nil
-    if t(res):
-        # Complete and check default value
-        for concept in defaults:
-            if concept not in res:
-                res[concept] = defaults[concept]
-        concept = 'default'
-        default = res[concept]
-        if default is not defaults[concept]:
-            coercer = res['checker']
-            value = coercer(default)
-            if t(value):
-                res[concept] = value
-            else:
-                res = nil
-    return res
+                return Wrong(res)
+        except BaseException as error:
+            return Wrong(error)
 
 
-del coercer
+class SafeCheck(FunctionalCheck):
+    '''Return a wrong value only if function produce an exception.'''
+    __slots__ = ()
+
+    def __call__(self, value):
+        try:
+            return self.inner(value)
+        except BaseException as error:
+            return Wrong(error)
 
 
-class ParamConformer(object):
-    '''Standardize actual parameters using a scheme.'''
-    __slots__ = ('scheme', 'positions', 'strict')
+class MultiCheck(Coercer):
+    '''Return a wrong value only when all inner coercers fails.'''
+    __slots__ = ()
 
-    def __init__(self, *schemes, **kwargs):
-        '''Create the conformer.
+    def __new__(cls, *args):
+        inner = tuple(Coercer(arg) for arg in args)
+        self = super(MultiCheck, cls).__new__(cls)
+        self.inner = inner
+        return self
 
-        :param schemes: Each item must be a dictionary with a scheme portion.
-               See the module documentation for more information.
+    def __call__(self, value):
+        coercers = self.inner
+        i, res = 0, _false
+        while isinstance(res, Wrong) and i < len(coercers):
+            res = coercers[i](value)
+            i += 1
+        return res.inner if isinstance(res, Right) and res.inner else res
 
-        :param kwargs: Except by the below special keyword argument, represent
-               additional scheme definition, each keyword argument will
-               represent the schema of a parameter with the same name.
+    def __str__(self):
+        aux = ' OR '.join(str(c) for c in self.inner)
+        return 'combo({})'.format(aux)
 
-        :param __strict__: Special keyword argument; if True, only scheme
-               definitions could be used as actual arguments.
+
+class ParamManager(object):
+    '''Function parameter handler.
+
+    For example::
+
+      def wraps(*args, **kwargs):
+          pm = ParamManager(args, kwargs)
+          name = pm(0, 1, 'name', coerce=str)
+          wrapped = pm(0, 1, 'wrapped', coerce=valid(callable))
+          ...
+
+    See `ParamSchemeRow`:class: and `ParamScheme`:class: classes to
+    pre-define and validate schemes for extracting parameter values in a
+    consistent way.
+
+    '''
+
+    def __init__(self, args, kwds):
+        '''Created with actual parameters of a client function.'''
+        self.args = args
+        self.kwds = kwds
+        self.consumed = set()    # consumed identifiers
+
+    @classmethod
+    def create(cls, *args, **kwds):
+        '''Create an instance with parameter variable number style.'''
+        return cls(args, kwds)
+
+    def __call__(self, *ids, **options):
+        '''Get a parameter value.
+
+        :param ids: parameter identifiers.
+
+        :param options: keyword argument options.
+
+        Options could be:
+
+        - 'default': value used if the parameter is absent;
+
+        - 'coerce': check if a value is valid or not and convert to its
+          definitive value; see `coercer`:class: for more information.
 
         '''
-        self.strict = kwargs.pop('__strict__', False)
-        self._formalize_schemes(schemes, kwargs)
-        self._normalize_positions()
-
-    def _formalize_schemes(self, schemes, kwargs):
-        '''Formalize scheme in a more precise internal dictionary.'''
-        from itertools import chain
-        from xoutil.cl import identifier_coerce, vouch as ok
-        self.scheme = {}
-        for scheme in chain((kwargs,), reversed(schemes)):
-            for par in scheme:
-                par = ok(identifier_coerce, par)
-                if par not in self.scheme:
-                    self.scheme[par] = ok(scheme_coerce, scheme[par])
-        if self.scheme:
-            self._check_duplicate_aliases()
-        else:
-            raise TypeError('Invalid empty scheme definition!')
-
-    def _check_duplicate_aliases(self):
-        '''Check if there are duplicate aliases and parameter names.'''
-        from xoutil.eight import iteritems
-        used = set(self.scheme)
-        duplicated = set()
-        for par, ps in iteritems(self.scheme):
-            for alias in ps['aliases']:
-                if alias in used:
-                    duplicated.add(alias)
-                else:
-                    used.add(alias)
-        if duplicated:
-            msg = 'Duplicate identifiers detected: "{}"'
-            raise TypeError(msg.format(', '.join(duplicated)))
-
-    def _normalize_positions(self):
-        '''Update the `positions` dictionaries.'''
-        from xoutil.eight import range, iteritems
-        aux = {}
-        for par, ps in iteritems(self.scheme):
-            for pos in ps['pos']:
-                l = aux.setdefault(pos, [])
-                l.append(par)
-        res, pivot = {}, 0
-        for pos in range(min(aux), max(aux) + 1):
-            if pos in aux:
-                res[pivot] = sorted(aux[pos])
-                pivot += 1
-        self.positions = res
-
-    def __call__(self, args, kwargs):
-        '''Consolidate in `kwargs` all actual parameters.
-
-        :param args: The positional arguments received by the calling function.
-
-        :param kwargs: The keyword arguments received by the calling function.
-
-        '''
-        from xoutil.eight import iteritems
-        assert isinstance(args, tuple) and isinstance(kwargs, dict)
-
-        def clean(name):
-            '''If argument with name is not yet assigned.'''
-            return name not in kwargs
-
-        def settle(name, value):
-            '''Settle a value if not yet assigned, raises an error if not.'''
-            if clean(name):
-                kwargs[str(name)] = value
+        args, kwds = self.args, self.kwds
+        i, res = 0, _false
+        while isinstance(res, Wrong) and i < len(ids):
+            key = ids[i]
+            if key in self.consumed:
+                pass
+            elif isinstance(key, int):
+                try:
+                    res = args[key]
+                except IndexError:
+                    pass
+            elif key in kwds:
+                res = kwds[key]
+            if not isinstance(res, Wrong) and 'coerce' in options:
+                aux = Coercer(options['coerce'])(res)
+                res = aux.inner if isinstance(aux, Right) else aux
+            if not isinstance(res, Wrong):
+                if isinstance(key, int) and key < 0:
+                    key = len(args) + key
+                self.consumed.add(key)
             else:
-                msg = 'Got multiple values for "{}" argument: "{}" and "{}"!'
-                raise TypeError(msg.format(name, value, kwargs[name]))
-
-        def solve_aliases():
-            '''Solve keyword arguments that have aliases.'''
-            from xoutil import Unset
-            for par, ps in iteritems(self.scheme):
-                for alias in ps['aliases']:
-                    value = kwargs.pop(alias, Unset)
-                    if value is not Unset:
-                        settle(par, value)
-
-        def check_kwargs():
-            '''Check all formal keyword arguments.'''
-            from xoutil.cl import t
-            for key, arg in iteritems(kwargs):
-                if key in self.scheme:
-                    checker = self.scheme[key]['checker']
-                    value = checker(arg)
-                    if t(value):
-                        kwargs[str(key)] = value
-                    else:
-                        msg = 'Invalid argument value "{}": "{}"!'
-                        raise ValueError(msg.format(key, arg))
-                elif self.strict:
-                    msg = 'Invalid keyword argument "{}": "{}"!'
-                    raise ValueError(msg.format(key, arg))
-
-        def solve_results():
-            '''Assign default values for missing arguments.'''
-            from xoutil.cl import t
-            for par, ps in iteritems(self.scheme):
-                if clean(par):
-                    default = ps['default']
-                    if t(default):
-                        kwargs[str(par)] = default
-                    else:
-                        msg = 'Missing required argument "{}"!'
-                        raise TypeError(msg.format(par))
-
-        def get_valid():
-            '''Get the valid parameter name in current position pivot.
-
-            Return a tuple (name, value) if valid.
-
-            '''
-            from xoutil.cl import t
-            names = positions[pivot]
-            i, count = 0, len(names)
-            res = ()
-            while not res and i < count:
-                name = names[i]
-                if clean(name):
-                    checker = self.scheme[name]['checker']
-                    value = checker(arg)
-                    if t(value):
-                        res = (name, value)
                 i += 1
-            return res
-
-        def get_duplicate():
-            '''Get a possible all not settled valid parameter names.'''
-            from xoutil.cl import t
-            res = None
-            pos = last_pivot
-            while not res and pos < len(positions):
-                names = positions[pos]
-                i = 0
-                while not res and i < len(names):
-                    name = names[i]
-                    if name not in settled:
-                        checker = self.scheme[name]['checker']
-                        value = checker(arg)
-                        if t(value):
-                            res = name
-                    i += 1
-                pos += 1
-            return res
-
-        solve_aliases()
-        check_kwargs()
-        # Solve positional arguments
-        settled = set()
-        positions = self.positions
-        positionals = {p for p, ps in iteritems(self.scheme) if ps['pos']}
-        max_args = len({name for name in positionals if clean(name)})
-        i, count = 0, len(args)
-        pivot = last_pivot = 0
-        if count <= max_args:
-            while i < count and pivot < len(positions):
-                arg = args[i]
-                res = get_valid()
-                if res:
-                    name, value = res
-                    settle(name, value)
-                    settled.add(name)
-                    last_pivot = pivot
-                    i += 1
-                else:
-                    pivot += 1
-            if i == count:
-                solve_results()
+        if isinstance(res, Wrong):
+            if 'default' in options:
+                return options['default']
+            elif isinstance(res.inner, BaseException):
+                raise res.inner
             else:
-                from xoutil.eight import typeof
-                dup = get_duplicate()
-                extra = 'duplicate "{}" '.format(dup) if dup else ''
-                msg = ('Invalid {}argument "{}" at position "{}" of type '
-                       '"{}".')
-                tname = typeof(arg).__name__
-                raise TypeError(msg.format(extra, arg, i, tname))
+                raise TypeError('value for "{}" is not found'.format(ids))
         else:
-            msg = 'Expecting at most {} positional arguments ({} given)!'
-            raise TypeError(msg.format(max_args, count))
+            return res.inner if isinstance(res, Right) else res
+
+    def remainder(self):
+        '''Return not consumed values in a mapping.'''
+        from xoutil.eight import range
+        passed = set(range(len(self.args))) | set(self.kwds)
+        ids = passed - self.consumed
+        args, kwds = self.args, self.kwds
+        return {k: args[k] if isinstance(k, int) else kwds[k] for k in ids}
+
+
+class ParamSchemeRow(object):
+    '''Scheme row for a  `ParamManager`:class: instance call.
+
+    This class validates identifiers and options at this level; these
+    checks are not done in a call to get a parameter value.
+
+    Normally this class is used as part of a full `ParamScheme`:class:
+    composition.
+
+    '''
+    __slots__ = ('ids', 'options')
+
+    def __init__(self, *ids, **options):
+        from collections import Counter
+        from xoutil.eight import iteritems, string_types as strs
+        from xoutil.eight.values import isidentifier
+        aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
+        if aux:
+            parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
+            msg = '{}() repeated identifiers: {}'
+            raise TypeError(msg.format(_tname(self), ', '.join(parts)))
+        else:
+            ok = lambda k: (isinstance(k, int) or
+                            isinstance(k, strs) and isidentifier(k))
+            bad = [k for k in ids if not ok(k)]
+            if bad:
+                msg = ('{}() identifiers with wrong type (only int and str '
+                       'allowed): {}')
+                raise TypeError(msg.format(_tname(self), bad))
+        coerce = options.pop('coerce', _false)
+        default = options.pop('default', _false)
+        if options:
+            msg = '{}(): received invalid keyword parameters: {}'
+            raise TypeError(msg.format(_tname(self), set(options)))
+        aux = {'coerce': Coercer(coerce)} if coerce is not _false else {}
+        if default is not _false:
+            aux['default'] = default
+        self.ids = ids
+        self.options = aux
+
+    def __str__(self):
+        from xoutil.eight import iteritems
+        parts = [repr(k) for k in self.ids]
+        for key, value in iteritems(self.options):
+            parts.append('{}={!r}'.format(key, value))
+        aux = ', '.join(parts)
+        return 'ParamSchemeRow({})'.format(aux)
+    __repr__ = __str__
+
+    def __call__(self, manager):
+        if isinstance(manager, ParamManager):
+            return manager(*self.ids, **self.options)
+        else:
+            msg = '{}() expects a `ParamManager` instance, "{}" given'
+            raise TypeError(msg.format(_tname(self), _tname(manager)))
+
+    @property
+    def default(self):
+        return self.options.get('default', _false)
+
+    @property
+    def key(self):
+        from xoutil.eight import string_types as strs
+        res = next((k for k in self.ids if isinstance(k, strs)), None)
+        if res is None:
+            res = self.ids[0]
+        return res
+
+
+class ParamScheme(object):
+    '''Full scheme for a  `ParamManager`:class: instance call.
+
+    This class receives a set of `ParamSchemeRow`:class: instances and
+    validate them as a whole.
+
+    '''
+    __slots__ = ('rows',)
+
+    def __init__(self, *rows):
+        from xoutil.eight import string_types as strs
+        if rows:
+            used = set()
+            for idx, row in enumerate(rows):
+                if isinstance(row, ParamSchemeRow):
+                    this = {k for k in row.ids if isinstance(k, strs)}
+                    aux = used & this
+                    if not aux:
+                        used |= this
+
+                    else:
+                        msg = ('{}() repeated keyword identifiers "{}" in '
+                               'row {}')
+                        raise ValueError(msg.format(_tname(self), aux, idx))
+            self.rows = rows
+        else:
+            msg = '{}() takes at least 1 argument (0 given)'
+            raise TypeError(msg.format(_tname(self)))
+
+    def __str__(self):
+        aux = ',\n\i'.join(str(row) for row in self)
+        return '{}({})'.format(_tname(self), aux)
+
+    def __repr__(self):
+        return '{}({} rows)'.format(_tname(self), len(self))
+
+    def __len__(self):
+        return len(self.rows)
+
+    def __getitem__(self, idx):
+        return self.rows[idx]
+
+    def __iter__(self):
+        return iter(self.rows)
+
+    def get(self, args, kwds, strict=False):
+        '''Get a mappings for all values.'''
+        pm = ParamManager(args, kwds)
+        res = {row.key: row(pm) for row in self}
+        aux = pm.remainder()
+        if strict:
+            if aux:
+                msg = ('after a full `{}` process, there are still remainder '
+                       'parameters: {}')
+                raise TypeError(msg.format(_tname(self), set(aux)))
+        else:
+            res.update(aux)
+        return res
+
+    @property
+    def defauls(self):
+        '''Return a mapping with all valid default values.'''
+        aux = ((row.key, row.default) for row in self)
+        return {k: d for k, d in aux if d is not _false}
 
 
 if __name__ == '__main__':
-    print('Testing module "xoutil.params"')
+    print('Testing module `xoutil.params`')
 
     import sys
     from xoutil.eight import string_types
-    from xoutil.cl import file_coerce, positive_int_coerce
+    from xoutil.cl import (file_coerce as cfile,
+                           positive_int_coerce as cposint)
 
-    sample_scheme = {
-        'stream': (file_coerce, {0, 3}, {'output'}, sys.stdout),
-        'indent': (positive_int_coerce, {1}, 1),
-        'width': (positive_int_coerce, {2}, {'max_width'}, 79),
-        'newline': (string_types, '\n'), }
+    scheme, row = ParamScheme, ParamSchemeRow
+
+    sample_scheme = scheme(
+        row('stream', 0, -1, 'output', default=sys.stdout, coerce=cfile),
+        row('indent', 0, 1, default=1, coerce=cposint),
+        row('width', 0, 1, 2, 'max_width', default=79, coerce=cposint),
+        row('newline', default='\n', coerce=string_types))
 
     def test(*args, **kwargs):
         print('-'*80)
         print(">>>", args, "--", kwargs)
         try:
-            conformer(args, kwargs)
-            print("...", kwargs)
+            print('...', sample_scheme.get(args, kwargs))
         except BaseException as error:
             print("???", '{}:'.format(type(error).__name__), error)
-
-    conformer = ParamConformer(sample_scheme)
 
     test(4, 80)
     test(2, '80')
@@ -403,7 +612,3 @@ if __name__ == '__main__':
     test(sys.stderr, 4, output=sys.stderr)
     test(sys.stderr, 4, 80, output=sys.stderr)
     test(4, -79)
-
-    conformer = ParamConformer(sample_scheme, __strict__=True)
-
-    test(80, indent=4, extra="I'm not OK!")
