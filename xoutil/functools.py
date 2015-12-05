@@ -18,7 +18,6 @@ You may use this module as drop-in replacement of `functools`.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 
@@ -118,8 +117,7 @@ def power(*args):
     try:
         funcs, times = args[:-1], args[-1]
     except IndexError:
-        msg = "Function `power` requires at least two arguments"
-        raise TypeError(msg)
+        funcs = False
     if not funcs:
         raise TypeError('Function `power` requires at least two arguments')
     if any(not callable(func) for func in funcs):
@@ -210,9 +208,9 @@ def lwraps(*args, **kwargs):
                 raise TypeError(msg.format(name, typeof(value).__name__))
 
     decorables = (FunctionType, MethodType, staticmethod, classmethod)
-    name_key = str('__name__')
-    doc_key = str('__doc__')
-    mod_key = str('__module__')
+    name_key = '__name__'
+    doc_key = '__doc__'
+    mod_key = '__module__'
     safes = {name_key, mod_key}
     source = {}
     target = Unset
@@ -237,12 +235,11 @@ def lwraps(*args, **kwargs):
         settle_str(name_key, kwargs.pop(name_key, Unset))
         settle_str(doc_key, kwargs.pop('doc', Unset))
         settle_str(doc_key, kwargs.pop(doc_key, Unset))
-        for key, value in iteritems(kwargs):
-            source[key] = value
+        source.update(kwargs)
         if wrapped is not Unset:
             # TODO: Check the type of `wrapped` to find these attributes in
             # disparate callable objects similarly with functions.
-            for name in (mod_key, '__name__', '__doc__'):
+            for name in (mod_key, name_key, doc_key):
                 if name not in source:
                     source[str(name)] = getattr(wrapped, name)
             d = source.setdefault('__dict__', {})
