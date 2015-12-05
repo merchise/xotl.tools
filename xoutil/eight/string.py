@@ -70,6 +70,27 @@ def isfullidentifier(s):
     return str(s) if all(isidentifier(p) for p in s.split('.')) else False
 
 
+def safe_isidentifier(s):
+    '''If `s` is a valid identifier according to the language definition.
+
+    Check before if `s` is instance of string types.
+
+    '''
+    from . import string_types
+    return isinstance(s, string_types) and isidentifier(s)
+
+
+def safe_isfullidentifier(s):
+    '''Check if `arg` is a valid dotted Python identifier.
+
+    Check before if `s` is instance of string types.  See
+    `safe_isidentifier`:func: for what "validity" means.
+
+    '''
+    from .. import string_types
+    return isinstance(s, string_types) and isfullidentifier(s)
+
+
 def check_identifier(s):
     '''Check if `s` is a valid identifier.'''
     from xoutil.eight.string import isidentifier

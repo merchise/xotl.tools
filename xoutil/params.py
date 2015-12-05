@@ -495,7 +495,7 @@ class ParamSchemeRow(object):
     def __init__(self, *ids, **options):
         from collections import Counter
         from xoutil.eight import iteritems, string_types as strs
-        from xoutil.eight.string import isidentifier
+        from xoutil.eight.string import safe_isidentifier as iskey
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
@@ -503,14 +503,14 @@ class ParamSchemeRow(object):
             raise TypeError(msg.format(_tname(self), ', '.join(parts)))
         else:
             ok = lambda k: (isinstance(k, int) or
-                            isinstance(k, strs) and isidentifier(k))
+                            isinstance(k, strs) and iskey(k))
             bad = [k for k in ids if not ok(k)]
             if bad:
                 msg = ('{}() identifiers with wrong type (only int and str '
                        'allowed): {}')
                 raise TypeError(msg.format(_tname(self), bad))
         key = options.pop('key', _false)
-        if not (key is _false or isidentifier(key)):
+        if not (key is _false or iskey(key)):
             msg = ('"key" option must be an identifier, "{}" of type "{}" '
                    'given')
             raise TypeError(msg.format(key), _tname(key))
@@ -565,7 +565,7 @@ class ParamSchemeRow(object):
         # TODO: calculate the key value in the constructor
         from xoutil.eight import string_types as strs
         res = self._key
-        if not res:
+        if res is _false:
             res = next((k for k in self.ids if isinstance(k, strs)), None)
             if res is None:
                 res = self.ids[0]
