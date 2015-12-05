@@ -482,8 +482,15 @@ class ParamSchemeRow(object):
     Normally this class is used as part of a full `ParamScheme`:class:
     composition.
 
+    Additionally to the options can be passed to
+    `ParamManager.__call__`:meth:', this class can be instanced with:
+
+    - 'key': an identifier to be used when the parameter is only positional or
+      when none of the possible keyword aliases must be used as the
+      primary-key.
+
     '''
-    __slots__ = ('ids', 'options')
+    __slots__ = ('ids', 'options', '_key')
 
     def __init__(self, *ids, **options):
         from collections import Counter
@@ -502,6 +509,11 @@ class ParamSchemeRow(object):
                 msg = ('{}() identifiers with wrong type (only int and str '
                        'allowed): {}')
                 raise TypeError(msg.format(_tname(self), bad))
+        key = options.pop('key', _false)
+        if not (key is _false or isidentifier(key)):
+            msg = ('"key" option must be an identifier, "{}" of type "{}" '
+                   'given')
+            raise TypeError(msg.format(key), _tname(key))
         coerce = options.pop('coerce', _false)
         default = options.pop('default', _false)
         if options:
@@ -512,6 +524,7 @@ class ParamSchemeRow(object):
             aux['default'] = default
         self.ids = ids
         self.options = aux
+        self._key = key
 
     def __str__(self):
         from xoutil.eight import iteritems
@@ -549,10 +562,14 @@ class ParamSchemeRow(object):
         information).
 
         '''
+        # TODO: calculate the key value in the constructor
         from xoutil.eight import string_types as strs
-        res = next((k for k in self.ids if isinstance(k, strs)), None)
-        if res is None:
-            res = self.ids[0]
+        res = self._key
+        if not res:
+            res = next((k for k in self.ids if isinstance(k, strs)), None)
+            if res is None:
+                res = self.ids[0]
+            self._key = res
         return res
 
 
