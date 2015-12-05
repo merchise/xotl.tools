@@ -580,7 +580,7 @@ class ParamScheme(object):
     validate them as a whole.
 
     '''
-    __slots__ = ('rows',)
+    __slots__ = ('rows', 'cache')
 
     def __init__(self, *rows):
         from xoutil.eight import string_types as strs
@@ -592,12 +592,12 @@ class ParamScheme(object):
                     aux = used & this
                     if not aux:
                         used |= this
-
                     else:
                         msg = ('{}() repeated keyword identifiers "{}" in '
                                'row {}')
                         raise ValueError(msg.format(_tname(self), aux, idx))
             self.rows = rows
+            self.cache = None
         else:
             msg = '{}() takes at least 1 argument (0 given)'
             raise TypeError(msg.format(_tname(self)))
@@ -615,7 +615,12 @@ class ParamScheme(object):
 
     def __getitem__(self, idx):
         '''Obtain the scheme-row by a given index.'''
-        return self.rows[idx]
+        from xoutil.eight import string_types
+        if isinstance(idx, string_types):
+            cache = self._getcache()
+            return cache[idx]
+        else:
+            return self.rows[idx]
 
     def __iter__(self):
         '''Iterate over all defined scheme-rows.'''
@@ -642,19 +647,26 @@ class ParamScheme(object):
             res.update(aux)
         return res
 
-    def get(self, *args, **kwds):
-        '''A shortcut to calling the instance.
+    def keys(self):
+        '''Partial compatibility with mappings.'''
+        from xoutil.eight import iterkeys
+        return iterkeys(self._getcache())
 
-        But passing variable number of parameters.
-
-        '''
-        return self(args, kwds)
+    def items(self):
+        '''Partial compatibility with mappings.'''
+        from xoutil.eight import iteritems
+        return iteritems(self._getcache())
 
     @property
     def defaults(self):
         '''Return a mapping with all valid default values.'''
         aux = ((row.key, row.default) for row in self)
         return {k: d for k, d in aux if d is not _false}
+
+    def _getcache(self):
+        if not self.cache:
+            self.cache = {row.key: row for row in self}
+        return self.cache
 
 
 if __name__ == '__main__':
