@@ -35,4 +35,4 @@ methods.
    instance as its single argument.
 
 .. autoclass:: ParamScheme
-   :members: get, defaults, __len__, __getitem__, __iter__
+   :members: get, defaults, __call__, __len__, __getitem__, __iter__

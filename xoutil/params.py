@@ -14,9 +14,8 @@
 
 '''Basic function argument manager.
 
-This module depends only on `xoutil.eight`:mod: basic module, it doesn't
-depend on any other allowing to used it from any place without dependencies
-problems.
+This module must avoid dependencies on modules that aren't basic enough that
+could be the use of this one itself.
 
 A `Coercer`:class: is a concept that combine two elements: validity check and
 value moulding.  Most times only the first part is needed because the original
@@ -245,8 +244,35 @@ class NoneOrTypeCheck(TypeCheck):
         return 'none-or-{}'.format(aux)
 
 
+class TypeCast(TypeCheck):
+    '''Cast a value to a correct type.'''
+    __slots__ = ()
+
+    def __call__(self, value):
+        res = super(TypeCast, self).__call__(value)
+        if not res:
+            _types = self.inner
+            i = 0
+            while not res and i < len(_types):
+                try:
+                    res = _types[i](value)
+                    if not res:
+                        res = Right(res)
+                except BaseException:
+                    pass
+                i += 1
+        return res
+
+    def __str__(self):
+        aux = super(NoneOrTypeCheck, self).__str__()
+        return 'none-or-{}'.format(aux)
+
+
 class CheckAndCast(Coercer):
-    '''Check if value is instance of given types.'''
+    '''Check if value, if valid cast it.
+
+    Result value must be valid also.
+    '''
     __slots__ = ()
 
     def __new__(cls, check, cast):
@@ -264,9 +290,13 @@ class CheckAndCast(Coercer):
         check, cast = self.inner
         aux = check(value)
         if aux:
-            return cast(value)
-        elif isinstance(aux, Wrong):
-            return aux
+            res = cast(value)
+            if check(res):
+                return res
+        else:
+            res = aux
+        if isinstance(res, Wrong):
+            return res
         else:
             return Wrong(value)
 
@@ -574,10 +604,17 @@ class ParamScheme(object):
         '''Iterate over all defined scheme-rows.'''
         return iter(self.rows)
 
-    def get(self, args, kwds, strict=False):
-        '''Get a mapping with all resulting values.'''
+    def __call__(self, args, kwds, strict=False):
+        '''Get a mapping with all resulting values.
+
+        If special value '_false' is used as 'default' option in a scheme-row,
+        corresponding value isn't returned in the mapping if the parameter
+        value is missing.
+
+        '''
         pm = ParamManager(args, kwds)
-        res = {row.key: row(pm) for row in self}
+        aux = ((row.key, row(pm)) for row in self)
+        res = {key: value for key, value in aux if value is not _false}
         aux = pm.remainder()
         if strict:
             if aux:
@@ -587,6 +624,14 @@ class ParamScheme(object):
         else:
             res.update(aux)
         return res
+
+    def get(self, *args, **kwds):
+        '''A shortcut to calling the instance.
+
+        But passing variable number of parameters.
+
+        '''
+        return self(args, kwds)
 
     @property
     def defaults(self):

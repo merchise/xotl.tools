@@ -33,7 +33,7 @@ del file_coerce, positive_int, string_types
 def test_basic_params():
 
     def get_values(*args, **kwargs):
-        return sample_scheme.get(args, kwargs)
+        return sample_scheme(args, kwargs)
 
     def foobar(**kwargs):
         from xoutil.eight import iteritems
@@ -67,7 +67,7 @@ def test_basic_params():
 def test_param_errors():
 
     def get_values(*args, **kwargs):
-        return sample_scheme.get(args, kwargs, strict=True)
+        return sample_scheme(args, kwargs, strict=True)
 
     def error_repr(error):
         return '{}()'.format(type(error).__name__, error)
@@ -89,7 +89,7 @@ def test_param_errors():
     except BaseException as error:
         assert False, msg.format(TypeError.__name__, error_repr(error))
     try:
-        get_values(80, indent=4, extra="I'm not OK!", __strict__=True)
+        get_values(80, indent=4, extra="I'm not OK!")
         assert False, 'Should raise TypeError'
     except TypeError:
         pass
