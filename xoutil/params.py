@@ -412,11 +412,6 @@ class ParamManager(object):
         self.kwds = kwds
         self.consumed = set()    # consumed identifiers
 
-    @classmethod
-    def create(cls, *args, **kwds):
-        '''Create an instance with parameter variable number style.'''
-        return cls(args, kwds)
-
     def __call__(self, *ids, **options):
         '''Get a parameter value.
 
@@ -449,9 +444,11 @@ class ParamManager(object):
                 aux = Coercer(options['coerce'])(res)
                 res = aux.inner if isinstance(aux, Right) else aux
             if not isinstance(res, Wrong):
-                if isinstance(key, int) and key < 0:
-                    key = len(args) + key
                 self.consumed.add(key)
+                if isinstance(key, int) and key < 0:
+                    # consume both, negative and adjusted value
+                    key = len(args) + key
+                    self.consumed.add(key)
             else:
                 i += 1
         if isinstance(res, Wrong):

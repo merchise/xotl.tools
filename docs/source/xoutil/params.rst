@@ -11,7 +11,7 @@ term "argument" for referencing those pertaining to `ParamManager`:class:
 methods.
 
 .. autoclass:: ParamManager
-   :members: __init__, create, __call__, remainder
+   :members: __init__, __call__, remainder
 
    When use this class as a callable, each identifier could be an integer or a
    string, respectively representing indexes in the positional and names in
