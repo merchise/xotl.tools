@@ -522,13 +522,15 @@ class ParamSchemeRow(object):
                    'given')
             raise TypeError(msg.format(key), _tname(key))
         coerce = options.pop('coerce', _false)
-        default = options.pop('default', _false)
+        if 'default' in options:
+            aux = {'default': options.pop('default')}
+        else:
+            aux = {}
+        if coerce is not _false:
+            aux['coerce'] = coerce
         if options:
             msg = '{}(): received invalid keyword parameters: {}'
             raise TypeError(msg.format(_tname(self), set(options)))
-        aux = {'coerce': Coercer(coerce)} if coerce is not _false else {}
-        if default is not _false:
-            aux['default'] = default
         self.ids = ids
         self.options = aux
         self._key = key
