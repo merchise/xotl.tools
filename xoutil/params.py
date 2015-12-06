@@ -112,6 +112,15 @@ class Wrong(BooleanWrapper):
     __slots__ = ()
     _singleton = None
 
+    def __new__(cls, *args):
+        self = super(Wrong, cls).__new__(cls, *args)
+        if isinstance(self.inner, BaseException):
+            from xoutil.eight.exceptions import with_traceback
+            from sys import exc_info
+            info = exc_info()
+            if info[1] is self.inner:
+                self.inner = with_traceback(self.inner, info[2])
+        return self
 
 _false, _true = Wrong(), Right()
 
@@ -455,7 +464,8 @@ class ParamManager(object):
             if 'default' in options:
                 return options['default']
             elif isinstance(res.inner, BaseException):
-                raise res.inner
+                from xoutil.eight.exceptions import throw
+                throw(res.inner)
             else:
                 raise TypeError('value for "{}" is not found'.format(ids))
         else:
