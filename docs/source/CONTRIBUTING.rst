@@ -44,7 +44,7 @@ We use both normal tests ("à la pytest") and doctest. The purpose of doctests
 is testing the documentation instead of testing the code, which is the purpose
 of the former.
 
-Most of our normal tests are currently simple functions with the "test_" prefix
+Most of our normal tests are currently simple functions with the "test" prefix
 and are located in the ``tests/`` directory.
 
 Many functions that lacks are, though, tested by our use in other
@@ -102,7 +102,7 @@ We divide xoutil modules into 4 tiers:
    besides the standard library.  These modules implement some features that
    are exported through other xoutil modules.  These module are never
    documented, but their re-exported features are documented elsewhere.  For
-   instance, :class:`xoutil.type.UnsetType` is actually implemented in
+   instance, `xoutil.type.UnsetType` is actually implemented in
    ``xoutil._values``.
 
    Also the exported module :mod:`xoutil.compat` is this tier.
