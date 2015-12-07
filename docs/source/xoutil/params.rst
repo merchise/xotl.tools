@@ -2,8 +2,8 @@
 =============================================================
 
 .. automodule:: xoutil.params
-   :members: Right, Wrong, Coercer, TypeCheck, NoneOrTypeCheck, CheckAndCast,
-             LogicalCheck, SafeCheck, MultiCheck
+   :members: Coercer, TypeCheck, NoneOrTypeCheck, CheckAndCast, LogicalCheck,
+             SafeCheck, MultiCheck
 
 Because the nature of this tool, the term "parameter" will be used in this
 documentation to reference those of the represented client function, and the
@@ -28,11 +28,11 @@ methods.
    when type or types, `isinstance` standard function is used to check.
 
 
+.. autoclass:: ParamScheme
+   :members: get, defaults, __call__, __len__, __getitem__, __iter__
+
 .. autoclass:: ParamSchemeRow
-   :members: key, default
+   :members: key, default, __call__
 
    This class generates callable instances receiving one `ParamManager`:class:
    instance as its single argument.
-
-.. autoclass:: ParamScheme
-   :members: get, defaults, __call__, __len__, __getitem__, __iter__
