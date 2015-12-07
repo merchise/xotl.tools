@@ -51,80 +51,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-class BooleanWrapper(object):
-    '''A wrapper for valid results.'''
-    __slots__ = 'inner'
-
-    def __new__(cls, *args):
-        default = cls is Right
-        if len(args) == 0:
-            arg = default
-        elif len(args) == 1:
-            arg = args[0]
-        else:
-            msg = '{}: receive too many arguments "{}"'
-            raise TypeError(msg.format(cls.__name__, len(args)))
-        if arg is default:
-            if cls._singleton is None:
-                self = super(BooleanWrapper, cls).__new__(cls)
-                self.inner = arg
-                cls._singleton = self
-            return cls._singleton
-        elif cls is BooleanWrapper:
-            return (Right if arg else Wrong)(arg)
-        elif isinstance(arg, cls):
-            return arg
-        elif not isinstance(arg, BooleanWrapper):
-            self = super(BooleanWrapper, cls).__new__(cls)
-            self.inner = arg
-            return self
-        else:
-            msg = 're-wrapping inverted value: {}({})'
-            raise ValueError(msg.format(cls.__name__, arg))
-
-    def __init__(self, *args):
-        pass
-
-    def __nonzero__(self):
-        return isinstance(self, Right)
-    __bool__ = __nonzero__
-
-    def __str__(self):
-        return '{}({!r})'.format(type(self).__name__, self.inner)
-    __repr__ = __str__
-
-    def __eq__(self, other):
-        return (isinstance(other, type(self)) and self.inner == other.inner or
-                self.inner is other)    # TODO: check if `==` instead `is`
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-class Right(BooleanWrapper):
-    '''A wrapper for valid results.'''
-    __slots__ = ()
-    _singleton = None
-
-
-class Wrong(BooleanWrapper):
-    '''A wrapper for invalid results.'''
-    __slots__ = ()
-    _singleton = None
-
-    def __new__(cls, *args):
-        self = super(Wrong, cls).__new__(cls, *args)
-        if isinstance(self.inner, BaseException):
-            from xoutil.eight.exceptions import with_traceback
-            from sys import exc_info
-            info = exc_info()
-            if info[1] is self.inner:
-                self.inner = with_traceback(self.inner, info[2])
-        return self
-
-_false, _true = Wrong(), Right()
-
-
 def _tname(arg):
     'Return the type name.'
     from xoutil.eight import typeof
@@ -222,8 +148,9 @@ class TypeCheck(Coercer):
             raise TypeError(_tname(self), msg)
 
     def __call__(self, value):
+        from xoutil.option import Just, Wrong
         ok = isinstance(value, self.inner)
-        return (value if value else Right(value)) if ok else Wrong(value)
+        return (value if value else Just(value)) if ok else Wrong(value)
 
     def __str__(self):
         aux = ', '.join(t.__name__ for t in self.inner)
@@ -235,6 +162,7 @@ class NoneOrTypeCheck(TypeCheck):
     __slots__ = ()
 
     def __call__(self, value):
+        from xoutil.option import Wrong
         if value is None:
             _types = self.inner
             i, res = 0, None
@@ -258,6 +186,7 @@ class TypeCast(TypeCheck):
     __slots__ = ()
 
     def __call__(self, value):
+        from xoutil.option import Just
         res = super(TypeCast, self).__call__(value)
         if not res:
             _types = self.inner
@@ -266,7 +195,7 @@ class TypeCast(TypeCheck):
                 try:
                     res = _types[i](value)
                     if not res:
-                        res = Right(res)
+                        res = Just(res)
                 except BaseException:
                     pass
                 i += 1
@@ -296,6 +225,7 @@ class CheckAndCast(Coercer):
             raise TypeError(msg.format(_tname(self), _tname(cast)))
 
     def __call__(self, value):
+        from xoutil.option import Wrong
         check, cast = self.inner
         aux = check(value)
         if aux:
@@ -345,13 +275,14 @@ class LogicalCheck(FunctionalCheck):
     __slots__ = ()
 
     def __call__(self, value):
+        from xoutil.option import Just, Wrong
         try:
             res = self.inner(value)
             if res:
-                if isinstance(res, Right):
+                if isinstance(res, Just):
                     return res
                 elif res is True:
-                    return Right(value)
+                    return Just(value)
                 else:
                     return res
             elif isinstance(res, Wrong):
@@ -369,6 +300,7 @@ class SafeCheck(FunctionalCheck):
     __slots__ = ()
 
     def __call__(self, value):
+        from xoutil.option import Wrong
         try:
             return self.inner(value)
         except BaseException as error:
@@ -386,12 +318,13 @@ class MultiCheck(Coercer):
         return self
 
     def __call__(self, value):
+        from xoutil.option import Just, Wrong, _none
         coercers = self.inner
-        i, res = 0, _false
+        i, res = 0, _none
         while isinstance(res, Wrong) and i < len(coercers):
             res = coercers[i](value)
             i += 1
-        return res.inner if isinstance(res, Right) and res.inner else res
+        return res.inner if isinstance(res, Just) and res.inner else res
 
     def __str__(self):
         aux = ' OR '.join(str(c) for c in self.inner)
@@ -436,8 +369,9 @@ class ParamManager(object):
           definitive value; see `coercer`:class: for more information.
 
         '''
+        from xoutil.option import Just, Wrong, _none
         args, kwds = self.args, self.kwds
-        i, res = 0, _false
+        i, res = 0, _none
         while isinstance(res, Wrong) and i < len(ids):
             key = ids[i]
             if key in self.consumed:
@@ -451,7 +385,7 @@ class ParamManager(object):
                 res = kwds[key]
             if not isinstance(res, Wrong) and 'coerce' in options:
                 aux = Coercer(options['coerce'])(res)
-                res = aux.inner if isinstance(aux, Right) else aux
+                res = aux.inner if isinstance(aux, Just) else aux
             if not isinstance(res, Wrong):
                 self.consumed.add(key)
                 if isinstance(key, int) and key < 0:
@@ -469,7 +403,7 @@ class ParamManager(object):
             else:
                 raise TypeError('value for "{}" is not found'.format(ids))
         else:
-            return res.inner if isinstance(res, Right) else res
+            return res.inner if isinstance(res, Just) else res
 
     def remainder(self):
         '''Return not consumed values in a mapping.'''
@@ -503,6 +437,7 @@ class ParamSchemeRow(object):
         from collections import Counter
         from xoutil.eight import iteritems, string_types as strs
         from xoutil.eight.string import safe_isidentifier as iskey
+        from xoutil.option import _none
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
@@ -516,18 +451,17 @@ class ParamSchemeRow(object):
                 msg = ('{}() identifiers with wrong type (only int and str '
                        'allowed): {}')
                 raise TypeError(msg.format(_tname(self), bad))
-        key = options.pop('key', _false)
-        if not (key is _false or iskey(key)):
+        key = options.pop('key', _none)
+        if not (key is _none or iskey(key)):
             msg = ('"key" option must be an identifier, "{}" of type "{}" '
                    'given')
             raise TypeError(msg.format(key), _tname(key))
-        coerce = options.pop('coerce', _false)
         if 'default' in options:
             aux = {'default': options.pop('default')}
         else:
             aux = {}
-        if coerce is not _false:
-            aux['coerce'] = coerce
+        if 'coerce' in options:
+            aux['coerce'] = Coercer(options.pop('coerce'))
         if options:
             msg = '{}(): received invalid keyword parameters: {}'
             raise TypeError(msg.format(_tname(self), set(options)))
@@ -544,21 +478,37 @@ class ParamSchemeRow(object):
         return 'ParamSchemeRow({})'.format(aux)
     __repr__ = __str__
 
-    def __call__(self, manager):
-        if isinstance(manager, ParamManager):
-            return manager(*self.ids, **self.options)
+    def __call__(self, *args, **kwds):
+        '''Execute a scheme-row using as argument a `ParamManager` instance.
+
+        The concept of `ParamManager`:class: instance argument is a little
+        tricky: when a variable number of arguments is used, if only one
+        positional and is already an instance of `ParamManager`:class:, it is
+        directly used; if two, the first is a `tuple` and the second is a
+        `dict`, these are considered the constructor arguments of the new
+        instance; otherwise all arguments are used to build the new instance.
+
+        '''
+        count = len(args)
+        if count == 1 and not kwds and isinstance(args[0], ParamManager):
+            manager = args[0]
         else:
-            msg = '{}() expects a `ParamManager` instance, "{}" given'
-            raise TypeError(msg.format(_tname(self), _tname(manager)))
+            if count == 2 and not kwds:
+                a, k = args
+                if isinstance(a, tuple) and isinstance(k, dict):
+                    args, kwds = a, k
+            manager = ParamManager(args, kwds)
+        return manager(*self.ids, **self.options)
 
     @property
     def default(self):
         '''Returned value if parameter value is absent.
 
-        If not defined, special value `_false` is returned.
+        If not defined, special value `_none` is returned.
 
         '''
-        return self.options.get('default', _false)
+        from xoutil.option import _none
+        return self.options.get('default', _none)
 
     @property
     def key(self):
@@ -573,8 +523,9 @@ class ParamSchemeRow(object):
         '''
         # TODO: calculate the key value in the constructor
         from xoutil.eight import string_types as strs
+        from xoutil.option import _none
         res = self._key
-        if res is _false:
+        if res is _none:
             res = next((k for k in self.ids if isinstance(k, strs)), None)
             if res is None:
                 res = self.ids[0]
@@ -638,22 +589,24 @@ class ParamScheme(object):
     def __call__(self, args, kwds, strict=False):
         '''Get a mapping with all resulting values.
 
-        If special value '_false' is used as 'default' option in a scheme-row,
+        If special value '_none' is used as 'default' option in a scheme-row,
         corresponding value isn't returned in the mapping if the parameter
         value is missing.
 
         '''
+        from xoutil.option import Wrong
         pm = ParamManager(args, kwds)
         aux = ((row.key, row(pm)) for row in self)
-        res = {key: value for key, value in aux if value is not _false}
-        aux = pm.remainder()
+        ok = lambda v: not isinstance(v, Wrong)
+        res = {key: value for key, value in aux if ok(value)}
+        rem = pm.remainder()
         if strict:
-            if aux:
+            if rem:
                 msg = ('after a full `{}` process, there are still remainder '
                        'parameters: {}')
-                raise TypeError(msg.format(_tname(self), set(aux)))
+                raise TypeError(msg.format(_tname(self), set(rem)))
         else:
-            res.update(aux)
+            res.update(rem)
         return res
 
     def keys(self):
@@ -669,8 +622,10 @@ class ParamScheme(object):
     @property
     def defaults(self):
         '''Return a mapping with all valid default values.'''
+        from xoutil.option import Wrong
         aux = ((row.key, row.default) for row in self)
-        return {k: d for k, d in aux if d is not _false}
+        ok = lambda v: not isinstance(v, Wrong)
+        return {k: d for k, d in aux if ok(d)}
 
     def _getcache(self):
         if not self.cache:
