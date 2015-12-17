@@ -451,7 +451,7 @@ def fix_private_name(cls, name):
 # refactoring of some of 'xoutil.types' and move all the "is_classmethod",
 # "is_staticmethod" and inspection-related functions there.
 def get_method_function(cls, method_name):
-    '''Get definition function given in its :param:`method_name`.
+    '''Get definition function given in its `method_name`.
 
     There is a difference between the result of this function and
     ``getattr(cls, method_name)`` because the last one return the unbound
@@ -473,12 +473,12 @@ def get_method_function(cls, method_name):
 
 
 def build_documentation(cls, get_doc=None, deep=1):
-    '''Build a proper documentation from a class :param:`cls`.
+    '''Build a proper documentation from a class `cls`.
 
-    Classes are recursed in MRO until process all levels (:param:`deep`)
+    Classes are recursed in MRO until process all levels (`deep`)
     building the resulting documentation.
 
-    The function :param:`get_doc` get the documentation of a given class. If
+    The function `get_doc` get the documentation of a given class. If
     no function is given, then attribute ``__doc__`` is used.
 
     '''
@@ -513,14 +513,14 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
     This function may be useful for shells or Python Command Line Interfaces
     (CLI).
 
-    If :param:`cls` has an invalid documentation, super-classes are recursed
+    If `cls` has an invalid documentation, super-classes are recursed
     in MRO until a documentation definition was made at any level.
 
-    :param:`ignore` could be used to specify which classes to ignore by
-                    specifying its name in this list.
+    :param ignore: could be used to specify which classes to ignore by
+                   specifying its name in this list.
 
-    :param:`min_length` specify that documentations with less that a number of
-                        characters, also are ignored.
+    :param min_length: specify that documentations with less that a number of
+                       characters, also are ignored.
 
     '''
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
@@ -547,14 +547,14 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
     This function may be useful for shells or Python Command Line Interfaces
     (CLI).
 
-    If :param:`cls` has an invalid documentation, super-classes are recursed
-    in MRO until a documentation definition was made at any level.
+    If `cls` has an invalid documentation, super-classes are recursed in MRO
+    until a documentation definition was made at any level.
 
-    :param:`ignore` could be used to specify which classes to ignore by
-                    specifying its name in this list.
+    :param ignore: could be used to specify which classes to ignore by
+                   specifying its name in this list.
 
-    :param:`min_length` specify that documentations with less that a number of
-                        characters, also are ignored.
+    :param min_length: specify that documentations with less that a number of
+                       characters, also are ignored.
 
     '''
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
