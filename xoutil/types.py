@@ -64,42 +64,110 @@ from .eight.types import (MappingProxyType, MemberDescriptorType,    # noqa
 #: This is roughly the type of the ``object.__getattribute__`` method.
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
+from xoutil.eight.exceptions import StandardError, BaseException    # noqa
 
-try:
-    from exceptions import StandardError
-except:
-    StandardError = Exception
+# TODO: deprecate next
+ExceptionBase = BaseException
+
+from re import compile as _regex_compile
+
+RegexPattern = type(_regex_compile(''))
+
+del _regex_compile
+
+
+def type_coerce(obj):
+    '''Ensure return a valid type from `obj`.'''
+    from xoutil.eight import class_types as ctypes
+    return obj if isinstance(obj, ctypes) else obj.__class__
 
 
 class mro_dict(Mapping):
-    '''An utility class that behaves like a read-only dict to query the
-    attributes in the MRO chain of a `target` class (or an object's class).
+    '''Utility behaving like a read-only dict of `target` MRO attributes.
+
+    For example::
+
+      >>> class A(object):
+      ...     x = 12
+      ...     y = 34
+
+      >>> class B(A):
+      ...     y = 56
+      ...     z = 78
+
+      >>> d = mro_dict(B)
+
+      >>> d['x']
+      12
+
+      >>> d['y']
+      56
+
+      >>> d['z']
+      78
 
     '''
+    # TODO: What is the application for this utility?
+    __slots__ = ('_probes', '_keys')
+
     def __init__(self, target):
-        type_ = target if hasattr(target, 'mro') else type(target)
-        self._target_mro = type_.mro()
+        from xoutil.inspect import _static_getmro
+        type_ = type_coerce(target)
+        target_mro = _static_getmro(type_)
+        self._probes = tuple(c.__dict__ for c in target_mro)
+        self._keys = set()
 
     def __getitem__(self, name):
         from xoutil.objects import get_first_of
-        probes = tuple(c.__dict__ for c in self._target_mro)
-        result = get_first_of(probes, name, default=_unset)
+        result = get_first_of(self._probes, name, default=_unset)
         if result is not _unset:
             return result
         else:
             raise KeyError(name)
 
     def __iter__(self):
-        res = []
-        probes = tuple(c.__dict__ for c in self._target_mro)
-        for probe in probes:
-            for key in probe:
-                if key not in res:
-                    res.append(key)
-                    yield key
+        if not self._keys:
+            self._settle_keys()
+        return iter(self._keys)
 
     def __len__(self):
-        return sum(1 for _ in self)
+        if not self._keys:
+            self._settle_keys()
+        return len(self._keys)
+
+    def _settle_keys(self):
+        for probe in self._probes:
+            for key in probe:
+                if key not in self._keys:
+                    self._keys.add(key)
+
+
+def mro_get_value_list(cls, name):
+    '''Return a list with all `cls` class attributes in MRO.'''
+    from xoutil.inspect import _static_getmro
+    mro = _static_getmro(type_coerce(cls))
+    return [t.__dict__[name] for t in mro if name in t.__dict__]
+
+
+def mro_get_full_mapping(cls, name):
+    '''Return a dictionary with all items from `cls` in MRO.
+
+    All values corresponding to `name` must be valid mappings.
+
+    '''
+    aux = mro_get_value_list(cls, name)
+    count = len(aux)
+    if count == 0:
+        return {}
+    elif count == 1:
+        return aux[0]
+    else:
+        res = {}
+        for m in aux:
+            for key in m:
+                if key not in res:
+                    res[key] = m[key]
+        return res
 
 
 # TODO: Many of is_*method methods here are needed to be compared against the
@@ -119,7 +187,7 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> from six.moves import range
+        >>> from xoutil.eight import range
         >>> is_iterable(range(1))
         True
 
@@ -154,7 +222,7 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> from six.moves import range
+        >>> from xoutil.eight import range
         >>> is_collection(range(1))
         True
 
@@ -174,7 +242,7 @@ def is_collection(maybe):
 
     '''
     from xoutil.collections import UserList
-    from six.moves import range
+    from xoutil.eight import range
     return isinstance(maybe, (tuple, range, list, set, frozenset,
                               GeneratorType, UserList))
 
@@ -217,16 +285,16 @@ def is_classmethod(desc, name=_unset):
     '''Returns true if a `method` is a class method.
 
     :param desc: This may be the method descriptor or the class that holds the
-                 method, in the second case you must provide the `name` of the
-                 method.
+           method, in the second case you must provide the `name` of the
+           method.
 
-                 .. note::
+           .. note::
 
-                    Notice that in the first case what is needed is the
-                    **method descriptor**, i.e, taken from the class'
-                    `__dict__` attribute. If instead you pass something like
-                    ``cls.methodname``, this method will return False whilst
-                    :func:`is_instancemethod` will return True.
+              Notice that in the first case what is needed is the **method
+              descriptor**, i.e, taken from the class' `__dict__`
+              attribute. If instead you pass something like
+              ``cls.methodname``, this method will return False whilst
+              :func:`is_instancemethod` will return True.
 
     :param name: The name of the method, if the first argument is the class.
 

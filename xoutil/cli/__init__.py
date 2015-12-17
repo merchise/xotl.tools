@@ -28,7 +28,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from abc import abstractmethod, ABCMeta
-from xoutil.objects import metaclass, classproperty
+from xoutil.eight.meta import metaclass
+from xoutil.objects import classproperty
 from .tools import command_name, program_name
 
 
@@ -48,8 +49,9 @@ class RegistryDescriptor(object):
             return self.cache
         else:
             if instance:
+                from xoutil.eight import typeof
                 obj = 'Instance %s of class %s' % (id(instance),
-                                                   type(instance).__name__)
+                                                   typeof(instance).__name__)
             else:
                 obj = 'Class %s' % owner.__name__
             msg = 'Only allowed in class "Command"; used invalidly from "%s"!'
@@ -150,7 +152,7 @@ class Command(metaclass(ABCMeta)):
         '''
         if cls is Command:
             if cmd is not None:
-                from six import string_types as text
+                from xoutil.eight import string_types as text
                 name = cmd if isinstance(cmd, text) else command_name(cmd)
             else:
                 raise ValueError('missing command specification!')

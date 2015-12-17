@@ -18,7 +18,6 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from . import _py3
@@ -29,8 +28,9 @@ def metaclass(meta, **kwargs):
     class base:
         pass
 
-    metabase = meta.__base__
-    if metabase is object:  # when meta is type
+    if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
+        metabase = meta.__base__
+    else:
         metabase = type
 
     class inner_meta(metabase):
@@ -54,6 +54,6 @@ def metaclass(meta, **kwargs):
         def __init__(self, name, bases, attrs, **kw):
             pass
 
-    from .types import new_class
+    from ._types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)
     return new_class('__inner__', (base, ), kwds=kwds)

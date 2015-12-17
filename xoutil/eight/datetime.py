@@ -14,6 +14,7 @@
 '''Xoutil datetime extensions for writing code that runs on Python 2 and 3
 
 Method strftime Python 2
+
 '''
 
 from __future__ import (division as _py3_division,

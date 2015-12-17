@@ -12,8 +12,7 @@
 #
 # Created on 13 janv. 2013
 
-'''Modules utilities.
-'''
+'''Modules utilities.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -21,6 +20,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from types import ModuleType
+
+# TODO: Implement the concept of module descriptor
 
 
 def force_module(ref=None):
@@ -127,7 +128,7 @@ def customize(module, custom_attrs=None, meta=None):
     '''
     if not isinstance(module, _CustomModuleBase):
         import sys
-        from xoutil.objects import metaclass
+        from xoutil.eight.meta import metaclass
         meta_base = meta if meta else type
 
         class CustomModuleType(meta_base):
@@ -233,7 +234,7 @@ def get_module_path(module):
     '''
     from importlib import import_module
     from xoutil.fs.path import normalize_path
-    from six import string_types as strs
+    from xoutil.eight import string_types as strs
     mod = import_module(module) if isinstance(module, strs) else module
     # The __path__ only exists for packages and does not include the
     # __init__.py

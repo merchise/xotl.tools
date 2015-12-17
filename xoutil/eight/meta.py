@@ -26,27 +26,27 @@ else:
 
 metaclass.__doc__ = '''Define the metaclass of a class.
 
-    .. versionadded:: 1.4.1
+    .. versionadded:: 1.4.1  But moved to this module since 1.7.0.
 
     This function allows to define the metaclass of a class equally in Python
     2 and 3.
 
     Usage::
 
-       >>> class Meta(type):
-       ...   pass
+     >>> class Meta(type):
+     ...   pass
 
-       >>> class Foobar(metaclass(Meta)):
-       ...   pass
+     >>> class Foobar(metaclass(Meta)):
+     ...   pass
 
-       >>> class Spam(metaclass(Meta), dict):
-       ...   pass
+     >>> class Spam(metaclass(Meta), dict):
+     ...   pass
 
-       >>> type(Spam) is Meta
-       True
+     >>> type(Spam) is Meta
+     True
 
-       >>> Spam.__bases__ == (dict, )
-       True
+     >>> Spam.__bases__ == (dict, )
+     True
 
     .. versionadded:: 1.5.5 The `kwargs` keywords arguments with support for
        ``__prepare__``.
@@ -71,17 +71,17 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        that ``__prepare__`` is called **only** for classes that use the
        `metaclass`:func: directly.  In the following hierarchy::
 
-           class Meta(type):
-                @classmethod
-                def __prepare__(cls, name, bases, **kwargs):
-                    from xoutil.collections import OrderedDict
-                    return OrderedDict()
+         class Meta(type):
+              @classmethod
+              def __prepare__(cls, name, bases, **kwargs):
+                  from xoutil.collections import OrderedDict
+                  return OrderedDict()
 
-           class Foo(metaclass(Meta)):
-                pass
+         class Foo(metaclass(Meta)):
+              pass
 
-           class Bar(Foo):
-                pass
+         class Bar(Foo):
+              pass
 
        when creating the class ``Bar`` the ``__prepare__()`` class method is
        not called in Python 2.7!
@@ -99,39 +99,93 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        registration of classes), then this would lead to unwanted double
        registration of the class::
 
-          >>> class BaseMeta(type):
-          ...     classes = []
-          ...     def __new__(cls, name, bases, attrs):
-          ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
-          ...         cls.classes.append(res)   # <-- side effect
-          ...         return res
+        >>> class BaseMeta(type):
+        ...     classes = []
+        ...     def __new__(cls, name, bases, attrs):
+        ...         res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
+        ...         cls.classes.append(res)   # <-- side effect
+        ...         return res
 
-          >>> class Base(metaclass(BaseMeta)):
-          ...     pass
+        >>> class Base(metaclass(BaseMeta)):
+        ...     pass
 
-          >>> class SubType(BaseMeta):
-          ...     pass
+        >>> class SubType(BaseMeta):
+        ...     pass
 
-          >>> class Egg(metaclass(SubType), Base):   # <-- metaclass first
-          ...     pass
+        >>> class Egg(metaclass(SubType), Base):   # <-- metaclass first
+        ...     pass
 
-          >>> Egg.__base__ is Base   # <-- but the base is Base
-          True
+        >>> Egg.__base__ is Base   # <-- but the base is Base
+        True
 
-          >>> len(BaseMeta.classes) == 2
-          True
+        >>> len(BaseMeta.classes) == 2
+        True
 
-          >>> class Spam(Base, metaclass(SubType)):
-          ...     'Like "Egg" but it will be registered twice in Python 2.x.'
+        >>> class Spam(Base, metaclass(SubType)):
+        ...     'Like "Egg" but it will be registered twice in Python 2.x.'
 
        In this case the registration of Spam ocurred twice::
 
-          >>> BaseMeta.classes  # doctest: +SKIP
-          [<class Base>, <class Egg>, <class Spam>, <class Spam>]
+        >>> BaseMeta.classes  # doctest: +SKIP
+        [<class Base>, <class Egg>, <class Spam>, <class Spam>]
 
        Bases, however, are just fine::
 
-          >>> Spam.__bases__ == (Base, )
-          True
+        >>> Spam.__bases__ == (Base, )
+        True
+
+    .. versionadded:: 1.7.1 Now are accepted atypical meta-classes, for
+       example functions or any callable with the same arguments as those that
+       type accepts (class name, tuple of base classes, attributes mapping).
 
 '''
+
+
+from re import compile
+_META_STRIP = compile('(?i)(^(meta(class)?|type)_{0,2}|'
+                      '_{0,2}(meta(class)?|type)$)')
+del compile
+
+
+def helper_class(meta, name=None, doc=None, adjust_module=True):
+    '''Create a helper class based in the meta-class concept.
+
+    :param meta: The meta-class type to base returned helper-class on it.
+
+    :param name: The name (``__name__``) to assign to the returned
+           helper-class; if None is given, a nice name is calculated.
+
+    :param doc: The documentation (``__doc__``) to assign to the returned
+           helper-class; if None is given, a nice one is calculated.
+
+    :param adjust_module: if True, the ``__module__`` helper-class attribute
+           is changed; if False is leaved unchanged.
+
+    For example::
+
+      >>> from abc import ABCMeta
+      >>> ABC = helper_class(ABCMeta)    # better than Python 3's abc.ABC :(
+      >>> class MyError(Exception, ABC):
+      ...     pass
+      >>> (MyError.__bases__ == (Exception,), hasattr(MyError, 'register'))
+      (True, True)
+
+    This function calls `metaclass`:func: internally.  So, in the example
+    anterior, `MyError` declaration is equivalent to::
+
+      >>> class MyError(Exception, metaclass(ABCMeta)):
+      ...     pass
+
+    '''
+    res = metaclass(meta)
+    name = name or _META_STRIP.sub('', meta.__name__)
+    doc = doc or ('Helper class.\n\nProvide a standard way to create `{name}`'
+                  ' sub-classes using inheritance.\n\n'
+                  'For example::\n\n'
+                  '  class My{name}({name}):\n'
+                  '      pass\n\n').format(name=name)
+    res.__name__ = name
+    res.__doc__ = doc
+    if adjust_module:
+        res.__module__ = '<helper::{}>'.format(meta.__module__)
+    return res

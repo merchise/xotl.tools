@@ -28,9 +28,17 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from .identifiers import (is_valid_identifier,   # noqa
+                          check_identifier,
                           is_valid_full_identifier,
                           is_valid_public_identifier,
                           is_valid_slug)
+
+
+def _adorn_checker_name(name):
+    '''Make more attractive or legible a checker name.'''
+    res = name.replace('_AND_', ' & ')
+    res = res.replace('_OR_', ' | ')
+    return res.replace('<lambda>', '<λ>')
 
 
 def _get_checker_name(checker):
@@ -47,7 +55,7 @@ def _get_checker_name(checker):
         return l('_OR_')
     else:
         from xoutil.inspect import type_name
-        res = type_name(checker)
+        res = type_name(checker, affirm=True)
         if not isinstance(checker, type):
             assert callable(checker)
             if 'lambda' in res:
@@ -76,23 +84,42 @@ def is_type(cls):
 
 
 # TODO: With this new function, `is_type` could be deprecated
+# TODO: Migrate to a class
 def predicate(*checkers, **kwargs):
     '''Return a validation checker for types and simple conditions.
 
-    :param checkers: A variable number of checkers, each one could be a type,
-        a tuple of types, a callable that receives the value and returns if
-        the value is valid, or a list of other inner checkers.  In order the
-        value is considered valid, all checkers must validate the value.  True
-        and False could be used as checkers always validating or invalidating
-        the value.  An empty list or no checker is synonym of True, an empty
-        tuple is synonym of False.
+    :param checkers: A variable number of checkers; each one could be:
+
+        - A type, or tuple of types, to test valid values with
+          ``isinstance(value, checker)``
+
+        - A set or mapping of valid values, the value is valid if contained in
+          the checker.
+
+        - A tuple of other inner checkers, if any of the checkers validates a
+          value, the value is valid (OR).
+
+        - A list of other inner checkers, all checkers must validate the value
+          (AND).
+
+        - A callable that receives the value and returns True if the value is
+          valid.
+
+        - ``True`` and ``False`` could be used as checkers always validating
+          or invalidating the value.
+
+        An empty list or no checker is synonym of ``True``, an empty tuple,
+        set or mapping is synonym of ``False``.
 
     :param name: Keyword argument to be used in case of error; will be the
         argument of `ValueError` exception; could contain the placeholders
         ``{value}`` and ``{type}``; a default value is used if this argument
         is not given.
 
-    :param force_name: Keyword argument to force a name is not given.
+    :param force_name: Keyword argument to force a name if not given.
+
+    In order to obtain good documentations, use proper names for functions and
+    lambda arguments.
 
     With this function could be built real type checkers, for example::
 
@@ -126,21 +153,31 @@ def predicate(*checkers, **kwargs):
       False
 
     '''
+    from xoutil.logical import Logical
+    from xoutil.collections import Set, Mapping
+
     def inner(obj):
         '''Check is `obj` is a valid instance for a set of checkers.'''
 
-        def fail(chk):
-            if isinstance(chk, bool):
-                res = chk
-            elif isinstance(chk, (type, tuple)):
+        def valid(chk):
+            if isinstance(chk, (bool, Logical)):
+                res = bool(chk)
+            elif isinstance(chk, type):
                 res = isinstance(obj, chk)
+            elif isinstance(chk, tuple):
+                if all(isinstance(c, type) for c in chk):
+                    res = isinstance(obj, chk)
+                else:
+                    res = any(valid(c) for c in chk)
             elif isinstance(chk, list):
-                res = predicate(*chk)(obj)
+                res = all(valid(c) for c in chk)
+            elif isinstance(chk, (Set, Mapping)):
+                res = obj in chk
             else:
                 res = chk(obj)
-            return not res
+            return res
 
-        return next((chk for chk in checkers if fail(chk)), None) is None
+        return next((chk for chk in checkers if not valid(chk)), None) is None
 
     name = kwargs.get('name')
     if name is None and kwargs.get('force_name'):
@@ -201,11 +238,14 @@ def ok(value, *checkers, **kwargs):
         considered valid, all checkers must validate the value.
 
     :param message: keyword argument to be used in case of error; will be the
-        argument of `ValueError` exception; could contain the placeholders
-        ``{value}`` and ``{type}``; a default value is used if this argument
-        is not given.
+           argument of `ValueError` exception; could contain the placeholders
+           ``{value}`` and ``{type}``; a default value is used if this
+           argument is not given.
 
     :param msg: an alias for "message"
+
+    :param extra_checkers: In order to create validators using `partial`.
+           Must be a tuple.
 
     Keyword arguments are not validated to be correct.
 
@@ -234,7 +274,8 @@ def ok(value, *checkers, **kwargs):
       '---'
 
     '''
-    pred = predicate(*checkers)
+    extra_checkers = kwargs.get('extra_checkers', ())
+    pred = predicate(*(checkers + extra_checkers))
     if pred(value):
         return value
     else:
@@ -243,3 +284,21 @@ def ok(value, *checkers, **kwargs):
         msg = next(get(kwargs, 'message', 'msg'), 'Invalid {type}: {value}!')
         msg = msg.format(value=value, type=type_name(value, affirm=True))
         raise ValueError(msg)
+
+
+def check_no_extra_kwargs(kwargs):
+    '''Check that no extra keyword arguments are still not processed.
+
+    For example::
+
+      >>> from xoutil.validators import check_no_extra_kwargs
+      >>> def only_safe_arg(**kwargs):
+      ...     safe = kwargs.pop('safe', False)
+      ...     check_no_extra_kwargs(kwargs)
+      ...     print('OK for safe:', safe)
+
+    '''
+    if kwargs:
+        plural = '' if len(kwargs) == 1 else 's'
+        msg = 'Unexpected keyword argument%s: "%s"!'
+        raise TypeError(msg % (plural, ', '.join(kwargs)))

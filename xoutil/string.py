@@ -21,17 +21,14 @@
 additions.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
-Python 3.x treats strings differently, `bytes` and `_unicode` will be used
+Python 3.x treats strings differently.  `bytes` and `text_type` will be used
 instead with the following conventions:
 
 - In Python 2.x `str` is synonym of `bytes` and both (`unicode` and 'str') are
-  both string types inheriting form `basestring`.  `_unicode` is synonym of
-  `unicode`.
+  both string types inheriting form `basestring`.
 
 - In Python 3.x `str` is always unicode but `unicode` and `basestring` types
   doesn't exists. `bytes` type can be used as an array of one byte each item.
-
-  `_unicode` is synonym of `str`.
 
   Many methods are readjusted to these conditions.
 
@@ -39,14 +36,11 @@ instead with the following conventions:
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.deprecation import deprecated as _deprecated
-from six import (string_types as _str_base,
-                 text_type as _unicode,
-                 binary_type as _bytes,
-                 PY3 as _py3k)
+from xoutil.eight import _py3
 
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
@@ -78,17 +72,18 @@ def safe_decode(s, encoding=None):
     .. versionadded:: 1.1.3
 
     '''
-    if isinstance(s, _unicode):
+    from xoutil.eight import text_type
+    if isinstance(s, text_type):
         return s
     else:
         encoding = force_encoding(encoding)
         try:
             # In Python 3 str(b'm') returns the string "b'm'" and not just "m",
             # this fixes this.
-            return _unicode(s, encoding, 'replace')
+            return text_type(s, encoding, 'replace')
         except:
             # For numbers and other stuff.
-            return _unicode(s)
+            return text_type(s)
 
 
 def safe_encode(u, encoding=None):
@@ -103,18 +98,57 @@ def safe_encode(u, encoding=None):
     '''
     # TODO: This is not nice for Python 3, bytes is not valid string any more
     #       See :func:`json.encoder.py_encode_basestring_ascii` of Python 2.x
+    from xoutil.eight import string_types, text_type
     if isinstance(u, bytes):
         return u
     else:
         encoding = force_encoding(encoding)
         try:
-            if isinstance(u, _str_base):
+            if isinstance(u, string_types):
                 # In Python 2.x bytes does not allows an encoding argument.
                 return bytes(u)
             else:
-                return _unicode(u).encode(encoding, 'replace')
+                return text_type(u).encode(encoding, 'replace')
         except:
-            return _unicode(u).encode(encoding, 'replace')
+            return text_type(u).encode(encoding, 'replace')
+
+
+def safe_str(obj=str()):
+    '''Convert to normal string type in a safe way.
+
+    Most of our Python 2.x code uses unicode as normal string, also in
+    Python 3 converting bytes or byte-arrays to strings includes the "b"
+    prefix in the resulting value.
+
+    This function is useful in some scenarios that require `str` type (for
+    example attribute ``__name__`` in functions and types).
+
+    As ``str is bytes`` in Python2, using str(value) assures correct these
+    scenarios in most cases, but in other is not enough, for example::
+
+      >>> from xoutil.string import safe_str as sstr
+      >>> def inverted_partial(func, *args, **keywords):
+      ...     def inner(*a, **kw):
+      ...         a += args
+      ...         kw.update(keywords)
+      ...         return func(*a, **kw)
+      ...     inner.__name__ = sstr(func.__name__.replace('lambda', u'λ'))
+      ...     return inner
+
+    .. versionadded:: 1.7.0
+
+    '''
+    if _py3:
+        if isinstance(obj, (bytes, bytearray)):
+            return safe_decode(obj)
+        else:
+            return str(obj)
+    else:
+        try:
+            return str(obj)
+        except UnicodeEncodeError:
+            # assert isinstance(value, unicode)
+            return safe_encode(obj)
 
 
 def safe_join(separator, iterable, encoding=None):
@@ -153,7 +187,7 @@ def safe_join(separator, iterable, encoding=None):
 
 
 # Makes explicit the deprecation warning for py3k.
-if _py3k:
+if _py3:
     safe_join = _deprecated('builtin join method of str',
                             'safe_join is deprecated for Python 3. Use '
                             'builtin join method of str.')(safe_join)
@@ -166,7 +200,8 @@ def safe_strip(value):
     .. versionadded:: 1.1.3
 
     '''
-    return value.strip() if isinstance(value, (_unicode, _bytes)) else value
+    from xoutil.eight import string_types
+    return value.strip() if isinstance(value, string_types) else value
 
 
 def cut_prefix(value, prefix):
@@ -174,7 +209,7 @@ def cut_prefix(value, prefix):
     unchanged.
 
     '''
-    from six import text_type as str, binary_type as bytes
+    from xoutil.eight import text_type as str, binary_type as bytes
     if isinstance(value, str) and isinstance(prefix, bytes):
         prefix = safe_decode(prefix)
     elif isinstance(value, bytes) and isinstance(prefix, str):
@@ -205,7 +240,7 @@ def cut_suffix(value, suffix):
     unchanged.
 
     '''
-    from six import text_type as str, binary_type as bytes
+    from xoutil.eight import text_type as str, binary_type as bytes
     if isinstance(value, str) and isinstance(suffix, bytes):
         suffix = safe_decode(suffix)
     elif isinstance(value, bytes) and isinstance(suffix, str):
@@ -252,14 +287,16 @@ def capitalize(value, title=True):
 
     Return bytes or unicode depending on type of `value`.
 
-        >>> type(capitalize(_unicode('something'))) is _unicode
+        >>> from xoutil.eight import text_type
+        >>> type(capitalize(text_type('something'))) is text_type
         True
 
         >>> type(capitalize(str('something'))) is str
         True
 
     '''
-    space, empty = (' ', '') if isinstance(value, _unicode) else (b' ', b'')
+    tstr = type(value)
+    space, empty = tstr(' '), tstr('')
     words = value.split() if value else None
     if words:
         count = len(words) if title else 1
@@ -273,15 +310,42 @@ def capitalize(value, title=True):
         return empty
 
 
+def hyphen_name(name):
+    '''Convert a name, normally an identifier, to a hyphened slug.
+
+    All transitions from lower to upper capitals (or from digits to letters)
+    are joined with a hyphen.
+
+    Also, all invalid characters (those invalid in Python identifiers) are
+    converted to hyphens.
+
+    For example::
+
+      >>> hyphen_name('BaseNode') == 'base-node'
+      True
+
+    '''
+    import re
+    regex = re.compile('([a-z0-9][A-Z]|[a-zA-Z][0-9]|[0-9][a-z])')
+    parts = []
+    for m in reversed(list(regex.finditer(name))):
+        i, f = m.span()
+        name, tail = name[:i + 1], name[i + 1:]
+        parts.insert(0, tail)
+    parts.insert(0, name)
+    name = '-'.join(parts)
+    return safe_str(normalize_slug(name, '-', '_'))
+
+
 # TODO: Document and fix all these "normalize_..." functions
 def normalize_unicode(value):
     # FIXME: i18n
     if (value is None) or (value is str('')):
         return ''
     elif value is True:
-        return 'Sí'
+        return safe_decode('Sí')
     elif value is False:
-        return 'No'
+        return safe_decode('No')
     else:
         return safe_decode(value)
 
@@ -307,28 +371,30 @@ def normalize_str(value):
 
 
 def normalize_ascii(value):
-    '''Return the string normal form for the :param:`value`
+    '''Return the string normal form for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization.
+
     '''
     import unicodedata
-    if not isinstance(value, _unicode):
+    from xoutil.eight import text_type
+    if not isinstance(value, text_type):
         value = safe_decode(value)
     res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    return safe_decode(res)
+    return safe_str(res)
 
 
 def normalize_slug(value, replacement='-', invalids=None, valids=None):
-    '''Return the string normal form, valid for slugs, for the :param:`value`
+    '''Return the string normal form, valid for slugs, for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization.
 
     Lower-case the result.
 
-    Replace unwanted characters by :param:`replacement`, repetition of given
-    pattern will be converted to only one instance.
+    Replace unwanted characters by `replacement`, repetition of given pattern
+    will be converted to only one instance.
 
     ``[_a-z0-9]`` are assumed as valid characters.  Extra arguments can modify
     this standard behaviour:
@@ -344,9 +410,8 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
            string, any iterator of valid strings of characters, or ``None`` to
            use only default valid characters (See above).
 
-    Parameters :param:`value` and :param:`replacement` could be of any
-    (non-string) type, these values are normalized and converted to lower-case
-    ASCII strings.
+    Parameters `value` and `replacement` could be of any (non-string) type,
+    these values are normalized and converted to lower-case ASCII strings.
 
     Examples::
 
@@ -357,6 +422,12 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       True
 
       >>> normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
+      True
+
+      >>> normalize_slug('_x', '_') == '_x'
+      True
+
+      >>> normalize_slug('-x', '_') == 'x'
       True
 
       >>> normalize_slug(None) == 'none'
@@ -374,6 +445,9 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       >>> normalize_slug(123456, '', invalids='52') == '1346'
       True
 
+      >>> normalize_slug('_x', '_') == '_x'
+      True
+
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
 
     .. versionchanged:: 1.6.6 Replaced the `invalid_underscore` paremeter by
@@ -381,6 +455,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
 
     '''
     import re
+    from xoutil.eight import string_types
     # local functions
     _normalize = lambda v: normalize_ascii(v).lower()
     _set = lambda v: ''.join(set(v))
@@ -389,7 +464,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     # check and adjust arguments
     if replacement in (None, False):
         replacement = ''
-    elif isinstance(replacement, _str_base):
+    elif isinstance(replacement, string_types):
         replacement = normalize_ascii(replacement)    # TODO: or _normalize?
     else:
         msg = '`replacement` (%s) must be a string or None, not `%s`.'
@@ -400,28 +475,31 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     elif invalids in {None, False}:
         invalids = ''
     else:
-        if not isinstance(invalids, _str_base):
+        if not isinstance(invalids, string_types):
             invalids = _from_iter(invalids)
         invalids = _esc(_normalize(invalids))
     if valids is None:
         valids = ''
     else:
-        if not isinstance(valids, _str_base):
+        if not isinstance(valids, string_types):
             valids = _from_iter(valids)
         valids = _esc(re.sub(r'[0-9a-b]+', '', _normalize(valids)))
     # calculate result
     res = _normalize(value)
     regex = re.compile(r'[^_a-z0-9%s]+' % valids)
-    res = regex.sub(replacement, res)
+    repl = '\t' if replacement else ''
+    res = regex.sub(repl, res)
     if invalids:
         regex = re.compile(r'[%s]+' % invalids)
-        res = regex.sub(replacement, res)
-    if replacement:
-        r = {'r': r'%s' % re.escape(replacement)}
+        res = regex.sub(repl, res)
+    if repl:
+        r = {'r': r'%s' % re.escape(repl)}
         regex = re.compile(r'(%(r)s){2,}' % r)
-        res = regex.sub(replacement, res)
+        res = regex.sub(repl, res)
         regex = re.compile(r'(^%(r)s+|%(r)s+$)' % r)
         res = regex.sub('', res)
+        regex = re.compile(r'[\t]' % r)
+        res = regex.sub(replacement, res)
     return res
 
 
@@ -445,7 +523,8 @@ def parse_boolean(value):
     False
 
     '''
-    if isinstance(value, _str_base):
+    from xoutil.eight import string_types
+    if isinstance(value, string_types):
         value = value.strip()
         if value:
             if value.isdigit():
@@ -467,12 +546,41 @@ def parse_url_int(value, default=None):
     arguments as a list of one element.
 
     '''
+    # TODO: Move to `xoutil.web`
     if isinstance(value, (list, tuple, set)) and len(value) > 0:
         value = value[0]
     try:
         return int(safe_strip(value))
     except:
         return default
+
+
+def error2str(error):
+    '''Convert an error to string.'''
+    from xoutil.eight import string_types
+    from xoutil.types import type_coerce
+    if isinstance(error, string_types):
+        return safe_str(error)
+    elif isinstance(error, BaseException):
+        tname = type(error).__name__
+        res = safe_str(error)
+        if tname in res:
+            return res
+        else:
+            return str(': ').join(tname, res) if res else tname
+    elif issubclass(error, BaseException):
+        return type(error).__name__
+    else:
+        prefix = str('unknown error: ')
+        cls = type_coerce(error)
+        tname = cls.__name__
+        if cls is error:
+            res = tname
+        else:
+            res = safe_str(error)
+            if tname not in res:
+                res = str('{}({})').format(tname, res) if res else tname
+        return prefix + res
 
 
 def force_str(value, encoding=None):
@@ -508,9 +616,9 @@ def make_a10z(string):
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 
-from six.moves import input
+from xoutil.eight import input
 
 input = _deprecated(
     input,
-    "xoutil.string.input is deprecated.  Use six.moves.input"
+    "xoutil.string.input is deprecated.  Use xoutil.eight.input"
 )(input)

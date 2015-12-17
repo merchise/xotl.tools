@@ -80,4 +80,8 @@ class Progress(object):
             sys.stdout.flush()
 
     def _get_terminal_width(self, default=120):
-        return default
+        import os
+        try:
+            return int(os.environ.get('COLUMNS', default))
+        except ValueError:
+            return default

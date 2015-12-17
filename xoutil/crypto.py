@@ -84,7 +84,7 @@ def _normalize_level(level):
     Otherwise it must be a valid level number.
 
     '''
-    from six import string_types
+    from xoutil.eight import string_types
     if isinstance(level, string_types):
         return PASS_LEVEL_NAME_MAPPING[level]
     else:

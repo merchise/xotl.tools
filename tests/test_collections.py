@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xoutil.tests.test_collections
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
@@ -23,18 +23,15 @@ from __future__ import (division as _py3_division,
                         absolute_import as _absolute_import)
 import sys
 import unittest
+import pytest
+
 from random import shuffle
+from xoutil.collections import defaultdict
 
 try:
-    import pytest
-except:
-    class pytest(object):
-        class _mark(object):
-            def __getattr__(self, attr):
-                return lambda *a, **kw: (lambda f: f)
-        mark = _mark()
-
-from xoutil.collections import defaultdict
+    from xoutil.release import VERSION_INFO
+except ImportError:
+    VERSION_INFO = (1, 6, 10)  # Latest version without VERSION_INFO
 
 
 class TestCollections(unittest.TestCase):
@@ -53,14 +50,30 @@ class TestCollections(unittest.TestCase):
             d['abc']
 
 
+@pytest.mark.skipif(VERSION_INFO < (1, 7, 1),
+                    reason='.pop() has old semantics')
+def test_stacked_dict_with_newpop():
+    '''Test that stacked.pop has the same semantics has dict.pop.'''
+    from xoutil.collections import StackedDict
+    sd = StackedDict(a='level-0', b=1)
+    assert sd.pop('a') == 'level-0'
+    assert sd.pop('non', sd) is sd
+    try:
+        sd.pop('non')
+    except KeyError:
+        pass
+    else:
+        assert False, 'Should have raised a KeyError'
+
+
 def test_stacked_dict():
     from xoutil.collections import StackedDict
     sd = StackedDict(a='level-0')
     assert sd.peek() == dict(a='level-0')
-    sd.push(a=1, b=2, c=10)
+    sd.push_level(a=1, b=2, c=10)
     assert sd.level == 1
     assert sd.peek() == dict(a=1, b=2, c=10)
-    sd.push(b=4, c=5)
+    sd.push_level(b=4, c=5)
     assert sd.peek() == dict(b=4, c=5)
     assert sd.level == 2
     assert sd['b'] == 4
@@ -75,14 +88,14 @@ def test_stacked_dict():
         pass
     except:
         assert False, 'Should have raise KeyError'
-    assert sd.pop() == {'b': 4}
+    assert sd.pop_level() == {'b': 4}
     assert sd['b'] == 2
     assert sd['a'] == 1
     assert len(sd) == 3
-    sd.pop()
+    sd.pop_level()
     assert sd['a'] == 'level-0'
     try:
-        sd.pop()
+        sd.pop_level()
         assert False, ('Level 0 cannot be poped. '
                        'It should have raised a TypeError')
     except TypeError:
@@ -93,17 +106,17 @@ def test_stacked_dict():
 
 
 # Backported from Python 3.3.0 standard library
-from six import PY3
+from xoutil.eight import _py3 as PY3
 from xoutil.collections import ChainMap, Counter, OrderedDict, Mapping
 from xoutil.collections import MutableMapping
 import copy
 import pickle
-import inspect
 from random import randrange
 
 
 class TestChainMap(unittest.TestCase):
     def test_basics(self):
+        from xoutil.eight import typeof
         c = ChainMap()
         c['a'] = 1
         c['b'] = 2
@@ -140,14 +153,14 @@ class TestChainMap(unittest.TestCase):
         if not PY3:
             # check repr
             self.assertIn(repr(d), [
-                type(d).__name__ + "({u'c': 30}, {u'a': 1, u'b': 2})",
-                type(d).__name__ + "({u'c': 30}, {u'b': 2, u'a': 1})"
+                typeof(d).__name__ + "({u'c': 30}, {u'a': 1, u'b': 2})",
+                typeof(d).__name__ + "({u'c': 30}, {u'b': 2, u'a': 1})"
             ])
         else:
             # check repr
             self.assertIn(repr(d), [
-                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+                typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+                typeof(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
             ])
 
         # check shallow copies
@@ -484,10 +497,6 @@ class TestOrderedDict(unittest.TestCase):
                                            ('d', 4)], c=3, e=5).items()),
                          pairs)
 
-        # make sure no positional args conflict with possible kwdargs
-        _argspec = inspect.getargspec(OrderedDict.__dict__['__init__']).args
-        self.assertEqual(_argspec, ['self'])
-
         # Make sure that direct calls to __init__ do not clear previous
         # contents
         d = OrderedDict([('a', 1), ('b', 2), ('c', 3), ('d', 44), ('e', 55)])
@@ -758,6 +767,206 @@ class TestOrderedDict(unittest.TestCase):
                 raise Exception()
         items = [('a', 1), ('c', 3), ('b', 2)]
         self.assertEqual(list(MyOD(items).items()), items)
+
+
+class TestPascalSet(unittest.TestCase):
+
+    def test_consistency(self):
+        from random import randint
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        count = 5
+        for test in range(count):
+            size = randint(20, 60)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s1 = PascalSet(*ranges)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s2 = PascalSet(*ranges)
+            ss1 = set(s1)
+            ss2 = set(s2)
+            self.assertEqual(s1, ss1)
+            self.assertEqual(s1 - s2, ss1 - ss2)
+            self.assertEqual(s2 - s1, ss2 - ss1)
+            self.assertEqual(s1 & s2, ss1 & ss2)
+            self.assertEqual(s2 & s1, ss2 & ss1)
+            self.assertEqual(s1 | s2, ss1 | ss2)
+            self.assertEqual(s2 | s1, ss2 | ss1)
+            self.assertEqual(s1 ^ s2, ss1 ^ ss2)
+            self.assertEqual(s2 ^ s1, ss2 ^ ss1)
+            self.assertLess(s1 - s2, s1)
+            self.assertLess(s1 - s2, ss1)
+            self.assertLessEqual(s1 - s2, s1)
+            self.assertLessEqual(s1 - s2, ss1)
+            self.assertGreater(s1, s1 - s2)
+            self.assertGreater(s1, ss1 - ss2)
+            self.assertGreaterEqual(s1, s1 - s2)
+            self.assertGreaterEqual(s1, ss1 - ss2)
+
+    def test_syntax_sugar(self):
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        s1 = PascalSet[1:4, 9, 15:18]
+        s2 = PascalSet[3:18]
+        self.assertEqual(str(s1), '{1..3, 9, 15..17}')
+        self.assertEqual(str(s1 ^ s2), '{1, 2, 4..8, 10..14}')
+        self.assertEqual(list(PascalSet[3:18]), list(range(3, 18)))
+
+    def test_operators(self):
+        from xoutil.eight import range
+        from xoutil.collections import PascalSet
+        g = lambda s: (i for i in s)
+        s1 = PascalSet[1:4, 9, 15:18]
+        r1 = range(1, 18)
+        s2 = PascalSet(s1, 20)
+        self.assertTrue(s1.issubset(s1))
+        self.assertTrue(s1.issubset(set(s1)))
+        self.assertTrue(s1.issubset(list(s1)))
+        self.assertTrue(s1.issubset(g(s1)))
+        self.assertTrue(s1.issubset(r1))
+        self.assertTrue(s1.issubset(set(r1)))
+        self.assertTrue(s1.issubset(list(r1)))
+        self.assertTrue(s1.issubset(g(r1)))
+        self.assertTrue(s2.issuperset(s2))
+        self.assertTrue(s2.issuperset(s1))
+        self.assertTrue(s2.issuperset(set(s1)))
+        self.assertTrue(s2.issuperset(list(s1)))
+        self.assertTrue(s2.issuperset(g(s1)))
+        self.assertTrue(s1 <= set(s1))
+        self.assertTrue(s1 < s2)
+        self.assertTrue(s1 <= s2)
+        self.assertTrue(s1 < set(s2))
+        self.assertTrue(s1 <= set(s2))
+        self.assertTrue(s1 < set(r1))
+        self.assertTrue(s1 <= set(r1))
+        self.assertTrue(s2 >= s2)
+        self.assertTrue(s2 >= set(s2))
+        self.assertTrue(s2 > s1)
+        self.assertTrue(s2 > set(s1))
+        self.assertTrue(s2 >= s1)
+        self.assertTrue(s2 >= set(s1))
+
+    def test_errors(self):
+        '''Test that stacked.pop has the same semantics has dict.pop.'''
+        from xoutil.collections import PascalSet
+        s1 = PascalSet[1:4, 9, 15:18]
+        s2 = PascalSet(s1, 20)
+        self.assertLess(s1, s2)
+        try:
+            if s1 < list(s2):
+                state = 'less'
+            else:
+                state = 'not-less'
+        except TypeError:
+            state = 'TypeError'
+        self.assertEqual(state, 'TypeError')
+        with self.assertRaises(TypeError):
+            if s1 < set(s2):
+                state = 'ok'
+            if s1 < list(s2):
+                state = 'safe-less'
+            else:
+                state = 'safe-not-less'
+        self.assertEqual(state, 'ok')
+
+
+class TestBitPascalSet(unittest.TestCase):
+
+    def test_consistency(self):
+        from random import randint
+        from xoutil.eight import range
+        from xoutil.collections import BitPascalSet
+        count = 5
+        for test in range(count):
+            size = randint(20, 60)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s1 = BitPascalSet(*ranges)
+            ranges = (range(i, randint(i, i + 3)) for i in range(1, size))
+            s2 = BitPascalSet(*ranges)
+            ss1 = set(s1)
+            ss2 = set(s2)
+            self.assertEqual(s1, ss1)
+            self.assertEqual(s1 - s2, ss1 - ss2)
+            self.assertEqual(s2 - s1, ss2 - ss1)
+            self.assertEqual(s1 & s2, ss1 & ss2)
+            self.assertEqual(s2 & s1, ss2 & ss1)
+            self.assertEqual(s1 | s2, ss1 | ss2)
+            self.assertEqual(s2 | s1, ss2 | ss1)
+            self.assertEqual(s1 ^ s2, ss1 ^ ss2)
+            self.assertEqual(s2 ^ s1, ss2 ^ ss1)
+            self.assertLess(s1 - s2, s1)
+            self.assertLess(s1 - s2, ss1)
+            self.assertLessEqual(s1 - s2, s1)
+            self.assertLessEqual(s1 - s2, ss1)
+            self.assertGreater(s1, s1 - s2)
+            self.assertGreater(s1, ss1 - ss2)
+            self.assertGreaterEqual(s1, s1 - s2)
+            self.assertGreaterEqual(s1, ss1 - ss2)
+
+    def test_syntax_sugar(self):
+        from xoutil.eight import range
+        from xoutil.collections import BitPascalSet
+        s1 = BitPascalSet[1:4, 9, 15:18]
+        s2 = BitPascalSet[3:18]
+        self.assertEqual(str(s1), '{1..3, 9, 15..17}')
+        self.assertEqual(str(s1 ^ s2), '{1, 2, 4..8, 10..14}')
+        self.assertEqual(list(BitPascalSet[3:18]), list(range(3, 18)))
+
+    def test_operators(self):
+        from xoutil.eight import range
+        from xoutil.collections import BitPascalSet
+        g = lambda s: (i for i in s)
+        s1 = BitPascalSet[1:4, 9, 15:18]
+        r1 = range(1, 18)
+        s2 = BitPascalSet(s1, 20)
+        self.assertTrue(s1.issubset(s1))
+        self.assertTrue(s1.issubset(set(s1)))
+        self.assertTrue(s1.issubset(list(s1)))
+        self.assertTrue(s1.issubset(g(s1)))
+        self.assertTrue(s1.issubset(r1))
+        self.assertTrue(s1.issubset(set(r1)))
+        self.assertTrue(s1.issubset(list(r1)))
+        self.assertTrue(s1.issubset(g(r1)))
+        self.assertTrue(s2.issuperset(s2))
+        self.assertTrue(s2.issuperset(s1))
+        self.assertTrue(s2.issuperset(set(s1)))
+        self.assertTrue(s2.issuperset(list(s1)))
+        self.assertTrue(s2.issuperset(g(s1)))
+        self.assertTrue(s1 <= set(s1))
+        self.assertTrue(s1 < s2)
+        self.assertTrue(s1 <= s2)
+        self.assertTrue(s1 < set(s2))
+        self.assertTrue(s1 <= set(s2))
+        self.assertTrue(s1 < set(r1))
+        self.assertTrue(s1 <= set(r1))
+        self.assertTrue(s2 >= s2)
+        self.assertTrue(s2 >= set(s2))
+        self.assertTrue(s2 > s1)
+        self.assertTrue(s2 > set(s1))
+        self.assertTrue(s2 >= s1)
+        self.assertTrue(s2 >= set(s1))
+
+    def test_errors(self):
+        '''Test that stacked.pop has the same semantics has dict.pop.'''
+        from xoutil.collections import BitPascalSet
+        s1 = BitPascalSet[1:4, 9, 15:18]
+        s2 = BitPascalSet(s1, 20)
+        self.assertLess(s1, s2)
+        try:
+            if s1 < list(s2):
+                state = 'less'
+            else:
+                state = 'not-less'
+        except TypeError:
+            state = 'TypeError'
+        self.assertEqual(state, 'TypeError')
+        with self.assertRaises(TypeError):
+            if s1 < set(s2):
+                state = 'ok'
+            if s1 < list(s2):
+                state = 'safe-less'
+            else:
+                state = 'safe-not-less'
+        self.assertEqual(state, 'ok')
 
 
 def test_abcs():

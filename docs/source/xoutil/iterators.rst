@@ -2,8 +2,10 @@
 ==============================================================================
 
 .. automodule:: xoutil.iterators
-   :members: dict_update_new, fake_dict_iteritems, first_n, first_non_null,
+   :members: dict_update_new, first_n, first_non_null,
 	     slides, continuously_slides, delete_duplicates
+
+.. autofunction:: fake_dict_iteritems(source)
 
 .. autofunction:: flatten(sequence, is_scalar=xoutil.types.is_scalar, depth=None)
 

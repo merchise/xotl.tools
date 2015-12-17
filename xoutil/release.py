@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.7.0'
+VERSION = '1.7.1'
 
 
 def dev_tag_installed():
@@ -28,9 +28,14 @@ def dev_tag_installed():
     try:
         dist = pkg_resources.get_distribution('xoutil')
         full_version = dist.version
+        # FIX: Below line is not working anymore
         base = dist.parsed_version.base_version
         return full_version[len(base):]
     except:
         return None
 
 RELEASE_TAG = dev_tag_installed() or ''
+
+# I won't put the release tag in the version_info tuple.  Since PEP440 is on
+# the way.
+VERSION_INFO = tuple(int(x) for x in VERSION.split('.'))

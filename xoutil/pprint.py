@@ -42,8 +42,8 @@ def ppformat(obj):
 
     '''
     import io
-    from six import PY3, text_type
-    if PY3:
+    from xoutil.eight import _py3, text_type
+    if _py3:
         stream = io.StringIO()
     else:
         stream = io.BytesIO()

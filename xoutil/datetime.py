@@ -82,7 +82,7 @@ except ValueError:
             return strftime(self, fmt)
 
         def __sub__(self, other):
-            return assure(super(datetime, self).__sub__(other))
+            return assure(super(date, self).__sub__(other))
 
     class datetime(datetime):
         __doc__ = datetime.__doc__

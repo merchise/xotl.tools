@@ -25,12 +25,12 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 from xoutil import Unset
-from six import callable, string_types as str_base
+from xoutil.eight import callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
-# TODO: Deprecate all use of `metaclass` from `xoutil.objects`, instead use it
-#       directly from `xoutil.eight.meta`.
-from .eight.meta import metaclass    # noqa
+from .eight.meta import metaclass as _metaclass    # noqa
+metaclass = deprecated('xoutil.eight.meta.metaclass')(_metaclass)
+
 
 __docstring_format__ = 'rst'
 
@@ -53,6 +53,9 @@ class SafeDataItem(object):
     and ``__getattribute__`` to obtain its value.  Also allow to define a
     constructor or a default value for the first time the attribute is read
     without a prior value assigned.
+
+    Need to be used only in scenarios where descriptor instance values must be
+    accessed safely in '__getattr__' implementations.
 
     This class only can be instanced inner a class context in one of the
     following scenarios::
@@ -239,8 +242,9 @@ class SafeDataItem(object):
                 self.__set__(obj, res)
                 return res
             else:
+                from xoutil.eight import typeof
                 msg = "'%s' object has no attribute '%s'"
-                raise AttributeError(msg % (type(obj).__name__,
+                raise AttributeError(msg % (typeof(obj).__name__,
                                             self.attr_name))
         else:
             return self
@@ -329,9 +333,8 @@ class SafeDataItem(object):
 def smart_getter(obj, strict=False):
     '''Returns a smart getter for `obj`.
 
-    If obj is Mapping, it returns the ``.get()`` method bound to the object
-    `obj`.  Otherwise it returns a partial of `getattr` on `obj` with default
-    set to None (if `strict` is False).
+    If `obj` is a mapping, it returns the ``.get()`` method bound to the
+    object `obj`, otherwise it returns a partial of ``getattr`` on `obj`.
 
     :param strict: Set this to True so that the returned getter checks that
                    keys/attrs exists.  If `strict` is True the getter may
@@ -387,6 +390,46 @@ def smart_getter_and_deleter(obj):
         return partial(popattr, obj)
 
 
+def multi_getter(source, *ids):
+    '''Get values from `source` of all given `ids`.
+
+    :param source: Any object but dealing with differences between mappings
+           and other object types.
+
+    :param ids: Identifiers to get values from `source`.
+
+           An ID item could be:
+
+           - a string: is considered a key, if `source` is a mapping, or an
+             attribute name if `source` is an instance of any other type.
+
+           - a collection of strings: find the first valid value in `source`
+             evaluating each item in this collection using the above logic.
+
+    Example::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> list(multi_getter(d, 'a', ('y', 'x'), ('x', 'y'), ('a', 'z', 'x')))
+      [None, 2, 1, 3]
+
+      >>> next(multi_getter(d, ('y', 'x'), ('x', 'y')), '---')
+      2
+
+      >>> next(multi_getter(d, 'a', ('b', 'c'), ('e', 'f')), '---') is None
+      True
+
+    .. versionadded:: 1.7.1
+
+    '''
+    from collections import Iterable as multi
+    from xoutil.eight import string_types as strs
+    getter = smart_getter(source)
+    many = lambda a: isinstance(a, multi) and not isinstance(a, strs)
+    first = lambda a: next((i for i in map(getter, a) if i is not None), None)
+    get = lambda a: first(a) if many(a) else getter(a)
+    return (get(aux) for aux in ids)
+
+
 def is_private_name(name):
     '''Return if `name` is private or not.'''
     prefix = '__'
@@ -410,7 +453,7 @@ def fix_private_name(cls, name):
 # refactoring of some of 'xoutil.types' and move all the "is_classmethod",
 # "is_staticmethod" and inspection-related functions there.
 def get_method_function(cls, method_name):
-    '''Get definition function given in its :param:`method_name`.
+    '''Get definition function given in its `method_name`.
 
     There is a difference between the result of this function and
     ``getattr(cls, method_name)`` because the last one return the unbound
@@ -432,12 +475,12 @@ def get_method_function(cls, method_name):
 
 
 def build_documentation(cls, get_doc=None, deep=1):
-    '''Build a proper documentation from a class :param:`cls`.
+    '''Build a proper documentation from a class `cls`.
 
-    Classes are recursed in MRO until process all levels (:param:`deep`)
+    Classes are recursed in MRO until process all levels (`deep`)
     building the resulting documentation.
 
-    The function :param:`get_doc` get the documentation of a given class. If
+    The function `get_doc` get the documentation of a given class. If
     no function is given, then attribute ``__doc__`` is used.
 
     '''
@@ -472,14 +515,14 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
     This function may be useful for shells or Python Command Line Interfaces
     (CLI).
 
-    If :param:`cls` has an invalid documentation, super-classes are recursed
+    If `cls` has an invalid documentation, super-classes are recursed
     in MRO until a documentation definition was made at any level.
 
-    :param:`ignore` could be used to specify which classes to ignore by
-                    specifying its name in this list.
+    :param ignore: could be used to specify which classes to ignore by
+                   specifying its name in this list.
 
-    :param:`min_length` specify that documentations with less that a number of
-                        characters, also are ignored.
+    :param min_length: specify that documentations with less that a number of
+                       characters, also are ignored.
 
     '''
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
@@ -506,14 +549,14 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
     This function may be useful for shells or Python Command Line Interfaces
     (CLI).
 
-    If :param:`cls` has an invalid documentation, super-classes are recursed
-    in MRO until a documentation definition was made at any level.
+    If `cls` has an invalid documentation, super-classes are recursed in MRO
+    until a documentation definition was made at any level.
 
-    :param:`ignore` could be used to specify which classes to ignore by
-                    specifying its name in this list.
+    :param ignore: could be used to specify which classes to ignore by
+                   specifying its name in this list.
 
-    :param:`min_length` specify that documentations with less that a number of
-                        characters, also are ignored.
+    :param min_length: specify that documentations with less that a number of
+                       characters, also are ignored.
 
     '''
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
@@ -651,21 +694,24 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
     '''
     from operator import eq, ne
     res = True
-    tests = ((ne, force_equals), (eq, force_differents))
+    tests = ((eq, force_equals), (ne, force_differents))
     j = 0
     get_from_source = smart_getter(source)
     get_from_target = smart_getter(target)
     while res and (j < len(tests)):
-        fail, attrs = tests[j]
+        passed, attrs = tests[j]
         i = 0
         while res and (i < len(attrs)):
             attr = attrs[i]
-            if fail(get_from_source(attr), get_from_target(attr)):
-                res = False
-            else:
+            if passed(get_from_source(attr), get_from_target(attr)):
                 i += 1
+            else:
+                res = False
         j += 1
     return res
+
+# Mark this so that informed people may use it.
+validate_attrs._positive_testing = True
 
 
 def iterate_over(source, *keys):
@@ -692,7 +738,7 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from six.moves import map
+        from xoutil.iterators import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val
@@ -848,7 +894,6 @@ class lazy(object):
         self.kwargs = kwargs
 
     def __call__(self):
-        from six import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -856,6 +901,7 @@ class lazy(object):
             return res
 
 
+# TODO: Implement this as an ABC
 def mixin(base):
     '''Create a valid mixin base.
 
@@ -869,6 +915,29 @@ def mixin(base):
     doc = "Generated mixin base from %s.%s" % (repr(base), org)
     name = str('%s_base_mixin' % base.__name__)
     return type(name, (base,), {'__doc__': doc})
+
+
+def iter_branch_subclasses(cls, include_this=True):
+    '''Internal function, see `get_branch_subclasses`:func:.'''
+    children = type.__subclasses__(cls)
+    if children:
+        for sc in children:
+            for item in iter_branch_subclasses(sc):
+                yield item
+    elif include_this:
+        yield cls
+
+
+def get_branch_subclasses(cls):
+    '''Similar to `type.__subclasses__`:meth: but recursive.
+
+    Only return sub-classes in branches (those with no sub-classes).  Instead
+    of returning a list, yield each valid value.
+
+    .. versionadded:: 1.7.0
+
+    '''
+    return list(iter_branch_subclasses(cls, include_this=False))
 
 
 class classproperty(object):
@@ -892,6 +961,8 @@ class classproperty(object):
 
         '''
         self.__get = fget
+        self.__name__ = fget.__name__
+        self.__doc__ = fget.__doc__
 
     def __get__(self, instance, owner):
         cls = type(instance) if instance is not None else owner
@@ -939,55 +1010,59 @@ def setdefaultattr(obj, name, value):
     return res
 
 
-def copy_class(cls, meta=None, ignores=None, new_attrs=None):
+def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     '''Copies a class definition to a new class.
 
     The returned class will have the same name, bases and module of `cls`.
 
-    :param meta: If None, the `type(cls)` of the class is used to build the new
-                 class, otherwise this must be a *proper* metaclass.
+    :param meta: If None, the `type(cls)` of the class is used to build the
+                 new class, otherwise this must be a *proper* metaclass.
 
 
-    :param ignores: A (sequence of) string, glob-pattern, or regexp for
-                    attributes names that should not be copied to new class.
+    :param ignores: A sequence of attributes names that should not be copied
+        to the new class.
 
-                    If the strings begins with "(?" it will be considered a
-                    regular expression string representation, if it does not
-                    but it contains any wild-char it will be considered a
-                    glob-pattern, otherwise is the exact name of the ignored
-                    attribute.
-
-                    Any ignored that is not a string **must** be an object with
-                    a `match(attr)` method that must return a non-null value if
-                    the the `attr` should be ignored. For instance, a regular
-                    expression object.
+        An item may be callable accepting a single argument `attr` that must
+        return a non-null value if the the `attr` should be ignored.
 
     :param new_attrs: New attributes the class must have. These will take
                       precedence over the attributes in the original class.
 
     :type new_attrs: dict
 
+    :param new_name: The name for the copy.  If not provided the name will
+                     copied.
+
     .. versionadded:: 1.4.0
 
+    .. versionchanged:: 1.7.1 The `ignores` argument must an iterable of
+       strings or callables.  Removed the glob-pattern and regular expressions
+       as possible values.  They are all possible via the callable variant.
+
+    .. versionadded:: 1.7.1 The `new_name` argument.
+
     '''
-    from xoutil.fs import _get_regex
-    from six import iteritems as iteritems_
-    # TODO: [manu] "xoutil.fs" is more specific module than this one. So ...
-    #       isn't correct to depend on it. Migrate part of "_get_regex" to a
-    #       module that can be imported logically without problems from both,
-    #       this and "xoutil.fs".
-    from xoutil.types import MemberDescriptorType
+    from xoutil.eight import iteritems, callable
+    from xoutil.eight._types import new_class
+    from xoutil.eight.types import MemberDescriptorType
+    from xoutil.string import safe_str
+
+    def _get_ignored(what):
+        if callable(what):
+            return what
+        else:
+            return lambda s: s == what
+
     if not meta:
         meta = type(cls)
-    if isinstance(ignores, str_base):
-        ignores = tuple((_get_regex(i) if isinstance(i, str_base) else i)
-                        for i in (ignores, ))
-        ignored = lambda name: any(ignore.match(name) for ignore in ignores)
+    if ignores:
+        ignores = tuple(_get_ignored(i) for i in ignores)
+        ignored = lambda name: any(ignore(name) for ignore in ignores)
     else:
         ignored = None
     valids = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
     attrs = {name: value
-             for name, value in iteritems_(cls.__dict__)
+             for name, value in iteritems(cls.__dict__)
              if name not in valids
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
@@ -995,7 +1070,12 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None):
              if ignored is None or not ignored(name)}
     if new_attrs:
         attrs.update(new_attrs)
-    result = meta(cls.__name__, cls.__bases__, attrs)
+    exec_body = lambda ns: ns.update(attrs)
+    if new_name:
+        name = safe_str(new_name)
+    else:
+        name = cls.__name__
+    result = new_class(name, cls.__bases__, {'metaclass': meta}, exec_body)
     return result
 
 
@@ -1055,7 +1135,7 @@ def smart_copy(*args, **kwargs):
 
     :returns: `target`.
 
-    .. versionchanged:: 1.6.9 `defaults` is now keyword only.
+    .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
     from collections import MutableMapping
@@ -1140,6 +1220,7 @@ def extract_attrs(obj, *names, **kwargs):
     return getter(obj)
 
 
+# TODO: deprecate thid, use instead `xoutil.eight.abc.ABCMeta.adopt`
 def register_with(abc):
     '''Register a virtual `subclass` of an ABC.
 
@@ -1262,7 +1343,7 @@ def dict_merge(*dicts, **others):
 
     '''
     from collections import Mapping, Sequence, Set
-    from six import iteritems as iteritems_
+    from xoutil.eight import iteritems
     from xoutil.objects import get_first_of
     from xoutil.types import are_instances, no_instances
     if others:
@@ -1272,7 +1353,7 @@ def dict_merge(*dicts, **others):
     collections = (Set, Sequence)
     while dicts:
         current = dicts.pop(0)
-        for key, val in iteritems_(current):
+        for key, val in iteritems(current):
             if isinstance(val, Mapping):
                 val = {key: val[key] for key in val}
             value = result.setdefault(key, val)

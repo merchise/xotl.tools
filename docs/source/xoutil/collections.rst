@@ -31,7 +31,20 @@ We have backported several Python 3.3 features but not all.
 .. autoclass:: SmartDictMixin
 
 .. autoclass:: StackedDict
-   :members: push, pop, level, peek
+   :members: push_level, pop_level, level, peek
+
+   .. method:: pop()
+
+      A deprecated alias for `pop_level`:meth:.
+
+      .. deprecated:: 1.7.0
+
+   .. method:: push(*args, **kwargs)
+
+      A deprecated alias for `push_level`:meth:.
+
+      .. deprecated:: 1.7.0
+
 
 .. class:: ChainMap(*maps)
 
@@ -84,3 +97,8 @@ We have backported several Python 3.3 features but not all.
 
 
    .. note:: Backported from Python 3.4.  In Python 3.4 this is an alias.
+
+
+.. autoclass:: PascalSet
+
+.. autoclass:: BitPascalSet

@@ -31,19 +31,15 @@ types = _pm.types
 
 isdatadescriptor = _pm.isdatadescriptor
 
-
-# TODO: Generalize this in compatibility module
-try:
-    StandardException = StandardError
-except NameError:
-    StandardException = Exception
-
+# TODO: Rename all use of `StandardException`
+from xoutil.eight.exceptions import StandardError as StandardException
 
 try:
     getattr_static = _pm.getattr_static
 except AttributeError:
     # Copied from `/usr/lib/python3.3/inspect.py`
-
+    # TODO: Maybe all these function must be moved to eight
+    from xoutil.eight import typeof as _typeof
     _sentinel = object()
 
     def _safe_search_bases(cls, accum):
@@ -56,16 +52,12 @@ except AttributeError:
             for base in cls.__bases__:
                 _safe_search_bases(base, accum)
 
-    def _typeof(obj):
-        try:
-            old = isinstance(obj, types.InstanceType)
-        except AttributeError:
-            # This is the Python 3.1 case: No getattr_static but also no
-            # InstanceType
-            old = False
-        return obj.__class__ if old else type(obj)
-
     def _static_getmro(klass):
+        '''Get a reasonable method resolution order of a class.
+
+        Works well for both old-style and new-style classes.
+
+        '''
         try:
             old_class_type = types.ClassType
         except AttributeError:
@@ -81,7 +73,7 @@ except AttributeError:
             return res
         else:
             msg = "doesn't apply to '%s' object"
-            raise TypeError(msg % type_name(_typeof(klass)))
+            raise TypeError(msg % _typeof(klass).__name__)
 
     def _check_instance(obj, attr):
         try:
@@ -194,7 +186,7 @@ def get_attr_value(obj, name, *default):
         try:
             owner = type if is_type else type(obj)
             res = res.__get__(obj, owner)
-        except AttributeError:
+        except BaseException:
             res = _undef
     if res is _undef and not is_type:
         cls = type(obj)
@@ -212,8 +204,9 @@ def get_attr_value(obj, name, *default):
     elif default is not _undef:
         return default
     else:
+        from xoutil.eight import typeof
         msg = "'%s' object has no attribute '%s'"
-        raise AttributeError(msg % (type(obj).__name__, name))
+        raise AttributeError(msg % (typeof(obj).__name__, name))
 
 
 def type_name(obj, affirm=False):
@@ -246,14 +239,32 @@ def type_name(obj, affirm=False):
       '(int, float)'
 
     '''
-    from six import class_types, string_types
+    from xoutil.eight import class_types, string_types
     named_types = class_types + (types.FunctionType, types.MethodType)
     name = '__name__'
+    if isinstance(obj, (staticmethod, classmethod)):
+        fn = get_attr_value(obj, '__func__', None)
+        if fn:
+            obj = fn
     if isinstance(obj, named_types):
-        res = getattr_static(obj, name, None)
-        if res and isdatadescriptor(res):
-            res = res.__get__(obj, type)
+        # TODO: Why not use directly `get_attr_value``
+        try:
+            res = getattr_static(obj, name, None)
+            if res:
+                if isdatadescriptor(res):
+                    res = res.__get__(obj, type)
+        except BaseException:
+            res = None
+        if res is None:
+            try:
+                res = obj.__name__
+            except AttributeError:
+                res = None
     else:
+        res = None
+    if res is None:
+        # TODO: Why not use directly `get_attr_value``
+        # FIX: Improve and standardize the combination of next code
         res = getattr_static(obj, name, None)
         if res and isdatadescriptor(res):
             res = res.__get__(obj, type(obj))

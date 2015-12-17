@@ -30,9 +30,13 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil._local import local as _local
+import sys
+if 'greenlet' in sys.modules:
+    from xoutil._local import local as _local
+else:
+    from threading import local as _local
 
-from xoutil.objects import metaclass
+from xoutil.eight.meta import metaclass
 from xoutil.collections import StackedDict
 
 from xoutil.names import strlist as strs
@@ -128,11 +132,20 @@ class Context(metaclass(MetaContext), StackedDict):
             self.count = 0
             # TODO: Redefine all event management
             self._events = []
-        self.push(**data)
-        return self
+        return self(**data)
 
-    def __init__(self, name, **data):
-        '''Must be defined empty for parameters compatibility.'''
+    def __init__(self, *args, **kwargs):
+        '''Must be defined empty for `__new__` parameters compatibility.
+
+        Using generic parameters definition allow any redefinition of this
+        class can use this `__init__`.
+
+        '''
+
+    def __call__(self, **data):
+        '''Allow re-enter in a new level to an already assigned context.'''
+        self.push_level(**data)
+        return self
 
     def __nonzero__(self):
         return bool(self.count)
@@ -154,7 +167,7 @@ class Context(metaclass(MetaContext), StackedDict):
             for event in self.events:
                 event(self)
             del _data.contexts[self.name]
-        self.pop()
+        self.pop_level()
         return False
 
     @property

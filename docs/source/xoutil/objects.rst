@@ -4,7 +4,7 @@
 .. automodule:: xoutil.objects
    :members: validate_attrs, iterate_over, smart_getter,
 	     smart_getter_and_deleter, popattr, setdefaultattr, copy_class,
-	     metaclass, attrclass, fulldir, classproperty
+	     attrclass, fulldir, classproperty
 
 .. autofunction:: get_first_of(sources, *keys, default=None, pred=None)
 
@@ -33,3 +33,13 @@
 .. function:: get_and_del_first_of(source, *keys, default=None)
 
    Deprecated alias for :func:`pop_first_of`.
+
+.. class:: metaclass(meta, **kwargs)
+
+   Deprecated alias of `xoutil.eight.meta.metaclass`:class:.
+
+.. autofunction:: fix_method_documentation
+
+.. autofunction:: multi_getter
+
+.. autofunction:: get_branch_subclasses

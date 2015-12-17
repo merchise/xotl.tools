@@ -12,7 +12,7 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from six import string_types
+from xoutil.eight import string_types
 from xoutil.textwrap import wrap, fill, dedent, indent
 
 

@@ -30,12 +30,20 @@ __all__ = [str(name) for name in ('DictProxyType', 'MemberDescriptorType',
                                   'new_class', 'prepare_class', )]
 
 
+import sys
+_py34 = sys.version_info >= (3, 4, 0)
+del sys
+
+
 from types import MemberDescriptorType, GetSetDescriptorType
 if MemberDescriptorType is GetSetDescriptorType:    # As in pypy
     class _foo(object):
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
     del _foo
+
+
+from ._types import new_class, prepare_class, _calculate_meta    # noqa
 
 
 try:
@@ -53,19 +61,22 @@ except ImportError:
 try:
     from types import MappingProxyType
 except ImportError:
-    # TODO: There was an unnecessary implementation here.  But it wasn't used
-    # at all and wrong.  "MappingProxyType"" is named "DictProxyType" in
-    # Python 2.x.  Deprecate "DictProxyType" in favor of "MappingProxyType".
-    from types import DictProxyType as MappingProxyType    # noqa
+    MappingProxyType = DictProxyType
+
+# TODO: "MappingProxyType"" is named "DictProxyType" in Python 2.x.  Deprecate
+# "DictProxyType" in favor of "MappingProxyType".
 
 
-try:
+if _py34:
     from types import SimpleNamespace
-except ImportError:
+else:
     # TODO: migrate to `xoutil.eight.reprlib`
+    from abc import ABCMeta
+    from .meta import metaclass
+
     from xoutil.reprlib import recursive_repr
 
-    class SimpleNamespace(object):
+    class SimpleNamespace(metaclass(ABCMeta)):
         '''A simple attribute-based namespace.
 
         SimpleNamespace(**kwargs)
@@ -76,7 +87,9 @@ except ImportError:
             self.__dict__.update(kwargs)
 
         def __eq__(self, other):
-            return self.__dict__ == other.__dict__
+            # TODO: This method is not implemented in py33
+            ok = isinstance(other, SimpleNamespace)
+            return ok and self.__dict__ == other.__dict__
 
         @recursive_repr(str('namespace(...)'))
         def __repr__(self):
@@ -84,7 +97,14 @@ except ImportError:
             items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
             return "{}({})".format('namespace', ", ".join(items))
 
-    del recursive_repr
+    del recursive_repr, ABCMeta, metaclass
+
+    try:
+        from types import SimpleNamespace as _sns
+        SimpleNamespace.register(_sns)
+        del _sns
+    except ImportError:
+        pass
 
 
 try:
@@ -159,79 +179,3 @@ except ImportError:
             result = type(self)(self.fget, self.fset, fdel, self.__doc__)
             result.overwrite_doc = self.overwrite_doc
             return result
-
-try:
-    from types import new_class
-except ImportError:
-    # PEP 3115 compliant dynamic class creation.  Used in
-    # xoutil.objects.metaclass
-    #
-    # Taken from Python 3.3 code-base.
-    def new_class(name, bases=(), kwds=None, exec_body=None):
-        """Create a class object dynamically using the appropriate metaclass.
-
-        """
-        import sys
-        meta, ns, kwds = prepare_class(name, bases, kwds)
-        if exec_body is not None:
-            exec_body(ns)
-        if sys.version_info >= (3, 0):
-            return meta(name, bases, ns, **kwds)
-        else:
-            return meta(name, bases, ns)
-
-
-try:
-    from types import prepare_class
-except ImportError:
-    def prepare_class(name, bases=(), kwds=None):
-        """Call the __prepare__ method of the appropriate metaclass.
-
-        Returns (metaclass, namespace, kwds) as a 3-tuple
-
-        *metaclass* is the appropriate metaclass
-        *namespace* is the prepared class namespace
-        *kwds* is an updated copy of the passed in kwds argument with any
-        'metaclass' entry removed. If no kwds argument is passed in, this will
-        be an empty dict.
-
-        """
-        if kwds is None:
-            kwds = {}
-        else:
-            kwds = dict(kwds)  # Don't alter the provided mapping
-        meta = kwds.pop('metaclass', None)
-        if not meta:
-            if bases:
-                meta = type(bases[0])
-            else:
-                meta = type
-        if isinstance(meta, type):
-            # when meta is a type, we first determine the most-derived
-            # metaclass instead of invoking the initial candidate directly
-            meta = _calculate_meta(meta, bases)
-        if hasattr(meta, '__prepare__'):
-            ns = meta.__prepare__(name, bases, **kwds)
-        else:
-            ns = {}
-        return meta, ns, kwds
-
-
-try:
-    from types import _calculate_meta
-except ImportError:
-    def _calculate_meta(meta, bases):
-        """Calculate the most derived metaclass."""
-        winner = meta
-        for base in bases:
-            base_meta = type(base)
-            if issubclass(winner, base_meta):
-                continue
-            if issubclass(base_meta, winner):
-                winner = base_meta
-                continue
-            # else:
-            raise TypeError("metaclass conflict: the metaclass of a derived "
-                            "class must be a (non-strict) subclass of the "
-                            "metaclasses of all its bases")
-        return winner
