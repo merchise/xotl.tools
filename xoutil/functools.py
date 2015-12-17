@@ -558,3 +558,35 @@ if not py33:
             return update_wrapper(wrapper, user_function)
 
         return decorating_function
+
+
+def curry(f):
+    '''Return a function that automatically 'curries' is positional arguments.
+
+    Example::
+
+        >>> add = curry(lambda x, y: x + y)
+        >>> add(1)(2)
+        3
+
+        >>> add(1, 2)
+        3
+
+        >>> add()()()(1, 2)
+        3
+    '''
+    from xoutil.inspect import getfullargspec
+    fargs = getfullargspec(f)[0]
+
+    def curried(cargs=None):
+        if cargs is None:
+            cargs = []
+
+        def inner(*args, **kwargs):
+            cargs_ = cargs + list(args)
+            if len(cargs_) < len(fargs):
+                return curried(cargs_)
+            else:
+                return f(*cargs_, **kwargs)
+        return inner
+    return curried()

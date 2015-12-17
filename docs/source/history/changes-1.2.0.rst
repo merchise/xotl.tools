@@ -17,8 +17,8 @@ version number because we've removed some deprecated functions and/or modules.
   .. The decorator-making decorator
   .. :func:`xoutil.mdeco.decorator` returns a signature-keeping decorator.
 
-- Fixes in :mod:`xoutil.aop.extended`. Added parameters in
-  :func:`xoutil.aop.classical.weave`.
+- Fixes in :mod:`!xoutil.aop.extended`. Added parameters in
+  :func:`!xoutil.aop.classical.weave`.
 
 - Introduces :func:`xoutil.iterators.first_n` and deprecates
   :func:`xoutil.iterators.first` and :func:`xoutil.iterators.get_first`.

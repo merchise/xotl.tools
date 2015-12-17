@@ -4,6 +4,17 @@ Changelog
 1.7 series
 ----------
 
+2015-12-17. Release 1.7.1
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.7.1.rst
+
+.. warning:: Due to lack of time, we have decided to release this version
+   without proper releases of 1.7.0 and 1.6.11.
+
+
+.. _release-1.7.0:
+
 Unreleased. Release 1.7.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 

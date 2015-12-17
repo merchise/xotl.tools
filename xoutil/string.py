@@ -371,7 +371,7 @@ def normalize_str(value):
 
 
 def normalize_ascii(value):
-    '''Return the string normal form for the :param:`value`
+    '''Return the string normal form for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization.
@@ -386,15 +386,15 @@ def normalize_ascii(value):
 
 
 def normalize_slug(value, replacement='-', invalids=None, valids=None):
-    '''Return the string normal form, valid for slugs, for the :param:`value`
+    '''Return the string normal form, valid for slugs, for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization.
 
     Lower-case the result.
 
-    Replace unwanted characters by :param:`replacement`, repetition of given
-    pattern will be converted to only one instance.
+    Replace unwanted characters by `replacement`, repetition of given pattern
+    will be converted to only one instance.
 
     ``[_a-z0-9]`` are assumed as valid characters.  Extra arguments can modify
     this standard behaviour:
@@ -410,9 +410,8 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
            string, any iterator of valid strings of characters, or ``None`` to
            use only default valid characters (See above).
 
-    Parameters :param:`value` and :param:`replacement` could be of any
-    (non-string) type, these values are normalized and converted to lower-case
-    ASCII strings.
+    Parameters `value` and `replacement` could be of any (non-string) type,
+    these values are normalized and converted to lower-case ASCII strings.
 
     Examples::
 

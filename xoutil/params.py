@@ -12,7 +12,7 @@
 #
 # Created 2015-07-13
 
-'''Basic function argument manager.
+r'''Basic function argument manager.
 
 This module must avoid dependencies on modules that aren't basic enough that
 could be the use of this one itself.

@@ -1,5 +1,6 @@
-:mod:`xoutil.params` -- Basic function argument manager
-=============================================================
+=========================================================
+ :mod:`xoutil.params` -- Basic function argument manager
+=========================================================
 
 .. automodule:: xoutil.params
    :members: Coercer, TypeCheck, NoneOrTypeCheck, CheckAndCast, LogicalCheck,
