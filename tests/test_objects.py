@@ -442,3 +442,25 @@ def test_validate_attrs():
                           force_differents=('age',))
 
     assert not validate_attrs(source, target, force_equals=('age',))
+
+
+def test_memoized_classproperty():
+    from xoutil.decorator import memoized_property
+    from xoutil.objects import classproperty
+
+    current = 1
+
+    class Foobar(object):
+        @memoized_property
+        @classproperty
+        def prop(cls):
+            return current
+
+        @classproperty
+        @memoized_property
+        def prop2(cls):
+            return current
+
+    assert Foobar.prop == current
+    current += 1
+    assert Foobar.prop != current

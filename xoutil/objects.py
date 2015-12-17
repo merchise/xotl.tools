@@ -957,6 +957,8 @@ class classproperty(object):
 
         '''
         self.__get = fget
+        self.__name__ = fget.__name__
+        self.__doc__ = fget.__doc__
 
     def __get__(self, instance, owner):
         cls = type(instance) if instance is not None else owner
