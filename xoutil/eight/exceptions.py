@@ -25,6 +25,9 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+from . import _py3, exec_
+
+
 try:
     from exceptions import StandardError
 except ImportError:
@@ -34,3 +37,28 @@ try:
     BaseException = BaseException
 except NameError:
     BaseException = StandardError
+
+
+if _py3:
+    def reraise(tp, value, tb=None):
+        if value.__traceback__ is not tb:
+            raise value.with_traceback(tb)
+        raise value
+else:
+    exec_("""def reraise(tp, value, tb=None): raise tp, value, tb""")
+
+reraise.__doc__ = '''Raise an exception with a traceback.
+
+In Python 2.7 this is the same as::
+
+    raise T, V, tb
+
+In Python 3+ this is::
+
+    raise T(V).with_traceback(tb)
+
+.. versionadded: 1.7.1
+
+'''
+
+del _py3, exec_
