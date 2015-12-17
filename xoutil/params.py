@@ -15,7 +15,7 @@
 # Created 2015-07-13
 
 
-'''Conformer for function parameter passing.
+r'''Conformer for function parameter passing.
 
 It's usual to declare functions with generic prototypes::
 

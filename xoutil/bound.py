@@ -57,7 +57,7 @@ from __future__ import (division as _py3_division,
 
 from types import GeneratorType
 from xoutil.decorator.meta import decorator
-from xoutil.objects import metaclass
+from xoutil.eight.meta import metaclass
 
 
 class BoundedType(type):

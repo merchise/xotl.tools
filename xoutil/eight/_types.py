@@ -30,7 +30,7 @@ try:
     from types import new_class
 except ImportError:
     # PEP 3115 compliant dynamic class creation.  Used in
-    # xoutil.objects.metaclass
+    # xoutil.eight.meta.metaclass
     #
     # Taken from Python 3.3 code-base.
     def new_class(name, bases=(), kwds=None, exec_body=None):

@@ -26,6 +26,9 @@ from __future__ import (division as _py3_division,
 from xoutil.eight import _py3, iteritems as iteritems_
 from xoutil.string import safe_decode
 
+import warnings
+warnings.warn('xoutil.html is deprecated')
+
 
 if _py3:
     from html import entities

@@ -7,10 +7,10 @@ Migrate features compliant with `six` concept to :mod:`xoutil.eight`
 
 This task was already started by migrating:
 
-- Meta-classes definition.  See :func:`xoutil.eight.meta.metaclass`_.
+- Meta-classes definition.  See :func:`xoutil.eight.meta.metaclass`.
 
 - Definitions that exists in only one version (2 or 3) of Python module
-  :mod:`types`.  See :mod:`xoutil.eight.types`_.
+  :mod:`types`.  See :mod:`xoutil.eight.types`.
 
 
 .. todo:: Progressively update HISTORY file with all :mod:`xoutil.eight`
