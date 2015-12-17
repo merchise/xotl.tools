@@ -37,3 +37,9 @@
 .. class:: metaclass(meta, **kwargs)
 
    Deprecated alias of `xoutil.eight.meta.metaclass`:class:.
+
+.. autofunction:: fix_method_documentation
+
+.. autofunction:: multi_getter
+
+.. autofunction:: get_branch_subclasses

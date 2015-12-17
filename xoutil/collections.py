@@ -1721,7 +1721,9 @@ class MetaSet(type):
 class PascalSet(object, metaclass(MetaSet)):
     '''Collection of unique integer elements (implemented with intervals).
 
-    PascalSet(*others) -> new set object
+    ::
+
+       PascalSet(*others) -> new set object
 
     .. versionadded:: 1.7.0
 
@@ -2336,9 +2338,11 @@ MutableSet.register(PascalSet)
 class BitPascalSet(object, metaclass(MetaSet)):
     '''Collection of unique integer elements (implemented with bit-wise sets).
 
-    BitPascalSet(*others) -> new bit-set object
+    ::
 
-    .. versionadded:: 1.7.0
+        BitPascalSet(*others) -> new bit-set object
+
+    .. versionadded:: 1.7.0.
 
     '''
     __slots__ = ('_items',)

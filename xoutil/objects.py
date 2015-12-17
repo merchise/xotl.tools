@@ -418,6 +418,8 @@ def multi_getter(source, *ids):
       >>> next(multi_getter(d, 'a', ('b', 'c'), ('e', 'f')), '---') is None
       True
 
+    .. versionadded:: 1.7.1
+
     '''
     from collections import Iterable as multi
     from xoutil.eight import string_types as strs
@@ -931,6 +933,8 @@ def get_branch_subclasses(cls):
 
     Only return sub-classes in branches (those with no sub-classes).  Instead
     of returning a list, yield each valid value.
+
+    .. versionadded:: 1.7.0
 
     '''
     return list(iter_branch_subclasses(cls, include_this=False))
