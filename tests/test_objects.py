@@ -101,7 +101,7 @@ def test_fulldir():
 
 
 def test_newstyle_metaclass():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class Field(object):
         __slots__ = (str('name'), str('default'))
@@ -151,7 +151,7 @@ def test_newstyle_metaclass():
 
 def test_new_style_metaclass_registration():
     import sys
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class BaseMeta(type):
         classes = []
@@ -444,6 +444,7 @@ def test_validate_attrs():
     assert not validate_attrs(source, target, force_equals=('age',))
 
 
+@pytest.mark.xfail()
 def test_memoized_classproperty():
     from xoutil.decorator import memoized_property
     from xoutil.objects import classproperty
