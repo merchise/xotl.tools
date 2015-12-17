@@ -4,7 +4,8 @@
 # xoutil.meta
 # ---------------------------------------------------------------------
 #
-# Copyright (c) 2013-2015 Merchise Autrement and contributors for the
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # decorator function.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -26,8 +27,7 @@ implement the decorator :func:`~xoutil.deprecation.deprecated` more easily.
 
 
 This module is an adapted work from the decorator version 3.3.2 package and is
-copyright of its owner as stated below. Adaptation work is done by Merchise
-Autrement.
+copyright of its owner as stated below. Adaptation work is done by Merchise.
 
 Original copyright and license notices from decorator package:
 
@@ -67,10 +67,10 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-from six import string_types as _str_base, PY3 as _PY3
+from xoutil.eight import _py3
 
 
-if _PY3:
+if _py3:
     from inspect import getfullargspec as _getfullargspec
 else:
     from inspect import getargspec as _getfullargspec
@@ -189,7 +189,8 @@ class FunctionMaker(object):
         added,
         if any.
         """
-        if isinstance(obj, _str_base):  # "name(signature)"
+        from xoutil.eight import string_types
+        if isinstance(obj, string_types):  # "name(signature)"
             obj = str(obj)
             name, rest = obj.strip().split(str('('), 1)
             signature = rest[:-1]   # strip a right parens

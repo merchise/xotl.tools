@@ -51,11 +51,16 @@ master_doc = 'index'
 project = u'xoutil'
 
 year = datetime.datetime.now().year
-if year > 2012:
-    copyright = u'2012-{year}, Merchise Autrement and Contributors'.format(year=year)
+if year >= 2015:
+    year = u'' if year == 2015 else u'-{year}'.format(year=year)
+    copyright = u'2015{year}, Merchise and Contributors'
+elif year > 2012:
+    copyright = u'2012-{year}, Merchise Autrement and Contributors'
 else:
-    copyright = u'2012, Medardo Rodríguez'
-
+    if year < 2012:
+        year = u'{year}-2012'.format(year=year)
+    copyright = u'{year}, Medardo Rodríguez'
+copyright = copyright.format(year=year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -223,7 +228,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'xoutil.tex', u'xoutil Documentation',
-   u'Merchise Autrement', 'manual'),
+   u'Merchise', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -253,7 +258,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'xoutil', u'xoutil Documentation',
-     [u'Merchise Autrement'], 1)
+     [u'Merchise'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -267,7 +272,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'xoutil', u'xoutil Documentation',
-   u'Merchise Autrement', 'xoutil', 'One line description of project.',
+   u'Merchise', 'xoutil', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -297,3 +302,7 @@ autosummary_generate = True
 
 # - doctesting
 doctest_test_doctest_blocks = None
+
+
+# Produce output for todo and todolist
+todo_include_todos = True

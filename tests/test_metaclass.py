@@ -3,7 +3,8 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_metaclass
 #----------------------------------------------------------------------
-# Copyright (c) 2013, 2014, 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -17,8 +18,25 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
+try:
+    from xoutil.release import VERSION_INFO
+except ImportError:
+    VERSION_INFO = (1, 6, 10)  # Latest release without this attribute.
+
+
+def test_older_import():
+    try:
+        from xoutil.objects import metaclass  # noqa
+    except ImportError:
+        assert VERSION_INFO > (1, 7, 1), \
+            'xoutil.objects.metaclass should still exists in 1.7.0'
+    else:
+        assert VERSION_INFO <= (1, 7, 1), \
+            'xoutil.object.metaclass should be removed from 1.7.2'
+
+
 def test_basic_inline_metaclass():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class Meta(type):
         pass
@@ -35,9 +53,53 @@ def test_basic_inline_metaclass():
     assert Base.__base__ is object
 
 
+def test_atypical_metaclass():
+    from xoutil.eight.meta import metaclass
+
+    class API(object):
+        def values(self, obj):
+            def item(key):
+                if key.startswith('_'):
+                    return ''
+                else:
+                    value = getattr(obj, key)
+                    if not hasattr(value, 'im_func'):
+                        doc = type(value).__name__
+                    elif value.__doc__ is None:
+                        doc = 'no docstring'
+                    else:
+                        doc = value.__doc__
+                return '%10s : %s' % (key, doc)
+            res = [item(el) for el in dir(obj)]
+            return '\n'.join([el for el in res if el != ''])
+
+        def __get__(self, instance, klass):
+            if instance is not None:
+                return self.values(instance)
+            else:
+                return self.values(klass)
+
+    class MyMeta(type):
+        pass
+
+    def apify(clsname, bases, attrs):
+        if '__doc__' not in attrs:
+            attrs['__doc__'] = API()
+        return MyMeta(clsname, bases, attrs)
+
+    class AutoAPI(metaclass(apify)):
+        def foobar(self):
+            pass
+
+    assert isinstance(AutoAPI, MyMeta), 'Wrong metaclass %r' % type(AutoAPI)
+    assert AutoAPI.__bases__ == (object, ), 'Invalid bases %r' % \
+        AutoAPI.__bases__
+    assert AutoAPI.__doc__ is not None
+
+
 def test_no_double_registration_with_inlinemetaclass():
     import sys
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
     py32 = sys.version_info >= (3, 2)
 
     class RegisteringType(type):
@@ -66,7 +128,7 @@ def test_no_double_registration_with_inlinemetaclass():
 
 
 def test_inlinemetaclass_decorator_with_slots():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
     from xoutil.types import MemberDescriptorType
 
     class Meta(type):
@@ -113,7 +175,7 @@ def test_inlinemetaclass_decorator_with_slots():
 
 def test_prepare_a_class():
     import sys
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class ClassDict(dict):
         pass
@@ -167,7 +229,7 @@ def test_prepare_a_class():
 
 
 def test_type():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class x(metaclass(type)):
         pass

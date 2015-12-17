@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.records
 # ---------------------------------------------------------------------
-# Copyright (c) 2014, 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -18,7 +19,7 @@ A record allows to describe plain external data and a simplified model to
 *read* it.  The main use of records is to represent data that is read from a
 CSV file.
 
-See the `record`:class: class to see how to use it.
+See the `record`:class: class to find out how to use it.
 
 '''
 
@@ -29,7 +30,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil import Unset
 from xoutil.functools import lru_cache
-from xoutil.objects import metaclass
+from xoutil.eight.meta import metaclass
 
 
 @lru_cache()
@@ -51,10 +52,7 @@ class _record_type(type):
         result = not attr.startswith('_') and attr.upper() == attr
         if val is not Unset:
             from numbers import Integral
-            try:
-                from six import string_types
-            except ImportError:
-                from xoutil.compat import str_base as string_types
+            from xoutil.eight import string_types
             isi = isinstance
             result = result and (isi(val, Integral) or isi(val, string_types))
         return result
@@ -198,8 +196,8 @@ class record(metaclass(_record_type)):
 def isnull(val):
     '''Return True if `val` is null.
 
-    Null values are None, the empty string and any instance of
-    `xoutil.types.UnsetType`:class:.
+    Null values are None, the empty string and any False instance of
+    `xoutil.logical.Logical`:class:.
 
     Notice that 0, the empty list and other false values in Python are not
     considered null.  This allows that the CSV null (the empty string) is
@@ -207,8 +205,8 @@ def isnull(val):
     valid number) are not misinterpreted as null.
 
     '''
-    from xoutil._values import UnsetType
-    return val in (None, '') or isinstance(val, UnsetType)
+    from xoutil.logical import Logical
+    return val in (None, '') or (isinstance(val, Logical) and not val)
 
 
 # Standard readers

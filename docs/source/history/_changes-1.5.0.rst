@@ -22,4 +22,4 @@
 - Also we have documented a few more functions, including
   :func:`xoutil.fs.path.rtrim`.
 
-- All modules below :mod:`xoutil.aop` are in risk and are being deprecated.
+- All modules below :mod:`!xoutil.aop` are in risk and are being deprecated.

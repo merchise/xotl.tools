@@ -2,8 +2,9 @@
 # ---------------------------------------------------------------------
 # xoutil.decorator
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise Autrement and Contributors
-# Copyright (c) 2009-2011 Medardo Rodríguez
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2009-2012 Medardo Rodríguez
 #
 # Author: Medardo Rodriguez
 # Contributors: see CONTRIBUTORS and HISTORY file
@@ -75,8 +76,8 @@ def settle(**kwargs):
 
     '''
     def inner(target):
-        from six import iteritems as iteritems_
-        for key, value in iteritems_(kwargs):
+        from xoutil.eight import iteritems
+        for key, value in iteritems(kwargs):
             setattr(target, key, value)
         return target
     return inner
@@ -267,6 +268,7 @@ class memoized_instancemethod(object):
     def __get__(self, obj, cls):
         if obj is None:
             return self
+
         def oneshot(*args, **kw):
             result = self.fget(obj, *args, **kw)
             memo = lambda *a, **kw: result
@@ -274,6 +276,7 @@ class memoized_instancemethod(object):
             memo.__doc__ = self.__doc__
             obj.__dict__[self.__name__] = memo
             return result
+
         oneshot.__name__ = self.__name__
         oneshot.__doc__ = self.__doc__
         return oneshot

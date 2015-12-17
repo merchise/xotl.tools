@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_string
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -16,13 +17,28 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import pytest
 
-@pytest.mark.skipif()
-def test_normal_safe_formatter():
-    from xoutil.string import SafeFormatter, safe_encode
+def test_safe_string():
+    from xoutil.string import safe_str
+    from xoutil.eight import _py2
+    aux = lambda x: 2*x + 1
+    name = 'λ x: 2*x + 1'
+    aux.__name__ = safe_str(name)
+    delta = 1 if _py2 else 0
+    assert len(aux.__name__) == len(name) + delta
 
-    f = SafeFormatter(x=1, y=2)
-    result = f.format(safe_encode('CWD: "{cwd}"; "x+d["x"]": {x+d["x"]}.'),
-                      cwd=safe_encode('~/tmp/foóbar'), d=dict(x=1))
-    assert 'CWD: "~/tmp/foóbar"; "x+d["x"]": 2.' == result
+
+def test_normalize_slug():
+    from xoutil.string import normalize_slug
+    assert normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
+    assert normalize_slug('  Á.e i  Ó  u  ', '.', invalids='AU') == 'e.i.o'
+    assert normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
+    assert normalize_slug('_x', '_') == '_x'
+    assert normalize_slug('-x', '_') == 'x'
+    assert normalize_slug('-x-y-', '_') == 'x_y'
+    assert normalize_slug(None) == 'none'
+    assert normalize_slug(1 == 1) == 'true'
+    assert normalize_slug(1.0) == '1-0'
+    assert normalize_slug(135) == '135'
+    assert normalize_slug(123456, '', invalids='52') == '1346'
+    assert normalize_slug('_x', '_') == '_x'

@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.cpystack
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2009-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -23,12 +24,13 @@ from __future__ import (division as _py3_division,
 import inspect
 
 from xoutil.names import strlist as strs
-from six import PY3 as _py3k
+from xoutil.eight import _py3
+from xoutil.deprecation import deprecated
 
 
 __all__ = strs('MAX_DEEP', 'getargvalues', 'error_info',
                'object_info_finder', 'object_finder', 'track_value',
-               'iter_frames')
+               'iter_stack', 'iter_frames')
 del strs
 
 MAX_DEEP = 25
@@ -70,7 +72,7 @@ def getargvalues(frame):
         res.update(values[kwds])
     return res
 
-if not _py3k:
+if not _py3:
     getargvalues.__doc__ += """
     In Python 2.7, packed arguments also works::
 
@@ -241,11 +243,10 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
 
 
 def object_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
-    '''Use :func:`object_info_finder` to find an object of the given type
-    through all arguments in stack frames.
+    '''Find an object of the given type through all arguments in stack frames.
 
-    The difference is that this function return the object directly, not a
-    tuple.
+    The difference with :func:`object_info_finder` is that this function
+    returns the object directly, not a tuple.
 
     '''
     finder = object_info_finder(obj_type, arg_name, max_deep)
@@ -272,6 +273,31 @@ def track_value(value, max_deep=MAX_DEEP):
     return res
 
 
+def iter_stack(max_deep=MAX_DEEP):
+    '''Iterates through stack frames until exhausted or `max_deep` is reached.
+
+    To find a frame fulfilling a condition use::
+
+      frame = next(f for f in iter_stack() if condition(f))
+
+    Using the previous pattern, functions `object_info_finder`,
+    `object_finder` and `track_value` can be reprogrammed or deprecated.
+
+    .. versionadded:: 1.6.8
+
+    '''
+    frame = inspect.currentframe()
+    try:
+        deep = 0
+        while (deep < max_deep) and (frame is not None):
+            yield frame
+            frame = frame.f_back
+            deep += 1
+    finally:
+        del frame   # As recommended in the Python's doc to avoid memory leaks
+
+
+@deprecated(iter_stack)
 def iter_frames(max_deep=MAX_DEEP):
     '''Iterates through all stack frames.
 
@@ -280,6 +306,8 @@ def iter_frames(max_deep=MAX_DEEP):
         (deep, filename, line_no, start_line).
 
     .. versionadded:: 1.1.3
+
+    .. deprecated:: 1.6.8 The use of params `attr_filter` and `value_filter`.
 
     '''
     # TODO: [manu] Use this in all previous functions with same structure
@@ -293,3 +321,6 @@ def iter_frames(max_deep=MAX_DEEP):
             deep += 1
     finally:
         del frame   # As recommended in the Python's doc to avoid memory leaks
+
+
+del deprecated

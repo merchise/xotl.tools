@@ -40,6 +40,8 @@
 
 .. autoclass:: ctuple
 
+.. autoclass:: lwraps(f, n, *, name=None, doc=None, wrapped=None)
+
 ..
    Local Variables:
    ispell-dictionary: "en"

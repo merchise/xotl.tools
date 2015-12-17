@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.test_context
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -18,6 +19,25 @@ from __future__ import (division as _py3_division,
 
 import unittest
 import pytest
+
+# Test concurrent access to context by several greenlets.  Verify isolation in
+# the greenlets.  We don't test isolation for threads cause that depends on
+# python's thread locals and we *rely* on its correctness.
+#
+# Since xoutil.context inspect sys.modules to test for greenlet presence we
+# need to import greenlets before importing context.
+#
+try:
+    import greenlet
+except ImportError:
+    GREENLETS = False
+else:
+    GREENLETS = True
+
+import sys
+sys.modules.pop('xoutil.context', None)
+del sys
+
 from xoutil.context import context
 
 
@@ -97,17 +117,6 @@ def test_reusing_raises():
             assert False, 'It should have raised a RuntimeError'
 
 
-# Test concurrent access to context by several greenlets.  Verify isolation in
-# the greenlets.  We don't test isolation for threads cause that depends on
-# python's thread locals and we *rely* on its correctness.
-try:
-    import greenlet
-except ImportError:
-    GREENLETS = False
-else:
-    GREENLETS = True
-
-
 @pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')
 def test_greenlet_contexts():
     import random
@@ -124,6 +133,7 @@ def test_greenlet_contexts():
         def __call__(self):
             nonlocals.calls += 1
             nonlocals.switches += 1
+            assert 'GREEN CONTEXT' not in context
             with context('GREEN CONTEXT') as ctx:
                 assert ctx.get('greenvar', Unset) is Unset
                 ctx['greenvar'] = self.arg
@@ -136,19 +146,40 @@ def test_greenlet_contexts():
     def loop(n):
         greenlets = [greenlet.greenlet(run=GreenletProg(i))
                      for i in range(n)]
+        nonlocals.calls = 0
+        nonlocals.switches = 0
         while greenlets:
             pos = random.randrange(0, len(greenlets))
             gl = greenlets[pos]
-            print('Switching to greenlet %d' % pos)
             gl.switch()
             # The gl has relinquished control, so if its dead removed from the
             # list, otherwise let it be for another round.
             if gl.dead:
                 del greenlets[pos]
-        print('Loop ended')
+        assert nonlocals.calls == n, "There should be N calls to greenlets."
+        assert nonlocals.switches == 2*n, "There should be 2*N switches."
+
+    def loop_determ(n):
+        greenlets = [greenlet.greenlet(run=GreenletProg(i))
+                     for i in range(n)]
+        pos = 0
+        nonlocals.calls = 0
+        nonlocals.switches = 0
+        while greenlets:
+            gl = greenlets[pos]
+            gl.switch()
+            # The gl has relinquished control, so if its dead removed from the
+            # list, otherwise let it be for another round.
+            if gl.dead:
+                del greenlets[pos]
+            # In this case we ensure there will be several concurrent
+            # greenlets
+            pos = ((pos + 1) % len(greenlets)) if greenlets else 0
+        assert nonlocals.calls == n, "There should be N calls to greenlets."
+        assert nonlocals.switches == 2*n, "There should be 2*N switches."
 
     root = greenlet.greenlet(run=loop)
-    N = 10
-    root.switch(N)
-    assert nonlocals.calls == N, "There should be N calls to greenlets."
-    assert nonlocals.switches == 2*N, "There should be 2*N switches."
+    root.switch(10)
+
+    root = greenlet.greenlet(run=loop_determ)
+    root.switch(5)

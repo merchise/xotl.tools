@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.fs
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -31,7 +32,6 @@ import sys
 import os
 from re import compile as _rcompile
 from xoutil.fs.path import normalize_path
-from six import string_types
 
 
 re_magic = _rcompile('[*?[]')
@@ -126,6 +126,7 @@ def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
 
     '''
     if regex:
+        from xoutil.eight import string_types
         if isinstance(regex, string_types):
             regex = _rcompile(regex)
     else:
@@ -147,6 +148,7 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
 
     The params have analagous meaning that in :func:`iter_files` and the same
     restrictions.
+
     '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     for path, _dirs, _files in os.walk(normalize_path(top)):
@@ -194,10 +196,13 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
     if confirm is None:
         confirm = lambda _: True
     for path, _dirs, _files in os.walk(normalize_path(top)):
+        # XXX: Make clearest next condition
         if ((regex is None or regex.search(path)) and
-            (exclude is None or not exclude.search(path)) and
-            not _dirs and not _files and confirm(path) and
-            not os.path.ismount(path)):
+                (exclude is None or not exclude.search(path)) and
+                not _dirs and
+                not _files and
+                confirm(path) and
+                not os.path.ismount(path)):
             os.rmdir(path)
 
 
@@ -218,6 +223,7 @@ def regex_rename(top, pattern, repl, maxdepth=None):
 
     '''
     from re import subn as _re_subn
+    from xoutil.eight import string_types
     if isinstance(pattern, string_types):
         pattern = _rcompile(pattern)
     depth = 0
@@ -236,8 +242,7 @@ def regex_rename(top, pattern, repl, maxdepth=None):
 
 def rename_wrong(top='.', current_encoding=None, target_encoding=None,
                  verbose=False):
-    '''Converts filenames from one encoding to another if the current is wrong.
-    '''
+    '''Converts wrong filenames from one encoding to another.'''
     # FIXME: Not finished
     raise NotImplementedError
     import sys
@@ -280,26 +285,33 @@ filter_false = lambda path, stat_info: False
 
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
+    from xoutil.eight import string_types
     if isinstance(regex, string_types):
         regex = _rcompile(regex)
+
     def _filter(path, stat_info):
         return regex.match(os.path.basename(path)) is not None
+
     return _filter
 
 
 def get_wildcard_filter(pattern):
     '''Return a filter for "walk" based on a wildcard pattern a la fnmatch.'''
     regex = _get_regex(pattern)
+
     def _filter(path, stat_info):
         return regex.match(os.path.basename(path)) is not None
+
     return _filter
 
 
 def get_mime_filter(mime_start):
     import mimetypes
+
     def _filter(path, stat_info):
         t = mimetypes.guess_type(path)[0]
         return t.startswith(mime_start) if t else False
+
     return _filter
 
 
@@ -453,29 +465,27 @@ if sys.version_info < (3, 4, 1):
         raised.  This is recursive.
 
         """
-        import errno
-        from os import path, mkdir
-        from os.path import curdir
+        from errno import EEXIST
         from xoutil.string import safe_encode
-        head, tail = path.split(name)
+        head, tail = os.path.split(name)
         if not tail:
-            head, tail = path.split(head)
-        if head and tail and not path.exists(head):
+            head, tail = os.path.split(head)
+        if head and tail and not os.path.exists(head):
             try:
                 makedirs(head, mode, exist_ok)
             except OSError as e:
                 # be happy if someone already created the path
-                if e.errno != errno.EEXIST:
+                if e.errno != EEXIST:
                     raise
-            cdir = curdir
+            cdir = os.path.curdir
             if isinstance(tail, bytes):
-                cdir = safe_encode(curdir, 'ASCII')
+                cdir = safe_encode(os.path.curdir, 'ASCII')
             if tail == cdir:      # xxx/newdir/. exists if xxx/newdir exists
                 return
         try:
-            mkdir(name, mode)
+            os.mkdir(name, mode)
         except OSError as e:
-            if not exist_ok or e.errno != errno.EEXIST or not path.isdir(name):
+            if not exist_ok or e.errno != EEXIST or not os.path.isdir(name):
                 raise
 else:
     from os import makedirs
@@ -536,8 +546,8 @@ def concatfiles(*files):
 
     '''
     import shutil
+    from xoutil.eight import string_types
     from xoutil.types import is_collection
-    from six import string_types
     if len(files) < 2:
         raise TypeError('At least 2 files must be passed to concatfiles.')
     elif len(files) == 2:

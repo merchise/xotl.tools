@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.annotate
 # ---------------------------------------------------------------------
-# Copyright (c) 2012-2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -21,7 +22,6 @@ from __future__ import (division as _py3_division,
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
 
-from six import string_types as _str_base
 from xoutil.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
@@ -43,7 +43,8 @@ _ARG_SEP = _regex_compile(r'(?im)^\*{0,2}(?P<argname>[_\w\d]+)\s*:')
 
 
 def _split_signature(signature):
-    signature = (signature.strip() if isinstance(signature, _str_base) else '')
+    from xoutil.eight import string_types as strs
+    signature = (signature.strip() if isinstance(signature, strs) else '')
     if signature:
         matches = _SIGNATURE.match(signature)
         return matches.group('args'), matches.group('return')
@@ -113,13 +114,13 @@ def _parse_signature(signature):
         def __getitem__(self, key):
             from xoutil import Unset
             from xoutil.iterators import dict_update_new
-            from six import PY3
+            from xoutil.eight import _py3
             d = self.d
             res = d.get(key, Unset)
             f = self.f
             if res is Unset and f:
                 f_globals = self.f_globals
-                if PY3:
+                if _py3:
                     # FIXME: This modifies f_globals! Use f_builtins of the
                     # frame.
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # tests.test_objects
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -13,7 +14,6 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import pytest
@@ -28,16 +28,16 @@ def test_smart_copy():
 
     source = new(a=1, b=2, c=4, _d=5)
     target = {}
-    smart_copy(source, target, False)
+    smart_copy(source, target, defaults=False)
     assert target == dict(a=1, b=2, c=4)
 
     source = new(a=1, b=2, c=4, _d=5)
     target = {}
-    smart_copy(source, target, None)
+    smart_copy(source, target, defaults=None)
     assert target == dict(a=1, b=2, c=4)
 
     target = {}
-    smart_copy(source, target, True)
+    smart_copy(source, target, defaults=True)
     assert target['_d'] == 5
 
 
@@ -57,8 +57,6 @@ def test_smart_copy_with_defaults():
 def test_smart_copy_signature():
     with pytest.raises(TypeError):
         smart_copy({}, defaults=False)
-    with pytest.raises(TypeError):
-        smart_copy({}, False)
 
 
 def test_smart_copy_from_dict_to_dict():
@@ -97,8 +95,13 @@ def test_smart_copy_with_callable_default():
     assert d == dict(a=1, b='2')
 
 
+def test_fulldir():
+    from xoutil.objects import fulldir
+    assert {'__getitem__', 'get', 'items', 'keys'} < fulldir({})
+
+
 def test_newstyle_metaclass():
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class Field(object):
         __slots__ = (str('name'), str('default'))
@@ -148,7 +151,7 @@ def test_newstyle_metaclass():
 
 def test_new_style_metaclass_registration():
     import sys
-    from xoutil.objects import metaclass
+    from xoutil.eight.meta import metaclass
 
     class BaseMeta(type):
         classes = []
@@ -184,7 +187,10 @@ def test_new_style_metaclass_registration():
 
 def test_lazy():
     from xoutil.objects import lazy, setdefaultattr
-    class new(object): pass
+
+    class new(object):
+        pass
+
     inst = new()
     setter = lambda a: -a
     setdefaultattr(inst, 'c', lazy(setter, 10))
@@ -286,7 +292,9 @@ def test_get_first_of():
     somedict = {"foo": "bar", "spam": "eggs"}
     assert get_first_of(somedict, "eggs") is None
 
-    class Someobject(object): pass
+    class Someobject(object):
+        pass
+
     inst = Someobject()
     inst.foo = 'bar'
     inst.eggs = 'spam'
@@ -294,7 +302,10 @@ def test_get_first_of():
     assert get_first_of(inst, 'invalid') is None
 
     somedict = {"foo": "bar", "spam": "eggs"}
-    class Someobject(object): pass
+
+    class Someobject(object):
+        pass
+
     inst = Someobject()
     inst.foo = 'bar2'
     inst.eggs = 'spam'
@@ -305,8 +316,10 @@ def test_get_first_of():
 
     none = object()
     assert get_first_of((inst, somedict), 'foobar', default=none) is none
-    assert get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 3) == 'eggs'
-    assert get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 4) is None
+    _eggs = get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 3)
+    assert _eggs == 'eggs'
+    _none = get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 4)
+    assert _none is None
 
     with pytest.raises(TypeError):
         get_first_of(None, anything=1)
@@ -314,7 +327,10 @@ def test_get_first_of():
 
 def test_smart_getter():
     from xoutil.objects import smart_getter
-    class new(object): pass
+
+    class new(object):
+        pass
+
     o = new()
     o.attr1 = 1
     o.attr2 = 1
@@ -360,3 +376,92 @@ def test_extract_attrs():
     with pytest.raises(AttributeError):
         assert extract_attrs(d, 'y')
     assert extract_attrs(d, 'y', default=None) is None
+
+
+def test_copy_class():
+    from xoutil import Unset
+    from xoutil.eight import _py3
+    from xoutil.eight.meta import metaclass
+    from xoutil.objects import copy_class
+
+    u = str if _py3 else unicode
+
+    class MetaFoo(type):
+        pass
+
+    class Foo(metaclass(MetaFoo)):
+        a = 1
+        b = 2
+        c = 3
+        d = 4
+
+    class Baz(Foo):
+        e = 5
+
+    index = {k: getattr(Foo, k) for k in 'abcd'}
+    Bar = copy_class(Foo)
+    assert Bar.a == Foo.a and Bar.b and Bar.c and Bar.d
+
+    Egg = copy_class(Foo, ignores=['b', 'c'])
+    assert getattr(Egg, 'b', Unset) is Unset
+
+    Egg = copy_class(Foo, ignores=[lambda k: index.get(k) and index.get(k) > 2])
+    assert Egg.a == Foo.a
+    assert getattr(Egg, 'c', Unset) is Unset
+
+    Named = copy_class(Foo, new_name='Named')
+    assert Named.__name__ == 'Named'
+
+    Named = copy_class(Foo, new_name=u('Named'))
+    assert Named.__name__ == 'Named'
+
+    import fnmatch
+    pattern = lambda attr: fnmatch.fnmatch(attr, 'a*')
+    Egg = copy_class(Foo, ignores=[pattern])
+    assert getattr(Egg, 'a', Unset) is Unset
+
+    import re
+    _pattern = re.compile('^a')
+    pattern = lambda attr: _pattern.match(attr)
+    Egg = copy_class(Foo, ignores=[pattern])
+    assert getattr(Egg, 'a', Unset) is Unset
+
+
+def test_validate_attrs():
+    from xoutil.objects import validate_attrs
+
+    class Person(object):
+        def __init__(self, **kwargs):
+            for which in kwargs:
+                setattr(self, which, kwargs[which])
+
+    source = Person(name='Manuel', age=33, sex='male')
+    target = {'name': 'Manuel', 'age': 4, 'sex': 'male'}
+
+    assert validate_attrs(source, target, force_equals=('sex',),
+                          force_differents=('age',))
+
+    assert not validate_attrs(source, target, force_equals=('age',))
+
+
+@pytest.mark.xfail()
+def test_memoized_classproperty():
+    from xoutil.decorator import memoized_property
+    from xoutil.objects import classproperty
+
+    current = 1
+
+    class Foobar(object):
+        @memoized_property
+        @classproperty
+        def prop(cls):
+            return current
+
+        @classproperty
+        @memoized_property
+        def prop2(cls):
+            return current
+
+    assert Foobar.prop == current
+    current += 1
+    assert Foobar.prop != current

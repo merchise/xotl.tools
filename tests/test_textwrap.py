@@ -2,8 +2,7 @@
 
 # Most of the code was taken from the Python 3.3 code base.
 #
-# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
-# 2012 Python Software Foundation.  All rights reserved.
+# Copyright (c) 2001-2012 Python Software Foundation.  All rights reserved.
 #
 
 from __future__ import (division as _py3_division,
@@ -13,8 +12,8 @@ from __future__ import (division as _py3_division,
 
 
 import unittest
-from six import string_types
-from xoutil.textwrap import TextWrapper, wrap, fill, dedent, indent
+from xoutil.eight import string_types
+from xoutil.textwrap import wrap, fill, dedent, indent
 
 
 class BaseTestCase(unittest.TestCase):
@@ -31,9 +30,9 @@ class BaseTestCase(unittest.TestCase):
         return result
 
     def check(self, result, expect):
-        self.assertEqual(result, expect,
-            'expected:\n%s\nbut got:\n%s' % (
-                self.show(expect), self.show(result)))
+        msg = 'expected:\n%s\nbut got:\n%s' % (self.show(expect),
+                                               self.show(result))
+        self.assertEqual(result, expect, msg)
 
     def check_wrap(self, text, width, expect, **kwargs):
         result = wrap(text, width, **kwargs)
@@ -53,7 +52,6 @@ class IndentTestCases(BaseTestCase):
         self.text = '''\
 This paragraph will be filled, first without any indentation,
 and then with some (including a hanging indent).'''
-
 
     def test_fill(self):
         # Test the fill() method
@@ -200,18 +198,18 @@ class IndentTestCase(unittest.TestCase):
     # The roundtrip cases are separate, because textwrap.dedent doesn't
     # handle Windows line endings
     ROUNDTRIP_CASES = (
-      # Basic test case
-      "Hi.\nThis is a test.\nTesting.",
-      # Include a blank line
-      "Hi.\nThis is a test.\n\nTesting.",
-      # Include leading and trailing blank lines
-      "\nHi.\nThis is a test.\nTesting.\n",
+        # Basic test case
+        "Hi.\nThis is a test.\nTesting.",
+        # Include a blank line
+        "Hi.\nThis is a test.\n\nTesting.",
+        # Include leading and trailing blank lines
+        "\nHi.\nThis is a test.\nTesting.\n",
     )
     CASES = ROUNDTRIP_CASES + (
-      # Use Windows line endings
-      "Hi.\r\nThis is a test.\r\nTesting.\r\n",
-      # Pathological case
-      "\nHi.\r\nThis is a test.\n\r\nTesting.\r\n\n",
+        # Use Windows line endings
+        "Hi.\r\nThis is a test.\r\nTesting.\r\n",
+        # Pathological case
+        "\nHi.\r\nThis is a test.\n\r\nTesting.\r\n\n",
     )
 
     def test_indent_nomargin_default(self):
@@ -257,16 +255,16 @@ class IndentTestCase(unittest.TestCase):
         # Test default indenting of lines that are not whitespace only
         prefix = '  '
         expected = (
-          # Basic test case
-          "  Hi.\n  This is a test.\n  Testing.",
-          # Include a blank line
-          "  Hi.\n  This is a test.\n\n  Testing.",
-          # Include leading and trailing blank lines
-          "\n  Hi.\n  This is a test.\n  Testing.\n",
-          # Use Windows line endings
-          "  Hi.\r\n  This is a test.\r\n  Testing.\r\n",
-          # Pathological case
-          "\n  Hi.\r\n  This is a test.\n\r\n  Testing.\r\n\n",
+            # Basic test case
+            "  Hi.\n  This is a test.\n  Testing.",
+            # Include a blank line
+            "  Hi.\n  This is a test.\n\n  Testing.",
+            # Include leading and trailing blank lines
+            "\n  Hi.\n  This is a test.\n  Testing.\n",
+            # Use Windows line endings
+            "  Hi.\r\n  This is a test.\r\n  Testing.\r\n",
+            # Pathological case
+            "\n  Hi.\r\n  This is a test.\n\r\n  Testing.\r\n\n",
         )
         for text, expect in zip(self.CASES, expected):
             self.assertEqual(indent(text, prefix), expect)
@@ -275,16 +273,16 @@ class IndentTestCase(unittest.TestCase):
         # Test default indenting of lines that are not whitespace only
         prefix = '  '
         expected = (
-          # Basic test case
-          "  Hi.\n  This is a test.\n  Testing.",
-          # Include a blank line
-          "  Hi.\n  This is a test.\n\n  Testing.",
-          # Include leading and trailing blank lines
-          "\n  Hi.\n  This is a test.\n  Testing.\n",
-          # Use Windows line endings
-          "  Hi.\r\n  This is a test.\r\n  Testing.\r\n",
-          # Pathological case
-          "\n  Hi.\r\n  This is a test.\n\r\n  Testing.\r\n\n",
+            # Basic test case
+            "  Hi.\n  This is a test.\n  Testing.",
+            # Include a blank line
+            "  Hi.\n  This is a test.\n\n  Testing.",
+            # Include leading and trailing blank lines
+            "\n  Hi.\n  This is a test.\n  Testing.\n",
+            # Use Windows line endings
+            "  Hi.\r\n  This is a test.\r\n  Testing.\r\n",
+            # Pathological case
+            "\n  Hi.\r\n  This is a test.\n\r\n  Testing.\r\n\n",
         )
         for text, expect in zip(self.CASES, expected):
             self.assertEqual(indent(text, prefix, None), expect)
@@ -293,16 +291,16 @@ class IndentTestCase(unittest.TestCase):
         # Add 'prefix' to all lines, including whitespace-only ones.
         prefix = '  '
         expected = (
-          # Basic test case
-          "  Hi.\n  This is a test.\n  Testing.",
-          # Include a blank line
-          "  Hi.\n  This is a test.\n  \n  Testing.",
-          # Include leading and trailing blank lines
-          "  \n  Hi.\n  This is a test.\n  Testing.\n",
-          # Use Windows line endings
-          "  Hi.\r\n  This is a test.\r\n  Testing.\r\n",
-          # Pathological case
-          "  \n  Hi.\r\n  This is a test.\n  \r\n  Testing.\r\n  \n",
+            # Basic test case
+            "  Hi.\n  This is a test.\n  Testing.",
+            # Include a blank line
+            "  Hi.\n  This is a test.\n  \n  Testing.",
+            # Include leading and trailing blank lines
+            "  \n  Hi.\n  This is a test.\n  Testing.\n",
+            # Use Windows line endings
+            "  Hi.\r\n  This is a test.\r\n  Testing.\r\n",
+            # Pathological case
+            "  \n  Hi.\r\n  This is a test.\n  \r\n  Testing.\r\n  \n",
         )
         predicate = lambda line: True
         for text, expect in zip(self.CASES, expected):
@@ -312,16 +310,16 @@ class IndentTestCase(unittest.TestCase):
         # Add 'prefix' solely to whitespace-only lines.
         prefix = '  '
         expected = (
-          # Basic test case
-          "Hi.\nThis is a test.\nTesting.",
-          # Include a blank line
-          "Hi.\nThis is a test.\n  \nTesting.",
-          # Include leading and trailing blank lines
-          "  \nHi.\nThis is a test.\nTesting.\n",
-          # Use Windows line endings
-          "Hi.\r\nThis is a test.\r\nTesting.\r\n",
-          # Pathological case
-          "  \nHi.\r\nThis is a test.\n  \r\nTesting.\r\n  \n",
+            # Basic test case
+            "Hi.\nThis is a test.\nTesting.",
+            # Include a blank line
+            "Hi.\nThis is a test.\n  \nTesting.",
+            # Include leading and trailing blank lines
+            "  \nHi.\nThis is a test.\nTesting.\n",
+            # Use Windows line endings
+            "Hi.\r\nThis is a test.\r\nTesting.\r\n",
+            # Pathological case
+            "  \nHi.\r\nThis is a test.\n  \r\nTesting.\r\n  \n",
         )
         predicate = lambda line: not line.strip()
         for text, expect in zip(self.CASES, expected):

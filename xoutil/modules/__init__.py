@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.modules
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -11,8 +12,7 @@
 #
 # Created on 13 janv. 2013
 
-'''Modules utilities.
-'''
+'''Modules utilities.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -20,6 +20,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from types import ModuleType
+
+# TODO: Implement the concept of module descriptor
 
 
 def force_module(ref=None):
@@ -55,6 +57,7 @@ def force_module(ref=None):
         return __import__(ref, fromlist=[ref], level=0)
 
 
+# TODO: Deprecate this method in favor of ``from <module> import *``
 def copy_members(source=None, target=None):
     '''Copy module members from `source` to `target`.
 
@@ -125,7 +128,7 @@ def customize(module, custom_attrs=None, meta=None):
     '''
     if not isinstance(module, _CustomModuleBase):
         import sys
-        from xoutil.objects import metaclass
+        from xoutil.eight.meta import metaclass
         meta_base = meta if meta else type
 
         class CustomModuleType(meta_base):
@@ -162,9 +165,11 @@ def modulemethod(func):
     import sys
     from functools import wraps
     self, _created, cls = customize(sys.modules[func.__module__])
+
     @wraps(func)
     def inner(*args, **kwargs):
         return func(self, *args, **kwargs)
+
     setattr(cls, func.__name__, func)
     return inner
 
@@ -229,7 +234,7 @@ def get_module_path(module):
     '''
     from importlib import import_module
     from xoutil.fs.path import normalize_path
-    from six import string_types as strs
+    from xoutil.eight import string_types as strs
     mod = import_module(module) if isinstance(module, strs) else module
     # The __path__ only exists for packages and does not include the
     # __init__.py

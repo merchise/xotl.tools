@@ -30,7 +30,7 @@
 
 - Bug fixes:
 
-  - Fixes some errors with :mod:`classical <xoutil.aop.classical>` AOP weaving
+  - Fixes some errors with :mod:`classical <!xoutil.aop.classical>` AOP weaving
     of functions in modules that where :func:`customized
     <xoutil.modules.customize>`.
 

@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.names
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -20,11 +21,7 @@ from __future__ import (division as _py3_division,
 
 
 from xoutil import Undefined as _undef
-
-try:
-    str_base = basestring
-except NameError:
-    str_base = str
+from .eight import base_string
 
 
 def _get_mappings(source):
@@ -188,21 +185,71 @@ def module_name(item):
 
        >>> from xoutil import Unset
        >>> module_name(Unset)
-       'xoutil._values'
+       'xoutil.logical'
 
     '''
     from xoutil.inspect import get_attr_value
     if item is None:
         res = ''
-    elif isinstance(item, str_base):
+    elif isinstance(item, base_string):
         res = item
     else:
         res = get_attr_value(item, '__module__', None)
         if res is None:
             res = get_attr_value(type(item), '__module__', '')
-    if res.startswith('__') or (res in ('builtins', '<module>')):
+    if res.startswith('__') or res in ('builtins', 'exceptions', '<module>'):
         res = ''
     return str(res)
+
+
+def simple_name(item, join=True):
+    '''Returns the simple name for the given object.
+
+    :param join: If False, only the object inner name is returned; if it is a
+           callable is used similar to a string join receiving a tuple of
+           (module-name, inner-name) as argument; True means (is equivalent
+           to)::
+
+             join = lambda arg: '.'.join(arg).strip('.')
+
+           For example, use ``lambda arg: arg`` to return the 2-tuple itself.
+
+           See `module_name`:func: for more information when a not False value
+           is used.
+
+    Examples::
+
+       >>> simple_name(simple_name)
+       'xoutil.names.simple_name'
+
+       >>> from xoutil import Unset
+       >>> simple_name(Unset)
+       'xoutil.logical.Unset'
+
+    This function is intended for named objects (those with the `__name__`
+    attribute), if an object without standard name is used, the type name is
+    returned instead; for example::
+
+        >>> simple_name(0)
+        'int'
+
+    To get a name in a more precise way, use `nameof`:func:.
+
+    '''
+    # TODO: Use this function in `nameof`
+    from xoutil.inspect import type_name
+    singletons = (None, True, False, Ellipsis, NotImplemented)
+    res = next((str(s) for s in singletons if s is item), None)
+    if res is None:
+        res = type_name(item)
+        if res is None:
+            item = type(item)
+            res = type_name(item)
+        if join:
+            if join is True:
+                join = lambda arg: str('.'.join(arg).strip('.'))
+            res = join((module_name(item), res))
+    return res
 
 
 def nameof(*args, **kwargs):
@@ -255,6 +302,7 @@ def nameof(*args, **kwargs):
     '''
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
+    from xoutil.eight import range
     from xoutil.inspect import type_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
@@ -289,7 +337,7 @@ def nameof(*args, **kwargs):
                     if head:
                         res = '.'.join((head, res))
                 grant(res)
-            elif isinstance(item, (str_base, Number)):
+            elif isinstance(item, (base_string, Number)):
                 grant(str(item))
             else:
                 grant('@'.join(('%(next)s', hex(id(item)))), typed=True)
@@ -510,7 +558,7 @@ class strlist(list):
 # Otherwise the `tests/` directory would need to be a proper package.
 
 import unittest as _utest
-from ._values import Unset as _Unset   # Use a tier 0 module!
+from xoutil import Unset as _Unset   # Use a tier 0 module!
 
 
 class TestRelativeImports(_utest.TestCase):

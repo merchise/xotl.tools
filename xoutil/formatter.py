@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.formatter
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2009-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -23,8 +24,8 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from six import string_types as _str_base
-from xoutil.objects import metaclass
+from xoutil.eight import string_types as _str_base
+from xoutil.eight.meta import metaclass
 
 
 class DelimiterFactory(object):
@@ -43,7 +44,7 @@ class BaseFactory(object):
 
 class MapFactory(BaseFactory):
     def __call__(self, mapping):
-        from six import text_type
+        from xoutil.eight import text_type
         return text_type(mapping[self.key])
 
 
@@ -53,7 +54,7 @@ class PyFactory(BaseFactory):
                                         start, end)
 
     def __call__(self, mapping):
-        from six import text_type
+        from xoutil.eight import text_type
         return text_type(eval(self.key, mapping))
 
 

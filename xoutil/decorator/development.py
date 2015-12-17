@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.decorator.development
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -16,15 +17,11 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-import warnings
 
-from six import class_types as _class_types
-from xoutil.names import nameof
-
-from .meta import decorator as _decorator
+from .meta import decorator
 
 
-@_decorator
+@decorator
 def unstable(target, msg=None):
     '''Declares that a method, class or interface is unstable.
 
@@ -37,6 +34,9 @@ def unstable(target, msg=None):
     second matches `target's` full name.
 
     '''
+    import warnings
+    from xoutil.names import nameof
+    from xoutil.eight import class_types
     if msg is None:
         msg = ('The {0} `{1}` is declared unstable. '
                'It may change in the future or be removed.')
@@ -46,14 +46,14 @@ def unstable(target, msg=None):
         from xoutil import Ignored as Interface
     if isinstance(target, type(Interface)):
         objtype = 'interface'
-    elif isinstance(target, _class_types):
+    elif isinstance(target, class_types):
         objtype = 'class'
     else:
         objtype = 'function or method'
     message = msg.format(objtype,
                          nameof(target, inner=True, full=True))
-    if isinstance(target, _class_types) or issubclass(type(target),
-                                                      type(Interface)):
+    if isinstance(target, class_types) or issubclass(type(target),
+                                                     type(Interface)):
         class meta(type(target)):
             pass
 
@@ -69,3 +69,6 @@ def unstable(target, msg=None):
             warnings.warn(message, stacklevel=2)
             return target(*args, **kwargs)
         return _unstable
+
+
+del decorator

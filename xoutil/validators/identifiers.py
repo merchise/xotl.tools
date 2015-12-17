@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.validators.identifiers
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -25,7 +26,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode)
 
 from re import compile as _regex_compile
-from six import string_types
+from xoutil.eight import string_types
 
 
 from xoutil.names import strlist as strs
@@ -48,6 +49,18 @@ def is_valid_identifier(name):
 
     '''
     return isinstance(name, string_types) and _IDENTIFIER_REGEX.match(name)
+
+
+def check_identifier(name):
+    '''Checks if `name` a valid Python identifier.
+
+    If not, an exception is raised.
+
+    '''
+    if is_valid_identifier(name):
+        return name
+    else:
+        raise ValueError('"%s" is not a valid identifier!' % name)
 
 
 _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')

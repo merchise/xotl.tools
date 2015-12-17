@@ -7,7 +7,7 @@
 .. versionadded:: 1.6.3  Pre-release version.
 
 .. warning:: This module is still in heavy development.  The API is flux.  It
-   will be declared stable only after release 1.7.0.  Even the module name
+   will be declared stable only after release 1.8.0.  Even the module name
    might change in the future.
 
 
@@ -29,8 +29,8 @@ This document uses the following terminology:
    unbounded function
 
       This is the function that does the actual work without testing for any
-      `boundary condition`:term:.  Boundary conditions are not
-      "natural-causes" of termination for the algorithm but conditions imposed
+      `boundary condition`:term:.  Boundary conditions are not "natural
+      causes" of termination for the algorithm but conditions imposed
       elsewhere: the environment, resource management, etc.
 
       This function *must* return a generator, called the `unbounded
@@ -45,40 +45,39 @@ This document uses the following terminology:
 
    boundary condition
 
-      Is a condition, imposed outside the logical description of any
-      algorithm, that can be tested, when met it indicates that the `unbounded
+      It's a condition that does not belong to the logical description of any
+      algorithm.  When this condition is met it indicates that the `unbounded
       generator`:term: should be closed.  The boundary condition is tested
       each time the unbounded generator yields.
 
       A boundary condition is usually implemented in a single function called
-      a `boundary definition`:term:.
+      the `boundary definition`:term:.
 
    boundary definition
 
       A function that implements a boundary condition.  This function must
       comply with the boundary protocol (see `boundary`:func:).
 
-      Sometime we identify the `boundary` with its `boundary definition`.
+      Sometimes we identify the boundary condition with its `boundary
+      definition`.
 
    bounded function
 
-      Is the result of applying a `boundary definition` to an `unbounded
+      It's the result of applying a `boundary definition` to an `unbounded
       function`.
 
    bounded generator
 
-      Is the result of applying a `boundary condition` to an `unbounded
+      It's the result of applying a `boundary condition` to an `unbounded
       generator`.
 
 
-__ `Defining boundaries`_.
-
 The bounded execution model takes at least an `unbounded generator` and a
-`boundary condition` (which as stated `above <boundary condition>`:term: is
-also a generator).  Applying the boundary condition to the generator
-ultimately results in a bounded generator, which will be semantically
-equivalent to the `unbounded generator` but will stop yielding when the
-boundary condition yields True or when the generator itself is exhausted.
+`boundary condition`.  Applying the boundary condition to the unbounded
+generator ultimately results in a `bounded generator`, which will behave
+almost equivalently to the `unbounded generator` but will stop when the
+boundary condition yields True or when the unbounded generator itself is
+exhausted.
 
 
 Included boundary conditions
@@ -102,7 +101,6 @@ you could use the following high-level boundaries:
 .. autofunction:: whenany(*boundaries)
 
 .. autofunction:: whenall(*boundaries)
-
 
 
 Defining boundaries
@@ -137,10 +135,10 @@ how a boundary condition could be implemented.
 
 We implemented the boundary condition via the `boundary`:func: helper.  This
 helpers allows to implement the boundary condition via a boundary definition
-(the function above).  Then the ``boundary`` helper takes the definition it
-builds a `BoundaryCondition`:class: instance.  This instance can then be used
-to decorate the `unbounded function`, this operation returns a `bounded
-function` (a `Bounded`:class: instance).
+(the function above).  The ``boundary`` helper takes the definition and builds
+a `BoundaryCondition`:class: instance.  This instance can then be used to
+decorate the `unbounded function`, returning a `bounded function` (a
+`Bounded`:class: instance).
 
 When the `bounded function` is called, what actually happens is that:
 
@@ -237,11 +235,12 @@ execution of the task::
        outbox = Outbox.open()
        try:
           for message in outbox:
-	     emailbackend.send(message)
-	     outbox.remove(message)
-	     yield message
+             emailbackend.send(message)
+             outbox.remove(message)
+             yield message
        except GeneratorExit:
-          pass  # Avoid the propagation of this
+          # This means the time we were given is off.
+          pass
        finally:
           outbox.close()  # commit the changes to the outbox
 
@@ -256,3 +255,66 @@ place in the code above where an error could happen is the sending of the
 email, and the data is only touched for each email that is actually sent.  So
 we can safely close our outbox and commit the removal of previous message from
 the outbox.
+
+
+Using the `Bounded.generate`:meth: method
+=========================================
+
+Calling a `bounded generator` simply returns the last valued produced by the
+`unbounded generator`, but sometimes you need to actually *see* all the values
+produced.  This is useful if you need to meld several `generators` with
+partially overlapping boundary conditions.
+
+Let's give an example by extending a bit the example given in the previous
+section.  Assume you now need to extend your cron task to also read an Inbox
+as much as it can and then send as many messages as it can.  Both things
+should be done under a given amount of time, however the accumulated size of
+sent messages should not surpass a threshold of bytes to avoid congestion.
+
+For this task you may use both `timed`:func: and `accumulated`:func:.  Notice
+that you to apply `accumulated`:func: only to the process of sending the
+messages and the `timed` boundary to the overall process.
+
+This can be accomplished like this:
+
+.. code-block:: python
+   :linenos:
+
+   def communicate(interval, bandwidth):
+       from itertools import chain as meld
+       def receive():
+           for message in Inbox.receive():
+              yield message
+       @accumulated(bandwith, 'size')
+       def send():
+           for message in Outbox.messages():
+               yield message
+       @timed(interval)
+       def execute():
+           for _ in meld(receive(), send.generate()):
+               yield
+       return execute()
+
+
+Let's break this into its parts:
+
+- The ``receive`` function reads the Inbox and yields each message received.
+
+  It is actually an `unbounded function`:term: but don't want to bound its
+  execution in isolation.
+
+- The ``send`` unbounded function sends every message we have in the Outbox
+  and yields each one.  In this case we *can* apply the `accumulated` boundary
+  to get a `Bounded`:class: instance.
+
+- Then we define an `execute` function bounded by `timed`.  This function
+  melds the ``receive`` and ``send`` processes, but we can't actually call
+  ``send`` because we need to yield after each message has been received or
+  sent.  That's why we need to call the `~Bounded.generate`:meth: so that the
+  time boundary is also applied to the sending process.
+
+.. note:: The structure from this example is actually taken from a real
+   program, although simplified to serve better for learning.  For instance,
+   in our real-world program `bandwidth` could be None to indicate no size
+   limit should be applied to the sending process.  Also in the example we're
+   not actually saving nor sending messages!

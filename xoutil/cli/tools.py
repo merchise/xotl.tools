@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.cli.tools
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -67,7 +68,7 @@ def command_name(cls):
     Unset = object()
     res = getattr(cls, 'command_cli_name', Unset)
     if res is not Unset:
-        from six import string_types
+        from xoutil.eight import string_types
         if not isinstance(res, string_types):
             raise TypeError("Attribute 'command_cli_name' must be a string.")
     else:

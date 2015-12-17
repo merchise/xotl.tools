@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil._meta3
+# xoutil.eight._meta3
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -17,19 +18,19 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from six import PY3
-assert PY3, 'This module should be loaded in Py3k only'
+from . import _py3
+assert _py3, 'This module should be loaded in Py3k only'
 
 
 def metaclass(meta, **kwargs):
     class base:
         pass
 
-    metabase = meta.__base__
-    if metabase is object:  # when meta is type
+    if isinstance(meta, type) and issubclass(meta, type) and meta is not type:
+        metabase = meta.__base__
+    else:
         metabase = type
 
     class inner_meta(metabase):
@@ -53,6 +54,6 @@ def metaclass(meta, **kwargs):
         def __init__(self, name, bases, attrs, **kw):
             pass
 
-    from xoutil.types import new_class
+    from ._types import new_class
     kwds = dict(kwargs, metaclass=inner_meta)
     return new_class('__inner__', (base, ), kwds=kwds)

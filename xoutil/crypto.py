@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.crypto
 # ---------------------------------------------------------------------
-# Copyright (c) 2014, 2015 Merchise Autrement
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -83,7 +84,7 @@ def _normalize_level(level):
     Otherwise it must be a valid level number.
 
     '''
-    from six import string_types
+    from xoutil.eight import string_types
     if isinstance(level, string_types):
         return PASS_LEVEL_NAME_MAPPING[level]
     else:

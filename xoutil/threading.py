@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.threading
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -43,6 +44,7 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
         args = ()
     if not kwargs:
         kwargs = {}
+
     def async():
         try:
             result = func(*args, **kwargs)
@@ -53,6 +55,7 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
                 onerror(error)
         finally:
             event.set()
+
     thread = threading.Thread(target=async)
     thread.setDaemon(True)  # XXX: Why?
     thread.start()

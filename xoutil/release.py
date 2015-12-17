@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.release
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -19,44 +20,22 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.6.10'
-
-
-def dev_tag():
-    result = ''
-    import os
-    fn = os.path.abspath(os.path.join(__file__, '..', '..', 'setup.cfg'))
-    if os.path.exists(fn):
-        try:
-            import configparser
-        except:
-            # Python 2.7
-            import ConfigParser as configparser
-        parser = configparser.SafeConfigParser()
-        parser.read([fn])
-        try:
-            res = parser.get(str('egg_info'), str('tag_build'))
-        except:
-            res = None
-        if res:
-            result = res
-    return result
+VERSION = '1.7.1'
 
 
 def dev_tag_installed():
-    import re
     import pkg_resources
-    tag_start_regex = re.compile(r'[^\d\.]')
     try:
         dist = pkg_resources.get_distribution('xoutil')
-        version = dist.version
-        match = tag_start_regex.search(version)
-        if match:
-            return version[match.start():]
-        else:
-            return None
+        full_version = dist.version
+        # FIX: Below line is not working anymore
+        base = dist.parsed_version.base_version
+        return full_version[len(base):]
     except:
         return None
 
+RELEASE_TAG = dev_tag_installed() or ''
 
-RELEASE_TAG = dev_tag_installed() or dev_tag()
+# I won't put the release tag in the version_info tuple.  Since PEP440 is on
+# the way.
+VERSION_INFO = tuple(int(x) for x in VERSION.split('.'))

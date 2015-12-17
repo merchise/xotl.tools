@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------
 # xoutil.iterators
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -25,6 +26,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil import Unset
 from xoutil.types import is_scalar
+
 from xoutil.deprecation import deprecated
 
 
@@ -44,7 +46,7 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     '''Flattens out a sequence. It takes care of everything deemed a collection
     (i.e, not a scalar according to the callabled passed in `is_scalar`)::
 
-        >>> from six.moves import range
+        >>> from xoutil.eight import range
         >>> range_ = lambda *a: list(range(*a))
         >>> tuple(flatten((1, range_(2, 5), range(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -76,23 +78,70 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
                 yield subitem
 
 
+def multi_pop(source, *keys):
+    '''Pop values from `source` of all given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Keys to pop values.
+
+    All keys that are not found are ignored.
+
+    Examples::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      1
+
+      >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
+      '---'
+
+    '''
+    return (source.pop(key) for key in keys if key in source)
+
+
+def multi_get(source, *keys):
+    '''Get values from `source` of all given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Keys to get values.
+
+    All keys that are not found are ignored.
+
+    Examples::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> next(multi_get(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_get(d, 'a', 'y', 'x'), '---')
+      2
+
+      >>> next(multi_get(d, 'a', 'b'), '---')
+      '---'
+
+    '''
+    return (source.get(key) for key in keys if key in source)
+
+
 def dict_update_new(target, source):
-    '''
-    Update values in "source" that are new (not currently present) in "target".
-    '''
+    '''Update values in `source` that are new (not present) in `target`.'''
     for key in source:
         if key not in target:
             target[key] = source[key]
 
 
+@deprecated('generator expression')
 def fake_dict_iteritems(source):
     '''Iterate (key, value) in a source that have defined method "keys" and
      :meth:`~object.__getitem__`.
 
-    .. warning::
-
-       *In risk since 1.4.0*. Most of the time is enough to use the generator
-       expression ``((key, source[key]) for key in source.keys())``.
+    .. warning:: Deprecated since 1.7.0.  This was actually in risk since
+                 1.4.0.
 
     '''
     import warnings
@@ -241,4 +290,13 @@ def first_n(iterable, n=1, fill=Unset):
 
 
 # Compatible zip and map
-from six.moves import zip, map, zip_longest
+from xoutil.eight import _py3
+
+if _py3:
+    map = map
+    zip = zip
+    from itertools import zip_longest     # noqa
+
+else:
+    from itertools import (imap as map, izip as zip,    # noqa
+                           izip_longest as zip_longest)

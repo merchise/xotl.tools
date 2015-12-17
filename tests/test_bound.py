@@ -2,6 +2,7 @@
 #----------------------------------------------------------------------
 # test_routines
 #----------------------------------------------------------------------
+# Copyright (c) 2015 Merchise and Contributors
 # Copyright (c) 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #

@@ -2,7 +2,8 @@
 # ---------------------------------------------------------------------
 # xoutil.data
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2015 Merchise Autrement and Contributors
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2009-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -39,8 +40,8 @@ def adapt_exception(value, **kwargs):
     if isi(value, ebc) or isi(value, type) and issc(value, ebc):
         return value
     elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
-        from six import string_types as str_base
-        iss = lambda s: isinstance(s, str_base)
+        from xoutil.eight import string_types
+        iss = lambda s: isinstance(s, string_types)
         ecls = value[0]
         args = ((x.format(**kwargs) if iss(x) else x) for x in value[1:])
         return ecls(*args)

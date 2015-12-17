@@ -3,9 +3,9 @@
   we might have forgotten some):
 
   - :mod:`xoutil.context`
-  - :mod:`xoutil.aop.basic`
+  - :mod:`!xoutil.aop.basic`
   - :mod:`xoutil.deprecation`
-  - :mod:`xoutil.proxy`
+  - :mod:`!xoutil.proxy`
 
 - Rescued :mod:`xoutil.annotate` and is going to be supported from
   now on.

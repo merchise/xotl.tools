@@ -2,7 +2,8 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright 2013-2015 Merchise Autrement and Contributors for the
+# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # defaultdict and opendict implementations.
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
@@ -34,19 +35,30 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _absolute_import)
 
-import sys
 from xoutil.modules import copy_members as _copy_python_module_members
 _pm = _copy_python_module_members()
 
-if sys.version_info >= (3, 3):
-    _copy_python_module_members('collections.abc')
+from xoutil.deprecation import deprecated
+
+import sys
+_py2 = sys.version_info < (3, 0, 0)
+_py33 = sys.version_info >= (3, 3, 0)
+_py34 = sys.version_info >= (3, 4, 0)
 del sys
 
+if _py33:
+    _copy_python_module_members('collections.abc')
+
 namedtuple = _pm.namedtuple
+Sized = _pm.Sized
+Container = _pm.Container
+Iterable = _pm.Iterable
 MutableMapping = _pm.MutableMapping
 Mapping = _pm.Mapping
 MutableSequence = _pm.MutableSequence
 Sequence = _pm.Sequence
+Set = _pm.Set
+MutableSet = _pm.MutableSet
 _itemgetter = _pm._itemgetter
 _heapq = _pm._heapq
 _chain = _pm._chain
@@ -57,14 +69,74 @@ del _pm, _copy_python_module_members
 
 
 from collections import defaultdict as _defaultdict
+from xoutil import Unset
 from xoutil.names import strlist as slist
 from xoutil.objects import SafeDataItem as safe
+from xoutil.eight.meta import metaclass
 
 
-import sys
-_py33 = sys.version_info >= (3, 3, 0)
-_py34 = sys.version_info >= (3, 4, 0)
-del sys
+class safe_dict_iter(tuple):
+    '''Iterate a dictionary in a safe way.
+
+    This is useful when a dictionary can be modified while iterating on it,
+    for example::
+
+      >>> d = {1: 2, 3: 4, 5: 6}
+      >>> di = safe_dict_iter(d)
+
+      >>> for k, v in di.items():
+      ...     d[v] = k
+
+      >>> [(k, v) for (k, v) in di.items()]
+      [(1, 2), (3, 4), (5, 6)]
+
+      >>> del d[1]
+
+      >>> [(k, v) for (k, v) in di.items()]
+      [(3, 4), (5, 6)]
+
+      >>> [k for k in di]
+      [3, 5]
+
+    '''
+
+    def __new__(cls, mapping):
+        self = super(safe_dict_iter, cls).__new__(cls, mapping)
+        self._mapping = mapping
+        return self
+
+    def __str__(self):
+        cls_name = type(self).__name__
+        res = str(', ').join(str(i) for i in self)
+        return str('{}({})').format(cls_name, res)
+    __repr__ = __str__
+
+    def __len__(self):
+        return sum(1 for key in self)
+
+    def __contains__(self, key):
+        res = super(safe_dict_iter, self).__contains__(key)
+        return res and key in self.mapping
+
+    def __nonzero__(self):
+        return bool(len(self))
+    __bool__ = __nonzero__
+
+    def __iter__(self):
+        for key in super(safe_dict_iter, self).__iter__():
+            if key in self._mapping:
+                yield key
+    keys = __iter__
+
+    def values(self):
+        for key in self:
+            if key in self._mapping:
+                yield self._mapping[key]
+
+    def items(self):
+        for key in self:
+            if key in self._mapping:
+                yield (key, self._mapping[key])
 
 
 class defaultdict(_defaultdict):
@@ -171,7 +243,6 @@ class OpenDictMixin(object):
         return list(set(~self) | fulldir(self))
 
     def __getattr__(self, name):
-        from xoutil import Unset
         from xoutil.inspect import get_attr_value
         res = get_attr_value(self, name, Unset)
         if res is not Unset:
@@ -241,7 +312,8 @@ class OpenDictMixin(object):
 
         '''
         from xoutil.string import normalize_slug
-        return normalize_slug(key, '_')
+        from xoutil.validators import is_valid_identifier
+        return key if is_valid_identifier(key) else normalize_slug(key, '_')
 
 
 class SmartDictMixin(object):
@@ -277,6 +349,9 @@ class SmartDictMixin(object):
         for key in kwargs:
             self[key] = kwargs[key]
 
+    # TODO: Include new argument ``full=True`` to also search in string
+    #       values.  Maybe this kind of feature will be better in a function
+    #       instead a method.
     def search(self, pattern):
         '''Return new mapping with items which key match a `pattern` regexp.
 
@@ -284,7 +359,7 @@ class SmartDictMixin(object):
         type of the caller instance.  If the constructor of corresponding type
         can't be called without arguments, then look up for a class
         variable named `__search_result_type__` or return a standard
-        Python dictionary if not found
+        Python dictionary if not found.
 
         '''
         from re import compile
@@ -341,6 +416,7 @@ if not _py33:
     class _Link(object):
         __slots__ = 'prev', 'next', 'key', '__weakref__'
 
+    # TODO: This class is implemented in all Python versions I have.
     class OrderedDict(dict):
         'Dictionary that remembers insertion order'
         # An inherited dict maps keys to values. The inherited dict provides
@@ -495,9 +571,7 @@ if not _py33:
         items = MutableMapping.items
         __ne__ = MutableMapping.__ne__
 
-        __marker = object()    # TODO: Change for some UnsetType instance
-
-        def pop(self, key, default=__marker):
+        def pop(self, key, default=Unset):
             '''od.pop(k[,d]) -> v, remove specified key and return the
             corresponding value.
 
@@ -509,9 +583,10 @@ if not _py33:
                 result = self[key]
                 del self[key]
                 return result
-            if default is self.__marker:
+            elif default is not Unset:
+                return default
+            else:
                 raise KeyError(key)
-            return default
 
         def setdefault(self, key, default=None):
             '''``od.setdefault(k[, d])`` -> ``od.get(k, d)`` also set
@@ -1482,7 +1557,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     The property :attr:`level` returns the actual number of levels.
 
-    When accessing keys they are searched from the lastest level "upwards", if
+    When accessing keys they are searched from the latest level "upwards", if
     such a key does not exists in any level a KeyError is raised.
 
     Deleting a key only works in the *current level*; if it's not defined there
@@ -1512,7 +1587,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         '''
         return len(self.inner.maps) - 1
 
-    def push(self, *args, **kwargs):
+    def push_level(self, *args, **kwargs):
         '''Pushes a whole new level to the stacked dict.
 
         :param args: Several mappings from which the new level will be
@@ -1527,7 +1602,33 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         self.update(*args, **kwargs)
         return self.level
 
-    def pop(self):
+    @deprecated(push_level)
+    def push(self, *args, **kwargs):
+        '''Don't use thid method, use new `push_level`:meth: instead.'''
+        return self.push_level(*args, **kwargs)
+
+    def pop(self, *args):
+        '''Remove this, always use original `MutableMapping.pop`:meth:.
+
+        If none arguments are given, `pop_level`:meth: is called and a
+        deprecation warning is printed in `sys.stderr` the first time.  If one
+        or two arguments are given, those are interpreted as (key, default)
+        values of the super class `pop`:meth:.
+
+        '''
+        if len(args) == 0:
+            cls = type(self)
+            if not hasattr(cls, '_bad_pop_called'):
+                import warnings
+                setattr(cls, '_bad_pop_called', True)
+                msg = ('Use `pop` method without parameters is deprecated, '
+                       'use `pop_level` instead')
+                warnings.warn(msg, stacklevel=2)
+            return self.pop_level()
+        else:
+            return super(StackedDict, self).pop(*args)
+
+    def pop_level(self):
         '''Pops the last pushed level and returns the whole level.
 
         If there are no levels in the stacked dict, a TypeError is raised.
@@ -1584,8 +1685,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
 
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
-    '''A combination of the the OrderedDict with the
-    :class:`SmartDictMixin`.
+    '''A combination of the `OrderedDict` with the `SmartDictMixin`.
 
     .. warning:: Initializing with kwargs does not ensure any initial ordering,
                  since Python's keyword dict is not ordered. Use a list/tuple
@@ -1603,5 +1703,1150 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)
 
+
+class MetaSet(type):
+    '''Allow syntax sugar creating sets.
+
+    This is pythonic syntax (stop limit is never included), for example::
+
+        >>> from xoutil.collections import PascalSet as srange
+        >>> [i for i in srange[1:4, 15, 20:23]]
+        [1, 2, 3, 15, 20, 21, 22, 23]
+
+    '''
+    def __getitem__(cls, ranges):
+        return cls(*ranges) if isinstance(ranges, tuple) else cls(ranges)
+
+
+class PascalSet(object, metaclass(MetaSet)):
+    '''Collection of unique integer elements (implemented with intervals).
+
+    ::
+
+       PascalSet(*others) -> new set object
+
+    .. versionadded:: 1.7.0
+
+    '''
+    __slots__ = ('_items',)
+
+    def __init__(self, *others):
+        '''Initialize self.
+
+        :param others: Any number of integer or collection of integers that
+               will be the set members.
+
+        '''
+        self._items = []    # a list of list of two elements
+        self.update(*others)
+
+    def __str__(self):
+        from xoutil.eight import range
+
+        def aux(s, e):
+            if s == e:
+                return str(s)
+            elif s + 1 == e:
+                return '%s, %s' % (s, e)
+            else:
+                return '%s..%s' % (s, e)
+
+        l = self._items
+        ranges = ((l[i], l[i + 1]) for i in range(0, len(l), 2))
+        return str('{%s}' % ', '.join((aux(s, e) for (s, e) in ranges)))
+
+    def __repr__(self):
+        cls = type(self)
+        cname = cls.__name__
+        return str('%s([%s])' % (cname, ', '.join((str(i) for i in self))))
+
+    def __iter__(self):
+        l = self._items
+        i, count = 0, len(l)
+        while i < count:
+            s, e = l[i], l[i + 1]
+            while s <= e:
+                yield s
+                s += 1
+            i += 2
+
+    def __len__(self):
+        res = 0
+        l = self._items
+        i, count = 0, len(l)
+        while i < count:
+            res += l[i + 1] - l[i] + 1
+            i += 2
+        return res
+
+    def __nonzero__(self):
+        return bool(self._items)
+    __bool__ = __nonzero__
+
+    def __contains__(self, other):
+        '''True if set has an element ``other``, else False.'''
+        from xoutil.eight import integer_types
+        return isinstance(other, integer_types) and self._search(other)[0]
+
+    def __hash__(self):
+        '''Compute the hash value of a set.'''
+        return Set._hash(self)
+
+    if _py2:
+        def __cmp__(self, other):
+            # Python 3 automatically generate a TypeError when no mechanism is
+            # found by returning `NotImplemented` special value.  In Python 2
+            # this patch method must be generated
+            from xoutil.eight import typeof
+            sname = typeof(self).__name__
+            oname = typeof(other).__name__
+            msg = 'unorderable types: "%s" and "%s"!'
+            raise TypeError(msg % (sname, oname))
+
+    def __eq__(self, other):
+        '''Python 2 and 3 have several differences in operator definitions.
+
+        For example::
+
+          >>> from xoutil.collections import PascalSet
+          >>> s1 = PascalSet[0:10]
+          >>> assert s1 == set(s1)    # OK (True) in 2 and 3
+          >>> assert set(s1) == s1    # OK in 3, fails in 2
+
+        '''
+        if isinstance(other, Set):
+            ls, lo = len(self), len(other)
+            if ls == lo:
+                if isinstance(other, PascalSet):
+                    return self._items == other._items
+                else:
+                    return self.count(other) == ls
+            else:
+                return False
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __gt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issuperset(other) and len(self) > len(other)
+            else:
+                return bool(self._items)
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issuperset(other)
+            else:
+                return bool(self._items)
+        else:
+            return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issubset(other) and len(self) < len(other)
+            else:
+                return not self._items
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issubset(other)
+            else:
+                return not self._items
+        else:
+            return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, Set):
+            return self.difference(other)
+        else:
+            return NotImplemented
+
+    def __isub__(self, other):
+        if isinstance(other, Set):
+            self.difference_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rsub__(self, other):
+        if isinstance(other, Set):
+            return other - type(other)(self)
+        else:
+            return NotImplemented
+
+    def __and__(self, other):
+        if isinstance(other, Set):
+            return self.intersection(other)
+        else:
+            return NotImplemented
+
+    def __iand__(self, other):
+        if isinstance(other, Set):
+            self.intersection_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rand__(self, other):
+        if isinstance(other, Set):
+            return other & type(other)(self)
+        else:
+            return NotImplemented
+
+    def __or__(self, other):
+        if isinstance(other, Set):
+            return self.union(other)
+        else:
+            return NotImplemented
+
+    def __ior__(self, other):
+        if isinstance(other, Set):
+            self.update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __ror__(self, other):
+        if isinstance(other, Set):
+            return other | type(other)(self)
+        else:
+            return NotImplemented
+
+    def __xor__(self, other):
+        if isinstance(other, Set):
+            return self.symmetric_difference(other)
+        else:
+            return NotImplemented
+
+    def __ixor__(self, other):
+        if isinstance(other, Set):
+            self.symmetric_difference_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rxor__(self, other):
+        if isinstance(other, Set):
+            return other ^ type(other)(self)
+        else:
+            return NotImplemented
+
+    def count(self, other):
+        '''Number of occurrences of any member of other in this set.
+
+        If other is an integer, return 1 if present, 0 if not.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            return 1 if other in self else 0
+        else:
+            return sum((i in self for i in other), 0)
+
+    def add(self, other):
+        '''Add an element to a set.
+
+        This has no effect if the element is already present.
+
+        '''
+        self._insert(other)
+
+    def union(self, *others):
+        '''Return the union of sets as a new set.
+
+        (i.e. all elements that are in either set.)
+
+        '''
+        res = self.copy()
+        res.update(*others)
+        return res
+
+    def update(self, *others):
+        '''Update a set with the union of itself and others.'''
+        from xoutil.eight import integer_types, range
+        for other in others:
+            if isinstance(other, PascalSet):
+                l = other._items
+                if self._items:
+                    count = len(l)
+                    i = 0
+                    while i < count:
+                        self._insert(l[i], l[i + 1])
+                        i += 2
+                else:
+                    self._items = l[:]
+            elif isinstance(other, integer_types):
+                self._insert(other)
+            elif isinstance(other, Iterable):
+                for i in other:
+                    self._insert(i)
+            elif isinstance(other, slice):
+                start, stop, step = other.start, other.stop, other.step
+                if step is None:
+                    step = 1
+                if step in (1, -1):
+                    stop -= step
+                    if step == -1:
+                        start, stop = stop, start
+                    self._insert(start, stop)
+                else:
+                    for i in range(start, stop, step):
+                        self._insert(i)
+            else:
+                raise self._invalid_value(other)
+
+    def intersection(self, *others):
+        '''Return the intersection of two or more sets as a new set.
+
+        (i.e. elements that are common to all of the sets.)
+
+        '''
+        res = self.copy()
+        res.intersection_update(*others)
+        return res
+
+    def intersection_update(self, *others):
+        '''Update a set with the intersection of itself and another.'''
+        from xoutil.eight import integer_types as ints
+        l = self._items
+        oi, count = 0, len(others)
+        while l and oi < count:
+            other = others[oi]
+            if not isinstance(other, PascalSet):
+                # safe mode for intersection
+                other = PascalSet(i for i in other if isinstance(i, ints))
+            o = other._items
+            if o:
+                sl, el = l[0], l[-1]
+                so, eo = o[0], o[-1]
+                if sl < so:
+                    self._remove(sl, so - 1)
+                if eo < el:
+                    self._remove(eo + 1, el)
+                i = 2
+                while l and i < len(o):
+                    s, e = o[i - 1] + 1, o[i] - 1
+                    if s <= e:
+                        self._remove(s, e)
+                    i += 2
+            else:
+                del l[:]
+            oi += 1
+
+    def difference(self, *others):
+        '''Return the difference of two or more sets as a new set.
+
+        (i.e. all elements that are in this set but not the others.)
+
+        '''
+        res = self.copy()
+        res.difference_update(*others)
+        return res
+
+    def difference_update(self, *others):
+        '''Remove all elements of another set from this set.'''
+        for other in others:
+            if isinstance(other, PascalSet):
+                l = other._items
+                count = len(l)
+                i = 0
+                while i < count:
+                    self._remove(l[i], l[i + 1])
+                    i += 2
+            else:
+                from xoutil.eight import integer_types
+                for i in other:
+                    if isinstance(i, integer_types):
+                        self._remove(i)
+
+    def symmetric_difference(self, other):
+        '''Return the symmetric difference of two sets as a new set.
+
+        (i.e. all elements that are in exactly one of the sets.)
+
+        '''
+        res = self.copy()
+        res.symmetric_difference_update(other)
+        return res
+
+    def symmetric_difference_update(self, other):
+        'Update a set with the symmetric difference of itself and another.'
+        if not isinstance(other, PascalSet):
+            other = PascalSet(other)
+        if self:
+            if other:
+                # TODO: Implement more efficiently
+                aux = other - self
+                self -= other
+                self |= aux
+        else:
+            self._items = other._items[:]
+
+    def discard(self, other):
+        '''Remove an element from a set if it is a member.
+
+        If the element is not a member, do nothing.
+
+        '''
+        self._remove(other)
+
+    def remove(self, other):
+        '''Remove an element from a set; it must be a member.
+
+        If the element is not a member, raise a KeyError.
+
+        '''
+        if other in self:
+            self._remove(other)
+        else:
+            raise KeyError('"%s" is not a member!' % other)
+
+    def pop(self):
+        '''Remove and return an arbitrary set element.
+
+        Raises KeyError if the set is empty.
+
+        '''
+        l = self._items
+        if l:
+            res = l[0]
+            if l[0] < l[1]:
+                l[0] += 1
+            else:
+                del l[0:2]
+            return res
+        else:
+            raise KeyError('pop from an empty set!')
+
+    def clear(self):
+        '''Remove all elements from this set.'''
+        self._items = []
+
+    def copy(self):
+        '''Return a shallow copy of a set.'''
+        return type(self)(self)
+
+    def isdisjoint(self, other):
+        '''Return True if two sets have a null intersection.'''
+        if isinstance(other, PascalSet):
+            if self and other:
+                l, o = self._items, other._items
+                i, lcount, ocount = 0, len(l), len(o)
+                maybe = True
+                while maybe and i < lcount:
+                    found, idx = other._search(l[i])
+                    if idx == ocount:    # exhausted
+                        # assert not found
+                        i = lcount
+                    elif found or l[i + 1] >= o[idx]:
+                        maybe = False
+                    else:
+                        i += 2
+                return maybe
+            else:
+                return True
+        else:
+            return not any(i in self for i in other)
+
+    def issubset(self, other):
+        '''Report whether another set contains this set.'''
+        ls = len(self)
+        if isinstance(other, PascalSet):
+            if self:
+                if ls > len(other):  # Fast check for obvious cases
+                    return False
+                else:
+                    l, o = self._items, other._items
+                    i, lcount = 0, len(l)
+                    maybe = True
+                    while maybe and i < lcount:
+                        found, idx = other._search(l[i])
+                        if found and l[i + 1] <= o[idx + 1]:
+                            i += 2
+                        else:
+                            maybe = False
+                    return maybe
+            else:
+                return True
+        elif isinstance(other, Sized) and ls > len(other):
+            # Fast check for obvious cases
+            return False
+        elif isinstance(other, Container):
+            aux = next((i for i in self if i not in other), Unset)
+            return aux is Unset
+        else:
+            # Generator cases
+            from operator import add
+            from functools import reduce
+            lo = reduce(add, (i in self for i in other), 0)
+            return lo == ls
+
+    def issuperset(self, other):
+        '''Report whether this set contains another set.'''
+        ls = len(self)
+        if isinstance(other, PascalSet):
+            if other:
+                if ls < len(other):  # Fast check for obvious cases
+                    return False
+                else:
+                    l, o = self._items, other._items
+                    i, ocount = 0, len(o)
+                    maybe = True
+                    while maybe and i < ocount:
+                        found, idx = self._search(o[i])
+                        if found and o[i + 1] <= l[idx + 1]:
+                            i += 2
+                        else:
+                            maybe = False
+                    return maybe
+            else:
+                return True
+        elif isinstance(other, Sized) and ls < len(other):
+            # Fast check for obvious cases
+            return False
+        else:
+            aux = next((i for i in other if i not in self), Unset)
+            return aux is Unset
+
+    def _search(self, other):
+        '''Search the pair where ``other`` is placed.
+
+        Return a duple :``(if found or not, index)``.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            l = self._items
+            start, end = 0, len(l)
+            res, pivot = False, 2*(end // 4)
+            while not res and start < end:
+                s, e = l[pivot], l[pivot + 1]
+                if other < s:
+                    end = pivot
+                elif other > e:
+                    start = pivot + 2
+                else:
+                    res = True
+                pivot = start + 2*((end - start) // 4)
+            return res, pivot
+        else:
+            raise self._invalid_value(other)
+
+    def _insert(self, start, end=None):
+        '''Insert an interval of integers.'''
+        if not end:
+            end = start
+        assert start <= end
+        l = self._items
+        count = len(l)
+        found, idx = self._search(start)
+        if not found:
+            if idx > 0 and start == l[idx - 1] + 1:
+                found = True
+                idx -= 2
+                l[idx + 1] = start
+                if idx < count - 2 and end == l[idx + 2] - 1:
+                    end = l[idx + 3]
+            elif idx < count and end >= l[idx] - 1:
+                found = True
+                l[idx] = start
+        if found:
+            while end > l[idx + 1]:
+                if idx < count - 2 and end >= l[idx + 2] - 1:
+                    if end <= l[idx + 3]:
+                        l[idx + 1] = l[idx + 3]
+                    del l[idx + 2:idx + 4]
+                    count -= 2
+                else:
+                    l[idx + 1] = end
+        else:
+            if idx < count:
+                l.insert(idx, start)
+                l.insert(idx + 1, end)
+            else:
+                l.extend((start, end))
+            count += 2
+
+    def _remove(self, start, end=None):
+        '''Remove an interval of integers.'''
+        if not end:
+            end = start
+        assert start <= end
+        l = self._items
+        sfound, sidx = self._search(start)
+        efound, eidx = self._search(end)
+        if sfound and efound and sidx == eidx:
+            first = l[sidx] < start
+            last = l[eidx + 1] > end
+            if first and last:
+                l.insert(eidx + 1, end + 1)
+                l.insert(sidx + 1, start - 1)
+            elif first:
+                l[sidx + 1] = start - 1
+            elif last:
+                l[eidx] = end + 1
+            else:
+                del l[sidx:eidx + 2]
+        else:
+            if sfound and l[sidx] < start:
+                l[sidx + 1] = start - 1
+                sidx += 2
+            if efound:
+                if l[eidx + 1] > end:
+                    l[eidx] = end + 1
+                else:
+                    eidx += 2
+            if sidx < eidx:
+                del l[sidx:eidx]
+
+    def _invalid_value(self, value):
+        from xoutil.eight import typeof
+        cls_name = typeof(self).__name__
+        vname = typeof(value).__name__
+        msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
+               'must be an integer!')
+        return TypeError(msg % (value, vname, cls_name))
+
+    @classmethod
+    def _prime_numbers_until(cls, limit):
+        '''This is totally a funny test method.'''
+        from xoutil.eight import range
+        res = cls[2:limit]
+        for i in range(2, limit//2 + 1):
+            if i in res:
+                aux = i + i
+                while aux < limit:
+                    if aux in res:
+                        res.remove(aux)
+                    aux += i
+        return res
+
+
+MutableSet.register(PascalSet)
+
+
+class BitPascalSet(object, metaclass(MetaSet)):
+    '''Collection of unique integer elements (implemented with bit-wise sets).
+
+    ::
+
+        BitPascalSet(*others) -> new bit-set object
+
+    .. versionadded:: 1.7.0.
+
+    '''
+    __slots__ = ('_items',)
+    _bit_length = 62    # How many values are stored in each item
+
+    def __init__(self, *others):
+        '''Initialize self.
+
+        :param others: Any number of integer or collection of integers that
+               will be the set members.
+
+        In this case `_items` is a dictionary with keys containing number
+        division seeds and values bit-wise integers (each bit is the division
+        modulus position).
+
+        '''
+        self._items = {}
+        self.update(*others)
+
+    def __str__(self):
+        if self:
+            return str(PascalSet(self))
+        else:
+            cname = type(self).__name__
+            return str('%s([])') % cname
+
+    def __repr__(self):
+        cname = type(self).__name__
+        res = str(', ').join(str(i) for i in self)
+        return str('%s([%s])') % (cname, res)
+
+    def __iter__(self):
+        bl = self._bit_length
+        sm = self._items
+        for k in sorted(sm):
+            v = sm[k]
+            base = k*bl
+            i = 0
+            ref = 1
+            while i < bl:
+                if ref & v:
+                    yield base + i
+                ref <<= 1
+                i += 1
+
+    def __len__(self):
+        return sum((1 for i in self), 0)
+
+    def __nonzero__(self):
+        return bool(self._items)
+    __bool__ = __nonzero__
+
+    def __contains__(self, other):
+        '''True if this bit-set has the element ``other``, else False.'''
+        res = self._search(other)
+        if res:
+            k, ref, v = res
+            return bool(v & (1 << ref))
+        else:
+            return False
+
+    def __hash__(self):
+        '''Compute the hash value of a set.'''
+        return Set._hash(self)
+
+    if _py2:
+        def __cmp__(self, other):
+            # Python 3 automatically generate a TypeError when no mechanism is
+            # found by returning `NotImplemented` special value.  In Python 2
+            # this patch method must be generated
+            from xoutil.eight import typeof
+            sname = typeof(self).__name__
+            oname = typeof(other).__name__
+            msg = 'unorderable types: "%s" and "%s"!'
+            raise TypeError(msg % (sname, oname))
+
+    def __eq__(self, other):
+        '''Python 2 and 3 have several differences in operator definitions.
+
+        For example::
+
+          >>> from xoutil.collections import BitPascalSet
+          >>> s1 = BitPascalSet[0:10]
+          >>> assert s1 == set(s1)    # OK (True) in 2 and 3
+          >>> assert set(s1) == s1    # OK in 3, fails in 2
+
+        '''
+        if isinstance(other, Set):
+            if isinstance(other, BitPascalSet):
+                return self._items == other._items
+            else:
+                ls, lo = len(self), len(other)
+                return ls == lo == self.count(other)
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __gt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issuperset(other) and len(self) > len(other)
+            else:
+                return bool(self._items)
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Set):
+            return self.issuperset(other) if other else bool(self._items)
+        else:
+            return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, Set):
+            if other:
+                return self.issubset(other) and len(self) < len(other)
+            else:
+                return not self._items
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, Set):
+            return self.issubset(other) if other else not self._items
+        else:
+            return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, Set):
+            return self.difference(other)
+        else:
+            return NotImplemented
+
+    def __isub__(self, other):
+        if isinstance(other, Set):
+            self.difference_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rsub__(self, other):
+        if isinstance(other, Set):
+            return other - type(other)(self)
+        else:
+            return NotImplemented
+
+    def __and__(self, other):
+        if isinstance(other, Set):
+            return self.intersection(other)
+        else:
+            return NotImplemented
+
+    def __iand__(self, other):
+        if isinstance(other, Set):
+            self.intersection_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rand__(self, other):
+        if isinstance(other, Set):
+            return other & type(other)(self)
+        else:
+            return NotImplemented
+
+    def __or__(self, other):
+        if isinstance(other, Set):
+            return self.union(other)
+        else:
+            return NotImplemented
+
+    def __ior__(self, other):
+        if isinstance(other, Set):
+            self.update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __ror__(self, other):
+        if isinstance(other, Set):
+            return other | type(other)(self)
+        else:
+            return NotImplemented
+
+    def __xor__(self, other):
+        if isinstance(other, Set):
+            return self.symmetric_difference(other)
+        else:
+            return NotImplemented
+
+    def __ixor__(self, other):
+        if isinstance(other, Set):
+            self.symmetric_difference_update(other)
+            return self
+        else:
+            return NotImplemented
+
+    def __rxor__(self, other):
+        if isinstance(other, Set):
+            return other ^ type(other)(self)
+        else:
+            return NotImplemented
+
+    def count(self, other):
+        '''Number of occurrences of any member of other in this set.
+
+        If other is an integer, return 1 if present, 0 if not.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            return 1 if other in self else 0
+        else:
+            return sum((i in self for i in other), 0)
+
+    def add(self, other):
+        '''Add an element to a bit-set.
+
+        This has no effect if the element is already present.
+
+        '''
+        self._insert(other)
+
+    def union(self, *others):
+        '''Return the union of bit-sets as a new set.
+
+        (i.e. all elements that are in either set.)
+
+        '''
+        res = self.copy()
+        res.update(*others)
+        return res
+
+    def update(self, *others):
+        '''Update a bit-set with the union of itself and others.'''
+        from xoutil.eight import integer_types, range
+        for other in others:
+            if isinstance(other, BitPascalSet):
+                sm = self._items
+                om = other._items
+                for k, v in safe_dict_iter(om).items():
+                    if k in sm:
+                        sm[k] |= v
+                    else:
+                        sm[k] = v
+            elif isinstance(other, integer_types):
+                self._insert(other)
+            elif isinstance(other, Iterable):
+                for i in other:
+                    self._insert(i)
+            elif isinstance(other, slice):
+                start, stop, step = other.start, other.stop, other.step
+                if step is None:
+                    step = 1
+                for i in range(start, stop, step):
+                    self._insert(i)
+            else:
+                raise self._invalid_value(other)
+
+    def intersection(self, *others):
+        '''Return the intersection of two or more bit-sets as a new set.
+
+        (i.e. elements that are common to all of the sets.)
+
+        '''
+        res = self.copy()
+        res.intersection_update(*others)
+        return res
+
+    def intersection_update(self, *others):
+        '''Update a bit-set with the intersection of itself and another.'''
+        from xoutil.eight import integer_types as ints
+        sm = self._items
+        oi, count = 0, len(others)
+        while sm and oi < count:
+            other = others[oi]
+            if not isinstance(other, BitPascalSet):
+                # safe mode for intersection
+                other = PascalSet(i for i in other if isinstance(i, ints))
+            om = other._items
+            for k, v in safe_dict_iter(sm).items():
+                v &= om.get(k, 0)
+                if v:
+                    sm[k] = v
+                else:
+                    del sm[k]
+            oi += 1
+
+    def difference(self, *others):
+        '''Return the difference of two or more bit-sets as a new set.
+
+        (i.e. all elements that are in this set but not the others.)
+
+        '''
+        res = self.copy()
+        res.difference_update(*others)
+        return res
+
+    def difference_update(self, *others):
+        '''Remove all elements of another bit-set from this set.'''
+        for other in others:
+            if isinstance(other, BitPascalSet):
+                sm = self._items
+                om = other._items
+                for k, v in safe_dict_iter(om).items():
+                    if k in sm:
+                        v = sm[k] & ~v
+                        if v:
+                            sm[k] = v
+                        else:
+                            del sm[k]
+            else:
+                from xoutil.eight import integer_types
+                for i in other:
+                    if isinstance(i, integer_types):
+                        self._remove(i)
+
+    def symmetric_difference(self, other):
+        '''Return the symmetric difference of two bit-sets as a new set.
+
+        (i.e. all elements that are in exactly one of the sets.)
+
+        '''
+        res = self.copy()
+        res.symmetric_difference_update(other)
+        return res
+
+    def symmetric_difference_update(self, other):
+        'Update a bit-set with the symmetric difference of itself and another.'
+        if not isinstance(other, BitPascalSet):
+            other = BitPascalSet(other)
+        if self:
+            if other:
+                # TODO: Implement more efficiently
+                aux = other - self
+                self -= other
+                self |= aux
+        else:
+            self._items = other._items[:]
+
+    def discard(self, other):
+        '''Remove an element from a bit-set if it is a member.
+
+        If the element is not a member, do nothing.
+
+        '''
+        self._remove(other)
+
+    def remove(self, other):
+        '''Remove an element from a bit-set; it must be a member.
+
+        If the element is not a member, raise a KeyError.
+
+        '''
+        self._remove(other, fail=True)
+
+    def pop(self):
+        '''Remove and return an arbitrary bit-set element.
+
+        Raises KeyError if the set is empty.
+
+        '''
+        from xoutil.eight import iteritems
+        sm = self._items
+        if sm:
+            bl = self._bit_length
+            k, v = next(iteritems(sm))
+            assert v
+            base = k*bl
+            i = 0
+            ref = 1
+            res = None
+            while res is None:
+                if ref & v:
+                    res = base + i
+                else:
+                    ref <<= 1
+                    i += 1
+            v &= ~ref
+            if v:
+                sm[k] = v
+            else:
+                del sm[k]
+            return res
+        else:
+            raise KeyError('pop from an empty set!')
+
+    def clear(self):
+        '''Remove all elements from this bit-set.'''
+        self._items = {}
+
+    def copy(self):
+        '''Return a shallow copy of a set.'''
+        return type(self)(self)
+
+    def isdisjoint(self, other):
+        '''Return True if two bit-sets have a null intersection.'''
+        from xoutil.eight import iteritems
+        if isinstance(other, BitPascalSet):
+            sm, om = self._items, other._items
+            if sm and om:
+                return all(sm.get(k, 0) & v == 0 for k, v in iteritems(om))
+            else:
+                return True
+        else:
+            return not any(i in self for i in other)
+
+    def issubset(self, other):
+        '''Report whether another set contains this bit-set.'''
+        from xoutil.eight import iteritems
+        if isinstance(other, BitPascalSet):
+            sm, om = self._items, other._items
+            if sm:
+                return all(om.get(k, 0) & v == v for k, v in iteritems(sm))
+            else:
+                return True
+        elif isinstance(other, Container):
+            return not any(i not in other for i in self)
+        else:
+            # Generator cases
+            return sum((i in self for i in other), 0) == len(self)
+
+    def issuperset(self, other):
+        '''Report whether this bit set contains another set.'''
+        from xoutil.eight import iteritems
+        if isinstance(other, BitPascalSet):
+            sm, om = self._items, other._items
+            if om:
+                return all(sm.get(k, 0) & v == v for k, v in iteritems(om))
+            else:
+                return True
+        else:
+            return not any(i not in self for i in other)
+
+    def _search(self, other):
+        '''Search the bit-wise value where ``other`` could be placed.
+
+        Return a duple :``(seed, bits to shift left)``.
+
+        '''
+        from xoutil.eight import integer_types
+        if isinstance(other, integer_types):
+            sm = self._items
+            bl = self._bit_length
+            k, ref = divmod(other, bl)
+            return k, ref, sm.get(k, 0)
+        else:
+            return None
+
+    def _insert(self, other):
+        '''Add a member in this bit-set.'''
+        aux = self._search(other)
+        if aux:
+            k, ref, v = aux
+            self._items[k] = v | (1 << ref)
+        else:
+            raise self._invalid_value(other)
+
+    def _remove(self, other, fail=False):
+        '''Remove an interval of integers from this bit-set.'''
+        aux = self._search(other)
+        ok = False
+        if aux:
+            k, ref, v = aux
+            if v:
+                aux = v & ~(1 << ref)
+                if v != aux:
+                    ok = True
+                    sm = self._items
+                    if aux:
+                        sm[k] = aux
+                    else:
+                        del sm[k]
+        if not ok and fail:
+            raise KeyError('"%s" is not a member!' % other)
+
+    def _invalid_value(self, value):
+        from xoutil.eight import typeof
+        cls_name = typeof(self).__name__
+        vname = typeof(value).__name__
+        msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
+               'must be an integer!')
+        return TypeError(msg % (value, vname, cls_name))
+
+    @classmethod
+    def _prime_numbers_until(cls, limit):
+        '''This is totally a funny test method.'''
+        from xoutil.eight import range
+        res = cls[2:limit]
+        for i in range(2, limit//2 + 1):
+            if i in res:
+                aux = i + i
+                while aux < limit:
+                    if aux in res:
+                        res.remove(aux)
+                    aux += i
+        return res
+
+
+MutableSet.register(BitPascalSet)
+
+
 # get rid of unused global variables
-del slist, _py33, _py34
+del slist, _py2, _py33, _py34, metaclass
+del deprecated
