@@ -88,6 +88,9 @@ except ImportError:
 
     def _objclass(class_dict, entry):
         try:
+            # TODO: Look implementation of `inspect.classify_class_attrs`.
+            # Extend this concept to understand the inner type of any class or
+            # instance attribute.
             return class_dict.__objclass__ is entry
         except AttributeError:
             # FIX: to avoid error in pypy
