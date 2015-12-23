@@ -594,7 +594,8 @@ def fulldir(obj):
 
 
 # TODO: Fix signature after removal of attr_filter and value_filter
-def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None, _depth=0):
+def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None,
+         _depth=0):
     '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
 
