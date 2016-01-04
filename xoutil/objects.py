@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.objects
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
@@ -1315,7 +1315,6 @@ def get_traverser(*paths, **kw):
 
 
 def dict_merge(*dicts, **others):
-
     '''Merges several dicts into a single one.
 
     Merging is similar to updating a dict, but if values are non-scalars they
