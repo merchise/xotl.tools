@@ -304,6 +304,7 @@ class flextime(timedelta):
             return _super(cls, *args, **kwargs)
 
 
+# daterange([start,] stop[, step])
 def daterange(*args):
     '''Returns an iterator that yields each date in the range of ``[start,
     stop)``, not including the stop.
