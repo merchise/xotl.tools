@@ -3,18 +3,18 @@
 # ---------------------------------------------------------------------
 # xoutil.cli
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on 3 mai 2013
+# Created on 2013-05-03
 
 '''Define tools for command-line interface (CLI) applications.
 
-CLi is a means of interaction with a computer program where the user (or
+CLI is a mean of interaction with a computer program where the user (or
 client) issues commands to the program in the form of successive lines of text
 (command lines).
 
@@ -24,7 +24,6 @@ client) issues commands to the program in the form of successive lines of text
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
 from xoutil.eight.abc import abstractmethod, ABC
@@ -32,51 +31,8 @@ from xoutil.objects import classproperty
 from .tools import command_name, program_name
 
 
-class RegistryDescriptor(object):
-    '''Define a mechanism to automatically obtain all registered commands.'''
-
-    __slots__ = [str('cache')]
-
-    def __init__(self):
-        self.cache = {}
-
-    def __get__(self, instance, owner):
-        if instance is None and owner is Command:
-            if not self.cache:
-                self._settle_cache(Command)
-                assert self.cache.pop(command_name(Command), None) is None
-            return self.cache
-        else:
-            if instance:
-                from xoutil.eight import typeof
-                obj = 'Instance %s of class %s' % (id(instance),
-                                                   typeof(instance).__name__)
-            else:
-                obj = 'Class %s' % owner.__name__
-            msg = 'Only allowed in class "Command"; used invalidly from "%s"!'
-            raise AttributeError(msg % obj)
-
-    def _settle_cache(self, source, recursed=set()):
-        # TODO: Convert check based in argument "recursed" in a decorator
-        name = source.__name__
-        if name not in recursed:
-            recursed.add(name)
-            sub_commands = source.__subclasses__()
-            sub_commands.extend(getattr(source, '_abc_registry', ()))
-            cmds = getattr(source, '__commands__', None)
-            if cmds:
-                sub_commands.extend(cmds())
-            if sub_commands:
-                for cmd in sub_commands:
-                    self._settle_cache(cmd, recursed=recursed)
-            else:   # Only branch commands are OK to execute
-                self.cache[command_name(source)] = source
-        else:
-            raise ValueError('Reused class name "%s"!' % name)
-
-
 class Command(ABC):
-    '''A command base registry.
+    '''A command base.
 
     There are several methods to register new commands:
 
@@ -119,7 +75,6 @@ class Command(ABC):
             msg = ('Invalid class "%s" for use this property, only allowed in '
                    '"Command"!')
             raise TypeError(msg % cls.__name__)
-        # = RegistryDescriptor()
 
     @abstractmethod
     def run(self, args=None):
@@ -201,7 +156,7 @@ class Command(ABC):
 
 
 class Help(Command):
-    '''Show all commands
+    '''Show all commands.
 
     Define the class attribute `__order__` to sort commands in special command
     "help".
@@ -262,7 +217,7 @@ class Help(Command):
     def _strip_doc(doc):
         if doc:
             doc = str('%s' % doc).strip()
-            return str(doc.strip().split('\n')[0].strip('''.'" \t\n\r'''))
+            return str(doc.split('\n')[0].strip('''"' \t\n\r'''))
         else:
             return ''
 
@@ -271,6 +226,5 @@ HELP_NAME = command_name(Help)
 
 # TODO: Create "xoutil.config" here
 
-del RegistryDescriptor
 del abstractmethod, ABC
 del classproperty
