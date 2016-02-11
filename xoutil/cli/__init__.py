@@ -59,22 +59,18 @@ class Command(ABC):
     def __repr__(self):
         return '<command: %s>' % command_name(type(self))
 
-    @classproperty
-    def registry(cls):
+    @staticmethod
+    def registry():
         '''Obtain all registered commands.'''
-        if cls is Command:
-            name = '__registry__'
-            res = getattr(cls, name, {})
-            if not res:
-                cls._settle_cache(res, Command)
-                assert res.pop(command_name(Command), None) is None
-                cls._check_help(res)
-                setattr(cls, name, res)
-            return res
-        else:
-            msg = ('Invalid class "%s" for use this property, only allowed in '
-                   '"Command"!')
-            raise TypeError(msg % cls.__name__)
+        cls = Command
+        name = '__registry__'
+        res = getattr(cls, name, {})
+        if not res:
+            cls._settle_cache(res, Command)
+            assert res.pop(command_name(Command), None) is None
+            cls._check_help(res)
+            setattr(cls, name, res)
+        return res
 
     @abstractmethod
     def run(self, args=None):
