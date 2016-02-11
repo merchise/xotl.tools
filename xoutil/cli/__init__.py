@@ -75,8 +75,6 @@ class Command(ABC):
     @abstractmethod
     def run(self, args=None):
         '''Must return a valid value for "sys.exit"'''
-        if args is None:
-            args = []
         raise NotImplementedError
 
     @classmethod
