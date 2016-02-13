@@ -105,16 +105,3 @@ def command_name(cls):
             raise TypeError("Attribute 'command_cli_name' must be a string.")
     else:
         return hyphenize_name(cls.__name__)
-
-
-def _report_error(error):
-    import sys
-    msg = str(error)
-    name = type(error).__name__
-    if name not in msg:
-        msg = '{}: {}'.format(name, msg)
-    print('* {}'.format(msg), file=sys.stderr)
-
-
-def _fail_on_error(error):
-    raise error
