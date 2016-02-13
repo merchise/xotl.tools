@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cli.tools
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -13,6 +13,11 @@
 # Created on 5 mai 2013
 
 '''Utilities for command-line interface (CLI) applications.
+
+- `program_name`:func:\ : calculate the program name from "sys.argv[0]".
+
+- `command_name`:fucn:\ : calculate command names using class names in lower
+   case inserting a hyphen before each new capital letter.
 
 '''
 
@@ -29,11 +34,35 @@ def program_name():
     return basename(sys.argv[0])
 
 
-# XXX: Very odd implementation, improve it
+def hyphenize_name(name):
+    '''Convert an identifier to a valid command name using hyphens.'''
+    # XXX: In Python 3, identifiers could contain any unicode alphanumeric.
+    import re
+    res = name
+    trans = tuple(re.finditer('[A-Z][a-z]', res))
+    i = len(trans) - 1
+    while i >= 0:
+        m = trans[i]
+        s = m.start()
+        if s > 0:
+            res = res[:s] + '-' + res[s:]
+        i -= 1
+    trans = tuple(re.finditer('[a-z][A-Z]', res))
+    i = len(trans) - 1
+    while i >= 0:
+        m = trans[i]
+        s = m.start() + 1
+        res = res[:s] + '-' + res[s:]
+        i -= 1
+    return res.lower()
+
+
 def command_name(cls):
-    '''Command names are calculated as class names in lower case inserting a
-    hyphen before each new capital letter. For example "MyCommand" will be
-    used as "my-command".
+    '''Calculate a command name from given class.
+
+    Names are calculated putting class names in lower case and inserting
+    hyphens before each new capital letter.  For example "MyCommand" will
+    generate "my-command".
 
     It's defined as an external function because a class method don't apply to
     minimal commands (those with only the "run" method).
@@ -66,25 +95,26 @@ def command_name(cls):
         TypeError: Attribute 'command_cli_name' must be a string.
 
     '''
-    Unset = object()
-    res = getattr(cls, 'command_cli_name', Unset)
-    if res is not Unset:
+    unset = object()
+    res = getattr(cls, 'command_cli_name', unset)
+    if res is not unset:
         from xoutil.eight import string_types
-        if not isinstance(res, string_types):
+        if isinstance(res, string_types):
+            return res
+        else:
             raise TypeError("Attribute 'command_cli_name' must be a string.")
     else:
-        from io import StringIO
-        from xoutil.string import safe_decode
-        buf = StringIO()
-        start = True
-        for letter in cls.__name__:
-            if letter.isupper():
-                if not start:
-                    buf.write(safe_decode('-'))
-                letter = letter.lower()
-            buf.write(safe_decode(letter))
-            start = False
-        buf.flush()
-        res = buf.getvalue()
-        buf.close()
-    return res
+        return hyphenize_name(cls.__name__)
+
+
+def _report_error(error):
+    import sys
+    msg = str(error)
+    name = type(error).__name__
+    if name not in msg:
+        msg = '{}: {}'.format(name, msg)
+    print('* {}'.format(msg), file=sys.stderr)
+
+
+def _fail_on_error(error):
+    raise error
