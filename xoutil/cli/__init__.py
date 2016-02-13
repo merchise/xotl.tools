@@ -62,14 +62,13 @@ class Command(ABC):
     @staticmethod
     def registry():
         '''Obtain all registered commands.'''
-        cls = Command
         name = '__registry__'
-        res = getattr(cls, name, {})
+        res = getattr(Command, name, {})
         if not res:
-            cls._settle_cache(res, Command)
+            Command._settle_cache(res, Command)
             assert res.pop(command_name(Command), None) is None
-            cls._check_help(res)
-            setattr(cls, name, res)
+            Command._check_help(res)
+            setattr(Command, name, res)
         return res
 
     @abstractmethod
@@ -79,8 +78,7 @@ class Command(ABC):
 
     @classmethod
     def set_default_command(cls, cmd=None):
-        '''A default command can be defined for call it when no one is
-        specified.
+        '''Default command is called when no one is specified.
 
         A command is detected when its name appears as the first command-line
         argument.
