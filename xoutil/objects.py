@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.objects
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
@@ -947,6 +947,34 @@ class classproperty(object):
     def __get__(self, instance, owner):
         cls = type(instance) if instance is not None else owner
         return self.__get(cls)
+
+
+class staticproperty(object):
+    '''A descriptor that behaves like properties for instances but static.
+
+    Example of its use::
+
+        class Foobar(object):
+            @staticproperty
+            def getx():
+                return 'this is static'
+
+    Static properties are always read-only, if attribute values must be set or
+    deleted, a metaclass must be defined.
+
+    '''
+    def __init__(self, fget):
+        '''Create the static property descriptor.
+
+          :param fget: is a function for getting the attribute value
+
+        '''
+        self.__get = fget
+        self.__name__ = fget.__name__
+        self.__doc__ = fget.__doc__
+
+    def __get__(self, instance, owner):
+        return self.__get()
 
 
 def setdefaultattr(obj, name, value):

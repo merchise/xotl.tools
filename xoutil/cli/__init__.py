@@ -27,7 +27,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from xoutil.eight.abc import abstractmethod, ABC
-from xoutil.objects import classproperty
+from xoutil.objects import staticproperty
 from .tools import command_name, program_name
 
 
@@ -59,7 +59,7 @@ class Command(ABC):
     def __repr__(self):
         return '<command: %s>' % command_name(type(self))
 
-    @staticmethod
+    @staticproperty
     def registry():
         '''Obtain all registered commands.'''
         name = '__registry__'
@@ -109,57 +109,6 @@ class Command(ABC):
                 msg = 'redundant command specification: "%s" and "%s"!'
                 raise ValueError(msg % (cls, cmd))
         Command.__default_command__ = name
-
-    @classmethod
-    def setup_error_arguments(cls, parser):
-        '''Settle common patterns for error argument definitions.
-
-        There are three states for error management in a program:
-
-        - ignore: all errors are just ignored.
-
-        - report: errors are reported by standard error output.
-
-        - fail: errors are re-raised interrupting the program execution.
-
-        One command can use this feature -for example, in its redefinition of
-        `Command.get_arg_parser`:meth: as follow::
-
-          from argparse import ArgumentParser
-          parser = ArgumentParser()
-          ...
-          cls.setup_error_arguments(parser)
-
-        These options are "ignore-errors" and "fail-on-errors".  ``None`` is
-        used as the value for the first one, `_fail_on_error`:meth: for the
-        second, and `_report_error`:meth: as the default value.
-
-        '''
-        parser.add_argument('--ignore-errors', dest='onerror',
-                            default=cls._report_error,
-                            action='store_const', const=None,
-                            help=('if given, errors are ignored instead '
-                                  'report them'))
-        parser.add_argument('--fail-on-errors', dest='onerror',
-                            action='store_const', const=cls._fail_on_error,
-                            default=cls._report_error,
-                            help=('if given, raise errors instead report '
-                                  'them'))
-
-    @staticmethod
-    def _report_error(error):
-        '''Used as default value error argument options.'''
-        import sys
-        msg = str(error)
-        name = type(error).__name__
-        if name not in msg:
-            msg = '{}: {}'.format(name, msg)
-        print('* {}'.format(msg), file=sys.stderr)
-
-    @staticmethod
-    def _fail_on_error(error):
-        '''Used as the value for "fail-on-errors" argument option.'''
-        raise error
 
     @staticmethod
     def _settle_cache(target, source, recursed=None):
@@ -270,4 +219,4 @@ HELP_NAME = command_name(Help)
 # TODO: Create "xoutil.config" here
 
 del abstractmethod, ABC
-del classproperty
+del staticproperty
