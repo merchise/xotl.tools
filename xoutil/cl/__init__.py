@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cl
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -33,9 +33,14 @@ arguments.
 
 Also contains sub-modules to obtain, convert and check values of common types.
 
+John McCarthy and his students began work on the first Lisp implementation in
+1958.  After FORTRAN, Lisp is the oldest language still in use.
+
 .. versionadded:: 1.7.0
 
 '''
+
+# TODO: move to xaskell
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,

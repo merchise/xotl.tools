@@ -161,9 +161,9 @@ def slugify(value, *args, **kwargs):
     from xoutil.eight import typeof, string_types
     from . import compose, istype
     from .simple import (not_false, ascii_coerce, lower_ascii_coerce)
-    from .args import partial_param_get
+    from xoutil.args.handler import ParamManager, valid
     # local functions
-    getarg = partial_param_get(args, kwargs)
+    getarg = ParamManager(args, kwargs)
     _str = compose(not_false(''), istype(string_types))
     _ascii = compose(_str, ascii_coerce)
     _lascii = compose(_str, lower_ascii_coerce)
@@ -171,7 +171,7 @@ def slugify(value, *args, **kwargs):
     _esc = compose(_set, lambda v: re.escape(v))
     _from_iter = lambda v: ''.join(i for i in v)
 
-    replacement = getarg('replacement', 0, default='', coercers=_ascii)
+    replacement = getarg('replacement', 0, default='', coercers=string_types)
     invalids = getarg('invalids', 0, default='', coercers=_ascii)
     if invalids is True:
         # Backward compatibility with former `invalid_underscore` argument
