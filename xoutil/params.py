@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.values
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -49,6 +49,11 @@ instance.
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
+
+
+def actual_params(*args, **kwds):
+    '''Dummy function returning passed parameters in a tuple (args, kwds).'''
+    return args, kwds
 
 
 def _tname(arg):
@@ -308,7 +313,11 @@ class SafeCheck(FunctionalCheck):
 
 
 class MultiCheck(Coercer):
-    '''Return a wrong value only when all inner coercers fails.'''
+    '''Return a wrong value only when all inner coercers fails.
+
+    Haskell: guards (pp. 132)
+
+    '''
     __slots__ = ()
 
     def __new__(cls, *args):

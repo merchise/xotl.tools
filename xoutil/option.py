@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.option
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -47,7 +47,12 @@ recover the *exception propagation style* -instead of continue in *pure
 functional programming*-, to re-raise the exception, instead the `raise`
 Python statement, use `~xoutil.eight.exceptions.throw`:func:.
 
+See https://en.wikipedia.org/wiki/Monad_%28functional_programming%29\
+#The_Maybe_monad
+
 '''
+
+# TODO: move to xaskell package
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -57,11 +62,36 @@ from __future__ import (division as _py3_division,
 class Maybe(object):
     '''Wrapper for optional values.
 
-    A value can have two forms: it can be ``Just(x)`` where 'x' is the actual
-    value, or a `Wrong` object, which represents a missing or improper value.
+    The Maybe type encapsulates an optional value.  A value of type ``Maybe
+    a`` either contains a value of type ``a`` (represented as ``Just a``), or
+    it is empty (represented as ``Nothing``).  Using `Maybe`` is a good way to
+    deal with errors or exceptional cases without resorting to drastic
+    measures such as error. In this implementation we make a variation where a
+    ``Wrong`` object represents a missing (with special value ``Nothing``) or
+    an improper value (including errors).
 
     See descendant classes `Just`:class: and `Wrong`:class: for more
     information.
+
+    This implementation combines ``Maybe`` and ``Either`` Haskell data types.
+    ``Maybe`` is a means of being explicit that you are not sure that a
+    function will be successful when it is executed.  Conventionally, the
+    usage of ``Either`` for errors uses ``Right`` when the computation is
+    successful, and ``Left`` for failing scenarios.
+
+    In this implementation, `Just`:class` us used for equivalence with both
+    Haskell ``Just`` and ``Right`` types; `Wrong`:class: is used with the
+    special value ``Nothing`` and to encapsulate errors or incorrect values
+    (Haskell ``Left``).
+
+    Haskell::
+
+      data Maybe a = Nothing | Just a
+
+      either :: (a -> c) -> (b -> c) -> Either a b -> c
+
+    Case analysis for the Either type.  If the value is Left a, apply the
+    first function to a; if it is Right b, apply the second function to b.
 
     '''
     __slots__ = 'inner'
@@ -124,6 +154,8 @@ class Wrong(Maybe):
 
     When encapsulation errors, the current trace-back is properly encapsulated
     using `xoutil.eight.exceptions`:mod: module features.
+
+    # TODO: Use `naught` or `Left` instead.
 
     '''
     __slots__ = ()
