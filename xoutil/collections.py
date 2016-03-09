@@ -336,7 +336,7 @@ class SmartDictMixin(object):
     below.
 
     '''
-    def update(self, *args, **kwargs):
+    def update(self, *args, **kwds):
         '''Update this dict from a set of iterables `args` and keyword values
         `kwargs`.
 
@@ -349,14 +349,17 @@ class SmartDictMixin(object):
 
         '''
         for arg in args:
-            if hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
+            if isinstance(arg, Mapping):
                 for key in arg:
+                    self[key] = arg[key]
+            elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
+                for key in arg.keys():
                     self[key] = arg[key]
             else:
                 for key, value in arg:
                     self[key] = value
-        for key in kwargs:
-            self[key] = kwargs[key]
+        for key, value in kwds.items():
+            self[key] = value
 
     # TODO: Include new argument ``full=True`` to also search in string
     #       values.  Maybe this kind of feature will be better in a function
