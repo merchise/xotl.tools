@@ -336,7 +336,7 @@ class SmartDictMixin(object):
     below.
 
     '''
-    def update(self, *args, **kwds):
+    def update(*args, **kwds):
         '''Update this dict from a set of iterables `args` and keyword values
         `kwargs`.
 
@@ -348,18 +348,26 @@ class SmartDictMixin(object):
         - an iterable of (key, value) pairs.
 
         '''
-        for arg in args:
-            if isinstance(arg, Mapping):
-                for key in arg:
-                    self[key] = arg[key]
-            elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
-                for key in arg.keys():
-                    self[key] = arg[key]
-            else:
-                for key, value in arg:
-                    self[key] = value
-        for key, value in kwds.items():
-            self[key] = value
+        # TODO: Issue 9137 was fixed in this method, what about other with
+        #       keyword arguments.
+        if args:
+            self = args[0]    # Issue 9137
+            args = args[1:]
+            for arg in args:
+                if isinstance(arg, Mapping):
+                    for key in arg:
+                        self[key] = arg[key]
+                elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
+                    for key in arg.keys():
+                        self[key] = arg[key]
+                else:
+                    for key, value in arg:
+                        self[key] = value
+            for key, value in kwds.items():
+                self[key] = value
+        else:
+            raise TypeError('update() takes at least 1 positional argument '
+                            '(0 given)')
 
     # TODO: Include new argument ``full=True`` to also search in string
     #       values.  Maybe this kind of feature will be better in a function

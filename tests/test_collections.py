@@ -816,19 +816,18 @@ class TestRankedDict(unittest.TestCase):
         # mixed input
         self.assertNotEqual(list(od.items()), pairs)
 
-        # XXX: Issue 9137: Named argument called 'other' or 'self'
+        # Issue 9137: Named argument called 'other' or 'self'
         # shouldn't be treated specially.
-        # od = RankedDict()
-        # od.update(self=23)
-        # self.assertEqual(list(od.items()), [('self', 23)])
-        # od = RankedDict()
-        # od.update(other={})
-        # self.assertEqual(list(od.items()), [('other', {})])
-        # od = RankedDict()
-        # od.update(red=5, blue=6, other=7, self=8)
-        # self.assertEqual(sorted(list(od.items())),
-        #                  [('blue', 6), ('other', 7), ('red', 5), ('self', 8)])
-        # end of XXX
+        od = RankedDict()
+        od.update(self=23)
+        self.assertEqual(list(od.items()), [('self', 23)])
+        od = RankedDict()
+        od.update(other={})
+        self.assertEqual(list(od.items()), [('other', {})])
+        od = RankedDict()
+        od.update(red=5, blue=6, other=7, self=8)
+        self.assertEqual(sorted(list(od.items())),
+                         [('blue', 6), ('other', 7), ('red', 5), ('self', 8)])
 
     def test_abc(self):
         self.assert_(isinstance(RankedDict(), MutableMapping))
