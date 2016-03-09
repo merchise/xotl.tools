@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.tests.test_collections
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
@@ -19,7 +19,6 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _absolute_import)
 import sys
 import unittest
@@ -153,8 +152,8 @@ class TestChainMap(unittest.TestCase):
         if not PY3:
             # check repr
             self.assertIn(repr(d), [
-                typeof(d).__name__ + "({u'c': 30}, {u'a': 1, u'b': 2})",
-                typeof(d).__name__ + "({u'c': 30}, {u'b': 2, u'a': 1})"
+                typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+                typeof(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
             ])
         else:
             # check repr
@@ -293,7 +292,7 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(c.get('z', 10), 10)
         self.assertEqual(c, dict(a=3, b=2, c=1))
         if not PY3:
-            self.assertEqual(repr(c), "Counter({u'a': 3, u'b': 2, u'c': 1})")
+            self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
         else:
             self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
         self.assertEqual(c.most_common(), [('a', 3), ('b', 2), ('c', 1)])
@@ -335,7 +334,7 @@ class TestCounter(unittest.TestCase):
 
     def test_copying(self):
         # Check that counters are copyable, deepcopyable, picklable, and
-        #have a repr/eval round-trip
+        # have a repr/eval round-trip
         words = Counter('which witch had which witches wrist watch'.split())
         update_test = Counter()
         update_test.update(words)
@@ -688,7 +687,7 @@ class TestOrderedDict(unittest.TestCase):
         if not PY3:
             self.assertEqual(
                 repr(od),
-                "OrderedDict([(u'c', 1), (u'b', 2), (u'a', 3)])")
+                "OrderedDict([('c', 1), ('b', 2), ('a', 3)])")
         else:
             self.assertEqual(
                 repr(od),
@@ -702,8 +701,8 @@ class TestOrderedDict(unittest.TestCase):
         od['x'] = od
         if not PY3:
             self.assertEqual(repr(od),
-                             ("OrderedDict([(u'a', None), (u'b', None), "
-                              "(u'c', None), (u'x', ...)])"))
+                             ("OrderedDict([('a', None), ('b', None), "
+                              "('c', None), ('x', ...)])"))
         else:
             self.assertEqual(repr(od),
                              ("OrderedDict([('a', None), ('b', None), "
