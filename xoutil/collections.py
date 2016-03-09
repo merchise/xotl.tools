@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.collections
 # ----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # defaultdict and opendict implementations.
 #
@@ -1694,6 +1694,276 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     def __delitem__(self, key):
         del self.inner[key]
+
+
+class RankedDict(SmartDictMixin, dict):
+    '''Mapping that remembers modification order.
+
+    Differences with `OrderedDict`:class: are:
+
+    - Can be ranked (change precedence order) at any time; see `rank`:meth:
+      and `swap_ranks`:meth: methods for more information.
+
+    - Based in modification, not in insertion order.
+
+    - Keeps the standard semantics of Python for `popitem`:meth: method
+      returning a random pair when called without parameters.
+
+    '''
+
+    def __init__(self, *args, **kwds):
+        '''Initialize a ranked dictionary.
+
+        The signature is the same as regular dictionaries, but keyword
+        arguments are not recommended because their insertion order is
+        arbitrary.
+
+        Use `rank`:meth: to change the precedence order in any moment.
+
+        '''
+        # Ensure direct calls to ``__init__`` don't clear previous contents
+        try:
+            self._ranks
+        except AttributeError:
+            self._ranks = []
+        self.update(*args, **kwds)
+
+    def rank(self, *keys):
+        '''Arrange mapping keys into a systematic precedence order.
+
+        :param keys: Variable number of key values, given are ordered in the
+               highest precedence levels (0 is the most priority).  Not given
+               keys are added at the end in the its current order.
+
+        '''
+        if keys:
+            ranks = []
+            for key in keys:
+                if key in self:
+                    ranks.append(key)
+                else:
+                    raise KeyError('{}'.format(key))
+            aux = set(keys)
+            for key in self:
+                if key not in aux:
+                    ranks.append(key)
+            self._ranks = ranks
+
+    def swap_ranks(self, *args, **kwds):
+        '''Exchange ranks of given keys.
+
+        :param args: Each item must be a pair of keys to exchange the order of
+               precedence.
+
+        :param kwds: Every keyword argument will have a pair to exchange
+               (name, value).
+
+        '''
+        if args or kwds:
+            for key1, key2 in args:
+                self._swap_ranks(key1, key2)
+            for key1 in kwds:
+                key2 = kwds[key1]
+                self._swap_ranks(key1, key2)
+        else:
+            msg = 'swap_ranks() expects at least one pair of keys (0 given)'
+            raise TypeError(msg)
+
+    def move_to_end(self, key, last=True):
+        '''Move an existing element to the end.
+
+        Or move it to the beginning if ``last==False``.
+
+        Raises KeyError if the element does not exist.  When ``last==True``,
+        acts like a fast version of ``self[key] = self.pop(key)``.
+
+        .. note:: This method is kept for compatibility with
+                  `OrderedDict`:class:\ .  Last example using
+                  ``self.pop(key)`` works well in both, in OD and this class,
+                  but here in `RankedDict`:class: it's semantically equivalent
+                  to ``self[key] = self[key]``.
+
+        '''
+        try:
+            ranks = self._ranks
+            if last:
+                if key != ranks[-1]:
+                    ranks.remove(key)
+                    ranks.append(key)
+            else:
+                if key != ranks[0]:
+                    ranks.remove(key)
+                    ranks.insert(0, key)
+        except ValueError:
+            raise KeyError(key)
+
+    def _swap_ranks(self, key1, key2):
+        '''Protected method to swap a pair of ranks.'''
+        if key1 in self and key2 in self:
+            ranks = self._ranks
+            idx1, idx2 = ranks.index(key1), ranks.index(key2)
+            if idx1 != idx2:
+                aux = ranks[idx1]
+                ranks[idx1] = ranks[idx2]
+                ranks[idx2] = aux
+        else:
+            raise KeyError('{!r} and/or {!r}'.format(key1, key2))
+
+    def __setitem__(self, key, value):
+        '''rd.__setitem__(i, y) <==> rd[i]=y'''
+        ranks = self._ranks
+        if key in self:
+            if ranks[-1] != key:
+                ranks.remove(key)
+                ranks.append(key)
+        else:
+            ranks.append(key)
+        super(RankedDict, self).__setitem__(key, value)
+
+    def __delitem__(self, key):
+        '''rd.__delitem__(y) <==> del rd[y]'''
+        super(RankedDict, self).__delitem__(key)
+        self._ranks.remove(key)
+
+    def __iter__(self):
+        '''rd.__iter__() <==> iter(rd)'''
+        return iter(self._ranks)
+
+    def __reversed__(self):
+        '''rd.__reversed__() <==> reversed(rd)'''
+        return reversed(self._ranks)
+
+    def clear(self):
+        '''rd.clear() -> None.  Remove all items from rd.'''
+        super(RankedDict, self).clear()
+        self._ranks = []
+
+    def popitem(self, index=None):
+        '''rd.popitem([index]) -> (key, value), return and remove a pair.
+
+        :param index: Position of pair to return (default last).  This method
+               isn't have the same semantic as in `OrderedDict`:class: one,
+               none the defined in method with the same name in standard
+               Python mappings; here is similar to `~list.pop`:meth:.
+
+        '''
+        if self:
+            if index is None or index is True:
+                index = -1
+            key = self._ranks.pop(index)
+            return key, super(RankedDict, self).pop(key)
+        else:
+            raise KeyError('popitem(): dictionary is empty')
+
+    def __sizeof__(self):
+        '''D.__sizeof__() -> size of D in memory, in bytes.
+
+        .. note:: Why ``sys.getsizeof(obj)`` doesn't return the same result as
+                  ``obj.__sizeof__()``?
+
+        '''
+        return super(RankedDict, self).__sizeof__() + self._ranks.__sizeof__()
+
+    def keys(self):
+        '''D.keys() -> an object providing a view on D's keys.'''
+        return self.__iter__()
+
+    def values(self):
+        '''D.values() -> an object providing a view on D's values.'''
+        for key in self:
+            yield self[key]
+
+    def items(self):
+        '''D.items() -> an object providing a view on D's items.'''
+        for key in self:
+            yield (key, self[key])
+
+    if _py2:
+        iterkeys = keys
+        itervalues = values
+        iteritems = items
+
+    def __eq__(self, other):
+        '''rd.__eq__(y) <==> rd==y.
+
+        Comparison to another `RankedDict`:class: instance is order-sensitive
+        while comparison to a regular mapping is order-insensitive.
+
+        '''
+        res = super(RankedDict, self).__eq__(other)
+        if res:
+            if isinstance(other, RankedDict):
+                return self._ranks == other._ranks
+            elif isinstance(other, OrderedDict):
+                return self._ranks == list(other)
+            else:
+                return True
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def pop(self, key, *args):
+        '''rd.pop(k[,d]) -> v
+
+        Remove specified key and return the corresponding value.
+
+        If key is not found, d is returned if given, otherwise KeyError is
+        raised.
+
+        '''
+        count = len(args)
+        if count < 2:
+            res = super(RankedDict, self).pop(key, Unset)
+            if res is Unset:
+                if count == 1:
+                    return args[0]
+                else:
+                    raise KeyError(key)
+            else:
+                self._ranks.remove(key)
+                return res
+        else:
+            msg = 'pop expected at most 2 arguments, got {}'.format(count + 1)
+            raise TypeError(msg)
+
+    def setdefault(self, key, default=None):
+        '''D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D'''
+        if key in self:
+            return self[key]
+        else:
+            self[key] = default
+            return default
+
+    @_recursive_repr()
+    def __repr__(self):
+        '''x.__repr__() <==> repr(x)'''
+        aux = ', '.join('({!r}, {!r})'.format(k, self[k]) for k in self)
+        if aux:
+            aux = '[{}]'.format(aux)
+        return '{}({})'.format(type(self).__name__, aux)
+
+    def __reduce__(self):
+        '''Return state information for pickling.'''
+        cls = type(self)
+        inst_dict = vars(self).copy()
+        for k in vars(cls()):
+            inst_dict.pop(k, None)
+        return cls, (), inst_dict or None, None, iter(self.items())
+
+    def copy(self):
+        '''D.copy() -> a shallow copy of D.'''
+        return type(self)(self)
+
+    @classmethod
+    def fromkeys(cls, iterable, value=None):
+        '''RD.fromkeys(S[, v]) -> New ranked dictionary with keys from S.
+
+        If not specified, the value defaults to None.
+
+        '''
+        return cls((key, value) for key in iterable)
 
 
 class OrderedSmartDict(SmartDictMixin, OrderedDict):
