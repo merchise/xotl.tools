@@ -403,9 +403,15 @@ class SmartDict(SmartDictMixin, dict):
     See :meth:`SmartDictMixin.update` and :meth:`SmartDictMixin.search`.
 
     '''
-    def __init__(self, *args, **kwargs):
-        super(SmartDict, self).__init__()
-        self.update(*args, **kwargs)
+    def __init__(*args, **kwargs):
+        if args:
+            self = args[0]    # Issue 9137
+            args = args[1:]
+            super(SmartDict, self).__init__()
+            self.update(*args, **kwargs)
+        else:
+            msg = 'constructor takes at least 1 positional argument (0 given)'
+            raise TypeError(msg)
 
 
 class opendict(OpenDictMixin, dict, object):
@@ -453,7 +459,7 @@ if not _py33:
         # reference in self.__map. Those hard references disappear when a key
         # is deleted from an OrderedDict.
 
-        def __init__(self, *args, **kwds):
+        def __init__(*args, **kwds):
             '''Initialize an ordered dictionary.
 
             The signature is the same as regular dictionaries, but keyword
@@ -461,9 +467,11 @@ if not _py33:
             arbitrary.
 
             '''
-            if len(args) > 1:
-                raise TypeError('expected at most 1 arguments, got %d' %
-                                len(args))
+            if not args:
+                raise TypeError("descriptor '__init__' of 'OrderedDict' "
+                                "object needs an argument")
+            self = args[0]
+            args = args[1:]
             try:
                 self.__root
             except AttributeError:
@@ -784,12 +792,20 @@ if not _py34:
 if not _py33:
     class UserDict(MutableMapping):
         # Start by filling-out the abstract methods
-        def __init__(self, dict=None, **kwargs):
-            self.data = {}
-            if dict is not None:
-                self.update(dict)
-            if len(kwargs):
-                self.update(kwargs)
+        def __init__(*args, **kwargs):
+            count = len(args)
+            if count == 1 or count == 2:    # self, dict=None
+                self = args[0]    # Issue 9137
+                dict = None if count == 1 else args[1]
+                self.data = {}
+                if dict is not None:
+                    self.update(dict)
+                if len(kwargs):
+                    self.update(kwargs)
+            else:
+                msg = ('constructor takes at least 1 and at most 2 '
+                       'positional arguments ({} given)')
+                raise TypeError(msg.format(count))
 
         def __len__(self):
             return len(self.data)
@@ -1237,7 +1253,7 @@ if not _py33:
         # http://code.activestate.com/recipes/259174/
         # Knuth, TAOCP Vol. II section 4.6.3
 
-        def __init__(self, iterable=None, **kwds):
+        def __init__(*args, **kwds):
             '''Create a new, empty Counter object.  And if given, count
             elements from an input iterable.  Or, initialize the count from
             another mapping of elements to their counts.
@@ -1248,8 +1264,17 @@ if not _py33:
             >>> c = Counter(a=4, b=2)        # a new counter from keyword args
 
             '''
-            super(Counter, self).__init__()
-            self.update(iterable, **kwds)
+            count = len(args)
+            if count == 1 or count == 2:    # self, iterable=None
+                self = args[0]    # Issue 9137
+                iterable = None if count == 1 else args[1]
+                self.data = {}
+                super(Counter, self).__init__()
+                self.update(iterable, **kwds)
+            else:
+                msg = ('constructor takes at least 1 and at most 2 '
+                       'positional arguments ({} given)')
+                raise TypeError(msg.format(count))
 
         def __missing__(self, key):
             'The count of elements not in the Counter is zero.'
@@ -1301,7 +1326,7 @@ if not _py33:
             raise NotImplementedError('Counter.fromkeys() is undefined.  '
                                       'Use Counter(iterable) instead.')
 
-        def update(self, iterable=None, **kwds):
+        def update(*args, **kwds):
             '''Like dict.update() but add counts instead of replacing them.
 
             Source can be an iterable, a dictionary, or another Counter
@@ -1323,21 +1348,29 @@ if not _py33:
             # Both the inputs and outputs are allowed to contain zero and
             # negative counts.
 
-            if iterable is not None:
-                if isinstance(iterable, Mapping):
-                    if self:
-                        self_get = self.get
-                        for elem, count in iterable.items():
-                            self[elem] = count + self_get(elem, 0)
+            count = len(args)
+            if count == 1 or count == 2:    # self, iterable=None
+                self = args[0]    # Issue 9137
+                iterable = None if count == 1 else args[1]
+                if iterable is not None:
+                    if isinstance(iterable, Mapping):
+                        if self:
+                            self_get = self.get
+                            for elem, count in iterable.items():
+                                self[elem] = count + self_get(elem, 0)
+                        else:
+                            # fast path when counter is empty
+                            super(Counter, self).update(iterable)
                     else:
-                        # fast path when counter is empty
-                        super(Counter, self).update(iterable)
-                else:
-                    _count_elements(self, iterable)
-            if kwds:
-                self.update(kwds)
+                        _count_elements(self, iterable)
+                if kwds:
+                    self.update(kwds)
+            else:
+                msg = ('update() takes at least 1 and at most 2 positional '
+                       'arguments ({} given)')
+                raise TypeError(msg.format(count))
 
-        def subtract(self, iterable=None, **kwds):
+        def subtract(*args, **kwds):
             '''Like dict.update() but subtracts counts instead of replacing
             them.
 
@@ -1370,16 +1403,24 @@ if not _py33:
               -1
 
             '''
-            if iterable is not None:
-                self_get = self.get
-                if isinstance(iterable, Mapping):
-                    for elem, count in iterable.items():
-                        self[elem] = self_get(elem, 0) - count
-                else:
-                    for elem in iterable:
-                        self[elem] = self_get(elem, 0) - 1
-            if kwds:
-                self.subtract(kwds)
+            count = len(args)
+            if count == 1 or count == 2:    # self, iterable=None
+                self = args[0]    # Issue 9137
+                iterable = None if count == 1 else args[1]
+                if iterable is not None:
+                    self_get = self.get
+                    if isinstance(iterable, Mapping):
+                        for elem, count in iterable.items():
+                            self[elem] = self_get(elem, 0) - count
+                    else:
+                        for elem in iterable:
+                            self[elem] = self_get(elem, 0) - 1
+                if kwds:
+                    self.subtract(kwds)
+            else:
+                msg = ('update() takes at least 1 and at most 2 positional '
+                       'arguments ({} given)')
+                raise TypeError(msg.format(count))
 
         def copy(self):
             'Return a shallow copy.'
@@ -1592,9 +1633,15 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
     __slots__ = (safe.slot('inner', ChainMap),
                  safe.slot(OpenDictMixin.__cache_name__, dict))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(*args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        self.update(*args, **kwargs)
+        if args:
+            self = args[0]    # Issue 9137
+            args = args[1:]
+            self.update(*args, **kwargs)
+        else:
+            raise TypeError('constructor takes at least 1 positional '
+                            'argument (0 given)')
 
     @property
     def level(self):
@@ -1719,7 +1766,7 @@ class RankedDict(SmartDictMixin, dict):
 
     '''
 
-    def __init__(self, *args, **kwds):
+    def __init__(*args, **kwds):
         '''Initialize a ranked dictionary.
 
         The signature is the same as regular dictionaries, but keyword
@@ -1729,12 +1776,19 @@ class RankedDict(SmartDictMixin, dict):
         Use `rank`:meth: to change the precedence order in any moment.
 
         '''
-        # Ensure direct calls to ``__init__`` don't clear previous contents
-        try:
-            self._ranks
-        except AttributeError:
-            self._ranks = []
-        self.update(*args, **kwds)
+        if args:
+            self = args[0]
+            args = args[1:]
+            # Ensure direct calls to ``__init__`` don't clear previous
+            # contents
+            try:
+                self._ranks
+            except AttributeError:
+                self._ranks = []
+            self.update(*args, **kwds)
+        else:
+            msg = 'constructor takes at least 1 positional argument (0 given)'
+            raise TypeError(msg)
 
     def rank(self, *keys):
         '''Arrange mapping keys into a systematic precedence order.
@@ -1982,7 +2036,7 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
                  of pairs instead.
 
     '''
-    def __init__(self, *args, **kwds):
+    def __init__(*args, **kwds):
         '''Initialize an ordered dictionary.
 
         The signature is the same as regular dictionaries, but keyword
@@ -1990,8 +2044,14 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         arbitrary.
 
         '''
-        super(OrderedSmartDict, self).__init__()
-        self.update(*args, **kwds)
+        if args:
+            self = args[0]    # Issue 9137
+            args = args[1:]
+            super(OrderedSmartDict, self).__init__()
+            self.update(*args, **kwds)
+        else:
+            msg = 'constructor takes at least 1 positional argument (0 given)'
+            raise TypeError(msg)
 
 
 class MetaSet(type):
