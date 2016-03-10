@@ -28,9 +28,6 @@ from xoutil import Unset
 from xoutil.eight import callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
-from .eight.meta import metaclass as _metaclass    # noqa
-metaclass = deprecated('xoutil.eight.meta.metaclass')(_metaclass)
-
 
 __docstring_format__ = 'rst'
 
