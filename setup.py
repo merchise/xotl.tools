@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
+# flake8:  noqa
 import os
 import sys
 from setuptools import setup, find_packages

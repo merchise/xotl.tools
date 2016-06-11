@@ -591,7 +591,8 @@ def fulldir(obj):
 
 
 # TODO: Fix signature after removal of attr_filter and value_filter
-def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None, _depth=0):
+def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None,
+         _depth=0):
     '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
 
@@ -1346,7 +1347,6 @@ def get_traverser(*paths, **kw):
 
 
 def dict_merge(*dicts, **others):
-
     '''Merges several dicts into a single one.
 
     Merging is similar to updating a dict, but if values are non-scalars they

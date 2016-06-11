@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.datetime
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
@@ -304,6 +304,7 @@ class flextime(timedelta):
             return _super(cls, *args, **kwargs)
 
 
+# daterange([start,] stop[, step])
 def daterange(*args):
     '''Returns an iterator that yields each date in the range of ``[start,
     stop)``, not including the stop.

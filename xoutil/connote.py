@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.connote
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2016 Merchise and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
