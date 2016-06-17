@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.values
+# xoutil.params
 # ---------------------------------------------------------------------
 # Copyright (c) 2015, 2016 Merchise and Contributors
 # All rights reserved.
@@ -453,8 +453,10 @@ class ParamSchemeRow(object):
             msg = '{}() repeated identifiers: {}'
             raise TypeError(msg.format(_tname(self), ', '.join(parts)))
         else:
-            ok = lambda k: (isinstance(k, int) or
-                            isinstance(k, strs) and iskey(k))
+            def ok(k):
+                return (isinstance(k, strs) and iskey(k) or
+                        isinstance(k, int))
+
             bad = [k for k in ids if not ok(k)]
             if bad:
                 msg = ('{}() identifiers with wrong type (only int and str '
@@ -603,10 +605,12 @@ class ParamScheme(object):
         value is missing.
 
         '''
-        from xoutil.option import Wrong
+        def ok(v):
+            from xoutil.option import Wrong
+            return not isinstance(v, Wrong)
+
         pm = ParamManager(args, kwds)
         aux = ((row.key, row(pm)) for row in self)
-        ok = lambda v: not isinstance(v, Wrong)
         res = {key: value for key, value in aux if ok(value)}
         rem = pm.remainder()
         if strict:
@@ -631,9 +635,11 @@ class ParamScheme(object):
     @property
     def defaults(self):
         '''Return a mapping with all valid default values.'''
-        from xoutil.option import Wrong
+        def ok(v):
+            from xoutil.option import Wrong
+            return not isinstance(v, Wrong)
+
         aux = ((row.key, row.default) for row in self)
-        ok = lambda v: not isinstance(v, Wrong)
         return {k: d for k, d in aux if ok(d)}
 
     def _getcache(self):
