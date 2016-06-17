@@ -158,10 +158,10 @@ def slugify(value, *args, **kwargs):
 
     '''
     import re
-    from xoutil.eight import typeof, string_types
+    from xoutil.eight import string_types
     from . import compose, istype
     from .simple import (not_false, ascii_coerce, lower_ascii_coerce)
-    from xoutil.args.handler import ParamManager, valid
+    from xoutil.params import ParamManager
     # local functions
     getarg = ParamManager(args, kwargs)
     _str = compose(not_false(''), istype(string_types))
@@ -169,10 +169,13 @@ def slugify(value, *args, **kwargs):
     _lascii = compose(_str, lower_ascii_coerce)
     _set = compose(_ascii, lambda v: ''.join(set(v)))
     _esc = compose(_set, lambda v: re.escape(v))
-    _from_iter = lambda v: ''.join(i for i in v)
 
-    replacement = getarg('replacement', 0, default='', coercers=string_types)
+    def _from_iter(v):
+        return ''.join(i for i in v)
+
+    replacement = getarg('replacement', 0, default='-', coercers=string_types)
     invalids = getarg('invalids', 0, default='', coercers=_ascii)
+    valids = getarg('valids', 0, default='', coercers=_ascii)
     if invalids is True:
         # Backward compatibility with former `invalid_underscore` argument
         invalids = '_'
@@ -180,16 +183,13 @@ def slugify(value, *args, **kwargs):
         invalids = ''
     else:
         if not isinstance(invalids, string_types):
-            invalids = _from_iter(invalids)
-        invalids = _esc(lascii(invalids))
-    if valids is None:
-        valids = ''
-    else:
-        if not isinstance(valids, string_types):
-            valids = _from_iter(valids)
-        valids = _esc(re.sub(r'[0-9a-b]+', '', lascii(valids)))
+            invalids = ''.join(i for i in invalids)
+        invalids = _esc(_lascii(invalids))
+    if not isinstance(valids, string_types):
+        valids = _from_iter(valids)
+    valids = _esc(re.sub(r'[0-9a-b]+', '', _lascii(valids)))
     # calculate result
-    res = lascii(value)
+    res = _lascii(value)
     regex = re.compile(r'[^_a-z0-9%s]+' % valids)
     repl = '\t' if replacement else ''
     res = regex.sub(repl, res)
