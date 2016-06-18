@@ -128,7 +128,9 @@ def vouch(fn, *args, **kwargs):
             raise TypeError(msg.format(coercer_name(fn), _bar(args, kwargs)))
     else:
         # TODO: Transform `lwraps` and use here
-        res = lambda *a, **kw: vouch(fn, *a, **kw)
+        def res(*a, **kw):
+            return vouch(fn, *a, **kw)
+
         try:
             res.__name__ = coercer_name(fn)
             doc = fn.__doc__
