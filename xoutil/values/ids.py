@@ -48,7 +48,7 @@ from uuid import (UUID, uuid1, uuid3, uuid4, uuid5, getnode,    # noqa
 from xoutil.deprecation import inject_deprecated
 import xoutil.cl.ids
 
-__all__ = ['str_uuid', 'slugify', ]
+__all__ = ['str_uuid', 'slugify', ]    # noqa
 
 inject_deprecated(__all__, xoutil.cl.ids)
 
