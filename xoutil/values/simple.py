@@ -27,20 +27,12 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from . import coercer
+from xoutil.cl.simple import (name_coerce, decode_coerce,    # noqa
+                              encode_coerce, unicode_coerce, bytes_coerce,
+                              str_coerce, ascii_coerce, ascii_set_coerce,
+                              lower_ascii_coerce, lower_ascii_set_coerce,
+                              chars_coerce)
 
-
-from xoutil.deprecation import inject_deprecated
-import xoutil.cl.simple
-
-__all__ = ['name_coerce', 'decode_coerce', 'encode_coerce',    # noqa
-           'unicode_coerce', 'bytes_coerce', 'str_coerce', 'ascii_coerce',
-           'ascii_set_coerce', 'lower_ascii_coerce', 'lower_ascii_set_coerce',
-           'chars_coerce']
-
-inject_deprecated(__all__, xoutil.cl.simple)
-
-del xoutil.cl.simple, inject_deprecated
 
 # TODO: Declared in 'xoutil.values.simple' at release 1.7 but not here in
 # release 1.7.2:
