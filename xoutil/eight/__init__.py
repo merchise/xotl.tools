@@ -33,6 +33,9 @@ from __future__ import (division as _py3_division,
 
 import sys
 
+# TODO: [manu] Which is the preferred, to use 'encoding' or to use 'coding',
+# in the header?
+
 # Python versions
 
 _py2 = sys.version_info[0] == 2
