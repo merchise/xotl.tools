@@ -59,3 +59,5 @@ from xoutil.cl import (logical, nil, t, _coercer_decorator, vouch,    # noqa
 
 
 valid, Invalid, check = t, nil, vouch
+
+# TODO: Migrate all uses of this module and remove it.
