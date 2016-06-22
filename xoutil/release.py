@@ -36,6 +36,16 @@ def dev_tag_installed():
 
 RELEASE_TAG = dev_tag_installed() or ''
 
+
+def safe_int(x):
+    try:
+        return int(x)
+    except ValueError:
+        return x
+
 # I won't put the release tag in the version_info tuple.  Since PEP440 is on
 # the way.
-VERSION_INFO = tuple(int(x) for x in VERSION.split('.'))
+VERSION_INFO = tuple(safe_int(x) for x in VERSION.split('.'))
+
+
+del safe_int
