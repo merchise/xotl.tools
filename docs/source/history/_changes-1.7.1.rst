@@ -20,3 +20,9 @@
   - `xoutil.connote`:mod:.
 
   - `xoutil.params`:mod:.
+
+Fixes in 1.7.1.post1:
+
+- Fix issue with both `xoutil.string.safe_decode`:func: and
+  `xoutil.string.safe_encode`:func:.  Previously, the parameter encoding could
+  contain an invalid encoding name and the function could fail.
