@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_string
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -16,6 +16,16 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
+
+
+def test_safe_decode_dont_fail_uppon_invalid_encoding():
+    from xoutil.string import safe_decode
+    assert safe_decode(b'á', 'i-dont-exist') == u'á'
+
+
+def test_safe_encode_dont_fail_uppon_invalid_encoding():
+    from xoutil.string import safe_encode
+    assert safe_encode(u'á', 'i-dont-exist') == b'á'
 
 
 def test_safe_string():
