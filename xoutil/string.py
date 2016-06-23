@@ -81,6 +81,9 @@ def safe_decode(s, encoding=None):
             # In Python 3 str(b'm') returns the string "b'm'" and not just "m",
             # this fixes this.
             return text_type(s, encoding, 'replace')
+        except LookupError:
+            # The provided enconding is not know, try with no encoding.
+            return safe_decode(s)
         except:
             # For numbers and other stuff.
             return text_type(s)
@@ -104,13 +107,16 @@ def safe_encode(u, encoding=None):
     else:
         encoding = force_encoding(encoding)
         try:
-            if isinstance(u, string_types):
-                # In Python 2.x bytes does not allows an encoding argument.
-                return bytes(u)
-            else:
+            try:
+                if isinstance(u, string_types):
+                    # In Python 2.x bytes does not allows an encoding argument.
+                    return bytes(u)
+                else:
+                    return text_type(u).encode(encoding, 'replace')
+            except:
                 return text_type(u).encode(encoding, 'replace')
-        except:
-            return text_type(u).encode(encoding, 'replace')
+        except LookupError:
+            return safe_encode(u)
 
 
 def safe_str(obj=str()):
