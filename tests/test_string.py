@@ -20,12 +20,12 @@ from __future__ import (division as _py3_division,
 
 def test_safe_decode_dont_fail_uppon_invalid_encoding():
     from xoutil.string import safe_decode
-    assert safe_decode(b'á', 'i-dont-exist') == u'á'
+    assert safe_decode(b'\xc3\xa1', 'i-dont-exist') == u'á'
 
 
 def test_safe_encode_dont_fail_uppon_invalid_encoding():
     from xoutil.string import safe_encode
-    assert safe_encode(u'á', 'i-dont-exist') == b'á'
+    assert safe_encode(u'á', 'i-dont-exist') == b'\xc3\xa1'
 
 
 def test_safe_string():
