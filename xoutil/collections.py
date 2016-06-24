@@ -695,20 +695,19 @@ if not _py34:
 
         def __getitem__(self, key):
             for mapping in self.maps:
-                try:
-                    return mapping[key]    # can't use 'key in mapping' with
-                                           # defaultdict
+                try:    # can't use 'key in mapping' with defaultdict
+                    return mapping[key]
                 except KeyError:
                     pass
-            return self.__missing__(key)    # support subclasses that define
-                                            # __missing__
+            # support subclasses that define __missing__
+            return self.__missing__(key)
 
         def get(self, key, default=None):
             return self[key] if key in self else default
 
         def __len__(self):
-            return len(set().union(*self.maps))  # reuses stored hash values
-                                                 # if possible
+            # reuses stored hash values if possible
+            return len(set().union(*self.maps))
 
         def __iter__(self):
             return iter(set().union(*self.maps))
