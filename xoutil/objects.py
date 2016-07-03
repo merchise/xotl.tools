@@ -386,6 +386,9 @@ def smart_getter_and_deleter(obj):
         return partial(popattr, obj)
 
 
+# TODO: [med] See the get_traverser.  I think the function is actually
+# a subtype of that.  Also, this method sticks with the getter for the
+# top object, see the failing companion test in this commit.
 def multi_getter(source, *ids):
     '''Get values from `source` of all given `ids`.
 
@@ -416,6 +419,7 @@ def multi_getter(source, *ids):
 
     .. versionadded:: 1.7.1
 
+    
     '''
     from collections import Iterable as multi
     from xoutil.eight import string_types as strs
