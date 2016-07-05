@@ -114,9 +114,18 @@ import pickle
 from random import randrange
 
 
+def _items(d):
+    'For some reason in new PyPy 5.0.1 for Py 2.7.10, set order is not nice.'
+    from xoutil.eight import _pypy
+    res = d.items()
+    if _pypy and isinstance(res, list):
+        res.sort()
+    return res
+
+
 class TestChainMap(unittest.TestCase):
     def test_basics(self):
-        from xoutil.eight import typeof
+        from xoutil.eight import typeof, _pypy
         c = ChainMap()
         c['a'] = 1
         c['b'] = 2
@@ -126,7 +135,7 @@ class TestChainMap(unittest.TestCase):
         # check internal state
         self.assertEqual(d.maps, [{'b': 20, 'c': 30}, {'a': 1, 'b': 2}])
         # check items/iter/getitem
-        self.assertEqual(d.items(), dict(a=1, b=20, c=30).items())
+        self.assertEqual(_items(d), _items(dict(a=1, b=20, c=30)))
         # check len
         self.assertEqual(len(d), 3)
         # check contains
@@ -141,7 +150,7 @@ class TestChainMap(unittest.TestCase):
         # check internal state
         self.assertEqual(d.maps, [{'c': 30}, {'a': 1, 'b': 2}])
         # check items/iter/getitem
-        self.assertEqual(d.items(), dict(a=1, b=2, c=30).items())
+        self.assertEqual(_items(d), _items(dict(a=1, b=2, c=30)))
         # check len
         self.assertEqual(len(d), 3)
         # check contains
