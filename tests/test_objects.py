@@ -465,3 +465,18 @@ def test_memoized_classproperty():
     assert Foobar.prop == current
     current += 1
     assert Foobar.prop != current
+
+
+def test_multi_getter_failure():
+    from xoutil.objects import multi_getter
+    from xoutil.objects import traverse
+
+    class new(object):
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    top = new(d=dict(a=1, b=2), a=10, b=20)
+
+    assert traverse(top, 'd.a') == 1
+    assert next(multi_getter(top, ('d', 'a'))) == 1
+    
