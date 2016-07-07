@@ -132,10 +132,19 @@ else:
     from StringIO import StringIO    # noqa
 
 
-if _py3:
-    import builtins
-    exec_ = getattr(builtins, 'exec')  # noqa
-else:
+try:
+    __builtin__
+except NameError:
+    # Probably PyPy
+    try:
+        import builtins as __builtin__    # Making sure in some Py3 versions
+    except:
+        import __builtin__    # noqa
+
+
+try:
+    exec_ = getattr(__builtin__, 'exec')  # noqa
+except AttributeError:
     def exec_(_code_, _globs_=None, _locs_=None):
         """Execute code in a namespace."""
         import sys
@@ -148,3 +157,28 @@ else:
         elif _locs_ is None:
             _locs_ = _globs_
         exec("""exec _code_ in _globs_, _locs_""")
+
+
+try:
+    execfile = getattr(__builtin__, 'execfile')  # noqa
+except AttributeError:
+    def execfile(filename, globals=None, locals=None):
+        """Read and execute a Python script from a file.
+
+        The globals and locals are dictionaries, defaulting to the current
+        globals and locals.  If only globals is given, locals defaults to it.
+
+        """
+        import sys
+        if globals is None:
+            frame = sys._getframe(1)
+            globals = frame.f_globals
+            if locals is None:
+                locals = frame.f_locals
+            del frame
+        elif locals is None:
+            locals = globals
+        with open(filename, "r") as f:
+            source = f.read()
+            code = compile(source, filename, 'exec')
+            return exec_(code, globals, locals)
