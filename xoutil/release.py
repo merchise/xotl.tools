@@ -17,35 +17,15 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
+
+from xoutil.versions import dev_tag_installed, parse_version_info
+
 
 VERSION = '1.7.2'
 
+RELEASE_TAG = dev_tag_installed('xoutil') or ''
 
-def dev_tag_installed():
-    import pkg_resources
-    try:
-        dist = pkg_resources.get_distribution('xoutil')
-        full_version = dist.version
-        # FIX: Below line is not working anymore
-        base = dist.parsed_version.base_version
-        return full_version[len(base):]
-    except:
-        return None
+VERSION_INFO = parse_version_info(VERSION)
 
-RELEASE_TAG = dev_tag_installed() or ''
-
-
-def safe_int(x):
-    try:
-        return int(x)
-    except ValueError:
-        return x
-
-# I won't put the release tag in the version_info tuple.  Since PEP440 is on
-# the way.
-VERSION_INFO = tuple(safe_int(x) for x in VERSION.split('.'))
-
-
-del safe_int
+del dev_tag_installed, parse_version_info
