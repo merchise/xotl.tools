@@ -350,24 +350,11 @@ class SmartDictMixin(object):
         '''
         # TODO: Issue 9137 was fixed in this method, what about other with
         #       keyword arguments.
-        if args:
-            self = args[0]    # Issue 9137
-            args = args[1:]
-            for arg in args:
-                if isinstance(arg, Mapping):
-                    for key in arg:
-                        self[key] = arg[key]
-                elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
-                    for key in arg.keys():
-                        self[key] = arg[key]
-                else:
-                    for key, value in arg:
-                        self[key] = value
-            for key, value in kwds.items():
-                self[key] = value
-        else:
-            raise TypeError('update() takes at least 1 positional argument '
-                            '(0 given)')
+        self, args = issue_9137(args, caller='update')
+        for key, value in smart_iter_items(*args):
+            self[key] = value
+        for key, value in kwds.items():
+            self[key] = value
 
     # TODO: Include new argument ``full=True`` to also search in string
     #       values.  Maybe this kind of feature will be better in a function
@@ -404,14 +391,9 @@ class SmartDict(SmartDictMixin, dict):
 
     '''
     def __init__(*args, **kwargs):
-        if args:
-            self = args[0]    # Issue 9137
-            args = args[1:]
-            super(SmartDict, self).__init__()
-            self.update(*args, **kwargs)
-        else:
-            msg = 'constructor takes at least 1 positional argument (0 given)'
-            raise TypeError(msg)
+        self, args = issue_9137(args, caller='SmartDict constructor')
+        super(SmartDict, self).__init__()
+        self.update(*args, **kwargs)
 
 
 class opendict(OpenDictMixin, dict, object):
@@ -792,19 +774,9 @@ if not _py33:
     class UserDict(MutableMapping):
         # Start by filling-out the abstract methods
         def __init__(*args, **kwargs):
-            count = len(args)
-            if count == 1 or count == 2:    # self, dict=None
-                self = args[0]    # Issue 9137
-                dict = None if count == 1 else args[1]
-                self.data = {}
-                if dict is not None:
-                    self.update(dict)
-                if len(kwargs):
-                    self.update(kwargs)
-            else:
-                msg = ('constructor takes at least 1 and at most 2 '
-                       'positional arguments ({} given)')
-                raise TypeError(msg.format(count))
+            self, args = issue_9137(args, caller='UserDict constructor')
+            self.data = {}
+            self.update(*args, **kwargs)
 
         def __len__(self):
             return len(self.data)
@@ -1263,17 +1235,10 @@ if not _py33:
             >>> c = Counter(a=4, b=2)        # a new counter from keyword args
 
             '''
-            count = len(args)
-            if count == 1 or count == 2:    # self, iterable=None
-                self = args[0]    # Issue 9137
-                iterable = None if count == 1 else args[1]
-                self.data = {}
-                super(Counter, self).__init__()
-                self.update(iterable, **kwds)
-            else:
-                msg = ('constructor takes at least 1 and at most 2 '
-                       'positional arguments ({} given)')
-                raise TypeError(msg.format(count))
+            self, args = issue_9137(args, caller='Counter constructor')
+            self.data = {}
+            super(Counter, self).__init__()
+            self.update(*args, **kwds)
 
         def __missing__(self, key):
             'The count of elements not in the Counter is zero.'
@@ -1347,27 +1312,21 @@ if not _py33:
             # Both the inputs and outputs are allowed to contain zero and
             # negative counts.
 
-            count = len(args)
-            if count == 1 or count == 2:    # self, iterable=None
-                self = args[0]    # Issue 9137
-                iterable = None if count == 1 else args[1]
-                if iterable is not None:
-                    if isinstance(iterable, Mapping):
-                        if self:
-                            self_get = self.get
-                            for elem, count in iterable.items():
-                                self[elem] = count + self_get(elem, 0)
-                        else:
-                            # fast path when counter is empty
-                            super(Counter, self).update(iterable)
+            self, args = issue_9137(args, caller='update', arg_max=1)
+            if args:
+                iterable = args[0]
+                if isinstance(iterable, Mapping):
+                    if self:
+                        self_get = self.get
+                        for elem, count in iterable.items():
+                            self[elem] = count + self_get(elem, 0)
                     else:
-                        _count_elements(self, iterable)
-                if kwds:
-                    self.update(kwds)
-            else:
-                msg = ('update() takes at least 1 and at most 2 positional '
-                       'arguments ({} given)')
-                raise TypeError(msg.format(count))
+                        # fast path when counter is empty
+                        super(Counter, self).update(iterable)
+                else:
+                    _count_elements(self, iterable)
+            if kwds:
+                self.update(kwds)
 
         def subtract(*args, **kwds):
             '''Like dict.update() but subtracts counts instead of replacing
@@ -1402,24 +1361,18 @@ if not _py33:
               -1
 
             '''
-            count = len(args)
-            if count == 1 or count == 2:    # self, iterable=None
-                self = args[0]    # Issue 9137
-                iterable = None if count == 1 else args[1]
-                if iterable is not None:
-                    self_get = self.get
-                    if isinstance(iterable, Mapping):
-                        for elem, count in iterable.items():
-                            self[elem] = self_get(elem, 0) - count
-                    else:
-                        for elem in iterable:
-                            self[elem] = self_get(elem, 0) - 1
-                if kwds:
-                    self.subtract(kwds)
-            else:
-                msg = ('update() takes at least 1 and at most 2 positional '
-                       'arguments ({} given)')
-                raise TypeError(msg.format(count))
+            self, args = issue_9137(args, caller='subtract', arg_max=1)
+            if args:
+                iterable = args[0]
+                self_get = self.get
+                if isinstance(iterable, Mapping):
+                    for elem, count in iterable.items():
+                        self[elem] = self_get(elem, 0) - count
+                else:
+                    for elem in iterable:
+                        self[elem] = self_get(elem, 0) - 1
+            if kwds:
+                self.subtract(kwds)
 
         def copy(self):
             'Return a shallow copy.'
@@ -1634,13 +1587,8 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     def __init__(*args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        if args:
-            self = args[0]    # Issue 9137
-            args = args[1:]
-            self.update(*args, **kwargs)
-        else:
-            raise TypeError('constructor takes at least 1 positional '
-                            'argument (0 given)')
+        self, args = issue_9137(args, caller='StackedDict constructor')
+        self.update(*args, **kwargs)
 
     @property
     def level(self):
@@ -2043,14 +1991,9 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         arbitrary.
 
         '''
-        if args:
-            self = args[0]    # Issue 9137
-            args = args[1:]
-            super(OrderedSmartDict, self).__init__()
-            self.update(*args, **kwds)
-        else:
-            msg = 'constructor takes at least 1 positional argument (0 given)'
-            raise TypeError(msg)
+        self, args = issue_9137(args, caller='OrderedSmartDict constructor')
+        super(OrderedSmartDict, self).__init__()
+        self.update(*args, **kwds)
 
 
 class MetaSet(type):
@@ -3195,6 +3138,76 @@ class BitPascalSet(object, metaclass(MetaSet)):
 
 MutableSet.register(BitPascalSet)
 
+
+# Smart Tools
+
+def issue_9137(args, caller=None, arg_max=None):
+    '''Parse positional arguments for methods fixing issue 9137.
+
+    There are methods that expect 'self' as valid keyword argument, this is
+    not possible if this name is used formally::
+
+      def update(self, *args, **kwds):
+          ...
+
+    To do that, declare them as ``method_name(*args, **kwds)``, and inner it
+    use this function::
+
+      def update(*args, **kwds):
+          self, args = issue_9137(args, caller='update', arg_max=1)
+
+    :param caller: is used for error reporting.
+
+    :param arg_max: Maximum count expected for real positional arguments.
+           This value doesn't take 'self' into account.
+
+    '''
+    if args:
+        self = args[0]    # Issue 9137
+        args = args[1:]
+        count = len(args)
+        if arg_max is None or count <= arg_max:
+            return self, args
+        else:
+            msg = '{} expected at most {} arguments, got {}'
+            name = caller or 'this method'
+            raise TypeError(msg.format(name, arg_max, count))
+    else:
+        msg = '{} takes at least 1 positional argument (0 given)'
+        raise TypeError(msg.format(caller or 'this method'))
+
+
+def pair(arg):
+    '''Check if `arg` is a pair (two elements tuple or list).'''
+    return arg if isinstance(arg, (tuple, list)) and len(arg) == 2 else None
+
+
+def smart_iter_items(*args):
+    '''Iterate over item pairs.
+
+    If a pair of pairs is found, e.g. ``[(1, 2), (3, 4)]``, inner pairs are
+    yielded.
+
+    '''
+    for arg in args:
+        if isinstance(arg, Mapping):
+            for key in arg:
+                yield key, arg[key]
+        elif hasattr(arg, 'keys') and hasattr(arg, '__getitem__'):
+            # Custom mappings
+            for key in arg.keys():
+                yield key, arg[key]
+        elif pair(arg) and not (pair(arg[0]) and pair(arg[1])):
+            yield arg
+        else:
+            for item in arg:
+                if pair(item):
+                    yield item
+                else:
+                    from xoutil.eight import typeof
+                    name = type(item).__name__
+                    msg = "'{}' object '{}' is not a pair"
+                    raise TypeError(msg.format(name, item))
 
 # get rid of unused global variables
 del slist, _py2, _py33, _py34, metaclass
