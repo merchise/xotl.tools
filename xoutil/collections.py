@@ -351,9 +351,7 @@ class SmartDictMixin(object):
         # TODO: Issue 9137 was fixed in this method, what about other with
         #       keyword arguments.
         self, args = issue_9137(args, caller='update')
-        for key, value in smart_iter_items(*args):
-            self[key] = value
-        for key, value in kwds.items():
+        for key, value in smart_iter_items(*args, **kwds):
             self[key] = value
 
     # TODO: Include new argument ``full=True`` to also search in string
@@ -3182,11 +3180,11 @@ def pair(arg):
     return arg if isinstance(arg, (tuple, list)) and len(arg) == 2 else None
 
 
-def smart_iter_items(*args):
-    '''Iterate over item pairs.
+def smart_iter_items(*args, **kwds):
+    '''Unify iteration over (key, value) pairs.
 
-    If a pair of pairs is found, e.g. ``[(1, 2), (3, 4)]``, inner pairs are
-    yielded.
+    If a pair of pairs is found, e.g. ``[(1, 2), (3, 4)]``, instead of
+    yielding one pair (the outermost), inner two pairs takes precedence.
 
     '''
     for arg in args:
@@ -3208,6 +3206,9 @@ def smart_iter_items(*args):
                     name = type(item).__name__
                     msg = "'{}' object '{}' is not a pair"
                     raise TypeError(msg.format(name, item))
+    for key in kwds:
+        yield key, kwds[key]
+
 
 # get rid of unused global variables
 del slist, _py2, _py33, _py34, metaclass
