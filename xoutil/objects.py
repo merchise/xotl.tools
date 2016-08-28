@@ -344,7 +344,8 @@ def smart_getter(obj, strict=False):
         if not strict:
             return obj.get
         else:
-            def _get(key, default=Unset):
+            def getter(key, default=Unset):
+                "Get the given key. Raise an error when it doesn't exists."
                 try:
                     return obj[key]
                 except KeyError:
@@ -352,12 +353,16 @@ def smart_getter(obj, strict=False):
                         raise
                     else:
                         return default
-            return _get
+            return getter
     else:
         if not strict:
-            return lambda attr, default=None: getattr(obj, attr, default)
+            def getter(attr, default=None):
+                "Get the given attr. Return default if it doesn't exists."
+                return getattr(obj, attr, default)
+            return getter
         else:
-            def _partial(attr, default=Unset):
+            def getter(attr, default=Unset):
+                "Get the given attr. Raise an error when it doesn't exists."
                 try:
                     return getattr(obj, attr)
                 except AttributeError:
@@ -365,7 +370,7 @@ def smart_getter(obj, strict=False):
                         raise
                     else:
                         return default
-            return _partial
+            return getter
 
 
 def smart_getter_and_deleter(obj):
@@ -419,14 +424,16 @@ def multi_getter(source, *ids):
 
     .. versionadded:: 1.7.1
 
-    
     '''
-    from collections import Iterable as multi
-    from xoutil.eight import string_types as strs
     getter = smart_getter(source)
-    many = lambda a: isinstance(a, multi) and not isinstance(a, strs)
-    first = lambda a: next((i for i in map(getter, a) if i is not None), None)
-    get = lambda a: first(a) if many(a) else getter(a)
+
+    def first(a):
+        return next((i for i in map(getter, a) if i is not None), None)
+
+    def get(a):
+        from xoutil.cl.simple import logic_iterable_coerce as many
+        return first(a) if many(a) else getter(a)
+
     return (get(aux) for aux in ids)
 
 

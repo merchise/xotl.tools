@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # tests.test_objects
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -468,6 +468,12 @@ def test_memoized_classproperty():
 
 
 def test_multi_getter_failure():
+    '''`multi_getter` is not the same as `traverse`.
+
+    When a collection of identifiers is given, it get the first valid value
+    (see the documentation).
+
+    '''
     from xoutil.objects import multi_getter
     from xoutil.objects import traverse
 
@@ -478,5 +484,4 @@ def test_multi_getter_failure():
     top = new(d=dict(a=1, b=2), a=10, b=20)
 
     assert traverse(top, 'd.a') == 1
-    assert next(multi_getter(top, ('d', 'a'))) == 1
-    
+    assert next(multi_getter(top, ('d', 'a'))) == {'a': 1, 'b': 2}
