@@ -517,7 +517,7 @@ def sized_coerce(arg):
       True
 
     '''
-    from xoutil.collections import Iterable, Sized
+    from collections import Iterable, Sized
     if isinstance(arg, Iterable):
         return arg if isinstance(arg, Sized) else list(arg)
     else:
@@ -840,7 +840,7 @@ class combo(custom):
         self.inner = tuple(vouch(coercer, c) for c in coercers)
 
     def __call__(self, arg):
-        from xoutil.collections import Iterable
+        from collections import Iterable
         if isinstance(arg, Iterable):
             coercers = self.inner
             items = iter(arg)
@@ -938,7 +938,7 @@ class pargs(custom):
         self.inner = vouch(coercer, arg_coerce)
 
     def __call__(self, arg):
-        from xoutil.collections import Iterable
+        from collections import Iterable
         coerce = self.inner
         if isinstance(arg, Iterable):
             arg = tuple(arg)
@@ -1030,7 +1030,7 @@ class iterable(custom):
         self.inner = (member_coerce, outer_coerce)
 
     def __call__(self, arg):
-        from xoutil.collections import (Set, Sequence, MutableSequence)
+        from collections import (Set, Sequence, MutableSequence)
         member_coerce, outer_coerce = self.inner
         modified = False
         aux = outer_coerce(arg)
@@ -1120,7 +1120,7 @@ class mapping(custom):
                mapping values.
 
         '''
-        from xoutil.collections import Mapping
+        from collections import Mapping
         if key_coercer is value_coercer is Unset:
             return coercer(Mapping)
         else:
@@ -1131,7 +1131,7 @@ class mapping(custom):
             return self
 
     def __call__(self, arg):
-        from xoutil.collections import (Mapping, MutableMapping)
+        from collections import (Mapping, MutableMapping)
         if isinstance(arg, Mapping):
             key_coercer, value_coercer = self.inner
             res = arg
