@@ -82,6 +82,11 @@ def typeof(obj):
         return obj.__class__ if isinstance(obj, InstanceType) else type(obj)
 
 
+def type_name(obj):
+    '''Return the type name.'''
+    return typeof(obj).__name__
+
+
 try:
     __intern = intern
 

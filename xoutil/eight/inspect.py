@@ -52,9 +52,9 @@ except ImportError:
             except ImportError:
                 # Python 3.1 lacks both _static_getmro and ClassType
                 pass
-            from xoutil.eight import typeof
-            msg = "doesn't apply to '%s' object"
-            raise TypeError(msg % typeof(klass).__name__)
+            from xoutil.eight import type_name
+            msg = "doesn't apply to '{}' object"
+            raise TypeError(msg.format(type_name(klass)))
 
 
 try:

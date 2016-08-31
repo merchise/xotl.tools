@@ -1,5 +1,5 @@
 # Back-ported from Python 3.2.
-# Copyright (c) 2001-2012, 2014, 2015, Python Software Foundation; All rights reserved.
+# Copyright (c) 2001-2012, 2014, 2015, 2016, Python Software Foundation; All rights reserved.
 # Retains the licence of the Python Software Foundation.
 
 """Redo the builtin repr() (representation) but with limits on most sizes."""
@@ -82,8 +82,8 @@ else:
             return self.repr1(x, self.maxlevel)
 
         def repr1(self, x, level):
-            from xoutil.eight import typeof
-            typename = typeof(x).__name__
+            from xoutil.eight import type_name
+            typename = type_name(x)
             if ' ' in typename:
                 parts = typename.split()
                 typename = '_'.join(parts)

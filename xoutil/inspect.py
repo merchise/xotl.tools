@@ -69,9 +69,9 @@ def get_attr_value(obj, name, *default):
     elif default is not Undefined:
         return default
     else:
-        from xoutil.eight import typeof
+        from xoutil.eight import type_name
         msg = "'%s' object has no attribute '%s'"
-        raise AttributeError(msg % (typeof(obj).__name__, name))
+        raise AttributeError(msg % (type_name(obj), name))
 
 
 def type_name(obj, affirm=False):

@@ -51,15 +51,12 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+from xoutil.eight import type_name as _tname
+
+
 def actual_params(*args, **kwds):
     '''Dummy function returning passed parameters in a tuple (args, kwds).'''
     return args, kwds
-
-
-def _tname(arg):
-    'Return the type name.'
-    from xoutil.eight import typeof
-    return typeof(arg).__name__
 
 
 def _nameof(arg):

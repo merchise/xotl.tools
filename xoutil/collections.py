@@ -2087,9 +2087,9 @@ class PascalSet(metaclass(MetaSet)):
             # Python 3 automatically generate a TypeError when no mechanism is
             # found by returning `NotImplemented` special value.  In Python 2
             # this patch method must be generated
-            from xoutil.eight import typeof
-            sname = typeof(self).__name__
-            oname = typeof(other).__name__
+            from xoutil.eight import type_name
+            sname = type_name(self)
+            oname = type_name(other)
             msg = 'unorderable types: "%s" and "%s"!'
             raise TypeError(msg % (sname, oname))
 
@@ -2600,9 +2600,9 @@ class PascalSet(metaclass(MetaSet)):
                 del l[sidx:eidx]
 
     def _invalid_value(self, value):
-        from xoutil.eight import typeof
-        cls_name = typeof(self).__name__
-        vname = typeof(value).__name__
+        from xoutil.eight import type_name
+        cls_name = type_name(self)
+        vname = type_name(value)
         msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
                'must be an integer!')
         return TypeError(msg % (value, vname, cls_name))
@@ -2703,9 +2703,9 @@ class BitPascalSet(object, metaclass(MetaSet)):
             # Python 3 automatically generate a TypeError when no mechanism is
             # found by returning `NotImplemented` special value.  In Python 2
             # this patch method must be generated
-            from xoutil.eight import typeof
-            sname = typeof(self).__name__
-            oname = typeof(other).__name__
+            from xoutil.eight import type_name
+            sname = type_name(self)
+            oname = type_name(other)
             msg = 'unorderable types: "%s" and "%s"!'
             raise TypeError(msg % (sname, oname))
 
@@ -3112,9 +3112,9 @@ class BitPascalSet(object, metaclass(MetaSet)):
             raise KeyError('"%s" is not a member!' % other)
 
     def _invalid_value(self, value):
-        from xoutil.eight import typeof
-        cls_name = typeof(self).__name__
-        vname = typeof(value).__name__
+        from xoutil.eight import type_name
+        cls_name = type_name(self)
+        vname = type_name(value)
         msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
                'must be an integer!')
         return TypeError(msg % (value, vname, cls_name))
@@ -3202,10 +3202,9 @@ def smart_iter_items(*args, **kwds):
                 if pair(item):
                     yield item
                 else:
-                    from xoutil.eight import typeof
-                    name = type(item).__name__
+                    from xoutil.eight import type_name
                     msg = "'{}' object '{}' is not a pair"
-                    raise TypeError(msg.format(name, item))
+                    raise TypeError(msg.format(type_name(item), item))
     for key in kwds:
         yield key, kwds[key]
 

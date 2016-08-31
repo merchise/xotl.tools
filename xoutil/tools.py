@@ -93,9 +93,9 @@ def args_repr(args, **options):
       'int, float, str, ...'
 
     '''
-    from xoutil.eight import typeof, string_types
+    from xoutil.eight import type_name, string_types
     count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: typeof(arg).__name__)
+    cast = options.get('cast', lambda arg: type_name(arg))
     item_format = options.get('item_format', '{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')
@@ -148,9 +148,9 @@ def kwargs_repr(kwargs, **options):
       'x:int, y:float, z:str, ...'
 
     '''
-    from xoutil.eight import typeof, string_types
+    from xoutil.eight import type_name, string_types
     count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: typeof(arg).__name__)
+    cast = options.get('cast', lambda arg: type_name(arg))
     item_format = options.get('item_format', '{}:{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')
