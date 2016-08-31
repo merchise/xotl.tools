@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.option
+# xoutil.monads.option
 # ---------------------------------------------------------------------
 # Copyright (c) 2015, 2016 Merchise and Contributors
 # All rights reserved.
