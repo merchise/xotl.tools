@@ -34,20 +34,13 @@ from xoutil.cl.simple import (name_coerce, decode_coerce,    # noqa
                               chars_coerce)
 
 
+from xoutil.cl.simple import (iterable_coerce,    # noqa
+                              logic_iterable_coerce, force_iterable_coerce)
+
 # TODO: Declared in 'xoutil.values.simple' at release 1.7 but not here in
 # release 1.7.2:
 # - strict_iterable_coerce
 # - class text
 
 
-def strict_iterable_coerce(arg):
-    '''Return the same argument if it is a strict iterable.
-
-    Strings are excluded.
-
-    '''
-    from xoutil.eight import string_types
-    from collections import Iterable
-    from . import Invalid
-    ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
-    return arg if ok else Invalid
+strict_iterable_coerce = logic_iterable_coerce
