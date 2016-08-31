@@ -368,7 +368,7 @@ def strict_string_coerce(arg):
     return str_coerce(arg) if isinstance(arg, string_types) else nil
 
 
-from xoutil.eight import text_type as text
+from xoutil.eight import text_type as text    # noqa
 
 
 class text(text):
