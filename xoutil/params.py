@@ -47,12 +47,48 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil.eight import type_name as _tname
-
-
 def actual_params(*args, **kwds):
     '''Dummy function returning passed parameters in a tuple (args, kwds).'''
+    # TODO: deprecate -or simple remove- this
     return args, kwds
+
+
+def issue_9137(args, max_args=None, caller=None):
+    '''Parse positional arguments for methods fixing issue 9137.
+
+    There are methods that expect 'self' as valid keyword argument, this is
+    not possible if this name is used formally::
+
+      def update(self, *args, **kwds):
+          ...
+
+    To do that, declare them as ``method_name(*args, **kwds)``, and inner it
+    use this function::
+
+      def update(*args, **kwds):
+          self, args = issue_9137(args, max_args=1, caller='update')
+
+    :param max_args: A positive integer or ``None``; expected at most this
+           count of positional arguments.
+
+    :param caller: Used for error reporting.
+
+    :returns: (self, rest of checked positional arguments)
+
+    '''
+    if args:
+        self = args[0]    # Issue 9137
+        args = args[1:]
+        count = len(args)
+        if max_args is None or count <= max_args:
+            return self, args
+        else:
+            msg = '{} expected at most {} arguments, got {}'
+            name = caller or 'this method'
+            raise TypeError(msg.format(name, max_args, count))
+    else:
+        msg = '{} takes at least 1 positional argument (0 given)'
+        raise TypeError(msg.format(caller or 'this method'))
 
 
 class ParamManager(object):
@@ -162,13 +198,14 @@ class ParamSchemeRow(object):
         from collections import Counter
         from xoutil.eight import iteritems, string_types as strs
         from xoutil.eight.string import safe_isidentifier as iskey
+        from xoutil.eight import type_name
         from xoutil.monads.option import _none
         from xoutil.monads.checkers import Coercer
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
             msg = '{}() repeated identifiers: {}'
-            raise TypeError(msg.format(_tname(self), ', '.join(parts)))
+            raise TypeError(msg.format(type_name(self), ', '.join(parts)))
         else:
             def ok(k):
                 return (isinstance(k, strs) and iskey(k) or
@@ -178,12 +215,12 @@ class ParamSchemeRow(object):
             if bad:
                 msg = ('{}() identifiers with wrong type (only int and str '
                        'allowed): {}')
-                raise TypeError(msg.format(_tname(self), bad))
+                raise TypeError(msg.format(type_name(self), bad))
         key = options.pop('key', _none)
         if not (key is _none or iskey(key)):
             msg = ('"key" option must be an identifier, "{}" of type "{}" '
                    'given')
-            raise TypeError(msg.format(key), _tname(key))
+            raise TypeError(msg.format(key), type_name(key))
         if 'default' in options:
             aux = {'default': options.pop('default')}
         else:
@@ -192,7 +229,7 @@ class ParamSchemeRow(object):
             aux['coerce'] = Coercer(options.pop('coerce'))
         if options:
             msg = '{}(): received invalid keyword parameters: {}'
-            raise TypeError(msg.format(_tname(self), set(options)))
+            raise TypeError(msg.format(type_name(self), set(options)))
         self.ids = ids
         self.options = aux
         self._key = key
@@ -271,7 +308,7 @@ class ParamScheme(object):
     __slots__ = ('rows', 'cache')
 
     def __init__(self, *rows):
-        from xoutil.eight import string_types as strs
+        from xoutil.eight import string_types as strs, type_name as tname
         if rows:
             used = set()
             for idx, row in enumerate(rows):
@@ -283,19 +320,21 @@ class ParamScheme(object):
                     else:
                         msg = ('{}() repeated keyword identifiers "{}" in '
                                'row {}')
-                        raise ValueError(msg.format(_tname(self), aux, idx))
+                        raise ValueError(msg.format(tname(self), aux, idx))
             self.rows = rows
             self.cache = None
         else:
             msg = '{}() takes at least 1 argument (0 given)'
-            raise TypeError(msg.format(_tname(self)))
+            raise TypeError(msg.format(tname(self)))
 
     def __str__(self):
+        from xoutil.eight import type_name
         aux = ',\n\i'.join(str(row) for row in self)
-        return '{}({})'.format(_tname(self), aux)
+        return '{}({})'.format(type_name(self), aux)
 
     def __repr__(self):
-        return '{}({} rows)'.format(_tname(self), len(self))
+        from xoutil.eight import type_name
+        return '{}({} rows)'.format(type_name(self), len(self))
 
     def __len__(self):
         '''The defined scheme-rows number.'''
@@ -322,6 +361,8 @@ class ParamScheme(object):
         value is missing.
 
         '''
+        from xoutil.eight import type_name
+
         def ok(v):
             from xoutil.monads.option import Wrong
             return not isinstance(v, Wrong)
@@ -334,7 +375,7 @@ class ParamScheme(object):
             if rem:
                 msg = ('after a full `{}` process, there are still remainder '
                        'parameters: {}')
-                raise TypeError(msg.format(_tname(self), set(rem)))
+                raise TypeError(msg.format(type_name(self), set(rem)))
         else:
             res.update(rem)
         return res

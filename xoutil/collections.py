@@ -348,8 +348,7 @@ class SmartDictMixin(object):
         - an iterable of (key, value) pairs.
 
         '''
-        # TODO: Issue 9137 was fixed in this method, what about other with
-        #       keyword arguments.
+        from xoutil.params import issue_9137
         self, args = issue_9137(args, caller='update')
         for key, value in smart_iter_items(*args, **kwds):
             self[key] = value
@@ -389,6 +388,7 @@ class SmartDict(SmartDictMixin, dict):
 
     '''
     def __init__(*args, **kwargs):
+        from xoutil.params import issue_9137
         self, args = issue_9137(args, caller='SmartDict constructor')
         super(SmartDict, self).__init__()
         self.update(*args, **kwargs)
@@ -772,6 +772,7 @@ if not _py33:
     class UserDict(MutableMapping):
         # Start by filling-out the abstract methods
         def __init__(*args, **kwargs):
+            from xoutil.params import issue_9137
             self, args = issue_9137(args, caller='UserDict constructor')
             self.data = {}
             self.update(*args, **kwargs)
@@ -1233,6 +1234,7 @@ if not _py33:
             >>> c = Counter(a=4, b=2)        # a new counter from keyword args
 
             '''
+            from xoutil.params import issue_9137
             self, args = issue_9137(args, caller='Counter constructor')
             self.data = {}
             super(Counter, self).__init__()
@@ -1309,8 +1311,8 @@ if not _py33:
             # counting contexts.  Instead, we implement straight-addition.
             # Both the inputs and outputs are allowed to contain zero and
             # negative counts.
-
-            self, args = issue_9137(args, caller='update', arg_max=1)
+            from xoutil.params import issue_9137
+            self, args = issue_9137(args, max_args=1, caller='update')
             if args:
                 iterable = args[0]
                 if isinstance(iterable, Mapping):
@@ -1359,7 +1361,8 @@ if not _py33:
               -1
 
             '''
-            self, args = issue_9137(args, caller='subtract', arg_max=1)
+            from xoutil.params import issue_9137
+            self, args = issue_9137(args, max_args=1, caller='subtract')
             if args:
                 iterable = args[0]
                 self_get = self.get
@@ -1585,6 +1588,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     def __init__(*args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
+        from xoutil.params import issue_9137
         self, args = issue_9137(args, caller='StackedDict constructor')
         self.update(*args, **kwargs)
 
@@ -1989,6 +1993,7 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         arbitrary.
 
         '''
+        from xoutil.params import issue_9137
         self, args = issue_9137(args, caller='OrderedSmartDict constructor')
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)
@@ -3138,42 +3143,6 @@ MutableSet.register(BitPascalSet)
 
 
 # Smart Tools
-
-def issue_9137(args, caller=None, arg_max=None):
-    '''Parse positional arguments for methods fixing issue 9137.
-
-    There are methods that expect 'self' as valid keyword argument, this is
-    not possible if this name is used formally::
-
-      def update(self, *args, **kwds):
-          ...
-
-    To do that, declare them as ``method_name(*args, **kwds)``, and inner it
-    use this function::
-
-      def update(*args, **kwds):
-          self, args = issue_9137(args, caller='update', arg_max=1)
-
-    :param caller: is used for error reporting.
-
-    :param arg_max: Maximum count expected for real positional arguments.
-           This value doesn't take 'self' into account.
-
-    '''
-    if args:
-        self = args[0]    # Issue 9137
-        args = args[1:]
-        count = len(args)
-        if arg_max is None or count <= arg_max:
-            return self, args
-        else:
-            msg = '{} expected at most {} arguments, got {}'
-            name = caller or 'this method'
-            raise TypeError(msg.format(name, arg_max, count))
-    else:
-        msg = '{} takes at least 1 positional argument (0 given)'
-        raise TypeError(msg.format(caller or 'this method'))
-
 
 def pair(arg):
     '''Check if `arg` is a pair (two elements tuple or list).'''
