@@ -36,16 +36,21 @@ from xoutil.eight import type_name as _tname
 
 
 def _nameof(arg):
-    'Obtain a nice name in a safe way.'
+    '''Obtain a nice name in a safe way.
+
+    A module internal.
+
+    '''
     try:
         res = arg.__name__
         _lambda_name = (lambda x: x).__name__
         return 'λ' if res == _lambda_name else res
     except AttributeError:
+        from xoutil.eight import type_name
         if isinstance(arg, Coercer):
             return str(arg)
         else:
-            return '{}(…)'.format(_tname(arg))
+            return '{}(…)'.format(type_name(arg))
 
 
 class Coercer(object):
