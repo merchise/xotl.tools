@@ -91,6 +91,41 @@ def issue_9137(args, max_args=None, caller=None):
         raise TypeError(msg.format(caller or 'this method'))
 
 
+def pos_default(args, caller=None, base_count=0):
+    '''Return a list with the default value given as a positional argument.
+
+    If no value is given, return an empty list.
+
+    For example::
+
+      def get(self, key, *args):
+          'A default value can be given as a positional argument'
+          if key in self:
+              return self[key]
+          else:
+              res = pos_default(args)
+              if res:
+                  return res[0]
+              else:
+                  raise KeyError(key)
+
+    An exception is raised if more than one positional argument is given.
+    CALLER and BASE_COUNT optional arguments are used to complement message in
+    this case.
+
+    '''
+    if args:
+        count = len(args)
+        if count == 1:
+            return args
+        else:
+            caller = '{} '.format(caller) if caller else ''
+            msg = '{}expected at most {} arguments, got {}'
+            raise TypeError(msg.format(caller, base_count + 1, count + 1))
+    else:
+        return ()
+
+
 class ParamManager(object):
     '''Function parameter handler.
 
