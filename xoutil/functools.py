@@ -164,7 +164,7 @@ def lwraps(*args, **kwargs):
 
     For example::
 
-      >>> from xoutil.validators.connote import lwraps as lw
+      >>> from xoutil.functools import lwraps as lw
 
       >>> is_valid_age = lw('is-valid-human-age', lambda age: 0 < age <= 120,
       ...                   doc=('A predicate to evaluate if an age is '
