@@ -70,18 +70,23 @@ class logical(boolean):
     - When called as ``nil(arg)``, check if `arg` is `nil` returning `t` or
       `nil` if not.
 
+    Constructor could receive a valid name ('nil' or 't') or any other
+    ``boolean`` instance.
+
     '''
     __slots__ = ()
     _valids = {'nil': False, 't': True}
 
-    def __new__(cls, name):
+    def __new__(cls, arg):
+        from xoutil.symbols import boolean
         from xoutil import Undefined as wrong
+        name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
         value = cls._valids.get(name, wrong)
         if value is not wrong:
             return super(logical, cls).__new__(cls, name, value)
         else:
-            msg = 'creating invalid logical instance "{}"'
-            raise TypeError(msg.format(name))
+            msg = 'retrieving invalid logical instance "{}"'
+            raise TypeError(msg.format(arg))
 
     def __call__(self, arg):
         if self:    # self is t
