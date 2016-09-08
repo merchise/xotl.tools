@@ -704,13 +704,16 @@ class typecast(istype):
 class safe(custom):
     '''Uses a function (or callable) in a safe way.
 
-    Receives any callable that expects only one argument and returns another
-    value; if that returned value is a Boolean, those functions are called
-    predicates (See `xoutil.connote`:mod: for more information).
+    Receives a coercer that expects only one argument and returns another
+    value.
 
-    The wrapped function is called in a safe way (inside try/except); if an
-    exception is raised the coercer returns `nil` and it is saved in the
-    instance field `scope`.
+    If the returned value is a ``boolean`` (maybe the coercer is a predicate,
+    see `~xoutil.connote`:mod: for more information), it's converted to a
+    ``logical`` instance.
+
+    The wrapped coercer is called in a safe way (inside try/except); if an
+    exception is raised the coercer returns ``nil`` and the error is saved in
+    the instance attribute ``scope``.
 
     '''
     __slots__ = ()
@@ -721,7 +724,9 @@ class safe(custom):
 
     def __call__(self, arg):
         try:
-            return arg if self.inner(arg) else nil
+            from xoutil.symbol import boolean
+            res = self.inner(arg)
+            return logical(res) if isinstance(res, boolean) else res
         except BaseException as error:
             self.scope = (arg, error)
             return nil
