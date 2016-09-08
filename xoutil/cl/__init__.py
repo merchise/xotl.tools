@@ -708,7 +708,9 @@ class safe(custom):
 
     def __init__(self, func):
         super(safe, self).__init__()
-        self.inner = vouch(func, callable_coerce)
+        # TODO: Maybe will be better to use any valid coercer instead of a
+        # callable
+        self.inner = vouch(callable_coerce, func)
 
     def __call__(self, arg):
         try:
