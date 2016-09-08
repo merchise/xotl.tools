@@ -615,7 +615,11 @@ class flatten(custom):
     def __call__(self, arg):
         aux = self.inner(arg)
         if isinstance(aux, (tuple, list)):
-            return [i for l in map(self, aux) for i in l]
+            res = types_tuple_coerce(aux)
+            if res is nil:
+                return [i for l in map(self, aux) for i in l]
+            else:
+                return [coercer(aux)]
         else:
             return [vouch(self.checker, aux)]
 
