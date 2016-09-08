@@ -731,28 +731,29 @@ class compose(custom):
     the nature of coercers: ordering the coercers is important when some can
     modify (adapt) original values.
 
-    If no value results in `coercers`, a default coercer could be given in
-    `options` or `identity_coerce` is assumed.
+    If no value results in `coercers`, a default coercer could be given as a
+    keyword argument; `identity_coerce` is assumed if missing.
 
     '''
     __slots__ = ()
 
-    def __new__(cls, *coercers, **options):
+    def __new__(cls, *coercers, **kwds):
         inner = tuple(c for c in flatten(cls.inward)(coercers)
                       if c is not identity_coerce)
-        if len(inner) > 1:
+        count = len(inner)
+        if count > 1:
             self = super(compose, cls).__new__(cls)
             self.inner = inner
             return self
-        elif len(inner) == 1:
+        elif count == 1:
             return inner[0]
         else:
-            res = options.pop('default', identity_coerce)
-            if not options:
+            res = kwds.pop('default', identity_coerce)
+            if not kwds:
                 return res
             else:
                 msg = '`compose` got unexpected keyword argument(s) "{}"'
-                raise TypeError(msg.format(set(options)))
+                raise TypeError(msg.format(set(kwds)))
 
     def __call__(self, arg):
         coercers = self.inner
