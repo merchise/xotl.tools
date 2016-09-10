@@ -117,3 +117,46 @@ class TestCompose(unittest.TestCase):
         result = compose(echo, list, range, math=False)(10)
         expected = ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], )
         self.assertEqual(expected, result)
+
+def test_lwraps():
+    from xoutil.functools import lwraps
+
+    class foobar(object):
+        @lwraps('method-one', one=True)
+        def one(self):
+            return type(self).__name__
+
+        @lwraps('method-two', two=True)
+        @classmethod
+        def two(cls):
+            return cls.__name__
+
+        @lwraps('method-three', three=True)
+        @staticmethod
+        def three():
+            return 'foobar'
+
+    @lwraps('function-four', four=True, one=False)
+    def four(*args):
+        return [(arg.__name__, arg()) for arg in args]
+
+    f = foobar()
+    names = ('method-one', 'method-two', 'method-three', 'function-four')
+
+    assert four.__name__ == names[3]
+    assert foobar.one.__name__ == names[0]
+    assert foobar.two.__name__ == names[1]
+    assert foobar.three.__name__ == names[2]
+    assert f.one.__name__ == names[0]
+    assert f.two.__name__ == names[1]
+    assert f.three.__name__ == names[2]
+
+    assert four.four
+    assert not four.one
+    assert f.one.one
+    assert f.two.two
+    assert f.three.three
+
+    for i, (a, b) in enumerate(four(f.one, f.two, f.three)):
+        assert a == names[i]
+        assert b == 'foobar'
