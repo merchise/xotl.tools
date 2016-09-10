@@ -192,7 +192,7 @@ def lwraps(*args, **kwargs):
     from xoutil.string import safe_str
 
     def repeated(name):
-        msg = "lwraps() got multiple values for argument '{}'"
+        msg = "lwraps got multiple values for argument '{}'"
         raise TypeError(msg.format(name))
 
     def settle_str(name, value):
@@ -204,10 +204,12 @@ def lwraps(*args, **kwargs):
                     repeated(name)
             else:
                 from xoutil.eight import type_name
-                msg = 'lwraps() expecting string for "{}", {} found'
+                msg = 'lwraps expecting string for "{}", {} found'
                 raise TypeError(msg.format(name, type_name(value)))
 
-    decorables = (FunctionType, MethodType, staticmethod, classmethod)
+    methods = (staticmethod, classmethod, MethodType)
+    decorables = methods + (FunctionType, )
+
     name_key = '__name__'
     doc_key = '__doc__'
     mod_key = '__module__'
@@ -227,7 +229,7 @@ def lwraps(*args, **kwargs):
                 else:
                     repeated('target-function')
             else:
-                msg = 'lwraps() arg {} must be a string or decorable function'
+                msg = 'lwraps arg {} must be a string or decorable function'
                 raise TypeError(msg.format(i))
             i += 1
         wrapped = kwargs.pop('wrapped', Unset)
@@ -247,7 +249,8 @@ def lwraps(*args, **kwargs):
 
         def wrapper(target):
             if isinstance(target, decorables):
-                if isinstance(target, (staticmethod, classmethod, MethodType)):
+                res = target
+                if isinstance(target, methods):
                     target = target.__func__
                 for name in (mod_key, name_key, doc_key):
                     if name in source:
@@ -260,15 +263,15 @@ def lwraps(*args, **kwargs):
                         target.__dict__.update(d)
                 for key, value in iteritems(source):
                     setattr(target, key, value)
-                return target
+                return res
             else:
                 from xoutil.eight import type_name
-                msg = 'Only decorate functions, not {}'
+                msg = 'only functions are decorated, not {}'
                 raise TypeError(msg.format(type_name(target)))
 
         return wrapper(target) if target else wrapper
     else:
-        msg = 'lwraps() takes at most 2 arguments ({} given)'
+        msg = 'lwraps takes at most 2 arguments ({} given)'
         raise TypeError(msg.format(len(args)))
 
     # TODO: Next code could be removed.
