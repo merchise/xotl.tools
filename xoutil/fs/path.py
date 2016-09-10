@@ -24,18 +24,18 @@ file-system. This module re-exports (without change) several functions from the
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        # unicode_literals as _py3_unicode,
+                        # TODO: Why not ``absolute_import``?
+                        )
 
 import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
 from xoutil.functools import power as pow_
-from xoutil.names import strlist as strs
-__all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
-               'fix_encoding', 'join', 'normalize_path',
-               'shorten_module_filename', 'shorten_user')
-del strs
+__all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
+           'fix_encoding', 'join', 'normalize_path',
+           'shorten_module_filename', 'shorten_user')
 
 
 # TODO: import all in "from os.path import *"

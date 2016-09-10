@@ -24,6 +24,7 @@ type-related functions.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.deprecation import deprecated
@@ -40,14 +41,12 @@ del _pm, _copy_python_module_members
 from xoutil import Unset as _unset
 from collections import Mapping
 
-from xoutil.names import strlist as strs
-__all__ = strs('mro_dict', 'MappingProxyType',
-               'SlotWrapperType', 'is_iterable', 'is_collection',
-               'is_string_like', 'is_scalar', 'is_staticmethod',
-               'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
-               'is_module', 'Required', 'NoneType', 'new_class',
-               'prepare_class')
-del strs
+__all__ = ('mro_dict', 'MappingProxyType',
+           'SlotWrapperType', 'is_iterable', 'is_collection',
+           'is_string_like', 'is_scalar', 'is_staticmethod',
+           'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
+           'is_module', 'Required', 'NoneType', 'new_class',
+           'prepare_class')
 
 
 from .eight.types import (MappingProxyType, MemberDescriptorType,    # noqa

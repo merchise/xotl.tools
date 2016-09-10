@@ -16,7 +16,7 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import subprocess as _pm
@@ -26,10 +26,8 @@ _copy_members(_pm)
 Popen = _pm.Popen
 PIPE = _pm.PIPE
 
-from xoutil.names import strlist as strs
-__all__ = strs('call_and_check_output')
-__all__.extend(getattr(_pm, '__all__', dir(_pm)))
-del strs, _pm, _copy_members
+__all__ = ['call_and_check_output'] + list(getattr(_pm, '__all__', dir(_pm)))
+del _pm, _copy_members
 
 
 def call_and_check_output(*popenargs, **kwargs):

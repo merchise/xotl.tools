@@ -19,11 +19,11 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        # unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_import)
 
-from xoutil.names import strlist as strs
-__all__ = strs('Progress')
-del strs
+
+__all__ = ['Progress']
 
 
 _HELIX = '|/-\\'

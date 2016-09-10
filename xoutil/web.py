@@ -21,11 +21,12 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        # unicode_literals as _py3_unicode,
+                        # TODO: Why not ``absolute_import``?
+                        )
 
-from xoutil.names import strlist as strs
-__all__ = strs('slugify')
-del strs
+
+__all__ = ['slugify']
 
 
 def slugify(s, entities=True, decimal=True, hexadecimal=True):

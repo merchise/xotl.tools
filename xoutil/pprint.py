@@ -18,7 +18,7 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.modules import copy_members as _copy_members
@@ -27,9 +27,7 @@ _copy_members(_pm)
 
 pprint = _pm.pprint  # Avoid IDE complaints
 
-from xoutil.names import strlist as strs
-__all__ = strs('ppformat', *getattr(_pm, '__all__', dir(_pm)))
-del strs
+__all__ = ['ppformat'] + list(getattr(_pm, '__all__', dir(_pm)))
 del _pm, _copy_members
 
 

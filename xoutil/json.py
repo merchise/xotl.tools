@@ -31,7 +31,7 @@ case that library is not installed in your system.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.modules import copy_members as _copy_python_module_members
@@ -39,10 +39,8 @@ _pm = _copy_python_module_members()
 
 load = _pm.load
 
-from xoutil.names import strlist as strs
-__all__ = strs('file_load')
-__all__.extend(getattr(_pm, '__all__', dir(_pm)))
-del strs, _copy_python_module_members
+__all__ = list(getattr(_pm, '__all__', dir(_pm))) + ['file_load']
+del _copy_python_module_members
 
 
 class JSONEncoder(_pm.JSONEncoder):

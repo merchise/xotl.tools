@@ -19,19 +19,19 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        # unicode_literals as _py3_unicode,
+                        # TODO: Why not ``absolute_import``
+                        )
 
 import inspect
 
-from xoutil.names import strlist as strs
 from xoutil.eight import _py3
 from xoutil.deprecation import deprecated
 
 
-__all__ = strs('MAX_DEEP', 'getargvalues', 'error_info',
-               'object_info_finder', 'object_finder', 'track_value',
-               'iter_stack', 'iter_frames')
-del strs
+__all__ = ('MAX_DEEP', 'getargvalues', 'error_info',
+           'object_info_finder', 'object_finder', 'track_value',
+           'iter_stack', 'iter_frames')
 
 MAX_DEEP = 25
 

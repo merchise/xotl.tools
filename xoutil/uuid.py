@@ -18,11 +18,10 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.names import strlist as strs
-__all__ = strs('uuid', )
-del strs
+__all__ = ['uuid']
 
 from xoutil.deprecation import deprecated
 from xoutil.cl.ids import str_uuid

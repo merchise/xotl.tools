@@ -21,8 +21,8 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        # unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_imports)
 
 import sys
 
@@ -32,11 +32,10 @@ from types import FunctionType as function
 from .meta import decorator as _decorator
 
 
-from xoutil.names import strlist as strs
-__all__ = strs('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
-               'assignment_operator', 'instantiate', 'memoized_property',
-               'memoized_instancemethod', 'reset_memoized')
-del strs
+# TODO: 'decorator' is undefined.
+__all__ = ('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
+           'assignment_operator', 'instantiate', 'memoized_property',
+           'memoized_instancemethod', 'reset_memoized')
 
 
 class AttributeAlias(object):

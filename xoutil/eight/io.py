@@ -41,8 +41,8 @@ Another incompatibilities:
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import as _absolute_import)
+                        # unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_import)
 
 # TODO: This is the initial state for a in-progress module.
 

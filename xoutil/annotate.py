@@ -16,8 +16,8 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        # unicode_literals as _py3_unicode,
+                        absolute_import as _py3_abs_import)
 
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
@@ -27,9 +27,7 @@ _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
 from xoutil.decorator.meta import decorator
 
-from xoutil.names import strlist as strs
-__all__ = strs('annotate')
-del strs
+__all__ = ['annotate']
 
 
 _SIGNATURE = _regex_compile(r'''(?ixm)

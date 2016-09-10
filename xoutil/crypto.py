@@ -24,18 +24,16 @@ secury strong level.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 
-from xoutil.names import strlist as strs
-__all__ = strs('PASS_PHRASE_LEVEL_BASIC',
-               'PASS_PHRASE_LEVEL_MAPPED',
-               'PASS_PHRASE_LEVEL_MAPPED_MIXED',
-               'PASS_PHRASE_LEVEL_MAPPED_DATED',
-               'PASS_PHRASE_LEVEL_STRICT',
-               'generate_password')
-del strs
+__all__ = ('PASS_PHRASE_LEVEL_BASIC',
+           'PASS_PHRASE_LEVEL_MAPPED',
+           'PASS_PHRASE_LEVEL_MAPPED_MIXED',
+           'PASS_PHRASE_LEVEL_MAPPED_DATED',
+           'PASS_PHRASE_LEVEL_STRICT',
+           'generate_password')
 
 
 #: The most basic level (less ) for the password generation.

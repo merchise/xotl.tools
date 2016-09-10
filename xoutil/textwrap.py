@@ -17,7 +17,7 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
 from xoutil.modules import copy_members as _copy_python_module_members

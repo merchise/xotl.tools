@@ -23,17 +23,18 @@ Regular expressions and validation functions for several identifiers.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        # unicode_literals as _py3_unicode,
+                        # TODO: Why not ``absolute_import``?
+                        )
+
 
 from re import compile as _regex_compile
 from xoutil.eight import string_types
 
 
-from xoutil.names import strlist as strs
-__all__ = strs('is_valid_identifier', 'is_valid_full_identifier',
-               'is_valid_public_identifier',
-               'is_valid_slug')
-del strs
+__all__ = ('is_valid_identifier', 'is_valid_full_identifier',
+           'is_valid_public_identifier',
+           'is_valid_slug')
 
 
 # TODO: In Py3k "ña" is a valid identifier and this regex won't allow it
