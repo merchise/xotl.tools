@@ -32,33 +32,21 @@ from xoutil.deprecation import deprecated
 from xoutil import Unset as _unset
 from collections import Mapping
 
-__all__ = ('mro_dict', 'MappingProxyType',
-           'SlotWrapperType', 'is_iterable', 'is_collection',
-           'is_string_like', 'is_scalar', 'is_staticmethod',
-           'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
-           'is_module', 'Required', 'NoneType', 'new_class',
-           'prepare_class')
-
-
 from xoutil.ahead.types import *    # noqa
 from xoutil.eight._types import _calculate_meta    # noqa
 
-
-#: The type of methods that are builtin in Python.
-#:
-#: This is roughly the type of the ``object.__getattribute__`` method.
-WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
-
 from xoutil.eight.exceptions import StandardError, BaseException    # noqa
-
+from xoutil.eight import force_type as type_coerce
 from re import compile as _regex_compile
 
 RegexPattern = type(_regex_compile(''))
 
 del _regex_compile
 
-
-from xoutil.eight import force_type as type_coerce
+#: The type of methods that are builtin in Python.
+#:
+#: This is roughly the type of the ``object.__getattribute__`` method.
+WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
 class mro_dict(Mapping):
@@ -389,3 +377,10 @@ def no_instances(*args):
 
 
 del deprecated
+
+__all__ = ('mro_dict', 'MappingProxyType',
+           'SlotWrapperType', 'is_iterable', 'is_collection',
+           'is_string_like', 'is_scalar', 'is_staticmethod',
+           'is_classmethod', 'is_instancemethod', 'is_slotwrapper',
+           'is_module', 'Required', 'NoneType', 'new_class',
+           'prepare_class')
