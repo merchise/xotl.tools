@@ -23,13 +23,13 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
-__all__ = ['new_class', 'prepare_class']
+__all__ = ['new_class', 'prepare_class', '_calculate_meta', 'get_exec_body']
 
 
 try:
     from types import new_class
 except ImportError:
-    # PEP 3115 compliant dynamic class creation.  Used in
+    # Provide a PEP 3115 compliant mechanism for class creation.  Used in
     # xoutil.eight.meta.metaclass
     #
     # Taken from Python 3.3 code-base.
@@ -41,7 +41,6 @@ except ImportError:
         if exec_body is not None:
             exec_body(ns)
         return meta(name, bases, ns, **kwds)
-
 
 try:
     from types import prepare_class
