@@ -41,6 +41,7 @@ import sys
 _py2 = sys.version_info[0] == 2
 _py3 = sys.version_info[0] == 3
 _py33 = sys.version_info >= (3, 3, 0)
+_py34 = sys.version_info >= (3, 4, 0)
 _pypy = sys.version.find('PyPy') >= 0
 
 del sys
@@ -71,6 +72,20 @@ else:
     del ClassType
 
 binary_type = bytes
+UnicodeType = text_type
+StringTypes = string_types
+
+#: Define a tuple with both base types in Python 2 and containing only `type`
+#: in Python 3.
+ClassTypes = class_types
+
+
+try:
+    buffer
+except NameError:
+    # The `memoryview`:class: API is similar but not exactly the same as that
+    # of `buffer`.
+    buffer = memoryview
 
 
 def typeof(obj):
