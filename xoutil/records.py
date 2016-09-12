@@ -59,7 +59,7 @@ class _record_type(type):
 
     @staticmethod
     def is_reader(attr, func, fields=None):
-        from xoutil.types import FunctionType as function
+        from xoutil.ahead.types import FunctionType as function
         from xoutil.types import is_staticmethod as static
         attr = attr.lower()
         good_name = attr.startswith('_') and attr.endswith('_reader')

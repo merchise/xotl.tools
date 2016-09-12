@@ -136,7 +136,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             # otherwise an import cycle might be formed when deprecating a
             # class in xoutil.objects.
             import sys
-            from xoutil.types import MemberDescriptorType
+            from xoutil.ahead.types import MemberDescriptorType
             meta = type(target)
             _py3 = sys.version_info[0] == 3
             td = target.__dict__

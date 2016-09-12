@@ -86,8 +86,8 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        when creating the class ``Bar`` the ``__prepare__()`` class method is
        not called in Python 2.7!
 
-    .. seealso:: `xoutil.types.prepare_class`:func: and
-       `xoutil.types.new_class`:func:.
+    .. seealso:: `xoutil.ahead.types.prepare_class`:func: and
+       `xoutil.ahead.types.new_class`:func:.
 
     .. warning::
 

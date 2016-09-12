@@ -1083,7 +1083,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     '''
     from xoutil.eight import iteritems, callable
     from xoutil.eight._types import new_class
-    from xoutil.eight.types import MemberDescriptorType
+    from xoutil.ahead.types import MemberDescriptorType
     from xoutil.string import safe_str
 
     def _get_ignored(what):
