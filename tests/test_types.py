@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_types
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
 import unittest
 import pickle
 
-from xoutil import types
+from xoutil.ahead import types
 
 
 def test_iscollection():
@@ -49,7 +49,7 @@ def test_iscollection():
 class NoneTypeTests(unittest.TestCase):
     'To avoid FlyCheck errors'
     def test_identity(self):
-        from xoutil.types import NoneType
+        from xoutil.ahead.types import NoneType
         self.assertIs(NoneType, type(None))
 
 
@@ -228,4 +228,4 @@ class SimpleNamespaceTests(unittest.TestCase):
 
 class TestDynamicClassAttribute(unittest.TestCase):
     def test_isimportable(self):
-        from xoutil.types import DynamicClassAttribute    # noqa
+        from xoutil.ahead.types import DynamicClassAttribute    # noqa
