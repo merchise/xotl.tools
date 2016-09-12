@@ -58,10 +58,7 @@ RegexPattern = type(_regex_compile(''))
 del _regex_compile
 
 
-def type_coerce(obj):
-    '''Ensure return a valid type from `obj`.'''
-    from xoutil.eight import class_types as ctypes
-    return obj if isinstance(obj, ctypes) else obj.__class__
+from xoutil.eight import force_type as type_coerce
 
 
 class mro_dict(Mapping):

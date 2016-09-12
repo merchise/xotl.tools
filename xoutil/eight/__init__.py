@@ -89,12 +89,21 @@ except NameError:
 
 
 def typeof(obj):
-    '''Obtain the object's type compatible with Py 2**3.'''
+    '''Obtain the object's type (compatible with Python 2**3).'''
     if _py3:
         return type(obj)
     else:
         from types import InstanceType
         return obj.__class__ if isinstance(obj, InstanceType) else type(obj)
+
+
+def force_type(obj):
+    '''Ensure return a valid type from `obj`.
+
+    If `obj` is already a "type", return itself, else obtain its type.
+
+    '''
+    return obj if isinstance(obj, class_types) else typeof(obj)
 
 
 def type_name(obj):
