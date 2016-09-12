@@ -28,15 +28,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.deprecation import deprecated
-from xoutil.modules import copy_members as _copy_python_module_members
-
-_pm = _copy_python_module_members()
-GeneratorType = _pm.GeneratorType
-FunctionType = _pm.FunctionType
-ModuleType = _pm.ModuleType
-
-del _pm, _copy_python_module_members
-
 
 from xoutil import Unset as _unset
 from collections import Mapping
@@ -49,10 +40,8 @@ __all__ = ('mro_dict', 'MappingProxyType',
            'prepare_class')
 
 
-from .eight.types import (MappingProxyType, MemberDescriptorType,    # noqa
-                          NoneType, MappingProxyType, SimpleNamespace,
-                          DynamicClassAttribute, new_class, prepare_class,
-                          _calculate_meta)
+from xoutil.ahead.types import *    # noqa
+from xoutil.eight._types import _calculate_meta    # noqa
 
 
 #: The type of methods that are builtin in Python.
