@@ -39,6 +39,7 @@ from xoutil.eight.exceptions import StandardError, BaseException    # noqa
 from xoutil.eight import force_type as type_coerce
 from re import compile as _regex_compile
 
+# TODO: @manu, consider for ahead types
 RegexPattern = type(_regex_compile(''))
 
 del _regex_compile
@@ -46,9 +47,11 @@ del _regex_compile
 #: The type of methods that are builtin in Python.
 #:
 #: This is roughly the type of the ``object.__getattribute__`` method.
+# TODO: @manu, consider one of them for ahead types
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
+# TODO: used internally in this module
 class mro_dict(Mapping):
     '''Utility behaving like a read-only dict of `target` MRO attributes.
 
@@ -109,6 +112,7 @@ class mro_dict(Mapping):
                     self._keys.add(key)
 
 
+# TODO: used internally in this module
 def mro_get_value_list(cls, name):
     '''Return a list with all `cls` class attributes in MRO.'''
     from xoutil.inspect import _static_getmro
@@ -116,6 +120,7 @@ def mro_get_value_list(cls, name):
     return [t.__dict__[name] for t in mro if name in t.__dict__]
 
 
+# TODO: not further use
 def mro_get_full_mapping(cls, name):
     '''Return a dictionary with all items from `cls` in MRO.
 
@@ -141,6 +146,8 @@ def mro_get_full_mapping(cls, name):
 # standard lib's module inspect versions.  If they behave the same, these
 # should be deprecated in favor of the standards.
 
+# TODO: use in `xoutil.json.JSONEncoder` was replaced by ``isinstance(maybe,
+# Iterable)``, so now is used only internally.
 def is_iterable(maybe):
     '''Returns True if `maybe` is an iterable object (e.g. implements the
     `__iter__` method):

@@ -62,7 +62,7 @@ class JSONEncoder(_pm.JSONEncoder):
     def default(self, obj):
         from datetime import datetime, date, time
         from decimal import Decimal
-        from xoutil.types import is_iterable
+        from collections import Iterable
         from xoutil.datetime import assure
         if isinstance(obj, datetime):
             return assure(obj).strftime(self.DT_FORMAT)
@@ -72,7 +72,7 @@ class JSONEncoder(_pm.JSONEncoder):
             return obj.strftime(self.TIME_FORMAT)
         elif isinstance(obj, Decimal):
             return str(obj)
-        elif is_iterable(obj):
+        elif isinstance(obj, Iterable):
             return list(iter(obj))
         return super(JSONEncoder, self).default(obj)
 
