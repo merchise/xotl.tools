@@ -55,14 +55,13 @@ def getargvalues(frame):
         -10
 
     '''
-    from xoutil.types import is_collection
+    from xoutil.cl.simple import force_sequence_coerce as array
     from xoutil.iterators import flatten
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
     for keys in pos:
-        if not is_collection(keys):
-            keys = (keys,)
-        res.update({key: values[key] for key in flatten(keys)})
+        if keys:
+            res.update({key: values[key] for key in flatten(array(keys))})
     if args:
         i = 0
         for item in values[args]:
