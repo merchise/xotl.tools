@@ -183,6 +183,48 @@ def is_iterable(maybe):
         return True
 
 
+# TODO: @manu, external uses to be upgraded:
+#
+# - `odoo.addons.mail.xopgi.index`: can be replaced by a local function
+#   ``isinstance(maybe, (tuple, list, set))`` or by
+#   `xoutil.cl.simple.logic_iterable_coerce`.
+#
+# - `xopgi.account.xopgi.xopgi_proper_currency.move`: ibidem
+#
+# - `xopgi.base.xopgi.xopgi_recurrence.models.recurrent_model`: two uses, the
+#   first is similar to above examples, second use the concept of arrays
+#   (mappings are collections but not arrays) and maybe must consider to move
+#   this function to new `xoutil.ahead.collections` and use it from there.
+#   @med, consider `xoutil.cl.simple.array_coerce`.
+#
+# - `xopgi.hr.xopgi.xopgi_hr_job_assets.hr_job`: ibidem to first.
+#
+# - `xopgi.hr_contract.xopgi.xopgi_hr_contract.hr_contract`: ibidem.
+#
+# - `xequiotl.rstmodel`: ibidem.
+#
+# - `xoeuf.cli.mailgate`: ibidem.
+#
+# - `xoeuf.cli.secure`: ibidem.
+#
+# - `xoeuf.osv.model_extensions`: ibidem.
+#
+# - `xoeuf.osv.writers`: ibidem.
+#
+# - `xotl.simple.event`: ibidem.
+#
+# - `xoutil.tests.test_types`: reconfigure all tests after upgrading all
+#   uses.
+#
+# - `xoutil.cpystack`: migrated to use new
+#   `xoutil.cl.simple.force_sequence_coerce`.
+#
+# - `xoutil.fs`: migrated to use `xoutil.cl.simple.force_iterable_coerce`.
+#
+# - `xoutil.iterators`: replaced by ``isinstance(fill, Iterable)``.
+#
+# - `xoutil.objects`: replaced by `xoutil.cl.simple.logic_collection_coerce` or
+#   `xoutil.cl.simple.logic_iterable_coerce`.
 def is_collection(maybe):
     '''Test `maybe` to see if it is a tuple, a list, a set or a generator
     function.
@@ -215,10 +257,8 @@ def is_collection(maybe):
     .. versionchanged:: 1.5.5 UserList are collections.
 
     '''
-    from xoutil.collections import UserList
-    from xoutil.eight import range
-    return isinstance(maybe, (tuple, range, list, set, frozenset,
-                              GeneratorType, UserList))
+    from xoutil.cl.simple import logic_collection_coerce, nil
+    return logic_collection_coerce(maybe) is not nil
 
 
 def is_mapping(maybe):
