@@ -366,6 +366,7 @@ def is_slotwrapper(desc, name=_unset):
     return isinstance(desc, SlotWrapperType)
 
 
+# not used outside this module.
 def is_module(maybe):
     '''Returns True if `maybe` is a module.'''
     return isinstance(maybe, ModuleType)
