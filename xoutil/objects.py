@@ -345,8 +345,8 @@ def smart_getter(obj, strict=False):
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     '''
-    from .types import is_mapping
-    if is_mapping(obj):
+    from xoutil.collections import Mapping
+    if isinstance(obj, Mapping):
         if not strict:
             return obj.get
         else:
@@ -1185,8 +1185,8 @@ def smart_copy(*args, **kwargs):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
-    from collections import MutableMapping
-    from xoutil.types import is_mapping, Required
+    from xoutil.collections import MutableMapping, Mapping
+    from xoutil.types import Required
     from xoutil.validators.identifiers import is_valid_identifier
     from xoutil.cl.simple import logic_iterable_coerce, nil
     defaults = kwargs.pop('defaults', False)
@@ -1206,7 +1206,7 @@ def smart_copy(*args, **kwargs):
         def setter(key, val):
             if is_valid_identifier(key):
                 setattr(target, key, val)
-    _mapping = is_mapping(defaults)
+    _mapping = isinstance(defaults, Mapping)
     if _mapping or logic_iterable_coerce(defaults) is not nil:
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
@@ -1223,10 +1223,7 @@ def smart_copy(*args, **kwargs):
         keys = []
         for source in sources:
             get = smart_getter(source)
-            if is_mapping(source):
-                items = (name for name in source)
-            else:
-                items = dir(source)
+            items = source if isinstance(source, Mapping) else dir(source)
             for key in items:
                 private = isinstance(key, str_base) and key.startswith('_')
                 if (defaults is False or defaults is None) and private:
