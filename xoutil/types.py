@@ -44,6 +44,11 @@ RegexPattern = type(_regex_compile(''))
 
 del _regex_compile
 
+import warnings    # noqa
+warnings.warn('"xoutil.types" is now deprecated and it will be removed.'
+              ' Use "xoutil.ahead.types" instead.', stacklevel=2)
+del warnings
+
 #: The type of methods that are builtin in Python.
 #:
 #: This is roughly the type of the ``object.__getattribute__`` method.
