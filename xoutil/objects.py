@@ -1407,8 +1407,7 @@ def dict_merge(*dicts, **others):
                         constructor = type(value)
                         value = join(constructor(val))
                     else:
-                        raise ValueError("Invalid value for key '%s'"
-                                         % key)
+                        raise ValueError("Invalid value for key '%s'" % key)
                 elif are_instances(value, val, Mapping):
                     value = dict_merge(value, val)
                 elif no_instances(value, val, (Set, Sequence, Mapping)):

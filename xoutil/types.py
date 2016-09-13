@@ -371,6 +371,7 @@ def is_module(maybe):
     '''Returns True if `maybe` is a module.'''
     return isinstance(maybe, ModuleType)
 
+
 # TODO: @manu, @med, review external references to this function, and remove
 # them:
 #
@@ -385,6 +386,15 @@ class Required(object):
         pass
 
 
+# TODO: @manu, @med, review external references to this function, and remove
+# them:
+#
+# - `xopgi_recurrence.models.recurrent_model`: sentence
+#   ``are_instances(leftres, rightres, tuple)`` must be replaced by
+#   ``isinstance(leftres, tuple) and isinstance(rightres, tuple)``.
+#
+# - `xoutil.objects`
+#
 # Real "Py4k" signature ``are_instances(*subjects, types)``.
 def are_instances(*args):
     '''Return True if every `subject` is an instance of (any) `types`.
