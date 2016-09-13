@@ -28,7 +28,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from . import coercer
+from . import coercer, nil
 
 
 @coercer
@@ -40,7 +40,6 @@ def not_false_coercer(arg):
     `xoutil.symbols.boolean`:class: (of course including `False` itself).
 
     '''
-    from . import nil
     from xoutil.symbols import boolean
     false = arg is None or (not arg and isinstance(arg, boolean))
     return arg if not false else nil
@@ -64,7 +63,6 @@ def isnot(value):
     '''Create a coercer that returns `arg` if `arg` is not `value`.'''
     @coercer
     def inner_coercer(arg):
-        from . import nil
         return arg if arg is not value else nil
     return inner_coercer
 
@@ -81,7 +79,6 @@ def name_coerce(arg):
 
     '''
     from types import GeneratorType
-    from . import nil
     if isinstance(arg, GeneratorType):
         return nil
     else:
@@ -97,43 +94,87 @@ def name_coerce(arg):
 def iterable_coerce(arg):
     '''Return the same argument if it is an iterable.'''
     from collections import Iterable
-    from . import nil
     return arg if isinstance(arg, Iterable) else nil
 
 
-@coercer
-def logic_iterable_coerce(arg):
-    '''Return the same argument if it is a strict iterable.
+def collection(arg=nil, avoid=(), force=False, base=None, name=None):
+    '''Coercer for logic collections.
 
-    Strings are not considered an iterable in this case.
+    Inner coercer returns the same argument if it is a strict iterable.  In
+    Python, strings are normally iterables, but never in our logic.  So::
+
+      >>> collection('abc') is nil
+      True
+
+    This function could directly check an argument if it isn't ``nil``, or
+    returns a coercer using extra parameters:
+
+    :param avoid: a type or tuple of extra types to ignore as valid
+           collections; for example::
+
+             >>> collection(avoid=dict)({}) is nil
+             True
+             >>> collection()({}) is nil
+             False
+
+    :param force: if main argument is not a valid collection, it is are
+           wrapped inner a list::
+
+             >>> collection(avoid=(dict,), force=True)({}) == [{}]
+             True
+
+    :param base: if not ``None``, must be the base to check instead of
+           `~collections.Iterable`:class:.
+
+    :param name: decorate inner coercer with that function name.
 
     '''
-    from xoutil.eight import string_types
-    from collections import Iterable
-    from . import nil
-    ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
-    return arg if ok else nil
+    if not base:
+        from collections import Iterable as base
+    if not isinstance(avoid, tuple):
+        avoid = (avoid, )
+
+    @coercer
+    def collection_coerce(arg):
+        from xoutil.eight import string_types
+        invalid = string_types + avoid
+        ok = not isinstance(arg, invalid) and isinstance(arg, base)
+        return arg if ok else ([arg] if force else nil)
+
+    if arg is nil:
+        doc = ('Return the same argument if it is a strict iterable.\n    '
+               'Strings{} are not considered valid iterables in this case.\n'
+               ).format('and {}'.format(avoid) if avoid else '')
+        if force:
+            doc += '    A non iterable argument is wrapped in a list.\n'
+        collection_coerce.__doc__ = doc
+        del doc
+        if name:
+            collection_coerce.__name__ = name
+        return collection_coerce
+    else:
+        assert not name
+        return collection_coerce(arg)
 
 
-@coercer
-def force_iterable_coerce(arg):
-    '''Return always an iterable.
-
-    Like in `logic_iterable_coerce`:func:, strings are not considered an
-    iterable, all values not iterables are wrapped inner a list.
-
-    '''
-    from xoutil.eight import string_types
-    from collections import Iterable
-    ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
-    return arg if ok else [arg]
+from collections import Mapping, Sequence    # noqa
+logic_iterable_coerce = collection(name='logic_iterable_coerce')
+force_iterable_coerce = collection(force=True, name='force_iterable_coerce')
+logic_collection_coerce = collection(avoid=Mapping,
+                                     name='logic_collection_coerce')
+force_collection_coerce = collection(avoid=Mapping, force=True,
+                                     name='force_collection_coerce')
+logic_sequence_coerce = collection(avoid=Mapping, base=Sequence,
+                                   name='logic_sequence_coerce')
+force_sequence_coerce = collection(avoid=Mapping, force=True, base=Sequence,
+                                   name='force_sequence_coerce')
+del Mapping, Sequence
 
 
 @coercer
 def decode_coerce(arg):
     '''Decode objects implementing the buffer protocol.'''
     import locale
-    from . import nil
     from xoutil.eight import text_type, callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     decode = getattr(arg, 'decode', None)
@@ -161,7 +202,6 @@ def decode_coerce(arg):
 def encode_coerce(arg):
     '''Encode string objects.'''
     import locale
-    from . import nil
     from xoutil.eight import callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     encode = getattr(arg, 'encode', None)
@@ -202,7 +242,6 @@ def unicode_coerce(arg):
 
     '''
     from array import array
-    from . import nil
     from xoutil.eight import text_type
     aux = name_coerce(arg)
     if aux is not nil:
@@ -257,7 +296,6 @@ def bytes_coerce(arg):
 
     '''
     from array import array
-    from . import nil
     from xoutil.eight import text_type
     aux = name_coerce(arg)
     if aux is not nil:
@@ -363,7 +401,6 @@ def chars_coerce(arg):
 @coercer
 def strict_string_coerce(arg):
     '''Coerce to string only if argument is a valid string type.'''
-    from . import nil
     from xoutil.eight import string_types
     return str_coerce(arg) if isinstance(arg, string_types) else nil
 
@@ -371,6 +408,7 @@ def strict_string_coerce(arg):
 from xoutil.eight import text_type as text    # noqa
 
 
+# TODO: Why is this here
 class text(text):
     '''Return a nice text representation of one object.
 
