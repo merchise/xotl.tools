@@ -144,7 +144,7 @@ def collection(arg=nil, avoid=(), force=False, base=None, name=None):
     if arg is nil:
         doc = ('Return the same argument if it is a strict iterable.\n    '
                'Strings{} are not considered valid iterables in this case.\n'
-               ).format('and {}'.format(avoid) if avoid else '')
+               ).format(' and {}'.format(avoid) if avoid else '')
         if force:
             doc += '    A non iterable argument is wrapped in a list.\n'
         collection_coerce.__doc__ = doc
