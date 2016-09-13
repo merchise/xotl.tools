@@ -190,7 +190,7 @@ def slides(iterable, width=2, fill=None):
 
     '''
     from itertools import cycle, repeat
-    from xoutil.types import is_collection
+    from collections import Iterable
     pos = 0
     res = []
     iterator = iter(iterable)
@@ -205,7 +205,7 @@ def slides(iterable, width=2, fill=None):
             res = []
             pos = 0
     if res:
-        if is_collection(fill):
+        if isinstance(fill, Iterable):
             fill = cycle(fill)
         else:
             fill = repeat(fill)
@@ -269,15 +269,21 @@ def first_n(iterable, n=1, fill=Unset):
 
     .. versionadded:: 1.2.0
 
-    .. versionchanged:: 1.4.0 The notion of collection for the `fill`
-                        argument uses :class:`xoutil.types.is_collection`
-                        instead of probing for the ``__iter__`` method.
+    .. versionchanged:: 1.4.0 The notion of collection for the `fill` argument
+                        uses `xoutil.types.is_collection`:func: instead of
+                        probing for the ``__iter__`` method.
+
+    .. versionchanged:: 1.7.2 The notion of collection for the `fill` argument
+                        uses ``isinstance(fill, Iterable)`` replacing
+                        `xoutil.types.is_collection`:func:.  We must be
+                        consistent with `iterable` argument that allow an
+                        string as a valid iterable and `is_collection` not.
 
     '''
     if fill is not Unset:
-        from xoutil.types import is_collection
+        from collections import Iterable
         from itertools import cycle, repeat, chain
-        if is_collection(fill):
+        if isinstance(fill, Iterable):
             fill = cycle(fill)
         else:
             fill = repeat(fill)
