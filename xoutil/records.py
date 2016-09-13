@@ -59,21 +59,21 @@ class _record_type(type):
 
     @staticmethod
     def is_reader(attr, func, fields=None):
-        from xoutil.ahead.types import FunctionType as function
-        from xoutil.types import is_staticmethod as static
+        from xoutil.ahead.types import FunctionType
         attr = attr.lower()
         good_name = attr.startswith('_') and attr.endswith('_reader')
-        good_type = isinstance(func, function) or static(func)
+        good_type = isinstance(func, (FunctionType, staticmethod))
         return good_name and good_type
 
     def __new__(cls, name, bases, attrs):
-        from xoutil.types import is_staticmethod as stm
+        def static(f):
+            return f if isinstance(f, staticmethod) else staticmethod(f)
+
         cls_fields = {attr: val for attr, val in attrs.items()
                       if cls._is_rec_definition(attr, val)}
         descriptors = {attr.lower(): field_descriptor(attr)()
                        for attr in cls_fields}
-        readers = {attr.lower(): staticmethod(func) if not stm(func) else func
-                   for attr, func in attrs.items()
+        readers = {attr.lower(): static(func) for attr, func in attrs.items()
                    if cls.is_reader(attr, func)}
         new_attrs = dict(attrs, **descriptors)
         new_attrs.update(readers)

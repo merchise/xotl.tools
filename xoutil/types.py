@@ -296,6 +296,12 @@ def is_scalar(maybe):
     return is_string_like(maybe) or not is_iterable(maybe)
 
 
+# TODO: @manu, @med, review external references to this function, and remove
+# them:
+#
+# - `xoutil.objects`: only a reference in a comment, must be removed.
+#
+# - `xoutil.records`: fixed.
 def is_staticmethod(desc, name=_unset):
     '''Returns true if a `method` is a static method.
 
