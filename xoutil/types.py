@@ -371,7 +371,10 @@ def is_module(maybe):
     '''Returns True if `maybe` is a module.'''
     return isinstance(maybe, ModuleType)
 
-
+# TODO: @manu, @med, review external references to this function, and remove
+# them:
+#
+# - `xoutil.objects.smart_copy`.
 @deprecated(type(_unset), 'This is only used in `~objects.smart_copy`.')
 class Required(object):
     '''A type for required fields in scenarios where a default is not
