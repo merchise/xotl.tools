@@ -340,6 +340,7 @@ def is_classmethod(desc, name=_unset):
     return isinstance(desc, classmethod)
 
 
+# not used outside this module.
 def is_instancemethod(desc, name=_unset):
     '''Returns true if a given `method` is neither a static method nor a class
     method.
