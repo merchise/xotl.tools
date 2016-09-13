@@ -724,8 +724,9 @@ def iterate_over(source, *keys):
 
     If any `key` is missing from `source` is ignored (not yielded).
 
-    If `source` is a `collection <xoutil.types.is_collection>`:func:, iterate
-    over each of the items searching for any of keys.  This is not recursive.
+    If `source` is a `collection
+    <xoutil.cl.simple.logic_collection_coerce>`:func:, iterate over each of
+    the items searching for any of keys.  This is not recursive.
 
     If no `keys` are provided, return an "empty" iterator -- i.e will raise
     StopIteration upon calling `next`.
@@ -733,7 +734,7 @@ def iterate_over(source, *keys):
     .. versionadded:: 1.5.2
 
     '''
-    from xoutil.types import is_collection
+    from xoutil.cl.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter(source)
@@ -748,7 +749,7 @@ def iterate_over(source, *keys):
             for key, val in generator:
                 yield key, val
 
-    if is_collection(source):
+    if logic_collection_coerce(source) is not nil:
         res = when_collection(source)
     else:
         res = inner(source)
@@ -812,7 +813,7 @@ def pop_first_of(source, *keys, **kwargs):
         True
 
     '''
-    from xoutil.types import is_collection
+    from xoutil.cl.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter_and_deleter(source)
@@ -822,7 +823,7 @@ def pop_first_of(source, *keys, **kwargs):
             i += 1
         return res
 
-    if is_collection(source):
+    if logic_collection_coerce(source) is not nil:
         res = Unset
         source = iter(source)
         probe = next(source, None)
@@ -1178,8 +1179,9 @@ def smart_copy(*args, **kwargs):
 
     '''
     from collections import MutableMapping
-    from xoutil.types import is_collection, is_mapping, Required
+    from xoutil.types import is_mapping, Required
     from xoutil.validators.identifiers import is_valid_identifier
+    from xoutil.cl.simple import logic_iterable_coerce, nil
     defaults = kwargs.pop('defaults', False)
     if kwargs:
         raise TypeError('smart_copy does not accept a "%s" keyword argument'
@@ -1198,7 +1200,7 @@ def smart_copy(*args, **kwargs):
             if is_valid_identifier(key):
                 setattr(target, key, val)
     _mapping = is_mapping(defaults)
-    if _mapping or is_collection(defaults):
+    if _mapping or logic_iterable_coerce(defaults) is not nil:
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:
