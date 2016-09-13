@@ -313,6 +313,10 @@ def is_staticmethod(desc, name=_unset):
     return isinstance(desc, staticmethod)
 
 
+# TODO: @manu, @med, review external references to this function, and remove
+# them:
+#
+# - `xoutil.objects`: only a reference in a comment, must be removed.
 def is_classmethod(desc, name=_unset):
     '''Returns true if a `method` is a class method.
 
