@@ -269,6 +269,7 @@ def is_mapping(maybe):
     return isinstance(obj, Mapping)
 
 
+# only referenced locally by `is_scalar`.
 def is_string_like(maybe):
     '''Returns True if `maybe` acts like a string'''
     try:
@@ -279,6 +280,13 @@ def is_string_like(maybe):
         return True
 
 
+# TODO: @manu, @med, review external references to this function:
+#
+# - `xoonko.core.management.profiles.loaders.models_loader`
+#
+# - `xoonko.core.management.profiles.producers.json_producer`
+#
+# - `xoutil.iterators`
 def is_scalar(maybe):
     '''Returns True if `maybe` is a string, an int, or some other scalar type
     (i.e not an iterable.)
@@ -384,7 +392,7 @@ def are_instances(*args):
 
     '''
     if not args:
-        raise TypeError('are_instances requires at least an argument')
+        raise TypeError('are_instances requires at least one argument')
     subjects, types = args[:-1], args[-1]
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.

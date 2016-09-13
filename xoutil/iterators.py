@@ -25,7 +25,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil import Unset
-from xoutil.types import is_scalar
 
 from xoutil.deprecation import deprecated
 
@@ -42,9 +41,12 @@ def first_non_null(iterable, default=None):
     return next((x for x in iter(iterable) if x), default)
 
 
-def flatten(sequence, is_scalar=is_scalar, depth=None):
-    '''Flattens out a sequence. It takes care of everything deemed a collection
-    (i.e, not a scalar according to the callabled passed in `is_scalar`)::
+def flatten(sequence, is_scalar=None, depth=None):
+    '''Flatten-out a sequence.
+
+    It takes care of everything deemed a collection (i.e, not a scalar
+    according to the callable passed in `is_scalar` argument; if ``None``,
+    `xoutil.types.is_scalar`:func: is assumed)::
 
         >>> from xoutil.eight import range
         >>> range_ = lambda *a: list(range(*a))
@@ -56,8 +58,8 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     flattened up to that level. `depth=0` means not to flatten. Nested
     iterators are not "exploded" if under the stated `depth`::
 
-        # In the following doctest we use ``...range(...X)`` because the string
-        # repr of range differs in Py2 and Py3k.
+        # In the following doctest we use ``...range(...X)`` because the
+        # string repr of range differs in Py2 and Py3k.
 
         >>> tuple(flatten((range_(2), range(2, 4)), depth=0))  # doctest: +ELLIPSIS
         ([0, 1], ...range(2, 4))
@@ -66,6 +68,8 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         (...range(...2), [2, 3])
 
     '''
+    if is_scalar is None:
+        from xoutil.types import is_scalar
     for item in sequence:
         if is_scalar(item):
             yield item
