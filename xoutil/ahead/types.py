@@ -93,7 +93,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.eight import _py34
+from xoutil.eight import _py2, _py34
 from types import *    # noqa
 from types import __all__
 
@@ -124,6 +124,14 @@ try:
 except NameError:
     MappingProxyType = type(type.__dict__)
     __all__.append('MappingProxyType')
+
+if _py2:
+    from collections import Mapping
+    if not issubclass(MappingProxyType, Mapping):
+        # TODO: when implement `xoutil.ahead.collections`, fix this problem
+        # there.
+        Mapping.register(MappingProxyType)
+    del Mapping
 
 try:
     NotImplementedType
@@ -277,4 +285,4 @@ try:
 except ImportError:
     from xoutil.eight._types import _calculate_meta    # noqa
 
-del _py34
+del _py2, _py34

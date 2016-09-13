@@ -74,6 +74,12 @@ from xoutil.names import strlist as slist
 from xoutil.objects import SafeDataItem as safe
 from xoutil.eight.meta import metaclass
 
+if _py2:
+    # TODO: Fix ('Mapping', 'MappingProxyType') sub-classing. When migrate
+    # this module to `xoutil.ahead`, review this.
+    from xoutil.ahead.types import MappingProxyType
+    del MappingProxyType
+
 
 class safe_dict_iter(tuple):
     '''Iterate a dictionary in a safe way.
