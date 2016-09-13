@@ -547,13 +547,11 @@ def concatfiles(*files):
     '''
     import shutil
     from xoutil.eight import string_types
-    from xoutil.types import is_collection
+    from xoutil.cl.simple import force_iterable_coerce
     if len(files) < 2:
         raise TypeError('At least 2 files must be passed to concatfiles.')
     elif len(files) == 2:
-        files, target = files[0], files[1]
-        if not is_collection(files):
-            files = [files]
+        files, target = force_iterable_coerce(files[0]), files[1]
     else:
         files, target = files[:-1], files[-1]
     if isinstance(target, string_types):
