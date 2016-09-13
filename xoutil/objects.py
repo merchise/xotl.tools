@@ -34,13 +34,20 @@ __docstring_format__ = 'rst'
 
 _INVALID_CLASS_TYPE_MSG = '``cls`` must be a class not an instance'
 
-# Safe length
-_len = lambda x: len(x) if x else 0
+
+def _len(x):
+    'Safe length'
+    return len(x) if x else 0
+
 
 # These two functions can be use to always return True or False
 # TODO: Deprecate both.
-_true = lambda *args, **kwargs: True
-_false = lambda *args, **kwargs: False
+def _true(*args, **kwargs):
+    return True
+
+
+def _false(*args, **kwargs):
+    return False
 
 
 class SafeDataItem(object):
