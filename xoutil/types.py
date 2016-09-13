@@ -426,6 +426,11 @@ def are_instances(*args):
     return all(isinstance(subject, types) for subject in subjects)
 
 
+# TODO: @manu, @med, review external references to this function, and remove
+# them:
+#
+# - `xoutil.objects`
+#
 # Real Py4k signature ``are_instances(*subjects, types)``self.
 def no_instances(*args):
     '''Return True if every `subject` is **not** an instance of (neither)
