@@ -353,6 +353,7 @@ def is_instancemethod(desc, name=_unset):
     return isinstance(desc, FunctionType)
 
 
+# not used outside this module.
 def is_slotwrapper(desc, name=_unset):
     '''Returns True if a given `method` is a slot wrapper (i.e. a method that
     is builtin in the `object` base class).
