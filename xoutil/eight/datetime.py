@@ -26,9 +26,18 @@ from __future__ import (division as _py3_division,
 from datetime import *    # noqa
 from datetime import __doc__    # noqa
 
+# TODO: migrate to 'xoutil.ahead'
 
-# Correctly substitute for %z and %Z escapes in strftime formats.
+import warnings    # noqa
+warnings.warn('"xoutil.datetime" is now deprecated and it will be removed.'
+              ' Use "xoutil.ahead.datetime" instead.', stacklevel=2)
+del warnings
+
+
+# TODO: this function was intended for 'strftime' that it's already
+# implemented in 'xoutil.ahead.datetime'.
 def _wrap_strftime(object, format, timetuple):
+    '''Correctly substitute for %z and %Z escapes in strftime formats.'''
     # from datetime import timedelta
     import time as _time
     # Don't call utcoffset() or tzname() unless actually needed.

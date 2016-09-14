@@ -40,6 +40,11 @@ from __future__ import (division as _py3_division,
 from xoutil.ahead.datetime import *    # noqa
 from xoutil.deprecation import deprecated
 
+import warnings    # noqa
+warnings.warn('"xoutil.datetime" is now deprecated and it will be removed.'
+              ' Use "xoutil.ahead.datetime" instead.', stacklevel=2)
+del warnings
+
 
 @deprecated(assure)
 def new_date(d):
