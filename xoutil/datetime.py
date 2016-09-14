@@ -54,10 +54,7 @@ def new_date(d):
 
 @deprecated(assure)
 def new_datetime(d):
-    '''Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
-    object.
-
-    '''
+    '''Generate a safe datetime give a legacy date or datetime object.'''
     args = [d.year, d.month, d.day]
     if isinstance(d, datetime.__base__):    # legacy datetime
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
