@@ -28,7 +28,7 @@ def test_iscollection():
     # `xoutil.cl.simple.logic_collection_coerce`
     from xoutil.eight import range
     from xoutil.types import is_collection
-    from xoutil.collections import UserList, UserDict
+    from xoutil.ahead.collections import UserList, UserDict
     assert is_collection('all strings are iterable') is False
     assert is_collection(1) is False
     assert is_collection(range(1)) is True

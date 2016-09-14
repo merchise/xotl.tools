@@ -154,7 +154,7 @@ def predicate(*checkers, **kwargs):
 
     '''
     from xoutil.symbols import boolean
-    from xoutil.collections import Set, Mapping
+    from xoutil.ahead.collections import Set, Mapping
 
     def inner(obj):
         '''Check is `obj` is a valid instance for a set of checkers.'''

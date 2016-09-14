@@ -177,7 +177,7 @@ def _static_issubclass(C, B):
 # TODO: Implement a safe version for `attrgetter`
 
 if not getattr(_pm, 'getfullargspec', None):
-    from xoutil.collections import namedtuple
+    from xoutil.ahead.collections import namedtuple
     FullArgSpec = namedtuple(
         'FullArgSpec',
         'args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults,'

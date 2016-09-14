@@ -153,7 +153,7 @@ class Predicate(object):
     def __call__(self, obj):
         '''Check is `obj` is a valid instance for a set of checkers.'''
         from xoutil.symbols import boolean
-        from xoutil.collections import Set, Mapping
+        from xoutil.ahead.collections import Set, Mapping
         from xoutil.eight import callable
 
         def valid(chk, stack=True):
@@ -197,7 +197,7 @@ def _get_checker_name(checker, full=False):
 
     '''
     from xoutil.symbols import boolean
-    from xoutil.collections import Set, Mapping, PascalSet
+    from xoutil.ahead.collections import Set, Mapping, PascalSet
     from xoutil.eight import callable
     from xoutil.inspect import type_name
     from xoutil.string import safe_str as sstr    # , safe_repr as srepr

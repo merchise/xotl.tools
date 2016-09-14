@@ -283,7 +283,7 @@ def lwraps(*args, **kwargs):
 
 if not py33:
     from threading import RLock
-    from xoutil.collections import namedtuple
+    from xoutil.ahead.collections import namedtuple
 
     _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize",
                                           "currsize"])

@@ -74,7 +74,7 @@ metaclass.__doc__ = '''Define the metaclass of a class.
          class Meta(type):
               @classmethod
               def __prepare__(cls, name, bases, **kwargs):
-                  from xoutil.collections import OrderedDict
+                  from xoutil.ahead.collections import OrderedDict
                   return OrderedDict()
 
          class Foo(metaclass(Meta)):

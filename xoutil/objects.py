@@ -345,7 +345,7 @@ def smart_getter(obj, strict=False):
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     '''
-    from xoutil.collections import Mapping
+    from xoutil.ahead.collections import Mapping
     if isinstance(obj, Mapping):
         if not strict:
             return obj.get
@@ -1185,7 +1185,7 @@ def smart_copy(*args, **kwargs):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
-    from xoutil.collections import MutableMapping, Mapping
+    from xoutil.ahead.collections import MutableMapping, Mapping
     from xoutil.types import Required
     from xoutil.validators.identifiers import is_valid_identifier
     from xoutil.cl.simple import logic_iterable_coerce, nil

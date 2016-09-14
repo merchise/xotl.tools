@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# xoutil.collections
+# xoutil.ahead.collections
 # ----------------------------------------------------------------------
 # Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -151,7 +151,7 @@ class defaultdict(_defaultdict):
 
     Examples::
 
-        >>> from xoutil.collections import defaultdict
+        >>> from xoutil.ahead.collections import defaultdict
         >>> d = defaultdict(lambda key, d: 'a')
         >>> d['abc']
         'a'
@@ -2010,7 +2010,7 @@ class MetaSet(type):
 
     This is pythonic syntax (stop limit is never included), for example::
 
-        >>> from xoutil.collections import PascalSet as srange
+        >>> from xoutil.ahead.collections import PascalSet as srange
         >>> [i for i in srange[1:4, 15, 20:23]]
         [1, 2, 3, 15, 20, 21, 22, 23]
 
@@ -2109,7 +2109,7 @@ class PascalSet(metaclass(MetaSet)):
 
         For example::
 
-          >>> from xoutil.collections import PascalSet
+          >>> from xoutil.ahead.collections import PascalSet
           >>> s1 = PascalSet[0:10]
           >>> assert s1 == set(s1)    # OK (True) in 2 and 3
           >>> assert set(s1) == s1    # OK in 3, fails in 2
@@ -2725,7 +2725,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
 
         For example::
 
-          >>> from xoutil.collections import BitPascalSet
+          >>> from xoutil.ahead.collections import BitPascalSet
           >>> s1 = BitPascalSet[0:10]
           >>> assert s1 == set(s1)    # OK (True) in 2 and 3
           >>> assert set(s1) == s1    # OK in 3, fails in 2

@@ -270,7 +270,7 @@ def is_collection(maybe):
 # replaced in the new body of this function
 def is_mapping(maybe):
     '''Test `maybe` to see if it is a valid mapping.'''
-    from xoutil.collections import Mapping
+    from xoutil.ahead.collections import Mapping
     return isinstance(obj, Mapping)
 
 

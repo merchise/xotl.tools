@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # tests.test_names
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -31,7 +31,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil.collections import OrderedSmartDict
+from xoutil.ahead.collections import OrderedSmartDict
 
 
 def test_nameof():
@@ -127,6 +127,6 @@ def test_module_level_name():
 def test_module_level_name_isolated():
     from xoutil.names import nameof, simple_name
     full_name_1 = 'test_names.OrderedSmartDict'
-    full_name_2 = 'xoutil.collections.OrderedSmartDict'
+    full_name_2 = 'xoutil.ahead.collections.OrderedSmartDict'
     assert nameof(OrderedSmartDict, full=True) == full_name_1
     assert simple_name(OrderedSmartDict) == full_name_2
