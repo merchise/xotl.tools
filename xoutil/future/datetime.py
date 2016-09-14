@@ -480,3 +480,83 @@ except NameError:
     timezone.min = timezone._create(timezone._minoffset)
     timezone.max = timezone._create(timezone._maxoffset)
     # _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+
+# TODO: this function was intended for a local 'strftime' that it's already
+# implemented in 'xoutil.future.datetime'.
+if 'eight' in __name__:
+    def _wrap_strftime(object, format, timetuple):
+        '''Correctly substitute for %z and %Z escapes in strftime formats.'''
+        # from datetime import timedelta
+        import time as _time
+        # Don't call utcoffset() or tzname() unless actually needed.
+        freplace = None    # the string to use for %f
+        zreplace = None    # the string to use for %z
+        Zreplace = None    # the string to use for %Z
+
+        # Scan format for %z and %Z escapes, replacing as needed.
+        newformat = []
+        push = newformat.append
+        i, n = 0, len(format)
+        while i < n:
+            ch = format[i]
+            i += 1
+            if ch == '%':
+                if i < n:
+                    ch = format[i]
+                    i += 1
+                    if ch == 'f':
+                        if freplace is None:
+                            freplace = '%06d' % getattr(object,
+                                                        'microsecond', 0)
+                        newformat.append(freplace)
+                    elif ch == 'z':
+                        if zreplace is None:
+                            zreplace = ""
+                            if hasattr(object, "utcoffset"):
+                                offset = object.utcoffset()
+                                if offset is not None:
+                                    sign = '+'
+                                    if offset.days < 0:
+                                        offset = -offset
+                                        sign = '-'
+                                    h, m = divmod(offset, timedelta(hours=1))
+                                    # not a whole minute
+                                    assert not m % timedelta(minutes=1)
+                                    m //= timedelta(minutes=1)
+                                    zreplace = '%c%02d%02d' % (sign, h, m)
+                        assert '%' not in zreplace
+                        newformat.append(zreplace)
+                    elif ch == 'Z':
+                        if Zreplace is None:
+                            Zreplace = ""
+                            if hasattr(object, "tzname"):
+                                s = object.tzname()
+                                if s is not None:
+                                    # strftime is going to have at this:
+                                    # escape %
+                                    Zreplace = s.replace('%', '%%')
+                        newformat.append(Zreplace)
+                    else:
+                        push('%')
+                        push(ch)
+                else:
+                    push('%')
+            else:
+                push(ch)
+        newformat = "".join(newformat)
+        print(newformat, timetuple)
+        return _time.strftime(newformat, timetuple)
+
+
+    # def strftime(self, fmt):    # Method for class date
+    #     "Format using strftime()."
+    #     return _wrap_strftime(self, fmt, self.timetuple())
+
+
+if not __name__.startswith('xoutil.future'):
+    from warnings import warn
+    msg = '"{}" is now deprecated and it will be removed. Use "{}" instead.'
+    old_name = 'xoutil.future.{}'.format(__name__.split('.')[-1])
+    warn(msg.format(__name__, old_name), stacklevel=2)
+    del warn, msg, old_name
