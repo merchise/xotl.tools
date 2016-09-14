@@ -3186,3 +3186,11 @@ def smart_iter_items(*args, **kwds):
 # get rid of unused global variables
 del slist, _py2, _py33, _py34, metaclass
 del deprecated
+
+
+if not __name__.startswith('xoutil.future'):
+    import warnings
+    msg = '"{}" is now deprecated and it will be removed. Use "{}" instead.'
+    msg = msg.format(__name__, __name__.replace('xoutil.', 'xoutil.future.'))
+    warnings.warn(msg, stacklevel=2)
+    del warnings, msg
