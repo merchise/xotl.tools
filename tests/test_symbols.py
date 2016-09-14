@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_symbols
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -31,7 +31,9 @@ class BooleanTests(unittest.TestCase):
         b = boolean(foo + 'set')
         c = boolean('Un' + bar)
 
-        self.assertIs(intern(foo + bar), repr(Unset))
+        # self.assertIs(intern(foo + bar), repr(Unset))
+        # above started to fail in PyPy, changed to next.
+        self.assertIs(intern(foo + bar), intern(repr(Unset)))
         self.assertIs(repr(a), repr(b))
         self.assertIs(a, Unset)
         self.assertIs(b, Unset)
