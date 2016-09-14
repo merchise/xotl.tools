@@ -548,15 +548,11 @@ if 'eight' in __name__:
         print(newformat, timetuple)
         return _time.strftime(newformat, timetuple)
 
-
     # def strftime(self, fmt):    # Method for class date
     #     "Format using strftime()."
     #     return _wrap_strftime(self, fmt, self.timetuple())
 
 
-if not __name__.startswith('xoutil.future'):
-    from warnings import warn
-    msg = '"{}" is now deprecated and it will be removed. Use "{}" instead.'
-    old_name = 'xoutil.future.{}'.format(__name__.split('.')[-1])
-    warn(msg.format(__name__, old_name), stacklevel=2)
-    del warn, msg, old_name
+from xoutil.future.warnings import check_future    # noqa
+check_future(__name__)
+del check_future
