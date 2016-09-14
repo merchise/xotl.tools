@@ -3189,8 +3189,8 @@ del deprecated
 
 
 if not __name__.startswith('xoutil.future'):
-    import warnings
+    from warnings import warn
     msg = '"{}" is now deprecated and it will be removed. Use "{}" instead.'
-    msg = msg.format(__name__, __name__.replace('xoutil.', 'xoutil.future.'))
-    warnings.warn(msg, stacklevel=2)
-    del warnings, msg
+    old_name = 'xoutil.future.{}'.format(__name__.split('.')[-1])
+    warn(msg.format(__name__, old_name), stacklevel=2)
+    del warn, msg, old_name
