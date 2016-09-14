@@ -25,15 +25,16 @@ from __future__ import (division as _py3_division,
 import warnings
 
 warnings.warn('"xoutil.eight.types" is now deprecated and it will be removed.'
-              ' Use "xoutil.ahead.types" instead.', stacklevel=2)
+              ' Use "xoutil.future.types" instead.', stacklevel=2)
 
 del warnings
 
-from xoutil.ahead.types import (NoneType, DictProxyType,    # noqa
-                                MappingProxyType, MemberDescriptorType,
-                                GetSetDescriptorType, SimpleNamespace,
-                                DynamicClassAttribute, new_class,
-                                prepare_class, _calculate_meta, get_exec_body)
+from xoutil.future.types import (NoneType, DictProxyType,    # noqa
+                                 MappingProxyType, MemberDescriptorType,
+                                 GetSetDescriptorType, SimpleNamespace,
+                                 DynamicClassAttribute, new_class,
+                                 prepare_class, _calculate_meta,
+                                 get_exec_body)
 
 
 __all__ = ['DictProxyType', 'MemberDescriptorType', 'NoneType',

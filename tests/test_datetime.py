@@ -19,8 +19,8 @@ from __future__ import (division as _py3_division,
 
 import pytest
 
-from xoutil.ahead.datetime import date
-from xoutil.ahead.datetime import daterange
+from xoutil.future.datetime import date
+from xoutil.future.datetime import daterange
 
 
 def test_daterange_stop_only():

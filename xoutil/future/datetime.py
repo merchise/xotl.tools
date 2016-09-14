@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.ahead.datetime
+# xoutil.future.datetime
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors

@@ -25,7 +25,7 @@ import unittest
 import pytest
 
 from random import shuffle
-from xoutil.ahead.collections import defaultdict
+from xoutil.future.collections import defaultdict
 
 try:
     from xoutil.release import VERSION_INFO
@@ -53,7 +53,7 @@ class TestCollections(unittest.TestCase):
                     reason='.pop() has old semantics')
 def test_stacked_dict_with_newpop():
     '''Test that stacked.pop has the same semantics has dict.pop.'''
-    from xoutil.ahead.collections import StackedDict
+    from xoutil.future.collections import StackedDict
     sd = StackedDict(a='level-0', b=1)
     assert sd.pop('a') == 'level-0'
     assert sd.pop('non', sd) is sd
@@ -66,7 +66,7 @@ def test_stacked_dict_with_newpop():
 
 
 def test_stacked_dict():
-    from xoutil.ahead.collections import StackedDict
+    from xoutil.future.collections import StackedDict
     sd = StackedDict(a='level-0')
     assert sd.peek() == dict(a='level-0')
     sd.push_level(a=1, b=2, c=10)
@@ -106,9 +106,9 @@ def test_stacked_dict():
 
 # Backported from Python 3.3.0 standard library
 from xoutil.eight import _py3 as PY3
-from xoutil.ahead.collections import ChainMap, Counter
-from xoutil.ahead.collections import OrderedDict, RankedDict
-from xoutil.ahead.collections import Mapping, MutableMapping
+from xoutil.future.collections import ChainMap, Counter
+from xoutil.future.collections import OrderedDict, RankedDict
+from xoutil.future.collections import Mapping, MutableMapping
 import copy
 import pickle
 from random import randrange
@@ -474,7 +474,7 @@ class TestCounter(unittest.TestCase):
         self.assertIn("'b': None", r)
 
     def test_helper_function(self):
-        from xoutil.ahead.collections import _count_elements
+        from xoutil.future.collections import _count_elements
         # two paths, one for real dicts and one for other mappings
         elems = list('abracadabra')
 
@@ -1040,7 +1040,7 @@ class TestPascalSet(unittest.TestCase):
     def test_consistency(self):
         from random import randint
         from xoutil.eight import range
-        from xoutil.ahead.collections import PascalSet
+        from xoutil.future.collections import PascalSet
         count = 5
         for test in range(count):
             size = randint(20, 60)
@@ -1070,7 +1070,7 @@ class TestPascalSet(unittest.TestCase):
 
     def test_syntax_sugar(self):
         from xoutil.eight import range
-        from xoutil.ahead.collections import PascalSet
+        from xoutil.future.collections import PascalSet
         s1 = PascalSet[1:4, 9, 15:18]
         s2 = PascalSet[3:18]
         self.assertEqual(str(s1), '{1..3, 9, 15..17}')
@@ -1079,7 +1079,7 @@ class TestPascalSet(unittest.TestCase):
 
     def test_operators(self):
         from xoutil.eight import range
-        from xoutil.ahead.collections import PascalSet
+        from xoutil.future.collections import PascalSet
         g = lambda s: (i for i in s)
         s1 = PascalSet[1:4, 9, 15:18]
         r1 = range(1, 18)
@@ -1113,7 +1113,7 @@ class TestPascalSet(unittest.TestCase):
 
     def test_errors(self):
         '''Test that stacked.pop has the same semantics has dict.pop.'''
-        from xoutil.ahead.collections import PascalSet
+        from xoutil.future.collections import PascalSet
         s1 = PascalSet[1:4, 9, 15:18]
         s2 = PascalSet(s1, 20)
         self.assertLess(s1, s2)
@@ -1140,7 +1140,7 @@ class TestBitPascalSet(unittest.TestCase):
     def test_consistency(self):
         from random import randint
         from xoutil.eight import range
-        from xoutil.ahead.collections import BitPascalSet
+        from xoutil.future.collections import BitPascalSet
         count = 5
         for test in range(count):
             size = randint(20, 60)
@@ -1170,7 +1170,7 @@ class TestBitPascalSet(unittest.TestCase):
 
     def test_syntax_sugar(self):
         from xoutil.eight import range
-        from xoutil.ahead.collections import BitPascalSet
+        from xoutil.future.collections import BitPascalSet
         s1 = BitPascalSet[1:4, 9, 15:18]
         s2 = BitPascalSet[3:18]
         self.assertEqual(str(s1), '{1..3, 9, 15..17}')
@@ -1179,7 +1179,7 @@ class TestBitPascalSet(unittest.TestCase):
 
     def test_operators(self):
         from xoutil.eight import range
-        from xoutil.ahead.collections import BitPascalSet
+        from xoutil.future.collections import BitPascalSet
         g = lambda s: (i for i in s)
         s1 = BitPascalSet[1:4, 9, 15:18]
         r1 = range(1, 18)
@@ -1213,7 +1213,7 @@ class TestBitPascalSet(unittest.TestCase):
 
     def test_errors(self):
         '''Test that stacked.pop has the same semantics has dict.pop.'''
-        from xoutil.ahead.collections import BitPascalSet
+        from xoutil.future.collections import BitPascalSet
         s1 = BitPascalSet[1:4, 9, 15:18]
         s2 = BitPascalSet(s1, 20)
         self.assertLess(s1, s2)
@@ -1236,21 +1236,21 @@ class TestBitPascalSet(unittest.TestCase):
 
 
 def test_abcs():
-    from xoutil.ahead.collections import Container    # noqa
-    from xoutil.ahead.collections import Iterable    # noqa
-    from xoutil.ahead.collections import Iterator    # noqa
-    from xoutil.ahead.collections import Sized    # noqa
-    from xoutil.ahead.collections import Callable    # noqa
-    from xoutil.ahead.collections import Sequence    # noqa
-    from xoutil.ahead.collections import MutableSequence    # noqa
-    from xoutil.ahead.collections import Set    # noqa
-    from xoutil.ahead.collections import MutableSet    # noqa
-    from xoutil.ahead.collections import Mapping    # noqa
-    from xoutil.ahead.collections import MutableMapping    # noqa
-    from xoutil.ahead.collections import MappingView    # noqa
-    from xoutil.ahead.collections import ItemsView    # noqa
-    from xoutil.ahead.collections import KeysView    # noqa
-    from xoutil.ahead.collections import ValuesView    # noqa
+    from xoutil.future.collections import Container    # noqa
+    from xoutil.future.collections import Iterable    # noqa
+    from xoutil.future.collections import Iterator    # noqa
+    from xoutil.future.collections import Sized    # noqa
+    from xoutil.future.collections import Callable    # noqa
+    from xoutil.future.collections import Sequence    # noqa
+    from xoutil.future.collections import MutableSequence    # noqa
+    from xoutil.future.collections import Set    # noqa
+    from xoutil.future.collections import MutableSet    # noqa
+    from xoutil.future.collections import Mapping    # noqa
+    from xoutil.future.collections import MutableMapping    # noqa
+    from xoutil.future.collections import MappingView    # noqa
+    from xoutil.future.collections import ItemsView    # noqa
+    from xoutil.future.collections import KeysView    # noqa
+    from xoutil.future.collections import ValuesView    # noqa
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# xoutil.ahead.collections
+# xoutil.future.collections
 # ----------------------------------------------------------------------
 # Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -75,8 +75,8 @@ from xoutil.eight.meta import metaclass
 
 if _py2:
     # TODO: Fix ('Mapping', 'MappingProxyType') sub-classing. When migrate
-    # this module to `xoutil.ahead`, review this.
-    from xoutil.ahead.types import MappingProxyType
+    # this module to `xoutil.future`, review this.
+    from xoutil.future.types import MappingProxyType
     del MappingProxyType
 
 
@@ -150,7 +150,7 @@ class defaultdict(_defaultdict):
 
     Examples::
 
-        >>> from xoutil.ahead.collections import defaultdict
+        >>> from xoutil.future.collections import defaultdict
         >>> d = defaultdict(lambda key, d: 'a')
         >>> d['abc']
         'a'
@@ -2009,7 +2009,7 @@ class MetaSet(type):
 
     This is pythonic syntax (stop limit is never included), for example::
 
-        >>> from xoutil.ahead.collections import PascalSet as srange
+        >>> from xoutil.future.collections import PascalSet as srange
         >>> [i for i in srange[1:4, 15, 20:23]]
         [1, 2, 3, 15, 20, 21, 22, 23]
 
@@ -2108,7 +2108,7 @@ class PascalSet(metaclass(MetaSet)):
 
         For example::
 
-          >>> from xoutil.ahead.collections import PascalSet
+          >>> from xoutil.future.collections import PascalSet
           >>> s1 = PascalSet[0:10]
           >>> assert s1 == set(s1)    # OK (True) in 2 and 3
           >>> assert set(s1) == s1    # OK in 3, fails in 2
@@ -2724,7 +2724,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
 
         For example::
 
-          >>> from xoutil.ahead.collections import BitPascalSet
+          >>> from xoutil.future.collections import BitPascalSet
           >>> s1 = BitPascalSet[0:10]
           >>> assert s1 == set(s1)    # OK (True) in 2 and 3
           >>> assert set(s1) == s1    # OK in 3, fails in 2

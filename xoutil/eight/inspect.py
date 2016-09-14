@@ -107,7 +107,7 @@ except ImportError:
             except KeyError:
                 pass
             else:
-                from xoutil.ahead.types import GetSetDescriptorType
+                from xoutil.future.types import GetSetDescriptorType
                 if not (type(class_dict) is GetSetDescriptorType and
                         class_dict.__name__ == "__dict__" and
                         _objclass(class_dict, entry)):
@@ -133,7 +133,7 @@ except ImportError:
         from xoutil.eight import typeof
         instance_result = _sentinel
         if not _is_type(obj):
-            from xoutil.ahead.types import MemberDescriptorType as mdt
+            from xoutil.future.types import MemberDescriptorType as mdt
             klass = typeof(obj)
             dict_attr = _shadowed_dict(klass)
             if dict_attr is _sentinel or type(dict_attr) is mdt:

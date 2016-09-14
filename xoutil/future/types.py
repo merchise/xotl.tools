@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.ahead.types
+# xoutil.future.types
 # ---------------------------------------------------------------------
 # Copyright (c) 2016 Merchise and Contributors
 # All rights reserved.
@@ -128,7 +128,7 @@ except NameError:
 if _py2:
     from collections import Mapping
     if not issubclass(MappingProxyType, Mapping):
-        # TODO: when implement `xoutil.ahead.collections`, fix this problem
+        # TODO: when implement `xoutil.future.collections`, fix this problem
         # there.
         Mapping.register(MappingProxyType)
     del Mapping

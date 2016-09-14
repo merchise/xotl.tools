@@ -74,7 +74,7 @@ metaclass.__doc__ = '''Define the metaclass of a class.
          class Meta(type):
               @classmethod
               def __prepare__(cls, name, bases, **kwargs):
-                  from xoutil.ahead.collections import OrderedDict
+                  from xoutil.future.collections import OrderedDict
                   return OrderedDict()
 
          class Foo(metaclass(Meta)):
@@ -86,8 +86,8 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        when creating the class ``Bar`` the ``__prepare__()`` class method is
        not called in Python 2.7!
 
-    .. seealso:: `xoutil.ahead.types.prepare_class`:func: and
-       `xoutil.ahead.types.new_class`:func:.
+    .. seealso:: `xoutil.future.types.prepare_class`:func: and
+       `xoutil.future.types.new_class`:func:.
 
     .. warning::
 

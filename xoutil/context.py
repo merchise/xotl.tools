@@ -27,7 +27,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil.tasking import local as _local
 from xoutil.eight.meta import metaclass
-from xoutil.ahead.collections import StackedDict
+from xoutil.future.collections import StackedDict
 
 __all__ = ('Context', 'context', 'NullContext')
 

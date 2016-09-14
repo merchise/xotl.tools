@@ -37,12 +37,12 @@ from __future__ import (division as _py3_division,
                         # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.ahead.datetime import *    # noqa
+from xoutil.future.datetime import *    # noqa
 from xoutil.deprecation import deprecated
 
 import warnings    # noqa
 warnings.warn('"xoutil.datetime" is now deprecated and it will be removed.'
-              ' Use "xoutil.ahead.datetime" instead.', stacklevel=2)
+              ' Use "xoutil.future.datetime" instead.', stacklevel=2)
 del warnings
 
 

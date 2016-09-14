@@ -63,7 +63,7 @@ class JSONEncoder(_pm.JSONEncoder):
         from datetime import datetime, date, time
         from decimal import Decimal
         from collections import Iterable
-        from xoutil.ahead.datetime import assure
+        from xoutil.future.datetime import assure
         if isinstance(obj, datetime):
             return assure(obj).strftime(self.DT_FORMAT)
         elif isinstance(obj, date):

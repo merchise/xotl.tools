@@ -32,27 +32,27 @@ from xoutil.deprecation import deprecated
 from xoutil import Unset as _unset
 from collections import Mapping
 
-from xoutil.ahead.types import *    # noqa
+from xoutil.future.types import *    # noqa
 from xoutil.eight._types import _calculate_meta    # noqa
 
 from xoutil.eight.exceptions import StandardError, BaseException    # noqa
 from xoutil.eight import force_type as type_coerce
 from re import compile as _regex_compile
 
-# TODO: @manu, consider for ahead types
+# TODO: @manu, consider for future types
 RegexPattern = type(_regex_compile(''))
 
 del _regex_compile
 
 import warnings    # noqa
 warnings.warn('"xoutil.types" is now deprecated and it will be removed.'
-              ' Use "xoutil.ahead.types" instead.', stacklevel=2)
+              ' Use "xoutil.future.types" instead.', stacklevel=2)
 del warnings
 
 #: The type of methods that are builtin in Python.
 #:
 #: This is roughly the type of the ``object.__getattribute__`` method.
-# TODO: @manu, consider one of them for ahead types
+# TODO: @manu, consider one of them for future types
 WrapperDescriptorType = SlotWrapperType = type(object.__getattribute__)
 
 
@@ -199,7 +199,7 @@ def is_iterable(maybe):
 # - `xopgi.base.xopgi.xopgi_recurrence.models.recurrent_model`: two uses, the
 #   first is similar to above examples, second use the concept of arrays
 #   (mappings are collections but not arrays) and maybe must consider to move
-#   this function to new `xoutil.ahead.collections` and use it from there.
+#   this function to new `xoutil.future.collections` and use it from there.
 #   @med, consider `xoutil.cl.simple.array_coerce`.
 #
 # - `xopgi.hr.xopgi.xopgi_hr_job_assets.hr_job`: ibidem to first.
@@ -270,7 +270,7 @@ def is_collection(maybe):
 # replaced in the new body of this function
 def is_mapping(maybe):
     '''Test `maybe` to see if it is a valid mapping.'''
-    from xoutil.ahead.collections import Mapping
+    from xoutil.future.collections import Mapping
     return isinstance(obj, Mapping)
 
 

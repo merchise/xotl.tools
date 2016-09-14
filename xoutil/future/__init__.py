@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.ahead
+# xoutil.future
 # ---------------------------------------------------------------------
 # Copyright (c) 2016 Merchise and Contributors
 # All rights reserved.
@@ -17,7 +17,7 @@
 Version 3 introduce several concepts in standard modules.  Sometimes these
 features are implemented in the evolution of 2.7.x versions.  By using
 sub-modules, these differences can be avoided transparently.  For example, you
-can import `xoutil.ahead.collections.UserDict`:class: in any version, that
+can import `xoutil.future.collections.UserDict`:class: in any version, that
 it's equivalent to Python 3 `collections.UserDict`:class:, but it don't exists
 in Python 2.
 

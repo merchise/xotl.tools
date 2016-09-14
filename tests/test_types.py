@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
 import unittest
 import pickle
 
-from xoutil.ahead import types
+from xoutil.future import types
 
 
 def test_iscollection():
@@ -28,7 +28,7 @@ def test_iscollection():
     # `xoutil.cl.simple.logic_collection_coerce`
     from xoutil.eight import range
     from xoutil.types import is_collection
-    from xoutil.ahead.collections import UserList, UserDict
+    from xoutil.future.collections import UserList, UserDict
     assert is_collection('all strings are iterable') is False
     assert is_collection(1) is False
     assert is_collection(range(1)) is True
@@ -51,7 +51,7 @@ def test_iscollection():
 class NoneTypeTests(unittest.TestCase):
     'To avoid FlyCheck errors'
     def test_identity(self):
-        from xoutil.ahead.types import NoneType
+        from xoutil.future.types import NoneType
         self.assertIs(NoneType, type(None))
 
 
@@ -230,4 +230,4 @@ class SimpleNamespaceTests(unittest.TestCase):
 
 class TestDynamicClassAttribute(unittest.TestCase):
     def test_isimportable(self):
-        from xoutil.ahead.types import DynamicClassAttribute    # noqa
+        from xoutil.future.types import DynamicClassAttribute    # noqa
