@@ -44,7 +44,7 @@ class Progress(object):
 
     def __init__(self, max_value=100, delta=1, first_message=None,
                  display_width=None):
-        from xoutil.datetime import datetime
+        from xoutil.ahead.datetime import datetime
         self.max_value = max_value
         self.delta = delta
         self.percent = self.value = 0
@@ -63,7 +63,7 @@ class Progress(object):
         percent = 100 * self.value // self.max_value
         if self.percent != percent:
             import sys
-            from xoutil.datetime import strfdelta
+            from xoutil.ahead.datetime import strfdelta
             self.percent = percent
             helix = _HELIX[percent % len(_HELIX)]
             elapsed = self.start_time.now() - self.start_time

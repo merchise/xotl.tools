@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_datetime
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -19,8 +19,8 @@ from __future__ import (division as _py3_division,
 
 import pytest
 
-from xoutil.datetime import date
-from xoutil.datetime import daterange
+from xoutil.ahead.datetime import date
+from xoutil.ahead.datetime import daterange
 
 
 def test_daterange_stop_only():
