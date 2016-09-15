@@ -69,7 +69,7 @@ def test_normalize_slug_hypothesis(s, invalids):
     assert ' ' in normalize_slug(s + ' ', valids=' '), \
         'Slugs do contain spaces if explicitly allowed'
 
-    # TODO (med): The following fails with s='0' and invalids='0'.  Is this a
+    # TODO: @med, The following fails with s='0' and invalids='0'.  Is this a
     # true invariant?
     assert all(c not in normalize_slug(s) for c in invalids), \
         'Slugs dont contain invalid chars'
