@@ -62,6 +62,8 @@ def test_cutting_is_inverse_to_adding(s, p):
     from xoutil.string import cut_prefix, cut_suffix
     assert cut_prefix(p + s, p) == s
     assert cut_suffix(s + p, p) == s
+    assert cut_suffix(s, '') == s
+    assert cut_prefix(s, '') == s
 
 
 @given(s=text(), p=text())
