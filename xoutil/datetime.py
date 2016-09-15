@@ -42,7 +42,7 @@ from xoutil.deprecation import deprecated
 
 import warnings    # noqa
 warnings.warn('"xoutil.datetime" is now deprecated and it will be removed.'
-              ' Use "xoutil.future.datetime" instead.', stacklevel=2)
+              ' Use "xoutil.future.datetime" instead.', stacklevel=1)
 del warnings
 
 

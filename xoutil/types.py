@@ -46,7 +46,7 @@ del _regex_compile
 
 import warnings    # noqa
 warnings.warn('"xoutil.types" is now deprecated and it will be removed.'
-              ' Use "xoutil.future.types" instead.', stacklevel=2)
+              ' Use "xoutil.future.types" instead.', stacklevel=1)
 del warnings
 
 #: The type of methods that are builtin in Python.

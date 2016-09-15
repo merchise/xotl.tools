@@ -40,10 +40,8 @@ from __future__ import (division as _py3_division,
 
 
 import warnings
-
 warnings.warn('"xoutil.values" is now deprecated and it will be removed. Use '
-              '"xoutil.cl" instead.', stacklevel=2)
-
+              '"xoutil.cl" instead.', stacklevel=1)
 del warnings
 
 from xoutil.cl import (logical, nil, t, _coercer_decorator, vouch,    # noqa
