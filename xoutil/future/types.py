@@ -93,9 +93,13 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.eight import _py2, _py34
+from xoutil.future import _rectify
+_rectify.check()
+del _rectify
+
+from xoutil.eight import _py2, _py34    # noqa
 from types import *    # noqa
-from types import __all__
+from types import __all__    # noqa
 
 __all__ = list(__all__)    # copy it to avoid errors
 
@@ -286,8 +290,3 @@ except ImportError:
     from xoutil.eight._types import _calculate_meta    # noqa
 
 del _py2, _py34
-
-
-from xoutil.future.warnings import check_future    # noqa
-check_future(__name__)
-del check_future

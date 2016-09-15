@@ -39,6 +39,10 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
+from xoutil.future import _rectify
+_rectify.check()
+del _rectify
+
 from datetime import *    # noqa
 
 # TODO: Consider use IoC to extend python datetime module
@@ -551,8 +555,3 @@ if 'eight' in __name__:
     # def strftime(self, fmt):    # Method for class date
     #     "Format using strftime()."
     #     return _wrap_strftime(self, fmt, self.timetuple())
-
-
-from xoutil.future.warnings import check_future    # noqa
-check_future(__name__)
-del check_future
