@@ -34,19 +34,21 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
+from xoutil.future import _rectify    # noqa
+_rectify.check()
+del _rectify
 
-from xoutil.deprecation import deprecated
 
-import sys
-_py2 = sys.version_info < (3, 0, 0)
-_py33 = sys.version_info >= (3, 3, 0)
-_py34 = sys.version_info >= (3, 4, 0)
-del sys
+from xoutil.modules import copy_members    # noqa
+_pm = copy_members()
+
+from xoutil.deprecation import deprecated    # noqa
+from xoutil.eight import _py2, _py33, _py34    # noqa
 
 if _py33:
-    _copy_python_module_members('collections.abc')
+    copy_members('collections.abc')
+
+del copy_members
 
 namedtuple = _pm.namedtuple
 Sized = _pm.Sized
@@ -64,19 +66,19 @@ _chain = _pm._chain
 _repeat = _pm._repeat
 _starmap = _pm._starmap
 
-del _pm, _copy_python_module_members
+del _pm
 
 
-from collections import defaultdict as _defaultdict
-from xoutil import Unset
-from xoutil.names import strlist as slist
-from xoutil.objects import SafeDataItem as safe
-from xoutil.eight.meta import metaclass
+from collections import defaultdict as _defaultdict    # noqa
+from xoutil import Unset    # noqa
+from xoutil.names import strlist as slist    # noqa
+from xoutil.objects import SafeDataItem as safe    # noqa
+from xoutil.eight.meta import metaclass    # noqa
 
 if _py2:
     # TODO: Fix ('Mapping', 'MappingProxyType') sub-classing. When migrate
     # this module to `xoutil.future`, review this.
-    from xoutil.future.types import MappingProxyType
+    from xoutil.future.types import MappingProxyType    # noqa
     del MappingProxyType
 
 
@@ -3186,8 +3188,3 @@ def smart_iter_items(*args, **kwds):
 # get rid of unused global variables
 del slist, _py2, _py33, _py34, metaclass
 del deprecated
-
-
-from xoutil.future.warnings import check_future    # noqa
-check_future(__name__)
-del check_future
