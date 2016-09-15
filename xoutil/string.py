@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.string
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
@@ -252,7 +252,7 @@ def cut_suffix(value, suffix):
     elif isinstance(value, bytes) and isinstance(suffix, str):
         suffix = safe_encode(suffix)
     # Since value.endswith('') is always true but value[:-0] is actually
-    # always value[:0], which is always '', we have to explictly test to
+    # always value[:0], which is always '', we have to explictly test for
     # len(suffix)
     if len(suffix) > 0 and value.endswith(suffix):
         return value[:-len(suffix)]
