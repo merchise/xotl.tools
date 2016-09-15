@@ -17,6 +17,9 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from hypothesis import given
+from hypothesis.strategies import text, binary
+
 
 def test_safe_decode_dont_fail_uppon_invalid_encoding():
     from xoutil.string import safe_decode
@@ -52,3 +55,19 @@ def test_normalize_slug():
     assert normalize_slug(135) == '135'
     assert normalize_slug(123456, '', invalids='52') == '1346'
     assert normalize_slug('_x', '_') == '_x'
+
+
+@given(s=text(), p=text())
+def test_cutting_is_inverse_to_adding(s, p):
+    from xoutil.string import cut_prefix, cut_suffix
+    assert cut_prefix(p + s, p) == s
+    assert cut_suffix(s + p, p) == s
+
+
+@given(s=text(), p=text())
+def test_cutting_is_stable(s, p):
+    from xoutil.string import cut_prefix, cut_suffix
+    if not s.startswith(p):
+        assert cut_prefix(s, p) == s == cut_prefix(cut_prefix(s, p), p)
+    if not s.endswith(p):
+        assert cut_suffix(s, p) == s == cut_suffix(cut_suffix(s, p), p)
