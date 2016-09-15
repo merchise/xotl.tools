@@ -33,9 +33,6 @@ from __future__ import (division as _py3_division,
 
 import sys
 
-# TODO: [manu] Which is the preferred, to use 'encoding' or to use 'coding',
-# in the header?
-
 # Python versions
 
 _py2 = sys.version_info[0] == 2
@@ -126,11 +123,15 @@ except NameError:
 if _py3:
     input = input
     range = range
-    zip = zip
 else:
     range = xrange
     input = raw_input
-    from itertools import izip as zip    # noqa
+
+if _py3:    # future_builtins definitions
+    ascii = ascii    # noqa
+    hex, oct, filter, map, zip = hex, oct, filter, map, zip
+else:
+    from future_builtins import *    # noqa
 
 
 def iterkeys(d):
@@ -152,6 +153,12 @@ try:
     callable = callable
 except NameError:
     def callable(obj):
+        '''Return whether `obj` is callable (i.e., some kind of function).
+
+        Note that classes are callable, as are instances of classes with a
+        __call__() method.
+
+        '''
         return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
 
 
@@ -167,12 +174,12 @@ except NameError:
     # Probably PyPy
     try:
         import builtins as __builtin__    # Making sure in some Py3 versions
-    except:
+    except ImportError:
         import __builtin__    # noqa
 
 
 try:
-    exec_ = getattr(__builtin__, 'exec')  # noqa
+    exec_ = getattr(__builtin__, 'exec')    # noqa
 except AttributeError:
     def exec_(_code_, _globs_=None, _locs_=None):
         """Execute code in a namespace."""
