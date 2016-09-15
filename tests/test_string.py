@@ -17,15 +17,20 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from hypothesis import given
+from hypothesis.strategies import text, binary
 
-def test_safe_decode_dont_fail_uppon_invalid_encoding():
+
+@given(s=binary())
+def test_safe_decode_dont_fail_uppon_invalid_encoding(s):
     from xoutil.string import safe_decode
-    assert safe_decode(b'\xc3\xa1', 'i-dont-exist') == u'á'
+    assert safe_decode(s, 'i-dont-exist') == safe_decode(s)
 
 
-def test_safe_encode_dont_fail_uppon_invalid_encoding():
+@given(s=text())
+def test_safe_encode_dont_fail_uppon_invalid_encoding(s):
     from xoutil.string import safe_encode
-    assert safe_encode(u'á', 'i-dont-exist') == b'\xc3\xa1'
+    assert safe_encode(s, 'i-dont-exist') == safe_encode(s)
 
 
 def test_safe_string():
@@ -52,3 +57,37 @@ def test_normalize_slug():
     assert normalize_slug(135) == '135'
     assert normalize_slug(123456, '', invalids='52') == '1346'
     assert normalize_slug('_x', '_') == '_x'
+
+
+@given(s=text(), invalids=text())
+def test_normalize_slug_hypothesis(s, invalids):
+    from xoutil.string import normalize_slug
+
+    assert ' ' not in normalize_slug(s), \
+        'Slugs do not contain spaces'
+
+    assert ' ' in normalize_slug(s + ' ', valids=' '), \
+        'Slugs do contain spaces if explicitly allowed'
+
+    # TODO: @med, The following fails with s='0' and invalids='0'.  Is this a
+    # true invariant?
+    assert all(c not in normalize_slug(s) for c in invalids), \
+        'Slugs dont contain invalid chars'
+
+
+@given(s=text(), p=text())
+def test_cutting_is_inverse_to_adding(s, p):
+    from xoutil.string import cut_prefix, cut_suffix
+    assert cut_prefix(p + s, p) == s
+    assert cut_suffix(s + p, p) == s
+    assert cut_suffix(s, '') == s
+    assert cut_prefix(s, '') == s
+
+
+@given(s=text(), p=text())
+def test_cutting_is_stable(s, p):
+    from xoutil.string import cut_prefix, cut_suffix
+    if not s.startswith(p):
+        assert cut_prefix(s, p) == s == cut_prefix(cut_prefix(s, p), p)
+    if not s.endswith(p):
+        assert cut_suffix(s, p) == s == cut_suffix(cut_suffix(s, p), p)

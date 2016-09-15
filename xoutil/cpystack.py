@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cpystack
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2009-2012 Medardo Rodríguez
 # All rights reserved.
@@ -309,7 +309,7 @@ def iter_frames(max_deep=MAX_DEEP):
     .. deprecated:: 1.6.8 The use of params `attr_filter` and `value_filter`.
 
     '''
-    # TODO: [manu] Use this in all previous functions with same structure
+    # TODO: @manu Use this in all previous functions with same structure
     frame = inspect.currentframe()
     try:
         deep = 0

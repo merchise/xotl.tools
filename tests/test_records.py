@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # test_records
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -23,6 +23,13 @@ from mock import patch
 from datetime import datetime, date
 
 from xoutil.records import record, datetime_reader, date_reader
+
+from hypothesis import given
+from hypothesis.strategies import composite, text, integers
+from hypothesis.extra.datetime import datetimes
+
+
+FMT = '%Y-%m-%d'
 
 
 class _table(record):
@@ -48,6 +55,15 @@ class person(_table):
         return int(res.days//365.25)
 
 
+@composite
+def persons(draw):
+    id = draw(integers())
+    name = draw(text())
+    lastname = draw(text())
+    birthday = draw(datetimes(min_year=1920, max_year=2007)).strftime(FMT)
+    return (id, name, lastname, birthday), person((id, name, lastname, birthday))
+
+
 class TestRecords(unittest.TestCase):
     def test_records(self):
         from datetime import datetime
@@ -58,6 +74,16 @@ class TestRecords(unittest.TestCase):
         self.assertEqual(1, manu.id)
         self.assertEqual(11, manu.age_when(datetime(1989, 10, 21)))
         self.assertEqual(35, manu.age_when(datetime(2014, 9, 22)))
+
+    @given(p=persons())
+    def test_record(self, p):
+        r, p = p
+        self.assertEqual(r[0], person.get_field(r, person.ID))
+        self.assertEqual(r[0], p.id)
+        self.assertEqual(r[1], p.name)
+        self.assertEqual(r[2], p.lastname)
+        self.assertEqual(r[3], p.birthdate.strftime(FMT))
+
 
     def test_descriptor(self):
         class INVOICE(record):
@@ -129,9 +155,6 @@ class TestRecords(unittest.TestCase):
         self.assertEqual(LINE.get_field(partialdata, LINE.DEBIT), 0)
         self.assertEqual(LINE.get_field(partialdata, LINE.CREDIT), 0)
         self.assertEqual(LINE.get_field(nulls, LINE.DEBIT), 0)
-
-
-FMT = '%Y-%m-%d'
 
 
 class TestDateTimeReader(unittest.TestCase):

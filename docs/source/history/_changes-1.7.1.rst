@@ -24,5 +24,15 @@
 Fixes in 1.7.1.post1:
 
 - Fix issue with both `xoutil.string.safe_decode`:func: and
-  `xoutil.string.safe_encode`:func:.  Previously, the parameter encoding could
-  contain an invalid encoding name and the function could fail.
+  `xoutil.string.safe_encode`:func:.
+
+  Previously, the parameter encoding could contain an invalid encoding name
+  and the function could fail.
+
+
+Fixes in 1.7.1.post2:
+
+- Fix `xoutil.string.cut_suffix`:func:. The following invariant was being
+  violated::
+
+    >>> cut_suffix(v, '') == v  # for any value of 'v'

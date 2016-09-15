@@ -8,7 +8,7 @@
 .settings/
 .tox/
 .cache/
-
+.hypothesis/
 build/
 dist/
 
