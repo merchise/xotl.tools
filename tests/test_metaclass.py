@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_metaclass
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -28,10 +28,10 @@ def test_older_import():
     try:
         from xoutil.objects import metaclass  # noqa
     except ImportError:
-        assert VERSION_INFO > (1, 7, 1), \
+        assert VERSION_INFO[:3] > (1, 7, 1), \
             'xoutil.objects.metaclass should still exists in 1.7.0'
     else:
-        assert VERSION_INFO <= (1, 7, 1), \
+        assert VERSION_INFO[:3] <= (1, 7, 1), \
             'xoutil.object.metaclass should be removed from 1.7.2'
 
 

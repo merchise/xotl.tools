@@ -7,6 +7,8 @@
 .pydevproject
 .settings/
 .tox/
+.cache/
+.hypothesis/
 
 build/
 dist/
