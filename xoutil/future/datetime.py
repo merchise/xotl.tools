@@ -555,3 +555,16 @@ if 'eight' in __name__:
     # def strftime(self, fmt):    # Method for class date
     #     "Format using strftime()."
     #     return _wrap_strftime(self, fmt, self.timetuple())
+
+if __name__ == 'xoutil.datetime':
+    # to be deprecated
+    def new_date(d):
+        '''Generate a safe date from a legacy datetime date object.'''
+        return date(d.year, d.month, d.day)
+
+    def new_datetime(d):
+        '''Generate a safe datetime give a legacy date or datetime object.'''
+        args = [d.year, d.month, d.day]
+        if isinstance(d, datetime.__base__):    # legacy datetime
+            args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
+        return datetime(*args)
