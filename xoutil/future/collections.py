@@ -34,39 +34,18 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from collections import *    # noqa
+from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
+
+# TODO: not needed ``from collections.abc import *``?
+
 from xoutil.future import _rectify    # noqa
 _rectify.check()
 del _rectify
 
 
-from xoutil.modules import copy_members    # noqa
-_pm = copy_members()
-
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.eight import _py2, _py33, _py34    # noqa
-
-if _py33:
-    copy_members('collections.abc')
-
-del copy_members
-
-namedtuple = _pm.namedtuple
-Sized = _pm.Sized
-Container = _pm.Container
-Iterable = _pm.Iterable
-MutableMapping = _pm.MutableMapping
-Mapping = _pm.Mapping
-MutableSequence = _pm.MutableSequence
-Sequence = _pm.Sequence
-Set = _pm.Set
-MutableSet = _pm.MutableSet
-_itemgetter = _pm._itemgetter
-_heapq = _pm._heapq
-_chain = _pm._chain
-_repeat = _pm._repeat
-_starmap = _pm._starmap
-
-del _pm
 
 
 from collections import defaultdict as _defaultdict    # noqa
