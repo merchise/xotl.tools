@@ -37,28 +37,30 @@ from __future__ import (division as _py3_division,
 from collections import *    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
-# TODO: not needed ``from collections.abc import *``?
+try:
+    from collection import _sys
+except ImportError:
+    import sys as _sys
 
 from xoutil.future import _rectify    # noqa
 _rectify.check()
 del _rectify
 
-
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.eight import _py2, _py33, _py34    # noqa
 
-
-from collections import defaultdict as _defaultdict    # noqa
 from xoutil import Unset    # noqa
-from xoutil.names import strlist as slist    # noqa
 from xoutil.objects import SafeDataItem as safe    # noqa
 from xoutil.eight.meta import metaclass    # noqa
+from xoutil.reprlib import recursive_repr    # noqa
+
+
 
 if _py2:
-    # TODO: Fix ('Mapping', 'MappingProxyType') sub-classing. When migrate
-    # this module to `xoutil.future`, review this.
+    # Fix some sub-classing problems.
     from xoutil.future.types import MappingProxyType    # noqa
-    del MappingProxyType
+    del MappingProxyType    # already fixed there
+    MutableSequence.register(deque)
 
 
 class safe_dict_iter(tuple):
@@ -125,7 +127,7 @@ class safe_dict_iter(tuple):
                 yield (key, self._mapping[key])
 
 
-class defaultdict(_defaultdict):
+class defaultdict(defaultdict):
     '''A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
 
@@ -397,18 +399,22 @@ class opendict(OpenDictMixin, dict, object):
     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
 
+# From this point below: Copyright (c) 2001-2013, Python Software
+# Foundation; All rights reserved.
 if not _py33:
-    # From this point below: Copyright (c) 2001-2013, Python Software
-    # Foundation; All rights reserved.
-
-    import sys as _sys
     from weakref import proxy as _proxy
-    from xoutil.reprlib import recursive_repr as _recursive_repr
 
     class _Link(object):
         __slots__ = 'prev', 'next', 'key', '__weakref__'
 
-    # TODO: This class is implemented in all Python versions I have.
+    # TODO: This class is implemented in all Python versions I have.  So, this
+    # is declared in order to use some new methods like 'move_to_end'; but
+    # next code will fail for not '_py33'::
+    #
+    #   >>> from collections import OrderedDict as orgOrderedDict
+    #   >>> from xoutil.future.collections import OrderedDict
+    #   >>> od = OrderedDict.fromkeys('abcde')
+    #   >>> assert isinstance(od, orgOrderedDict)
     class OrderedDict(dict):
         'Dictionary that remembers insertion order'
         # An inherited dict maps keys to values. The inherited dict provides
@@ -590,7 +596,7 @@ if not _py33:
             self[key] = default
             return default
 
-        @_recursive_repr()
+        @recursive_repr()
         def __repr__(self):
             'od.__repr__() <==> repr(od)'
             if not self:
@@ -684,7 +690,7 @@ if not _py34:
         def __bool__(self):
             return any(self.maps)
 
-        @_recursive_repr()
+        @recursive_repr()
         def __repr__(self):
             return '{0.__class__.__name__}({1})'.format(
                 self, ', '.join(map(repr, self.maps)))
@@ -752,6 +758,16 @@ if not _py34:
         def clear(self):
             'Clear ``maps[0]``, leaving ``maps[1:]`` intact.'
             self.maps[0].clear()
+
+
+try:
+    from collections import _count_elements
+except ImportError:
+    def _count_elements(mapping, iterable):
+        'Tally elements from the iterable.'
+        mapping_get = mapping.get
+        for elem in iterable:
+            mapping[elem] = mapping_get(elem, 0) + 1
 
 
 if not _py33:
@@ -1152,11 +1168,6 @@ if not _py33:
 
         def zfill(self, width):
             return self.__class__(self.data.zfill(width))
-
-    def _count_elements(mapping, iterable):
-        self_get = mapping.get
-        for elem in iterable:
-            mapping[elem] = self_get(elem, 0) + 1
 
     class Counter(dict):
         '''Dict subclass for counting hashable items.  Sometimes called a bag
@@ -1933,7 +1944,7 @@ class RankedDict(SmartDictMixin, dict):
             self[key] = default
             return default
 
-    @_recursive_repr()
+    @recursive_repr()
     def __repr__(self):
         '''x.__repr__() <==> repr(x)'''
         aux = ', '.join('({!r}, {!r})'.format(k, self[k]) for k in self)
@@ -3165,5 +3176,5 @@ def smart_iter_items(*args, **kwds):
 
 
 # get rid of unused global variables
-del slist, _py2, _py33, _py34, metaclass
-del deprecated
+del _py2, _py33, _py34, metaclass
+del deprecated, recursive_repr
