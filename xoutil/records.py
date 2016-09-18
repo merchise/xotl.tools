@@ -29,7 +29,7 @@ from __future__ import (division as _py3_division,
 
 
 from xoutil import Unset
-from xoutil.functools import lru_cache
+from xoutil.future.functools import lru_cache
 from xoutil.eight.meta import metaclass
 
 

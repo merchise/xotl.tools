@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
 
-from xoutil.functools import partial
+from xoutil.future.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
 from xoutil.decorator.meta import decorator

@@ -22,18 +22,14 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
+from functools import *    # noqa
 
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
-_pm_update_wrapper = _pm.update_wrapper
-wraps, partial = _pm.wraps, _pm.partial
-del _pm, _copy_python_module_members
+from xoutil.future import _rectify    # noqa
+_rectify.check()
+del _rectify
 
-import sys
-py33 = sys.version_info >= (3, 3, 0)
-del sys
-
-from xoutil.eight import callable
+from xoutil.eight import _py33    # noqa
+from xoutil.eight import callable    # noqa
 
 
 class ctuple(tuple):
@@ -142,7 +138,7 @@ def lwraps(*args, **kwargs):
     the name in any order.  So the next two ``identity`` definitions are
     equivalents::
 
-      >>> from xoutil.functools import lwraps as lw
+      >>> from xoutil.future.functools import lwraps as lw
 
       >>> identity = lw('identity', lambda arg: arg)
 
@@ -166,7 +162,7 @@ def lwraps(*args, **kwargs):
 
     For example::
 
-      >>> from xoutil.functools import lwraps as lw
+      >>> from xoutil.future.functools import lwraps as lw
 
       >>> is_valid_age = lw('is-valid-human-age', lambda age: 0 < age <= 120,
       ...                   doc=('A predicate to evaluate if an age is '
@@ -283,13 +279,16 @@ def lwraps(*args, **kwargs):
     # return func
 
 
-if not py33:
-    from threading import RLock
+try:
+    from functools import _CacheInfo
+except ImportError:
     from xoutil.future.collections import namedtuple
 
     _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize",
                                           "currsize"])
 
+if not _py33:
+    from threading import RLock
     # Back-ported lru_cache from py33. But take note that if running with at
     # least py3 we will use Python's version, so don't mess with internals.
 

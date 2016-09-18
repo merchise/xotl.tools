@@ -31,7 +31,7 @@ from __future__ import (division as _py3_division,
                         absolute_import)
 
 
-from xoutil.functools import lwraps as lw
+from xoutil.future.functools import lwraps as lw
 
 
 class Predicate(object):

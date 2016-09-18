@@ -32,7 +32,8 @@ import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
-from xoutil.functools import power as pow_
+from xoutil.future.functools import power as pow_
+
 __all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
            'fix_encoding', 'join', 'normalize_path',
            'shorten_module_filename', 'shorten_user')
@@ -40,26 +41,27 @@ __all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
 
 # TODO: import all in "from os.path import *"
 
-rtrim = lambda path, n=1: pow_(dirname, n)(normalize_path(path))
-rtrim.__doc__ = """Trims the last `n` components of the pathname `path`.
+def rtrim(path, n=1):
+    """Trims the last `n` components of the pathname `path`.
 
-This basically applies `n` times the function `os.path.dirname` to `path`.
+    This basically applies `n` times the function `os.path.dirname` to `path`.
 
-`path` is normalized before proceeding (but not tested to exists).
+    `path` is normalized before proceeding (but not tested to exists).
 
-.. versionchanged:: 1.5.5 `n` defaults to 1.  In this case rtrim is identical
-                    to :func:`os.path.dirname`.
+    .. versionchanged:: 1.5.5 `n` defaults to 1.  In this case rtrim is
+                        identical to :func:`os.path.dirname`.
 
-Example::
+    Example::
 
-    >>> rtrim('/tmp/a/b/c/d', 3)
-    '/tmp/a'
+      >>> rtrim('/tmp/a/b/c/d', 3)
+      '/tmp/a'
 
-    # It does not matter if `/` is at the end
-    >>> rtrim('/tmp/a/b/c/d/', 3)
-    '/tmp/a'
+      # It does not matter if `/` is at the end
+      >>> rtrim('/tmp/a/b/c/d/', 3)
+      '/tmp/a'
 
-"""
+    """
+    return pow_(dirname, n)(normalize_path(path))
 
 
 def fix_encoding(name, encoding=None):

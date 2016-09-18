@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_decorators
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
@@ -104,7 +104,7 @@ class RegressionTests(unittest.TestCase):
         be tested empty.
 
         '''
-        from xoutil.functools import partial
+        from xoutil.future.functools import partial
 
         @decorator
         def ditmoi(target, *args, **kwargs):

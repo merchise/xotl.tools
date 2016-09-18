@@ -51,7 +51,7 @@ import sys
 from re import compile as regex_compile
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
-from xoutil.functools import lwraps
+from xoutil.future.functools import lwraps
 from xoutil.symbols import boolean
 from xoutil import Unset
 

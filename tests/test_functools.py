@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_functools
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
@@ -26,7 +26,7 @@ import unittest
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
-from xoutil.functools import lru_cache
+from xoutil.future.functools import lru_cache
 
 
 @lru_cache(3)
@@ -71,7 +71,7 @@ def test_lrucache_stats():
     pass
 
 
-from xoutil.functools import compose
+from xoutil.future.functools import compose
 
 
 class TestCompose(unittest.TestCase):
@@ -95,7 +95,7 @@ class TestCompose(unittest.TestCase):
         self.assertEqual(3, add_3(0))
 
     def test_with_pow(self):
-        from xoutil.functools import power
+        from xoutil.future.functools import power
         incr = lambda x: x + 1
         add_1 = power(incr, 1)
         self.assertIs(incr, add_1)
@@ -104,7 +104,7 @@ class TestCompose(unittest.TestCase):
 
     def test_ctuple(self):
         from xoutil.eight import range
-        from xoutil.functools import ctuple
+        from xoutil.future.functools import ctuple
 
         def echo(*args):
             return args
@@ -119,7 +119,7 @@ class TestCompose(unittest.TestCase):
         self.assertEqual(expected, result)
 
 def test_lwraps():
-    from xoutil.functools import lwraps
+    from xoutil.future.functools import lwraps
 
     class foobar(object):
         @lwraps('method-one', one=True)
