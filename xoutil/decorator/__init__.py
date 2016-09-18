@@ -29,7 +29,7 @@ import sys
 from functools import wraps
 from types import FunctionType as function
 
-from .meta import decorator as _decorator
+from .meta import decorator
 
 
 # TODO: 'decorator' is undefined.
@@ -130,7 +130,7 @@ def aliases(*names, **kwargs):
     return inner
 
 
-@_decorator
+@decorator
 def assignment_operator(func, maybe_inline=False):
     '''Makes a function that receives a name, and other args to get its first
     argument (the name) from an assigment operation, meaning that it if its
@@ -177,7 +177,7 @@ def assignment_operator(func, maybe_inline=False):
     return inner
 
 
-@_decorator
+@decorator
 def instantiate(target, *args, **kwargs):
     '''Some singleton classes must be instantiated as part of its declaration
     because they represents singleton objects.
@@ -206,9 +206,6 @@ def instantiate(target, *args, **kwargs):
     '''
     target(*args, **kwargs)
     return target
-
-
-del _decorator
 
 
 # The following is extracted from the SQLAlchemy project's codebase, merit and

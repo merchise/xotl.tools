@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.meta
+# xoutil.decorator.meta
 # ---------------------------------------------------------------------
 #
 # Copyright (c) 2015-2016 Merchise and Contributors
@@ -17,13 +17,13 @@
 '''Decorator-making facilities.
 
 This module provides a signature-keeping version of the
-:func:`xoutil.decorators.decorator`, which is now deprecated in favor of this
+`xoutil.decorators.decorator`:func:, which is now deprecated in favor of this
 module's version.
 
-
 We scinded the decorator-making facilities from decorators per se to allow the
-module :mod:`xoutil.deprecation` to be used by decorators and at the same time,
-implement the decorator :func:`~xoutil.deprecation.deprecated` more easily.
+module `xoutil.deprecation`:mod: to be used by decorators and at the same
+time, implement the decorator :func:`~xoutil.deprecation.deprecated` more
+easily.
 
 
 This module is an adapted work from the decorator version 3.3.2 package and is
