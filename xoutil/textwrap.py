@@ -17,15 +17,10 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
-_pm_dedent = _pm.dedent
-_pm_indent = getattr(_pm, 'indent', None)
-
-del _pm, _copy_python_module_members
+from textwrap import *    # noqa
+import textwrap as _stdlib
 
 
 def dedent(text, skip_firstline=False):
@@ -51,18 +46,18 @@ def dedent(text, skip_firstline=False):
             subject, body = parts
         else:
             subject, body = parts[0], ''
-        result = _pm_dedent(subject)
+        result = _stdlib.dedent(subject)
         if body:
-            result += '\n' + _pm_dedent(body)
+            result += '\n' + _stdlib.dedent(body)
     else:
-        result = _pm_dedent(text)
+        result = _stdlib.dedent(text)
     return result
 
 
-if not _pm_indent:
-    #
+try:
+    indent
+except NameError:
     # The following is Copyright (c) of the Python Software Foundation.
-    #
     def indent(text, prefix, predicate=None):
         """Adds 'prefix' to the beginning of selected lines in 'text'.
 

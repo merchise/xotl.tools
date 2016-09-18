@@ -31,7 +31,9 @@ You may use this module as a drop-in replacement of the standard library
 `datetime`:mod: module.
 
 `date`:class: and `datetime`:class: classes are redefined if `strftime` method
-goes wrong with some dates; `ORG` contains original definitions.
+goes wrong with some dates; `_stdlib` contains original Python standard
+module and `_stdlib.date` and `_stdlib.datetime` can be used to get original
+definitions when redefined here.
 
 '''
 
@@ -39,13 +41,12 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
+from datetime import *    # noqa
+import datetime as _stdlib    # noqa
+
 from xoutil.future import _rectify
 _rectify.check()
 del _rectify
-
-from datetime import *    # noqa
-
-# TODO: Consider use IoC to extend python datetime module
 
 
 class WEEKDAY:
@@ -68,12 +69,6 @@ class ISOWEEKDAY:
     FRIDAY = 5
     SATURDAY = 6
     SUNDAY = 7
-
-
-class ORG:
-    'Original definitions for `date` and `datetime` classes.'
-    date = date
-    datetime = datetime
 
 
 try:

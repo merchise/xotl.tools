@@ -35,6 +35,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from collections import *    # noqa
+import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
 try:

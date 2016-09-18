@@ -93,14 +93,16 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from types import *    # noqa
+import types as _stdlib    # noqa
+
 from xoutil.future import _rectify
 _rectify.check()
 del _rectify
 
 from xoutil.eight import _py2, _py34    # noqa
-from types import *    # noqa
-from types import __all__    # noqa
 
+from types import __all__    # noqa
 __all__ = list(__all__)    # copy it to avoid errors
 
 try:

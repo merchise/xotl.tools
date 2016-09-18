@@ -23,6 +23,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from functools import *    # noqa
+import functools as _stdlib    # noqa
 
 from xoutil.future import _rectify    # noqa
 _rectify.check()
