@@ -38,23 +38,21 @@ from collections import *    # noqa
 import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
-try:
-    from collection import _sys
-except ImportError:
-    import sys as _sys
-
 from xoutil.future import _rectify    # noqa
 _rectify.check()
 del _rectify
 
+try:
+    from collection import _sys    # noqa
+except ImportError:
+    import sys as _sys
+
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.eight import _py2, _py33, _py34    # noqa
-
 from xoutil import Unset    # noqa
 from xoutil.objects import SafeDataItem as safe    # noqa
 from xoutil.eight.meta import metaclass    # noqa
 from xoutil.reprlib import recursive_repr    # noqa
-
 
 
 if _py2:
