@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.testbed
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
@@ -23,7 +23,7 @@ This module simply serves the purposes of the testing weaving modules
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import)
 
 

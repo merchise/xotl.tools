@@ -14,7 +14,7 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
+                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 from hypothesis import given
@@ -39,7 +39,9 @@ def test_safe_string():
     aux = lambda x: 2*x + 1
     name = 'λ x: 2*x + 1'
     aux.__name__ = safe_str(name)
-    delta = 1 if _py2 else 0
+    delta = 0    # 1 if _py2 else 0
+    # TODO: Because future unicode_literals was removed.  Maybe this test must
+    # be removed or reformulated.
     assert len(aux.__name__) == len(name) + delta
 
 

@@ -18,7 +18,8 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        # unicode_literals as _py3_unicode,
+)
 
 import unittest
 from xoutil.decorator import assignment_operator
