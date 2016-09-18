@@ -49,6 +49,17 @@ Formatter = _pm.Formatter     # Redundant but needed to avoid IDE errors
 
 del _copy_python_module_members, _pm
 
+# TODO: In Python 2.x series, equal comparison for `unicode` an `str` types
+# don't ever match.  For example::
+#   >>> s = 'λ'
+#   >>> u = u'λ'
+#   >>> u == s
+#   False
+#
+# Also a `UnicodeWarning` is issued with message "Unicode equal comparison
+# failed to convert both arguments to Unicode - interpreting them as being
+# unequal.  This must be fixed in this module.
+
 
 def force_encoding(encoding=None):
     '''Validates an encoding value; if None use `locale.getlocale()[1]`; else
