@@ -398,32 +398,37 @@ def normalize_ascii(value):
 
 
 def normalize_slug(value, replacement='-', invalids=None, valids=None):
-    '''Return the string normal form, valid for slugs, for the `value`
+    '''Return the normal-form of a given string value that is valid for slugs.
 
-    Convert all non-ascii to valid characters using unicode 'NFKC'
-    normalization.
-
-    Lower-case the result.
+    Convert all possible non-ascii to valid characters using unicode 'NFKC'
+    normalization and lower-case the result.
 
     Replace unwanted characters by `replacement`, repetition of given pattern
     will be converted to only one instance.
 
-    ``[_a-z0-9]`` are assumed as valid characters.  Extra arguments can modify
-    this standard behaviour:
+    Default valid characters are ``[_a-z0-9]``.  Extra arguments `invalids`
+    and `valids` can modify this standard behaviour, see next.
+
+    :param value: The value to normalize (a not empty string).
+
+    :param replacement: Normally a one character string to use in place of
+           invalid parts.  Repeated instances of the replacement will be
+           converted to just one; if appearing at the beginning or at the end,
+           are striped.  This character must not be part of `invalids` set (a
+           contradiction).  If ``None`` or ``False`` is converted to an empty
+           string for backward compatibility with old versions.
 
     :param invalids: Any collection of characters added to these that are
-           normally invalids (non-ascii or not included in valid characters).
+           normally invalid  (non-ascii or not included in valid characters).
            Boolean ``True`` can be passed as a synonymous of ``"_"`` for
            compatibility with old ``invalid_underscore`` argument.  ``False``
            or ``None`` are assumed as an empty set for invalid characters.
 
-    :param valids: A collection of extra valid characters (all non-ascii
-           characters are ignored).  This parameter could be either a valid
-           string, any iterator of valid strings of characters, or ``None`` to
-           use only default valid characters (See above).
+    .. todo:: it looks like "valid" plural is without "s" in English.
 
-    Parameters `value` and `replacement` could be of any (non-string) type,
-    these values are normalized and converted to lower-case ASCII strings.
+    :param valids: A collection of extra valid characters.  Could be either a
+           valid string, any iterator of strings, or ``None`` to use only
+           default valid characters.  Non-ASCII characters are ignored.
 
     Examples::
 
@@ -468,19 +473,23 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     '''
     import re
     from xoutil.eight import string_types
+
     # local functions
-    _normalize = lambda v: normalize_ascii(v).lower()
-    _set = lambda v: ''.join(set(v))
-    _esc = lambda v: re.escape(_set(v))
-    _from_iter = lambda v: ''.join(i for i in v)
+    def _normalize(v):
+        return normalize_ascii(v).lower()
+
+    def _set(v):
+        return re.escape(''.join(set(_normalize(v))))
+
     # check and adjust arguments
     if replacement in (None, False):
+        # for backward compatibility
         replacement = ''
     elif isinstance(replacement, string_types):
-        replacement = normalize_ascii(replacement)    # TODO: or _normalize?
+        replacement = _normalize(replacement)
     else:
-        msg = '`replacement` (%s) must be a string or None, not `%s`.'
-        raise TypeError(msg % (replacement, type(replacement)))
+        msg = '"replacement" ({}) must be a string or None, not "{}".'
+        raise TypeError(msg.format(replacement, type(replacement)))
     if invalids is True:
         # Backward compatibility with former `invalid_underscore` argument
         invalids = '_'
@@ -488,30 +497,33 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
         invalids = ''
     else:
         if not isinstance(invalids, string_types):
-            invalids = _from_iter(invalids)
-        invalids = _esc(_normalize(invalids))
+            invalids = ''.join(invalids)
+        invalids = _set(invalids)
+    if invalids:
+        invalids = re.compile(r'[{}]+'.format(invalids))
+    if len(replacement) == 1 and invalids and invalids.match(replacement):
+        msg = 'replacement "{}" must not be part of invalids set.'
+        raise ValueError(msg.format(replacement))
     if valids is None:
         valids = ''
     else:
         if not isinstance(valids, string_types):
-            valids = _from_iter(valids)
-        valids = _esc(re.sub(r'[0-9a-b]+', '', _normalize(valids)))
+            valids = ''.join(valids)
+        valids = _set(valids)
+        valids = _set(re.sub(r'[0-9a-z]+', '', valids))
+    valids = re.compile(r'[^_0-9a-z{}]+'.format(valids))
     # calculate result
-    res = _normalize(value)
-    regex = re.compile(r'[^_a-z0-9%s]+' % valids)
     repl = '\t' if replacement else ''
-    res = regex.sub(repl, res)
+    res = valids.sub(repl, _normalize(value))
     if invalids:
-        regex = re.compile(r'[%s]+' % invalids)
-        res = regex.sub(repl, res)
+        res = invalids.sub(repl, res)
     if repl:
-        r = {'r': r'%s' % re.escape(repl)}
-        regex = re.compile(r'(%(r)s){2,}' % r)
-        res = regex.sub(repl, res)
-        regex = re.compile(r'(^%(r)s+|%(r)s+$)' % r)
-        res = regex.sub('', res)
-        regex = re.compile(r'[\t]' % r)
-        res = regex.sub(replacement, res)
+        # convert two or more replacements in only one instance
+        r = r'{}'.format(re.escape(repl))
+        res = re.sub(r'({r}){{2,}}'.format(r=r), repl, res)
+        # remove start and end more replacement instances
+        res = re.sub(r'(^{r}+|{r}+$)'.format(r=r), '', res)
+        res = re.sub(r'[\t]', replacement, res)
     return res
 
 
