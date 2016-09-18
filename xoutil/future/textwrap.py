@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.textwrap
+# xoutil.future.textwrap
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2014 Merchise Autrement and Contributors
@@ -21,6 +21,11 @@ from __future__ import (division as _py3_division,
 
 from textwrap import *    # noqa
 import textwrap as _stdlib
+from textwrap import __all__    # noqa
+
+from xoutil.future import _rectify    # noqa
+_rectify.check()
+del _rectify
 
 
 def dedent(text, skip_firstline=False):
@@ -77,3 +82,6 @@ except NameError:
             for line in text.splitlines(True):
                 yield (prefix + line if predicate(line) else line)
         return ''.join(prefixed_lines())
+
+    __all__ = list(__all__)
+    __all__.append('indent')
