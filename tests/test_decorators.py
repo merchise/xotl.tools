@@ -17,9 +17,8 @@
 # Created on Nov 18, 2011
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        # unicode_literals as _py3_unicode,
-)
+                        print_function as _py3_print)
+# Why not "absolute_import"?
 
 import unittest
 from xoutil.decorator import assignment_operator

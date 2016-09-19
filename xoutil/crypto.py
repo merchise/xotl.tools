@@ -24,7 +24,6 @@ secury strong level.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 
