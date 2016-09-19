@@ -332,7 +332,7 @@ if __name__ == 'xoutil.types':
         __slots__ = ('_probes', '_keys')
 
         def __init__(self, target):
-            from xoutil.inspect import _static_getmro
+            from xoutil.future.inspect import _static_getmro
             type_ = type_coerce(target)
             target_mro = _static_getmro(type_)
             self._probes = tuple(c.__dict__ for c in target_mro)
@@ -365,7 +365,7 @@ if __name__ == 'xoutil.types':
     # TODO: used internally in this module
     def mro_get_value_list(cls, name):
         '''Return a list with all `cls` class attributes in MRO.'''
-        from xoutil.inspect import _static_getmro
+        from xoutil.future.inspect import _static_getmro
         mro = _static_getmro(type_coerce(cls))
         return [t.__dict__[name] for t in mro if name in t.__dict__]
 

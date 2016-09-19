@@ -54,7 +54,7 @@ def _get_checker_name(checker):
     elif isinstance(checker, tuple):
         return l('_OR_')
     else:
-        from xoutil.inspect import type_name
+        from xoutil.future.inspect import type_name
         res = type_name(checker, affirm=True)
         if not isinstance(checker, type):
             assert callable(checker)
@@ -214,7 +214,7 @@ def check(value, validator, msg=None):
     if checker(value):
         return True
     else:
-        from xoutil.inspect import type_name
+        from xoutil.future.inspect import type_name
         if not msg:
             # TODO: Use the name of validator with `inspect.getattr_static`
             # when `xoutil.future` is ready
@@ -281,7 +281,7 @@ def ok(value, *checkers, **kwargs):
         return value
     else:
         from xoutil.iterators import multi_get as get
-        from xoutil.inspect import type_name
+        from xoutil.future.inspect import type_name
         msg = next(get(kwargs, 'message', 'msg'), 'Invalid {type}: {value}!')
         msg = msg.format(value=value, type=type_name(value, affirm=True))
         raise ValueError(msg)

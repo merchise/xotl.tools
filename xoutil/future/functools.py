@@ -580,7 +580,7 @@ def curry(f):
         >>> add()()()(1, 2)
         3
     '''
-    from xoutil.inspect import getfullargspec
+    from xoutil.future.inspect import getfullargspec
     fargs = getfullargspec(f)[0]
 
     def curried(cargs=None):

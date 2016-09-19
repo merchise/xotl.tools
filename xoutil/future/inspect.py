@@ -29,6 +29,9 @@ from xoutil.eight.inspect import (_static_getmro, _check_instance,    # noqa
                                   _check_class, _is_type, _shadowed_dict,
                                   getattr_static)
 
+# TODO: @manu, migrate use of 'xoutil.inspect' in
+# 'xopgi.xopgi_mail_threads.mail_server.get_kwargs' to 'xoutil.future.inspect'
+
 
 def get_attr_value(obj, name, *default):
     '''Get a named attribute from an object in a safe way.

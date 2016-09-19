@@ -230,7 +230,7 @@ class OpenDictMixin(object):
         return list(set(~self) | fulldir(self))
 
     def __getattr__(self, name):
-        from xoutil.inspect import get_attr_value
+        from xoutil.future.inspect import get_attr_value
         res = get_attr_value(self, name, Unset)
         if res is not Unset:
             return res
@@ -277,7 +277,7 @@ class OpenDictMixin(object):
         To obtain this mapping you can use as the unary operator "~".
 
         '''
-        from xoutil.inspect import get_attr_value
+        from xoutil.future.inspect import get_attr_value
         KEY_LENGTH = 'length'
         KEY_MAPPING = 'mapping'
         cache = get_attr_value(self, type(self).__cache_name__)
@@ -359,7 +359,7 @@ class SmartDictMixin(object):
         try:
             res = cls()
         except BaseException:
-            from xoutil.inspect import get_attr_value
+            from xoutil.future.inspect import get_attr_value
             creator = get_attr_value(cls, '__search_result_type__', None)
             res = creator() if creator else {}
         for key in self:

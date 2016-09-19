@@ -228,7 +228,7 @@ class SafeDataItem(object):
 
     def __get__(self, obj, owner):
         if obj is not None:
-            from xoutil.inspect import get_attr_value
+            from xoutil.future.inspect import get_attr_value
             res = get_attr_value(obj, self.inner_name, Unset)
             if res is not Unset:
                 return res
@@ -459,8 +459,8 @@ def fix_private_name(cls, name):
         return name
 
 
-# TODO: @med, @manu, Decide if it's best to create a 'xoutil.inspect' that
-# extends the standard library module 'inspect' and place this
+# TODO: @med, @manu, Decide if it's best to create a 'xoutil.future.inspect'
+# that extends the standard library module 'inspect' and place this
 # signature-dealing functions there. Probably, to be consistent, this imposes
 # a refactoring of some of 'xoutil.types' and move all the "is_classmethod",
 # "is_staticmethod" and inspection-related functions there.
@@ -596,10 +596,13 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
     from xoutil.eight import typeof, class_types
-    from xoutil.inspect import get_attr_value, _static_getmro as getmro
-    getdir = lambda o: set(get_attr_value(o, '__dict__', {}))
+    from xoutil.future.inspect import get_attr_value, _static_getmro
+
+    def getdir(o):
+        return set(get_attr_value(o, '__dict__', {}))
+
     if isinstance(obj, class_types):
-        res = set.union(getdir(cls) for cls in getmro(obj))
+        res = set.union(getdir(cls) for cls in _static_getmro(obj))
     else:
         res = getdir(obj)
     cls = typeof(obj)

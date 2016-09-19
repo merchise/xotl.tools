@@ -83,7 +83,7 @@ class TestModuleDecorators(unittest.TestCase):
 
     def test_module_level_memoized_props(self):
         import customizetestbed as m
-        from xoutil.inspect import getattr_static
+        from xoutil.future.inspect import getattr_static
         self.assertNotEquals(getattr_static(m, 'memoized'), m)
         self.assertIs(m.memoized, m)
         self.assertIs(getattr_static(m, 'memoized'), m)

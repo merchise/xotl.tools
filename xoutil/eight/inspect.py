@@ -14,8 +14,8 @@
 
 '''Differences between Python 2 and 3 of standard `inspect` module.
 
-See `~xoutil.inspect`:module: for a full replacement.  The standard module
-gets useful information from live Python objects.
+See `~xoutil.future.inspect`:module: for a full replacement.  The standard
+module gets useful information from live Python objects.
 
 '''
 

@@ -23,7 +23,7 @@ import pytest
 # the greenlets.  We don't test isolation for threads cause that depends on
 # python's thread locals and we *rely* on its correctness.
 #
-# Since xoutil.context inspect sys.modules to test for greenlet presence we
+# Since xoutil.context inspects sys.modules to test for greenlet presence we
 # need to import greenlets before importing context.
 #
 try:
