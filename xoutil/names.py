@@ -18,9 +18,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-
 from xoutil import Undefined as _undef
-from .eight import base_string
+from xoutil.eight import base_string
 
 
 def _get_mappings(source):

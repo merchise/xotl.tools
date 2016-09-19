@@ -28,7 +28,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil.eight.abc import abstractmethod, ABC
 from xoutil.objects import staticproperty
-from .tools import command_name, program_name
+from xoutil.cli.tools import command_name, program_name
 
 
 class Command(ABC):

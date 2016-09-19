@@ -13,9 +13,7 @@
 
 '''This entire module is deprecated, use `xoutil.symbols` instead.'''
 
-
-from .symbols import boolean
-
+from xoutil.symbols import boolean
 from xoutil.deprecation import deprecated
 
 

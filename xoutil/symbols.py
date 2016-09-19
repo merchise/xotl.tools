@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from .eight.meta import metaclass
+from xoutil.eight.meta import metaclass
 
 SYMBOL = 'symbol'
 BOOLEAN = 'boolean'
@@ -117,7 +117,7 @@ class symbol(metaclass(MetaSymbol), int):
                name hash.
 
         '''
-        from .eight import intern as unique
+        from xoutil.eight import intern as unique
         name = unique(name)
         if name:
             valid = {symbol: lambda v: isinstance(v, int),

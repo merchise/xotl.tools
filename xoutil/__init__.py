@@ -23,9 +23,6 @@ Python's standard library.
 
 '''
 
-
-# from ._values import Unset, Undefined, Ignored  # noqa
-
 from .symbols import boolean
 
 

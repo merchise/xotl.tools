@@ -28,7 +28,7 @@ import sys
 from functools import wraps
 from types import FunctionType as function
 
-from .meta import decorator
+from xoutil.decorator.meta import decorator
 
 
 # TODO: 'decorator' is undefined.

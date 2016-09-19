@@ -26,11 +26,12 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from .identifiers import (is_valid_identifier,   # noqa
-                          check_identifier,
-                          is_valid_full_identifier,
-                          is_valid_public_identifier,
-                          is_valid_slug)
+# TODO: Check next import, it looks like one of the modules must be deprecated
+from xoutil.validators.identifiers import (is_valid_identifier,   # noqa
+                                           check_identifier,
+                                           is_valid_full_identifier,
+                                           is_valid_public_identifier,
+                                           is_valid_slug)
 
 
 def _adorn_checker_name(name):

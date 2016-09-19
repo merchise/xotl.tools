@@ -20,8 +20,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-
-from . import custom
+from xoutil.cl import custom
 
 
 class whether(custom):
@@ -34,7 +33,8 @@ class whether(custom):
     __slots__ = ()
 
     def __new__(cls, cond, right, *wrongs):
-        from . import vouch, coercer, compose, identity_coerce, void_coerce
+        from xoutil.cl import vouch, coercer, compose
+        from xoutil.cl import identity_coerce, void_coerce
         cond = vouch(coercer, cond)
         if cond is identity_coerce:
             return vouch(coercer, right)
@@ -48,7 +48,7 @@ class whether(custom):
             return self
 
     def __call__(self, arg):
-        from . import t
+        from xoutil.cl import t
         cond, right, wrong = self.inner
         return right(arg) if t(cond(arg)) else wrong(arg)
 
@@ -62,7 +62,7 @@ def when(cond, *coercers):
     This functions uses as implementation the class `whether`:class:.
 
     '''
-    from . import compose, void_coerce
+    from xoutil.cl import compose, void_coerce
     return whether(cond, compose(coercers, default=void_coerce))
 
 
@@ -76,7 +76,7 @@ class every(custom):
     __slots__ = ()
 
     def __new__(cls, predicate):
-        from . import vouch, coercer, identity_coerce, void_coerce
+        from xoutil.cl import vouch, coercer, identity_coerce, void_coerce
         predicate = vouch(coercer, predicate)
         if predicate is identity_coerce:
             return identity_coerce
@@ -88,7 +88,7 @@ class every(custom):
             return self
 
     def __call__(self, arg):
-        from . import t,  nil
+        from xoutil.cl import t,  nil
         predicate = self.inner
         res = all(t(predicate(item)) for item in arg)
         return res if res else nil

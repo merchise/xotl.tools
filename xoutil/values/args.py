@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.values.args
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2016 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -57,7 +57,7 @@ def param_get(args, kwargs, idx, name, default=Unset, coercers=Unset):
         if coercers is Unset:
             return res
         else:
-            from . import compose
+            from xoutil.cl import compose
             coercer = compose(coercers)
             return coercer(res)
     else:
