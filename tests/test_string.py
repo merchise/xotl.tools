@@ -17,7 +17,7 @@ from __future__ import (division as _py3_division,
                         # unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from hypothesis import given
+from hypothesis import given, example
 from hypothesis.strategies import text, binary
 
 
@@ -62,6 +62,7 @@ def test_normalize_slug():
 
 
 @given(s=text(), invalids=text())
+@example(s='0/0', invalids='-')
 def test_normalize_slug_hypothesis(s, invalids):
     from xoutil.string import normalize_slug
 
@@ -82,6 +83,7 @@ def test_normalize_slug_hypothesis(s, invalids):
     assert all(c not in normalize_slug(s, invalids=c)
                for c in invalids if c != default_replacement), \
                    "Slugs don't contain invalid chars"
+
 
 @given(s=text(), p=text())
 def test_cutting_is_inverse_to_adding(s, p):
