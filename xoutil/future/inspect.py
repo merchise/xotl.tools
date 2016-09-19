@@ -23,11 +23,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _absolute_import)
 
-
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
-
-isdatadescriptor = _pm.isdatadescriptor
+from inspect import *    # noqa
 
 from xoutil.eight.inspect import (_static_getmro, _check_instance,    # noqa
                                   _check_class, _is_type, _shadowed_dict,
@@ -176,22 +172,18 @@ def _static_issubclass(C, B):
 
 # TODO: Implement a safe version for `attrgetter`
 
-if not getattr(_pm, 'getfullargspec', None):
+try:
+    getfullargspec
+except NameError:
     from xoutil.future.collections import namedtuple
     FullArgSpec = namedtuple(
         'FullArgSpec',
         'args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults,'
-        'annotations'
-    )
+        'annotations')
 
     def getfullargspec(func):
         import inspect
         spec = inspect.getargspec(func)
         return FullArgSpec(
             spec.args, spec.varargs, spec.keywords, spec.defaults,
-            None, None, None
-        )
-
-
-# get rid of unused global variables
-del _pm, _copy_python_module_members
+            None, None, None)
