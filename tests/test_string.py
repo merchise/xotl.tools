@@ -22,18 +22,18 @@ from hypothesis.strategies import text, binary
 
 @given(s=binary())
 def test_safe_decode_dont_fail_uppon_invalid_encoding(s):
-    from xoutil.string import safe_decode
+    from xoutil.future.string import safe_decode
     assert safe_decode(s, 'i-dont-exist') == safe_decode(s)
 
 
 @given(s=text())
 def test_safe_encode_dont_fail_uppon_invalid_encoding(s):
-    from xoutil.string import safe_encode
+    from xoutil.future.string import safe_encode
     assert safe_encode(s, 'i-dont-exist') == safe_encode(s)
 
 
 def test_safe_string():
-    from xoutil.string import safe_str
+    from xoutil.future.string import safe_str
     from xoutil.eight import _py2
     aux = lambda x: 2*x + 1
     name = 'λ x: 2*x + 1'
@@ -45,7 +45,7 @@ def test_safe_string():
 
 
 def test_normalize_slug():
-    from xoutil.string import normalize_slug
+    from xoutil.future.string import normalize_slug
     assert normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
     assert normalize_slug('  Á.e i  Ó  u  ', '.', invalids='AU') == 'e.i.o'
     assert normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
@@ -63,7 +63,7 @@ def test_normalize_slug():
 @given(s=text(), invalids=text())
 @example(s='0/0', invalids='-')
 def test_normalize_slug_hypothesis(s, invalids):
-    from xoutil.string import normalize_slug
+    from xoutil.future.string import normalize_slug
 
     assert ' ' not in normalize_slug(s), 'Slugs do not contain spaces'
 
@@ -86,7 +86,7 @@ def test_normalize_slug_hypothesis(s, invalids):
 
 @given(s=text(), p=text())
 def test_cutting_is_inverse_to_adding(s, p):
-    from xoutil.string import cut_prefix, cut_suffix
+    from xoutil.future.string import cut_prefix, cut_suffix
     assert cut_prefix(p + s, p) == s
     assert cut_suffix(s + p, p) == s
     assert cut_suffix(s, '') == s
@@ -95,7 +95,7 @@ def test_cutting_is_inverse_to_adding(s, p):
 
 @given(s=text(), p=text())
 def test_cutting_is_stable(s, p):
-    from xoutil.string import cut_prefix, cut_suffix
+    from xoutil.future.string import cut_prefix, cut_suffix
     if not s.startswith(p):
         assert cut_prefix(s, p) == s == cut_prefix(cut_prefix(s, p), p)
     if not s.endswith(p):

@@ -496,7 +496,7 @@ def build_documentation(cls, get_doc=None, deep=1):
     no function is given, then attribute ``__doc__`` is used.
 
     '''
-    from xoutil.string import safe_decode
+    from xoutil.future.string import safe_decode
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if deep < 1:
         deep = 1
@@ -1094,7 +1094,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     from xoutil.eight import iteritems, callable
     from xoutil.eight._types import new_class
     from xoutil.future.types import MemberDescriptorType
-    from xoutil.string import safe_str
+    from xoutil.future.string import safe_str
 
     def _get_ignored(what):
         if callable(what):

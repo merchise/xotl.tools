@@ -170,7 +170,7 @@ def strfdelta(delta):
         True
 
     '''
-    from xoutil.string import strfnumber
+    from xoutil.future.string import strfnumber
     ss, sss = str('%s%s'), str(' %s%s')
     if delta.days:
         days = delta.days

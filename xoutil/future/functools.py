@@ -188,7 +188,7 @@ def lwraps(*args, **kwargs):
     from types import FunctionType, MethodType
     from xoutil import Unset
     from xoutil.eight import string_types, iteritems
-    from xoutil.string import safe_str
+    from xoutil.future.string import safe_str
 
     def repeated(name):
         msg = "lwraps got multiple values for argument '{}'"

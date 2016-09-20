@@ -160,7 +160,7 @@ def _get_best_name(names, safe=False, full=False):
         # TODO: Improve these methods to return False of reserved identifiers
         is_valid = is_valid_full_identifier if full else is_valid_identifier
         if not is_valid(res):
-            from xoutil.string import normalize_slug
+            from xoutil.future.string import normalize_slug
             _mark = 'dot_dot_dot'
             full = full and '.' in res
             if full:

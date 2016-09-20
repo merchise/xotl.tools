@@ -199,7 +199,7 @@ def _get_checker_name(checker, full=False):
     from xoutil.future.collections import Set, Mapping, PascalSet
     from xoutil.eight import callable
     from xoutil.future.inspect import type_name
-    from xoutil.string import safe_str as sstr    # , safe_repr as srepr
+    from xoutil.future.string import safe_str as sstr    # safe_repr as srepr
     srepr = repr
     if isinstance(checker, boolean):
         return str(checker)

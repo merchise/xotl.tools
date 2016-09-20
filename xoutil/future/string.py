@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.string
+# xoutil.future.string
 # ---------------------------------------------------------------------
 # Copyright (c) 2015, 2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -145,7 +145,7 @@ def safe_str(obj=str()):
     As ``str is bytes`` in Python2, using str(value) assures correct these
     scenarios in most cases, but in other is not enough, for example::
 
-      >>> from xoutil.string import safe_str as sstr
+      >>> from xoutil.future.string import safe_str as sstr
       >>> def inverted_partial(func, *args, **keywords):
       ...     def inner(*a, **kw):
       ...         a += args
@@ -207,9 +207,9 @@ def safe_join(separator, iterable, encoding=None):
 
 # Makes explicit the deprecation warning for py3k.
 if _py3:
-    safe_join = _deprecated('builtin join method of str',
-                            'safe_join is deprecated for Python 3. Use '
-                            'builtin join method of str.')(safe_join)
+    safe_join = deprecated('builtin join method of str',
+                           'safe_join is deprecated for Python 3. Use '
+                           'builtin join method of str.')(safe_join)
 
 
 def safe_strip(value):
@@ -653,9 +653,11 @@ def make_a10z(string):
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 
-from xoutil.eight import input
+from xoutil.eight import input    # noqa
 
-input = _deprecated(
-    input,
-    "xoutil.string.input is deprecated.  Use xoutil.eight.input"
-)(input)
+input = deprecated(input, "xoutil.future.string.input is deprecated.  Use "
+                   "xoutil.eight.input")(input)
+
+del deprecated
+
+__all__ = __all__ + []
