@@ -207,6 +207,9 @@ def safe_join(separator, iterable, encoding=None):
 
 # Makes explicit the deprecation warning for py3k.
 if _py3:
+    # TODO: @manu, since it's more common for us to use Python 2, this kind of
+    # deprecation must be avoided in order to produce code behaving
+    # equivalently in both versions. What do you think?
     safe_join = deprecated('builtin join method of str',
                            'safe_join is deprecated for Python 3. Use '
                            'builtin join method of str.')(safe_join)
