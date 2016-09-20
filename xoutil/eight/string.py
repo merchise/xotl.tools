@@ -56,7 +56,7 @@ def safe_isidentifier(s):
     Check before if `s` is instance of string types.
 
     '''
-    from . import string_types
+    from xoutil.eight import string_types
     return isinstance(s, string_types) and isidentifier(s)
 
 
@@ -67,7 +67,7 @@ def safe_isfullidentifier(s):
     `safe_isidentifier`:func: for what "validity" means.
 
     '''
-    from .. import string_types
+    from xoutil.eight import string_types
     return isinstance(s, string_types) and isfullidentifier(s)
 
 
