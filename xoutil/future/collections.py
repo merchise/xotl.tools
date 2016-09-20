@@ -38,9 +38,9 @@ from collections import *    # noqa
 import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
-from xoutil.future import _rectify    # noqa
-_rectify.check()
-del _rectify
+from xoutil.future import _past    # noqa
+_past.dissuade()
+del _past
 
 try:
     from collection import _sys    # noqa

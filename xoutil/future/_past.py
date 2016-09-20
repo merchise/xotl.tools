@@ -14,7 +14,7 @@
 
 '''This is not a future extension module.
 
-Add a function to assure that future module is being use correctly.
+Add a function to assure that future module is being used correctly.
 
 '''
 
@@ -23,10 +23,10 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def check(name=None):
+def dissuade(name=None):
     '''Check future module for being used correctly.
 
-    If not, issue a deprecation warning.
+    If not, -meaning in the past- issue a deprecation warning.
 
     :param name: name of module to check (could be ``None`` to inspect it in
            the stack-frame).

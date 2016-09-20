@@ -25,9 +25,9 @@ from __future__ import (division as _py3_division,
 from functools import *    # noqa
 import functools as _stdlib    # noqa
 
-from xoutil.future import _rectify    # noqa
-_rectify.check()
-del _rectify
+from xoutil.future import _past    # noqa
+_past.dissuade()
+del _past
 
 from xoutil.eight import _py33    # noqa
 from xoutil.eight import callable    # noqa

@@ -19,9 +19,9 @@ from __future__ import (division as _py3_division,
 
 from threading import *    # noqa
 
-from xoutil.future import _rectify    # noqa
-_rectify.check()
-del _rectify
+from xoutil.future import _past    # noqa
+_past.dissuade()
+del _past
 
 
 def async_call(func, args=None, kwargs=None, callback=None, onerror=None):

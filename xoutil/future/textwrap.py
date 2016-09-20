@@ -23,9 +23,9 @@ from textwrap import *    # noqa
 import textwrap as _stdlib
 from textwrap import __all__    # noqa
 
-from xoutil.future import _rectify    # noqa
-_rectify.check()
-del _rectify
+from xoutil.future import _past    # noqa
+_past.dissuade()
+del _past
 
 
 def dedent(text, skip_firstline=False):

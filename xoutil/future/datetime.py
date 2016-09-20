@@ -44,9 +44,9 @@ from __future__ import (division as _py3_division,
 from datetime import *    # noqa
 import datetime as _stdlib    # noqa
 
-from xoutil.future import _rectify
-_rectify.check()
-del _rectify
+from xoutil.future import _past
+_past.dissuade()
+del _past
 
 
 class WEEKDAY:
