@@ -70,9 +70,27 @@ def force_encoding(encoding=None):
     .. versionadded:: 1.2.0
 
     '''
-    # TODO: Maybe use only `sys.getdefaultencoding()`
+    # TODO: This mechanism is tricky, we must find out how to unroll the mess
+    # involving the concept of which encoding to use by default:
+    #
+    # - locale.getlocale(): In Python 2 returns ``(None, None)``, but in
+    #   Python 3 ``('en_US', 'UTF-8')``. The same in Mac-OS.
+    #
+    # - locale.getpreferredencoding(): all versions returns ``'UTF-8'``. The
+    #   same in Mac-OS.
+    #
+    # - sys.getdefaultencoding(): In Python 2 returns ``'ascii'``, but in
+    #   Python 3 ``'utf-8'``. The same in Mac-OS. The related code was
+    #   commented because these differences.
     import locale
-    return encoding or locale.getpreferredencoding() or 'UTF-8'
+    res = encoding
+    if not res:
+        res = locale.getlocale()[1]
+    if not res:
+        res = locale.getpreferredencoding()
+    # if not res:
+    #     res = sys.getdefaultencoding()
+    return res or 'UTF-8'
 
 
 def safe_decode(s, encoding=None):
