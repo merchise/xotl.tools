@@ -27,13 +27,13 @@ from __future__ import (division as _py3_division,
 
 def suffix_kwd(name):
     '''Add an underscore suffix if name if a Python keyword.'''
-    from xoutil.eight.string import iskeyword
+    from keyword import iskeyword
     return '{}_'.format(name) if iskeyword(name) else name
 
 
 def org_kwd(name):
     '''Remove the underscore suffix if name starts with a Python keyword.'''
-    from xoutil.eight.string import iskeyword
+    from keyword import iskeyword
     if name.endswith('_'):
         res = name[:-1]
         return res if iskeyword(res) else name

@@ -23,26 +23,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-try:
-    from keyword import kwlist, iskeyword    # noqa
-    kwlist = frozenset(kwlist)
-except ImportError:
-    # XXX: Next keyword-list could be wrong because If any keywords are
-    # defined to only be active when particular `__future__` statements are in
-    # effect -or removed, like `print`-, these must be included or removed as
-    # well.
-    kwlist = frozenset(['False', 'None', 'True', 'and', 'as', 'assert',
-                        'break', 'class', 'continue', 'def', 'del', 'elif',
-                        'else', 'except', 'exec', 'finally', 'for', 'from',
-                        'global', 'if', 'import', 'in', 'is', 'lambda',
-                        'not', 'or', 'pass', 'print', 'raise', 'return',
-                        'try', 'while', 'with', 'yield'])
-
-    def iskeyword(s):
-        '''Return true if `s` is a Python keyword.'''
-        return s in kwlist
-
-
 from re import compile as regex_compile
 
 _PY2_IDENTIFIER_REGEX = regex_compile('(?i)^[_a-z][_a-z0-9]*$')
