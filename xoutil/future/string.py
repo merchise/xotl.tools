@@ -47,6 +47,10 @@ except ImportError:
     # Python 2 and PyPy don't implement '__all__' for 'string' module.
     __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
 
+from xoutil.future import _past
+_past.dissuade()
+del _past
+
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.eight import _py3    # noqa
 
