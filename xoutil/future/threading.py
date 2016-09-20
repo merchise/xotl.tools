@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.threading
+# xoutil.future.threading
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -11,19 +11,23 @@
 # the terms of the LICENCE attached in the distribution package.
 #
 # Created on 2013-05-28
+# Migrated to 'future' on 2016-09-19
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.modules import copy_members
-threading = copy_members('threading')
-del copy_members
+from threading import *    # noqa
+
+from xoutil.future import _rectify    # noqa
+_rectify.check()
+del _rectify
 
 
 def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
-    '''Executes a function `func` with the given positional and keyword
-    arguments asynchronously.
+    '''Executes a function asynchronously.
+
+    The function receives the given positional and keyword arguments
 
     If `callback` is provided, it is called with a single positional argument:
     the result of calling `func(*args, **kwargs)`.
@@ -34,10 +38,10 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
     :returns: An event object that gets signalled when the function ends its
               execution whether normally or with an error.
 
-    :rtype: :class:`threading.Event`
+    :rtype: `Event`:class:
 
     '''
-    event = threading.Event()
+    event = Event()
     event.clear()
     if not args:
         args = ()
@@ -55,15 +59,16 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
         finally:
             event.set()
 
-    thread = threading.Thread(target=async)
+    thread = Thread(target=async)
     thread.setDaemon(True)  # XXX: Why?
     thread.start()
     return event
 
 
 class _SyncronizedCaller(object):
+    '''Protected to be used in `sync_call`:func:'''
     def __init__(self, pooling=0.005):
-        self.lock = threading.RLock()
+        self.lock = RLock()
         self._not_bailed = True
         self.pooling = pooling
 
@@ -84,7 +89,7 @@ class _SyncronizedCaller(object):
                     self._not_bailed = False
                 for e in events:
                     e.set()
-            timer = threading.Timer(timeout, set_all_events)
+            timer = Timer(timeout, set_all_events)
             timer.start()
         while events:
             terminated = []
@@ -99,8 +104,9 @@ class _SyncronizedCaller(object):
 
 
 def sync_call(funcs, callback, timeout=None):
-    '''Calls several functions each in it's own thread, and waits for all to
-    end.
+    '''Calls several functions, each one in it's own thread.
+
+    Waits for all to end.
 
     Each time a function ends the `callback` is called (wrapped in a lock to
     avoid race conditions) with the result of the as a single positional
@@ -117,3 +123,7 @@ def sync_call(funcs, callback, timeout=None):
     '''
     sync_caller = _SyncronizedCaller()
     sync_caller(funcs, callback, timeout)
+
+
+from threading import __all__    # noqa
+__all__ = __all__ + ['async_call', 'sync_call']
