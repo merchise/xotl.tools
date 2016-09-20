@@ -28,12 +28,3 @@ in Python 2.
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
-
-# TODO: -->
-# inspect.py
-# json.py
-# modules/__init__.py
-# pprint.py
-# string.py
-# subprocess.py
-# threading.py
