@@ -24,6 +24,9 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+# TODO: Integrate -in one- this module with 'xoutil.eight.string' and rename
+# it.
+
 
 def suffix_kwd(name):
     '''Add an underscore suffix if name if a Python keyword.'''
