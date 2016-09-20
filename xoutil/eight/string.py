@@ -23,17 +23,14 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from re import compile as regex_compile
-
-_PY2_IDENTIFIER_REGEX = regex_compile('(?i)^[_a-z][_a-z0-9]*$')
-
-del regex_compile
-
-
 if hasattr(str, 'isidentifier'):
     def isidentifier(s):
         return str(s) if s.isidentifier() else False
 else:
+    import re
+    _PY2_IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][_a-z0-9]*$')
+    del re
+
     def isidentifier(s):
         return str(s) if _PY2_IDENTIFIER_REGEX.match(s) else False
 
