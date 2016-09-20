@@ -57,7 +57,7 @@ except ImportError:
         be an empty dict.
 
         """
-        from . import typeof
+        from xoutil.eight import typeof
         if kwds is None:
             kwds = {}
         else:
@@ -82,7 +82,7 @@ except ImportError:
     # XXX: Remove all these `continue` statements
     def _calculate_meta(meta, bases):
         """Calculate the most derived metaclass."""
-        from . import typeof, class_types
+        from xoutil.eight import typeof, class_types
         old_cls = next((cls for cls in class_types if cls is not type), None)
         winner = meta
         for base in bases:

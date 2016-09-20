@@ -122,7 +122,7 @@ def helper_class(meta, name=None):
       ...     pass
 
     '''
-    from .meta import metaclass
+    from xoutil.eight.meta import metaclass
     res = metaclass(meta)
     doc = ('Helper class.\n\nProvide a standard way to create classes with '
            'the meta-class `{meta}` using inheritance.\n\nFor example::\n\n'
@@ -165,7 +165,7 @@ def mixin(*args, **kwargs):
     returns instead of desired `base`.
 
     '''
-    from .meta import metaclass
+    from xoutil.eight.meta import metaclass
     name, doc, bases = _name_doc_and_bases(args, kwargs)
     metas = _get_metaclasses(kwargs)
     mod = _get_module(bases, kwargs)
@@ -188,8 +188,9 @@ def mixin(*args, **kwargs):
 
 def _isname(s):
     '''Determine if `s` is a `mixin` name or not.'''
-    from . import string_types
-    from .string import isidentifier, iskeyword
+    from keyword import iskeyword
+    from xoutil.eight import string_types
+    from xoutil.eight.string import isidentifier
     if isinstance(s, string_types):
         res = isidentifier(s)
         if not (res and iskeyword(res)):
@@ -203,7 +204,7 @@ def _isname(s):
 
 def _name_doc_and_bases(args, kwargs):
     '''Extract from positional args the name, doc and bases for a mixin.'''
-    from . import string_types
+    from xoutil.eight import string_types
     args = list(args)
     name = None
     doc = None
@@ -300,7 +301,7 @@ def _get_metaclasses(kwargs):
 
 
 def _get_module(bases, kwargs):
-    from . import string_types
+    from xoutil.eight import string_types
     res = _get_kwarg(('module', '__module__'), kwargs)
     if res:
         if isinstance(res, string_types):
@@ -326,7 +327,7 @@ def _get_frame_module():
 
 
 def _calc_module(mod):
-    from . import string_types as strs
+    from xoutil.eight import string_types as strs
     _type = isinstance(mod, type)
     if mod or _type:
         if _type:
