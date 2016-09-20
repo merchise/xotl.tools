@@ -663,4 +663,12 @@ input = deprecated(input, "xoutil.future.string.input is deprecated.  Use "
 
 del deprecated
 
-__all__ = __all__ + []
+__all__ = __all__ + ['force_encoding', 'safe_decode', 'safe_encode',
+                     'safe_str', 'safe_join', 'safe_strip', 'cut_prefix',
+                     'cut_any_prefix', 'cut_prefixes', 'cut_suffix',
+                     'cut_any_suffix', 'cut_suffixes', 'capitalize_word',
+                     'capitalize', 'hyphen_name', 'normalize_unicode',
+                     'normalize_name', 'normalize_title', 'normalize_str',
+                     'normalize_ascii', 'normalize_slug', 'strfnumber',
+                     'parse_boolean', 'parse_url_int', 'error2str',
+                     'force_str', 'make_a10z']
