@@ -15,10 +15,10 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Feb 17, 2012
+# Created on 2012-02-17
+# Migrated to 'future' on 2016-09-20
 
-'''Exposes all original `string` module functionalities, with some general
-additions.
+'''Original `string` module functionality and with some additions.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
 Python 3.x treats strings differently.  `bytes` and `text_type` will be used
@@ -38,15 +38,18 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.deprecation import deprecated as _deprecated
-from xoutil.eight import _py3
+from string import *    # noqa
+import string as _stdlib    # noqa
 
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
+try:
+    from string import __all__    # noqa
+except ImportError:
+    # Python 2 and PyPy don't implement '__all__' for 'string' module.
+    __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
 
-Formatter = _pm.Formatter     # Redundant but needed to avoid IDE errors
+from xoutil.deprecation import deprecated    # noqa
+from xoutil.eight import _py3    # noqa
 
-del _copy_python_module_members, _pm
 
 # TODO: In Python 2.x series, equal comparison for `unicode` an `str` types
 # don't ever match.  For example::
