@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.future._rectify
+# xoutil.future._past
 # ---------------------------------------------------------------------
 # Copyright (c) 2016 Merchise and Contributors
 # All rights reserved.
@@ -14,7 +14,7 @@
 
 '''This is not a future extension module.
 
-Add function to assure that future module is being use correctly.
+Add a function to assure that future module is being use correctly.
 
 '''
 
