@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.subprocess
+# xoutil.future.subprocess
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -18,15 +18,11 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-import subprocess as _pm
-from xoutil.modules import copy_members as _copy_members
-_copy_members(_pm)
 
-Popen = _pm.Popen
-PIPE = _pm.PIPE
+from subprocess import *    # noqa
 
-__all__ = ['call_and_check_output'] + list(getattr(_pm, '__all__', dir(_pm)))
-del _pm, _copy_members
+from pprint import __all__    # noqa
+__all__ = __all__ + ['call_and_check_output']
 
 
 def call_and_check_output(*popenargs, **kwargs):
