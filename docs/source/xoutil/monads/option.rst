@@ -1,7 +1,7 @@
-:mod:`xoutil.option` -- Functional Programming *Option Type* definition.
-========================================================================
+``xoutil.monads.option`` - Functional Programming *Option Type* definition
+==========================================================================
 
-.. automodule:: xoutil.option
+.. automodule:: xoutil.monads.option
    :members: Maybe, Just, Wrong
 
 This module has three singleton values:
