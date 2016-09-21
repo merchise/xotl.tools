@@ -33,17 +33,17 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.modules import copy_members as _copy_python_module_members
-_pm = _copy_python_module_members()
+from json import *    # noqa
+import json as _stdlib    # noqa
 
-load = _pm.load
+from json import __all__    # noqa
+__all__ = __all__ + ['file_load', 'encode_string']
 
-__all__ = list(getattr(_pm, '__all__', dir(_pm))) + ['file_load']
-del _copy_python_module_members
+from json import encoder, decoder    # noqa
 
 
-class JSONEncoder(_pm.JSONEncoder):
-    __doc__ = (_pm.JSONEncoder.__doc__ + '''
+class JSONEncoder(_stdlib.JSONEncoder):
+    __doc__ = (_stdlib.JSONEncoder.__doc__ + '''
     We also support:
 
     - `datetime`, `date` and `time` values, which are translated to strings
@@ -76,6 +76,13 @@ class JSONEncoder(_pm.JSONEncoder):
         return super(JSONEncoder, self).default(obj)
 
 
+try:
+    JSONDecodeError
+except NameError:
+    # Python 2 implementation raises 'ValueError'
+    JSONDecodeError = ValueError
+
+
 def file_load(filename):
     with file(filename, 'r') as f:
         return load(f)
@@ -102,6 +109,3 @@ def encode_string(string, ensure_ascii=True):
     '''
     encode = encode_basestring_ascii if ensure_ascii else encode_basestring
     return encode(string)
-
-
-del _pm
