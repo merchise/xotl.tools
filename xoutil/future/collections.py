@@ -827,17 +827,17 @@ if not _py33:
             return d
 
     class UserList(MutableSequence):
-        """A more or less complete user-defined wrapper around list objects."""
+        '''A more or less complete user-defined wrapper around lists.'''
         def __init__(self, initlist=None):
-            self.data = []
             if initlist is not None:
-                # XXX should this accept an arbitrary sequence?
-                if type(initlist) == type(self.data):
-                    self.data[:] = initlist
+                if type(initlist) is list:
+                    self.data = initlist[:]
                 elif isinstance(initlist, UserList):
-                    self.data[:] = initlist.data[:]
+                    self.data = initlist.data[:]
                 else:
                     self.data = list(initlist)
+            else:
+                self.data = []
 
         def __repr__(self):
             return repr(self.data)
@@ -1557,7 +1557,7 @@ if not _py33:
                     self[elem] = other_count
             return self._keep_positive()
 
-### ;; end of Python 3.3 backport
+# ;; end of Python 3.3 backport
 
 
 class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
