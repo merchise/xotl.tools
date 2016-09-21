@@ -25,6 +25,10 @@ from pprint import *    # noqa
 from pprint import __all__    # noqa
 __all__ = __all__ + ['ppformat']
 
+from xoutil.future import _past    # noqa
+_past.dissuade()
+del _past
+
 
 def ppformat(obj):
     '''Just like `pprint`:func: but always returning a result.
