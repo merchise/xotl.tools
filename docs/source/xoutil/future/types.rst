@@ -6,28 +6,6 @@
 
 .. module:: xoutil.future.types
 
-.. autofunction:: is_iterable
-
-.. autofunction:: is_collection
-
-.. autofunction:: is_scalar
-
-.. autofunction:: is_string_like
-
-.. autofunction:: is_module
-
-.. autofunction:: is_classmethod
-
-.. autofunction:: is_staticmethod
-
-.. autofunction:: is_instancemethod
-
-.. autofunction:: is_slotwrapper
-
-.. autofunction:: are_instances(*subjects, types)
-
-.. autofunction:: no_instances(*subjects, types)
-
 .. autofunction:: new_class
 
    .. versionadded:: 1.5.5
@@ -37,12 +15,6 @@
    .. versionadded:: 1.5.5
 
 .. autoclass:: DictProxyType
-
-.. autoclass:: SlotWrapperType
-
-.. autoclass:: Required
-
-.. autoclass:: mro_dict
 
 .. class:: MappingProxyType
 

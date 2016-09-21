@@ -3,8 +3,6 @@
 
 .. automodule:: xoutil.future.datetime
 
-.. autofunction:: new_date
-.. autofunction:: new_datetime
 .. autofunction:: strfdelta
 .. autofunction:: strftime
 .. autofunction:: get_month_first
