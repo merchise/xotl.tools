@@ -7,10 +7,14 @@ See at the end: `All pending tasks listed`_.
 Python 2 and 3 Compatibility
 ----------------------------
 
-.. include:: backlog/misc.rst
-.. include:: backlog/backlog-six2eight.rst
-.. include:: backlog/glob.rst
+.. toctree::
+   :maxdepth: 1
+   :glob:
 
+   backlog/misc
+   backlog/backlog-six2eight
+   backlog/inspect
+   backlog/glob
 
 All pending tasks listed
 ------------------------

@@ -1,7 +1,7 @@
-:mod:`xoutil.functools` - Higher-order functions and operations on callable objects
-===================================================================================
+``xoutil.future.functools`` - Higher-order functions and callable objects
+=========================================================================
 
-.. automodule:: xoutil.functools
+.. automodule:: xoutil.future.functools
    :members: lru_cache
 
 .. function:: update_wrapper(wrapper, wrapped, assigned=WRAPPER_ASSIGNMENTS, updated=WRAPPER_UPDATES)

@@ -1,9 +1,9 @@
-:mod:`xoutil.collections` - High-performance container datatypes
-================================================================
+``xoutil.future.collections`` - High-performance container datatypes
+====================================================================
 
-.. module:: xoutil.collections
+.. module:: xoutil.future.collections
 
-This module extends the standard library's :mod:`collections`.  You may use it
+This module extends the standard library's `collections`:mod:.  You may use it
 as a drop-in replacement in many cases.
 
 Avoid importing ``*`` from this module since this is different in Python 2.7

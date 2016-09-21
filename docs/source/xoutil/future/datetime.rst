@@ -1,7 +1,7 @@
-:mod:`xoutil.datetime` - Basic date and time types
-===================================================
+``xoutil.future.datetime`` - Basic date and time types
+======================================================
 
-.. automodule:: xoutil.datetime
+.. automodule:: xoutil.future.datetime
 
 .. autofunction:: new_date
 .. autofunction:: new_datetime

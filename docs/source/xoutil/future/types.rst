@@ -1,10 +1,10 @@
-:mod:`xoutil.types` - Names for built-in types and extensions.
-===============================================================
+``xoutil.future.types`` - Names for built-in types and extensions
+=================================================================
 
 .. Unfortunately our customized modules is not compatible with sphinx
    automodule
 
-.. module:: xoutil.types
+.. module:: xoutil.future.types
 
 .. autofunction:: is_iterable
 
