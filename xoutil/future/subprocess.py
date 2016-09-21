@@ -24,6 +24,10 @@ from subprocess import *    # noqa
 from pprint import __all__    # noqa
 __all__ = __all__ + ['call_and_check_output']
 
+from xoutil.future import _past    # noqa
+_past.dissuade()
+del _past
+
 
 def call_and_check_output(*popenargs, **kwargs):
     '''Combines `call` and `check_output`. Returns a tuple ``(returncode,
