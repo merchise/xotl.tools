@@ -41,6 +41,10 @@ __all__ = __all__ + ['file_load', 'encode_string']
 
 from json import encoder, decoder    # noqa
 
+from xoutil.future import _past    # noqa
+_past.dissuade()
+del _past
+
 
 class JSONEncoder(_stdlib.JSONEncoder):
     __doc__ = (_stdlib.JSONEncoder.__doc__ + '''
