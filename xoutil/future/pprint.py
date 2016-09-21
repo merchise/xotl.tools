@@ -20,19 +20,14 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.modules import copy_members as _copy_members
-import pprint as _pm
-_copy_members(_pm)
+from pprint import *    # noqa
 
-pprint = _pm.pprint  # Avoid IDE complaints
-
-__all__ = ['ppformat'] + list(getattr(_pm, '__all__', dir(_pm)))
-del _pm, _copy_members
+from pprint import __all__    # noqa
+__all__ = __all__ + ['ppformat']
 
 
 def ppformat(obj):
-    '''Just like :func:`pprint` but always returns the result instead of
-    writing it to a stream.
+    '''Just like `pprint`:func: but always returning a result.
 
     :returns: The pretty formated text.
     :rtype: `unicode` in Python 2, `str` in Python 3.
