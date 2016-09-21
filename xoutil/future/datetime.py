@@ -16,6 +16,7 @@
 # DJango and generalized.
 #
 # Created on 2012-02-15
+# Migrated to 'future' on 2016-09-13
 
 '''Extends the standard `datetime` module.
 

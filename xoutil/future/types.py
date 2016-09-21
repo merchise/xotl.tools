@@ -13,6 +13,7 @@
 # package.
 #
 # Created on 2016-09-11
+# Migrated to 'future' on 2016-09-12
 
 '''Extends the standard `types` module.
 

@@ -15,7 +15,8 @@
 # This file is distributed under the terms of the LICENCE distributed
 # with this package.
 #
-# @created: 2012-07-03
+# Created: 2012-07-03
+# Migrated to 'future' on 2016-09-14
 #
 # Contributors from Medardo Rodríguez:
 #    - Manuel Vázquez Acosta <manu@merchise.org>

@@ -11,6 +11,7 @@
 # the terms of the LICENCE attached in the distribution package.
 #
 # Created on 2013-01-11
+# Migrated to 'future' on 2016-09-20
 
 '''Extensions the `subprocess` module in the standard library.'''
 

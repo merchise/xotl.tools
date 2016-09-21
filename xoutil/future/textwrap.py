@@ -10,10 +10,9 @@
 # terms of the Python Software Licence as of Python 3.3.
 #
 # Created on 2014-02-26
+# Migrated to 'future' on 2016-09-18
 
-'''Text wrapping and filling.
-
-'''
+'''Text wrapping and filling.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,

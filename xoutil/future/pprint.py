@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.pprint
+# xoutil.future.pprint
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
@@ -11,10 +11,9 @@
 # the terms of the LICENCE attached in the distribution package.
 #
 # Created on 2013-05-06
+# Migrated to 'future' on 2016-09-20
 
-'''Enhanced data pretty printer.
-
-'''
+'''Enhanced data pretty printer.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,

@@ -14,7 +14,8 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Jul 1, 2011
+# Created on 2011-07-01
+# Migrated to 'future' on 2016-09-20
 
 '''Extensions to the `json` standard library module.
 
