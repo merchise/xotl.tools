@@ -40,15 +40,13 @@ John McCarthy and his students began work on the first Lisp implementation in
 
 '''
 
-# TODO: move to xaskell
-
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
 
 import sys
-from re import compile as regex_compile
+import re
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
@@ -417,7 +415,7 @@ def create_int_range_coerce(min, max):
 # Identifiers and strings
 
 # TODO: In Py3k "ña" is a valid identifier and this regex won't allow it
-_IDENTIFIER_REGEX = regex_compile('(?i)^[_a-z][\w]*$')
+_IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][\w]*$')
 
 
 @coercer
@@ -436,7 +434,7 @@ def identifier_coerce(arg):
     return str(arg) if ok else nil
 
 
-_FULL_IDENTIFIER_REGEX = regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
+_FULL_IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 
 
 @coercer
@@ -1186,4 +1184,4 @@ class mapping(custom):
         return res
 
 
-del sys, ABCMeta, metaclass, regex_compile, lwraps, boolean
+del sys, re, ABCMeta, metaclass, lwraps, boolean
