@@ -3,8 +3,8 @@
 - Changes involving :mod:`xoutil.collections`:
 
   - Moves SmartDict and SortedSmartDict from `xoutil.data` to
-  :mod:`xoutil.collections` module.  They are still accessible -in version
-  previous to 1.7.2- from `!xoutil.data` but deprecated there.
+    `xoutil.collections`:mod: module.  They are still accessible -in version
+    previous to 1.7.2- from `!xoutil.data` but deprecated there.
 
   - Also there is now a :class:`xoutil.collections.SmartDictMixin` that
     implements the `update` behind all smart dicts in xoutil.
@@ -17,7 +17,7 @@
   - Removes deprecated :mod:`!xoutil.decorators`. Use :mod:`xoutil.decorator`.
 
   - Removed :func:`!xoutil.iterators.first`, and
-    :func:`!xoutil.iterators.get_first`.
+    `!xoutil.iterators.get_first`:func:.
 
   - Removed :func:`!xoutil.string.names`, :func:`!xoutil.string.normalize_to_str`
     and :func:`!xoutil.string.normalize_str_collection`.

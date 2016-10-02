@@ -23,9 +23,9 @@
 
   - Adds package :mod:`xoutil.threading`.
 
-  - Adds package :mod:`xoutil.html` and begins the port of
-    :mod:`xoutil.html.parser` from Python 3.3 to xoutil, so that a common
-    implementation for both Python 2.7 and Python 3.3 is available.
+  - Adds package `xoutil.html` and begins the port of `xoutil.html.parser`
+    from Python 3.3 to xoutil, so that a common implementation for both Python
+    2.7 and Python 3.3 is available.
 
 
 - Bug fixes:
