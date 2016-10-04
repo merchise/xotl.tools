@@ -62,13 +62,13 @@ from __future__ import (division as _py3_division,
 class Maybe(object):
     '''Wrapper for optional values.
 
-    The Maybe type encapsulates an optional value.  A value of type ``Maybe
-    a`` either contains a value of type ``a`` (represented as ``Just a``), or
-    it is empty (represented as ``Nothing``).  Using `Maybe`` is a good way to
-    deal with errors or exceptional cases without resorting to drastic
-    measures such as error. In this implementation we make a variation where a
-    ``Wrong`` object represents a missing (with special value ``Nothing``) or
-    an improper value (including errors).
+    The Maybe type encapsulates an optional value.  A value of type
+    ``Maybe a`` either contains a value of type ``a`` (represented as
+    ``Just a``), or it is empty (represented as ``Nothing``).  Using `Maybe``
+    is a good way to deal with errors or exceptional cases without resorting
+    to drastic measures such as error. In this implementation we make a
+    variation where a ``Wrong`` object represents a missing (with special
+    value ``Nothing``) or an improper value (including errors).
 
     See descendant classes `Just`:class: and `Wrong`:class: for more
     information.
