@@ -37,4 +37,4 @@ def test_nameof():
     assert nameof(1.0) == 'float'
 
 
-# TODO: Add test for remainder functions in this module.
+# TODO: Add tests for remainder functions in this module.

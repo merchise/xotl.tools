@@ -3,12 +3,12 @@
 # ---------------------------------------------------------------------
 # xoutil.names
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created 2013-04-15
 
@@ -21,6 +21,8 @@ from __future__ import (division as _py3_division,
 from xoutil import Undefined as _undef
 from xoutil.eight import base_string
 
+
+# TODO: This module must be reviewed and deprecate most of it.
 
 def _get_mappings(source):
     '''Return a sequence of mappings from `source`.
@@ -234,7 +236,7 @@ def simple_name(item, join=True):
     To get a name in a more precise way, use `nameof`:func:.
 
     '''
-    # TODO: Use this function in `nameof`
+    # TODO: deprecate `join` argument
     from xoutil.future.inspect import type_name
     singletons = (None, True, False, Ellipsis, NotImplemented)
     res = next((str(s) for s in singletons if s is item), None)
@@ -245,7 +247,8 @@ def simple_name(item, join=True):
             res = type_name(item)
         if join:
             if join is True:
-                join = lambda arg: str('.'.join(arg).strip('.'))
+                def join(arg):
+                    return str('.'.join(arg).strip('.'))
             res = join((module_name(item), res))
     return res
 
