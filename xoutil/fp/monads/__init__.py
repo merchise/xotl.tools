@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.fp.monads
 # ---------------------------------------------------------------------
-# Copyright (c) 2016 Merchise and Contributors
+# Copyright (c) 2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -12,7 +12,7 @@
 #
 # Created on 2016-10-01
 
-'''Yet another Python definition for Monads.
+'''Some monadic concepts a lo Haskell.
 
 '''
 
