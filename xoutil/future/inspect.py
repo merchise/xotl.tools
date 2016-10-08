@@ -2,12 +2,12 @@
 # ----------------------------------------------------------------------
 # xoutil.future.inspect
 # ----------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved
 #
-# This file is distributed under the terms of the LICENCE distributed
-# with this package.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created 2014-05-02
 # Migrated to 'future' on 2016-09-19
@@ -258,11 +258,11 @@ def type_name(obj, affirm=False):
     This function is safe.  If :param obj: is not an instance of a proper type
     then returns the following depending on :param affirm:
 
-    - If False returns None.
+    - If ``False`` returns None.
 
-    - If True convert a single object to its type before returns the name, but
-      if is a tuple, list or set; returns a string with a representation of
-      contained types.
+    - If ``True`` convert a single object to its type before returns the name,
+      but if is a tuple, list or set; returns a string with a representation
+      of contained types.
 
     Examples::
 
@@ -282,10 +282,12 @@ def type_name(obj, affirm=False):
       '(int, float)'
 
     '''
+    # TODO: Review this very carefully, maybe deprecate it.
     from xoutil.eight import class_types, string_types
     from types import FunctionType, MethodType
-    named_types = class_types + (FunctionType, MethodType)
-    name = '__name__'
+    from types import BuiltinFunctionType, BuiltinMethodType
+    named_types = class_types + (FunctionType, MethodType,
+                                 BuiltinFunctionType, BuiltinMethodType)
     if isinstance(obj, (staticmethod, classmethod)):
         fn = get_attr_value(obj, '__func__', None)
         if fn:
@@ -293,7 +295,7 @@ def type_name(obj, affirm=False):
     if isinstance(obj, named_types):
         # TODO: Why not use directly `get_attr_value``
         try:
-            res = getattr_static(obj, name, None)
+            res = getattr_static(obj, '__name__', None)
             if res:
                 if isdatadescriptor(res):
                     res = res.__get__(obj, type)
@@ -309,7 +311,7 @@ def type_name(obj, affirm=False):
     if res is None:
         # TODO: Why not use directly `get_attr_value``
         # FIX: Improve and standardize the combination of next code
-        res = getattr_static(obj, name, None)
+        res = getattr_static(obj, '__name__', None)
         if res and isdatadescriptor(res):
             res = res.__get__(obj, type(obj))
     if isinstance(res, string_types):
