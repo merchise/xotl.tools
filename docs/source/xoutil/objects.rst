@@ -4,7 +4,7 @@
 .. automodule:: xoutil.objects
    :members: validate_attrs, iterate_over, smart_getter,
 	     smart_getter_and_deleter, popattr, setdefaultattr, copy_class,
-	     attrclass, fulldir, classproperty
+	     fulldir, classproperty
 
 .. autofunction:: get_first_of(sources, *keys, default=None, pred=None)
 
