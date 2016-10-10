@@ -1,6 +1,13 @@
-================================
- `xoutil.pl` -- Predicate Logic
-================================
+===================================
+ `xoutil.fp.pl` -- Predicate Logic
+===================================
+
+.. automodule:: xoutil.fp.pl
+   :members:
+
+
+Understanding *Predicate Logic*
+===============================
 
 Predicate Logic is a set of formal systems used in philosophy, mathematics,
 linguistics, and computer science.  Also known as *predicate calculus* and
@@ -23,6 +30,3 @@ discourse* over which the quantified variables are bounded.  Formal
 definitions are set of sentences expressed as *predicates* defined on that
 domain, *functions* from that domain to itself, and a set of *axioms* accepted
 as true for those things in the domain.
-
-.. automodule:: xoutil.pl
-   :members:
