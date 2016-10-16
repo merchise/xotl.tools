@@ -50,3 +50,6 @@ def test_fp_tools():
     assert compose(f) is f
     assert compose(g, f)(x) == g(f(x))
     assert compose(h, g, f)(x) == h(g(f(x)))
+    c = compose(*((lambda y: lambda x: x + y)(i) for i in range(6)))
+    for i in range(6):
+        assert c[:i](0) == sum(range(i + 1))
