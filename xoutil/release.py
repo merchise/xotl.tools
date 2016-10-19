@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.release
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -21,7 +20,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil.versions import dev_tag_installed, parse_version_info
 
-VERSION = '1.7.2'
+VERSION = '1.7.3'
 
 RELEASE_TAG = dev_tag_installed('xoutil') or ''
 
