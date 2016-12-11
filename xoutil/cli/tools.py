@@ -93,13 +93,17 @@ def command_name(cls):
         TypeError: Attribute 'command_cli_name' must be a string.
 
     '''
+    from xoutil.eight import string_types
     unset = object()
-    res = getattr(cls, 'command_cli_name', unset)
-    if res is not unset:
-        from xoutil.eight import string_types
-        if isinstance(res, string_types):
-            return res
-        else:
-            raise TypeError("Attribute 'command_cli_name' must be a string.")
-    else:
-        return hyphenize_name(cls.__name__)
+    names = ('command_cli_name', '__command_name__')
+    i, res = 0, unset
+    while i < len(names) and res is unset:
+        name = names[i]
+        res = getattr(cls, names[i], unset)
+        if res is unset:
+            i += 1
+        elif not isinstance(res, string_types):
+            raise TypeError("Attribute '{}' must be a string.".format(name))
+    if res is unset:
+        res = hyphenize_name(cls.__name__)
+    return res
