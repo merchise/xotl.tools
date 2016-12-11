@@ -1,0 +1,15 @@
+#+TITLE: Backlog for *xoutil* - a collection of disparate utilities
+#+AUTHOR: Merchise Autrement [~º/~]
+#+DESCRIPTION: Development planning for this package.
+
+* Backlog for *xoutil*
+
+** Development ideas. [/]
+
+** Minor issues. [/]
+
+- [ ] Migrate the logic for sub-commands in 'argparse' by using [[file:/usr/share/doc/python/html/library/argparse.html?highlight%3Dargumentparser#argparse.ArgumentParser.add_subparsers][add_subparsers]]
+  when definie method [[file:xoutil/cli/__init__.py::def%20get_arg_parser(cls):][get_arg_parser]] for sub-classes of [[file:xoutil/cli/__init__.py::class%20Command(ABC):][xoutil.cli.Command]].
+
+
+** Configuration. [/]

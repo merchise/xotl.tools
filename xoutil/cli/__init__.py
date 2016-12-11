@@ -174,6 +174,7 @@ class Help(Command):
         Use class method "get
 
         '''
+        # TODO: Use 'add_subparsers' in this logic (see 'backlog.org').
         res = getattr(cls, '_arg_parser')
         if not res:
             from argparse import ArgumentParser
