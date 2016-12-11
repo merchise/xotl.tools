@@ -3,14 +3,13 @@
 # ---------------------------------------------------------------------
 # xoutil.annotate
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on Apr 3, 2012
+# Created on 2012-04-03
 
 '''Provides Python 3k forward-compatible (:pep:`3107`) annotations.'''
 

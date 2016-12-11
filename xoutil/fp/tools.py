@@ -130,6 +130,14 @@ class compose(metaclass(MetaCompose)):
     __name__ = property(__repr__)
     __doc__ = property(__str__)
 
+    def __eq__(self, other):
+        if isinstance(type(other), MetaCompose):
+            return self.inner == other.inner
+        elif self.inner:
+            return self.inner[0] == other
+        else:
+            return other is identity
+
     def __len__(self):
         return len(self.inner)
 

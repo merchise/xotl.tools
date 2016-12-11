@@ -4,8 +4,7 @@
 # xoutil.decorator.meta
 # ---------------------------------------------------------------------
 #
-# Copyright (c) 2015-2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # decorator function.
 #
 # This is free software; you can redistribute it and/or modify it under

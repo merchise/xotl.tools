@@ -2,9 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.future.collections
 # ----------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
-# defaultdict and opendict implementations.
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 #
 # Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
 # implementations.

@@ -3,14 +3,13 @@
 # ---------------------------------------------------------------------
 # xoutil.tests.test_annotations
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
-# Copyright (c) 2012-2014 Merchise Autrement and Contributors
+# Copyright (c) 2012, 2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on Apr 3, 2012
+# Created on 2012-04-04
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,

@@ -53,7 +53,7 @@ project = u'xoutil'
 year = datetime.datetime.now().year
 if year >= 2015:
     year = u'' if year == 2015 else u'-{year}'.format(year=year)
-    copyright = u'2015{year}, Merchise and Contributors'
+    copyright = u'2015{year}, Merchise Autrement [~º/~] and Contributors'
 elif year > 2012:
     copyright = u'2012-{year}, Merchise Autrement and Contributors'
 else:

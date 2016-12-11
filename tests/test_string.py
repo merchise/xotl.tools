@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_string
 #----------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
+# Copyright (c) 2015-2016 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #

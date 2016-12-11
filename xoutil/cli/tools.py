@@ -3,14 +3,13 @@
 # ---------------------------------------------------------------------
 # xoutil.cli.tools
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on 5 mai 2013
+# Created on 2013-05-05
 
 '''Utilities for command-line interface (CLI) applications.
 

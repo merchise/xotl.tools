@@ -3,17 +3,16 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_fs
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
-# Copyright (c) 2011, 2012 Medardo Rodríguez
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on Feb 15, 2012
+# Created on 2012-02-15
 
-'Tests for xoutil.fs module'
+'''Tests for xoutil.fs module'''
 
 import os
 import unittest

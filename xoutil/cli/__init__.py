@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cli
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -48,7 +47,7 @@ class Command(ABC):
 
     Each command could include its own argument parser, but it isn't used
     automatically, all arguments will be passed as a single parameter to
-    :meth:`run` removing the command when obtained from "sys.argv".
+    `run`:meth: removing the command when obtained from "sys.argv".
 
     '''
     __default_command__ = None

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.eight
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -176,6 +176,7 @@ except NameError:
         import builtins as __builtin__    # Making sure in some Py3 versions
     except ImportError:
         import __builtin__    # noqa
+builtins = __builtin__    # noqa
 
 
 try:

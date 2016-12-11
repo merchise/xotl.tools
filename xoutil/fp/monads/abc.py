@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.fp.monads.abc
 # ---------------------------------------------------------------------
-# Copyright (c) 2016 Merchise and Contributors
+# Copyright (c) 2016 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -185,6 +185,37 @@ class Monad(ABC):
 
         '''
         return self.bind(lambda _: other)
+
+    def lift(self, fn):
+        '''Monad transformer, map function over monadic value.
+
+        Applies a function ``(a -> b)`` to a value within a monad ``m``
+        (converts a regular function into one that acts within ``m``), and
+        that is what is meant by lifting.
+
+        The same behaviour as ``fmap`` (`Functor.map`:meth:), but implemented
+        using `bind`:meth:, and does not rely on us inheriting from
+        `Functor`:class:.
+
+        In Haskell::
+
+          Monad m => (a -> b) -> m a -> m b
+
+        '''
+        return self.bind(lambda a: self.unit(fn(a)))
+
+    def join(self):
+        '''Turns a container of containers into a single container.
+
+        join :: (Monad m) => m (m a) -> m a
+
+        The join function is the conventional monad join operator. It is used
+        to remove one level of monadic structure, projecting its bound
+        argument into the outer level.
+
+        '''
+        from xoutil.fp.tools import identity
+        return self.bind(identity)
 
 
 class CategoricalMonad(Monad, Applicative, Monoid, Functor):

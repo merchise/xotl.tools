@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -14,7 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created: Mar 23, 2012
+# Created: 2012-03-23
 #
 
 '''`xoutil` is a collection of disparate utilities that does not conform
