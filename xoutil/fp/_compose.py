@@ -22,6 +22,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from xoutil.deprecation import deprecated
+
 
 class pos_args(tuple):
     '''Mark variable number positional arguments (see `fargs`:class:).'''
@@ -106,6 +108,7 @@ class full_args(tuple):
             raise TypeError(msg.format(typeof(arg).__name__))
 
 
+@deprecated('xoutil.fp.tools.compose')
 def compose(*funcs):
     '''Composition of several functions.
 
@@ -135,6 +138,12 @@ def compose(*funcs):
     was procedural (``None``).
 
     '''
+    from xoutil.fp.tools import identity
+
+    def cnames(*args):
+        from xoutil.names import simple_name
+        return '({})'.format(', '.join(simple_name(arg) for arg in args))
+
     count = len(funcs)
     if count == 0:
         return identity

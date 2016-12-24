@@ -17,9 +17,9 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def test_fp_tools():
-    from xoutil.fp.tools import (identity, pos_args, kw_args, full_args,
-                                 compose)
+def test_fp_compose():
+    from xoutil.fp.tools import identity
+    from xoutil.fp._compose import (pos_args, kw_args, full_args, compose)
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__
@@ -50,6 +50,36 @@ def test_fp_tools():
     assert compose(f) is f
     assert compose(g, f)(x) == g(f(x))
     assert compose(h, g, f)(x) == h(g(f(x)))
+
+
+def test_fp_tools():
+    from xoutil.fp.tools import identity, compose
+
+    x, obj = 15, object()
+    f, g, h = x.__add__, x.__mul__, x.__xor__
+
+    def join(*args):
+        if args:
+            return ' -- '.join(str(arg) for arg in args)
+        # functions return 'None' when no explicit 'return' is issued.
+
+    def plus2(value):
+        return value + 2
+
+    def plus2d(value):
+        return {'stop': value + 2}
+
+    def myrange(stop):
+        return list(range(stop))
+
+    assert compose(join, myrange, plus2)(0) == '[0, 1]'
+    assert compose() is identity
+    assert compose()(x) is x
+    assert compose()(obj) is obj
+    assert compose(f) is f
+    assert compose(g, f)(x) == g(f(x))
+    assert compose(h, g, f)(x) == h(g(f(x)))
+
     c = compose(*((lambda y: lambda x: x + y)(i) for i in range(6)))
-    for i in range(6):
-        assert c[:i](0) == sum(range(i + 1))
+    for i in range(7):
+        assert c[:i](0) == sum(range(i))
