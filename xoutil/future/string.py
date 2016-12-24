@@ -434,7 +434,8 @@ def normalize_ascii(value):
     return safe_str(res)
 
 
-def normalize_slug(value, replacement='-', invalids=None, valids=None):
+def normalize_slug(value, *args, **kwds):
+    # TODO: replacement='-', invalids=None, valids=None
     '''Return the normal-form of a given string value that is valid for slugs.
 
     Convert all possible non-ascii to valid characters using unicode 'NFKC'
@@ -451,21 +452,31 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     :param replacement: Normally a one character string to use in place of
            invalid parts.  Repeated instances of the replacement will be
            converted to just one; if appearing at the beginning or at the end,
-           are striped.  This character must not be part of `invalids` set (a
-           contradiction).  If ``None`` or ``False`` is converted to an empty
-           string for backward compatibility with old versions.
+           are striped.  This character must not be part of the `invalids` set
+           (a contradiction).  If ``None`` or ``False`` is converted to an
+           empty string for backward compatibility with old versions of this
+           function.  If given as a positional argument, must be the first in
+           the `args` tuple.  Default value is '-'.
 
     :param invalids: Any collection of characters added to these that are
-           normally invalid  (non-ascii or not included in valid characters).
+           normally invalid (non-ascii or not included in valid characters).
            Boolean ``True`` can be passed as a synonymous of ``"_"`` for
            compatibility with old ``invalid_underscore`` argument.  ``False``
-           or ``None`` are assumed as an empty set for invalid characters.
+           or ``None`` are assumed as an empty set for invalid characters.  If
+           given as a positional argument, must be the second in the `args`
+           tuple.  Default value is ``""``.
 
     .. todo:: it looks like "valid" plural is without "s" in English.
 
     :param valids: A collection of extra valid characters.  Could be either a
            valid string, any iterator of strings, or ``None`` to use only
-           default valid characters.  Non-ASCII characters are ignored.
+           default valid characters.  Non-ASCII characters are ignored.  If
+           given as a positional argument, must be the third in the `args`
+           tuple.  Default value is ``""``.
+
+    :param command: A Boolean value, if ``True``, the `replacement` is added
+           when changing from lower to upper-case.  Must be always a keyword
+           argument.
 
     Examples::
 
@@ -502,6 +513,9 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
       >>> normalize_slug('_x', '_') == '_x'
       True
 
+      >>> normalize_slug('MyCommand', command=True) == 'my-command'
+      True
+
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
 
     .. versionchanged:: 1.6.6 Replaced the `invalid_underscore` paremeter by
@@ -519,6 +533,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
         return re.escape(''.join(set(_normalize(v))))
 
     # check and adjust arguments
+    replacement = args[0] if args else kwds.pop('replacement', '-')
     if replacement in (None, False):
         # for backward compatibility
         replacement = ''
@@ -527,6 +542,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     else:
         msg = '"replacement" ({}) must be a string or None, not "{}".'
         raise TypeError(msg.format(replacement, type(replacement)))
+    invalids = args[1] if len(args) > 1 else kwds.pop('invalids', '')
     if invalids is True:
         # Backward compatibility with former `invalid_underscore` argument
         invalids = '_'
@@ -541,6 +557,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     if len(replacement) == 1 and invalids and invalids.match(replacement):
         msg = 'replacement "{}" must not be part of invalids set.'
         raise ValueError(msg.format(replacement))
+    valids = args[2] if len(args) > 2 else kwds.pop('valids', '')
     if valids is None:
         valids = ''
     else:
@@ -549,6 +566,10 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
         valids = _set(valids)
         valids = _set(re.sub(r'[0-9a-z]+', '', valids))
     valids = re.compile(r'[^_0-9a-z{}]+'.format(valids))
+    command = kwds.pop('command', False)
+    if kwds:
+        msg = 'unexpected keyword argument(s) "{}"'.format(kwds)
+        raise TypeError(msg)
     # calculate result
     repl = '\t' if replacement else ''
     res = valids.sub(repl, _normalize(value))
