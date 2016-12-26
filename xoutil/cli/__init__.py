@@ -50,7 +50,10 @@ class Command(ABC):
     `run`:meth: removing the command when obtained from "sys.argv".
 
     '''
-    __default_command__ = None
+    __settings__ = {
+        # 'default_command' : None
+    }
+
 
     def __str__(self):
         return command_name(type(self))
@@ -74,6 +77,27 @@ class Command(ABC):
     def run(self, args=None):
         '''Must return a valid value for "sys.exit"'''
         raise NotImplementedError
+
+    @classmethod
+    def get_setting(cls, name, *default):
+        unset = object()
+        aux = len(default)
+        if aux == 0:
+            default = unset
+        elif aux == 1:
+            default = default[0]
+        else:
+            msg = 'get_setting() takes at most 3 arguments ({} given)'
+            raise TypeError(msg.format(aux + 2))
+        res = cls.__settings__.get(name, default)
+        if res is not unset:
+            return res
+        else:
+            raise KeyError(name)
+
+    @classmethod
+    def set_setting(cls, name, value):
+        cls.__settings__[name] = value    # TODO: Check type
 
     @classmethod
     def set_default_command(cls, cmd=None):
@@ -100,21 +124,22 @@ class Command(ABC):
                 from xoutil.eight import string_types as text
                 name = cmd if isinstance(cmd, text) else command_name(cmd)
             else:
+                # TODO: consider reset to None
                 raise ValueError('missing command specification!')
         else:
             if cmd is None:
                 name = command_name(cls)
             else:
-                msg = 'redundant command specification: "%s" and "%s"!'
-                raise ValueError(msg % (cls, cmd))
-        Command.__default_command__ = name
+                raise ValueError('redundant command specification', cls, cmd)
+
+        Command.set_setting('default_command', name)
 
     @staticmethod
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
+        # TODO: Convert check based in argument "recursed" in a decorator
         if recursed is None:
             recursed = set()
-        # TODO: Convert check based in argument "recursed" in a decorator
         from xoutil.names import nameof
         name = nameof(source, inner=True, full=True)
         if name not in recursed:

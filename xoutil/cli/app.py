@@ -37,7 +37,8 @@ def main(default=None):
         cmd_name = args[0]
         args = args[1:]
     else:
-        cmd_name = default or Command.__default_command__ or HELP_NAME
+        cmd_name = (default or Command.get_setting('default_command') or
+                    HELP_NAME)
     cmds = Command.registry
     cmd = cmds.get(cmd_name)
     if not cmd:
