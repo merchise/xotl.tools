@@ -359,31 +359,57 @@ def capitalize(value, title=True):
         return empty
 
 
-def hyphen_name(name):
-    '''Convert a name, normally an identifier, to a hyphened slug.
+def hyphen_name(name, join_numbers=True):
+    '''Convert a name to a hyphened slug.
 
-    All transitions from lower to upper capitals (or from digits to letters)
-    are joined with a hyphen.
+    The name is normally an identifier in Camel-Case.
 
     Also, all invalid characters (those invalid in Python identifiers) are
-    converted to hyphens.
+    ignored.  Numbers are joined with preceding part when `join_numbers` is
+    True.
 
     For example::
 
       >>> hyphen_name('BaseNode') == 'base-node'
       True
 
+      >>> hyphen_name('ICQNámeAc3P123') == 'icq-name-ac3-p123'
+      True
+
+      >> hyphen_name('--__ICQNámeP12_34Abc--') == 'icq-name-p12-34-abc'
+      True
+
+      >> hyphen_name('ICQNámeP12', join_numbers=False) == 'icq-name-p-12'
+      True
+
     '''
     import re
-    regex = re.compile('([a-z0-9][A-Z]|[a-zA-Z][0-9]|[0-9][a-z])')
-    parts = []
-    for m in reversed(list(regex.finditer(name))):
-        i, f = m.span()
-        name, tail = name[:i + 1], name[i + 1:]
-        parts.insert(0, tail)
-    parts.insert(0, name)
-    name = '-'.join(parts)
-    return safe_str(normalize_slug(name, '-', '_'))
+    name = normalize_ascii(name)
+    regex = re.compile('[^A-Za-z0-9]+')
+    name = regex.sub('-', name)
+    regex = re.compile('([A-Z]+|[a-z]+|[0-9]+|-)')
+    all = regex.findall(name)
+    i, count, parts = 0, len(all), []
+    while i < count:
+        part = all[i]
+        if part != '-':
+            upper = 'A' <= part <= 'Z'
+            if upper:
+                part = part.lower()
+            j = i + 1
+            if j < count and upper and 'a' <= all[j] <= 'z':
+                aux = part[:-1]
+                if aux:
+                    parts.append(aux)
+                part = part[-1] + all[j]
+                i = j
+                j += 1
+            if j < count and '0' <= all[j] <= '9' and join_numbers:
+                part = part + all[j]
+                i = j
+            parts.append(part)
+        i += 1
+    return '-'.join(parts)
 
 
 # TODO: Document and fix all these "normalize_..." functions
@@ -435,7 +461,6 @@ def normalize_ascii(value):
 
 
 def normalize_slug(value, *args, **kwds):
-    # TODO: replacement='-', invalids=None, valids=None
     '''Return the normal-form of a given string value that is valid for slugs.
 
     Convert all possible non-ascii to valid characters using unicode 'NFKC'
@@ -474,10 +499,6 @@ def normalize_slug(value, *args, **kwds):
            given as a positional argument, must be the third in the `args`
            tuple.  Default value is ``""``.
 
-    :param command: A Boolean value, if ``True``, the `replacement` is added
-           when changing from lower to upper-case.  Must be always a keyword
-           argument.
-
     Examples::
 
       >>> normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
@@ -511,9 +532,6 @@ def normalize_slug(value, *args, **kwds):
       True
 
       >>> normalize_slug('_x', '_') == '_x'
-      True
-
-      >>> normalize_slug('MyCommand', command=True) == 'my-command'
       True
 
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
@@ -566,7 +584,6 @@ def normalize_slug(value, *args, **kwds):
         valids = _set(valids)
         valids = _set(re.sub(r'[0-9a-z]+', '', valids))
     valids = re.compile(r'[^_0-9a-z{}]+'.format(valids))
-    command = kwds.pop('command', False)
     if kwds:
         msg = 'unexpected keyword argument(s) "{}"'.format(kwds)
         raise TypeError(msg)
