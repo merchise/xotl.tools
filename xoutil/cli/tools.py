@@ -27,32 +27,10 @@ from __future__ import (division as _py3_division,
 
 def program_name():
     '''Calculate the program name from "sys.argv[0]".'''
+    # TODO: Use 'argparse' standard (parser.prog)
     import sys
     from os.path import basename
     return basename(sys.argv[0])
-
-
-def hyphenize_name(name):
-    '''Convert an identifier to a valid command name using hyphens.'''
-    # XXX: In Python 3, identifiers could contain any unicode alphanumeric.
-    import re
-    res = name
-    trans = tuple(re.finditer('[A-Z][a-z]', res))
-    i = len(trans) - 1
-    while i >= 0:
-        m = trans[i]
-        s = m.start()
-        if s > 0:
-            res = res[:s] + '-' + res[s:]
-        i -= 1
-    trans = tuple(re.finditer('[a-z][A-Z]', res))
-    i = len(trans) - 1
-    while i >= 0:
-        m = trans[i]
-        s = m.start() + 1
-        res = res[:s] + '-' + res[s:]
-        i -= 1
-    return res.lower()
 
 
 def command_name(cls):
@@ -94,6 +72,7 @@ def command_name(cls):
 
     '''
     from xoutil.eight import string_types
+    from xoutil.future.string import hyphen_name
     unset = object()
     names = ('command_cli_name', '__command_name__')
     i, res = 0, unset
@@ -105,5 +84,5 @@ def command_name(cls):
         elif not isinstance(res, string_types):
             raise TypeError("Attribute '{}' must be a string.".format(name))
     if res is unset:
-        res = hyphenize_name(cls.__name__)
+        res = hyphen_name(cls.__name__)
     return res
