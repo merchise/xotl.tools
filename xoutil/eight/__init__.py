@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.eight
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -108,18 +108,6 @@ def type_name(obj):
     return typeof(obj).__name__
 
 
-try:
-    __intern = intern
-
-    def intern(string):
-        # Avoid problems in Python 2.x when using unicode by default.
-        return __intern(str(str() + string))
-
-    intern.__doc__ = __intern.__doc__
-except NameError:
-    from sys import intern    # noqa
-
-
 if _py3:
     input = input
     range = range
@@ -149,19 +137,6 @@ def iteritems(d):
     return (d.items if _py3 else d.iteritems)()
 
 
-try:
-    callable = callable
-except NameError:
-    def callable(obj):
-        '''Return whether `obj` is callable (i.e., some kind of function).
-
-        Note that classes are callable, as are instances of classes with a
-        __call__() method.
-
-        '''
-        return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
-
-
 if _py3:
     from io import StringIO
 else:
@@ -177,6 +152,32 @@ except NameError:
     except ImportError:
         import __builtin__    # noqa
 builtins = __builtin__    # noqa
+
+
+try:
+    callable = getattr(__builtin__, 'callable')    # noqa
+except AttributeError:
+    def callable(obj):
+        '''Return whether `obj` is callable (i.e., some kind of function).
+
+        Note that classes are callable, as are instances of classes with a
+        __call__() method.
+
+        '''
+        return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
+
+
+try:
+    __intern = getattr(__builtin__, 'intern')    # noqa
+
+    def intern(string):
+        # Avoid problems in Python 2.x when using unicode by default.
+        return __intern(str(str() + string))
+
+    intern.__doc__ = __intern.__doc__
+except AttributeError:
+    from sys import intern    # noqa
+
 
 
 try:
