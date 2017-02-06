@@ -251,7 +251,13 @@ def cut_suffix(value, suffix):
         suffix = safe_decode(suffix)
     elif isinstance(value, bytes) and isinstance(suffix, str):
         suffix = safe_encode(suffix)
-    return value[:-len(suffix)] if value.endswith(suffix) else value
+    # Since value.endswith('') is always true but value[:-0] is actually
+    # always value[:0], which is always '', we have to explictly test for
+    # len(suffix)
+    if len(suffix) > 0 and value.endswith(suffix):
+        return value[:-len(suffix)]
+    else:
+        return value
 
 
 def cut_any_suffix(value, *suffixes):

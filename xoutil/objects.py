@@ -439,10 +439,10 @@ def fix_private_name(cls, name):
         return name
 
 
-# TODO: [med] [manu] Decide if it's best to create a 'xoutil.inspect' that
+# TODO: @med, @manu, Decide if it's best to create a 'xoutil.inspect' that
 # extends the standard library module 'inspect' and place this
-# signature-dealing functions there. Probably, to be consistent, this imposes a
-# refactoring of some of 'xoutil.types' and move all the "is_classmethod",
+# signature-dealing functions there. Probably, to be consistent, this imposes
+# a refactoring of some of 'xoutil.types' and move all the "is_classmethod",
 # "is_staticmethod" and inspection-related functions there.
 def get_method_function(cls, method_name):
     '''Get definition function given in its `method_name`.

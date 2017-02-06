@@ -310,7 +310,7 @@ def iter_frames(max_deep=MAX_DEEP):
     .. deprecated:: 1.6.8 The use of params `attr_filter` and `value_filter`.
 
     '''
-    # TODO: [manu] Use this in all previous functions with same structure
+    # TODO: @manu Use this in all previous functions with same structure
     frame = inspect.currentframe()
     try:
         deep = 0

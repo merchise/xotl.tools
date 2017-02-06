@@ -65,12 +65,10 @@ setup(
     ],
     keywords='',
     author='Merchise',
-    # TODO: [taqchi] create these accounts
-    author_email='project+xoutil@merchise.com',
-    # TODO: Negotiate with Maykel Moya to obtain plain "Merchise" folder at
-    #       "https://github.com"
-    # TODO: [taqchi] manage these accounts
-    url='https://github.com/merchise/xoutil/',
+    author_email='project+xoutil@merchise.org',
+    # TODO: @med, @manu Negotiate with Maykel Moya to obtain plain "Merchise"
+    #       folder at "https://github.com"
+    url='https://github.com/merchise-autrement/xoutil/',
     license='GPLv3+',
     tests_require=['pytest'],
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
