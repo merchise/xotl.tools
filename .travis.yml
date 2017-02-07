@@ -1,12 +1,14 @@
 language: python
-python:
-  - "2.7"
-  - "3.1"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-  - "nightly"
-  - "pypy"
-
-install: "pip install . python-dateutil mock pytest"
-script: py.test -l -q
+python: 2.7
+env:
+  - TOX_ENV=py27
+  - TOX_ENV=py33
+  - TOX_ENV=py34
+  - TOX_ENV=py35
+  - TOX_ENV=pypy
+  - TOX_ENV=gl27
+  - TOX_ENV=gl34
+  - TOX_ENV=gl35
+  - TOX_ENV=pypygl
+install: echo   - pip install tox
+script: echo   - tox -e $TOX_ENV
