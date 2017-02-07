@@ -462,7 +462,7 @@ def until(**kwargs):
 
     - ``until(errors=errors)`` is the same as ``until_errors(*errors)``.
 
-    - ``until(accumulate=mass, path=path, initial=initial) is the same as
+    - ``until(accumulate=mass, path=path, initial=initial)`` is the same as
        ``accumulated(mass, *path.split('.'), initial=initial)``
 
     .. warning:: You cannot mix many calls.
