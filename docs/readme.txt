@@ -10,3 +10,6 @@ useful to implement components that have two different interfaces according to
 the context in which they are invoked.  In this regard, contexts are a thin
 (but very idiomatic) alternative to some of the design patterns found
 elsewhere.
+
+.. image:: https://travis-ci.org/merchise-autrement/xoutil.svg?branch=master
+   :target: https://travis-ci.org/merchise-autrement/xoutil
