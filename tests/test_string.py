@@ -81,7 +81,7 @@ def test_normalize_slug_hypothesis(s, invalids):
     default_replacement = '-'
     assert all(c not in normalize_slug(s, invalids=c)
                for c in invalids if c != default_replacement), \
-                   "Slugs don't contain invalid chars"
+        "Slugs don't contain invalid chars"
 
 
 @given(s=text(), p=text())
