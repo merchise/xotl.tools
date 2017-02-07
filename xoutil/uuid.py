@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.uuid
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015, 2017 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
@@ -25,7 +25,7 @@ __all__ = strs('uuid', )
 del strs
 
 from xoutil.deprecation import deprecated
-from xoutil.values.ids import uuid as str_uuid
+from xoutil.values.ids import str_uuid
 
 
 @deprecated(str_uuid)
