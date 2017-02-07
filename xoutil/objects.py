@@ -1160,18 +1160,19 @@ def smart_copy(*args, **kwargs):
     - A sequence with is first value being a subclass of Exception. In which
       case :class:`adapt_exception` is used.
 
-    In these cases a KeyError is raised if the key is not found in the sources.
+    In these cases a KeyError is raised if the key is not found in the
+    sources.
 
     If `default` is an iterable and a key is not found in any of the sources,
     None is copied to `target`.
 
-    If `defaults` is a callable then it should receive one positional arguments
-    for the current `attribute name` and several keyword arguments (we pass
-    ``source``) and return either True or False if the attribute should be
-    copied.
+    If `defaults` is a callable then it should receive one positional
+    arguments for the current `attribute name` and several keyword arguments
+    (we pass ``source``) and return either True or False if the attribute
+    should be copied.
 
-    If `defaults` is False (or None) only the attributes that do not start with
-    a "_" are copied, if it's True all attributes are copied.
+    If `defaults` is False (or None) only the attributes that do not start
+    with a "_" are copied, if it's True all attributes are copied.
 
     When `target` is not a mapping only valid Python identifiers will be
     copied.

@@ -1,26 +1,7 @@
-- Remove deprecated `!xoutil.objects.metaclass`:class:, use
-  `xoutil.eight.meta.metaclass`:func: instead.
+- Add `xoutil.bound.until`:func: and `xoutil.bound.until_errors`:func:.
 
-- Several modules are migrated to `xoutil.future`:mod:\ :
+- Fix issue that made `xoutil.uuid`:mod: unusable.  Introduced in
+  version 1.7.1, commit `58eb359
+  <https://github.com/merchise-autrement/xoutil/commit/58eb35950cc33a9ecaa6565895e1b2147cace9f9_>`__.
 
-  - `~xoutil.future.types`:mod:.
-
-  - `~xoutil.future.collections`:mod:.
-
-  - `~xoutil.future.datetime`:mod:.
-
-  - `~xoutil.future.functools`:mod:.
-
-  - `~xoutil.future.inspect`:mod:.
-
-  - `~xoutil.future.string`:mod:.
-
-  - `~xoutil.future.json`:mod:.
-
-  - `~xoutil.future.threading`:mod:.
-
-  - `~xoutil.future.subprocess`:mod:.
-
-  - `~xoutil.future.pprint`:mod:.
-
-  - `~xoutil.future.textwrap`:mod:.
+- Remove support for Python 3.1 and Python 3.2.

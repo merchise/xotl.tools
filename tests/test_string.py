@@ -3,8 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_string
 #----------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -60,28 +59,23 @@ def test_normalize_slug():
     assert normalize_slug('_x', '_') == '_x'
 
 
-@given(s=text(), invalids=text())
-@example(s='0/0', invalids='-')
-def test_normalize_slug_hypothesis(s, invalids):
-    from xoutil.future.string import normalize_slug
+# FIXME: Dont filter; `normalize_slug` should consider this.
+valid_replacements = text().filter(lambda x: '\\' not in x)
+
+
+@given(s=text(), invalids=text(), replacement=valid_replacements)
+@example(s='0/0', invalids='-', replacement='-')
+def test_normalize_slug_hypothesis(s, invalids, replacement):
+    from xoutil.string import normalize_slug
 
     assert ' ' not in normalize_slug(s), 'Slugs do not contain spaces'
 
     assert ' ' in normalize_slug(s + ' ', valids=' '), \
         'Slugs do contain spaces if explicitly allowed'
 
-    assert normalize_slug('0', invalids='0') == ''
-
-    try:
-        normalize_slug('0/0', invalids='-')
-        assert False, 'This point must not be reached.'
-    except ValueError:
-        assert True, 'replacement must not be part of invalids set'
-
-    default_replacement = '-'
-    assert all(c not in normalize_slug(s, invalids=c)
-               for c in invalids if c != default_replacement), \
-        "Slugs don't contain invalid chars"
+    assert all(c not in normalize_slug(s, replacement, invalids=c)
+               for c in invalids if c not in replacement), \
+        'Slugs dont contain invalid chars'
 
 
 @given(s=text(), p=text())

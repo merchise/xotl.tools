@@ -314,17 +314,17 @@ def get_mime_filter(mime_start):
 
 
 def nice_size(size):
-    '''Formats `size` to a nice human-friendly format by appending one of
-    `Kilo`, `Mega`, `Giga` and `Tera` suffix.
+    '''Formats `size` to a nice human-friendly format by appending one of `Kilo`,
+    `Mega`, `Giga`, `Tera`, `Peta`, or `Eta` suffix.
 
     '''
     tails = ' KMGTPE'
-    i, high = 0, len(tails) - 1
-    while (size >= 1024) and (i < high):
+    order, highest = 0, len(tails) - 1
+    while (size >= 1024) and (order < highest):
         size /= 1024
-        i += 1
+        order += 1
     res = ('%.2f' % size).rstrip('0').rstrip('.')
-    return '%s%s' % (res, tails[i])
+    return '%s%s' % (res, tails[order])
 
 
 def stat(path):
