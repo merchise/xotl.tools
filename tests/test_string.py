@@ -59,9 +59,13 @@ def test_normalize_slug():
     assert normalize_slug('_x', '_') == '_x'
 
 
-@given(s=text(), invalids=text())
-@example(s='0/0', invalids='-')
-def test_normalize_slug_hypothesis(s, invalids):
+# FIXME: Dont filter; `normalize_slug` should consider this.
+valid_replacements = text().filter(lambda x: '\\' not in x)
+
+
+@given(s=text(), invalids=text(), replacement=valid_replacements)
+@example(s='0/0', invalids='-', replacement='-')
+def test_normalize_slug_hypothesis(s, invalids, replacement):
     from xoutil.string import normalize_slug
 
     assert ' ' not in normalize_slug(s), \
@@ -70,7 +74,8 @@ def test_normalize_slug_hypothesis(s, invalids):
     assert ' ' in normalize_slug(s + ' ', valids=' '), \
         'Slugs do contain spaces if explicitly allowed'
 
-    assert all(c not in normalize_slug(s, invalids=c) for c in invalids), \
+    assert all(c not in normalize_slug(s, replacement, invalids=c)
+               for c in invalids if c not in replacement), \
         'Slugs dont contain invalid chars'
 
 

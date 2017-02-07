@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.string
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
@@ -408,19 +408,25 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     Replace unwanted characters by `replacement`, repetition of given pattern
     will be converted to only one instance.
 
+    .. warning:: There's a known bug when `replacement` contains '\'.
+
     ``[_a-z0-9]`` are assumed as valid characters.  Extra arguments can modify
     this standard behaviour:
 
     :param invalids: Any collection of characters added to these that are
-           normally invalids (non-ascii or not included in valid characters).
-           Boolean ``True`` can be passed as a synonymous of ``"_"`` for
-           compatibility with old ``invalid_underscore`` argument.  ``False``
-           or ``None`` are assumed as an empty set for invalid characters.
+           normally invalid in the provided `value`. (non-ascii or not
+           included in valid characters).  Boolean ``True`` can be passed as a
+           synonymous of ``"_"`` for compatibility with old
+           ``invalid_underscore`` argument.  ``False`` or ``None`` are assumed
+           as an empty set for invalid characters.
 
     :param valids: A collection of extra valid characters (all non-ascii
            characters are ignored).  This parameter could be either a valid
            string, any iterator of valid strings of characters, or ``None`` to
            use only default valid characters (See above).
+
+    .. warning:: The result may contain characters in `invalids` if
+                 `replacements` does.
 
     Parameters `value` and `replacement` could be of any (non-string) type,
     these values are normalized and converted to lower-case ASCII strings.
@@ -464,6 +470,9 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
 
     .. versionchanged:: 1.6.6 Replaced the `invalid_underscore` paremeter by
        `invalids`.  Added the `valids` parameter.
+
+    .. versionchanged:: 1.7.2 Clarified the role of `invalids` with regards to
+       `replacement`.
 
     '''
     import re
