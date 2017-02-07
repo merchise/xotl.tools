@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.versions
 # ---------------------------------------------------------------------
-# Copyright (c) 2016 Merchise and Contributors
+# Copyright (c) 2016-2017 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
