@@ -91,6 +91,10 @@ Included boundary conditions
 
 .. autofunction:: pred(func, skipargs=True)
 
+.. autofunction:: until_errors(*errors)
+
+.. autofunction:: until(time=None, times=None, errors=None)
+
 
 Chaining several boundary conditions
 ====================================
@@ -197,10 +201,9 @@ b) A looping structure that tests the condition has not been met and yields
 c) The ``yield True`` statement outside the loop to indicate the boundary
    condition has been met.
 
-This pattern is not an accident.  As an exception see the code for
-`whenall`:func: and `whenany`:func:.  They lack the first standalone `yield
-False` because they must not assume all its subordinate predicates will ignore
-the first message.
+This pattern is not an accident.  Exceptionally `whenall`:func: and
+`whenany`:func: lack the first standalone `yield False` because they must not
+assume all its subordinate predicates will ignore the first message.
 
 
 Internal API
@@ -228,7 +231,6 @@ but we may only spent about 60 seconds to send as many emails as we can.  If
 our emails are reasonably small (i.e will be delivered to the SMTP server in a
 few miliseconds) we could use the `timed`:func: predicate to bound the
 execution of the task::
-
 
     @timed(50)
     def send_emails():
@@ -271,9 +273,9 @@ as much as it can and then send as many messages as it can.  Both things
 should be done under a given amount of time, however the accumulated size of
 sent messages should not surpass a threshold of bytes to avoid congestion.
 
-For this task you may use both `timed`:func: and `accumulated`:func:.  Notice
-that you to apply `accumulated`:func: only to the process of sending the
-messages and the `timed` boundary to the overall process.
+For this task you may use both `timed`:func: and `accumulated`:func:.  But you
+must apply `accumulated`:func: only to the process of sending the messages and
+the `timed` boundary to the overall process.
 
 This can be accomplished like this:
 
@@ -282,13 +284,16 @@ This can be accomplished like this:
 
    def communicate(interval, bandwidth):
        from itertools import chain as meld
+
        def receive():
            for message in Inbox.receive():
               yield message
+
        @accumulated(bandwith, 'size')
        def send():
            for message in Outbox.messages():
                yield message
+
        @timed(interval)
        def execute():
            for _ in meld(receive(), send.generate()):

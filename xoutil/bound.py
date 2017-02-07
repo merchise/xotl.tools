@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.bound
 # ---------------------------------------------------------------------
-# Copyright (c) 2014-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -115,8 +115,13 @@ class BoundaryCondition(object):
     arguments they will be used to instantiate the `Bounded`:class: subclass,
     ie. this case allows only a single argument `target`.
 
+    If `errors` is not None it should be a tuple of exceptions to catch and
+    throw inside the boundary condition definition.  Other exceptions, beside
+    GeneratorExit and StopIteration, are not handled (so the bubble up).  See
+    `until_error`:func:.
+
     '''
-    def __new__(cls, definition, name=None):
+    def __new__(cls, definition, name=None, errors=None):
         from types import FunctionType
         if not isinstance(definition, FunctionType):
             raise TypeError('"definition" must be a function')
@@ -127,7 +132,7 @@ class BoundaryCondition(object):
         result.name = name  # needs to be set here or it'll be None
         return result
 
-    def __init__(self, definition, name=None):
+    def __init__(self, definition, name=None, errors=None):
         from inspect import getargspec
         spec = getargspec(definition)
         self.args = spec[0]
@@ -135,6 +140,9 @@ class BoundaryCondition(object):
         self.varargs = spec[1]
         self.varkwargs = spec[2]
         self.definition = definition
+        if not errors:
+            errors = (Exception, )
+        self.errors = errors
 
     def __str__(self):
         return str('boundary %s(...)' % self.name)
@@ -176,6 +184,8 @@ class BoundaryCondition(object):
                         yield data
                     except (GeneratorExit, StopIteration):
                         stop = True
+                    except self.errors as error:
+                        stop = boundary.throw(error)
                     else:
                         try:
                             stop = boundary.send(data)
@@ -230,7 +240,7 @@ class BoundaryCondition(object):
 
 
 @decorator
-def boundary(definition, name=None, base=BoundaryCondition):
+def boundary(definition, name=None, base=BoundaryCondition, errors=None):
     '''Helper to define a boundary condition.
 
     The `definition` must be a function that returns a generator.  The
@@ -280,7 +290,7 @@ def boundary(definition, name=None, base=BoundaryCondition):
 
     '''
     from functools import update_wrapper
-    result = base(definition, name=name)
+    result = base(definition, name=name, errors=errors)
     return update_wrapper(result, definition)
 
 
@@ -403,6 +413,80 @@ def pred(func, skipargs=True):
     yield True
 
 
+def until_errors(*errors):
+    '''Becomes True after any of `errors` has been raised.
+
+    Any other exceptions (except GeneratorExit) is propagated.  You must pass
+    at least an error.
+
+    Normally this will allow some possibly long jobs to be interrupted
+    (SoftTimeLimitException in celery task, for instance) but leave some time
+    for the caller to clean up things.
+
+    It's assumed that your job can be properly *finalized* after any of the
+    given exceptions has been raised.
+
+    '''
+    if not errors:
+        raise TypeError('catch must be called with at least an exception')
+    elif any(not issubclass(e, Exception) for e in errors):
+        raise TypeError(
+            'catch must be called only with subclasses of Exception'
+        )
+    if any(issubclass(e, GeneratorExit) for e in errors):
+        raise TypeError('You cannot catch GeneratorExit')
+
+    @boundary(errors=errors)
+    def _catch():
+        yield False
+        try:
+            while True:
+                yield False
+        except errors:
+            yield True
+    return _catch()
+
+
+def until(**kwargs):
+    '''An idiomatic alias to other boundary definitions.
+
+    - ``until(maxtime=n)`` is the same as ``timed(n)``.
+
+    - ``until(times=n)`` is the same as ``times(n)``.
+
+    - ``until(pred=func, skipargs=skip)`` is the same as
+      ``pred(func, skipargs=skip)``.
+
+    - ``until(errors=errors)`` is the same as ``until_errors(*errors)``.
+
+    - ``until(accumulate=mass, path=path, initial=initial)`` is the same as
+       ``accumulated(mass, *path.split('.'), initial=initial)``
+
+    .. warning:: You cannot mix many calls.
+
+    '''
+    maxtime = kwargs.pop('maxtime', None)
+    if maxtime:
+        return timed(maxtime, **kwargs)
+    n = kwargs.pop('times', None)
+    if n:
+        return times(n, **kwargs)
+    func = kwargs.pop('pred', None)
+    if func:
+        return pred(func, **kwargs)
+    errors = kwargs.pop('errors', None)
+    if errors:
+        return until_errors(*errors, **kwargs)
+    mass = kwargs.pop('accumulate', None)
+    if mass:
+        path = kwargs.pop('path', None)
+        if path:
+            return accumulated(mass, *path.split('.'), **kwargs)
+        else:
+            return accumulated(mass, **kwargs)
+    raise TypeError
+
+
 class HighLevelBoundary(BoundaryCondition):
     '''Boundary class for high-level boundary conditions.
 
@@ -474,8 +558,7 @@ def whenall(*subordinates):
     for pred in preds:
         next(pred)
     try:
-        while preds:  # When we are out of preds it means all have yielded
-                      # True
+        while preds:  # out of preds it means all have yielded True
             data = yield False
             i = 0
             while preds and i < len(preds):

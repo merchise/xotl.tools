@@ -2,9 +2,9 @@
 
 - Changes involving :mod:`xoutil.collections`:
 
-  - Moves SmartDict and SortedSmartDict from `xoutil.data` to
-    `xoutil.collections`:mod: module.  They are still accessible -in version
-    previous to 1.7.2- from `!xoutil.data` but deprecated there.
+  - Moves SmartDict and SortedSmartDict from :mod:`xoutil.data` to
+    `xoutil.collections`:mod:. They are still accessible from
+    `!xoutil.data`:mod:.
 
   - Also there is now a :class:`xoutil.collections.SmartDictMixin` that
     implements the `update` behind all smart dicts in xoutil.

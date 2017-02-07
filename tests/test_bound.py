@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # test_routines
-#----------------------------------------------------------------------
-# Copyright (c) 2014, 2016 Merchise Autrement [~º/~] and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -10,7 +10,6 @@
 # package.
 #
 # Created on 2014-07-21
-
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -32,19 +31,46 @@ def fibonacci(wait=None):
 
 class TestBoundedWithStandardPredicates(unittest.TestCase):
     def test_times(self):
-        from xoutil.bound import times
+        from xoutil.bound import times, until
         fib8 = times(8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
         self.assertEquals(fib8(), 21)
+
+        fib8 = until(times=8)(fibonacci)
+        # Fibonacci numbers are yielded:
+        # 1 1 2 3 5 8 13 21
+        self.assertEquals(fib8(), 21)
+
 
         fib8 = times(8)(fibonacci)
 
         fib8gen = fib8.generate()  # exposed bounded generator
         self.assertEquals(tuple(fib8gen), (1, 1, 2, 3, 5, 8, 13, 21))
 
+    def test_until_error(self):
+        from xoutil.bound import until
+
+        d = dict(a=1, b=2, c=3, d=4)
+
+        @until(errors=(KeyError, ))
+        def getall(d, *keys):
+            for k in keys:
+                yield d[k]
+
+        assert d['d'] == getall(d, 'a', 'b', 'd')
+        assert d['a'] == getall(d, 'a', 'kkk')
+
+        @until(errors=(ValueError, ))
+        def getall(d, *keys):
+            for k in keys:
+                yield d[k]
+
+        with self.assertRaises(KeyError):
+            getall(d, 'kkk')
+
     def test_timed(self):
-        from xoutil.bound import timed
+        from xoutil.bound import timed, until
         fib10ms = timed(1/100)(fibonacci)
         # Since the wait time below will be larger than the allowed execution
         # (10 ms) fib1ms will only be able to yield a single value (notice
@@ -52,12 +78,21 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         res = fib10ms(wait=1/10)
         self.assertEquals(res, 1)
 
+        fib10ms = until(maxtime=1/100)(fibonacci)
+        # Since the wait time below will be larger than the allowed execution
+        # (10 ms) fib1ms will only be able to yield a single value (notice
+        # that `timed` always allow a cycle.)
+        res = fib10ms(wait=1/10)
+        self.assertEquals(res, 1)
+
+
         # If the time boundary is too low timed will allow not allow a cycle.
         fib0ms = timed(0)(fibonacci)
         res = fib0ms()
         self.assertEquals(res, None)
 
     def test_accumulated(self):
+        from xoutil.bound import until
         from xoutil.bound import accumulated, timed, times
         # 1 + 1 + 2 + 3 + 5 + 8 + 13 + 21 + 34 + 55 + 89 + 144 = 376
         # ^   ^        ...                                  ^
@@ -67,6 +102,8 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         # V   V        ...                                  V     V
         # 1 + 1 + 2 + 3 + 5 + 8 + 13 + 21 + 34 + 55 + 89 + 144 + 233 = 609
         fib500 = accumulated(500)(fibonacci)
+        self.assertEqual(fib500(), 233)
+        fib500 = until(accumulate=500)(fibonacci)
         self.assertEqual(fib500(), 233)
 
         fib500timed = whenall(accumulated(500), timed(0))(fibonacci)
@@ -108,9 +145,8 @@ class TestHigherLevelPreds(unittest.TestCase):
         def bailout():
             yield
             try:
-                yield False  # Let the first iteration
-                while True:
-                    yield True
+                yield False
+                yield True
             except GeneratorExit:
                 pass
             else:

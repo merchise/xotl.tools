@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.ids
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -23,8 +23,8 @@ UUIDs constants `NAMESPACE_DNS`, `NAMESPACE_URL`, `NAMESPACE_OID` and
 
 This module also contains:
 
-- `uuid`:func:\ : Return a string with a GUID representation, random if the
-  argument is True, or a host ID if not.
+- `str_uuid`:func:\ : Return a string with a GUID representation, random if
+  the argument is True, or a host ID if not.
 
 - `slugify`:func:\ : Convert any object to a valid slug (mainly used with
   string parameters).
