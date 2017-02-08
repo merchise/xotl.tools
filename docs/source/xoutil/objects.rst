@@ -1,4 +1,4 @@
-:mod:`xoutil.objects` - Functions for dealing with objects
+`xoutil.objects`:mod: - Functions for dealing with objects
 ==========================================================
 
 .. automodule:: xoutil.objects
@@ -28,11 +28,11 @@
 
 .. function:: get_and_del_attr(obj, name, default=None)
 
-   Deprecated alias for :func:`popattr`.
+   Deprecated alias for `popattr`:func:.
 
 .. function:: get_and_del_first_of(source, *keys, default=None)
 
-   Deprecated alias for :func:`pop_first_of`.
+   Deprecated alias for `pop_first_of`:func:.
 
 .. class:: metaclass(meta, **kwargs)
 

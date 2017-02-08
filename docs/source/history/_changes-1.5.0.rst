@@ -1,25 +1,25 @@
 - Lots of removals.  Practically all deprecated since 1.4.0 (or before).  Let's
   list a few but not all:
 
-  - Both :obj:`xoutil.Unset` and :obj:`xoutil.Ignored` are no longer
-    re-exported in :mod:`xoutil.types`.
+  - Both `xoutil.Unset`:obj: and `xoutil.Ignored`:obj: are no longer
+    re-exported in `xoutil.types`:mod:.
 
-  - Removes module :mod:`!xoutil.decorator.compat`, since it only contained the
-    deprecated decorator :func:`!xoutil.decorator.compat.metaclass` in favor of
-    :func:`xoutil.objects.metaclass`.
+  - Removes module `!xoutil.decorator.compat`:mod:, since it only contained the
+    deprecated decorator `!xoutil.decorator.compat.metaclass`:func: in favor of
+    `xoutil.objects.metaclass`:func:.
 
-  - Removes ``nameof`` and ``full_nameof`` from :mod:`xoutil.objects` in favor
-    of :func:`xoutil.names.nameof`.
+  - Removes ``nameof`` and ``full_nameof`` from `xoutil.objects`:mod: in favor
+    of `xoutil.names.nameof`:func:.
 
-  - Removes ``pow_`` alias of :func:`xoutil.functools.power`.
+  - Removes ``pow_`` alias of `xoutil.functools.power`:func:.
 
   - Removes the deprecated ``xoutil.decorator.decorator`` function.  Use
-    :func:`xoutil.decorator.meta.decorator` instead.
+    `xoutil.decorator.meta.decorator`:func: instead.
 
-  - Now :func:`~xoutil.modules.get_module_path` is documented and in module
-    :mod:`xoutil.modules`.
+  - Now `~xoutil.modules.get_module_path`:func: is documented and in module
+    `xoutil.modules`:mod:.
 
 - Also we have documented a few more functions, including
-  :func:`xoutil.fs.path.rtrim`.
+  `xoutil.fs.path.rtrim`:func:.
 
-- All modules below :mod:`!xoutil.aop` are in risk and are being deprecated.
+- All modules below `!xoutil.aop`:mod: are in risk and are being deprecated.

@@ -1,4 +1,4 @@
-:mod:`xoutil.crypto` - Other cryptographic services
+`xoutil.crypto`:mod: - Other cryptographic services
 ===================================================
 
 .. automodule:: xoutil.crypto

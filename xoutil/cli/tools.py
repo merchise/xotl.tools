@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cli.tools
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -15,7 +15,7 @@
 
 - `program_name`:func:\ : calculate the program name from "sys.argv[0]".
 
-- `command_name`:fucn:\ : calculate command names using class names in lower
+- `command_name`:func:\ : calculate command names using class names in lower
    case inserting a hyphen before each new capital letter.
 
 '''

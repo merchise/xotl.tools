@@ -1,4 +1,4 @@
-:mod:`xoutil.logger` - Standard logger helpers
+`xoutil.logger`:mod: - Standard logger helpers
 ==============================================
 
 .. module:: xoutil.logger
