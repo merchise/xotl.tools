@@ -290,7 +290,7 @@ def first_n(iterable, n=1, fill=Unset):
 
 
 def ungroup(iterator):
-    '''Reverses the operation of a `itertools.groupby`:func: (or similar).
+    '''Reverses the operation of `itertools.groupby`:func: (or similar).
 
     The `iterator` should produce pairs of ``(_, xs)``; where ``xs`` is
     another iterator (or iterable).
@@ -301,33 +301,33 @@ def ungroup(iterator):
 
     Example::
 
-    >>> def groups():
-    ...    def chunk(s):
-    ...       for x in range(s, s+3):
-    ...           print('Yielding x:', x)
-    ...           yield x
-    ...
-    ...    for g in range(2):
-    ...       print('Yielding group', g)
-    ...       yield g, chunk(g)
+      >>> def groups():
+      ...    def chunk(s):
+      ...       for x in range(s, s+3):
+      ...           print('Yielding x:', x)
+      ...           yield x
+      ...
+      ...    for g in range(2):
+      ...       print('Yielding group', g)
+      ...       yield g, chunk(g)
 
-    >>> list(ungroup(groups()))
-    Yielding group 0
-    Yielding x: 0
-    Yielding x: 1
-    Yielding x: 2
-    Yielding group 1
-    Yielding x: 1
-    Yielding x: 2
-    Yielding x: 3
-    [0, 1, 2, 1, 2, 3]
+      >>> list(ungroup(groups()))
+      Yielding group 0
+      Yielding x: 0
+      Yielding x: 1
+      Yielding x: 2
+      Yielding group 1
+      Yielding x: 1
+      Yielding x: 2
+      Yielding x: 3
+      [0, 1, 2, 1, 2, 3]
 
     This is not the same as ``itertools.chain(*(xs for _, xs in iterator))``::
 
-    >>> import itertools
-    >>> xs = itertools.chain(*(xs for _, xs in groups()))
-    Yielding group 0
-    Yielding group 1
+      >>> import itertools
+      >>> xs = itertools.chain(*(xs for _, xs in groups()))
+      Yielding group 0
+      Yielding group 1
 
     The iterator was consumed just to create the arguments to ``chain()``.
 
