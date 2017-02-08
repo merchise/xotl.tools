@@ -105,21 +105,21 @@ We divide xoutil modules into 4 tiers:
    instance, `xoutil.type.UnsetType` is actually implemented in
    ``xoutil._values``.
 
-   Also the exported module :mod:`xoutil.compat` is this tier.
+   Also the exported module `xoutil.compat`:mod: is this tier.
 
 #. Tier 1
 
    In this tier we have:
 
-   - :mod:`xoutil.decorator.meta`.  This is to allow the definition of
+   - `xoutil.decorator.meta`:mod:.  This is to allow the definition of
      decorators in other modules.
 
-   - :mod:`xoutil.names`.  This is to allow the use of
-     :class:`xoutil.names.namelist` for the ``__all__`` attribute of other
+   - `xoutil.names`:mod:.  This is to allow the use of
+     `xoutil.names.namelist`:class: for the ``__all__`` attribute of other
      modules.
 
-   - :mod:`xoutil.deprecation`.  It **must not** depend on any other module
-     besides :mod:`xoutil.compat`.  Many modules in `xoutil` will use this
+   - `xoutil.deprecation`:mod:.  It **must not** depend on any other module
+     besides `xoutil.compat`:mod:.  Many modules in `xoutil` will use this
      module at import time to declare deprecated features.
 
 #. Tier 2
@@ -128,16 +128,16 @@ We divide xoutil modules into 4 tiers:
    modules, and that export features that could be imported at the module
    level.
 
-   This tier only has the :mod:`xoutil.modules`.  Both
-   :func:`xoutil.modules.modulepropery` and :func:`xoutil.modules.modulemethod`
-   are meant be used at module level definitions, so they are likely to be
-   imported at module level.
+   This tier only has the `xoutil.modules`:mod:.  Both
+   `xoutil.modules.modulepropery`:func: and
+   `xoutil.modules.modulemethod`:func: are meant be used at module level
+   definitions, so they are likely to be imported at module level.
 
 #. Tier 3
 
    The rest of the modules.
 
-   In this tier, :mod:`xoutil.objects` and :mod:`xoutil.types` are kings.  But
+   In this tier, `xoutil.objects`:mod: and `xoutil.types`:mod: are kings.  But
    in order to allow the import of other modules the following pair of rules
    are placed:
 
@@ -148,7 +148,7 @@ We divide xoutil modules into 4 tiers:
 
   This entails that you can't define a function that must be a module level
   import, like a decorator for other functions.  For that reason, decorators
-  are mostly placed in the :mod:`xoutil.decorator` module.
+  are mostly placed in the `xoutil.decorator`:mod: module.
 
 
 The tiers above are a "logical suggestion" of how xoutil modules are organized

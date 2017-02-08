@@ -1,4 +1,4 @@
-- Added the module :mod:`xoutil.records`.
+- Added the module `xoutil.records`:mod:.
 
 - Deleted deprecated ``xoutil.compat``.
 

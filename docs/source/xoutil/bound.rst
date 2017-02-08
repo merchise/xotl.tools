@@ -1,6 +1,6 @@
-======================================================================
- :mod:`xoutil.bound` -- Helpers for bounded execution of co-routines.
-======================================================================
+=====================================================================
+ `xoutil.bound`:mod: -- Helpers for bounded execution of co-routines
+=====================================================================
 
 .. module:: xoutil.bound
 
@@ -15,7 +15,7 @@ A bounded execution model
 =========================
 
 Some features are easy to implement using a generator or co-routine
-(:pep:`342`).  For instance, you might want to "report units of work" one at a
+(`342`:pep:).  For instance, you might want to "report units of work" one at a
 time.  These kind of features could be easily programmed without any `bounds`
 whatsoever, and then you might "weave" the bounds.
 

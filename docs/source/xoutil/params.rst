@@ -1,5 +1,5 @@
 =========================================================
- :mod:`xoutil.params` -- Basic function argument manager
+ `xoutil.params`:mod: -- Basic function argument manager
 =========================================================
 
 .. automodule:: xoutil.params

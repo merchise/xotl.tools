@@ -1,15 +1,13 @@
 Copyright and Licence
 =====================
 
-Copyright (c) 2015 Merchise and Contributors.
-
-Copyright (c) 2013, 2014 Merchise Autrement and Contributors.
+Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors.
 
 Copyright (c) 2012 Medardo Rodríguez.
 
 This software is released under terms similar to the Python Software
-Foundation (PSF) licence for Python 3.2 as stated :ref:`below
-<merchise-license-psf>`.
+Foundation (PSF) licence for Python 3.2 as stated `below
+<merchise-license-psf>`:ref:.
 
 Three modules inside this package are backports from Python 3.2.3's standard
 library and the PSF retains the copyright.

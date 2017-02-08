@@ -36,5 +36,5 @@ Contents:
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`search`
+* `genindex`:ref:
+* `search`:ref:

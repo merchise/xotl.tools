@@ -25,17 +25,17 @@
    changes.
 
    .. note:: In Python 3.3+ this is an alias for
-      :class:`types.MappingProxyType` in the standard library.
+      `types.MappingProxyType`:class: in the standard library.
 
 
 .. class:: SimpleNamespace
 
    .. versionadded:: 1.5.5
 
-   A simple :class:`object` subclass that provides attribute access to its
+   A simple `object`:class: subclass that provides attribute access to its
    namespace, as well as a meaningful repr.
 
-   Unlike :class:`object`, with ``SimpleNamespace`` you can add and remove
+   Unlike `object`:class:, with ``SimpleNamespace`` you can add and remove
    attributes.  If a ``SimpleNamespace`` object is initialized with keyword
    arguments, those are directly added to the underlying namespace.
 
@@ -52,11 +52,11 @@
                return self.__dict__ == other.__dict__
 
    ``SimpleNamespace`` may be useful as a replacement for ``class NS: pass``.
-   However, for a structured record type use :func:`~collections.namedtuple`
+   However, for a structured record type use `~collections.namedtuple`:func:
    instead.
 
    .. note:: In Python 3.4+ this is an alias to
-             :class:`types.SimpleNamespace`.
+             `types.SimpleNamespace`:class:.
 
 .. autoclass:: DynamicClassAttribute
 

@@ -1,4 +1,4 @@
-:mod:`xoutil.fs.path` -- Path utilities
+`xoutil.fs.path`:mod: -- Path utilities
 =======================================
 
 .. automodule:: xoutil.fs.path

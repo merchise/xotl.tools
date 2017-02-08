@@ -1,4 +1,4 @@
-:mod:`xoutil.iterators` -   Functions creating iterators for efficient looping
+`xoutil.iterators`:mod: -   Functions creating iterators for efficient looping
 ==============================================================================
 
 .. automodule:: xoutil.iterators
@@ -36,10 +36,10 @@
    exhausted.
 
    If one of the iterables is potentially infinite, then the
-   :func:`zip_longest` function should be wrapped with something that limits
-   the number of calls (for example :func:`islice` or :func:`takewhile`). If
+   `zip_longest`:func: function should be wrapped with something that limits
+   the number of calls (for example `islice`:func: or `takewhile`:func:).  If
    not specified, `fillvalue` defaults to None.
 
-   This function is actually an alias to :func:`itertools.izip_longest` in
-   Python 2.7, and an alias to :func:`itertools.zip_longest` in Python
+   This function is actually an alias to `itertools.izip_longest`:func: in
+   Python 2.7, and an alias to `itertools.zip_longest`:func: in Python
    3.3.

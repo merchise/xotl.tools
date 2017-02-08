@@ -18,7 +18,7 @@
    the instance dictionary).
 
    To allow access to the original function for introspection and other
-   purposes (e.g.  bypassing a caching decorator such as :func:`lru_cache`),
+   purposes (e.g.  bypassing a caching decorator such as `lru_cache`:func:),
    this function automatically adds a `__wrapped__` attribute to the wrapper
    that refers to the original function.
 
@@ -28,7 +28,7 @@
    the wrapper definition rather than the original function definition, which
    is typically less than helpful.
 
-   :func:`update_wrapper` may be used with callables other than functions.
+   `update_wrapper`:func: may be used with callables other than functions.
    Any attributes named in assigned or updated that are missing from the
    object being wrapped are ignored (i.e.  this function will not attempt to
    set them on the wrapper function).  AttributeError is still raised if the

@@ -1,4 +1,4 @@
-:mod:`xoutil.decorator` - Several decorators
+`xoutil.decorator`:mod: - Several decorators
 ============================================
 
 .. module:: xoutil.decorator

@@ -1,6 +1,6 @@
-====================================================
-:mod:`xoutil.html` -- Helpers for manipulating HTML.
-====================================================
+=====================================================
+ `xoutil.html`:mod: -- Helpers for manipulating HTML
+=====================================================
 
 .. automodule:: xoutil.html
    :members: escape

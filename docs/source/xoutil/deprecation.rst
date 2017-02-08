@@ -1,4 +1,4 @@
-:mod:`xoutil.deprecation` - Utils for marking deprecated elements
+`xoutil.deprecation`:mod: - Utils for marking deprecated elements
 =================================================================
 
 .. automodule:: xoutil.deprecation

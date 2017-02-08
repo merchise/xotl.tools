@@ -15,19 +15,19 @@
   classmethod of metaclasses.  This is fully supported in Python 3.0+ and
   partially mocked in Python 2.7.
 
-- Backported :class:`xoutil.types.MappingProxyType` from Python 3.3.
+- Backported `xoutil.types.MappingProxyType`:class: from Python 3.3.
 
-- Backported :class:`xoutil.types.SimpleNamespace` from Python 3.4.
+- Backported `xoutil.types.SimpleNamespace`:class: from Python 3.4.
 
-- Backported :class:`xoutil.types.DynamicClassAttribute` from Python 3.4
+- Backported `xoutil.types.DynamicClassAttribute`:class: from Python 3.4
 
-- Added function :func:`xoutil.iterators.delete_duplicates`.
+- Added function `xoutil.iterators.delete_duplicates`:func:.
 
-- Added parameter `ignore_underscore` to :func:`xoutil.string.normalize_slug`.
+- Added parameter `ignore_underscore` to `xoutil.string.normalize_slug`:func:.
 
-- Added module :mod:`xoutil.crypto` with a function for generating passwords.
+- Added module `xoutil.crypto`:mod: with a function for generating passwords.
 
-- Fixed several bug in :func:`xoutil.functools.compose`.
+- Fixed several bug in `xoutil.functools.compose`:func:.
 
 - Makes `xoutil.fs.path.rtrim`:func: have a default value for the amount of
   step to traverse.

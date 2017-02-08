@@ -76,7 +76,7 @@ We have backported several Python 3.3 features but not all.
 
    .. method:: new_child(m=None)
 
-      Returns a new :class:`ChainMap` containing a new map followed by all of
+      Returns a new `ChainMap`:class: containing a new map followed by all of
       the maps in the current instance.  If ``m`` is specified, it becomes the
       new map at the front of the list of mappings; if not specified, an empty
       dict is used, so that a call to ``d.new_child()`` is equivalent to:
