@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.iterators
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -26,6 +26,7 @@ from xoutil import Unset
 
 from xoutil.deprecation import deprecated
 
+# TODO: Evaluate rename to 'xoutil.future.itertools'.
 
 def first_non_null(iterable, default=None):
     '''Returns the first value from iterable which is non-null.
