@@ -1,0 +1,1 @@
+- Add `xoutil.iterators.ungroup`:func:
