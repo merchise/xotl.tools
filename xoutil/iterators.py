@@ -322,7 +322,7 @@ def ungroup(iterator):
       Yielding x: 3
       [0, 1, 2, 1, 2, 3]
 
-    This is not the same as ``itertools.chain(*(xs for _, xs in iterator))``::
+    This is not the same as::
 
       >>> import itertools
       >>> xs = itertools.chain(*(xs for _, xs in groups()))
