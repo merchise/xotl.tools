@@ -137,8 +137,7 @@ def dict_update_new(target, source):
 
 @deprecated('generator expression')
 def fake_dict_iteritems(source):
-    '''Iterate (key, value) in a source that have defined method "keys" and
-     :meth:`~object.__getitem__`.
+    '''Iterate (key, value) in a source that have defined method "keys" and :meth:`~object.__getitem__`.
 
     .. warning:: Deprecated since 1.7.0.  This was actually in risk since
                  1.4.0.
