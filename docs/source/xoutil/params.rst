@@ -6,6 +6,8 @@
    :members: Coercer, TypeCheck, NoneOrTypeCheck, CheckAndCast, LogicalCheck,
              SafeCheck, MultiCheck
 
+.. todo:: All previous members are moved to `monads` or `cl` modules.
+
 Because the nature of this tool, the term "parameter" will be used in this
 documentation to reference those of the represented client function, and the
 term "argument" for referencing those pertaining to `ParamManager`:class:
