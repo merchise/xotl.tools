@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.eight.exceptions
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -12,15 +12,55 @@
 #
 # Created on 2015-10-14
 
-'''Compatibility exceptions between Python 2 and 3.
+'''Compatibility for exceptions between Python 2 and 3.
 
-Python 2 defines an module named `exceptions` but Python 3 doesn't.  Also,
-there are some exception classes defined in Python 2 but not in Python 3.
+Python 2 defines an module named `exceptions` but Python 3 doesn't.  We
+decided not to implement something similar, for example, in
+`xoutil.future`:mod: package because all these exception classes are
+built-ins in both Python major versions.
 
-In Python, `with_traceback` method will be assigned to function similar that
-in Python 3, the problem is to use the raise statement with this syntax.  To
-accomplish with similar syntax in Python 2 or 3, use the new created
-`BaseException.throw`:meth:.
+There are some exception classes defined in Python 2 but not in Python 3, to
+keep compatibility we do some adjusts here with `BaseException`:class: and
+`StandardError`:class: classes.
+
+In Python 2, the syntax for ``raise`` statement could include at most 3
+arguments; that syntax was completelly changed in Python 3:
+`~BaseException.with_traceback`:meth: method will be needed to specify a
+trace-back.  Unfortunately, attributes can't be set to built-in/extension
+types, as `BaseException`:class: class.  So, we create a function
+(`throw`:func:) you can use to replace `~BaseException.with_traceback`:meth:,
+so ``raise error.with_traceback(tb)`` in Python 3, will be the same as
+``throw(error, tb)`` in both versions.
+
+In the next example, is raised a 'division by zero' but as it would be
+occurred in the 'TypeError' line::
+
+    >>> import sys
+    >>> from xoutil.eight.exceptions import throw
+    >>> try:
+    ...     raise TypeError('xxx')
+    ... except:
+    ...     tb = sys.exc_info()[2]
+    ...     try:
+    ...         1/0
+    ...     except Exception as error:
+    ...         throw(error, tb)
+
+This "bizarre" example is equivalent -in Python 3- to::
+
+    >>> import sys
+    >>> from xoutil.eight.exceptions import throw
+    >>> try:
+    ...     raise TypeError('xxx')
+    ... except:
+    ...     tb = sys.exc_info()[2]
+    ...     try:
+    ...         1/0
+    ...     except Exception as error:
+    ...         raise error.with_traceback(tb)
+
+In Python 3 there is a new syntax (``raise error [from cause]``) no covered in
+this module yet.  This will be subject for future development.
 
 '''
 
@@ -40,7 +80,7 @@ except NameError:
 
 
 try:
-    with_traceback = BaseException.with_traceback
+    with_traceback = BaseException.with_traceback    # only in Python 3
 except AttributeError:
     from ._past2 import throw
 
@@ -50,7 +90,7 @@ except AttributeError:
         return self
 else:
     def throw(self, tb=None):
-        '''Syntax unify with Python 3 for ``raise error.with_traceback(tb)``.
+        '''Syntax unify with Python 3 for ``raise error.with_traceback(tb)``.
 
         Instead of use the Python `raise` statement, use ``throw(error, tb)``.
 
