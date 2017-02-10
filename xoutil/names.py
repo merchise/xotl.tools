@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.names
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -285,7 +285,7 @@ def nameof(*args, **kwargs):
     used instead.
 
     If `inner` is True we try to extract the name by introspection instead of
-    looking for the object in the frame stack::
+    looking for the object in the frame stack.
 
     If `full` is True the full identifier of the object is preferred.  In this
     case if `inner` is False the local-name for the object is found.  If
