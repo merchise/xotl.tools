@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.api._errors
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -14,7 +14,7 @@
 
 '''Internal module for API errors.
 
-WTF: Unfortunately, exception management don't work with ABCs in Python 3.
+WTF: Unfortunately, exception management don't work with ABCs in Python 3.
 (See issue #\ 12029_).
 
 A mechanism compatible with all versions for this pattern could be found in
@@ -23,6 +23,8 @@ this module.
 .. _12029: http://bugs.python.org/issue12029
 
 '''
+
+# TODO: This code must be moved to 'xoutil.eight.exceptions'
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.eight.abc
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -12,11 +12,11 @@
 #
 # Created on 2015-10-18
 
-'''"""Abstract Base Classes (ABCs) according to PEP 3119."""
+'''Abstract Base Classes (ABCs) according to PEP 3119.
 
-Compatibility module between Python 2 and 3.
+Compatibility module between Python 2 and 3.
 
-This module defines one symbol that is defined in Python 3 as a class:
+This module defines one symbol that is defined in Python 3 as a class:
 
   class ABC(metaclass=ABCMeta):
       """Helper class that provides a standard way to create an ABC using

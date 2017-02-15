@@ -12,7 +12,7 @@
 #
 # Created 2016-08-31
 
-r'''Basic value checkers.
+r'''Monadic value checkers.
 
 A `Coercer`:class: is a concept that combine two elements: validity check and
 value moulding.  Most times only the first part is needed because the original
@@ -36,11 +36,8 @@ from xoutil.eight import type_name as _tname
 
 
 def _nameof(arg):
-    '''Obtain a nice name in a safe way.
-
-    A module internal.
-
-    '''
+    'Internal to obtain a nice name in a safe way.'
+    # TODO: Move this to a more general module
     try:
         res = arg.__name__
         _lambda_name = (lambda x: x).__name__

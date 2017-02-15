@@ -5,9 +5,9 @@
 # ---------------------------------------------------------------------
 #
 # Most of the code of this file is backported from Python 3.2 standard library
-# with minor modifications to make it work on Python 2.7. So, this file is
+# with minor modifications to make it works on Python 2.7. So, this file is
 # distributed under the terms of the Python Software Foundatation Licence for
-# Python 3.2.
+# Python 3.2.
 #
 # Created on 2013-02-22
 # Migrated to 'future' on 2016-09-16

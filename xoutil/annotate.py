@@ -12,7 +12,7 @@
 #
 # Created on Apr 3, 2012
 
-'''Provides Python 3k forward-compatible (:pep:`3107`) annotations.'''
+'''Provides Python 3k forward-compatible (:pep:`3107`) annotations.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -121,7 +121,7 @@ def _parse_signature(signature):
                     # FIXME: This modifies f_globals! Use f_builtins of the
                     # frame.
 
-                    # In Py3k (at least Python 3.2) builtins are not directly
+                    # In Py3k (at least Python 3.2) builtins are not directly
                     # in f_globals but inside a __builtins__ key.
                     builtins = f_globals.get('__builtins__', {})
                     dict_update_new(f_globals, builtins)
@@ -155,7 +155,7 @@ def _parse_signature(signature):
 
 @decorator
 def annotate(func, signature=None, **keyword_annotations):
-    '''Annotates a function with a Python 3k forward-compatible
+    '''Annotates a function with a Python 3k forward-compatible
     ``__annotations__`` mapping.
 
     See :pep:`3107` for more details about annotations.
@@ -167,7 +167,7 @@ def annotate(func, signature=None, **keyword_annotations):
         This string should follow the annotations syntax in :pep:`3107`. But
         there are several deviations from the PEP text:
 
-       - There's no support for the full syntax of Python 2 expressions; in
+       - There's no support for the full syntax of Python 2 expressions; in
          particular nested arguments are not supported since they are
          deprecated and are not valid in Py3k.
 

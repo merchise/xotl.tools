@@ -12,7 +12,7 @@
 #
 # Created 2015-07-13
 
-r'''Basic function argument manager.
+r'''Function argument manager.
 
 This module must avoid dependencies on modules that aren't basic enough that
 could be the use of this one itself.
@@ -110,8 +110,8 @@ def pos_default(args, caller=None, base_count=0):
                   raise KeyError(key)
 
     An exception is raised if more than one positional argument is given.
-    CALLER and BASE_COUNT optional arguments are used to complement message in
-    this case.
+    `caller` and `base_count` optional arguments are used to complement
+    message in this case.
 
     '''
     if args:

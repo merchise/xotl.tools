@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.api
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -36,7 +36,7 @@ concept of a kind defined in the API layer.
 In Python there is a very nice mechanism for this kind of mapping: "Abstract
 Base Classes (ABCs)".  Unfortunately it doesn't work for exceptions in some
 Python versions.  Because of that, this mechanism is extended for API errors
-in  internal module `xoutil.api._errors`:mod:.
+in the internal module `xoutil.api._errors`:mod:.
 
 '''
 

@@ -493,13 +493,14 @@ class strlist(list):
     '''Similar to list, but only intended for storing ``str`` instances.
 
     Constructors:
-        * strlist() -> new empty list
-        * strlist(collection) -> new list initialized from collection's items
-        * strlist(item, ...) -> new list initialized from severals items
+      * strlist() -> new empty list
+      * strlist(collection) -> new list initialized from collection's items
+      * strlist(item, ...) -> new list initialized from severals items
 
     Last versions of Python 2.x has a feature to use unicode as standard
     strings, but some object names can be only ``str``. To be compatible with
     Python 3.x in an easy way, use this list.
+
     '''
     def __init__(self, *args):
         if len(args) == 1:

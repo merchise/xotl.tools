@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.context
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -14,8 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Mar 9, 2011
-#
+# Created on 2011-03-09
 
 
 '''A context manager for execution context flags.'''
@@ -25,14 +23,15 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.tasking import local as _local
+from xoutil.tasking import local as LocalData
 from xoutil.eight.meta import metaclass
 from xoutil.future.collections import StackedDict
 
 __all__ = ('Context', 'context', 'NullContext')
 
 
-class LocalData(_local):
+class LocalData(LocalData):
+    '''Thread-local data for contexts.'''
     def __init__(self):
         super(LocalData, self).__init__()
         self.contexts = {}
@@ -68,7 +67,7 @@ class Context(metaclass(MetaContext), StackedDict):
         In context SOME_CONTEXT
 
     Note the difference creating the context and checking it: for entering a
-    context you should use ` context(name)`` for testing whether some piece of
+    context you should use ``context(name)`` for testing whether some piece of
     code is being executed inside a context you should use ``context[name]``;
     you may also use the syntax `name in context`.
 

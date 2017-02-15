@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.eight
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -11,15 +11,14 @@
 #
 # Created on 2015-02-26
 
-'''Xoutil extensions for writing code that runs on Python 2 and 3
+'''Python 2 and Python 3 compatibility.
 
 The name comes from (Manu's idea') "2 raised to the power of 3".
 
-There is an existing library written by "Benjamin Peterson" named `six`_, both
+There is an existing library written by "Benjamin Peterson" named six_, both
 (`xoutil.eight` and `six`) can be used together since this module don't claim
-to be a replacement of `six`, just some extra extensions.  Nevertheless, there
-are some simple definitions that even when are in `six` also are defined also
-here.
+to be a replacement of six_, just some extra extensions.  Nevertheless, there
+are some simple definitions that even when are in six_ also are defined here.
 
 This package also fixes some issues from PyPy interpreter.
 
@@ -86,7 +85,7 @@ except NameError:
 
 
 def typeof(obj):
-    '''Obtain the object's type (compatible with Python 2**3).'''
+    '''Obtain the object's type (compatible with Python 2**3).'''
     if _py3:
         return type(obj)
     else:
@@ -112,7 +111,7 @@ try:
     __intern = intern
 
     def intern(string):
-        # Avoid problems in Python 2.x when using unicode by default.
+        # Avoid problems in Python 2.x when using unicode by default.
         return __intern(str(str() + string))
 
     intern.__doc__ = __intern.__doc__

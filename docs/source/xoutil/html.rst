@@ -4,6 +4,8 @@
 
 .. automodule:: xoutil.html
    :members: escape
+   :deprecated:
+
 
 Sub-modules on this package
 ===========================
