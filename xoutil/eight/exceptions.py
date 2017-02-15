@@ -12,55 +12,57 @@
 #
 # Created on 2015-10-14
 
-'''Compatibility for exceptions between Python 2 and 3.
+'''Solve compatibility issues for exceptions handling.
 
-Python 2 defines an module named `exceptions` but Python 3 doesn't.  We
-decided not to implement something similar, for example, in
-`xoutil.future`:mod: package because all these exception classes are
-built-ins in both Python major versions.
+The syntax for the ``raise`` statement was changed in Python 3:
 
-There are some exception classes defined in Python 2 but not in Python 3, to
-keep compatibility we do some adjusts here with `BaseException`:class: and
-`StandardError`:class: classes.
+- ``with_traceback`` method will be needed to specify a trace-back; and
 
-In Python 2, the syntax for ``raise`` statement could include at most 3
-arguments; that syntax was completelly changed in Python 3:
-`~BaseException.with_traceback`:meth: method will be needed to specify a
-trace-back.  Unfortunately, attributes can't be set to built-in/extension
-types, as `BaseException`:class: class.  So, we create a function
-(`throw`:func:) you can use to replace `~BaseException.with_traceback`:meth:,
-so ``raise error.with_traceback(tb)`` in Python 3, will be the same as
-``throw(error, tb)`` in both versions.
+- ``[from cause]`` clause used for exception chaining (subject for future
+  development).
 
-In the next example, is raised a 'division by zero' but as it would be
-occurred in the 'TypeError' line::
+In the first case, the best solution would be to assign a ``with_traceback``
+method to the `BaseException`:class: in Python 2 (where is missing).
+Unfortunately, attributes can't be set to built-in/extension types.
 
-    >>> import sys
-    >>> from xoutil.eight.exceptions import throw
-    >>> try:
-    ...     raise TypeError('xxx')
-    ... except:
-    ...     tb = sys.exc_info()[2]
-    ...     try:
-    ...         1/0
-    ...     except Exception as error:
-    ...         throw(error, tb)
+To fulfills both concepts, an external function (`throw`:func:) is created in
+this module in order to replace new Python 3 ``raise`` syntax:
 
-This "bizarre" example is equivalent -in Python 3- to::
+- ``throw(error, traceback=tb)`` ≣ ``raise error.with_traceback(tb)``,
+
+- ``throw(error, cause=former_error)`` ≣ ``raise error from former_error``.
+
+See the next hypothetical example::
 
     >>> import sys
     >>> from xoutil.eight.exceptions import throw
     >>> try:
-    ...     raise TypeError('xxx')
-    ... except:
+    ...     StdError = StandardError
+    ... except NameError as cause:    # raised only in Python 3
     ...     tb = sys.exc_info()[2]
     ...     try:
-    ...         1/0
-    ...     except Exception as error:
-    ...         raise error.with_traceback(tb)
+    ...         from xoutil.eight.exceptions import StandardError as StdError
+    ...     except ImportError as error:    # old xoutil version?
+    ...         throw(error, traceback=tb, cause=cause)
 
-In Python 3 there is a new syntax (``raise error [from cause]``) no covered in
-this module yet.  This will be subject for future development.
+This example would be, using Python 3 syntax::
+
+    >>> import sys
+    >>> try:
+    ...     StdError = StandardError
+    ... except NameError as cause:    # raised only in Python 3
+    ...     tb = sys.exc_info()[2]
+    ...     try:
+    ...         from xoutil.eight.exceptions import StandardError as StdError
+    ...     except ImportError as error:    # old xoutil version?
+    ...         raise error.with_traceback(tb) from cause
+
+Python 2 defines a module named `exceptions` but Python 3 doesn't.  We decided
+not to implement something similar, for example, in `xoutil.future`:mod:
+package because all these exception classes are built-ins in both Python major
+versions, so use any of them directly.  But `StandardError`:class: is not
+defined in Python 3, for compatibility in base classes, use adjusts introduced
+here in `BaseException`:class: and `StandardError`:class: classes.
 
 '''
 
@@ -69,7 +71,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 try:
-    from exceptions import StandardError
+    from exceptions import StandardError    # Not in Python 3
 except ImportError:
     StandardError = Exception
 
@@ -82,20 +84,11 @@ except NameError:
 try:
     with_traceback = BaseException.with_traceback    # only in Python 3
 except AttributeError:
-    from ._past2 import throw
+    from ._errors2 import throw
 
     def with_traceback(self, tb):
         '''set self.__traceback__ to tb and return self.'''
         self.__traceback__ = tb
         return self
 else:
-    def throw(self, tb=None):
-        '''Syntax unify with Python 3 for ``raise error.with_traceback(tb)``.
-
-        Instead of use the Python `raise` statement, use ``throw(error, tb)``.
-
-        '''
-        if not tb:
-            # realize if a previous `with_traceback` was called.
-            tb = getattr(self, '__traceback__', None)
-        raise self.with_traceback(tb) if tb else self
+    from ._errors3 import throw

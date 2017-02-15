@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight._past2
+# xoutil.eight._errors2
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -12,7 +12,7 @@
 #
 # Created on 2015-12-06
 
-'''Ancient Python 2 tools that don't function any more in Python 3.
+'''Exceptions handling, specific only for Python 2.
 
 '''
 
@@ -27,7 +27,7 @@ assert not _py3, 'This module should not be loaded in Py3k'
 # ---- exceptions ----
 
 def throw(self, tb=None):
-    '''Syntax unify with Python 3 for ``raise error.with_traceback(tb)``.
+    '''Syntax unify with Python 3 for ``raise error.with_traceback(tb)``.
 
     Instead of use the Python `raise` statement, use ``throw(error, tb)``.
 
