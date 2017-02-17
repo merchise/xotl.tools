@@ -84,11 +84,11 @@ except NameError:
 try:
     with_traceback = BaseException.with_traceback    # only in Python 3
 except AttributeError:
-    from ._errors2 import throw
-
-    def with_traceback(self, tb):
-        '''set self.__traceback__ to tb and return self.'''
-        self.__traceback__ = tb
-        return self
+    from ._errors2 import with_traceback, throw    # noqa
 else:
     from ._errors3 import throw
+
+
+from ._errors import throw_doc    # noqa
+throw.__doc__ = throw_doc
+del throw_doc

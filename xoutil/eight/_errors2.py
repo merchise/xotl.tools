@@ -24,18 +24,28 @@ from . import _py3
 assert not _py3, 'This module should not be loaded in Py3k'
 
 
-# ---- exceptions ----
+def with_traceback(self, tb):
+    '''set self.__traceback__ to tb and return self.'''
+    self.__traceback__ = tb
+    return self
 
-def throw(self, tb=None):
-    '''Syntax unify with Python 3 for ``raise error.with_traceback(tb)``.
 
-    Instead of use the Python `raise` statement, use ``throw(error, tb)``.
-
-    '''
-
+def throw(self, *args, **kwds):
+    from ._errors import get_args
+    tb, cause = get_args(*args, **kwds)
     if not tb:
         # realize if a previous `with_traceback` was called.
         tb = getattr(self, '__traceback__', None)
+    if tb:
+        from types import TracebackType
+        if not isinstance(tb, TracebackType):
+            raise TypeError('__traceback__ must be a traceback or None')
+    else:
+        pass    # TODO: Look for trace-back in the calling stack
+    if cause and not isinstance(cause, BaseException):
+        raise TypeError('exception causes must derive from BaseException')
+    self = with_traceback(self, tb)
+    self.__cause__ = cause
     if tb:
         raise self, None, tb
     else:

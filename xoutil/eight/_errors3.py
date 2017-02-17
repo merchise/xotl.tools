@@ -24,15 +24,12 @@ from . import _py3
 assert _py3, 'This module should be loaded only in Py3K'
 
 
-# ---- exceptions ----
-
-def throw(self, tb=None):
-    '''Syntax unify with Python 3 for ``raise error.with_traceback(tb)``.
-
-    Instead of use the Python `raise` statement, use ``throw(error, tb)``.
-
-    '''
-    if not tb:
-        # realize if a previous `with_traceback` was called.
-        tb = getattr(self, '__traceback__', None)
-    raise self.with_traceback(tb) if tb else self
+def throw(self, *args, **kwds):
+    from ._errors import get_args
+    tb, cause = get_args(*args, **kwds)
+    if tb:
+        self = self.with_traceback(tb)
+    if cause:
+        raise self from cause
+    else:
+        raise self
