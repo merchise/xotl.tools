@@ -38,8 +38,6 @@
 
 .. autoclass:: UnsetType
 
-.. autoclass:: DictProxyType
-
 .. autoclass:: SlotWrapperType
 
 .. autoclass:: Required

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.eight.meta
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -26,7 +26,9 @@ else:
 
 metaclass.__doc__ = '''Define the metaclass of a class.
 
-    .. versionadded:: 1.4.1  But moved to this module since 1.7.0.
+    .. versionadded:: 1.7.0  It's available as
+       `xoutil.objects.metaclass`:func: since 1.4.1.  That alias is now
+       deprecated and will be removed in 1.8.
 
     This function allows to define the metaclass of a class equally in Python
     2 and 3.

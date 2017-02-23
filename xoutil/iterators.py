@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.iterators
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
@@ -137,8 +137,7 @@ def dict_update_new(target, source):
 
 @deprecated('generator expression')
 def fake_dict_iteritems(source):
-    '''Iterate (key, value) in a source that have defined method "keys" and
-     :meth:`~object.__getitem__`.
+    '''Iterate (key, value) in a source that have defined method "keys" and :meth:`~object.__getitem__`.
 
     .. warning:: Deprecated since 1.7.0.  This was actually in risk since
                  1.4.0.
@@ -287,6 +286,55 @@ def first_n(iterable, n=1, fill=Unset):
     while n > 0:
         yield next(seq)
         n -= 1
+
+
+def ungroup(iterator):
+    '''Reverses the operation of `itertools.groupby`:func: (or similar).
+
+    The `iterator` should produce pairs of ``(_, xs)``; where ``xs`` is
+    another iterator (or iterable).
+
+    It's guaranteed that the `iterator` will be consumed at the *boundaries*
+    of each pair, i.e. before taking another pair ``(_, ys)`` from `iterator`
+    the first ``xs`` will be fully yielded.
+
+    Demonstration:
+
+      >>> def groups():
+      ...    def chunk(s):
+      ...       for x in range(s, s+3):
+      ...           print('Yielding x:', x)
+      ...           yield x
+      ...
+      ...    for g in range(2):
+      ...       print('Yielding group', g)
+      ...       yield g, chunk(g)
+
+      >>> list(ungroup(groups()))
+      Yielding group 0
+      Yielding x: 0
+      Yielding x: 1
+      Yielding x: 2
+      Yielding group 1
+      Yielding x: 1
+      Yielding x: 2
+      Yielding x: 3
+      [0, 1, 2, 1, 2, 3]
+
+    This is not the same as::
+
+      >>> import itertools
+      >>> xs = itertools.chain(*(xs for _, xs in groups()))
+      Yielding group 0
+      Yielding group 1
+
+    Notice that the iterator was fully consumed just to create the arguments
+    to ``chain()``.
+
+    '''
+    for _, xs in iterator:
+        for x in xs:
+            yield x
 
 
 # Compatible zip and map
