@@ -58,9 +58,8 @@ if ABCMeta('A', (object,), {}).register(int) is not int:
     def register(cls, subclass):
         '''
 
-        Returns the subclass, to allow usage as a class decorator.  Using this
-        method, difference in Python versions from 3.3 of `register`:meth:
-        method is fixed.
+        Returns the subclass, to allow usage as a class decorator.  This
+        improvement was introduced in Python 3.3.
 
         '''
         ABCMeta.__old_register__(cls, subclass)
