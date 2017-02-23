@@ -9,5 +9,6 @@
 .. autofunction:: strftime
 .. autofunction:: get_month_first
 .. autofunction:: get_month_last
+.. autofunction:: get_next_month
 .. autofunction:: is_full_month
 .. autofunction:: daterange([start,] stop[, step])
