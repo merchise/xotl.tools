@@ -23,8 +23,22 @@ from __future__ import (division as _py3_division,
 
 def get_args(*args, **kwds):
     '''Common function to retrieve arguments for `throw`.
+def get_cause(self):
+    '''Get a  previous cause defined on an error.'''
+    return getattr(self, '__cause__', None)
 
-    '''
+
+def get_tb(self):
+    '''Get existing trace-back defined on an error.'''
+    name = '__traceback__'
+    res = getattr(self, name, None)
+    if res is None:
+        cause = get_cause(self)
+        if cause:
+            res = getattr(cause, name, None)
+    return res
+
+
     count = len(args)
     if count < 3:
         tb = args[0] if count else None
