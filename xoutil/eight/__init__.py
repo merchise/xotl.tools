@@ -168,17 +168,15 @@ else:
 
 
 try:
-    __builtin__
-except NameError:
-    # Probably PyPy
-    try:
-        import builtins as __builtin__    # Making sure in some Py3 versions
-    except ImportError:
-        import __builtin__    # noqa
+   import __builtin__    # noqa
+   builtins = __builtin__
+except ImportError:
+    import builtins    # noqa
+    __builtin__ = builtins
 
 
 try:
-    exec_ = getattr(__builtin__, 'exec')    # noqa
+    exec_ = getattr(builtins, 'exec')    # noqa
 except AttributeError:
     def exec_(_code_, _globs_=None, _locs_=None):
         """Execute code in a namespace."""
