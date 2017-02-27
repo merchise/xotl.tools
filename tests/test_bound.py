@@ -73,6 +73,14 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         with self.assertRaises(KeyError):
             getall(d, 'kkk')
 
+        @until(errors=(RuntimeError, ))
+        def failing():
+            raise RuntimeError
+            yield 1
+
+        assert failing() is None
+        assert list(failing.generate()) == []
+
     def test_timed(self):
         from xoutil.bound import timed, until
         fib10ms = timed(1/100)(fibonacci)
