@@ -69,6 +69,7 @@ if ABCMeta('A', (object,), {}).register(int) is not int:
     del register
 
 
+# TODO: Deprecate and remove this
 ABCMeta.adopt = ABCMeta.register
 
 
