@@ -81,14 +81,13 @@ except NameError:
     BaseException = StandardError
 
 
-try:
-    with_traceback = BaseException.with_traceback    # only in Python 3
-except AttributeError:
-    from ._errors2 import with_traceback, throw    # noqa
+_py3 = hasattr(BaseException, 'with_traceback')
+
+if _py3:
+    from ._throw3 import throw    # noqa
 else:
-    from ._errors3 import throw
+    from ._throw2 import throw    # noqa
+from ._throw import catch    # noqa
 
-
-from ._errors import throw_doc    # noqa
-throw.__doc__ = throw_doc
-del throw_doc
+throw.__module__ = __name__
+catch.__module__ = __name__

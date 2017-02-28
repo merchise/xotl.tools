@@ -12,24 +12,27 @@
 #
 # Created on 2015-12-06
 
-'''Exceptions handling, specific only for Python 2.
-
-'''
-
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from ._throw import __doc__
 from . import _py3
-assert _py3, 'This module should be loaded only in Py3K'
+assert not _py3, 'This module should not be loaded in Python 3'
 
 
-def throw(self, *args, **kwds):
-    from ._errors import get_args
-    tb, cause = get_args(*args, **kwds)
-    if tb:
-        self = self.with_traceback(tb)
+def throw(error, *args, **kwds):
+    from ._throw import parse_args, force_traceback
+    cause, tb = parse_args(args, kwds)
+    if tb is None:
+        tb = force_traceback(error, cause)
     if cause:
-        raise self from cause
-    else:
-        raise self
+        if isinstance(cause, BaseException):
+            error.__cause__ = cause
+        else:
+            raise TypeError('exception cause must derive from BaseException')
+    error.__traceback__ = tb
+    raise error, None, tb
+
+
+throw.__doc__ = __doc__
