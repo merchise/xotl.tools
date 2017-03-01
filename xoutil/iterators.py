@@ -80,6 +80,29 @@ def flatten(sequence, is_scalar=None, depth=None):
                 yield subitem
 
 
+def pop_first(source, keys, default=None):
+    '''Pop first value from `source` from given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Reference keys to pop the value.
+
+    Examples::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> pop_first(d, ('a', 'y', 'x'), '---')
+      2
+
+      >>> pop_first(d, ('a', 'y', 'x'), '---')
+      1
+
+      >>> pop_first(d, ('a', 'y', 'x'), '---')
+      '---'
+
+    '''
+    return next((source.pop(key) for key in keys if key in source), default)
+
+
 def multi_pop(source, *keys):
     '''Pop values from `source` of all given `keys`.
 
