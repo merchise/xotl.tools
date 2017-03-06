@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.monads.option
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -45,7 +45,7 @@ encapsulating errors.
 When receiving a `Wrong`:class: instance encapsulating an error, and want to
 recover the *exception propagation style* -instead of continue in *pure
 functional programming*-, to re-raise the exception, instead the `raise`
-Python statement, use `~xoutil.eight.exceptions.throw`:func:.
+Python statement, use `~xoutil.eight.errors.throw`:func:.
 
 See https://en.wikipedia.org/wiki/Monad_%28functional_programming%29\
 #The_Maybe_monad
@@ -163,6 +163,7 @@ class Wrong(Maybe):
     def __new__(cls, *args):
         self = super(Wrong, cls).__new__(cls, *args)
         if isinstance(self.inner, BaseException):
+            # FIX: Use `catch`
             from xoutil.eight.exceptions import with_traceback
             from sys import exc_info
             info = exc_info()

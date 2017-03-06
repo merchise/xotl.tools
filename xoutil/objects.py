@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.objects
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
 #
@@ -791,7 +790,7 @@ def get_first_of(source, *keys, **kwargs):
 
 
 def pop_first_of(source, *keys, **kwargs):
-    '''Similar to :func:`get_first_of` using as `source` either an object or a
+    '''Similar to `get_first_of`:func: using as `source` either an object or a
     mapping and deleting the first attribute or key.
 
     Examples::

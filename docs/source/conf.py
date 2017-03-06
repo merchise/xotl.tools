@@ -12,7 +12,6 @@
 # serve to show the default.
 
 import sys, os
-import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -50,17 +49,11 @@ master_doc = 'index'
 # General information about the project.
 project = u'xoutil'
 
-year = datetime.datetime.now().year
-if year >= 2015:
-    year = u'' if year == 2015 else u'-{year}'.format(year=year)
-    copyright = u'2015{year}, Merchise and Contributors'
-elif year > 2012:
-    copyright = u'2012-{year}, Merchise Autrement and Contributors'
-else:
-    if year < 2012:
-        year = u'{year}-2012'.format(year=year)
-    copyright = u'{year}, Medardo Rodríguez'
-copyright = copyright.format(year=year)
+from datetime import datetime    # noqa
+# Any year before to 2012 xoutil copyrights to "Medardo Rodriguez"
+copyright = u'2012-{} Merchise Autrement [~º/~] and Contributors'
+copyright = copyright.format(datetime.now().year)
+del datetime
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

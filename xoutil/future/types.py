@@ -2,17 +2,14 @@
 # ---------------------------------------------------------------------
 # xoutil.future.types
 # ---------------------------------------------------------------------
-# Copyright (c) 2016 Merchise and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2010-2012 Medardo Rodriguez
 # All rights reserved.
-#
-# This module was started in 2010 by Medardo Rodríguez,
-# Copyrighted 2013, 2014 by Merchise Autrement, and 2015-2016 by Merchise
 #
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on 2016-09-11
 # Migrated to 'future' on 2016-09-12
 
 '''Extends the standard `types` module.
