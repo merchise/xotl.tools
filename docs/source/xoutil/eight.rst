@@ -22,4 +22,6 @@ Tools
 
 .. automodule:: xoutil.eight.exceptions
 
+.. automodule:: xoutil.eight.errors
+
 .. automodule:: xoutil.eight.abc
