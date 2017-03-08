@@ -47,12 +47,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def actual_params(*args, **kwds):
-    '''Dummy function returning passed parameters in a tuple (args, kwds).'''
-    # TODO: deprecate -or simple remove- this
-    return args, kwds
-
-
 def issue_9137(args, max_args=None, caller=None):
     '''Parse positional arguments for methods fixing issue 9137.
 
