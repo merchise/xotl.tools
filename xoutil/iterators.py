@@ -153,11 +153,17 @@ def multi_get(source, *keys):
     return (source.get(key) for key in keys if key in source)
 
 
-def dict_update_new(target, source):
-    '''Update values in `source` that are new (not present) in `target`.'''
+def dict_update_new(target, source, fail=False):
+    '''Update values in `source` that are new (not present) in `target`.
+
+    If `fail` is True and a value is already set, an error is raised.
+
+    '''
     for key in source:
         if key not in target:
             target[key] = source[key]
+        elif fail:
+            raise TypeError('key "{}" already in target'.format(key))
 
 
 @deprecated('generator expression')
