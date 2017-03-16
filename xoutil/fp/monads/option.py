@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.monads.option
+# xoutil.fp.monads.option
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
@@ -51,8 +51,6 @@ See https://en.wikipedia.org/wiki/Monad_%28functional_programming%29\
 #The_Maybe_monad
 
 '''
-
-# TODO: move to xaskell package
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,

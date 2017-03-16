@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.monads.checkers
+# xoutil.fp.prove
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
@@ -12,7 +12,7 @@
 #
 # Created 2016-08-31
 
-r'''Monadic value checkers.
+r'''Prove validity of values.
 
 A `Coercer`:class: is a concept that combine two elements: validity check and
 value moulding.  Most times only the first part is needed because the original
@@ -128,7 +128,7 @@ class TypeCheck(Coercer):
             raise TypeError(_tname(self), msg)
 
     def __call__(self, value):
-        from xoutil.monads.option import Just, Wrong
+        from xoutil.fp.monads.option import Just, Wrong
         ok = isinstance(value, self.inner)
         return (value if value else Just(value)) if ok else Wrong(value)
 
@@ -143,7 +143,7 @@ class NoneOrTypeCheck(TypeCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.monads.option import Wrong
+        from xoutil.fp.monads.option import Wrong
         if value is None:
             _types = self.inner
             i, res = 0, None
@@ -167,7 +167,7 @@ class TypeCast(TypeCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.monads.option import Just
+        from xoutil.fp.monads.option import Just
         res = super(TypeCast, self).__call__(value)
         if not res:
             _types = self.inner
@@ -206,7 +206,7 @@ class CheckAndCast(Coercer):
             raise TypeError(msg.format(_tname(self), _tname(cast)))
 
     def __call__(self, value):
-        from xoutil.monads.option import Wrong
+        from xoutil.fp.monads.option import Wrong
         check, cast = self.inner
         aux = check(value)
         if aux:
@@ -256,7 +256,7 @@ class LogicalCheck(FunctionalCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.monads.option import Just, Wrong
+        from xoutil.fp.monads.option import Just, Wrong
         try:
             res = self.inner(value)
             if res:
@@ -281,7 +281,7 @@ class SafeCheck(FunctionalCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.monads.option import Wrong
+        from xoutil.fp.monads.option import Wrong
         try:
             return self.inner(value)
         except BaseException as error:
@@ -303,7 +303,7 @@ class MultiCheck(Coercer):
         return self
 
     def __call__(self, value):
-        from xoutil.monads.option import Just, Wrong, _none
+        from xoutil.fp.monads.option import Just, Wrong, _none
         coercers = self.inner
         i, res = 0, _none
         while isinstance(res, Wrong) and i < len(coercers):
