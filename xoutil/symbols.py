@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.symbols
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -71,6 +71,7 @@ class MetaSymbol(type):
         Standard Python Boolean values are parsed too.
 
         '''
+        from xoutil.eight import type_name
         if '#' in name:    # Remove comment
             name = name.split('#')[0].strip()
         with self._instances as cache:
@@ -80,7 +81,7 @@ class MetaSymbol(type):
                 return res
             else:
                 msg = 'invalid parsed value "{}" of type "{}"; must be "{}"'
-                rtn, sn = type(res).__name__, self.__name__
+                rtn, sn = type_name(res), self.__name__
                 raise TypeError(msg.format(res, rtn, sn))
         else:
             msg = 'name "{}" is not defined'
@@ -117,7 +118,7 @@ class symbol(metaclass(MetaSymbol), int):
                name hash.
 
         '''
-        from xoutil.eight import intern as unique
+        from xoutil.eight import intern as unique, type_name
         name = unique(name)
         if name:
             valid = {symbol: lambda v: isinstance(v, int),
@@ -137,7 +138,7 @@ class symbol(metaclass(MetaSymbol), int):
                     else:
                         msg = ('instancing "{}" with name "{}" and incorrect '
                                'value "{}" of type "{}"')
-                        cn, vt = cls.__name__, type(value).__name__
+                        cn, vt = cls.__name__, type_name(value)
                         raise TypeError(msg.format(cn, name, value, vt))
                 elif res != value:    # Check existing instance
                     msg = 'value "{}" mismatch for existing instance: "{}"'

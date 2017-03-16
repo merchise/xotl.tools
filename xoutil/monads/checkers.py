@@ -133,8 +133,9 @@ class TypeCheck(Coercer):
         return (value if value else Just(value)) if ok else Wrong(value)
 
     def __str__(self):
+        from xoutil.eight import type_name
         aux = ', '.join(t.__name__ for t in self.inner)
-        return 'instance-of({})'.format(aux)
+        return '{}({})'.format(type_name(self), aux)
 
 
 class NoneOrTypeCheck(TypeCheck):

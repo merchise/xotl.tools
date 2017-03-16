@@ -577,19 +577,19 @@ def parse_url_int(value, default=None):
 
 def error2str(error):
     '''Convert an error to string.'''
-    from xoutil.eight import string_types
+    from xoutil.eight import string_types, type_name
     from xoutil.types import type_coerce
     if isinstance(error, string_types):
         return safe_str(error)
     elif isinstance(error, BaseException):
-        tname = type(error).__name__
+        tname = type_name(error)
         res = safe_str(error)
         if tname in res:
             return res
         else:
             return str(': ').join(tname, res) if res else tname
     elif issubclass(error, BaseException):
-        return type(error).__name__
+        return type_name(error)
     else:
         prefix = str('unknown error: ')
         cls = type_coerce(error)
