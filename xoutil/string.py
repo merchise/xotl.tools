@@ -636,7 +636,33 @@ def make_a10z(string):
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 
-from xoutil.eight import input
+def smallstr(obj):
+    '''Obtain a small string representation using a safe way.
+
+    Classes can define a new attribute named '__small__', must be an string or
+    a method.
+
+    .. versionadded:: 1.8.0
+
+    '''
+    from xoutil.eight import string_types, type_name
+    try:
+        aux = getattr(obj, '__small__', None)
+        if aux is None:
+            res = obj.__name__
+            lambda_name = (lambda x: x).__name__
+            res = 'λ' if res == lambda_name else res
+        elif isinstance(aux, string_types):
+            res = safe_str(aux)
+        else:
+            res = aux()
+    except BaseException:
+        res =  '{}(…)'.format(type_name(obj))
+    return res
+
+
+
+from xoutil.eight import input    # noqa
 
 input = _deprecated(
     input,
