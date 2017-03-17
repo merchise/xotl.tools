@@ -24,3 +24,6 @@
   - `~xoutil.future.pprint`:mod:.
 
   - `~xoutil.future.textwrap`:mod:.
+
+- Create ``__small__`` protocol for small string representations, see
+  `xoutil.string.smallstr`:func: for more information.
