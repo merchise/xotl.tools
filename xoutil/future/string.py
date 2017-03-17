@@ -77,23 +77,19 @@ def force_encoding(encoding=None):
     # involving the concept of which encoding to use by default:
     #
     # - locale.getlocale(): In Python 2 returns ``(None, None)``, but in
-    #   Python 3 ``('en_US', 'UTF-8')``. The same in Mac-OS.
+    #   Python 3 ``('en_US', 'UTF-8')``.
     #
-    # - locale.getpreferredencoding(): all versions returns ``'UTF-8'``. The
-    #   same in Mac-OS.
+    # - locale.getpreferredencoding(): all versions returns ``'UTF-8'``.
     #
     # - sys.getdefaultencoding(): In Python 2 returns ``'ascii'``, but in
-    #   Python 3 ``'utf-8'``. The same in Mac-OS. The related code was
+    #   Python 3 ``'utf-8'``.  The same in Mac-OS. The related code was
     #   commented because these differences.
+    #
+    # All these considerations where also proved in Mac-OS.
     import locale
-    res = encoding
-    if not res:
-        res = locale.getlocale()[1]
-    if not res:
-        res = locale.getpreferredencoding()
-    # if not res:
-    #     res = sys.getdefaultencoding()
-    return res or 'UTF-8'
+    return encoding or locale.getpreferredencoding() or 'UTF-8'
+    # return (encoding or locale.getlocale()[1] or locale.getpreferredencoding()
+    #         or sys.getdefaultencoding() or 'UTF-8')
 
 
 def safe_decode(s, encoding=None):
@@ -228,9 +224,6 @@ def safe_join(separator, iterable, encoding=None):
 
 # Makes explicit the deprecation warning for py3k.
 if _py3:
-    # TODO: @manu, since it's more common for us to use Python 2, this kind of
-    # deprecation must be avoided in order to produce code behaving
-    # equivalently in both versions. What do you think?
     safe_join = deprecated('builtin join method of str',
                            'safe_join is deprecated for Python 3. Use '
                            'builtin join method of str.')(safe_join)
@@ -437,7 +430,7 @@ def normalize_ascii(value):
 def normalize_slug(value, replacement='-', invalids=None, valids=None):
     '''Return the normal-form of a given string value that is valid for slugs.
 
-    Convert all possible non-ascii to valid characters using unicode 'NFKC'
+    Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization and lower-case the result.
 
     Replace unwanted characters by `replacement`, repetition of given pattern
@@ -461,7 +454,7 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
            compatibility with old ``invalid_underscore`` argument.  ``False``
            or ``None`` are assumed as an empty set for invalid characters.
 
-    .. todo:: it looks like "valid" plural is without "s" in English.
+    .. todo:: check if "valid" plural is without "s" in English.
 
     :param valids: A collection of extra valid characters.  Could be either a
            valid string, any iterator of strings, or ``None`` to use only
@@ -506,6 +499,9 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
 
     .. versionchanged:: 1.6.6 Replaced the `invalid_underscore` paremeter by
        `invalids`.  Added the `valids` parameter.
+
+    .. versionchanged:: 1.7.2 Clarified the role of `invalids` with regards to
+       `replacement`.
 
     '''
     import re
@@ -675,6 +671,104 @@ def make_a10z(string):
        p13n
     '''
     return string[0] + str(len(string[1:-1])) + string[-1]
+
+
+def smallstr(obj, max_width=32, standard=True):
+    '''Return a small string representation of the object.
+
+    Classes can now define a new special method or attribute named
+    '__small__'.
+
+    If `standard` is True, no unicode character is used in Python 2.
+
+    .. versionadded:: 1.8.0
+
+    '''
+    from xoutil.eight import _py2, callable, type_name, string_types
+    std = standard and _py2
+    if isinstance(obj, string_types):
+        res = obj
+    elif hasattr(obj, '__small__'):
+        small = obj.__small__
+        if isinstance(small, string_types):
+            res = small
+        elif callable(small):
+            if getattr(small, '__self__', 'ok') is not None:
+                res = small()
+            else:
+                msg = "smallstr() unbound '__small__' for: {}"
+                raise TypeError(msg.format(obj))
+        else:
+            msg = "smallstr() invalid '__small__' type: {}"
+            raise TypeError(msg.format(type_name(small)))
+    else:
+        res = _smallstr(obj, max_width, standard)
+    return safe_str(res) if std else res
+
+
+def _smallstr(obj, max_width, standard):
+    'Internal tool for `smallstr`:func:.'
+    from collections import Set, Mapping
+    from xoutil.eight import _py2, type_name
+    std = standard and _py2
+    res = str(obj)
+    if (res.startswith('<') and res.endswith('>')) or len(res) > max_width:
+        try:
+            res = obj.__name__
+            if not std and res == (lambda: None).__name__:
+                res = 'λ'
+        except AttributeError:
+            if isinstance(obj, (tuple, list, Set, Mapping)):
+                res = _numerable_smallstr(obj, max_width, standard)
+            else:
+                ELLIPSIS = '...' if std else '…'
+                res = '{}({})'.format(type_name(obj), ELLIPSIS)
+    return res
+
+
+def _numerable_smallstr(obj, max_width, standard):
+    'Internal tool for `smallstr`:func:.'
+    from collections import Set, Mapping
+    from xoutil.eight import _py2, type_name
+    classes = (tuple, list, Mapping, Set)
+    cls = next((c for c in classes if isinstance(obj, c)), None)
+    if cls:
+        res = ''
+        if cls is Set and not obj:
+            borders = ('{}('.format(type_name(obj)), ')')
+        else:
+            borders = ('()', '[]', '{}', '{}')[classes.index(cls)]
+            std = standard and _py2
+            ELLIPSIS = '...' if std else '…'
+            UNDEF = object()
+            sep = ', '
+            if cls is Mapping:
+                from xoutil.eight import iteritems
+
+                def itemrepr(item):
+                    key, value = item
+                    return '{}: {}'.format(repr(key), repr(value))
+            else:
+                iteritems = iter
+                itemrepr = repr
+            items = iteritems(obj)
+            ok = True
+            while ok:
+                item = next(items, UNDEF)
+                if item is not UNDEF:
+                    s = sep if res else ''
+                    aux = s + itemrepr(item)
+                    if len(aux) + len(res) + len(borders) <= max_width:
+                        res += aux
+                    else:
+                        res += s + ELLIPSIS
+                        ok = False
+                else:
+                    ok = False
+        return '{}{}{}'.format(borders[0], res, borders[1])
+    else:
+        raise TypeError('_numerable_smallstr() expects tuple, list, set, or '
+                        'mapping; got {}'.format(type_name(obj)))
 
 
 from xoutil.eight import input    # noqa
