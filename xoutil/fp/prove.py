@@ -32,24 +32,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil.eight import type_name as _tname
-
-
-def _nameof(arg):
-    'Internal to obtain a nice name in a safe way.'
-    # TODO: Move this to a more general module
-    try:
-        res = arg.__name__
-        _lambda_name = (lambda x: x).__name__
-        return 'λ' if res == _lambda_name else res
-    except AttributeError:
-        from xoutil.eight import type_name
-        if isinstance(arg, Coercer):
-            return str(arg)
-        else:
-            return '{}(…)'.format(type_name(arg))
-
-
 class Coercer(object):
     '''Wrapper for value-coercing definitions.
 
@@ -74,25 +56,25 @@ class Coercer(object):
     __slots__ = ('inner',)
 
     def __new__(cls, *args):
-        from xoutil.eight import class_types, callable
+        from xoutil.eight import class_types, callable, type_name
         if cls is Coercer:    # Parse the right sub-type
-            _type_def = class_types + (tuple,)
-            if len(args) == 0:
-                msg = 'a {} takes at least 1 argument (0 given)'
-                raise TypeError(cls.__name__, msg)
-            elif len(args) == 1:
+            count = len(args)
+            if count == 0:
+                msg = '{}() takes at least 1 argument (0 given)'
+                raise TypeError(msg.format(cls.__name__))
+            elif count == 1:
                 arg = args[0]
                 if isinstance(arg, cls):
                     return arg
-                elif isinstance(arg, _type_def):
+                elif isinstance(arg, class_types + (tuple,)):
                     return TypeCheck(arg)
                 elif isinstance(arg, list):
                     return CheckAndCast(*arg)
                 elif callable(arg):
                     return LogicalCheck(arg)
                 else:
-                    msg = '''can't parse a {} definition of type: "{}"'''
-                    raise TypeError(msg.format(cls.__name__, _tname(arg)))
+                    msg = "{}() can't parse a definition of type: {}"
+                    raise TypeError(msg.format(cls.__name__, type_name(arg)))
             else:
                 return MultiCheck(*args)
         else:
@@ -110,7 +92,7 @@ class TypeCheck(Coercer):
     __slots__ = ()
 
     def __new__(cls, *args):
-        from xoutil.eight import class_types as _types
+        from xoutil.eight import class_types as _types, type_name
         if args:
             if len(args) == 1 and isinstance(args[0], tuple):
                 args = args[0]
@@ -120,12 +102,12 @@ class TypeCheck(Coercer):
                 return self
             else:
                 wrong = (arg for arg in args if not isinstance(arg, _types))
-                wnames = ', or '.join(_tname(w) for w in wrong)
+                wnames = ', or '.join(type_name(w) for w in wrong)
                 msg = '`TypeCheck` allows only valid types, not: ({})'
                 raise TypeError(msg.format(wnames))
         else:
             msg = '{}() takes at least 1 argument (0 given)'
-            raise TypeError(_tname(self), msg)
+            raise TypeError(type_name(self), msg)
 
     def __call__(self, value):
         from xoutil.fp.monads.option import Just, Wrong
@@ -133,9 +115,39 @@ class TypeCheck(Coercer):
         return (value if value else Just(value)) if ok else Wrong(value)
 
     def __str__(self):
+        return self._str()
+
+    def __crop__(self):
+        from xoutil.future.string import DEFAULT_MAX_WIDTH
+        return self._str(DEFAULT_MAX_WIDTH)
+
+    def _str(self, max_width=None):
+        '''Calculate both string versions (small and normal).'''
+        from xoutil import Undefined
         from xoutil.eight import type_name
-        aux = ', '.join(t.__name__ for t in self.inner)
-        return '{}({})'.format(type_name(self), aux)
+        from xoutil.future.string import ELLIPSIS
+        if max_width is None:
+            max_width = 1024    # a big number for this
+        start, end = '{}('.format(type_name(self)), ')'
+        borders_len = len(start) + len(end)
+        sep = ', '
+        res = ''
+        items = iter(self.inner)
+        ok = True
+        while ok:
+            item = next(items, Undefined)
+            if item is not Undefined:
+                if res:
+                    res += sep
+                aux = item.__name__
+                if len(res) + len(aux) + borders_len <= max_width:
+                    res += aux
+                else:
+                    res += ELLIPSIS
+                    ok = False
+            else:
+                ok = False
+        return '{}{}{}'.format(start, res, end)
 
 
 class NoneOrTypeCheck(TypeCheck):
@@ -183,6 +195,7 @@ class TypeCast(TypeCheck):
         return res
 
     def __str__(self):
+        # FIX: change this
         aux = super(NoneOrTypeCheck, self).__str__()
         return 'none-or-{}'.format(aux)
 
@@ -195,7 +208,7 @@ class CheckAndCast(Coercer):
     __slots__ = ()
 
     def __new__(cls, check, cast):
-        from xoutil.eight import callable
+        from xoutil.eight import callable, type_name
         check = Coercer(check)
         if callable(cast):
             self = super(CheckAndCast, cls).__new__(cls)
@@ -203,7 +216,7 @@ class CheckAndCast(Coercer):
             return self
         else:
             msg = '{}() expects a callable for cast, "{}" given'
-            raise TypeError(msg.format(_tname(self), _tname(cast)))
+            raise TypeError(msg.format(type_name(self), type_name(cast)))
 
     def __call__(self, value):
         from xoutil.fp.monads.option import Wrong
@@ -221,9 +234,10 @@ class CheckAndCast(Coercer):
             return Wrong(value)
 
     def __str__(self):
+        from xoutil.future.string import crop
         check, cast = self.inner
         fmt = '({}(…) if {}(…) else _wrong)'
-        return fmt.format(_nameof(cast), check)
+        return fmt.format(crop(cast), check)
 
 
 class FunctionalCheck(Coercer):
@@ -231,7 +245,7 @@ class FunctionalCheck(Coercer):
     __slots__ = ()
 
     def __new__(cls, check):
-        from xoutil.eight import callable
+        from xoutil.eight import callable, type_name
         if isinstance(check, Coercer):
             return check
         elif callable(check):
@@ -240,14 +254,16 @@ class FunctionalCheck(Coercer):
             return self
         else:
             msg = 'a functional check expects a callable but "{}" is given'
-            raise TypeError(msg.format(_tname(check)))
+            raise TypeError(msg.format(type_name(check)))
 
     def __str__(self):
+        from xoutil.eight import type_name
+        from xoutil.future.string import crop
         suffix = 'check'
-        kind = _tname(self).lower()
+        kind = type_name(self).lower()
         if kind.endswith(suffix):
             kind = kind[:-len(suffix)]
-        inner = _nameof(self.inner)
+        inner = crop(self.inner)
         return '{}({})()'.format(kind, inner)
 
 

@@ -17,7 +17,7 @@
 # Created on 2012-02-17
 # Migrated to 'future' on 2016-09-20
 
-'''Original `string` module functionality and with some additions.
+'''Some additions for `string` standard module.
 
 In this module `str` and `unicode` types are not used because Python 2.x and
 Python 3.x treats strings differently.  `bytes` and `text_type` will be used
@@ -64,6 +64,21 @@ from xoutil.eight import _py3    # noqa
 # Also a `UnicodeWarning` is issued with message "Unicode equal comparison
 # failed to convert both arguments to Unicode - interpreting them as being
 # unequal.  This must be fixed in this module.
+
+
+ELLIPSIS_ASCII = '...'
+ELLIPSIS_UNICODE = '…'
+
+#: Value used as a fill when a string representation is brimmed over.
+ELLIPSIS = ELLIPSIS_UNICODE if _py3 else ELLIPSIS_ASCII
+
+#: Default value for `max_width` parameter in functions that reduce strings,
+#: see `crop`:func: and `small`:func:.
+DEFAULT_MAX_WIDTH = 64
+
+#: Value for `max_width` parameter in functions that reduce strings, must not
+#: be less than this value.
+MIN_WIDTH = 8
 
 
 def force_encoding(encoding=None):
@@ -673,63 +688,81 @@ def make_a10z(string):
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 
-def smallstr(obj, max_width=32, standard=True):
-    '''Return a small string representation of the object.
+def _check_max_width(max_width, caller=None):
+    '''Used internally by some functions.'''
+    if max_width is None:
+        max_width = DEFAULT_MAX_WIDTH
+    elif max_width < MIN_WIDTH:
+        msg = '{}() '.format(caller) if caller else ''
+        msg += ('invalid value for `max_width`, must be between greated than '
+                '{}; got {}').format(MIN_WIDTH, max_width)
+        raise ValueError(msg)
+    return max_width
+
+
+def crop(obj, max_width=None):
+    '''Return a reduced string representation of `obj`.
 
     Classes can now define a new special method or attribute named
-    '__small__'.
+    '__crop__'.
 
-    If `standard` is True, no unicode character is used in Python 2.
+    If `max_width` is not given, defaults to ``DEFAULT_MAX_WIDTH``.
 
     .. versionadded:: 1.8.0
 
     '''
-    from xoutil.eight import _py2, callable, type_name, string_types
-    std = standard and _py2
+    from xoutil.eight import callable, type_name, string_types
+    max_width = _check_max_width(max_width, caller='crop')
     if isinstance(obj, string_types):
-        res = obj
-    elif hasattr(obj, '__small__'):
-        small = obj.__small__
-        if isinstance(small, string_types):
-            res = small
-        elif callable(small):
-            if getattr(small, '__self__', 'ok') is not None:
-                res = small()
+        res = obj    # TODO: reduce
+    elif hasattr(obj, '__crop__'):
+        aux = obj.__crop__
+        if isinstance(aux, string_types):
+            res = aux
+        elif callable(aux):
+            if getattr(aux, '__self__', 'ok') is not None:
+                res = aux()
             else:
-                msg = "smallstr() unbound '__small__' for: {}"
-                raise TypeError(msg.format(obj))
+                res = None
         else:
-            msg = "smallstr() invalid '__small__' type: {}"
-            raise TypeError(msg.format(type_name(small)))
+            msg = "crop() invalid '__crop__' type: {}"
+            raise TypeError(msg.format(type_name(aux)))
     else:
-        res = _smallstr(obj, max_width, standard)
-    return safe_str(res) if std else res
+        res = None
+    if res is None:
+        res = _crop(obj, max_width)
+    return res
 
 
-def _smallstr(obj, max_width, standard):
-    'Internal tool for `smallstr`:func:.'
+def _crop(obj, max_width):
+    '''Internal tool for `crop`:func:.'''
     from collections import Set, Mapping
-    from xoutil.eight import _py2, type_name
-    std = standard and _py2
+    from xoutil.eight import type_name
     res = str(obj)
     if (res.startswith('<') and res.endswith('>')) or len(res) > max_width:
         try:
             res = obj.__name__
-            if not std and res == (lambda: None).__name__:
-                res = 'λ'
         except AttributeError:
             if isinstance(obj, (tuple, list, Set, Mapping)):
-                res = _numerable_smallstr(obj, max_width, standard)
+                res = crop_iterator(obj, max_width)
             else:
-                ELLIPSIS = '...' if std else '…'
                 res = '{}({})'.format(type_name(obj), ELLIPSIS)
     return res
 
 
-def _numerable_smallstr(obj, max_width, standard):
-    'Internal tool for `smallstr`:func:.'
+def crop_iterator(obj, max_width=None):
+    '''Return a reduced string representation of the iterator `obj`.
+
+    See `crop`:func: function for a more general tool.
+
+    If `max_width` is not given, defaults to ``DEFAULT_MAX_WIDTH``.
+
+    .. versionadded:: 1.8.0
+
+    '''
     from collections import Set, Mapping
-    from xoutil.eight import _py2, type_name
+    from xoutil.eight import type_name
+    max_width = _check_max_width(max_width, caller='crop_iterator')
     classes = (tuple, list, Mapping, Set)
     cls = next((c for c in classes if isinstance(obj, c)), None)
     if cls:
@@ -738,8 +771,6 @@ def _numerable_smallstr(obj, max_width, standard):
             borders = ('{}('.format(type_name(obj)), ')')
         else:
             borders = ('()', '[]', '{}', '{}')[classes.index(cls)]
-            std = standard and _py2
-            ELLIPSIS = '...' if std else '…'
             UNDEF = object()
             sep = ', '
             if cls is Mapping:
@@ -756,19 +787,39 @@ def _numerable_smallstr(obj, max_width, standard):
             while ok:
                 item = next(items, UNDEF)
                 if item is not UNDEF:
-                    s = sep if res else ''
-                    aux = s + itemrepr(item)
-                    if len(aux) + len(res) + len(borders) <= max_width:
+                    if res:
+                        res += sep
+                    aux = itemrepr(item)
+                    if len(res) + len(borders) + len(aux) <= max_width:
                         res += aux
                     else:
-                        res += s + ELLIPSIS
+                        res += ELLIPSIS
                         ok = False
                 else:
                     ok = False
         return '{}{}{}'.format(borders[0], res, borders[1])
     else:
-        raise TypeError('_numerable_smallstr() expects tuple, list, set, or '
+        raise TypeError('crop_iterator() expects tuple, list, set, or '
                         'mapping; got {}'.format(type_name(obj)))
+
+
+def small(obj, max_width=None):
+    '''Crop the string representation of `obj` and make some replacements.
+
+    - Lambda function representations ('<lambda>' by 'λ').
+
+    - Ellipsis ('...'  by '…')
+
+    If max_width is not given, defaults to ``DEFAULT_MAX_WIDTH``.
+
+    .. versionadded:: 1.8.0
+
+    '''
+    max_width = _check_max_width(max_width, caller='small')
+    res = crop(obj, max_width)
+    res = res.replace(ELLIPSIS_ASCII, ELLIPSIS_UNICODE)
+    res = res.replace((lambda: None).__name__, 'λ')
+    return res
 
 
 from xoutil.eight import input    # noqa
@@ -778,12 +829,11 @@ input = deprecated(input, "xoutil.future.string.input is deprecated.  Use "
 
 del deprecated
 
-__all__ = __all__ + ['force_encoding', 'safe_decode', 'safe_encode',
-                     'safe_str', 'safe_join', 'safe_strip', 'cut_prefix',
-                     'cut_any_prefix', 'cut_prefixes', 'cut_suffix',
-                     'cut_any_suffix', 'cut_suffixes', 'capitalize_word',
-                     'capitalize', 'hyphen_name', 'normalize_unicode',
-                     'normalize_name', 'normalize_title', 'normalize_str',
-                     'normalize_ascii', 'normalize_slug', 'strfnumber',
-                     'parse_boolean', 'parse_url_int', 'error2str',
-                     'force_str', 'make_a10z']
+__all__ += ['force_encoding', 'safe_decode', 'safe_encode', 'safe_str',
+            'safe_join', 'safe_strip', 'cut_prefix', 'cut_any_prefix',
+            'cut_prefixes', 'cut_suffix', 'cut_any_suffix', 'cut_suffixes',
+            'capitalize_word', 'capitalize', 'hyphen_name',
+            'normalize_unicode', 'normalize_name', 'normalize_title',
+            'normalize_str', 'normalize_ascii', 'normalize_slug',
+            'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',
+            'force_str', 'make_a10z', 'crop']
