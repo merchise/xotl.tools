@@ -334,8 +334,8 @@ class SmartDictMixin(object):
         - an iterable of (key, value) pairs.
 
         '''
-        from xoutil.params import issue_9137
-        self, args = issue_9137(args, caller='update')
+        from xoutil.fp.params import issue_9137
+        self, args = issue_9137(args)
         for key, value in smart_iter_items(*args, **kwds):
             self[key] = value
 
@@ -374,8 +374,8 @@ class SmartDict(SmartDictMixin, dict):
 
     '''
     def __init__(*args, **kwargs):
-        from xoutil.params import issue_9137
-        self, args = issue_9137(args, caller='SmartDict constructor')
+        from xoutil.fp.params import issue_9137
+        self, args = issue_9137(args)
         super(SmartDict, self).__init__()
         self.update(*args, **kwargs)
 
@@ -772,8 +772,8 @@ if not _py33:
     class UserDict(MutableMapping):
         # Start by filling-out the abstract methods
         def __init__(*args, **kwargs):
-            from xoutil.params import issue_9137
-            self, args = issue_9137(args, caller='UserDict constructor')
+            from xoutil.fp.params import issue_9137
+            self, args = issue_9137(args)
             self.data = {}
             self.update(*args, **kwargs)
 
@@ -1229,8 +1229,8 @@ if not _py33:
             >>> c = Counter(a=4, b=2)        # a new counter from keyword args
 
             '''
-            from xoutil.params import issue_9137
-            self, args = issue_9137(args, caller='Counter constructor')
+            from xoutil.fp.params import issue_9137
+            self, args = issue_9137(args)
             self.data = {}
             super(Counter, self).__init__()
             self.update(*args, **kwds)
@@ -1306,8 +1306,9 @@ if not _py33:
             # counting contexts.  Instead, we implement straight-addition.
             # Both the inputs and outputs are allowed to contain zero and
             # negative counts.
-            from xoutil.params import issue_9137
-            self, args = issue_9137(args, max_args=1, caller='update')
+            from xoutil.fp.params import issue_9137, check_count
+            self, args = issue_9137(args)
+            check_count(args, 0, 1, caller='update')
             if args:
                 iterable = args[0]
                 if isinstance(iterable, Mapping):
@@ -1356,8 +1357,9 @@ if not _py33:
               -1
 
             '''
-            from xoutil.params import issue_9137
-            self, args = issue_9137(args, max_args=1, caller='subtract')
+            from xoutil.fp.params import issue_9137, check_count
+            self, args = issue_9137(args)
+            check_count(args, 0, 1, caller='subtract')
             if args:
                 iterable = args[0]
                 self_get = self.get
@@ -1583,8 +1585,8 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     def __init__(*args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        from xoutil.params import issue_9137
-        self, args = issue_9137(args, caller='StackedDict constructor')
+        from xoutil.fp.params import issue_9137
+        self, args = issue_9137(args)
         self.update(*args, **kwargs)
 
     @property
@@ -1988,8 +1990,8 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         arbitrary.
 
         '''
-        from xoutil.params import issue_9137
-        self, args = issue_9137(args, caller='OrderedSmartDict constructor')
+        from xoutil.fp.params import issue_9137
+        self, args = issue_9137(args)
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)
 
