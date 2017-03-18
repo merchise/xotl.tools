@@ -108,7 +108,7 @@ def check_default(args, caller=None, base_count=None):
 
     '''
     count = len(args)
-    if count in (0, 1):
+    if count == 0 or count == 1:
         return args
     else:
         caller = '{} '.format(caller) if caller else ''
@@ -122,7 +122,7 @@ def check_default(args, caller=None, base_count=None):
 
 
 class ParamManager(object):
-    '''Function parameter handler.
+    '''Function parameters parser.
 
     For example::
 
@@ -159,8 +159,8 @@ class ParamManager(object):
           definitive value; see `coercer`:class: for more information.
 
         '''
-        from xoutil.monads.option import Just, Wrong, _none
-        from xoutil.monads.checkers import Coercer
+        from xoutil.fp.monads.option import Just, Wrong, _none
+        from xoutil.fp.prove import Coercer
         args, kwds = self.args, self.kwds
         i, res = 0, _none
         while isinstance(res, Wrong) and i < len(ids):
@@ -189,7 +189,7 @@ class ParamManager(object):
             if 'default' in options:
                 return options['default']
             elif isinstance(res.inner, BaseException):
-                from xoutil.eight.errors import throw
+                from xoutil.eight.exceptions import throw
                 throw(res.inner)
             else:
                 raise TypeError('value for "{}" is not found'.format(ids))
@@ -229,8 +229,8 @@ class ParamSchemeRow(object):
         from xoutil.eight import iteritems, string_types as strs
         from xoutil.eight.string import safe_isidentifier as iskey
         from xoutil.eight import type_name
-        from xoutil.monads.option import _none
-        from xoutil.monads.checkers import Coercer
+        from xoutil.fp.monads.option import _none
+        from xoutil.fp.prove import Coercer
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
@@ -302,7 +302,7 @@ class ParamSchemeRow(object):
         If not defined, special value `_none` is returned.
 
         '''
-        from xoutil.monads.option import _none
+        from xoutil.fp.monads.option import _none
         return self.options.get('default', _none)
 
     @property
@@ -318,7 +318,7 @@ class ParamSchemeRow(object):
         '''
         # TODO: calculate the key value in the constructor
         from xoutil.eight import string_types as strs
-        from xoutil.monads.option import _none
+        from xoutil.fp.monads.option import _none
         res = self._key
         if res is _none:
             res = next((k for k in self.ids if isinstance(k, strs)), None)
@@ -394,7 +394,7 @@ class ParamScheme(object):
         from xoutil.eight import type_name
 
         def ok(v):
-            from xoutil.monads.option import Wrong
+            from xoutil.fp.monads.option import Wrong
             return not isinstance(v, Wrong)
 
         pm = ParamManager(args, kwds)
@@ -424,7 +424,7 @@ class ParamScheme(object):
     def defaults(self):
         '''Return a mapping with all valid default values.'''
         def ok(v):
-            from xoutil.monads.option import Wrong
+            from xoutil.fp.monads.option import Wrong
             return not isinstance(v, Wrong)
 
         aux = ((row.key, row.default) for row in self)
@@ -441,24 +441,25 @@ if __name__ == '__main__':
 
     import sys
     from xoutil.eight import string_types
-    from xoutil.cl import (file_coerce as cfile,
-                           positive_int_coerce as cposint)
+    from xoutil.cl import (file_coerce as is_file,
+                           positive_int_coerce as positive_int)
 
     scheme, row = ParamScheme, ParamSchemeRow
 
     sample_scheme = scheme(
-        row('stream', 0, -1, 'output', default=sys.stdout, coerce=cfile),
-        row('indent', 0, 1, default=1, coerce=cposint),
-        row('width', 0, 1, 2, 'max_width', default=79, coerce=cposint),
+        row('stream', 0, -1, 'output', default=sys.stdout, coerce=is_file),
+        row('indent', 0, 1, default=1, coerce=positive_int),
+        row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
         row('newline', default='\n', coerce=string_types))
 
     def test(*args, **kwargs):
+        from xoutil.eight import type_name
         print('-'*80)
         print(">>>", args, "--", kwargs)
         try:
             print('...', sample_scheme.get(args, kwargs))
         except BaseException as error:
-            print("???", '{}:'.format(type(error).__name__), error)
+            print("???", '{}:'.format(type_name(error)), error)
 
     test(4, 80)
     test(2, '80')
