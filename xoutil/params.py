@@ -47,44 +47,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def issue_9137(args, max_args=None, caller=None):
-    '''Parse positional arguments for methods fixing issue 9137.
-
-    There are methods that expect 'self' as valid keyword argument, this is
-    not possible if this name is used formally::
-
-      def update(self, *args, **kwds):
-          ...
-
-    To do that, declare them as ``method_name(*args, **kwds)``, and inner it
-    use this function::
-
-      def update(*args, **kwds):
-          self, args = issue_9137(args, max_args=1, caller='update')
-
-    :param max_args: A positive integer or ``None``; expected at most this
-           count of positional arguments.
-
-    :param caller: Used for error reporting.
-
-    :returns: (self, rest of checked positional arguments)
-
-    '''
-    if args:
-        self = args[0]    # Issue 9137
-        args = args[1:]
-        count = len(args)
-        if max_args is None or count <= max_args:
-            return self, args
-        else:
-            msg = '{} expected at most {} arguments, got {}'
-            name = caller or 'this method'
-            raise TypeError(msg.format(name, max_args, count))
-    else:
-        msg = '{} takes at least 1 positional argument (0 given)'
-        raise TypeError(msg.format(caller or 'this method'))
-
-
 def check_default(args, caller=None, base_count=None):
     '''Check default value expressed as variable-number positional parameter.
 
