@@ -1722,19 +1722,14 @@ class RankedDict(SmartDictMixin, dict):
         Use `rank`:meth: to change the precedence order in any moment.
 
         '''
-        if args:
-            self = args[0]
-            args = args[1:]
-            # Ensure direct calls to ``__init__`` don't clear previous
-            # contents
-            try:
-                self._ranks
-            except AttributeError:
-                self._ranks = []
-            self.update(*args, **kwds)
-        else:
-            msg = 'constructor takes at least 1 positional argument (0 given)'
-            raise TypeError(msg)
+        from xoutil.fp.params import issue_9137
+        self, args = issue_9137(args)
+        # Ensure direct calls to ``__init__`` don't clear previous contents
+        try:
+            self._ranks
+        except AttributeError:
+            self._ranks = []
+        self.update(*args, **kwds)
 
     def rank(self, *keys):
         '''Arrange mapping keys into a systematic precedence order.
@@ -1767,15 +1762,13 @@ class RankedDict(SmartDictMixin, dict):
                (name, value).
 
         '''
-        if args or kwds:
-            for key1, key2 in args:
-                self._swap_ranks(key1, key2)
-            for key1 in kwds:
-                key2 = kwds[key1]
-                self._swap_ranks(key1, key2)
-        else:
-            msg = 'swap_ranks() expects at least one pair of keys (0 given)'
-            raise TypeError(msg)
+        from xoutil.fp.params import check_count
+        check_count(len(args) + len(kwds) + 1, 2, caller='swap_ranks')
+        for key1, key2 in args:
+            self._swap_ranks(key1, key2)
+        for key1 in kwds:
+            key2 = kwds[key1]
+            self._swap_ranks(key1, key2)
 
     def move_to_end(self, key, last=True):
         '''Move an existing element to the end.
@@ -1921,20 +1914,18 @@ class RankedDict(SmartDictMixin, dict):
         raised.
 
         '''
+        from xoutil.fp.params import check_count
         count = len(args)
-        if count < 2:
-            res = super(RankedDict, self).pop(key, Unset)
-            if res is Unset:
-                if count == 1:
-                    return args[0]
-                else:
-                    raise KeyError(key)
+        check_count(count + 1, 1, 2, caller='pop')
+        res = super(RankedDict, self).pop(key, Unset)
+        if res is Unset:
+            if count == 1:
+                return args[0]
             else:
-                self._ranks.remove(key)
-                return res
+                raise KeyError(key)
         else:
-            msg = 'pop expected at most 2 arguments, got {}'.format(count + 1)
-            raise TypeError(msg)
+            self._ranks.remove(key)
+            return res
 
     def setdefault(self, key, default=None):
         '''D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D'''

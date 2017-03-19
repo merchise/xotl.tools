@@ -655,8 +655,8 @@ if __name__ == 'xoutil.types':
                      subjects not being instances of types.
 
         '''
-        if not args:
-            raise TypeError('are_instances requires at least one argument')
+        from xoutil.fp.params import check_count
+        check_count(args, 1, caller='are_instances')
         subjects, types = args[:-1], args[-1]
         if not subjects:
             isinstance(None, types)   # HACK: always validate `types`.
@@ -694,8 +694,8 @@ if __name__ == 'xoutil.types':
            not an instance of `types`.
 
         '''
-        if not args:
-            raise TypeError('no_instances requires at least an argument')
+        from xoutil.fp.params import check_count
+        check_count(args, 1, caller='no_instances')
         subjects, types = args[:-1], args[-1]
         if not subjects:
             isinstance(None, types)   # HACK: always validate `types`.

@@ -300,24 +300,22 @@ class ParamScheme(object):
     __slots__ = ('rows', 'cache')
 
     def __init__(self, *rows):
-        from xoutil.eight import string_types as strs, type_name as tname
-        if rows:
-            used = set()
-            for idx, row in enumerate(rows):
-                if isinstance(row, ParamSchemeRow):
-                    this = {k for k in row.ids if isinstance(k, strs)}
-                    aux = used & this
-                    if not aux:
-                        used |= this
-                    else:
-                        msg = ('{}() repeated keyword identifiers "{}" in '
-                               'row {}')
-                        raise ValueError(msg.format(tname(self), aux, idx))
-            self.rows = rows
-            self.cache = None
-        else:
-            msg = '{}() takes at least 1 argument (0 given)'
-            raise TypeError(msg.format(tname(self)))
+        from xoutil.eight import string_types as strs, type_name
+        from xoutil.fp.params import check_count
+        check_count(len(rows) + 1, 2, caller=type_name(self))
+        used = set()
+        for idx, row in enumerate(rows):
+            if isinstance(row, ParamSchemeRow):
+                this = {k for k in row.ids if isinstance(k, strs)}
+                aux = used & this
+                if not aux:
+                    used |= this
+                else:
+                    msg = ('{}() repeated keyword identifiers "{}" in '
+                           'row {}').format(type_name(self), aux, idx)
+                    raise ValueError(msg)
+        self.rows = rows
+        self.cache = None
 
     def __str__(self):
         from xoutil.eight import type_name
