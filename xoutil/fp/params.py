@@ -38,6 +38,9 @@ MAX_ARG_COUNT = sys.maxsize    # just any large number
 del sys
 
 
+from xoutil import Undefined    # used implicitly for absent default
+
+
 def issue_9137(args):
     '''Parse arguments for methods, fixing issue 9137 (self ambiguity).
 
@@ -111,3 +114,28 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
         else:
             name = 'called function or method'
         raise TypeError('{} takes {} ({} given)'.format(name, aux, count))
+
+
+def check_default(absent=Undefined):
+    '''Get a default value passed as a last excess positional argument.
+
+    :param absent: The value to be used by default if no one is given.
+           Defaults to `~xoutil.Undefined`:obj:.
+
+    For example::
+
+        def get(self, name, *default):
+            if name in self.inner_data:
+                return self.inner_data[name]
+            else:
+                from xoutil.fp.tools import check_default, Undefined
+                default = check_default()(*default)
+                if default is not Undefined:
+                    return default
+                else:
+                    raise KeyError(name)
+
+    '''
+    def default(res=absent):
+        return res
+    return default

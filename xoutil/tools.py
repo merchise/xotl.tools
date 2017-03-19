@@ -21,40 +21,21 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
+from xoutil.deprecation import deprecated
+from xoutil.fp.params import check_default
 
+
+@deprecated(check_default)
 def get_default(args, default=None):
     '''Get a default value passed as last positional argument.
 
-    Several functions that get values define an optional default value
-    parameter.  To use a construction ``def get_foobar(name, default=None)``
-    sometimes is not possible because `None` could be a possible valid
-    "foobar" value.  In these cases it's better to construct something like::
+    See `xoutil.fp.params.check_default`:func: for a more accurate function
+    that replace this.
 
-      def get_foobar(name, *default):
-          ...
-
-    and in client code you can call this function with a impossible "foobar"
-    value, like: ``res = get_foobar('egg', Undefined)`` (see `xoutil.cl`).
-
-    This function receive the tuple as received by the function, and which
-    value to return if None is given::
-
-      def get_foobar(name, *default):
-          from xoutil.tools import get_default
-          from xoutil import Undefined as _undef
-          default = get_default(default, _undef)
-          ...
-
-    If tuple `args` has an invalid size, a `TypeError` exception is raised.
+    .. deprecated:: 1.8.0
 
     '''
-    count = len(args)
-    if count == 0:
-        return default
-    elif count == 1:
-        return args[0]
-    else:
-        raise TypeError("expected 0 or 1 values for default, got %s" % count)
+    return check_default(default)(*args)
 
 
 def args_repr(args, **options):

@@ -47,42 +47,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def check_default(args, caller=None, base_count=None):
-    '''Check default value expressed as variable-number positional parameter.
-
-    The pattern is that none or one value can be given.  if OK, return the
-    same tuple given originally as ``*default``::
-
-        def pop(self, key, *default):
-            "D.pop(k[,d]) -> v"
-            if key in self:
-                return self[key]
-            else:
-                default = check_default(default)
-                if default:
-                    return default[0]
-                else:
-                    raise KeyError(key)
-
-    An exception is raised if more than one positional argument is given.  In
-    that case, `caller` and `base_count` are used to complement the message
-    (function name and base parameters count).
-
-    '''
-    count = len(args)
-    if count == 0 or count == 1:
-        return args
-    else:
-        caller = '{} '.format(caller) if caller else ''
-        if base_count is not None:
-            expected = 'at most {} arguments'.format(base_count + 1)
-            got = '{}'.format(base_count + count)
-        else:
-            expected = 'one default argument'
-            got = '{}'.format(count)
-        raise TypeError('{}expected {}, got {}'.format(caller, expected, got))
-
-
 class ParamManager(object):
     '''Function parameters parser.
 

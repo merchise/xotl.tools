@@ -219,9 +219,8 @@ def get_attr_value(obj, name, *default):
     `getattr_static`:func:.
 
     '''
-    from xoutil import Undefined
-    from xoutil.tools import get_default
-    default = get_default(default, Undefined)
+    from xoutil.fp.params import check_default, Undefined
+    default = check_default()(*default)
     is_type = isinstance(obj, type)
     res = getattr_static(obj, name, Undefined)
     if isdatadescriptor(res):
