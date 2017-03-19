@@ -23,7 +23,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from xoutil import Unset
-from xoutil.eight import callable, string_types as str_base
 from xoutil.deprecation import deprecated
 
 
@@ -283,6 +282,7 @@ class SafeDataItem(object):
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
+        from xoutil.eight import callable
         from xoutil.validators import (is_valid_identifier, predicate)
         self.attr_name = Unset
         self.init = Unset
@@ -471,6 +471,7 @@ def get_method_function(cls, method_name):
     method and this a python function.
 
     '''
+    from xoutil.eight import callable
     if not isinstance(cls, type):
         cls = cls.__class__
     mro = cls.mro()
@@ -536,6 +537,7 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
                        characters, also are ignored.
 
     '''
+    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if _len(cls.__doc__) < min_length:
         ignore = ignore or ()
@@ -570,6 +572,7 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
                        characters, also are ignored.
 
     '''
+    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     method = get_method_function(cls, method_name)
     if method and _len(method.__doc__) < min_length:
@@ -907,6 +910,7 @@ class lazy(object):
         self.kwargs = kwargs
 
     def __call__(self):
+        from xoutil.eight import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -1187,6 +1191,7 @@ def smart_copy(*args, **kwargs):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
+    from xoutil.eight import base_string, type_name, callable
     from xoutil.future.collections import MutableMapping, Mapping
     from xoutil.types import Required
     from xoutil.validators.identifiers import is_valid_identifier
@@ -1197,10 +1202,10 @@ def smart_copy(*args, **kwargs):
                         % kwargs.keys()[0])
     sources, target = args[:-1], args[-1]
     if not sources:
-        raise TypeError('smart_copy requires at least one source')
-    if isinstance(target, (bool, type(None), int, float, str_base)):
-        raise TypeError('target should be a mutable object, not %s' %
-                        type(target))
+        raise TypeError('smart_copy() requires at least one source')
+    if isinstance(target, (bool, type(None), int, float, base_string)):
+        raise TypeError('target should be a mutable object, not '
+                        '{}'.format(type_name(target)))
     if isinstance(target, MutableMapping):
         def setter(key, val):
             target[key] = val
@@ -1227,7 +1232,7 @@ def smart_copy(*args, **kwargs):
             get = smart_getter(source)
             items = source if isinstance(source, Mapping) else dir(source)
             for key in items:
-                private = isinstance(key, str_base) and key.startswith('_')
+                private = isinstance(key, base_string) and key.startswith('_')
                 if (defaults is False or defaults is None) and private:
                     copy = False
                 elif callable(defaults):
