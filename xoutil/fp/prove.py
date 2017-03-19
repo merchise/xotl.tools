@@ -93,21 +93,19 @@ class TypeCheck(Coercer):
 
     def __new__(cls, *args):
         from xoutil.eight import class_types as _types, type_name
-        if args:
-            if len(args) == 1 and isinstance(args[0], tuple):
-                args = args[0]
-            if all(isinstance(arg, _types) for arg in args):
-                self = super(TypeCheck, cls).__new__(cls)
-                self.inner = args
-                return self
-            else:
-                wrong = (arg for arg in args if not isinstance(arg, _types))
-                wnames = ', or '.join(type_name(w) for w in wrong)
-                msg = '`TypeCheck` allows only valid types, not: ({})'
-                raise TypeError(msg.format(wnames))
+        from xoutil.fp.params import check_count
+        check_count(len(args) + 1, 2, caller=cls.__name__)
+        if len(args) == 1 and isinstance(args[0], tuple):
+            args = args[0]
+        if all(isinstance(arg, _types) for arg in args):
+            self = super(TypeCheck, cls).__new__(cls)
+            self.inner = args
+            return self
         else:
-            msg = '{}() takes at least 1 argument (0 given)'
-            raise TypeError(type_name(self), msg)
+            wrong = (arg for arg in args if not isinstance(arg, _types))
+            wnames = ', or '.join(type_name(w) for w in wrong)
+            msg = '`TypeCheck` allows only valid types, not: ({})'
+            raise TypeError(msg.format(wnames))
 
     def __call__(self, value):
         from xoutil.fp.monads.option import Just, Wrong

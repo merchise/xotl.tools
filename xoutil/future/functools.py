@@ -75,8 +75,8 @@ def compose(*callables, **kwargs):
                  first.
 
     '''
-    if not callables:
-        raise TypeError('At least a function must be provided')
+    from xoutil.fp.params import check_count
+    check_count(callables, 1, caller='compose')
     if not all(callable(func) for func in callables):
         raise TypeError('Every func must a callable')
     if len(callables) == 1:
@@ -111,18 +111,16 @@ def power(*args):
        >>> power(operator.neg)
        Traceback (most recent call last):
        ...
-       TypeError: Function `power` requires at least two arguments
+       TypeError: power() takes at least 2 arguments (1 given)
+
     '''
-    try:
-        funcs, times = args[:-1], args[-1]
-    except IndexError:
-        funcs = False
-    if not funcs:
-        raise TypeError('Function `power` requires at least two arguments')
+    from xoutil.fp.params import check_count
+    check_count(args, 2, caller='power')
+    funcs, times = args[:-1], args[-1]
     if any(not callable(func) for func in funcs):
-        raise TypeError('First arguments of `power` must be callables')
-    if not isinstance(times, int):
-        raise TypeError('Last argument of `power` must be int')
+        raise TypeError('Arguments of `power`, but last, must be callables')
+    if not (isinstance(times, int) and times > 0):
+        raise TypeError('Last argument of `power` must be a positive integer')
     if len(funcs) > 1:
         base = (compose(funcs), )
     else:
@@ -189,6 +187,7 @@ def lwraps(*args, **kwargs):
     from xoutil import Unset
     from xoutil.eight import string_types, iteritems
     from xoutil.future.string import safe_str
+    from xoutil.fp.params import check_count
 
     def repeated(name):
         msg = "lwraps got multiple values for argument '{}'"
@@ -216,62 +215,59 @@ def lwraps(*args, **kwargs):
     source = {}
     target = Unset
     count = len(args)
-    if count <= 2:
-        i = 0
-        while i < count:
-            arg = args[i]
-            if isinstance(arg, string_types):
-                settle_str(name_key, arg)
-            elif isinstance(arg, decorables):
-                if target is Unset:
-                    target = arg
-                else:
-                    repeated('target-function')
+    check_count(count, 0, 2, caller='lwraps')
+    i = 0
+    while i < count:
+        arg = args[i]
+        if isinstance(arg, string_types):
+            settle_str(name_key, arg)
+        elif isinstance(arg, decorables):
+            if target is Unset:
+                target = arg
             else:
-                msg = 'lwraps arg {} must be a string or decorable function'
-                raise TypeError(msg.format(i))
-            i += 1
-        wrapped = kwargs.pop('wrapped', Unset)
-        settle_str(name_key, kwargs.pop('name', Unset))
-        settle_str(name_key, kwargs.pop(name_key, Unset))
-        settle_str(doc_key, kwargs.pop('doc', Unset))
-        settle_str(doc_key, kwargs.pop(doc_key, Unset))
-        source.update(kwargs)
-        if wrapped is not Unset:
-            # TODO: Check the type of `wrapped` to find these attributes in
-            # disparate callable objects similarly with functions.
+                repeated('target-function')
+        else:
+            msg = 'lwraps arg {} must be a string or decorable function'
+            raise TypeError(msg.format(i))
+        i += 1
+    wrapped = kwargs.pop('wrapped', Unset)
+    settle_str(name_key, kwargs.pop('name', Unset))
+    settle_str(name_key, kwargs.pop(name_key, Unset))
+    settle_str(doc_key, kwargs.pop('doc', Unset))
+    settle_str(doc_key, kwargs.pop(doc_key, Unset))
+    source.update(kwargs)
+    if wrapped is not Unset:
+        # TODO: Check the type of `wrapped` to find these attributes in
+        # disparate callable objects similarly with functions.
+        for name in (mod_key, name_key, doc_key):
+            if name not in source:
+                source[str(name)] = getattr(wrapped, name)
+        d = source.setdefault('__dict__', {})
+        d.update(wrapped.__dict__)
+
+    def wrapper(target):
+        if isinstance(target, decorables):
+            res = target
+            if isinstance(target, methods):
+                target = target.__func__
             for name in (mod_key, name_key, doc_key):
-                if name not in source:
-                    source[str(name)] = getattr(wrapped, name)
-            d = source.setdefault('__dict__', {})
-            d.update(wrapped.__dict__)
+                if name in source:
+                    value = source.pop(name)
+                    if name in safes:
+                        value = safe_str(value)
+                    setattr(target, str(name), value)
+                d = source.pop('__dict__', Unset)
+                if d:
+                    target.__dict__.update(d)
+            for key, value in iteritems(source):
+                setattr(target, key, value)
+            return res
+        else:
+            from xoutil.eight import type_name
+            msg = 'only functions are decorated, not {}'
+            raise TypeError(msg.format(type_name(target)))
 
-        def wrapper(target):
-            if isinstance(target, decorables):
-                res = target
-                if isinstance(target, methods):
-                    target = target.__func__
-                for name in (mod_key, name_key, doc_key):
-                    if name in source:
-                        value = source.pop(name)
-                        if name in safes:
-                            value = safe_str(value)
-                        setattr(target, str(name), value)
-                    d = source.pop('__dict__', Unset)
-                    if d:
-                        target.__dict__.update(d)
-                for key, value in iteritems(source):
-                    setattr(target, key, value)
-                return res
-            else:
-                from xoutil.eight import type_name
-                msg = 'only functions are decorated, not {}'
-                raise TypeError(msg.format(type_name(target)))
-
-        return wrapper(target) if target else wrapper
-    else:
-        msg = 'lwraps takes at most 2 arguments ({} given)'
-        raise TypeError(msg.format(len(args)))
+    return wrapper(target) if target else wrapper
 
     # TODO: Next code could be removed.
     # func.__name__ = safe_str(name)
