@@ -536,7 +536,8 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     elif isinstance(replacement, string_types):
         replacement = _normalize(replacement)
     else:
-        msg = '"replacement" ({}) must be a string or None, not "{}".'
+        msg = ('normalize_slug() "replacement" ({}) must be a string or '
+               'None, not "{}".')
         raise TypeError(msg.format(replacement, type(replacement)))
     if invalids is True:
         # Backward compatibility with former `invalid_underscore` argument
@@ -548,10 +549,13 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
             invalids = ''.join(invalids)
         invalids = _set(invalids)
     if invalids:
-        invalids = re.compile(r'[{}]+'.format(invalids))
-    if len(replacement) == 1 and invalids and invalids.match(replacement):
-        msg = 'replacement "{}" must not be part of invalids set.'
-        raise ValueError(msg.format(replacement))
+        invalid_regex = re.compile(r'[{}]+'.format(invalids))
+        if invalid_regex.search(replacement):
+            msg = ('normalize_slug() replacement "{}" must not contain any '
+                   'character in the invalid set.')
+            raise ValueError(msg.format(replacement))
+    else:
+        invalid_regex = None
     if valids is None:
         valids = ''
     else:
@@ -563,8 +567,8 @@ def normalize_slug(value, replacement='-', invalids=None, valids=None):
     # calculate result
     repl = '\t' if replacement else ''
     res = valids.sub(repl, _normalize(value))
-    if invalids:
-        res = invalids.sub(repl, res)
+    if invalid_regex:
+        res = invalid_regex.sub(repl, res)
     if repl:
         # convert two or more replacements in only one instance
         r = r'{}'.format(re.escape(repl))
