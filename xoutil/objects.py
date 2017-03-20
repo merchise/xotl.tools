@@ -1112,10 +1112,10 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
         ignored = lambda name: any(ignore(name) for ignore in ignores)
     else:
         ignored = None
-    valids = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
+    valid_names = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
     attrs = {name: value
              for name, value in iteritems(cls.__dict__)
-             if name not in valids
+             if name not in valid_names
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
              if not isinstance(value, MemberDescriptorType)

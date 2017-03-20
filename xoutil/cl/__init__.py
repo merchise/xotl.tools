@@ -73,13 +73,13 @@ class logical(boolean):
 
     '''
     __slots__ = ()
-    _valids = {'nil': False, 't': True}
+    _valid = {'nil': False, 't': True}
 
     def __new__(cls, arg):
         from xoutil.symbols import boolean
         from xoutil import Undefined as wrong
         name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
-        value = cls._valids.get(name, wrong)
+        value = cls._valid.get(name, wrong)
         if value is not wrong:
             return super(logical, cls).__new__(cls, name, value)
         else:

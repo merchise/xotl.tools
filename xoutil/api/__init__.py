@@ -152,8 +152,7 @@ class Handler(ABC):
     def is_applicable_for_context(cls):
         '''True if a driver is valid in current execution context.
 
-        Must be redefined in drivers that could result invalids in some
-        contexts.
+        Must be redefined in drivers that could be invalid in some contexts.
 
         '''
         return True

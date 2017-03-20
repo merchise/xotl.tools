@@ -45,9 +45,10 @@ def test_safe_string():
 
 def test_normalize_slug():
     from xoutil.future.string import normalize_slug
-    assert normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
-    assert normalize_slug('  Á.e i  Ó  u  ', '.', invalids='AU') == 'e.i.o'
-    assert normalize_slug('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
+    value = '  Á.e i  Ó  u  '
+    assert normalize_slug(value) == 'a-e-i-o-u'
+    assert normalize_slug(value, '.', invalid_chars='AU') == 'e.i.o'
+    assert normalize_slug(value, valid_chars='.') == 'a.e-i-o-u'
     assert normalize_slug('_x', '_') == '_x'
     assert normalize_slug('-x', '_') == 'x'
     assert normalize_slug('-x-y-', '_') == 'x_y'
@@ -55,7 +56,7 @@ def test_normalize_slug():
     assert normalize_slug(1 == 1) == 'true'
     assert normalize_slug(1.0) == '1-0'
     assert normalize_slug(135) == '135'
-    assert normalize_slug(123456, '', invalids='52') == '1346'
+    assert normalize_slug(123456, '', invalid_chars='52') == '1346'
     assert normalize_slug('_x', '_') == '_x'
 
 
@@ -63,21 +64,21 @@ def test_normalize_slug():
 valid_replacements = text().filter(lambda x: '\\' not in x)
 
 
-@given(s=text(), invalids=text(), replacement=valid_replacements)
-@example(s='0/0', invalids='-', replacement='-')
-def test_normalize_slug_hypothesis(s, invalids, replacement):
-    # TODO: (s='0:0', invalids='z', replacement='ź')
+@given(s=text(), invalid_chars=text(), replacement=valid_replacements)
+@example(s='0/0', invalid_chars='-', replacement='-')
+def test_normalize_slug_hypothesis(s, invalid_chars, replacement):
+    # TODO: (s='0:0', invalid_chars='z', replacement='ź')
     from xoutil.future.string import normalize_slug, normalize_ascii
 
     assert ' ' not in normalize_slug(s), 'Slugs do not contain spaces'
 
-    assert ' ' in normalize_slug(s + ' ', valids=' '), \
+    assert ' ' in normalize_slug(s + ' ', valid_chars=' '), \
         'Slugs do contain spaces if explicitly allowed'
 
     replacement = normalize_ascii(replacement).lower()
-    invalids = normalize_ascii(invalids).lower()
-    assert all(c not in normalize_slug(s, replacement, invalids=c)
-               for c in invalids if c not in replacement), \
+    invalid_chars = normalize_ascii(invalid_chars).lower()
+    assert all(c not in normalize_slug(s, replacement, invalid_chars=c)
+               for c in invalid_chars if c not in replacement), \
         'Slugs dont contain invalid chars'
 
 

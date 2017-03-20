@@ -54,13 +54,14 @@ def str_uuid(random=False):
     return '{}'.format(fn())
 
 
+# TODO: integrate with 'xoutil.future.string.normalize_slug'
 def slugify(value, *args, **kwargs):
     '''Return the string normal form, valid for slugs, for a given value.
 
     All values expecting strings are coerced using the following methodology:
     normalize all non-ascii to valid characters using unicode 'NFKC', converts
-    to lower-case and translate all invalids (including white-spaces) to the
-    character defined as `replacement` (normally a hyphen, see below).
+    to lower-case and translate all invalid chars (including white-spaces) to
+    the character defined as `replacement` (normally a hyphen, see below).
 
     In all values expecting sets repeated characters will be removed.
 
@@ -76,10 +77,10 @@ def slugify(value, *args, **kwargs):
            Could be given as a name argument or in the second positional
            argument (index 0 in `args`).  Default value is a hyphen ('-').
 
-    :param invalids: Characters to be considered invalids.  There is a default
-           set of valid characters which are kept in the resulting slug.
-           Characters given in this parameter are removed from the resulting
-           valid character set (see next parameter).
+    :param invalid_chars: Characters to be considered invalid.  There is a
+           default set of valid characters which are kept in the resulting
+           slug.  Characters given in this parameter are removed from the
+           resulting valid character set (see next parameter).
 
            Extra argument values can be used for compatibility with
            `invalid_underscore` argument in deprecated `normalize_slug`:func:
@@ -92,12 +93,12 @@ def slugify(value, *args, **kwargs):
            Could be given as a name argument or in the third positional
            argument (index 1 in `args`).  Default value is an empty set.
 
-    :param valids: A collection of extra valid characters.  Default set of
+    :param valid_chars: A collection of extra valid characters.  Default set of
            valid characters are alpha-numeric and the underscore (those that
            fulfill with the regular expression ``[_a-z0-9]``).  All characters
            not convertible to ascii are ignored.
 
-           This argument is processed before `invalids`.
+           This argument is processed before `invalid_chars`.
 
            Could be given only as a name argument.  Default value is an empty
            set.
@@ -122,10 +123,10 @@ def slugify(value, *args, **kwargs):
       >>> slugify('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
       True
 
-      >>> slugify('  Á.e i  Ó  u  ', '.', invalids='AU') == 'e.i.o'
+      >>> slugify('  Á.e i  Ó  u  ', '.', invalid_chars='AU') == 'e.i.o'
       True
 
-      >>> slugify('  Á.e i  Ó  u  ', valids='.') == 'a.e-i-o-u'
+      >>> slugify('  Á.e i  Ó  u  ', valid_chars='.') == 'a.e-i-o-u'
       True
 
       >>> slugify('_x', '_') == '_x'
@@ -146,7 +147,7 @@ def slugify(value, *args, **kwargs):
       >>> slugify(135) == '135'
       True
 
-      >>> slugify(123456, replacement='', invalids='52') == '1346'
+      >>> slugify(123456, replacement='', invalid_chars='52') == '1346'
       True
 
       >>> slugify('_x', replacement='_') == '_x'
@@ -173,27 +174,27 @@ def slugify(value, *args, **kwargs):
         return ''.join(i for i in v)
 
     replacement = getarg('replacement', 0, default='-', coercers=string_types)
-    invalids = getarg('invalids', 0, default='', coercers=_ascii)
-    valids = getarg('valids', 0, default='', coercers=_ascii)
-    if invalids is True:
+    invalid_chars = getarg('invalid_chars', 0, default='', coercers=_ascii)
+    valid_chars = getarg('valid_chars', 0, default='', coercers=_ascii)
+    if invalid_chars is True:
         # Backward compatibility with former `invalid_underscore` argument
-        invalids = '_'
-    elif invalids in {None, False}:
-        invalids = ''
+        invalid_chars = '_'
+    elif invalid_chars in {None, False}:
+        invalid_chars = ''
     else:
-        if not isinstance(invalids, string_types):
-            invalids = ''.join(i for i in invalids)
-        invalids = _esc(_lascii(invalids))
-    if not isinstance(valids, string_types):
-        valids = _from_iter(valids)
-    valids = _esc(re.sub(r'[0-9a-b]+', '', _lascii(valids)))
+        if not isinstance(invalid_chars, string_types):
+            invalid_chars = ''.join(i for i in invalid_chars)
+        invalid_chars = _esc(_lascii(invalid_chars))
+    if not isinstance(valid_chars, string_types):
+        valid_chars = _from_iter(valid_chars)
+    valid_chars = _esc(re.sub(r'[0-9a-b]+', '', _lascii(valid_chars)))
     # calculate result
     res = _lascii(value)
-    regex = re.compile(r'[^_a-z0-9%s]+' % valids)
+    regex = re.compile(r'[^_a-z0-9%s]+' % valid_chars)
     repl = '\t' if replacement else ''
     res = regex.sub(repl, res)
-    if invalids:
-        regex = re.compile(r'[%s]+' % invalids)
+    if invalid_chars:
+        regex = re.compile(r'[%s]+' % invalid_chars)
         res = regex.sub(repl, res)
     if repl:
         r = {'r': r'%s' % re.escape(repl)}

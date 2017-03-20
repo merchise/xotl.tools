@@ -70,10 +70,10 @@ def name_coerce(arg):
     '''If `arg` is a named object, return its name, else `nil`.
 
     Object names are always of `str` type, other types are considered
-    invalids.
+    invalid.
 
-    Generator objects has the special `__name__` attribute, but are ignored
-    and considered invalids.
+    Generator objects has the special `__name__` attribute, but they are
+    ignored and considered invalid.
 
     '''
     from types import GeneratorType
