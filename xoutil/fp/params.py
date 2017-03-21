@@ -125,15 +125,13 @@ def check_default(absent=Undefined):
     For example::
 
         def get(self, name, *default):
+            from xoutil.fp.tools import check_default, Undefined
             if name in self.inner_data:
                 return self.inner_data[name]
+            elif check_default()(*default) is not Undefined:
+                return default[0]
             else:
-                from xoutil.fp.tools import check_default, Undefined
-                default = check_default()(*default)
-                if default is not Undefined:
-                    return default
-                else:
-                    raise KeyError(name)
+                raise KeyError(name)
 
     '''
     def default(res=absent):

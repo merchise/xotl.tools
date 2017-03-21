@@ -23,6 +23,11 @@ import warnings
 from functools import wraps
 
 
+# TODO: Add arguments deprecation, for example use 'positional_limits' in
+# order to issue a warning if a function receive an amount of positional
+# arguments outside these limits; and 'invalid_kwds' in order to issue the
+# warning if these keyword arguments are used.
+
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
                'removed{in_version}. Use {replacement} instead.')
 

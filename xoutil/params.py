@@ -46,6 +46,73 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from xoutil.deprecation import deprecated
+
+
+@deprecated('xoutil.fp.params.issue_9137')
+def issue_9137(args, max_args=None, caller=None):
+    '''Parse positional arguments for methods fixing issue 9137.
+
+    There are methods that expect 'self' as valid keyword argument, this is
+    not possible if this name is used formally::
+
+      def update(self, *args, **kwds):
+          ...
+
+    To do that, declare them as ``method_name(*args, **kwds)``, and inner it
+    use this function::
+
+      def update(*args, **kwds):
+          self, args = issue_9137(args, max_args=1, caller='update')
+
+    :param max_args: A positive integer or ``None``; expected at most this
+           count of positional arguments.
+
+    :param caller: Used for error reporting.
+
+    :returns: (self, rest of checked positional arguments)
+
+    '''
+    from xoutil.fp.params import issue_9137
+    deprecated_args = [] if max_args is None else ['max_args']
+    if caller is not None:
+        deprecated_args.append('caller')
+    if deprecated_args:
+        import warnings
+        msg = ('issue_9137() {} parameters are not used any more, see '
+               'new function "xoutil.fp.params.issue_9137" for more '
+               'information.')
+        warnings.warn(msg.format(deprecated_args))
+    return issue_9137(args)
+
+
+@deprecated('xoutil.fp.params.check_default')
+def pos_default(args, caller=None, base_count=0):
+    '''Return a list with the default value given as a positional argument.
+
+    If no value is given, return an empty list.
+
+    For example::
+
+      def get(self, key, *args):
+          'A default value can be given as a positional argument'
+          if key in self:
+              return self[key]
+          else:
+              res = pos_default(args)
+              if res:
+                  return res[0]
+              else:
+                  raise KeyError(key)
+
+    An exception is raised if more than one positional argument is given.
+    CALLER and BASE_COUNT optional arguments are used to complement message in
+    this case.
+
+    '''
+    from xoutil.fp.params import check_default, Undefined
+    return () if check_default()(*args) is Undefined else args
+
 
 class ParamManager(object):
     '''Function parameters parser.
