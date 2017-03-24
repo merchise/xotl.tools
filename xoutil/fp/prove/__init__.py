@@ -317,9 +317,9 @@ class MultiCheck(Coercer):
         return self
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Just, Wrong, _none
+        from xoutil.fp.monads.option import Just, Wrong, none
         coercers = self.inner
-        i, res = 0, _none
+        i, res = 0, none
         while isinstance(res, Wrong) and i < len(coercers):
             res = coercers[i](value)
             i += 1

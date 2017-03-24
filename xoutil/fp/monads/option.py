@@ -172,6 +172,11 @@ class Wrong(Maybe):
 
 # ---- special singletons ----
 
-_false = Wrong()
-_true = Just()
-_none = Wrong(None)
+#: A `Wrong`:class: special singleton encapsulating the `False` value.
+false = Wrong()
+
+#: A `Just`:class: special singleton encapsulating the `True` value.
+true = Just()
+
+#: A `Wrong`:class: special singleton encapsulating the `None` value.
+none = Wrong(None)

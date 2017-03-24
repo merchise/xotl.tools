@@ -149,13 +149,14 @@ class ParamManager(object):
         - 'default': value used if the parameter is absent;
 
         - 'coerce': check if a value is valid or not and convert to its
-          definitive value; see `coercer`:class: for more information.
+          definitive value; see `xoutil.fp.prove.Coercer`:class: for more
+          information.
 
         '''
-        from xoutil.fp.monads.option import Just, Wrong, _none
+        from xoutil.fp.monads.option import Just, Wrong, none
         from xoutil.fp.prove import Coercer
         args, kwds = self.args, self.kwds
-        i, res = 0, _none
+        i, res = 0, none
         while isinstance(res, Wrong) and i < len(ids):
             key = ids[i]
             if key in self.consumed:
@@ -222,7 +223,7 @@ class ParamSchemeRow(object):
         from xoutil.eight import iteritems, string_types as strs
         from xoutil.eight.string import safe_isidentifier as iskey
         from xoutil.eight import type_name
-        from xoutil.fp.monads.option import _none
+        from xoutil.fp.monads.option import none
         from xoutil.fp.prove import Coercer
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
@@ -239,8 +240,8 @@ class ParamSchemeRow(object):
                 msg = ('{}() identifiers with wrong type (only int and str '
                        'allowed): {}')
                 raise TypeError(msg.format(type_name(self), bad))
-        key = options.pop('key', _none)
-        if not (key is _none or iskey(key)):
+        key = options.pop('key', none)
+        if not (key is none or iskey(key)):
             msg = ('"key" option must be an identifier, "{}" of type "{}" '
                    'given')
             raise TypeError(msg.format(key), type_name(key))
@@ -292,11 +293,11 @@ class ParamSchemeRow(object):
     def default(self):
         '''Returned value if parameter value is absent.
 
-        If not defined, special value `_none` is returned.
+        If not defined, special value ``none`` is returned.
 
         '''
-        from xoutil.fp.monads.option import _none
-        return self.options.get('default', _none)
+        from xoutil.fp.monads.option import none
+        return self.options.get('default', none)
 
     @property
     def key(self):
@@ -311,9 +312,9 @@ class ParamSchemeRow(object):
         '''
         # TODO: calculate the key value in the constructor
         from xoutil.eight import string_types as strs
-        from xoutil.fp.monads.option import _none
+        from xoutil.fp.monads.option import none
         res = self._key
-        if res is _none:
+        if res is none:
             res = next((k for k in self.ids if isinstance(k, strs)), None)
             if res is None:
                 res = self.ids[0]
@@ -377,7 +378,7 @@ class ParamScheme(object):
     def __call__(self, args, kwds, strict=False):
         '''Get a mapping with all resulting values.
 
-        If special value '_none' is used as 'default' option in a scheme-row,
+        If special value 'none' is used as 'default' option in a scheme-row,
         corresponding value isn't returned in the mapping if the parameter
         value is missing.
 
