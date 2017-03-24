@@ -29,7 +29,7 @@ if hasattr(str, 'isidentifier'):
     def isidentifier(s):
         return str(s) if s.isidentifier() else False
 else:
-    import re
+    import re    # noqa
     _PY2_IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][_a-z0-9]*$')
     del re
 

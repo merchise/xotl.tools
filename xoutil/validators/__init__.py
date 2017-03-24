@@ -250,7 +250,7 @@ def ok(value, *checkers, **kwargs):
     Keyword arguments are not validated to be correct.
 
     This function could be used with type-definitions for arguments, see
-    :class:`TypeChecker`.
+    `xoutil.fp.prove.TypeChecker`:class:.
 
     Examples::
 
