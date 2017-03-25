@@ -33,9 +33,6 @@ arguments.
 
 Also contains sub-modules to obtain, convert and check values of common types.
 
-John McCarthy and his students began work on the first Lisp implementation in
-1958.  After FORTRAN, Lisp is the oldest language still in use.
-
 .. versionadded:: 1.7.0
 
 '''
@@ -50,50 +47,16 @@ import re
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
-from xoutil.symbols import boolean
 from xoutil import Unset
 
-
-class logical(boolean):
-    '''Represent Common Lisp two special values `t` and `nil`.
-
-    Include redefinition of `__call__`:meth: to check values with special
-    semantic:
-
-    - When called as ``t(arg)``, check if `arg` is not `nil` returning a
-      logical true: the same argument if `arg` is nil or a true boolean value,
-      else return `t`.  That means that `False` or `0` are valid true values
-      for Common Lisp but not for Python.
-
-    - When called as ``nil(arg)``, check if `arg` is `nil` returning `t` or
-      `nil` if not.
-
-    Constructor could receive a valid name ('nil' or 't') or any other
-    ``boolean`` instance.
-
-    '''
-    __slots__ = ()
-    _valid = {'nil': False, 't': True}
-
-    def __new__(cls, arg):
-        from xoutil.symbols import boolean
-        from xoutil import Undefined as wrong
-        name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
-        value = cls._valid.get(name, wrong)
-        if value is not wrong:
-            return super(logical, cls).__new__(cls, name, value)
-        else:
-            msg = 'retrieving invalid logical instance "{}"'
-            raise TypeError(msg.format(arg))
-
-    def __call__(self, arg):
-        if self:    # self is t
-            return arg if arg or arg is nil else self
-        else:    # self is nil
-            return t if arg is self else self
+import warnings
+warnings.warn('"{}" module is completely deprecated; use "xoutil.fp.cl" or '
+              '"xoutil.fp.prove" instead'.format(__name__),
+              UserWarning)
+del warnings
 
 
-nil, t = logical('nil'), logical('t')
+from xoutil.fp.cl import logical, nil, t    # noqa
 
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
 
@@ -116,10 +79,9 @@ def vouch(fn, *args, **kwargs):
     To vouch a function declared in Python without arguments use `nil` as
     single positional argument::
 
-     res = vouch(noargs, nil)
+      res = vouch(noargs, nil)
 
     '''
-    from xoutil.tools import both_args_repr as _bar
     if args or kwargs:
         if len(args) == 1 and args[0] is nil:
             args = ()
@@ -127,8 +89,9 @@ def vouch(fn, *args, **kwargs):
         if t(res):
             return res
         else:
+            from xoutil.tools import both_args_repr as bar
             msg = '"{}" fails with when called with: ({})'
-            raise TypeError(msg.format(coercer_name(fn), _bar(args, kwargs)))
+            raise TypeError(msg.format(coercer_name(fn), bar(args, kwargs)))
     else:
         # TODO: Transform `lwraps` and use here
         def res(*a, **kw):
@@ -1184,4 +1147,4 @@ class mapping(custom):
         return res
 
 
-del sys, re, ABCMeta, metaclass, lwraps, boolean
+del sys, re, ABCMeta, metaclass, lwraps
