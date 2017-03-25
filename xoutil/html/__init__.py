@@ -26,6 +26,7 @@ from xoutil.future.string import safe_decode
 
 import warnings
 warnings.warn('xoutil.html is deprecated')
+del warnings
 
 
 if _py3:

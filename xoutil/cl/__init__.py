@@ -50,8 +50,8 @@ from xoutil.future.functools import lwraps
 from xoutil import Unset
 
 import warnings
-warnings.warn('"{}" module is completely deprecated; use "xoutil.fp.cl" or '
-              '"xoutil.fp.prove" instead'.format(__name__),
+warnings.warn('"{}" module is completely deprecated; use "xoutil.fp" package '
+              'instead'.format(__name__),
               UserWarning)
 del warnings
 

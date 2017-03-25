@@ -25,6 +25,8 @@ from xoutil.deprecation import deprecated
 from xoutil.fp.params import check_default
 
 
+# TODO: Move all functions in this module to a new place
+
 @deprecated(check_default)
 def get_default(args, default=None):
     '''Get a default value passed as last positional argument.
@@ -41,9 +43,11 @@ def get_default(args, default=None):
 def args_repr(args, **options):
     '''Format positional arguments to use in exception handling.
 
-    :params args: tuple as obtained in arguments when declared as ``*args``.
+    :params args: tuple as obtained in arguments when declared in a function
+           as ``*args``.
 
-    :param options: some extra options are used in this function.
+    :param options: some extra options could be used as excess keyword
+           arguments.
 
            - count: maximum amount of actual parameters to process; after
              reached that amount a tail item is appended with the remainder

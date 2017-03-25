@@ -9,5 +9,8 @@
 Tools
 =====
 
+.. automodule:: xoutil.fp.proofs
+   :members:
+
 .. automodule:: xoutil.fp.params
    :members:
