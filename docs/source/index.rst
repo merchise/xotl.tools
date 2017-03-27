@@ -15,8 +15,8 @@ What's new in this release
 .. include:: history/_changes-1.7.2.rst
 
 
-Contents:
----------
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2

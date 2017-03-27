@@ -1,16 +1,37 @@
-==============================================================
- `xoutil.fp`:mod: - Advanced functional programming in Python
-==============================================================
+:mod:`calendar` --- General calendar-related functions
+======================================================
+
+.. module:: calendar
+   :synopsis: Functions for working with calendars, including some emulation
+              of the Unix cal program.
+.. sectionauthor:: Drew Csillag <drew_csillag@geocities.com>
+
+
+
+
+
+`xoutil.fp`:mod: -- Functional Programming in Python
+====================================================
 
 .. automodule:: xoutil.fp
+   :synopsis: In Functional Programming a problem is decomposed into a set of
+              functions.
    :members:
 
+.. sectionauthor:: Medardo Rodriguez <med@merchise.org>
 
-Tools
-=====
+--------------
 
-.. automodule:: xoutil.fp.proofs
-   :members:
+Ideally, a function only takes inputs and produce outputs, and doesn't have
+any internal state that affects the output produced for a given input (like in
+Haskell).
 
-.. automodule:: xoutil.fp.params
-   :members:
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   fp/*

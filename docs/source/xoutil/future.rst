@@ -3,3 +3,13 @@
 
 .. automodule:: xoutil.future
    :members:
+
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   future/*
