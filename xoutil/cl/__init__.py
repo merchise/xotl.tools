@@ -55,56 +55,11 @@ warnings.warn('"{}" module is completely deprecated; use "xoutil.fp" package '
               UserWarning)
 del warnings
 
-
 from xoutil.fp.cl import logical, nil, t    # noqa
+from xoutil.fp.prove import vouch    # noqa
+
 
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
-
-
-def vouch(fn, *args, **kwargs):
-    '''Execute function `fn` and ensure that don't fail.
-
-    A function fails if it returns `nil`, in that case `vouch` raises
-    `TypeError`.
-
-    This function can be used directly or as a decorator::
-
-      >>> vouch(int_coerce, 1)
-      1
-
-      >>> @vouch
-      ... def my_fn(arg):
-      ...     return int_coerce(arg)
-
-    To vouch a function declared in Python without arguments use `nil` as
-    single positional argument::
-
-      res = vouch(noargs, nil)
-
-    '''
-    if args or kwargs:
-        if len(args) == 1 and args[0] is nil:
-            args = ()
-        res = fn(*args, **kwargs)
-        if t(res):
-            return res
-        else:
-            from xoutil.tools import both_args_repr as bar
-            msg = '"{}" fails with when called with: ({})'
-            raise TypeError(msg.format(coercer_name(fn), bar(args, kwargs)))
-    else:
-        # TODO: Transform `lwraps` and use here
-        def res(*a, **kw):
-            return vouch(fn, *a, **kw)
-
-        try:
-            res.__name__ = coercer_name(fn)
-            doc = fn.__doc__
-            if doc:
-                res.__doc__ = doc
-        except BaseException:
-            pass
-        return res
 
 
 class MetaCoercer(ABCMeta):

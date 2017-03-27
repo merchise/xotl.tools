@@ -12,7 +12,7 @@
 #
 # Created 2016-08-31
 
-r'''Prove validity of values.
+'''Prove validity of values.
 
 A `Coercer`:class: is a concept that combine two elements: validity check and
 value moulding.  Most times only the first part is needed because the original
@@ -30,6 +30,52 @@ It's usual to declare functions or methods with generic prototypes::
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
+
+
+def vouch(fn, *args, **kwargs):
+    '''Execute function `fn` and ensure that don't fail.
+
+    A function fails if it returns `nil`, in that case `vouch` raises
+    `TypeError`.
+
+    This function can be used directly or as a decorator::
+
+      >>> vouch(int_coerce, 1)
+      1
+
+      >>> @vouch
+      ... def my_fn(arg):
+      ...     return int_coerce(arg)
+
+    To vouch a function declared in Python without arguments use `nil` as
+    single positional argument::
+
+      res = vouch(noargs, nil)
+
+    '''
+    if args or kwargs:
+        if len(args) == 1 and args[0] is nil:
+            args = ()
+        res = fn(*args, **kwargs)
+        if t(res):
+            return res
+        else:
+            from xoutil.tools import both_args_repr as bar
+            msg = '"{}" fails with when called with: ({})'
+            raise TypeError(msg.format(coercer_name(fn), bar(args, kwargs)))
+    else:
+        # TODO: Transform `lwraps` and use here
+        def res(*a, **kw):
+            return vouch(fn, *a, **kw)
+
+        try:
+            res.__name__ = coercer_name(fn)
+            doc = fn.__doc__
+            if doc:
+                res.__doc__ = doc
+        except BaseException:
+            pass
+        return res
 
 
 class Coercer(object):
