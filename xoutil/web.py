@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xotl.web
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -73,7 +73,7 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     import re
     from xoutil.eight import unichr, text_type
-    from xoutil.string import safe_decode, normalize_slug
+    from xoutil.future.string import safe_decode, normalize_slug
     if not isinstance(s, text_type):
         s = safe_decode(s)
     if entities:
