@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.future.string
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
 #
@@ -42,6 +42,7 @@ import string as _stdlib    # noqa
 
 try:
     from string import __all__    # noqa
+    __all__ = list(__all__)
 except ImportError:
     # Python 2 and PyPy don't implement '__all__' for 'string' module.
     __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]

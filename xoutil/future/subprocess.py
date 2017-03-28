@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.future.subprocess
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
 from subprocess import *    # noqa
 
 from pprint import __all__    # noqa
-__all__ = __all__ + ['call_and_check_output']
+__all__ = list(__all__) + ['call_and_check_output']
 
 from xoutil.future import _past    # noqa
 _past.dissuade()

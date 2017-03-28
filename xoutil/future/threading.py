@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.future.threading
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -125,4 +125,4 @@ def sync_call(funcs, callback, timeout=None):
 
 
 from threading import __all__    # noqa
-__all__ = __all__ + ['async_call', 'sync_call']
+__all__ = list(__all__) + ['async_call', 'sync_call']

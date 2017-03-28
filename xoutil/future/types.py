@@ -100,8 +100,12 @@ del _past
 
 from xoutil.eight import _py2, _py34    # noqa
 
-from types import __all__    # noqa
-__all__ = list(__all__)    # copy it to avoid errors
+try:
+    from types import __all__    # noqa
+    __all__ = list(__all__)
+except ImportError:
+    # Python 2 and PyPy don't implement '__all__' for 'string' module.
+    __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
 
 try:
     NoneType
