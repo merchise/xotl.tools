@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.future.types
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2010-2012 Medardo Rodriguez
 # All rights reserved.
 #
@@ -592,18 +592,6 @@ if __name__ == 'xoutil.types':
         if name:
             desc = mro_dict(desc).get(name, None)
         return isinstance(desc, FunctionType)
-
-    # not used outside this module.
-    def is_slotwrapper(desc, name=_unset):
-        '''Returns True if a given `method` is a slot wrapper (i.e. a method that
-        is builtin in the `object` base class).
-
-        This function takes the same arguments as :func:`is_classmethod`.
-
-        '''
-        if name:
-            desc = mro_dict(desc).get(name, None)
-        return isinstance(desc, SlotWrapperType)
 
     # not used outside this module.
     def is_module(maybe):
