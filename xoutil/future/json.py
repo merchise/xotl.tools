@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.json
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -37,7 +37,7 @@ from json import *    # noqa
 import json as _stdlib    # noqa
 
 from json import __all__    # noqa
-__all__ = __all__ + ['file_load', 'encode_string']
+__all__ = list(__all__) + ['file_load', 'encode_string']
 
 from json import encoder, decoder    # noqa
 

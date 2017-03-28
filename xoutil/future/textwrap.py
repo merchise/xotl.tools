@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.future.textwrap
 # ---------------------------------------------------------------------
-# Copyright (c) 2014-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -20,6 +20,7 @@ from __future__ import (division as _py3_division,
 from textwrap import *    # noqa
 import textwrap as _stdlib
 from textwrap import __all__    # noqa
+__all__ = list(__all__)
 
 from xoutil.future import _past    # noqa
 _past.dissuade()
