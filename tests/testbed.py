@@ -14,11 +14,9 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Apr 29, 2012
+# Created on 2012-04-29
 
-'''
-This module simply serves the purposes of the testing weaving modules
-'''
+'''This module simply serves the purposes of the testing weaving modules'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,

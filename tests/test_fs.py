@@ -10,9 +10,9 @@
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on Feb 15, 2012
+# Created on 2012-02-15
 
-'Tests for xoutil.fs module'
+'''Tests for xoutil.fs module'''
 
 import os
 import unittest

@@ -13,7 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Nov 11, 2011
+# Created on 2011-11-11
 
 '''
 Regular expressions and validation functions for several identifiers.

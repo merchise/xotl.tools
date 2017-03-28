@@ -13,7 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Jun 28, 2011
+# Created on 2011-06-28
 
 '''Utils for Web applications.'''
 

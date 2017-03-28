@@ -9,7 +9,7 @@
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on 13 janv. 2013
+# Created on 2013-01-13
 
 '''Modules utilities.'''
 

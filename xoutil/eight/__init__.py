@@ -148,19 +148,6 @@ def iteritems(d):
     return (d.items if _py3 else d.iteritems)()
 
 
-try:
-    callable = callable
-except NameError:
-    def callable(obj):
-        '''Return whether `obj` is callable (i.e., some kind of function).
-
-        Note that classes are callable, as are instances of classes with a
-        __call__() method.
-
-        '''
-        return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
-
-
 if _py3:
     from io import StringIO
 else:
@@ -173,6 +160,19 @@ try:
 except ImportError:
     import builtins    # noqa
     __builtin__ = builtins
+
+
+try:
+    callable = getattr(__builtin__, 'callable')    # noqa
+except AttributeError:
+    def callable(obj):
+        '''Return whether `obj` is callable (i.e., some kind of function).
+
+        Note that classes are callable, as are instances of classes with a
+        __call__() method.
+
+        '''
+        return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
 
 
 try:

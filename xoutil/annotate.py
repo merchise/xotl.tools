@@ -9,7 +9,7 @@
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on Apr 3, 2012
+# Created on 2012-04-03
 
 '''Provides Python 3k forward-compatible (:pep:`3107`) annotations.'''
 

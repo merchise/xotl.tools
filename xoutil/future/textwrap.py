@@ -20,6 +20,7 @@ from __future__ import (division as _py3_division,
 from textwrap import *    # noqa
 import textwrap as _stdlib
 from textwrap import __all__    # noqa
+__all__ = list(__all__)
 
 from xoutil.future import _past    # noqa
 _past.dissuade()

@@ -131,7 +131,7 @@ def aliases(*names, **kwargs):
 @decorator
 def assignment_operator(func, maybe_inline=False):
     '''Makes a function that receives a name, and other args to get its first
-    argument (the name) from an assigment operation, meaning that it if its
+    argument (the name) from an assignment operation, meaning that it if its
     used in a single assignment statement the name will be taken from the left
     part of the ``=`` operator.
 

@@ -15,6 +15,8 @@ Python 2 and 3 Compatibility
    backlog/backlog-six2eight
    backlog/inspect
    backlog/glob
+   backlog/backlog-monads
+
 
 All pending tasks listed
 ------------------------

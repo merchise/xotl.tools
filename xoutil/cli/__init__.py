@@ -11,11 +11,17 @@
 #
 # Created on 2013-05-03
 
-'''Define tools for command-line interface (CLI) applications.
+'''Tools for Command-Line Interface (CLI) applications.
 
 CLI is a mean of interaction with a computer program where the user (or
 client) issues commands to the program in the form of successive lines of text
 (command lines).
+
+Commands can be registered by:
+
+  - sub-classing the `Command`:class:,
+  - using `~abc.ABCMeta.register`:meth: ABC mechanism for virtual sub-classes,
+  - redefining `~`Command.sub_commands`` class method.
 
 .. versionadded:: 1.4.1
 
@@ -31,26 +37,45 @@ from xoutil.cli.tools import command_name, program_name
 
 
 class Command(ABC):
-    '''A command base.
-
-    There are several methods to register new commands:
-
-      * Inheriting from this class
-      * Using the ABC mechanism of `register` virtual subclasses.
-      * Registering a class with the method "__commands__" defined.
-
-    If the method "__commands__" is used, it must be a class or static method.
-
-    Command names are calculated as class names in lower case inserting a
-    hyphen before each new capital letter. For example "MyCommand" will be
-    used as "my-command".
-
-    Each command could include its own argument parser, but it isn't used
-    automatically, all arguments will be passed as a single parameter to
-    :meth:`run` removing the command when obtained from "sys.argv".
+    '''Base for all commands.
 
     '''
-    __default_command__ = None
+    __settings__ = {
+        # 'default_command' : None
+    }
+
+    @classmethod
+    def cli_name(cls):
+        '''Calculate the command name.
+
+        Standard method uses `~xoutil.future.string.hyphen_name`.  Redefine it
+        to obtain a different behaviour.
+
+        Example::
+
+            >>> class MyCommand(Command):
+            ...     pass
+
+            >>> MyCommand.cli_name() == 'my-command'
+            True
+
+        '''
+        from xoutil.eight import string_types
+        from xoutil.future.string import hyphen_name
+        unset = object()
+        names = ('command_cli_name', '__command_name__')
+        i, res = 0, unset
+        while i < len(names) and res is unset:
+            name = names[i]
+            res = getattr(cls, names[i], unset)
+            if res is unset:
+                i += 1
+            elif not isinstance(res, string_types):
+                msg = "Attribute '{}' must be a string.".format(name)
+                raise TypeError(msg)
+        if res is unset:
+            res = hyphen_name(cls.__name__)
+        return res
 
     def __str__(self):
         return command_name(type(self))
@@ -74,6 +99,27 @@ class Command(ABC):
     def run(self, args=None):
         '''Must return a valid value for "sys.exit"'''
         raise NotImplementedError
+
+    @classmethod
+    def get_setting(cls, name, *default):
+        unset = object()
+        aux = len(default)
+        if aux == 0:
+            default = unset
+        elif aux == 1:
+            default = default[0]
+        else:
+            msg = 'get_setting() takes at most 3 arguments ({} given)'
+            raise TypeError(msg.format(aux + 2))
+        res = cls.__settings__.get(name, default)
+        if res is not unset:
+            return res
+        else:
+            raise KeyError(name)
+
+    @classmethod
+    def set_setting(cls, name, value):
+        cls.__settings__[name] = value    # TODO: Check type
 
     @classmethod
     def set_default_command(cls, cmd=None):
@@ -100,21 +146,22 @@ class Command(ABC):
                 from xoutil.eight import string_types as text
                 name = cmd if isinstance(cmd, text) else command_name(cmd)
             else:
+                # TODO: consider reset to None
                 raise ValueError('missing command specification!')
         else:
             if cmd is None:
                 name = command_name(cls)
             else:
-                msg = 'redundant command specification: "%s" and "%s"!'
-                raise ValueError(msg % (cls, cmd))
-        Command.__default_command__ = name
+                raise ValueError('redundant command specification', cls, cmd)
+
+        Command.set_setting('default_command', name)
 
     @staticmethod
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
+        # TODO: Convert check based in argument "recursed" in a decorator
         if recursed is None:
             recursed = set()
-        # TODO: Convert check based in argument "recursed" in a decorator
         from xoutil.names import nameof
         name = nameof(source, inner=True, full=True)
         if name not in recursed:
@@ -174,6 +221,7 @@ class Help(Command):
         Use class method "get
 
         '''
+        # TODO: Use 'add_subparsers' in this logic (see 'backlog.org').
         res = getattr(cls, '_arg_parser')
         if not res:
             from argparse import ArgumentParser

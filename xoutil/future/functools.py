@@ -4,6 +4,8 @@
 # xoutil.future.functools
 # ---------------------------------------------------------------------
 #
+# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+#
 # Most of the code of this file is backported from Python 3.2 standard library
 # with minor modifications to make it works on Python 2.7. So, this file is
 # distributed under the terms of the Python Software Foundatation Licence for

@@ -125,4 +125,4 @@ def sync_call(funcs, callback, timeout=None):
 
 
 from threading import __all__    # noqa
-__all__ = __all__ + ['async_call', 'sync_call']
+__all__ = list(__all__) + ['async_call', 'sync_call']

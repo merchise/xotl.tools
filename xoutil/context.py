@@ -15,7 +15,6 @@
 #
 # Created on 2011-03-09
 
-
 '''A context manager for execution context flags.'''
 
 

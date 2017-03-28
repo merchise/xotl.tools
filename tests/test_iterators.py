@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # tests.test_iterators
 #----------------------------------------------------------------------
 # Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
@@ -14,6 +14,8 @@
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
+
+from hypothesis import strategies as s, given
 
 
 def test_first_n_no_filling():
@@ -81,3 +83,18 @@ def test_continuously_slides():
     assert 'san' in trigrams
     assert 'ant' in trigrams
     assert len(trigrams) == 7
+
+
+@s.composite
+def keys(draw):
+    return 'k%d' % draw(s.integers(min_value=0, max_value=100))
+
+
+@given(s.dictionaries(keys(), s.integers()),
+       s.dictionaries(keys(), s.integers()))
+def test_dict_update_new(d1, d2):
+    from xoutil.iterators import dict_update_new
+    d = dict(d1)
+    dict_update_new(d1, d2)
+    assert all(key in d1 for key in d2)
+    assert all(d1[key] == d2[key] for key in d2 if key not in d)

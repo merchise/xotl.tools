@@ -460,9 +460,9 @@ def fix_private_name(cls, name):
 
 # TODO: @med, @manu, Decide if it's best to create a 'xoutil.future.inspect'
 # that extends the standard library module 'inspect' and place this
-# signature-dealing functions there. Probably, to be consistent, this imposes
-# a refactoring of some of 'xoutil.types' and move all the "is_classmethod",
-# "is_staticmethod" and inspection-related functions there.
+# signature-dealing functions there.  Probably, to be consistent, this imposes
+# a refactoring of some of 'xoutil.future.types' and move all the
+# "is_classmethod", "is_staticmethod" and inspection-related functions there.
 def get_method_function(cls, method_name):
     '''Get definition function given in its `method_name`.
 
@@ -1156,7 +1156,8 @@ def smart_copy(*args, **kwargs):
     and one of its key is not found in any of the `sources`, then the value of
     the key in the dictionary is copied to `target` unless:
 
-    - It's the value :class:`xoutil.types.Required` or an instance of Required.
+    - It's the value :class:`xoutil.future.types.Required` or an instance of
+      Required.
 
     - An exception object
 

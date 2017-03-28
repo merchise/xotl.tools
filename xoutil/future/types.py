@@ -100,8 +100,12 @@ del _past
 
 from xoutil.eight import _py2, _py34    # noqa
 
-from types import __all__    # noqa
-__all__ = list(__all__)    # copy it to avoid errors
+try:
+    from types import __all__    # noqa
+except ImportError:
+    import types
+    __all__ = dir(_stdlib)
+__all__ = list(__all__)
 
 try:
     NoneType
@@ -592,18 +596,6 @@ if __name__ == 'xoutil.types':
         if name:
             desc = mro_dict(desc).get(name, None)
         return isinstance(desc, FunctionType)
-
-    # not used outside this module.
-    def is_slotwrapper(desc, name=_unset):
-        '''Returns True if a given `method` is a slot wrapper (i.e. a method that
-        is builtin in the `object` base class).
-
-        This function takes the same arguments as :func:`is_classmethod`.
-
-        '''
-        if name:
-            desc = mro_dict(desc).get(name, None)
-        return isinstance(desc, SlotWrapperType)
 
     # not used outside this module.
     def is_module(maybe):

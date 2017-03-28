@@ -12,8 +12,6 @@
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
-#
-# Created on 2015-08-25
 
 '''Utilities to obtain identifiers that are unique at different contexts.
 

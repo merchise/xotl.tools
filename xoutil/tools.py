@@ -6,14 +6,16 @@
 # Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created 2014-05-15
 
-'''Simple tools with no dependencies on other modules.
+'''Simple tools minimizing dependencies on other modules.
 
-Extensions to the Python's standard library.
+The only used modules are Python's standard library `re`:mod:, and
+`xoutil.eight`:mod:.
 
 '''
 
@@ -23,6 +25,54 @@ from __future__ import (division as _py3_division,
 
 from xoutil.deprecation import deprecated
 from xoutil.fp.params import check_default
+
+
+# TODO: review this
+def nameof(obj):
+    '''Give the name of an object.
+
+    First try normally named object (those having a ``'__name__'`` attribute);
+    then some special classes instances that wraps the name internally are
+    checked; then it tests for some objects that are singletons\ [#sing]_;
+    finally -as a default tentative- return the type name.
+
+    For example::
+
+      >>> nameof(object)
+      'object'
+
+      >>> nameof(lambda x: x)
+      '<lambda>'
+
+      >>> singletons = (None, True, False, Ellipsis, NotImplemented)
+      >>> [nameof(s) for s in singletons]
+      ['None', 'True', 'False', 'Ellipsis', 'NotImplemented']
+
+      >>> nameof(0)
+      'int'
+
+    This is a beginning intended to deprecate a "fauna" of several existing
+    functions with the same purpose around several modules.
+
+    .. [#sing] In this case an object is considered a signgleton if both of
+               its representation strings (``str(obj)`` and ``repr(obj)``)
+               match and it is a valid identifier.
+
+    '''
+    try:
+        return obj.__name__
+    except AttributeError:
+        if isinstance(obj, (staticmethod, classmethod)):
+            return obj.__func__.__name__
+        else:    # try for singleton
+            import re
+            res = str(obj)
+            identifier_regex = '(?i)^[_a-z][_a-z0-9]*$'    # TODO: Py3?
+            if res == repr(obj) and re.match(identifier_regex, res):
+                return res
+            else:
+                from xoutil.eight import typeof
+                return typeof(obj).__name__
 
 
 # TODO: Move all functions in this module to a new place
@@ -77,9 +127,9 @@ def args_repr(args, **options):
       'int, float, str, ...'
 
     '''
-    from xoutil.eight import type_name, string_types
+    from xoutil.eight import typeof, string_types
     count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: type_name(arg))
+    cast = options.get('cast', lambda arg: typeof(arg).__name__)
     item_format = options.get('item_format', '{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')
@@ -132,9 +182,9 @@ def kwargs_repr(kwargs, **options):
       'x:int, y:float, z:str, ...'
 
     '''
-    from xoutil.eight import type_name, string_types
+    from xoutil.eight import typeof, string_types
     count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: type_name(arg))
+    cast = options.get('cast', lambda arg: typeof(arg).__name__)
     item_format = options.get('item_format', '{}:{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')

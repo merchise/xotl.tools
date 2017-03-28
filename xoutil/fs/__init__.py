@@ -10,7 +10,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Nov 28, 2011
+# Created on 2011-11-28
 
 '''File system utilities.
 

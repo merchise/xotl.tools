@@ -42,6 +42,7 @@ import string as _stdlib    # noqa
 
 try:
     from string import __all__    # noqa
+    __all__ = list(__all__)
 except ImportError:
     # Python 2 and PyPy don't implement '__all__' for 'string' module.
     __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
@@ -367,31 +368,57 @@ def capitalize(value, title=True):
         return empty
 
 
-def hyphen_name(name):
-    '''Convert a name, normally an identifier, to a hyphened slug.
+def hyphen_name(name, join_numbers=True):
+    '''Convert a name to a hyphened slug.
 
-    All transitions from lower to upper capitals (or from digits to letters)
-    are joined with a hyphen.
+    The name is normally an identifier in Camel-Case.
 
     Also, all invalid characters (those invalid in Python identifiers) are
-    converted to hyphens.
+    ignored.  Numbers are joined with preceding part when `join_numbers` is
+    True.
 
     For example::
 
       >>> hyphen_name('BaseNode') == 'base-node'
       True
 
+      >>> hyphen_name('ICQNámeAc3P123') == 'icq-name-ac3-p123'
+      True
+
+      >> hyphen_name('--__ICQNámeP12_34Abc--') == 'icq-name-p12-34-abc'
+      True
+
+      >> hyphen_name('ICQNámeP12', join_numbers=False) == 'icq-name-p-12'
+      True
+
     '''
     import re
-    regex = re.compile('([a-z0-9][A-Z]|[a-zA-Z][0-9]|[0-9][a-z])')
-    parts = []
-    for m in reversed(list(regex.finditer(name))):
-        i, f = m.span()
-        name, tail = name[:i + 1], name[i + 1:]
-        parts.insert(0, tail)
-    parts.insert(0, name)
-    name = '-'.join(parts)
-    return safe_str(normalize_slug(name, '-', '_'))
+    name = normalize_ascii(name)
+    regex = re.compile('[^A-Za-z0-9]+')
+    name = regex.sub('-', name)
+    regex = re.compile('([A-Z]+|[a-z]+|[0-9]+|-)')
+    all = regex.findall(name)
+    i, count, parts = 0, len(all), []
+    while i < count:
+        part = all[i]
+        if part != '-':
+            upper = 'A' <= part <= 'Z'
+            if upper:
+                part = part.lower()
+            j = i + 1
+            if j < count and upper and 'a' <= all[j] <= 'z':
+                aux = part[:-1]
+                if aux:
+                    parts.append(aux)
+                part = part[-1] + all[j]
+                i = j
+                j += 1
+            if j < count and '0' <= all[j] <= '9' and join_numbers:
+                part = part + all[j]
+                i = j
+            parts.append(part)
+        i += 1
+    return '-'.join(parts)
 
 
 # TODO: Document and fix all these "normalize_..." functions
@@ -467,7 +494,9 @@ def normalize_slug(value, *args, **kwds):
            normally invalid (non-ascii or not included in valid characters).
            Boolean ``True`` can be passed as a synonymous of ``"_"`` for
            compatibility with old ``invalid_underscore`` argument.  ``False``
-           or ``None`` are assumed as an empty set for invalid characters.
+           or ``None`` are assumed as an empty set for invalid characters.  If
+           given as a positional argument, must be the second in the `args`
+           tuple.  Default value is ``""``.
 
     .. todo:: check if "valid" plural is without "s" in English.
 
@@ -546,6 +575,7 @@ def normalize_slug(value, *args, **kwds):
     invalid_chars = getarg('invalid_chars', 0, default='', coercers=_ascii)
     valid_chars = getarg('valid_chars', 0, default='', coercers=_ascii)
     # check and adjust arguments
+    replacement = args[0] if args else kwds.pop('replacement', '-')
     if replacement in (None, False):
         # for backward compatibility
         replacement = ''

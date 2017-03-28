@@ -11,7 +11,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Feb 16, 2012
+# Created on 2012-02-16
 
 '''Extensions to os.path
 

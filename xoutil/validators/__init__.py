@@ -12,8 +12,6 @@
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
-#
-# Created 2014-05-06
 
 '''Some generic value validators and regular expressions and validation
 functions for several identifiers.

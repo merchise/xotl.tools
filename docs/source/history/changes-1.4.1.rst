@@ -27,7 +27,6 @@
     `xoutil.html.parser`:mod: from Python 3.3 to xoutil, so that a common
     implementation for both Python 2.7 and Python 3.3 is available.
 
-
 - Bug fixes:
 
   - Fixes some errors with `classical <!xoutil.aop.classical>`:mod: AOP weaving

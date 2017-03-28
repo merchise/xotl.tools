@@ -13,7 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Nov 18, 2011
+# Created on 2011-11-18
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print)

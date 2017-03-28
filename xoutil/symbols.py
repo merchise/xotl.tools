@@ -204,4 +204,18 @@ class boolean(symbol):
         return super(boolean, cls).__new__(cls, name, bool(value))
 
 
+#: False value where `None` could be a valid value
+Unset = boolean('Unset')
+
+
+#: False value for local scope use or where `Unset` could be a valid value
+Undefined = boolean('Undefined')
+
+
+#: To be used in arguments that are currently ignored cause they are being
+#: deprecated.  The only valid reason to use `Ignored` is to signal ignored
+#: arguments in method's/function's signature
+Ignored = boolean('Ignored')
+
+
 del metaclass

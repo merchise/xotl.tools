@@ -3,7 +3,6 @@
 # ---------------------------------------------------------------------
 # xoutil.decorator.meta
 # ---------------------------------------------------------------------
-#
 # Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #

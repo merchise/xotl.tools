@@ -79,7 +79,7 @@ def test_normalize_slug_hypothesis(s, invalid_chars, replacement):
     invalid_chars = normalize_ascii(invalid_chars).lower()
     assert all(c not in normalize_slug(s, replacement, invalid_chars=c)
                for c in invalid_chars if c not in replacement), \
-        'Slugs dont contain invalid chars'
+                   'Slugs dont contain invalid chars'
 
 
 @given(s=text(), p=text())

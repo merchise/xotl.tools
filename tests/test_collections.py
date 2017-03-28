@@ -13,7 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Jul 3, 2012
+# Created on 2012-07-03
 
 
 from __future__ import (division as _py3_division,

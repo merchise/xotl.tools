@@ -1,0 +1,33 @@
+#+TITLE: Backlog for *xoutil* - a collection of disparate utilities
+#+AUTHOR: Merchise Autrement [~º/~]
+#+DESCRIPTION: Development planning for this package.
+
+* Backlog for *xoutil*
+
+** Development ideas. [/]
+
+- [ ] Refactor CLI.
+
+  See IPython's [[file:~/.local/lib/python2.7/site-packages/IPython/terminal/ipapp.py::addflag%20%3D%20lambda%20*args:%20frontend_flags.update(boolean_flag(*args))][addflag]].  Migrate the logic for sub-commands in 'argparse' by
+  using [[file:/usr/share/doc/python/html/library/argparse.html?highlight%3Dargumentparser#argparse.ArgumentParser.add_subparsers][add_subparsers]] when definie method [[file:xoutil/cli/__init__.py::def%20get_arg_parser(cls):][get_arg_parser]] for sub-classes of
+  [[file:xoutil/cli/__init__.py::class%20Command(ABC):][xoutil.cli.Command]].
+
+
+** Errors
+
+- [ ] Fix IPython "recursive reload" in all xoutil modules for all Python
+  versions.
+
+  The =IPython.lib.deepreload= module allows you to recursively reload a
+  module: changes made to any of its dependencies will be reloaded without
+  having to exit.
+
+  When it is run on =xoutil=:
+
+  #+begin_src python
+    from IPython.lib.deepreload import reload as dreload
+    import xoutil
+    dreload(xoutil)
+  #+end_src
+
+** Configuration. [/]

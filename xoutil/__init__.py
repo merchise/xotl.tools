@@ -13,7 +13,7 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created: Mar 23, 2012
+# Created: 2012-03-23
 #
 
 '''`xoutil` is a collection of disparate utilities that does not conform
