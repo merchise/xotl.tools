@@ -303,11 +303,11 @@ def ungroup(iterator):
     The `iterator` should produce pairs of ``(_, xs)``; where ``xs`` is
     another iterator (or iterable).
 
-    It's guaranteed that `iterator` will be consumed at the *boundaries* of
-    each pair, i.e. before taking another ``(_, ys)`` from `iterator` the
-    first ``xs`` will be fully yielded.
+    It's guaranteed that the `iterator` will be consumed at the *boundaries*
+    of each pair, i.e. before taking another pair ``(_, ys)`` from `iterator`
+    the first ``xs`` will be fully yielded.
 
-    Example::
+    Demonstration:
 
       >>> def groups():
       ...    def chunk(s):
@@ -337,7 +337,8 @@ def ungroup(iterator):
       Yielding group 0
       Yielding group 1
 
-    The iterator was consumed just to create the arguments to ``chain()``.
+    Notice that the iterator was fully consumed just to create the arguments
+    to ``chain()``.
 
     '''
     for _, xs in iterator:
