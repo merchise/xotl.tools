@@ -14,6 +14,9 @@
 
 '''Prove validity of values.
 
+The `vouch`:func: function provides a tool to wrap function calls controlling
+these cases.
+
 A `Coercer`:class: is a concept that combine two elements: validity check and
 value moulding.  Most times only the first part is needed because the original
 value is in the correct shape if valid.
@@ -23,7 +26,9 @@ It's usual to declare functions or methods with generic prototypes::
   def func(*args, **kwargs):
       ...
 
-.. versionadded:: 1.7.2 Migrated from 'xoutil.params'
+.. versionadded:: 1.7.2
+
+.. versionchanged:: 1.8.0 Migrated from 'xoutil.params'
 
 '''
 
@@ -32,11 +37,23 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def vouch(fn, *args, **kwargs):
-    '''Execute function `fn` and ensure that don't fail.
+def vouch(func, *args, **kwargs):
+    '''Execute a function inner a safety wrapper.
 
-    A function fails if it returns `nil`, in that case `vouch` raises
-    `TypeError`.
+    An exception is raised if:
+
+    - The function returns `!xoutil.fp.cl.nil`:data:\ ; or
+
+    - The function returns a `!xoutil.fp.monads.option.Wrong`:class: instance;
+      or
+
+    - The function receives one unique parameter and returns ``False``; in
+      this case
+
+    - Any exception is raised inner the function execution.
+
+    or A function fails if it returns `nil`, in that case `vouch`
+    raises `TypeError`.
 
     This function can be used directly or as a decorator::
 
@@ -53,28 +70,28 @@ def vouch(fn, *args, **kwargs):
       res = vouch(noargs, nil)
 
     '''
+    from xoutil.future.string import small, safe_str
     if args or kwargs:
         if len(args) == 1 and args[0] is nil:
             args = ()
-        res = fn(*args, **kwargs)
+        res = func(*args, **kwargs)
         if t(res):
             return res
         else:
             from xoutil.tools import both_args_repr as bar
             msg = '"{}" fails with when called with: ({})'
-            raise TypeError(msg.format(coercer_name(fn), bar(args, kwargs)))
+            raise TypeError(msg.format(coercer_name(func), bar(args, kwargs)))
     else:
         # TODO: Transform `lwraps` and use here
         def res(*a, **kw):
-            return vouch(fn, *a, **kw)
+            return vouch(func, *a, **kw)
 
         try:
-            res.__name__ = coercer_name(fn)
-            doc = fn.__doc__
-            if doc:
-                res.__doc__ = doc
+            res.__name__ = func.__name__
+            res.__doc__ = func.__doc__
         except BaseException:
-            pass
+
+            res.__name__ = safe_str(small(func))
         return res
 
 
