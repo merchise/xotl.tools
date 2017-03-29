@@ -102,10 +102,10 @@ from xoutil.eight import _py2, _py34    # noqa
 
 try:
     from types import __all__    # noqa
+    __all__ = list(__all__)
 except ImportError:
-    import types
-    __all__ = dir(_stdlib)
-__all__ = list(__all__)
+    # Python 2 and PyPy don't implement '__all__' for 'string' module.
+    __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
 
 try:
     NoneType
