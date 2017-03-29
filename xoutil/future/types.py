@@ -104,7 +104,7 @@ try:
     from types import __all__    # noqa
     __all__ = list(__all__)
 except ImportError:
-    # Python 2 and PyPy don't implement '__all__' for 'string' module.
+    # Python 3.3 don't implement '__all__' for 'string' module.
     __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
 
 try:
