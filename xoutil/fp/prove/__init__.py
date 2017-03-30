@@ -40,22 +40,16 @@ from __future__ import (division as _py3_division,
 def vouch(func, *args, **kwargs):
     '''Execute a function inner a safety wrapper.
 
-    An exception is raised if:
+    Always raises an exceptions when values that represent failures are
+    returned:
 
-    - The function returns `!xoutil.fp.cl.nil`:data:\ ; or
+    - `!xoutil.fp.monads.option.Wrong`:class: instance; or
 
-    - The function returns a `!xoutil.fp.monads.option.Wrong`:class: instance;
-      or
+    - Any false instance of `xoutil.symbols.boolean`:class: (this includes
+      ``False`` standard Python value). See this module documentation for more
+      information.
 
-    - The function receives one unique parameter and returns ``False``; in
-      this case
-
-    - Any exception is raised inner the function execution.
-
-    or A function fails if it returns `nil`, in that case `vouch`
-    raises `TypeError`.
-
-    This function can be used directly or as a decorator::
+    Can be used directly or as a decorator::
 
       >>> vouch(int_coerce, 1)
       1
@@ -64,10 +58,8 @@ def vouch(func, *args, **kwargs):
       ... def my_fn(arg):
       ...     return int_coerce(arg)
 
-    To vouch a function declared in Python without arguments use `nil` as
-    single positional argument::
-
-      res = vouch(noargs, nil)
+    To vouch directly a function declared in Python without arguments use
+    ``vouch(noargs)()``.
 
     '''
     from xoutil.future.string import small, safe_str
