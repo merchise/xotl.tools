@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.future.datetime
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -267,6 +267,31 @@ def get_month_last(ref=None):
     else:
         m += 1
     return date(y, m, 1) - timedelta(1)
+
+
+def get_next_month(ref=None, lastday=False):
+    '''Get the first or last day of the *next month*.
+
+    If `lastday` is False return the first date of the `next month`.
+    Otherwise, return the last date.
+
+    The *next month* is computed with regards to a reference date.  If `ref`
+    is None, take the current date as the reference.
+
+    Examples:
+
+      >>> get_next_month(date(2017, 1, 23))
+      date(2017, 2, 1)
+
+      >>> get_next_month(date(2017, 1, 23), lastday=True)
+      date(2017, 2, 28)
+
+    '''
+    result = get_month_last(ref) + timedelta(days=1)
+    if lastday:
+        return get_month_last(result)
+    else:
+        return result
 
 
 def is_full_month(start, end):
