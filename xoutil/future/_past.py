@@ -47,4 +47,4 @@ def dissuade(name=None):
         warn(('"{}" is now deprecated and it will be removed; use "{}" '
               'instead.').format(name, new_name),
              # TODO: Why ``category=DeprecationWarning,`` doesn't work?
-             stacklevel=2)
+             stacklevel=3)
