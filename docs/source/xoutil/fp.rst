@@ -1,15 +1,3 @@
-:mod:`calendar` --- General calendar-related functions
-======================================================
-
-.. module:: calendar
-   :synopsis: Functions for working with calendars, including some emulation
-              of the Unix cal program.
-.. sectionauthor:: Drew Csillag <drew_csillag@geocities.com>
-
-
-
-
-
 `xoutil.fp`:mod: -- Functional Programming in Python
 ====================================================
 
@@ -31,7 +19,8 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :glob:
 
    fp/*
+   fp/**

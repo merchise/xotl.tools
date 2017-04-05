@@ -6,4 +6,6 @@
 
 .. autodata:: Unset
 
+.. autodata:: Undefined
+
 .. autodata:: Ignored
