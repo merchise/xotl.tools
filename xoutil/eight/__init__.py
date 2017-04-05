@@ -109,15 +109,18 @@ def type_name(obj):
 
 try:
     __intern = intern
-
-    def intern(string):
-        # Avoid problems in Python 2.x when using unicode by default.
-        return __intern(str(str() + string))
-
-    intern.__doc__ = __intern.__doc__
 except NameError:
-    from sys import intern    # noqa
+    from sys import intern as __intern    # noqa
 
+
+def intern(string):
+    # Avoid problems in Python 2.x when using unicode
+    if not isinstance(string, str):
+        string = string.encode('utf-8')
+    return __intern(string)
+
+# Avoid a Sphinx error
+intern.__doc__ = __intern.__doc__.replace("``", '"').replace("''", '"')
 
 if _py3:
     input = input

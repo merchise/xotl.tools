@@ -21,9 +21,8 @@ versions, so use any of them directly; nevertheless `StandardError`:class: is
 undefined in Python 3, we introduce some adjustments here in base classes
 (`BaseException`:class: and `StandardError`:class: classes).
 
-`catch`:func: unifies syntax differences raising exceptions.
-
-In Python 2 the syntax for ``raise`` is::
+The functions `catch`:func: and `throw`:func: unify syntax differences raising
+exceptions.  In Python 2 the syntax for ``raise`` is::
 
   "raise" [type ["," value ["," traceback]]]
 
@@ -31,8 +30,8 @@ and in Python 3::
 
   "raise" [error[.with_traceback(traceback)] ["from" cause]]
 
-You can use ``catch`` as a function to wrap errors going to be raised with a
-homogeneous syntax using a `trace` extra argument::
+You can use `catch`:func: as a function to wrap errors going to be raised with
+a homogeneous syntax using a `trace` extra argument::
 
     >>> divisor = 0
     >>> try:
@@ -67,9 +66,9 @@ except NameError:
 
 try:
     with_traceback = BaseException.with_traceback    # only in python 3
-    _py2 = False
+    _py3 = True
 except AttributeError:
-    _py2 = True
+    _py3 = False
 
     def with_traceback(self, tb):
         '''set self.__traceback__ to `tb` and return self.'''
@@ -116,9 +115,13 @@ def catch(self=None, trace=None):
             msg = 'catch() captured invalid exception information.'
             raise RuntimeError(msg)
     elif isinstance(trace, (tuple, list)):
-        cause, traceback = trace
+        if isinstance(trace[0], BaseException):
+            cause, traceback = trace
+        else:
+            traceback, cause = trace
     elif isinstance(trace, BaseException):
-        cause, traceback = trace, None
+        cause = trace
+        traceback = getattr(cause, '__traceback__', None)
     else:
         cause, traceback = None, trace
     if self is None:
@@ -131,20 +134,37 @@ def catch(self=None, trace=None):
 
 
 def throw(error, tb=None):
-    '''Unify syntax for raising an error with a trace-back.
+    '''Unify syntax for raising an error with trace-back information.
 
-    Instead of use the Python `raise` statement, use ``throw(error, tb)``.  If
-    `tb` is None, execute a `catch`:func:.
+    Instead of using the Python ``raise`` statement, use ``throw(error, tb)``.
+    If `tb` argument is not given, the trace-back information must be found in
+    the context, a ``TypeError`` is raised otherwise.
 
     '''
     if tb is None:
-        error = catch(error)
-        tb = error.__traceback__
+        tb = traceof(error)
         if tb is None:
-            msg = 'throw() can not determine a valid trace-back.'
-            raise RuntimeError(msg)
-    if _py2:
+            error = catch(error)
+            tb = error.__traceback__
+        if tb is None:
+            msg = "throw() can't be used without a trace-back."
+            raise TypeError(msg)
+    if _py3:
+        raise error.with_traceback(tb)
+    else:
         from ._throw2 import raise2
         raise2(error, tb)
-    else:
-        raise error
+
+
+def traceof(error):
+    '''Get the trace-back information of the given `error`.
+
+    Return None if not defined.
+
+    '''
+    from types import TracebackType
+    try:
+        res = error.__traceback__
+        return res if isinstance(res, TracebackType) else None
+    except AttributeError:
+        return None
