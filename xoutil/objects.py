@@ -1323,7 +1323,7 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
 
 def get_traverser(*paths, **kw):
     '''Combines the power of `traverse`:func: with the expectations from both
-    `operator.itergetter`:func: and `operator.attrgetter`:func:.
+    `operator.itemgetter`:func: and `operator.attrgetter`:func:.
 
     :param paths: Several paths to extract.
 
