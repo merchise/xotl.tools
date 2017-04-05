@@ -37,54 +37,69 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+def safe(func):
+    '''Decorate a function to be executed in a safety wrapper.
+
+    See `vouch`:func: for more information.
+
+    '''
+    from xoutil.future.string import small, safe_str
+
+    def inner(*a, **kw):
+        return vouch(func, *a, **kw)
+
+    try:
+        inner.__name__ = func.__name__
+        inner.__doc__ = func.__doc__
+    except BaseException:
+        inner.__name__ = safe_str(small(func))
+    return inner
+
+
 def vouch(func, *args, **kwargs):
     '''Execute a function inner a safety wrapper.
 
     Always raises an exceptions when values that represent failures are
     returned:
 
-    - `!xoutil.fp.monads.option.Wrong`:class: instance; or
+    - `~xoutil.fp.monads.option.Wrong`:class: instance of the Maybe monad; or
 
-    - Any false instance of `xoutil.symbols.boolean`:class: (this includes
-      ``False`` standard Python value). See this module documentation for more
-      information.
+    - Any false instance of `~xoutil.symbols.boolean`:class:\ .
 
-    Can be used directly or as a decorator::
-
-      >>> vouch(int_coerce, 1)
-      1
-
-      >>> @vouch
-      ... def my_fn(arg):
-      ...     return int_coerce(arg)
-
-    To vouch directly a function declared in Python without arguments use
-    ``vouch(noargs)()``.
+      This includes ``False`` Python standard value, `~xoutil.Unset`:obj:,
+      `~xoutil.Undefined`:obj:, `~xoutil.Ignored`:obj:, among other standard
+      `xoutil`:mod: values.
 
     '''
-    from xoutil.future.string import small, safe_str
-    if args or kwargs:
-        if len(args) == 1 and args[0] is nil:
-            args = ()
-        res = func(*args, **kwargs)
-        if t(res):
-            return res
+    from xoutil.future.string import small
+    from xoutil.eight.exceptions import traceof, throw, catch
+    from xoutil.symbols import boolean
+    from xoutil.fp.monads.option import Just, Wrong
+    res = func(*args, **kwargs)
+    if isinstance(res, boolean):
+        if res:
+            if len(args) == 1 and not kwargs:
+                res = args[0]
+            else:
+                # TODO: Check to raise an error on invalid arguments for a
+                # predicate
+                pass
         else:
-            from xoutil.tools import both_args_repr as bar
-            msg = '"{}" fails with when called with: ({})'
-            raise TypeError(msg.format(coercer_name(func), bar(args, kwargs)))
-    else:
-        # TODO: Transform `lwraps` and use here
-        def res(*a, **kw):
-            return vouch(func, *a, **kw)
-
-        try:
-            res.__name__ = func.__name__
-            res.__doc__ = func.__doc__
-        except BaseException:
-
-            res.__name__ = safe_str(small(func))
-        return res
+            msg = '{} predicate returns a false value'.format(small(func))
+            raise ValueError(msg)
+    elif isinstance(res, Wrong):
+        inner = res.inner
+        msg = '{} predicate returns a monadic wrong value'.format(small(func))
+        if isinstance(inner, BaseException):
+            error = catch(ValueError(msg), inner)
+            if traceof(error):
+                throw(error)
+            else:
+                raise error
+        else:
+            if inner is not None or not isinstance(inner, boolean):
+                msg += ' {} of type "{}"'.format(small(inner), type_name(inner))
+    return res
 
 
 class Coercer(object):
