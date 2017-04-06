@@ -361,6 +361,8 @@ def ungroup(iterator):
     Notice that the iterator was fully consumed just to create the arguments
     to ``chain()``.
 
+    .. versionadded:: 1.7.3
+
     '''
     for _, xs in iterator:
         for x in xs:
