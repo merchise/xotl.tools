@@ -175,6 +175,30 @@ def delete_duplicates(seq, key=lambda x: x):
     return seq
 
 
+def iter_delete_duplicates(iter, key=lambda x: x):
+    '''Yields non-repeating items from `iter`.
+
+    `key` has the same meaning as in `delete_duplicates`:func:.
+
+    Examples:
+
+      >>> list(iter_delete_duplicates('AAAaBBBA'))
+      ['A', 'a', 'B', 'A']
+
+      >>> list(iter_delete_duplicates('AAAaBBBA', key=lambda x: x.lower()))
+      ['A', 'B', 'A']
+
+    .. versionadded:: 1.7.4
+
+    '''
+    last = object()  # a value we're sure `iter` won't produce
+    for x in iter:
+        k = key(x)
+        if k != last:
+            yield x
+        last = k
+
+
 def slides(iterable, width=2, fill=None):
     '''Creates a sliding window of a given `width` over an iterable::
 

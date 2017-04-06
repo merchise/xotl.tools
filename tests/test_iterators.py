@@ -119,3 +119,10 @@ def test_delete_duplicates_with_key(l):
     res = delete_duplicates(l, key=lambda x: x % 3)
     assert len(res) <= 3, \
         'key yields 0, 1, or 2; thus res can contain at most 3 items'
+
+
+def test_iter_delete_duplicates():
+    from xoutil.iterators import iter_delete_duplicates
+    assert list(iter_delete_duplicates('AAAaBBBA')) == ['A', 'a', 'B', 'A']
+    assert list(iter_delete_duplicates('AAAaBBBA', key=lambda x: x.lower())) ==\
+        ['A', 'B', 'A']
