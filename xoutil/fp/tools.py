@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.fp.tools
 # ---------------------------------------------------------------------
-# Copyright (c) 2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2016, 2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -61,9 +61,10 @@ class compose(metaclass(MetaCompose)):
       >>> x = 15
       >>> f, g, h = x.__add__, x.__mul__, x.__xor__
       >>> all((compose() is identity,
+      ...
       ...      # identity functions are optimized
-      ...      compose(identity, identity) is identity,
-      ...      compose()(x) is x,
+      ...      compose(identity, f, identity) is f,
+      ...
       ...      compose(f) is f,
       ...      compose(g, f)(x) == g(f(x)),
       ...      compose(h, g, f)(x) == h(g(f(x)))))
