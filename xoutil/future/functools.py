@@ -4,7 +4,7 @@
 # xoutil.future.functools
 # ---------------------------------------------------------------------
 #
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 #
 # Most of the code of this file is backported from Python 3.2 standard library
 # with minor modifications to make it work on Python 2.7. So, this file is
@@ -34,6 +34,9 @@ del _past
 from xoutil.eight import _py33    # noqa
 from xoutil.eight import callable    # noqa
 
+import xoutil.fp.tools as fp
+from xoutil.deprecation import deprecated
+
 
 class ctuple(tuple):
     '''Simple tuple marker for :func:`compose`.
@@ -57,6 +60,8 @@ class ctuple(tuple):
     '''
 
 
+# TODO: [med]  Should we port the `ctuple` to fp.tools?
+@deprecated(fp.compose)
 def compose(*callables, **kwargs):
     '''Returns a function that is the composition of several `callables`.
 
@@ -75,6 +80,9 @@ def compose(*callables, **kwargs):
                  function composition: last function in `funcs` is applied
                  last. If False, then the last function in `func` is applied
                  first.
+
+    .. versionchanged 1.8.0:: Deprecated in favor of
+       `xoutil.fp.tools.compose`:class:
 
     '''
     if not callables:
