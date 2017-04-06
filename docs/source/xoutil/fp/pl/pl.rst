@@ -1,9 +1,8 @@
-===================================
- `xoutil.fp.pl` -- Predicate Logic
-===================================
+========================================
+ :mod:`xoutil.fp.pl` -- Predicate Logic
+========================================
 
 .. automodule:: xoutil.fp.pl
-   :members:
 
 
 Understanding *Predicate Logic*
