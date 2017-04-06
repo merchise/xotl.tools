@@ -286,6 +286,8 @@ def get_next_month(ref=None, lastday=False):
       >>> get_next_month(date(2017, 1, 23), lastday=True)
       date(2017, 2, 28)
 
+    .. versionadded:: 1.7.3
+
     '''
     result = get_month_last(ref) + timedelta(days=1)
     if lastday:

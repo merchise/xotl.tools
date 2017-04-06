@@ -3,7 +3,11 @@
 
 .. automodule:: xoutil.iterators
    :members: dict_update_new, first_n, first_non_null,
-	     slides, continuously_slides, delete_duplicates, ungroup
+	     slides, continuously_slides, ungroup
+
+.. autofunction:: delete_duplicates(seq[, key=lambda x: x])
+
+.. autofunction:: iter_delete_duplicates(iter[, key=lambda x: x])
 
 .. autofunction:: fake_dict_iteritems(source)
 
