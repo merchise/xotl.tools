@@ -152,16 +152,21 @@ def fake_dict_iteritems(source):
 def delete_duplicates(seq, key=lambda x: x):
     '''Remove all duplicate elements from `seq`.
 
-    Two items ``x`` and ``y`` are equal if the ``key(x) == key(y)``.  By
-    default `key` is the identity function.
+    Two items ``x`` and ``y`` are considered equal (duplicates) if
+    ``key(x) == key(y)``.  By default `key` is the identity function.
 
-    Works with any sequence that supports :func:`len` and
-    :meth:`~object.__getitem__`.  The return type will be the same as that of
-    the original sequence.
+    Works with any sequence that supports :func:`len`,
+    :meth:`~object.__getitem__` and `addition <object.__add__>`:meth:.
+
+    .. note:: ``seq.__getitem__`` should work properly with slices.
+
+    The return type will be the same as that of the original sequence.
 
     .. versionadded:: 1.5.5
 
-    .. versionchanged:: 1.7.4  Added the `key` argument.
+    .. versionchanged:: 1.7.4 Added the `key` argument. Clarified the
+       documentation: `seq` should also implement the ``__add__`` method and
+       that its ``__getitem__`` method should deal with slices.
 
     '''
     i, done = 0, set()
