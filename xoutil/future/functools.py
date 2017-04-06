@@ -38,7 +38,8 @@ import xoutil.fp.tools as fp
 from xoutil.deprecation import deprecated
 
 
-class ctuple(tuple):
+@deprecated(fp.pos_args)
+class ctuple(fp.pos_args):
     '''Simple tuple marker for :func:`compose`.
 
     Since is a callable you may use it directly in ``compose`` instead of
@@ -95,16 +96,7 @@ def compose(*callables, **kwargs):
     if not math:
         callables = list(reversed(callables))
 
-    def _inner(*args):
-        f, functions = callables[0], callables[1:]
-        result = f(*args)
-        for f in functions:
-            if isinstance(result, ctuple):
-                result = f(*result)
-            else:
-                result = f(result)
-        return result
-    return _inner
+    return fp.compose(*reversed(callables))
 
 
 # The real signature should be (*funcs, times)
