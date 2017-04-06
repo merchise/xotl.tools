@@ -17,7 +17,7 @@ from __future__ import (division as _py3_division,
                         unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-from hypothesis import strategies as s, given
+from hypothesis import strategies as s, given, assume
 
 
 def test_first_n_no_filling():
@@ -100,3 +100,14 @@ def test_dict_update_new(d1, d2):
     dict_update_new(d1, d2)
     assert all(key in d1 for key in d2)
     assert all(d1[key] == d2[key] for key in d2 if key not in d)
+
+
+@given(s.lists(s.integers()), s.integers(min_value=0))
+def test_delete_duplicates(l, pos):
+    from xoutil.iterators import delete_duplicates
+    from xoutil.collections import Counter
+    assume(0 <= pos < len(l))
+    res = delete_duplicates(l)
+    assert type(l) is type(res)  # noqa
+    assert len(res) <= len(l)
+    assert Counter(res)[l[pos]] == 1
