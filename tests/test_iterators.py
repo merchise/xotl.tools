@@ -111,3 +111,11 @@ def test_delete_duplicates(l, pos):
     assert type(l) is type(res)  # noqa
     assert len(res) <= len(l)
     assert Counter(res)[l[pos]] == 1
+
+
+@given(s.lists(s.integers()))
+def test_delete_duplicates_with_key(l):
+    from xoutil.iterators import delete_duplicates
+    res = delete_duplicates(l, key=lambda x: x % 3)
+    assert len(res) <= 3, \
+        'key yields 0, 1, or 2; thus res can contain at most 3 items'

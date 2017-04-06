@@ -149,8 +149,11 @@ def fake_dict_iteritems(source):
         yield key, source[key]
 
 
-def delete_duplicates(seq):
+def delete_duplicates(seq, key=lambda x: x):
     '''Remove all duplicate elements from `seq`.
+
+    Two items ``x`` and ``y`` are equal if the ``key(x) == key(y)``.  By
+    default `key` is the identity function.
 
     Works with any sequence that supports :func:`len` and
     :meth:`~object.__getitem__`.  The return type will be the same as that of
@@ -158,11 +161,14 @@ def delete_duplicates(seq):
 
     .. versionadded:: 1.5.5
 
+    .. versionchanged:: 1.7.4  Added the `key` argument.
+
     '''
     i, done = 0, set()
     while i < len(seq):
-        if seq[i] not in done:
-            done.add(seq[i])
+        k = key(seq[i])
+        if k not in done:
+            done.add(k)
             i += 1
         else:
             seq = seq[:i] + seq[i+1:]
