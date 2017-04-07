@@ -14,8 +14,9 @@
 
 '''Prove validity of values.
 
-The `vouch`:func: function provides a tool to wrap function calls controlling
-these cases.
+The `lift`:func: function provides a tool to wrap function calls controlling
+these cases; `safe`:func: decorator mark a function to be wrapped with
+`lift`:func:.
 
 A `Coercer`:class: is a concept that combine two elements: validity check and
 value moulding.  Most times only the first part is needed because the original
@@ -37,43 +38,82 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def safe(func):
-    '''Decorate a function to be executed in a safety wrapper.
+def safe(checker):
+    '''Create a decorator to execute a function inner a safety wrapper.
 
-    See `vouch`:func: for more information.
+    :param checker: Could be any function safe wrapper, but it's intended
+           mainly for `predicate`:func: or `lift`:func:.
+
+    In the following example, the semantics of this function can be seen.  The
+    definition::
+
+        >>> @checker(lift)
+        ... def test(x):
+        ...     return 1 <= x <= 10
+
+        >>> test(5)
+
+    It is equivalent to::
+
+        >>> def test(x):
+        ...     return 1 <= x <= 10
+
+        >>> lift(test, 5)
 
     '''
-    from xoutil.future.string import small, safe_str
+    def wrapper(func):
+        from xoutil.future.string import small, safe_str
 
-    def inner(*a, **kw):
-        return vouch(func, *a, **kw)
+        def inner(*args, **kwds):
+            return checker(func, *args, **kwds)
 
+        try:
+            inner.__name__ = func.__name__
+            inner.__doc__ = func.__doc__
+        except BaseException:
+            inner.__name__ = safe_str(small(func))
+        return inner
+
+
+def predicate(func, *args, **kwargs):
+    '''Call a function inner a safety wrapper returning true or false.
+
+    A predicate can be thought as an operator or function that returns a value
+    that is either true or false.  Predicates are sometimes used to indicate
+    set membership: sometimes it is inconvenient or impossible to describe a
+    set by listing all of its elements.  Thus, a predicate ``P(x)`` will be
+    true or false, depending on whether x belongs to a set.
+
+    Always returns an instance of `~xoutil.fp.monads.option.Maybe`:class: or a
+    strict Boolean value.
+
+    '''
+    from xoutil.symbols import boolean
+    from xoutil.fp.monads.option import Maybe, Just, Wrong
     try:
-        inner.__name__ = func.__name__
-        inner.__doc__ = func.__doc__
-    except BaseException:
-        inner.__name__ = safe_str(small(func))
-    return inner
+        res = func(*args, **kwargs)
+        if isinstance(res, (boolean, Maybe)):
+            return res
+        else:
+            return Just(res)
+    except BaseException as error:
+        return Wrong(error)
 
 
-def vouch(func, *args, **kwargs):
-    '''Execute a function inner a safety wrapper.
+def lift(func, *args, **kwargs):
+    '''Call a function inner a safety wrapper raising an exception on fail.
 
-    Always raises an exceptions when values that represent failures are
-    returned:
+    it raises an exception when values that represent failures are returned:
 
-    - `~xoutil.fp.monads.option.Wrong`:class: instance of the Maybe monad; or
+    - `~xoutil.fp.monads.option.Wrong`:class: instance; or
 
     - Any false instance of `~xoutil.symbols.boolean`:class:\ .
 
-      This includes ``False`` Python standard value, `~xoutil.Unset`:obj:,
-      `~xoutil.Undefined`:obj:, `~xoutil.Ignored`:obj:, among other standard
-      `xoutil`:mod: values.
-
     '''
-    from xoutil.future.string import small
+    from xoutil.eight import type_name
     from xoutil.eight.exceptions import traceof, throw, catch
     from xoutil.symbols import boolean
+    from xoutil.future.string import small
     from xoutil.fp.monads.option import Just, Wrong
     res = func(*args, **kwargs)
     if isinstance(res, boolean):
@@ -89,16 +129,19 @@ def vouch(func, *args, **kwargs):
             raise ValueError(msg)
     elif isinstance(res, Wrong):
         inner = res.inner
-        msg = '{} predicate returns a monadic wrong value'.format(small(func))
         if isinstance(inner, BaseException):
-            error = catch(ValueError(msg), inner)
-            if traceof(error):
-                throw(error)
+            if traceof(inner):
+                throw(inner)
             else:
-                raise error
+                raise inner
         else:
+            msg = '{} returns a monadic wrong value'.format(small(func))
             if inner is not None or not isinstance(inner, boolean):
-                msg += ' {} of type "{}"'.format(small(inner), type_name(inner))
+                s, t = small(inner), type_name(inner)
+                msg += ' {} of type "{}"'.format(s, t)
+            raise ValueError(msg)
+    elif isinstance(res, Just):
+        res = res.inner
     return res
 
 
