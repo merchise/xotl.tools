@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.tests.test_fp
 # ---------------------------------------------------------------------
-# Copyright (c) 2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2016, 2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -18,8 +18,13 @@ from __future__ import (division as _py3_division,
 
 
 def test_fp_compose():
-    from xoutil.fp.tools import identity
-    from xoutil.fp._compose import (pos_args, kw_args, full_args, compose)
+    from xoutil.fp.tools import (
+        identity,
+        compose,
+        pos_args,
+        kw_args,
+        full_args
+    )
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__

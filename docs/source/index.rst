@@ -9,17 +9,17 @@ Welcome to xoutil's documentation!
 
 .. automodule:: xoutil
 
-What's new in this release
---------------------------
+What's new in |release|
+-----------------------
 
-.. include:: history/_changes-1.7.3.rst
+.. include:: history/_changes-1.8.0.rst
 
 
 Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :glob:
 
    xoutil/toplevel

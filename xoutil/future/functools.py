@@ -4,7 +4,7 @@
 # xoutil.future.functools
 # ---------------------------------------------------------------------
 #
-# Copyright (c) 2013-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 #
 # Most of the code of this file is backported from Python 3.2 standard library
 # with minor modifications to make it works on Python 2.7. So, this file is
@@ -34,8 +34,12 @@ del _past
 from xoutil.eight import _py33    # noqa
 from xoutil.eight import callable    # noqa
 
+import xoutil.fp.tools as fp
+from xoutil.deprecation import deprecated
 
-class ctuple(tuple):
+
+@deprecated(fp.pos_args)
+class ctuple(fp.pos_args):
     '''Simple tuple marker for :func:`compose`.
 
     Since is a callable you may use it directly in ``compose`` instead of
@@ -57,6 +61,8 @@ class ctuple(tuple):
     '''
 
 
+# TODO: [med]  Should we port the `ctuple` to fp.tools?
+@deprecated(fp.compose)
 def compose(*callables, **kwargs):
     '''Returns a function that is the composition of several `callables`.
 
@@ -76,6 +82,9 @@ def compose(*callables, **kwargs):
                  last. If False, then the last function in `func` is applied
                  first.
 
+    .. versionchanged 1.8.0:: Deprecated in favor of
+       `xoutil.fp.tools.compose`:class:
+
     '''
     from xoutil.fp.params import check_count
     check_count(callables, 1, caller='compose')
@@ -87,16 +96,7 @@ def compose(*callables, **kwargs):
     if not math:
         callables = list(reversed(callables))
 
-    def _inner(*args):
-        f, functions = callables[0], callables[1:]
-        result = f(*args)
-        for f in functions:
-            if isinstance(result, ctuple):
-                result = f(*result)
-            else:
-                result = f(result)
-        return result
-    return _inner
+    return fp.compose(*reversed(callables))
 
 
 # The real signature should be (*funcs, times)

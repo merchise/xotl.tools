@@ -15,7 +15,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from hypothesis import strategies as s, given
+from hypothesis import strategies as s, given, assume
 
 
 def test_first_n_no_filling():
@@ -98,3 +98,28 @@ def test_dict_update_new(d1, d2):
     dict_update_new(d1, d2)
     assert all(key in d1 for key in d2)
     assert all(d1[key] == d2[key] for key in d2 if key not in d)
+
+
+@given(s.lists(s.integers(), max_size=100))
+def test_delete_duplicates(l):
+    from xoutil.iterators import delete_duplicates
+    from xoutil.collections import Counter
+    res = delete_duplicates(l)
+    assert type(l) is type(res)  # noqa
+    assert len(res) <= len(l)
+    assert all(Counter(res)[item] == 1 for item in l)
+
+
+@given(s.lists(s.integers()))
+def test_delete_duplicates_with_key(l):
+    from xoutil.iterators import delete_duplicates
+    res = delete_duplicates(l, key=lambda x: x % 3)
+    assert len(res) <= 3, \
+        'key yields 0, 1, or 2; thus res can contain at most 3 items'
+
+
+def test_iter_delete_duplicates():
+    from xoutil.iterators import iter_delete_duplicates
+    assert list(iter_delete_duplicates('AAAaBBBA')) == ['A', 'a', 'B', 'A']
+    assert list(iter_delete_duplicates('AAAaBBBA', key=lambda x: x.lower())) ==\
+        ['A', 'B', 'A']

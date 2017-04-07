@@ -14,6 +14,8 @@
 
 '''Advanced functional programming in Python.
 
+.. versionadded:: 1.8.0
+
 '''
 
 from __future__ import (division as _py3_division,

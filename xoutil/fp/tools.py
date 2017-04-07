@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.fp.tools
 # ---------------------------------------------------------------------
-# Copyright (c) 2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2016, 2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -61,13 +61,29 @@ class compose(metaclass(MetaCompose)):
       >>> x = 15
       >>> f, g, h = x.__add__, x.__mul__, x.__xor__
       >>> all((compose() is identity,
+      ...
       ...      # identity functions are optimized
-      ...      compose(identity, identity) is identity,
-      ...      compose()(x) is x,
+      ...      compose(identity, f, identity) is f,
+      ...
       ...      compose(f) is f,
       ...      compose(g, f)(x) == g(f(x)),
       ...      compose(h, g, f)(x) == h(g(f(x)))))
       True
+
+    If any "intermediate" function returns an instance of:
+
+    - `pos_args`:class:\ : it's expanded as variable positional arguments to
+      the next function.
+
+    - `kw_args`:class:\ : it's expanded as variable keyword arguments to the
+      next function.
+
+    - `full_args`:class:\ : it's expanded as variable positional and keyword
+      arguments to the next function.
+
+    The expected usage of these is **not** to have function return those types
+    directly, but to use them when composing functions that return tuples and
+    expect tuples.
 
     '''
     __slots__ = ('inner', 'scope')
@@ -91,11 +107,16 @@ class compose(metaclass(MetaCompose)):
         count = len(funcs)
         if count:
             i = 1
+            res = full_args((args, kwds))
             while i <= count:
                 try:
                     fn = funcs[-i]
-                    if i == 1:
-                        res = fn(*args, **kwds)
+                    if isinstance(res, pos_args):
+                        res = fn(*res)
+                    elif isinstance(res, kw_args):
+                        res = fn(**res)
+                    elif isinstance(res, full_args):
+                        res = fn(*res[0], **res[1])
                     else:
                         res = fn(res)
                 except BaseException:
@@ -158,3 +179,86 @@ class compose(metaclass(MetaCompose)):
 
     def __delitem__(self, index):
         del self.inner[index]
+
+
+class pos_args(tuple):
+    '''Mark variable number positional arguments (see `fargs`:class:).'''
+
+
+class kw_args(dict):
+    '''Mark variable number keyword arguments (see `fargs`:class:).'''
+
+
+class full_args(tuple):
+    '''Mark variable number arguments for composition.
+
+    Pair containing positional and keyword ``(args, kwds)`` arguments.
+
+    In standard functional composition, the result of a function is considered
+    a single value to be use as the next function argument.  You can override
+    this behaviour returning one instance of `pos_args`:class:,
+    `kw_args`:class:, or this class; in order to provide multiple arguments to
+    the next call.
+
+    Since types are callable, you may use it directly in `compose`:func:
+    instead of changing your functions to returns the instance of one of these
+    classes::
+
+      >>> def join_args(*args):
+      ...     return ' -- '.join(str(arg) for arg in args)
+
+      >>> compose(join_args, pos_args, list, range)(2)
+      '0 -- 1'
+
+      # Without 'pos_args', it prints the list
+      >>> compose(join_args, list, range)(2)
+      '[0, 1]'
+
+    '''
+    @staticmethod
+    def parse(arg):
+        '''Parse possible alternatives.
+
+        If ``arg`` is:
+
+        - a pair of a ``tuple`` and a ``dict``, return a `full_args`:class:
+          instance.
+
+        - a ``tuple`` or a ``list``, return a `pos_args`:class: instance;
+
+        - a ``dict``, return a `kw_args`:class: instance;
+
+        - ``None``, return an empty `pos_args`:class: instance.
+
+        For example (remember that functions return 'None' when no explicit
+        'return' is issued)::
+
+          >>> def join_args(*args):
+          ...     if args:
+          ...         return ' -- '.join(str(arg) for arg in args)
+
+          >>> compose(join_args, full_args.parse, join_args)()
+          None
+
+          # Without 'full_args.parse', return 'str(None)'
+          >>> compose(join_args, join_args)()
+          'None'
+
+        '''
+        if isinstance(arg, tuple):
+            def check(pos, kw):
+                return isinstance(pos, tuple) and isinstance(kw, dict)
+            if len(arg) == 2 and check(*arg):
+                return full_args(arg)
+            else:
+                return pos_args(arg)
+        elif isinstance(arg, list):
+            return pos_args(arg)
+        elif isinstance(arg, dict):
+            return kw_args(arg)
+        elif arg is None:
+            return pos_args()
+        else:
+            from xoutil.eight import typeof
+            msg = 'Expecting None, a tuple, a list, or a dict; {} found'
+            raise TypeError(msg.format(typeof(arg).__name__))

@@ -181,24 +181,59 @@ def fake_dict_iteritems(source):
         yield key, source[key]
 
 
-def delete_duplicates(seq):
+def delete_duplicates(seq, key=lambda x: x):
     '''Remove all duplicate elements from `seq`.
 
-    Works with any sequence that supports :func:`len` and
-    :meth:`~object.__getitem__`.  The return type will be the same as that of
-    the original sequence.
+    Two items ``x`` and ``y`` are considered equal (duplicates) if
+    ``key(x) == key(y)``.  By default `key` is the identity function.
+
+    Works with any sequence that supports :func:`len`,
+    :meth:`~object.__getitem__` and `addition <object.__add__>`:meth:.
+
+    .. note:: ``seq.__getitem__`` should work properly with slices.
+
+    The return type will be the same as that of the original sequence.
 
     .. versionadded:: 1.5.5
+
+    .. versionchanged:: 1.7.4 Added the `key` argument. Clarified the
+       documentation: `seq` should also implement the ``__add__`` method and
+       that its ``__getitem__`` method should deal with slices.
 
     '''
     i, done = 0, set()
     while i < len(seq):
-        if seq[i] not in done:
-            done.add(seq[i])
+        k = key(seq[i])
+        if k not in done:
+            done.add(k)
             i += 1
         else:
             seq = seq[:i] + seq[i+1:]
     return seq
+
+
+def iter_delete_duplicates(iter, key=lambda x: x):
+    '''Yields non-repeating items from `iter`.
+
+    `key` has the same meaning as in `delete_duplicates`:func:.
+
+    Examples:
+
+      >>> list(iter_delete_duplicates('AAAaBBBA'))
+      ['A', 'a', 'B', 'A']
+
+      >>> list(iter_delete_duplicates('AAAaBBBA', key=lambda x: x.lower()))
+      ['A', 'B', 'A']
+
+    .. versionadded:: 1.7.4
+
+    '''
+    last = object()  # a value we're sure `iter` won't produce
+    for x in iter:
+        k = key(x)
+        if k != last:
+            yield x
+        last = k
 
 
 def slides(iterable, width=2, fill=None):
@@ -368,6 +403,8 @@ def ungroup(iterator):
 
     Notice that the iterator was fully consumed just to create the arguments
     to ``chain()``.
+
+    .. versionadded:: 1.7.3
 
     '''
     for _, xs in iterator:
