@@ -90,8 +90,26 @@ def with_cause(self, cause):
         raise TypeError(msg)
 
 
-def catch(self=None, trace=None):
-    '''Grab a trace-back and/or a cause to prepare an exception being raised.
+def catch(self):
+    '''Check an error to settle trace-back information if found.
+
+    :param self: The exception to check.
+
+    '''
+    import sys
+    tb = traceof(self)
+    if tb is None:
+        _, cause, tb = sys.exc_info()
+    else:
+        cause = None
+    self = with_traceback(self, tb)
+    if cause is not None:
+        self = with_cause(self, cause)
+    return self
+
+
+def grab(self=None, trace=None):
+    '''Prepare an error being raised with a trace-back and/or a cause.
 
     :param self: The exception to be raised or None to capture the current
            trace context for future use.
@@ -137,8 +155,8 @@ def throw(error, tb=None):
     '''Unify syntax for raising an error with trace-back information.
 
     Instead of using the Python ``raise`` statement, use ``throw(error, tb)``.
-    If `tb` argument is not given, the trace-back information must be found in
-    the context, a ``TypeError`` is raised otherwise.
+    If `tb` argument is not given, the trace-back information is looked up in
+    the context.
 
     '''
     if tb is None:
@@ -146,10 +164,9 @@ def throw(error, tb=None):
         if tb is None:
             error = catch(error)
             tb = error.__traceback__
-        if tb is None:
-            msg = "throw() can't be used without a trace-back."
-            raise TypeError(msg)
-    if _py3:
+    if tb is None:
+        raise error
+    elif _py3:
         raise error.with_traceback(tb)
     else:
         from ._throw2 import raise2
