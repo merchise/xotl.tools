@@ -137,3 +137,26 @@ def check_default(absent=Undefined):
     def default(res=absent):
         return res
     return default
+
+
+def singleton(*args, **kwds):
+    '''Valid if just only one argument is given.
+
+    Return a valid boolean, maybe the argument value itself or an instance of
+    `~xoutil.fp.monads.option.Maybe`:class:\ .
+
+    In the case of more that one or no argument, `~xoutil.Ignored`:obj: is
+    returned.
+
+    '''
+    from xoutil import Ignored
+    from xoutil.fp.monads.option import Maybe, Just
+    if len(args) == 1 and not kwds:
+        res = args[0]
+    elif not args and len(kwds) == 1:
+        res = kwds[tuple(kwds)[0]]
+    else:
+        res = Ignored
+    if not res and not isinstance(res, Maybe):
+        res = Just(res)
+    return res
