@@ -14,9 +14,16 @@
 
 '''Prove validity of values.
 
-The `lift`:func: function provides a tool to wrap function calls controlling
-these cases; `safe`:func: decorator mark a function to be wrapped with
-`lift`:func:.
+There are a family of checker functions:
+
+- `vouch`:func: raises an exception on failure, this is useful to call
+  functions that use "special" false values to signal a failure.
+
+- `predicate`:func: returns a false value on failure, this is useful to call
+  functions that could raise an exception to signal a failure.
+
+- `safe`:func: creates a decorator to convert a function to use either the
+  `vouch`:func: or the `predicate`:func: protocol.
 
 A `Coercer`:class: is a concept that combine two elements: validity check and
 value moulding.  Most times only the first part is needed because the original
@@ -24,7 +31,7 @@ value is in the correct shape if valid.
 
 It's usual to declare functions or methods with generic prototypes::
 
-  def func(*args, **kwargs):
+  def func(*args, **kwds):
       ...
 
 .. versionadded:: 1.7.2
@@ -38,16 +45,97 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+def vouch(function, *args, **kwds):
+    '''Call a `function` inner a safety wrapper raising an exception if fail.
+
+    Fails could be signaled with special false values such as:
+
+    - Any `~xoutil.fp.monads.option.Wrong`:class: instance; or
+
+    - Any false value provable as instance of
+      `~xoutil.symbols.boolean`:class:, that doesn't include values as ``0``,
+      ``[]``, or ``None``.
+
+    '''
+    from xoutil.symbols import boolean
+    from xoutil.fp.monads.option import Just, Wrong
+    from xoutil.eight import type_name
+    from xoutil.future.string import small
+    from xoutil.eight.exceptions import throw
+    res = function(*args, **kwds)
+    if isinstance(res, boolean):
+        if res:
+            # This is controversial, a "predicative function" returning true
+            # has to validate a unique argument; but, what to do if the
+            # function receives several arguments, or no argument at all?
+            if len(args) == 1 and not kwds:
+                res = args[0]
+            else:
+                # TODO: Check if an error must be raised here.
+                pass
+        else:
+            msg = '{} predicate returns a false value'.format(small(function))
+            raise TypeError(msg)
+    elif isinstance(res, Wrong):
+        inner = res.inner
+        if isinstance(inner, BaseException):
+            throw(inner)
+        else:
+            msg = '{} predicate returns a wrong value'.format(small(function))
+            if inner is not None or not isinstance(inner, boolean):
+                v, t = small(inner), type_name(inner)
+                msg += ' {} of type "{}"'.format(v, t)
+            raise TypeError(msg)
+    elif isinstance(res, Just):
+        res = res.inner
+    return res
+
+
+def predicate(function, *args, **kwds):
+    '''Call a `function` inner a safety wrapper returning false if fail.
+
+    A predicate can be thought as an operator or function that returns a value
+    that is either true or false.  Predicates are sometimes used to indicate
+    set membership: sometimes it is inconvenient or impossible to describe a
+    set by listing all of its elements.  Thus, a predicate ``P(x)`` will be
+    true or false, depending on whether x belongs to a set.
+
+    If `function` validates its arguments, return a valid true value, could be
+    Always returns an instance of `~xoutil.fp.monads.option.Maybe`:class: or a
+    Boolean value.
+
+    '''
+    from xoutil.symbols import boolean
+    from xoutil.fp.monads.option import Maybe, Just, Wrong
+    try:
+        res = function(*args, **kwds)
+        if isinstance(res, (boolean, Maybe)):
+            if isinstance(res, Just) and res.inner:
+                return res.inner
+            elif isinstance(res, boolean) and len(args) == 1 and not kwds and args[0]:
+                return args
+            return res
+        elif res:
+            return res
+        else:
+            return Just(res)
+    except BaseException as error:
+        if isinstance(error, ValueError) and len(args) == 1 and not kwds:
+            return Wrong(args[0])
+        else:
+            return Wrong(error)
+
+
 def safe(checker):
     '''Create a decorator to execute a function inner a safety wrapper.
 
     :param checker: Could be any function safe wrapper, but it's intended
-           mainly for `predicate`:func: or `lift`:func:.
+           mainly for `predicate`:func: or `vouch`:func:.
 
     In the following example, the semantics of this function can be seen.  The
     definition::
 
-        >>> @checker(lift)
+        >>> @checker(vouch)
         ... def test(x):
         ...     return 1 <= x <= 10
 
@@ -58,7 +146,7 @@ def safe(checker):
         >>> def test(x):
         ...     return 1 <= x <= 10
 
-        >>> lift(test, 5)
+        >>> vouch(test, 5)
 
     '''
     def wrapper(func):
@@ -73,76 +161,6 @@ def safe(checker):
         except BaseException:
             inner.__name__ = safe_str(small(func))
         return inner
-
-
-def predicate(func, *args, **kwargs):
-    '''Call a function inner a safety wrapper returning true or false.
-
-    A predicate can be thought as an operator or function that returns a value
-    that is either true or false.  Predicates are sometimes used to indicate
-    set membership: sometimes it is inconvenient or impossible to describe a
-    set by listing all of its elements.  Thus, a predicate ``P(x)`` will be
-    true or false, depending on whether x belongs to a set.
-
-    Always returns an instance of `~xoutil.fp.monads.option.Maybe`:class: or a
-    strict Boolean value.
-
-    '''
-    from xoutil.symbols import boolean
-    from xoutil.fp.monads.option import Maybe, Just, Wrong
-    try:
-        res = func(*args, **kwargs)
-        if isinstance(res, (boolean, Maybe)):
-            return res
-        else:
-            return Just(res)
-    except BaseException as error:
-        return Wrong(error)
-
-
-def lift(func, *args, **kwargs):
-    '''Call a function inner a safety wrapper raising an exception on fail.
-
-    it raises an exception when values that represent failures are returned:
-
-    - `~xoutil.fp.monads.option.Wrong`:class: instance; or
-
-    - Any false instance of `~xoutil.symbols.boolean`:class:\ .
-
-    '''
-    from xoutil.eight import type_name
-    from xoutil.eight.exceptions import traceof, throw, catch
-    from xoutil.symbols import boolean
-    from xoutil.future.string import small
-    from xoutil.fp.monads.option import Just, Wrong
-    res = func(*args, **kwargs)
-    if isinstance(res, boolean):
-        if res:
-            if len(args) == 1 and not kwargs:
-                res = args[0]
-            else:
-                # TODO: Check to raise an error on invalid arguments for a
-                # predicate
-                pass
-        else:
-            msg = '{} predicate returns a false value'.format(small(func))
-            raise ValueError(msg)
-    elif isinstance(res, Wrong):
-        inner = res.inner
-        if isinstance(inner, BaseException):
-            if traceof(inner):
-                throw(inner)
-            else:
-                raise inner
-        else:
-            msg = '{} returns a monadic wrong value'.format(small(func))
-            if inner is not None or not isinstance(inner, boolean):
-                s, t = small(inner), type_name(inner)
-                msg += ' {} of type "{}"'.format(s, t)
-            raise ValueError(msg)
-    elif isinstance(res, Just):
-        res = res.inner
-    return res
 
 
 class Coercer(object):
