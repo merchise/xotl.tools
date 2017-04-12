@@ -385,6 +385,7 @@ class FunctionalCheck(Coercer):
 
     def __new__(cls, check):
         from xoutil.eight import callable, type_name
+        # TODO: Change next, don't use isinstance
         if isinstance(check, Coercer):
             return check
         elif callable(check):

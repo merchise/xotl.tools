@@ -108,6 +108,7 @@ class coercer(metaclass(MetaCoercer)):
         ...     res = int_coerce(arg)
         ...     return res if t(res) and 0 < arg <= 120 else nil
 
+        # TODO: Change next, don't use isinstance
         >>> isinstance(age_coerce, coercer)
         True
 
@@ -122,7 +123,7 @@ class coercer(metaclass(MetaCoercer)):
             return identity_coerce
         elif source is None or (source == 0 and isinstance(source, boolean)):
             return void_coerce
-        elif isinstance(source, coercer):
+        elif isinstance(source, coercer):    # TODO: don't use isinstance
             return source
         elif isinstance(source, (function, staticmethod, classmethod)):
             return _coercer_decorator(source)

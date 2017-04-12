@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.tests.test_clisp
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -39,6 +39,7 @@ class TestCLisp(unittest.TestCase):
         text_coerce = coercer(string_types)
         isnumber = istype((int, float, complex))
         numbercast = typecast((int, float, complex))
+        # TODO: don't use isinstance
         self.assertEqual(all(isinstance(c, coercer)
                              for c in (mc, mcu, uint_coerce, ic,
                                        age_coerce, text_coerce,
