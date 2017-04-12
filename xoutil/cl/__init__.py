@@ -56,10 +56,11 @@ warnings.warn('"{}" module is completely deprecated; use "xoutil.fp" package '
 del warnings
 
 from xoutil.fp.cl import logical, nil, t    # noqa
-from xoutil.fp.prove import vouch    # noqa
+from xoutil.fp.prove import validate as vouch    # noqa
 
 
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
+
 
 
 class MetaCoercer(ABCMeta):
