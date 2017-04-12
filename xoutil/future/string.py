@@ -572,10 +572,13 @@ def normalize_slug(value, *args, **kwds):
 
     getarg = ParamManager(args, kwds)
     replacement = getarg('replacement', 0, default='-', coercers=string_types)
-    invalid_chars = getarg('invalid_chars', 0, default='', coercers=_ascii)
-    valid_chars = getarg('valid_chars', 0, default='', coercers=_ascii)
-    # check and adjust arguments
+    # TODO: deprecate 'invalids' and 'valids' names.
+    invalid_chars = getarg('invalid_chars', 'invalid', 'invalids', 0,
+                           default='', coercers=_ascii)
+    valid_chars = getarg('valid_chars', 'valid', 'valids', 0, default='',
+                         coercers=_ascii)
     replacement = args[0] if args else kwds.pop('replacement', '-')
+    # TODO: check unnecessary arguments, raising errors
     if replacement in (None, False):
         # for backward compatibility
         replacement = ''
