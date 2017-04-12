@@ -30,9 +30,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil.future.functools import lwraps as lw
-
-
 class Predicate(object):
     '''A definition of a validation function using a grammar of simple
     predicates.
@@ -124,6 +121,7 @@ class Predicate(object):
 
     def __init__(self, *args, **kwargs):
         '''Create a predicate.'''
+        from xoutil.future.functools import lwraps as lw
         named = kwargs.pop('__named__', False)
         self.checkers = list(args)
         for name in kwargs:
