@@ -380,6 +380,14 @@ def daterange(*args):
             current += step
     return _generator()
 
+
+def without_tzinfo(dt):
+    '''Return the given datetime value with tzinfo removed.
+
+    '''
+    return datetime(*(dt.timetuple()[:6] + (dt.microsecond, )))
+
+
 try:
     timezone
 except NameError:
