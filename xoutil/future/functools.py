@@ -186,7 +186,7 @@ def lwraps(*args, **kwargs):
 
     '''
     from types import FunctionType, MethodType
-    from xoutil import Unset
+    from xoutil.symbols import Unset
     from xoutil.eight import string_types, iteritems
     from xoutil.future.string import safe_str
     from xoutil.fp.params import check_count

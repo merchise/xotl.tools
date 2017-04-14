@@ -38,7 +38,7 @@ MAX_ARG_COUNT = sys.maxsize    # just any large number
 del sys
 
 
-from xoutil import Undefined    # used implicitly for absent default
+from xoutil.symbols import Undefined    # used implicitly for absent default
 
 
 def issue_9137(args):
@@ -120,7 +120,7 @@ def check_default(absent=Undefined):
     '''Get a default value passed as a last excess positional argument.
 
     :param absent: The value to be used by default if no one is given.
-           Defaults to `~xoutil.Undefined`:obj:.
+           Defaults to `~xoutil.symbols.Undefined`:obj:.
 
     For example::
 
@@ -145,18 +145,18 @@ def singleton(*args, **kwds):
     Return a valid boolean, maybe the argument value itself or an instance of
     `~xoutil.fp.monads.option.Maybe`:class:\ .
 
-    In the case of more that one or no argument, `~xoutil.Ignored`:obj: is
+    In the case of invalid argument number, `~xoutil.symbols.Invalid`:obj: is
     returned.
 
     '''
-    from xoutil import Ignored
+    from xoutil.symbols import Invalid
     from xoutil.fp.monads.option import Maybe, Just
     if len(args) == 1 and not kwds:
         res = args[0]
     elif not args and len(kwds) == 1:
         res = kwds[tuple(kwds)[0]]
     else:
-        res = Ignored
+        res = Invalid
     if not res and not isinstance(res, Maybe):
         res = Just(res)
     return res

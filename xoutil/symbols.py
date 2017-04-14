@@ -11,7 +11,7 @@
 #
 # Created on 2015-11-18
 
-'''Special logical values like Unset, Ignored, Required, etc...
+'''Special logical values like Unset, Undefined, Ignored, Invalid, ...
 
 All values only could be `True` or `False` but are intended in places where
 `None` is expected to be a valid value or for special Boolean formats.
@@ -204,18 +204,23 @@ class boolean(symbol):
         return super(boolean, cls).__new__(cls, name, bool(value))
 
 
-#: False value where `None` could be a valid value
+# --- Special singleton values ---
+
+#: False value, mainly for function parameter definitions, where None could
+#: be a valid value.
 Unset = boolean('Unset')
 
-
-#: False value for local scope use or where `Unset` could be a valid value
+#: False value for local scope use or where ``Unset`` could be a valid value
 Undefined = boolean('Undefined')
 
-
-#: To be used in arguments that are currently ignored cause they are being
+#: To be used in arguments that are currently ignored because they are being
 #: deprecated.  The only valid reason to use `Ignored` is to signal ignored
 #: arguments in method's/function's signature
 Ignored = boolean('Ignored')
+
+#: To be used in functions resulting in a fail where False could be a valid
+#: value.
+Invalid = boolean('Invalid')
 
 
 del metaclass

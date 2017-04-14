@@ -119,7 +119,7 @@ def test_reusing_raises():
 @pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')
 def test_greenlet_contexts():
     import random
-    from xoutil import Unset
+    from xoutil.symbols import Unset
 
     class nonlocals:
         calls = 0

@@ -40,7 +40,7 @@ def unstable(target, msg=None):
     try:
         from zope.interface import Interface
     except ImportError:
-        from xoutil import Ignored as Interface
+        from xoutil.symbols import Ignored as Interface
     if isinstance(target, type(Interface)):
         objtype = 'interface'
     elif isinstance(target, class_types):

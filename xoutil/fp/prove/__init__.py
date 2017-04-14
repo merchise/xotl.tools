@@ -14,7 +14,7 @@
 
 '''Prove validity of values.
 
-There are a family of checker functions:
+There are a family of basic checker functions:
 
 - `validate`:func: raises an exception on failure, this is useful to call
   functions that use "special" false values to signal a failure.
@@ -57,8 +57,7 @@ def validate(function, *args, **kwds):
       ``[]``, or ``None``.
 
     '''
-    from xoutil import Ignored
-    from xoutil.symbols import boolean
+    from xoutil.symbols import boolean, Invalid
     from xoutil.future.string import small
     from xoutil.eight import type_name
     from xoutil.eight.exceptions import throw
@@ -68,7 +67,7 @@ def validate(function, *args, **kwds):
     if isinstance(res, boolean):
         if res:
             aux = singleton(*args, **kwds)
-            if aux is not Ignored:
+            if aux is not Invalid:
                 res = aux
         else:
             msg = '{}() validates as false'.format(small(function))
@@ -262,7 +261,7 @@ class TypeCheck(Coercer):
 
     def _str(self, max_width=None):
         '''Calculate both string versions (small and normal).'''
-        from xoutil import Undefined
+        from xoutil.symbols import Undefined
         from xoutil.eight import type_name
         from xoutil.future.string import ELLIPSIS
         if max_width is None:

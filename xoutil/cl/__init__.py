@@ -47,7 +47,7 @@ import re
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
-from xoutil import Unset
+from xoutil.symbols import Unset
 
 import warnings
 warnings.warn('"{}" module is completely deprecated; use "xoutil.fp" package '

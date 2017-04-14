@@ -96,7 +96,7 @@ class compose(metaclass(MetaCompose)):
         elif count == 1:
             return functions[0]
         else:
-            from xoutil import Unset
+            from xoutil.symbols import Unset
             self = super(compose, cls).__new__(cls)
             self.inner = functions
             self.scope = Unset

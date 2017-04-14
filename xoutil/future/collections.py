@@ -47,7 +47,7 @@ except ImportError:
 
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.eight import _py2, _py33, _py34    # noqa
-from xoutil import Unset    # noqa
+from xoutil.symbols import Unset    # noqa
 from xoutil.objects import SafeDataItem as safe    # noqa
 from xoutil.eight.meta import metaclass    # noqa
 from xoutil.reprlib import recursive_repr    # noqa

@@ -318,7 +318,7 @@ def decorator(caller):
         try:
             from zope.interface import Interface
         except ImportError:
-            from xoutil import Unset as Interface
+            from xoutil.symbols import Unset as Interface
         if (len(args) == 1 and not kwargs and
             (isinstance(args[0], (function, type)) or
              issubclass(type(args[0]), type(Interface)))):

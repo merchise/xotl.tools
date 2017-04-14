@@ -20,7 +20,7 @@ from __future__ import (division as _py3_division,
 
 
 # TODO: Unify this module with 'xoutil.params'
-from xoutil import Unset
+from xoutil.symbols import Unset
 
 
 def param_get(args, kwargs, idx, name, default=Unset, coercers=Unset):

@@ -54,10 +54,10 @@ class logical(boolean):
 
     def __new__(cls, arg):
         from xoutil.symbols import boolean
-        from xoutil import Undefined as wrong
+        from xoutil.symbols import Invalid
         name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
-        value = cls._valid.get(name, wrong)
-        if value is not wrong:
+        value = cls._valid.get(name, Invalid)
+        if value is not Invalid:
             return super(logical, cls).__new__(cls, name, value)
         else:
             msg = 'retrieving invalid logical instance "{}"'

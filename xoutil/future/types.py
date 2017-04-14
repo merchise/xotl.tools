@@ -295,7 +295,7 @@ except ImportError:
 
 if __name__ == 'xoutil.types':
     from xoutil.deprecation import deprecated
-    from xoutil import Unset as _unset
+    from xoutil.symbols import Unset as _unset
     from collections import Mapping
     from xoutil.eight import force_type as type_coerce
 
