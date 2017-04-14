@@ -11,9 +11,13 @@
 #
 # Created on 2013-03-25
 
+'''Integer encoding and decoding in different bases.
+
+'''
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
+                        absolute_import as _py3_abs_import)
 
 _DEFAULT_TABLE = ("0123456789"
                   "abcdefghijklmnopqrstuvwxyz"
