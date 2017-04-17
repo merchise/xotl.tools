@@ -466,6 +466,41 @@ def test_memoized_classproperty():
     assert Foobar.prop != current
 
 
+def test_properties():
+    from xoutil.objects import xproperty, classproperty, staticproperty
+
+    _x = 'static'
+
+    class Foobar(object):
+        _x = 'class'
+
+        def __init__(self):
+            self._x = 'instance'
+
+        @xproperty
+        def x(self):
+            return self._x
+
+        @classproperty
+        def cprop(cls):
+            return cls._x
+
+        @staticproperty
+        def sprop():
+            return _x
+
+    f = Foobar()
+
+    assert Foobar.x == 'class'
+    assert f.x == 'instance'
+
+    assert Foobar.cprop == 'class'
+    assert f.cprop == 'class'
+
+    assert Foobar.sprop == 'static'
+    assert f.sprop == 'static'
+
+
 def test_multi_getter_failure():
     '''`multi_getter` is not the same as `traverse`.
 
