@@ -1070,7 +1070,6 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     :param meta: If None, the `type(cls)` of the class is used to build the
                  new class, otherwise this must be a *proper* metaclass.
 
-
     :param ignores: A sequence of attributes names that should not be copied
         to the new class.
 
@@ -1122,7 +1121,8 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
              if ignored is None or not ignored(name)}
     if new_attrs:
         attrs.update(new_attrs)
-    exec_body = lambda ns: ns.update(attrs)
+    def exec_body(ns):  # noqa: E306 new-line before def
+        ns.update(attrs)
     if new_name:
         name = safe_str(new_name)
     else:
