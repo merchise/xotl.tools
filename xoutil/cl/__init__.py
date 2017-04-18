@@ -42,7 +42,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-import sys
 import re
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
@@ -58,9 +57,7 @@ del warnings
 from xoutil.fp.cl import logical, nil, t    # noqa
 from xoutil.fp.prove import validate as vouch    # noqa
 
-
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
-
 
 
 class MetaCoercer(ABCMeta):
@@ -1104,4 +1101,4 @@ class mapping(custom):
         return res
 
 
-del sys, re, ABCMeta, metaclass, lwraps
+del re, ABCMeta, metaclass, lwraps
