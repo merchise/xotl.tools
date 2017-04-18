@@ -154,7 +154,7 @@ class ParamManager(object):
 
         '''
         from xoutil.fp.monads.option import Just, Wrong, none
-        from xoutil.fp.prove import Coercer
+        from xoutil.fp.prove.base import coercer as Coercer
         args, kwds = self.args, self.kwds
         i, res = 0, none
         while isinstance(res, Wrong) and i < len(ids):
@@ -224,7 +224,7 @@ class ParamSchemeRow(object):
         from xoutil.eight.string import safe_isidentifier as iskey
         from xoutil.eight import type_name
         from xoutil.fp.monads.option import none
-        from xoutil.fp.prove import Coercer
+        from xoutil.fp.prove.base import coercer as Coercer
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
