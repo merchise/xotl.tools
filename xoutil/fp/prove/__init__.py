@@ -25,9 +25,7 @@ There are a family of basic checker functions:
 - `safe`:func: creates a decorator to convert a function to use either the
   `validate`:func: or the `affirm`:func: protocol.
 
-.. versionadded:: 1.7.2
-
-.. versionchanged:: 1.8.0 Migrated from 'xoutil.params'
+.. versionadded:: 1.8.0
 
 '''
 
