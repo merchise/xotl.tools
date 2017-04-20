@@ -156,6 +156,12 @@ if MemberDescriptorType is GetSetDescriptorType:
     del _foo
 
 
+# These types are defined in `inspect` module for Python >= 3.3
+MethodWrapperType = type(all.__call__)
+WrapperDescriptorType = type(type.__call__)    # In PyPy is MethodWrapperType
+ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
+
+
 sn_ok = _py34
 if sn_ok:
     try:
