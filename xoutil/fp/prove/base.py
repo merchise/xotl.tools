@@ -14,14 +14,8 @@
 
 '''Prove validity of values - Base classes.
 
-A "coercer", in the sense is used in this module, is a concept that combine
-two elements: validity check and value moulding.  Mostly, only the first part
-is needed because the original value is in the correct shape if valid (see
-`coercer`:class:).
-
-As the name indicates, `converter patterns`_ don't just do extraction, they
-also do *validation* and *conversion*, so we can change the new controller
-to only accept integers:
+A `coercer`:class: could combine two concepts (*validation* and *conversion*)
+in a single callable object.
 
 '''
 
@@ -29,11 +23,13 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-# TODO: http://localhost/doc/python3.5-doc/html/library/inspect.html#module-inspect
-
 
 class coercer(object):
-    '''Value coercers base class.
+    '''Base class for value coercers.
+
+    A "coercer" could combine two concepts in a single callable object:
+
+    - *validation*: , and *conversion* (see `coercer`:class:).
 
     A coercer combine to operations on values: validity check and mould.
 
