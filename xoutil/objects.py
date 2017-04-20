@@ -1044,13 +1044,10 @@ class staticproperty(property):
 
     '''
     def __get__(self, instance, owner):
-        if instance is not None:
-            if self.fget is not None:
-                return self.fget()
-            else:
-                raise AttributeError('unreadable attribute')
+        if self.fget is not None:
+            return self.fget()
         else:
-            return owner
+            raise AttributeError('unreadable attribute')
 
     def __set__(self, instance, value):
         if self.fset is not None:
