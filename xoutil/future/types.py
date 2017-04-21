@@ -119,18 +119,18 @@ except NameError:
     EllipsisType = type(Ellipsis)
     __all__.append('EllipsisType')
 
-# TODO: `MappingProxyType` is the Python 3 equivalent for `DictProxyType` in
-# Python 2.  Deprecate `DictProxyType` in favor of `MappingProxyType`.
 try:
-    DictProxyType
+    DictProxyType    # noqa
 except NameError:
     DictProxyType = type(type.__dict__)
     __all__.append('DictProxyType')
 
 try:
-    MappingProxyType
+    MappingProxyType    # noqa
 except NameError:
-    MappingProxyType = type(type.__dict__)
+    from xoutil.eight._types import MappingProxyType
+    if MappingProxyType is not DictProxyType:
+        MappingProxyType.register(DictProxyType)
     __all__.append('MappingProxyType')
 
 if _py2:
@@ -142,14 +142,14 @@ if _py2:
     del Mapping
 
 try:
-    NotImplementedType
+    NotImplementedType    # noqa
 except NameError:
     NotImplementedType = type(NotImplemented)
     __all__.append('NotImplementedType')
 
 
 # Check Jython and PyPy peculiarity
-if MemberDescriptorType is GetSetDescriptorType:
+if MemberDescriptorType is GetSetDescriptorType:    # noqa
     class _foo(object):
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
@@ -165,7 +165,7 @@ ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
 sn_ok = _py34
 if sn_ok:
     try:
-        SimpleNamespace
+        SimpleNamespace    # noqa
     except NameError:
         sn_ok = False
         __all__.append('SimpleNamespace')
@@ -208,7 +208,7 @@ if not sn_ok:
         pass
 
 try:
-    DynamicClassAttribute
+    DynamicClassAttribute    # noqa
 except NameError:
     class DynamicClassAttribute(object):
         """Route attribute access on a class to `~object.__getattr__`:meth:.
@@ -283,13 +283,13 @@ except NameError:
     __all__.append('DynamicClassAttribute')
 
 try:
-    new_class
+    new_class    # noqa
 except NameError:
     from xoutil.eight._types import new_class    # noqa
     __all__.append('new_class')
 
 try:
-    prepare_class
+    prepare_class    # noqa
 except NameError:
     from xoutil.eight._types import prepare_class    # noqa
     __all__.append('prepare_class')
