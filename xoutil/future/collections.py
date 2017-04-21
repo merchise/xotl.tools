@@ -52,7 +52,6 @@ from xoutil.objects import SafeDataItem as safe    # noqa
 from xoutil.eight.meta import metaclass    # noqa
 from xoutil.reprlib import recursive_repr    # noqa
 
-
 if _py2:
     # Fix some sub-classing problems.
     from xoutil.future.types import MappingProxyType    # noqa
