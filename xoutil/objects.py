@@ -941,6 +941,8 @@ def get_branch_subclasses(cls):
     return list(iter_branch_subclasses(cls, include_this=False))
 
 
+# TODO: Check `xoutil.future.types.DynamicClassAttribute`:class: for more
+# information and to compare with this one.
 class xproperty(property):
     '''Descriptor that gets values the same for instances and for classes.
 
@@ -966,6 +968,8 @@ class xproperty(property):
 
     X-properties are always read-only, if attribute values must be set or
     deleted, a metaclass must be defined.
+
+    .. versionadded:: 1.8.0
 
     '''
     def __init__(self, fget, doc=None):
@@ -1001,6 +1005,10 @@ class classproperty(property):
             def _set_name(cls, x):
                 cls.x = int(x)
             name = classproperty(_get_name, _set_name)
+
+    .. versionadded:: 1.4.1
+
+    .. versionchanged:: 1.8.0 Inherits from `property`
 
     '''
     def __get__(self, instance, owner):
