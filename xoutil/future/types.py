@@ -210,75 +210,45 @@ if not sn_ok:
 try:
     DynamicClassAttribute    # noqa
 except NameError:
-    class DynamicClassAttribute(object):
-        """Route attribute access on a class to `~object.__getattr__`:meth:.
+    # TODO: Add tests
+    class DynamicClassAttribute(property):
+        '''Route attribute access on a class to `~object.__getattr__`:meth:.
 
         This is a descriptor, used to define attributes that act differently
         when accessed through an instance and through a class.  Instance
         access remains normal, but access to an attribute through a class will
-        be routed to the class's :meth:`~object.__getattr__` method; this is
-        done by raising AttributeError.
+        be routed to the class's :meth:`~object.__getattr__`:meth: method;
+        this is done by raising `AttributeError`:class:.
 
         This allows one to have properties active on an instance, and have
         virtual attributes on the class with the same name (see
-        :class:`~py3:enum.Enum` for an example).
+        :class:`~py3:enum.Enum`:class: for an example).
 
         .. versionadded:: 1.5.5
 
-        .. note:: The class Enum mentioned has not yet been backported.
+        .. versionchanged:: 1.8.0 Inherits from `property`
 
-        .. note:: In Python 3.4+ this is an alias to
-                  :func:`types.DynamicClassAttribute
-                  <py3:types.DynamicClassAttribute>`.
+        .. note:: The class `Enum` mentioned has not yet been back-ported.
 
-        """
+        .. note:: In Python version>=3.4 this is an alias to
+                  `types.DynamicClassAttribute
+                  <py3:types.DynamicClassAttribute>`:class:.
+
+        '''
         def __init__(self, fget=None, fset=None, fdel=None, doc=None):
-            self.fget = fget
-            self.fset = fset
-            self.fdel = fdel
-            # next two lines make DynamicClassAttribute act the same as
-            # property
-            self.__doc__ = doc or fget.__doc__
-            self.overwrite_doc = doc is None
-            # support for abstract methods
-            _has_method = bool(getattr(fget, '__isabstractmethod__', False))
-            self.__isabstractmethod__ = _has_method
+            super(DynamicClassAttribute, self).__init__(fget, fset, fdel, doc)
+            # support for abstract methods in Python 2
+            isabs = bool(getattr(fget, '__isabstractmethod__', False))
+            self.__isabstractmethod__ = isabs
 
-        def __get__(self, instance, ownerclass=None):
-            if instance is None:
+        def __get__(self, obj, owner=None):
+            if obj is None:
                 if self.__isabstractmethod__:
                     return self
-                raise AttributeError()
-            elif self.fget is None:
-                raise AttributeError("unreadable attribute")
-            return self.fget(instance)
-
-        def __set__(self, instance, value):
-            if self.fset is None:
-                raise AttributeError("can't set attribute")
-            self.fset(instance, value)
-
-        def __delete__(self, instance):
-            if self.fdel is None:
-                raise AttributeError("can't delete attribute")
-            self.fdel(instance)
-
-        def getter(self, fget):
-            fdoc = fget.__doc__ if self.overwrite_doc else None
-            cls = type(self)
-            result = cls(fget, self.fset, self.fdel, fdoc or self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
-
-        def setter(self, fset):
-            result = type(self)(self.fget, fset, self.fdel, self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
-
-        def deleter(self, fdel):
-            result = type(self)(self.fget, self.fset, fdel, self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
+                else:
+                    raise AttributeError()
+            else:
+                return super(DynamicClassAttribute, self).__get__(obj, owner)
 
     __all__.append('DynamicClassAttribute')
 
