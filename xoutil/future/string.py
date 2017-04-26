@@ -52,7 +52,7 @@ _past.dissuade()
 del _past
 
 from xoutil.deprecation import deprecated    # noqa
-from xoutil.eight import _py3    # noqa
+from xoutil.eight import python_version    # noqa
 
 
 # TODO: In Python 2.x series, equal comparison for `unicode` an `str` types
@@ -71,7 +71,7 @@ ELLIPSIS_ASCII = '...'
 ELLIPSIS_UNICODE = '…'
 
 #: Value used as a fill when a string representation is brimmed over.
-ELLIPSIS = ELLIPSIS_UNICODE if _py3 else ELLIPSIS_ASCII
+ELLIPSIS = ELLIPSIS_UNICODE if python_version == 3 else ELLIPSIS_ASCII
 
 #: Default value for `max_width` parameter in functions that reduce strings,
 #: see `crop`:func: and `small`:func:.
@@ -190,7 +190,7 @@ def safe_str(obj=str()):
     .. versionadded:: 1.7.0
 
     '''
-    if _py3:
+    if python_version == 3:
         if isinstance(obj, (bytes, bytearray)):
             return safe_decode(obj)
         else:
@@ -239,7 +239,7 @@ def safe_join(separator, iterable, encoding=None):
 
 
 # Makes explicit the deprecation warning for py3k.
-if _py3:
+if python_version == 3:
     safe_join = deprecated('builtin join method of str',
                            'safe_join is deprecated for Python 3. Use '
                            'builtin join method of str.')(safe_join)

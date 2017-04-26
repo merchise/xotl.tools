@@ -31,7 +31,7 @@ from xoutil.future import _past    # noqa
 _past.dissuade()
 del _past
 
-from xoutil.eight import _py33    # noqa
+from xoutil.eight import python_version    # noqa
 from xoutil.eight import callable    # noqa
 
 import xoutil.fp.tools as fp
@@ -286,7 +286,7 @@ except ImportError:
     _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize",
                                           "currsize"])
 
-if not _py33:
+if python_version < 3.3:
     from threading import RLock
     # Back-ported lru_cache from py33. But take note that if running with at
     # least py3 we will use Python's version, so don't mess with internals.

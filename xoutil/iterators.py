@@ -413,9 +413,9 @@ def ungroup(iterator):
 
 
 # Compatible zip and map
-from xoutil.eight import _py3
+from xoutil.eight import python_version
 
-if _py3:
+if python_version == 3:
     map = map
     zip = zip
     from itertools import zip_longest     # noqa

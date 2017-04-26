@@ -326,9 +326,9 @@ def str_coerce(arg):
 
     '''
     # TODO: Analyze if promote to global::
-    #   str_coerce = unicode_coerce if _py3 else bytes_coerce
-    from xoutil.eight import _py3
-    return (unicode_coerce if _py3 else bytes_coerce)(arg)
+    #   str_coerce = unicode_coerce if python_version == 3 else bytes_coerce
+    from xoutil.eight import python_version
+    return (unicode_coerce if python_version == 3 else bytes_coerce)(arg)
 
 
 @coercer

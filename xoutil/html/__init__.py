@@ -85,7 +85,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.eight import _py3, iteritems as iteritems_
+from xoutil.eight import python_version, iteritems as iteritems_
 from xoutil.future.string import safe_decode
 
 import warnings
@@ -93,7 +93,7 @@ warnings.warn('xoutil.html is deprecated')
 del warnings
 
 
-if _py3:
+if python_version == 3:
     from html import entities
     from html import parser
 else:
@@ -125,11 +125,8 @@ def _further_escape(s):
     res += s[pos:]
     return res
 
-import sys
-_py32 = sys.version_info >= (3, 2)
-del sys
 
-if not _py32:
+if python_version < 3.2:
     # The following is a modified copy from the Python 3.2 standard library, to
     # make xoutil forwards compatible. The modification is needed to cope with
     # the bytes/unicode issues in Python 2.7
@@ -163,9 +160,6 @@ if not _py32:
 
 else:
     from html import escape    # noqa
-
-
-del _py3, _py32
 
 
 __all__ = (str('entities'), str('parser'), str('escape'))

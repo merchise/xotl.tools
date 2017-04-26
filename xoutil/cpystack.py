@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
 
 import inspect
 
-from xoutil.eight import _py3
+from xoutil.eight import python_version
 from xoutil.deprecation import deprecated
 
 
@@ -68,7 +68,7 @@ def getargvalues(frame):
         res.update(values[kwds])
     return res
 
-if not _py3:
+if python_version < 3:
     getargvalues.__doc__ += """
     In Python 2.7, packed arguments also works::
 

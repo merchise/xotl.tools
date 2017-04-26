@@ -64,10 +64,10 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-from xoutil.eight import _py3
+from xoutil.eight import python_version
 
 
-if _py3:
+if python_version == 3:
     from inspect import getfullargspec as _getfullargspec
 else:
     from inspect import getargspec as _getfullargspec

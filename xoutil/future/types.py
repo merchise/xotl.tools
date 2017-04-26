@@ -98,7 +98,7 @@ from xoutil.future import _past
 _past.dissuade()
 del _past
 
-from xoutil.eight import _py2, _py34    # noqa
+from xoutil.eight import python_version    # noqa
 
 try:
     from types import __all__    # noqa
@@ -133,7 +133,7 @@ except NameError:
         MappingProxyType.register(DictProxyType)
     __all__.append('MappingProxyType')
 
-if _py2:
+if python_version == 2:
     from collections import Mapping
     if not issubclass(MappingProxyType, Mapping):
         # TODO: when implement `xoutil.future.collections`, fix this problem
@@ -162,7 +162,7 @@ WrapperDescriptorType = type(type.__call__)    # In PyPy is MethodWrapperType
 ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
 
 
-sn_ok = _py34
+sn_ok = python_version >= 3.4
 if sn_ok:
     try:
         SimpleNamespace    # noqa
@@ -670,5 +670,3 @@ if __name__ == 'xoutil.types':
         return all(not isinstance(subject, types) for subject in subjects)
 
     del deprecated
-
-del _py2, _py34

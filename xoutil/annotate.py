@@ -110,13 +110,13 @@ def _parse_signature(signature):
         def __getitem__(self, key):
             from xoutil.symbols import Unset
             from xoutil.iterators import dict_update_new
-            from xoutil.eight import _py3
+            from xoutil.eight import python_version
             d = self.d
             res = d.get(key, Unset)
             f = self.f
             if res is Unset and f:
                 f_globals = self.f_globals
-                if _py3:
+                if python_version == 3:
                     # FIXME: This modifies f_globals! Use f_builtins of the
                     # frame.
 

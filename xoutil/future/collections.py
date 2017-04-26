@@ -46,13 +46,13 @@ except ImportError:
     import sys as _sys
 
 from xoutil.deprecation import deprecated    # noqa
-from xoutil.eight import _py2, _py33, _py34    # noqa
+from xoutil.eight import python_version    # noqa
 from xoutil.symbols import Unset    # noqa
 from xoutil.objects import SafeDataItem as safe    # noqa
 from xoutil.eight.meta import metaclass    # noqa
 from xoutil.reprlib import recursive_repr    # noqa
 
-if _py2:
+if python_version == 2:
     # Fix some sub-classing problems.
     from xoutil.future.types import MappingProxyType    # noqa
     del MappingProxyType    # already fixed there
@@ -397,7 +397,7 @@ class opendict(OpenDictMixin, dict, object):
 
 # From this point below: Copyright (c) 2001-2013, Python Software
 # Foundation; All rights reserved.
-if not _py33:
+if python_version < 3.3:
     from weakref import proxy as _proxy
 
     class _Link(object):
@@ -405,7 +405,7 @@ if not _py33:
 
     # TODO: This class is implemented in all Python versions I have.  So, this
     # is declared in order to use some new methods like 'move_to_end'; but
-    # next code will fail for not '_py33'::
+    # next code will fail for 'python_version < 3.3'::
     #
     #   >>> from collections import OrderedDict as orgOrderedDict
     #   >>> from xoutil.future.collections import OrderedDict
@@ -636,7 +636,7 @@ if not _py33:
             return dict.__eq__(self, other)
 
 
-if not _py34:
+if python_version < 3.4:
     class ChainMap(MutableMapping):
         '''A ChainMap groups multiple dicts (or other mappings) together
         to create a single, updateable view.
@@ -766,7 +766,7 @@ except ImportError:
             mapping[elem] = mapping_get(elem, 0) + 1
 
 
-if not _py33:
+if python_version < 3.3:
     class UserDict(MutableMapping):
         # Start by filling-out the abstract methods
         def __init__(*args, **kwargs):
@@ -1877,7 +1877,7 @@ class RankedDict(SmartDictMixin, dict):
         for key in self:
             yield (key, self[key])
 
-    if _py2:
+    if python_version == 2:
         iterkeys = keys
         itervalues = values
         iteritems = items
@@ -2073,7 +2073,7 @@ class PascalSet(metaclass(MetaSet)):
         '''Compute the hash value of a set.'''
         return Set._hash(self)
 
-    if _py2:
+    if python_version == 2:
         def __cmp__(self, other):
             # Python 3 automatically generate a TypeError when no mechanism is
             # found by returning `NotImplemented` special value.  In Python 2
@@ -2689,7 +2689,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
         '''Compute the hash value of a set.'''
         return Set._hash(self)
 
-    if _py2:
+    if python_version == 2:
         def __cmp__(self, other):
             # Python 3 automatically generate a TypeError when no mechanism is
             # found by returning `NotImplemented` special value.  In Python 2
@@ -3165,5 +3165,5 @@ def smart_iter_items(*args, **kwds):
 
 
 # get rid of unused global variables
-del _py2, _py33, _py34, metaclass
+del metaclass
 del deprecated, recursive_repr
