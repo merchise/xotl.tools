@@ -389,9 +389,9 @@ def chars_coerce(arg):
     `unicode_coerce`:meth:.
 
     '''
-    from xoutil.eight import _py3, integer_types as ints
+    from xoutil.eight import integer_types as ints, unichr
     if isinstance(arg, ints) and 0 <= arg <= 0x10ffff:
-        return (chr if _py3 else unichr)(arg)
+        return unichr(arg)
     else:
         return unicode_coerce(arg)
 
