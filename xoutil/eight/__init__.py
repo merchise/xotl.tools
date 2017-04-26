@@ -183,12 +183,14 @@ except NameError:
 
 if python_version == 3:
     integer_types = int,
+    long_int = int
     class_types = type,
     text_type = str
     unichr = chr
 else:
     from types import ClassType
     integer_types = (int, long)
+    long_int = long
     class_types = (type, ClassType)
     text_type = unicode
     unichr = unichr
