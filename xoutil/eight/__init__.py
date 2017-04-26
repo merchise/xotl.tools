@@ -30,20 +30,147 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import)
 
-import sys
 
-# Python versions
+class PythonVersion(tuple):
+    '''A more structured version info.
 
-_py2 = sys.version_info[0] == 2
-_py3 = sys.version_info[0] == 3
-_py33 = sys.version_info >= (3, 3, 0)
-_py34 = sys.version_info >= (3, 4, 0)
-_pypy = sys.version.find('PyPy') >= 0
+    This is a singleton (`python_version`:obj:) with the same interface of
+    `~sys.version_info`:obj:\ :
 
-del sys
+    A tuple containing five components (also visible as named component
+    attributes): `major`, `minor`, `micro`, `releaselevel`, and `serial`.  All
+    values except `releaselevel` are integers; the release level could be
+    'alpha', 'beta', 'candidate', or 'final'.  The attribute 'pypy' could be
+    used to determine if this is a PyPy instance or not.
+
+    The instance of this class can be compared with a variety of value types:
+
+    - An integer with the 'major' component.
+
+    - A float with the ('major', 'minor') components.
+
+    - A string is converted to a version tuple before compare it.
+
+    .. versionadded:: 1.8.0
+
+    '''
+    _instance = None
+
+    def __new__(cls):
+        import sys
+        if cls._instance is None:
+            self = super(PythonVersion, cls).__new__(cls, sys.version_info)
+            cls._instance = self
+            return self
+        else:
+            return cls._instance
+
+    @property
+    def major(self):
+        return self[0]
+
+    @property
+    def minor(self):
+        return self[1]
+
+    @property
+    def micro(self):
+        return self[2]
+
+    @property
+    def releaselevel(self):
+        return self[3]
+
+    @property
+    def serial(self):
+        return self[4]
+
+    @property
+    def pypy(self):
+        import sys
+        return sys.version.find('PyPy') >= 0
+
+    def to_float(self):
+        return float('{}.{}'.format(*self[:2]))
+
+    def __eq__(self, other):
+        from sys import version_info
+        if isinstance(other, int):
+            return self.major == other
+        elif isinstance(other, string_types + (float, )):
+            return self.__eq__(tuple(str(other).split(' ')[0].split('.')))
+        elif isinstance(other, PythonVersion) or other is version_info:
+            return True
+        elif isinstance(other, (tuple, list)):
+            MAX_IDX = 3
+            count = len(other)
+            if 1 <= count <= MAX_IDX:
+                this = self[:count]
+                other = tuple(int(c) for c in other)
+                return this == other
+            else:
+                msg = 'Expecting from 1 to {} components; got {}'
+                raise ValueError(msg.format(MAX_IDX, count))
+        else:
+            return NotImplemented
+
+    def __lt__(self, other):
+        import sys
+        if isinstance(other, int):
+            return self.__lt__((other,))
+        elif isinstance(other, string_types + (float, )):
+            return self.__lt__(tuple(str(other).split(' ')[0].split('.')))
+        elif isinstance(other, PythonVersion) or other is sys.version_info:
+            return False
+        elif isinstance(other, (tuple, list)):
+            MAX_IDX = 3
+            count = len(other)
+            if 1 <= count <= MAX_IDX:
+                this = self[:MAX_IDX]
+                other = tuple(int(c) for c in other)    # JIC strings are used
+                return this < other
+            else:
+                msg = 'Expecting from 1 to {} components; got {}'
+                raise ValueError(MAX_IDX, msg.format(len(other)))
+        else:
+            return NotImplemented
+
+    def __gt__(self, other):
+        import sys
+        if isinstance(other, int):
+            return self.__gt__((other,))
+        elif isinstance(other, string_types + (float, )):
+            return self.__gt__(tuple(str(other).split(' ')[0].split('.')))
+        elif isinstance(other, PythonVersion) or other is sys.version_info:
+            return False
+        elif isinstance(other, (tuple, list)):
+            MAX_IDX = 3
+            count = len(other)
+            if 1 <= count <= MAX_IDX:
+                this = self[:MAX_IDX]
+                other = tuple(int(c) for c in other)    # JIC strings are used
+                return this > other
+            else:
+                msg = 'Expecting from 1 to {} components; got {}'
+                raise ValueError(MAX_IDX, msg.format(len(other)))
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __le__(self, other):
+        return not (self > other)
+
+    def __ge__(self, other):
+        return not (self < other)
+
+
+#: See `PythonVersion`:class: documentation for more info.
+python_version = PythonVersion()
 
 try:
-    from hashlib import sha1 as sha
+    from hashlib import sha1 as sha    # noqa
 except ImportError:
     from sha import sha    # noqa
 
@@ -54,7 +181,7 @@ except NameError:
     base_string = str
     string_types = (str, )
 
-if _py3:
+if python_version == 3:
     integer_types = int,
     class_types = type,
     text_type = str
@@ -82,6 +209,17 @@ except NameError:
     # The `memoryview`:class: API is similar but not exactly the same as that
     # of `buffer`.
     buffer = memoryview
+
+
+# Python versions
+# TODO: deprecate all this in favor of direct use of 'python_version'
+
+_pyver = python_version.to_float()
+_py2 = python_version == 2
+_py3 = python_version == 3
+_py33 = python_version >= 3.3
+_py34 = python_version >= 3.4
+_pypy = python_version.pypy
 
 
 def typeof(obj):
