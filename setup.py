@@ -6,7 +6,7 @@ import sys
 from setuptools import setup, find_packages
 
 try:
-    execfile = execfile
+    execfile
 except NameError:
     def execfile(filename):
         'To run in Python 3'
