@@ -15,9 +15,11 @@
 #
 # Created: 2012-03-23
 
-'''`xoutil` is a collection of disparate utilities that does not conform
-a framework for anything. `xoutil` is essentially an extension to the
-Python's standard library.
+'''Collection of disparate utilities.
+
+`xoutil` is essentially an extension to the Python's standard library, it does
+not turn into a full framework, but it's very useful to be used from a
+diversity of scenarios where compatibility is an important issue.
 
 '''
 
