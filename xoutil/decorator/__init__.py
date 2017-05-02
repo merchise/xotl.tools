@@ -204,6 +204,52 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
+@decorator
+def singleton(target, *args, **kwargs):
+    '''Instantiate a class and assign the instance to the declared symbo.
+
+    Every argument, positional or keyword, is passed as such when invoking the
+    target. The following two code samples show two cases::
+
+      >>> @singleton
+      ... class foobar(object):
+      ...    def __init__(self):
+      ...        self.doc = 'foobar instance'
+
+      >>> foobar.doc
+      'foobar instance'
+
+      >>> @singleton('test', context={'x': 1})
+      ... class foobar(object):
+      ...     def __init__(self, name, context):
+      ...         self.name = name
+      ...         self.context = context
+
+      >>> foobar.name, foobar.context
+      ('test', {'x': 1})
+
+      >>> isinstance(foobar, type)
+      False
+
+    '''
+    try:
+        from types import ClassType
+        class_types = (type, ClassType)
+    except ImportError:
+        class_types = (type,)
+    res = target(*args, **kwargs)
+    if isinstance(target, class_types):
+        try:
+            def __init__(*args, **kwds):
+                msg = "'{}' is a singleton, it can be instantiated only once"
+                raise TypeError(msg.format(target.__name__))
+            target.__init__ = __init__
+        except:
+            pass
+    return res
+
+
+
 # The following is extracted from the SQLAlchemy project's codebase, merit and
 # copyright goes to SQLAlchemy authors::
 #
