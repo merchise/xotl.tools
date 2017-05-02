@@ -14,7 +14,6 @@
 # package.
 #
 # Created: 2012-03-23
-#
 
 '''`xoutil` is a collection of disparate utilities that does not conform
 a framework for anything. `xoutil` is essentially an extension to the
@@ -22,4 +21,5 @@ Python's standard library.
 
 '''
 
+# TODO: Deprecate this import
 from .symbols import Unset, Undefined, Ignored, Invalid

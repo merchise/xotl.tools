@@ -30,7 +30,6 @@ from types import FunctionType as function
 from xoutil.decorator.meta import decorator
 
 
-# TODO: 'decorator' is undefined.
 __all__ = ('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
            'assignment_operator', 'instantiate', 'memoized_property',
            'memoized_instancemethod', 'reset_memoized')
@@ -199,6 +198,7 @@ def instantiate(target, *args, **kwargs):
 
         >>> Foobar  # doctest: +ELLIPSIS
         <class '...Foobar'>
+
     '''
     target(*args, **kwargs)
     return target
