@@ -39,22 +39,24 @@ def _safe_int(arg):
 
 
 def _crucial_parts(info):
-    '''Count the important parts (starting integers) of a version info'''
+    '''Count the important parts (heading integers) of a version info'''
     i, ok = 0, True
     while i < len(info) and ok:
         v = info[i]
         if isinstance(v, int):
-            yield v
             i += 1
         else:
             ok = False
+    return i
 
 
-def _check(info):
+def _check(info, head=False):
     '''Check a version info.
 
     `info` could be a string or any iterable.  if `hard`, the 3 required
     integer components must be supplied at the beginning.
+
+    If `head` is true, return only the crucial parts.
 
     '''
     import re
@@ -85,9 +87,15 @@ def _check(info):
             res = None
         if res is None:
             # TODO: from xoutil.eight import type_name
-            msg = 'version info check got an value of type "{}"'
-            raise TypeError(msg.format(caller), type(info).__name__)
-    return res
+            msg = 'version info check got an invalid value of type "{}"'
+            raise TypeError(msg.format(type(info).__name__))
+    count = _crucial_parts(res)
+    if 1 <= count <= MAX_IDX:
+        return res[:count] if head else res
+    else:
+        msg = ('a version info need at least one and at most {} heading '
+               'integer components; got "{}"')
+        raise TypeError(msg.format(MAX_IDX, count))
 
 
 class ThreeNumbersVersion(tuple):
@@ -105,6 +113,8 @@ class ThreeNumbersVersion(tuple):
     - A float with the ('major', 'minor') components.
 
     - A string is converted to a version tuple before compare it.
+
+    But comparison only is relevant for heading integers.
 
     .. versionadded:: 1.8.0
 
@@ -128,67 +138,21 @@ class ThreeNumbersVersion(tuple):
         return float('{}.{}'.format(*self[:2]))
 
     def __eq__(self, other):
-        from sys import version_info
-        if isinstance(other, int):
-            return self.major == other
-        elif isinstance(other, _str_types + (float, )):
-            return self.__eq__(tuple(str(other).split(' ')[0].split('.')))
-        elif isinstance(other, ThreeNumbersVersion) or other is version_info:
-            return True
-        elif isinstance(other, (tuple, list)):
-            MAX_IDX = 3
-            count = len(other)
-            if 1 <= count <= MAX_IDX:
-                this = self[:count]
-                other = tuple(int(c) for c in other)
-                return this == other
-            else:
-                msg = 'Expecting from 1 to {} components; got {}'
-                raise ValueError(msg.format(MAX_IDX, count))
-        else:
-            return NotImplemented
+        aux = _check(other, head=True)
+        this = self[:len(aux)]
+        return this == aux
 
     def __lt__(self, other):
-        import sys
-        if isinstance(other, int):
-            return self.__lt__((other,))
-        elif isinstance(other, _str_types + (float, )):
-            return self.__lt__(tuple(str(other).split(' ')[0].split('.')))
-        elif isinstance(other, ThreeNumbersVersion) or other is sys.version_info:
-            return False
-        elif isinstance(other, (tuple, list)):
-            MAX_IDX = 3
-            count = len(other)
-            if 1 <= count <= MAX_IDX:
-                this = self[:MAX_IDX]
-                other = tuple(int(c) for c in other)    # JIC strings are used
-                return this < other
-            else:
-                msg = 'Expecting from 1 to {} components; got {}'
-                raise ValueError(MAX_IDX, msg.format(len(other)))
-        else:
-            return NotImplemented
+        aux = _check(other, head=True)
+        count = _crucial_parts(self)
+        this = self[:count]
+        return this < aux
 
     def __gt__(self, other):
-        import sys
-        if isinstance(other, int):
-            return self.__gt__((other,))
-        elif isinstance(other, _str_types + (float, )):
-            return self.__gt__(tuple(str(other).split(' ')[0].split('.')))
-        elif isinstance(other, ThreeNumbersVersion) or other is sys.version_info:
-            return False
-        elif isinstance(other, (tuple, list)):
-            MAX_IDX = 3
-            count = len(other)
-            if 1 <= count <= MAX_IDX:
-                this = self[:MAX_IDX]
-                other = tuple(int(c) for c in other)    # JIC strings are used
-                return this > other
-            else:
-                msg = 'Expecting from 1 to {} components; got {}'
-                raise ValueError(MAX_IDX, msg.format(len(other)))
-        else:
-            return NotImplemented
+        aux = _check(other, head=True)
+        count = _crucial_parts(self)
+        this = self[:count]
+        return this > aux
 
     def __ne__(self, other):
         return not (self == other)
