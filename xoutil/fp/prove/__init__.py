@@ -51,11 +51,11 @@ def validate(function, *args, **kwds):
     from xoutil.eight import type_name
     from xoutil.eight.exceptions import throw
     from xoutil.fp.monads.option import Just, Wrong
-    from xoutil.fp.params import singleton
+    from xoutil.fp.params import single
     res = function(*args, **kwds)
     if isinstance(res, boolean):
         if res:
-            aux = singleton(*args, **kwds)
+            aux = single(*args, **kwds)
             if aux is not Invalid:
                 res = aux
         else:

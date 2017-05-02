@@ -139,7 +139,7 @@ def check_default(absent=Undefined):
     return default
 
 
-def singleton(*args, **kwds):
+def single(*args, **kwds):
     '''Valid if just only one argument is given.
 
     Return a valid boolean, maybe the argument value itself or an instance of
