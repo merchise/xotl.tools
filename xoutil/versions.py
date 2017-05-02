@@ -210,6 +210,14 @@ def _get_mod_version(mod):
             except:
                 pass
         i += 1
+    if not res:
+        try:
+            import os
+            path = os.path.dirname(os.__file__)
+            if mod.__file__.startswith(path):
+                res = python_version
+        except:
+            pass
     return res
 
 
@@ -232,29 +240,31 @@ class PackageVersion(ThreeNumbersVersion):
 
     @staticmethod
     def _find_version(package_name):
-        res = None
-        while not res and package_name:
-            try:
-                import pkg_resources
-                dist = pkg_resources.get_distribution(package_name)
+        if package_name in ('__builtin__', 'builtins'):
+            return python_version
+        else:
+            res = None
+            while not res and package_name:
                 try:
-                    res = dist.parsed_version.base_version
-                except:
-                    res = dist.version
-            except:
-                from importlib import import_module
-                try:
-                    mod = import_module('.'.join((package_name, 'release')))
-                    res = _get_mod_version(mod)
-                except:
+                    import pkg_resources
+                    dist = pkg_resources.get_distribution(package_name)
                     try:
-                        mod = import_module(package_name)
+                        res = dist.parsed_version.base_version
+                    except:
+                        res = dist.version
+                except:
+                    from importlib import import_module
+                    try:
+                        mod = import_module('.'.join((package_name, 'release')))
                         res = _get_mod_version(mod)
                     except:
-                        mod = __import__(package_name)
-                        res = _get_mod_version(mod)
-            if not res:
-                aux = package_name.rsplit('.', 1)
-                if len(aux) > 1:
-                    package_name = aux[0]
-        return res
+                        try:
+                            mod = import_module(package_name)
+                            res = _get_mod_version(mod)
+                        except:
+                            mod = __import__(package_name)
+                            res = _get_mod_version(mod)
+                if not res:
+                    aux = package_name.rsplit('.', 1)
+                    package_name = aux[0] if len(aux) > 1 else ''
+            return res
