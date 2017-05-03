@@ -160,3 +160,27 @@ def single(*args, **kwds):
     if not res and not isinstance(res, Maybe):
         res = Just(res)
     return res
+
+
+def pop_keyword_arg(kwargs, names, default=Undefined):
+    '''Return the value of a keyword argument.
+
+    :param kwargs: The mapping with passed keyword arguments.
+
+    :param names: Could be a single name, or a collection of names.
+
+    :param default: The default value to return if no value is found.
+
+    '''
+    from xoutil.eight import string_types
+    if isinstance(names, string_types):
+        names = (names,)
+    i, count = 0, len(names)
+    res = Undefined
+    while res is Undefined and i < count:
+        aux = kwargs.pop(names[i], Undefined)
+        if aux is Undefined:
+            i += 1
+        else:
+            res = aux
+    return res if res is not Undefined else default
