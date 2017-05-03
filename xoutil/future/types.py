@@ -155,6 +155,8 @@ if MemberDescriptorType is GetSetDescriptorType:    # noqa
     MemberDescriptorType = type(_foo.bar)
     del _foo
 
+FuncTypes = tuple({FunctionType, MethodType, LambdaType, BuiltinFunctionType,
+                   BuiltinMethodType})
 
 # These types are defined in `inspect` module for Python >= 3.3
 MethodWrapperType = type(all.__call__)
