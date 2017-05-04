@@ -222,5 +222,8 @@ Ignored = boolean('Ignored')
 #: value.
 Invalid = boolean('Invalid')
 
+#: To be used as a mark for current context as a mechanism of comfort.
+This = boolean('This', True)
+
 
 del metaclass
