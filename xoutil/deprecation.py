@@ -23,12 +23,17 @@ import warnings
 from functools import wraps
 
 
+# TODO: Invalidate this module in favor of new 'xoutil.hints' when implemented
+
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
                'removed{in_version}. Use {replacement} instead.')
 
 
 class DeprecationError(Exception):
     pass
+
+
+# TODO: Use ``warnings.simplefilter('default', DeprecationWarning)``
 
 
 def _nameof(item):

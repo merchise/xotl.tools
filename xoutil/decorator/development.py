@@ -18,6 +18,8 @@ from __future__ import (division as _py3_division,
 from xoutil.decorator.meta import decorator
 
 
+# TODO: move to new module 'xoutil.hints' when fully implemented.
+
 @decorator
 def unstable(target, msg=None):
     '''Declares that a method, class or interface is unstable.
