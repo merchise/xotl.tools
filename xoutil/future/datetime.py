@@ -74,6 +74,8 @@ class ISOWEEKDAY:
 try:
     date(1800, 1, 1).strftime("%Y")
 except ValueError:
+    # TODO: This fix is not practical, could be better new classes with names
+    # -for example- "safe_date" and "safe_datetime".
     # This happens in Pytnon 2.7, I was considering to replace `strftime`
     # function from `time` module, that is used for all `strftime` methods;
     # but (WTF), Python double checks the year (in each method and then again
