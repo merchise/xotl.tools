@@ -33,11 +33,11 @@ def test_safe_encode_dont_fail_uppon_invalid_encoding(s):
 
 def test_safe_string():
     from xoutil.future.string import safe_str
-    from xoutil.eight import _py2
+    # from xoutil.eight import python_version
     aux = lambda x: 2*x + 1
     name = 'λ x: 2*x + 1'
     aux.__name__ = safe_str(name)
-    delta = 0    # 1 if _py2 else 0
+    delta = 0    # 1 if python_version == 2 else 0
     # TODO: Because future unicode_literals was removed.  Maybe this test must
     # be removed or reformulated.
     assert len(aux.__name__) == len(name) + delta

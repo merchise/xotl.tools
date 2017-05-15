@@ -44,9 +44,8 @@ class MetaCompose(ABCMeta):
         '''Override for ``issubclass(subclass, self)``.'''
         res = super(MetaCompose, self).__subclasscheck__(subclass)
         if not res:
-            import types as t
-            res = subclass in {t.FunctionType, t.MethodType, t.LambdaType,
-                               t.BuiltinFunctionType, t.BuiltinMethodType}
+            from xoutil.future.types import FuncTypes
+            res = subclass in FuncTypes
         return res
 
 
@@ -96,7 +95,7 @@ class compose(metaclass(MetaCompose)):
         elif count == 1:
             return functions[0]
         else:
-            from xoutil import Unset
+            from xoutil.symbols import Unset
             self = super(compose, cls).__new__(cls)
             self.inner = functions
             self.scope = Unset

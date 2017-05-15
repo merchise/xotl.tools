@@ -38,7 +38,7 @@ MAX_ARG_COUNT = sys.maxsize    # just any large number
 del sys
 
 
-from xoutil import Undefined    # used implicitly for absent default
+from xoutil.symbols import Undefined    # used implicitly for absent default
 
 
 def issue_9137(args):
@@ -120,7 +120,7 @@ def check_default(absent=Undefined):
     '''Get a default value passed as a last excess positional argument.
 
     :param absent: The value to be used by default if no one is given.
-           Defaults to `~xoutil.Undefined`:obj:.
+           Defaults to `~xoutil.symbols.Undefined`:obj:.
 
     For example::
 
@@ -139,24 +139,48 @@ def check_default(absent=Undefined):
     return default
 
 
-def singleton(*args, **kwds):
+def single(*args, **kwds):
     '''Valid if just only one argument is given.
 
     Return a valid boolean, maybe the argument value itself or an instance of
     `~xoutil.fp.monads.option.Maybe`:class:\ .
 
-    In the case of more that one or no argument, `~xoutil.Ignored`:obj: is
+    In the case of invalid argument number, `~xoutil.symbols.Invalid`:obj: is
     returned.
 
     '''
-    from xoutil import Ignored
+    from xoutil.symbols import Invalid
     from xoutil.fp.monads.option import Maybe, Just
     if len(args) == 1 and not kwds:
         res = args[0]
     elif not args and len(kwds) == 1:
         res = kwds[tuple(kwds)[0]]
     else:
-        res = Ignored
+        res = Invalid
     if not res and not isinstance(res, Maybe):
         res = Just(res)
     return res
+
+
+def pop_keyword_arg(kwargs, names, default=Undefined):
+    '''Return the value of a keyword argument.
+
+    :param kwargs: The mapping with passed keyword arguments.
+
+    :param names: Could be a single name, or a collection of names.
+
+    :param default: The default value to return if no value is found.
+
+    '''
+    from xoutil.eight import string_types
+    if isinstance(names, string_types):
+        names = (names,)
+    i, count = 0, len(names)
+    res = Undefined
+    while res is Undefined and i < count:
+        aux = kwargs.pop(names[i], Undefined)
+        if aux is Undefined:
+            i += 1
+        else:
+            res = aux
+    return res if res is not Undefined else default

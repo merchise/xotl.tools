@@ -104,7 +104,7 @@ def test_stacked_dict():
 
 
 # Backported from Python 3.3.0 standard library
-from xoutil.eight import _py3 as PY3
+from xoutil.eight import python_version
 from xoutil.future.collections import ChainMap, Counter
 from xoutil.future.collections import OrderedDict, RankedDict
 from xoutil.future.collections import Mapping, MutableMapping
@@ -115,16 +115,16 @@ from random import randrange
 
 def _items(d):
     'For some reason in new PyPy 5.0.1 for Py 2.7.10, set order is not nice.'
-    from xoutil.eight import _pypy
+    from xoutil.eight import python_version
     res = d.items()
-    if _pypy and isinstance(res, list):
+    if python_version.pypy and isinstance(res, list):
         res.sort()
     return res
 
 
 class TestChainMap(unittest.TestCase):
     def test_basics(self):
-        from xoutil.eight import typeof, _pypy
+        from xoutil.eight import typeof
         c = ChainMap()
         c['a'] = 1
         c['b'] = 2
@@ -158,7 +158,7 @@ class TestChainMap(unittest.TestCase):
         # check get
         for k, v in dict(a=1, b=2, c=30, z=100).items():
             self.assertEqual(d.get(k, 100), v)
-        if not PY3:
+        if python_version < 3:
             # check repr
             self.assertIn(repr(d), [
                 typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
@@ -300,10 +300,7 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(c.get('b', 10), 2)
         self.assertEqual(c.get('z', 10), 10)
         self.assertEqual(c, dict(a=3, b=2, c=1))
-        if not PY3:
-            self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
-        else:
-            self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
+        self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
         self.assertEqual(c.most_common(), [('a', 3), ('b', 2), ('c', 1)])
         for i in range(5):
             self.assertEqual(c.most_common(i),
@@ -693,7 +690,7 @@ class TestOrderedDict(unittest.TestCase):
 
     def test_repr(self):
         od = OrderedDict([('c', 1), ('b', 2), ('a', 3)])
-        if not PY3:
+        if python_version < 3:
             self.assertEqual(
                 repr(od),
                 "OrderedDict([('c', 1), ('b', 2), ('a', 3)])")
@@ -708,7 +705,7 @@ class TestOrderedDict(unittest.TestCase):
         # See issue #9826
         od = OrderedDict.fromkeys('abc')
         od['x'] = od
-        if not PY3:
+        if python_version < 3:
             self.assertEqual(repr(od),
                              ("OrderedDict([('a', None), ('b', None), "
                               "('c', None), ('x', ...)])"))
@@ -959,7 +956,7 @@ class TestRankedDict(unittest.TestCase):
 
     def test_repr(self):
         od = RankedDict([('c', 1), ('b', 2), ('a', 3)])
-        if not PY3:
+        if python_version < 3:
             self.assertEqual(
                 repr(od),
                 "RankedDict([('c', 1), ('b', 2), ('a', 3)])")
@@ -974,7 +971,7 @@ class TestRankedDict(unittest.TestCase):
         # See issue #9826
         od = RankedDict.fromkeys('abc')
         od['x'] = od
-        if not PY3:
+        if python_version < 3:
             self.assertEqual(repr(od),
                              ("RankedDict([('a', None), ('b', None), "
                               "('c', None), ('x', ...)])"))

@@ -18,6 +18,8 @@ from __future__ import (division as _py3_division,
 from xoutil.decorator.meta import decorator
 
 
+# TODO: move to new module 'xoutil.hints' when fully implemented.
+
 @decorator
 def unstable(target, msg=None):
     '''Declares that a method, class or interface is unstable.
@@ -40,7 +42,7 @@ def unstable(target, msg=None):
     try:
         from zope.interface import Interface
     except ImportError:
-        from xoutil import Ignored as Interface
+        from xoutil.symbols import Ignored as Interface
     if isinstance(target, type(Interface)):
         objtype = 'interface'
     elif isinstance(target, class_types):

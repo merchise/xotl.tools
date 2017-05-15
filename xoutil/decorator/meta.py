@@ -64,10 +64,7 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-from xoutil.eight import _py3
-
-
-if _py3:
+if sys.version_info[0] == 3:
     from inspect import getfullargspec as _getfullargspec
 else:
     from inspect import getargspec as _getfullargspec
@@ -184,7 +181,10 @@ class FunctionMaker(object):
         added,
         if any.
         """
-        from xoutil.eight import string_types
+        try:
+            string_types = (str, unicode)
+        except NameError:
+            string_types = (str,)
         if isinstance(obj, string_types):  # "name(signature)"
             obj = str(obj)
             name, rest = obj.strip().split(str('('), 1)
@@ -237,8 +237,9 @@ def flat_decorator(caller, func=None):
 # -- End of decorators package
 
 
+# FIX: This meta-decorator fails in some scenarios (old classes?)
 def decorator(caller):
-    '''Eases the creation of decorators with arguments. Normally a decorator
+    '''Eases the creation of decorators with arguments.  Normally a decorator
     with arguments needs three nested functions like this::
 
         def decorator(*decorator_arguments):
@@ -318,7 +319,8 @@ def decorator(caller):
         try:
             from zope.interface import Interface
         except ImportError:
-            from xoutil import Unset as Interface
+            Interface = None
+            # from xoutil.symbols import Unset as Interface
         if (len(args) == 1 and not kwargs and
             (isinstance(args[0], (function, type)) or
              issubclass(type(args[0]), type(Interface)))):

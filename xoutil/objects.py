@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil import Unset
+from xoutil.symbols import Unset
 from xoutil.deprecation import deprecated
 
 
@@ -941,7 +941,48 @@ def get_branch_subclasses(cls):
     return list(iter_branch_subclasses(cls, include_this=False))
 
 
-class classproperty(object):
+# TODO: Check `xoutil.future.types.DynamicClassAttribute`:class: for more
+# information and to compare with this one.
+class xproperty(property):
+    '''Descriptor that gets values the same for instances and for classes.
+
+    Example of its use::
+
+        >>> class Foobar(object):
+        ...     _x = 'in the class'
+        ...
+        ...     def __init__(self):
+        ...         self._x = 'in the instance'
+        ...
+        ...     @xproperty
+        ...     def x(self):
+        ...         return self._x
+
+        >>> f = Foobar()
+
+        >>> Foobar.x
+        'in the class'
+
+        >>> f.x
+        'in the instance'
+
+    X-properties are always read-only, if attribute values must be set or
+    deleted, a metaclass must be defined.
+
+    .. versionadded:: 1.8.0
+
+    '''
+    def __init__(self, fget, doc=None):
+        if fget is not None:
+            super(xproperty, self).__init__(fget, doc=doc)
+        else:
+            raise TypeError('xproperty() the "fget" argument is requiered')
+
+    def __get__(self, instance, owner):
+        return self.fget(instance if instance is not None else owner)
+
+
+class classproperty(property):
     '''A descriptor that behaves like property for instances but for classes.
 
     Example of its use::
@@ -951,26 +992,39 @@ class classproperty(object):
             def getx(cls):
                 return cls._x
 
-    Class properties are always read-only, if attribute values must be set or
-    deleted, a metaclass must be defined.
+    A writable `classproperty` is difficult to define, and it's not intended
+    for that case because 'setter', and 'deleter' decorators can't be used for
+    obvious reasons.  For example::
+
+        class Foobar(object):
+            x = 1
+            def __init__(self, x=2):
+                self.x = x
+            def _get_name(cls):
+                return str(cls.x)
+            def _set_name(cls, x):
+                cls.x = int(x)
+            name = classproperty(_get_name, _set_name)
+
+    .. versionadded:: 1.4.1
+
+    .. versionchanged:: 1.8.0 Inherits from `property`
 
     '''
-    def __init__(self, fget):
-        '''Create the class property descriptor.
-
-          :param fget: is a function for getting the class attribute value
-
-        '''
-        self.__get = fget
-        self.__name__ = fget.__name__
-        self.__doc__ = fget.__doc__
-
     def __get__(self, instance, owner):
-        cls = type(instance) if instance is not None else owner
-        return self.__get(cls)
+        obj = type(instance) if instance is not None else owner
+        return super(classproperty, self).__get__(obj, owner)
+
+    def __set__(self, instance, value):
+        obj = instance if isinstance(instance, type) else type(instance)
+        super(classproperty, self).__set__(obj, value)
+
+    def __delete__(self, instance):
+        obj = instance if isinstance(instance, type) else type(instance)
+        super(classproperty, self).__delete__(obj)
 
 
-class staticproperty(object):
+class staticproperty(property):
     '''A descriptor that behaves like properties for instances but static.
 
     Example of its use::
@@ -980,22 +1034,40 @@ class staticproperty(object):
             def getx():
                 return 'this is static'
 
-    Static properties are always read-only, if attribute values must be set or
-    deleted, a metaclass must be defined.
+    A writable `staticproperty` is difficult to define, and it's not intended
+    for that case because 'setter', and 'deleter' decorators can't be used for
+    obvious reasons.  For example::
+
+        class Foobar(object):
+            x = 1
+            def __init__(self, x=2):
+                self.x = x
+            def _get_name():
+                return str(Foobar.x)
+            def _set_name(x):
+                Foobar.x = int(x)
+            name = staticproperty(_get_name, _set_name)
+
+    .. versionadded:: 1.8
 
     '''
-    def __init__(self, fget):
-        '''Create the static property descriptor.
-
-          :param fget: is a function for getting the attribute value
-
-        '''
-        self.__get = fget
-        self.__name__ = fget.__name__
-        self.__doc__ = fget.__doc__
-
     def __get__(self, instance, owner):
-        return self.__get()
+        if self.fget is not None:
+            return self.fget()
+        else:
+            raise AttributeError('unreadable attribute')
+
+    def __set__(self, instance, value):
+        if self.fset is not None:
+            self.fset(value)
+        else:
+            raise AttributeError("can't set attribute")
+
+    def __delete__(self, instance):
+        if self.fdel is not None:
+            self.fdel()
+        else:
+            raise AttributeError("can't delete attribute")
 
 
 def setdefaultattr(obj, name, value):

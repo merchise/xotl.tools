@@ -378,12 +378,12 @@ def test_extract_attrs():
 
 
 def test_copy_class():
-    from xoutil import Unset
-    from xoutil.eight import _py3
+    from xoutil.symbols import Unset
+    from xoutil.eight import python_version
     from xoutil.eight.meta import metaclass
     from xoutil.objects import copy_class
 
-    u = str if _py3 else unicode
+    u = str if python_version == 3 else unicode
 
     class MetaFoo(type):
         pass
@@ -464,6 +464,41 @@ def test_memoized_classproperty():
     assert Foobar.prop == current
     current += 1
     assert Foobar.prop != current
+
+
+def test_properties():
+    from xoutil.objects import xproperty, classproperty, staticproperty
+
+    _x = 'static'
+
+    class Foobar(object):
+        _x = 'class'
+
+        def __init__(self):
+            self._x = 'instance'
+
+        @xproperty
+        def x(self):
+            return self._x
+
+        @classproperty
+        def cprop(cls):
+            return cls._x
+
+        @staticproperty
+        def sprop():
+            return _x
+
+    f = Foobar()
+
+    assert Foobar.x == 'class'
+    assert f.x == 'instance'
+
+    assert Foobar.cprop == 'class'
+    assert f.cprop == 'class'
+
+    assert Foobar.sprop == 'static'
+    assert f.sprop == 'static'
 
 
 def test_multi_getter_failure():

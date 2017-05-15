@@ -23,10 +23,7 @@ import warnings
 from functools import wraps
 
 
-# TODO: Add arguments deprecation, for example use 'positional_limits' in
-# order to issue a warning if a function receive an amount of positional
-# arguments outside these limits; and 'invalid_kwds' in order to issue the
-# warning if these keyword arguments are used.
+# TODO: Invalidate this module in favor of new 'xoutil.hints' when implemented
 
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
                'removed{in_version}. Use {replacement} instead.')
@@ -34,6 +31,9 @@ DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
 
 class DeprecationError(Exception):
     pass
+
+
+# TODO: Use ``warnings.simplefilter('default', DeprecationWarning)``
 
 
 def _nameof(item):

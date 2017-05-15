@@ -351,6 +351,3 @@ def _static_issubclass(C, B):
         return any(b in mro for b in B)
     else:
         return B in mro
-
-
-# TODO: Implement a safe version for `attrgetter`

@@ -104,6 +104,92 @@ except ImportError:
             raise TypeError(msg)
 
 
+try:
+    from types import MappingProxyType
+except ImportError:
+    from collections import Mapping
+
+    class mappingproxy(Mapping):
+        '''Python 3 compatible implementation for Python 2 'DictProxyType'.
+
+        `DictProxyType`:class: can't be used as a simple alias because there
+        are some Python 3 code that create instances.
+
+        '''
+        __slots__ = ('_mapping',)
+
+        def __init__(self, mapping):
+            from xoutil.eight import type_name as tname
+            from xoutil.future.collections import Mapping
+            if isinstance(mapping, Mapping):
+                self._mapping = mapping
+            else:
+                msg = '{}() argument must be a mapping, not {}'
+                raise TypeError(msg.format(tname(self), tname(mapping)))
+
+        def __len__(self):
+            return len(self._mapping)
+
+        def __str__(self):
+            return str(dict(self))
+
+        def __repr__(self):
+            return '{0.__class__.__name__}({0._mapping!r})'.format(self)
+
+        def items(self):
+            from xoutil.future.collections import ItemsView
+            try:
+                items = type(self._mapping).__dict__['items']
+                if items is not dict.__dict__['items']:
+                    return items(self._mapping)
+                else:
+                    return ItemsView(self)
+            except KeyError:
+                return ItemsView(self)
+
+        def keys(self):
+            from xoutil.future.collections import KeysView
+            try:
+                keys = type(self._mapping).__dict__['keys']
+                if keys is not dict.__dict__['keys']:
+                    return keys(self._mapping)
+                else:
+                    return KeysView(self)
+            except KeyError:
+                return KeysView(self)
+
+        def values(self):
+            from xoutil.future.collections import ValuesView
+            try:
+                values = type(self._mapping).__dict__['values']
+                if values is not dict.__dict__['values']:
+                    return values(self._mapping)
+                else:
+                    return ValuesView(self)
+            except KeyError:
+                return ValuesView(self)
+
+        def __iter__(self):
+            return iter(self._mapping)
+
+        def get(self, key, default=None):
+            return self._mapping.get(key, default)
+
+        def __contains__(self, key):
+            return key in self._mapping
+
+        def copy(self):
+            return self._mapping.copy()
+
+        def __getitem__(self, key):
+            return self._mapping[key]
+
+        def __dir__(self):
+            return dir(type(type.__dict__))
+
+    MappingProxyType = mappingproxy
+
+
 def get_exec_body(**kwargs):
     '''Return an `exec_body` function that update `ns` with `kwargs`.'''
     def exec_body(ns):

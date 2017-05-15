@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
 
 import inspect
 
-from xoutil.eight import _py3
+from xoutil.eight import python_version
 from xoutil.deprecation import deprecated
 
 
@@ -68,7 +68,7 @@ def getargvalues(frame):
         res.update(values[kwds])
     return res
 
-if not _py3:
+if python_version < 3:
     getargvalues.__doc__ += """
     In Python 2.7, packed arguments also works::
 
@@ -228,7 +228,8 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
         while (res is None) and (deep < max_deep) and (frame is not None):
             ctx = getargvalues(frame)
             d = {arg_name: ctx.get(arg_name)} if arg_name is not None else ctx
-            for key, value in d.iteritems():
+            for key in d:
+                value = d[key]:
                 if isinstance(value, obj_type):
                     res = (value, key, deep, frame)
             frame = frame.f_back
@@ -261,7 +262,8 @@ def track_value(value, max_deep=MAX_DEEP):
     res = None
     while (res is None) and (deep < max_deep) and (frame is not None):
         ctx = getargvalues(frame)
-        for _key, _value in ctx.iteritems():
+        for _key in ctx:
+            _value = ctx[_key]
             if (type(value) == type(_value)) and (value == _value):
                 res = (ctx, _key)
         frame = frame.f_back

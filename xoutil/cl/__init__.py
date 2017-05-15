@@ -42,12 +42,11 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-import sys
 import re
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
-from xoutil import Unset
+from xoutil.symbols import Unset
 
 import warnings
 warnings.warn('"{}" module is completely deprecated; use "xoutil.fp" package '
@@ -58,9 +57,7 @@ del warnings
 from xoutil.fp.cl import logical, nil, t    # noqa
 from xoutil.fp.prove import validate as vouch    # noqa
 
-
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
-
 
 
 class MetaCoercer(ABCMeta):
@@ -108,6 +105,7 @@ class coercer(metaclass(MetaCoercer)):
         ...     res = int_coerce(arg)
         ...     return res if t(res) and 0 < arg <= 120 else nil
 
+        # TODO: Change next, don't use isinstance
         >>> isinstance(age_coerce, coercer)
         True
 
@@ -122,7 +120,7 @@ class coercer(metaclass(MetaCoercer)):
             return identity_coerce
         elif source is None or (source == 0 and isinstance(source, boolean)):
             return void_coerce
-        elif isinstance(source, coercer):
+        elif isinstance(source, coercer):    # TODO: don't use isinstance
             return source
         elif isinstance(source, (function, staticmethod, classmethod)):
             return _coercer_decorator(source)
@@ -1103,4 +1101,4 @@ class mapping(custom):
         return res
 
 
-del sys, re, ABCMeta, metaclass, lwraps
+del re, ABCMeta, metaclass, lwraps

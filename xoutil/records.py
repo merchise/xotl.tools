@@ -27,7 +27,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil import Unset
+from xoutil.symbols import Unset
 from xoutil.future.functools import lru_cache
 from xoutil.eight.meta import metaclass
 
@@ -95,7 +95,7 @@ class _record_type(type):
         return result
 
     def get_field(self, raw_data, field):
-        from xoutil import Undefined
+        from xoutil.symbols import Undefined
         field_name = self._rec_index[field]
         try:
             value = raw_data[field]

@@ -30,7 +30,6 @@ from types import FunctionType as function
 from xoutil.decorator.meta import decorator
 
 
-# TODO: 'decorator' is undefined.
 __all__ = ('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
            'assignment_operator', 'instantiate', 'memoized_property',
            'memoized_instancemethod', 'reset_memoized')
@@ -39,7 +38,7 @@ __all__ = ('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
 class AttributeAlias(object):
     '''Descriptor to create aliases for object attributes.
 
-    This descriptor is mainly to be used internally by :func:`aliases`
+    This descriptor is mainly to be used internally by `aliases`:func:
     decorator.
 
     '''
@@ -59,8 +58,7 @@ class AttributeAlias(object):
 
 
 def settle(**kwargs):
-    '''Returns a decorator that sets different attribute values to the
-    decorated target (function or class).
+    '''Returns a decorator to settle attributes to the decorated target.
 
     Usage::
 
@@ -73,16 +71,14 @@ def settle(**kwargs):
 
     '''
     def inner(target):
-        from xoutil.eight import iteritems
-        for key, value in iteritems(kwargs):
-            setattr(target, key, value)
+        for attr in kwargs:
+            setattr(target, attr, kwargs[attr])
         return target
     return inner
 
 
 def namer(name, **kwargs):
-    '''Like :func:`settle`, but name is a positional argument and is assigned
-    to the attribute ``__name__``.
+    '''Like `settle`:func:, but '__name__' is a required positional argument.
 
     Usage::
 
@@ -101,7 +97,7 @@ def namer(name, **kwargs):
 
 
 def aliases(*names, **kwargs):
-    '''In a class, create an :class:`AttributeAlias` descriptor for each
+    '''In a class, create an `AttributeAlias`:class: descriptor for each
     definition as keyword argument (alias=existing_attribute).
 
     If "names" are given, then the definition context is looked and are
@@ -112,9 +108,9 @@ def aliases(*names, **kwargs):
         ...     'This function is added to its module with two new names.'
 
     '''
+    # FIX: This is not working in methods.
     def inner(target):
-        '''Direct closure decorator that settle several attribute aliases.
-        '''
+        '''Direct closure decorator that settle several attribute aliases.'''
         if kwargs:
             assert isinstance(target, type), '"target" must be a class.'
         if names:
@@ -122,7 +118,8 @@ def aliases(*names, **kwargs):
             for name in names:
                 _locals[str(name)] = target
         if kwargs:
-            for alias, field in kwargs.iteritems():
+            for alias in kwargs:
+                field = kwargs[alias]
                 setattr(target, alias, AttributeAlias(field))
         return target
     return inner
@@ -201,9 +198,56 @@ def instantiate(target, *args, **kwargs):
 
         >>> Foobar  # doctest: +ELLIPSIS
         <class '...Foobar'>
+
     '''
     target(*args, **kwargs)
     return target
+
+
+@decorator
+def singleton(target, *args, **kwargs):
+    '''Instantiate a class and assign the instance to the declared symbo.
+
+    Every argument, positional or keyword, is passed as such when invoking the
+    target. The following two code samples show two cases::
+
+      >>> @singleton
+      ... class foobar(object):
+      ...    def __init__(self):
+      ...        self.doc = 'foobar instance'
+
+      >>> foobar.doc
+      'foobar instance'
+
+      >>> @singleton('test', context={'x': 1})
+      ... class foobar(object):
+      ...     def __init__(self, name, context):
+      ...         self.name = name
+      ...         self.context = context
+
+      >>> foobar.name, foobar.context
+      ('test', {'x': 1})
+
+      >>> isinstance(foobar, type)
+      False
+
+    '''
+    try:
+        from types import ClassType
+        class_types = (type, ClassType)
+    except ImportError:
+        class_types = (type,)
+    res = target(*args, **kwargs)
+    if isinstance(target, class_types):
+        try:
+            def __init__(*args, **kwds):
+                msg = "'{}' is a singleton, it can be instantiated only once"
+                raise TypeError(msg.format(target.__name__))
+            target.__init__ = __init__
+        except:
+            pass
+    return res
+
 
 
 # The following is extracted from the SQLAlchemy project's codebase, merit and

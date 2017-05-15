@@ -55,8 +55,8 @@ from io import (DEFAULT_BUFFER_SIZE, IncrementalNewlineDecoder,    # noqa
 
 def is_file_like(obj):
     '''Return if `obj` is a valid file type or not.'''
-    from xoutil.eight import _py2, callable
-    types = (file, IOBase) if _py2 else (IOBase, )
+    from xoutil.eight import python_version, callable
+    types = (file, IOBase) if python_version == 2 else (IOBase, )
     if isinstance(obj, types):
         return True
     else:

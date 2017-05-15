@@ -18,7 +18,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil import Undefined as _undef
+# FIX: These imports must be local
+from xoutil.symbols import Undefined as _undef
 from xoutil.eight import base_string
 
 
@@ -183,7 +184,7 @@ def module_name(item):
        >>> module_name(module_name)
        'xoutil.names'
 
-       >>> from xoutil import Unset
+       >>> from xoutil.symbols import Unset
        >>> module_name(Unset)
        'xoutil.symbols'
 
@@ -222,7 +223,7 @@ def simple_name(item, join=True):
        >>> simple_name(simple_name)
        'xoutil.names.simple_name'
 
-       >>> from xoutil import Unset
+       >>> from xoutil.symbols import Unset
        >>> simple_name(Unset)
        'xoutil.symbols.Unset'
 
@@ -560,7 +561,7 @@ class strlist(list):
 # Otherwise the `tests/` directory would need to be a proper package.
 
 import unittest as _utest
-from xoutil import Unset as _Unset   # Use a tier 0 module!
+from xoutil.symbols import Unset as _Unset   # Use a tier 0 module!
 
 
 class TestRelativeImports(_utest.TestCase):

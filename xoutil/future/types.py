@@ -98,7 +98,7 @@ from xoutil.future import _past
 _past.dissuade()
 del _past
 
-from xoutil.eight import _py2, _py34    # noqa
+from xoutil.eight import python_version    # noqa
 
 try:
     from types import __all__    # noqa
@@ -119,21 +119,21 @@ except NameError:
     EllipsisType = type(Ellipsis)
     __all__.append('EllipsisType')
 
-# TODO: `MappingProxyType` is the Python 3 equivalent for `DictProxyType` in
-# Python 2.  Deprecate `DictProxyType` in favor of `MappingProxyType`.
 try:
-    DictProxyType
+    DictProxyType    # noqa
 except NameError:
     DictProxyType = type(type.__dict__)
     __all__.append('DictProxyType')
 
 try:
-    MappingProxyType
+    MappingProxyType    # noqa
 except NameError:
-    MappingProxyType = type(type.__dict__)
+    from xoutil.eight._types import MappingProxyType
+    if MappingProxyType is not DictProxyType:
+        MappingProxyType.register(DictProxyType)
     __all__.append('MappingProxyType')
 
-if _py2:
+if python_version == 2:
     from collections import Mapping
     if not issubclass(MappingProxyType, Mapping):
         # TODO: when implement `xoutil.future.collections`, fix this problem
@@ -142,24 +142,32 @@ if _py2:
     del Mapping
 
 try:
-    NotImplementedType
+    NotImplementedType    # noqa
 except NameError:
     NotImplementedType = type(NotImplemented)
     __all__.append('NotImplementedType')
 
 
 # Check Jython and PyPy peculiarity
-if MemberDescriptorType is GetSetDescriptorType:
+if MemberDescriptorType is GetSetDescriptorType:    # noqa
     class _foo(object):
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
     del _foo
 
+FuncTypes = tuple({FunctionType, MethodType, LambdaType, BuiltinFunctionType,
+                   BuiltinMethodType})
 
-sn_ok = _py34
+# These types are defined in `inspect` module for Python >= 3.3
+MethodWrapperType = type(all.__call__)
+WrapperDescriptorType = type(type.__call__)    # In PyPy is MethodWrapperType
+ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
+
+
+sn_ok = python_version >= 3.4
 if sn_ok:
     try:
-        SimpleNamespace
+        SimpleNamespace    # noqa
     except NameError:
         sn_ok = False
         __all__.append('SimpleNamespace')
@@ -202,88 +210,58 @@ if not sn_ok:
         pass
 
 try:
-    DynamicClassAttribute
+    DynamicClassAttribute    # noqa
 except NameError:
-    class DynamicClassAttribute(object):
-        """Route attribute access on a class to `~object.__getattr__`:meth:.
+    # TODO: Add tests
+    class DynamicClassAttribute(property):
+        '''Route attribute access on a class to `~object.__getattr__`:meth:.
 
         This is a descriptor, used to define attributes that act differently
         when accessed through an instance and through a class.  Instance
         access remains normal, but access to an attribute through a class will
-        be routed to the class's :meth:`~object.__getattr__` method; this is
-        done by raising AttributeError.
+        be routed to the class's :meth:`~object.__getattr__`:meth: method;
+        this is done by raising `AttributeError`:class:.
 
         This allows one to have properties active on an instance, and have
         virtual attributes on the class with the same name (see
-        :class:`~py3:enum.Enum` for an example).
+        :class:`~py3:enum.Enum`:class: for an example).
 
         .. versionadded:: 1.5.5
 
-        .. note:: The class Enum mentioned has not yet been backported.
+        .. versionchanged:: 1.8.0 Inherits from `property`
 
-        .. note:: In Python 3.4+ this is an alias to
-                  :func:`types.DynamicClassAttribute
-                  <py3:types.DynamicClassAttribute>`.
+        .. note:: The class `Enum` mentioned has not yet been back-ported.
 
-        """
+        .. note:: In Python version>=3.4 this is an alias to
+                  `types.DynamicClassAttribute
+                  <py3:types.DynamicClassAttribute>`:class:.
+
+        '''
         def __init__(self, fget=None, fset=None, fdel=None, doc=None):
-            self.fget = fget
-            self.fset = fset
-            self.fdel = fdel
-            # next two lines make DynamicClassAttribute act the same as
-            # property
-            self.__doc__ = doc or fget.__doc__
-            self.overwrite_doc = doc is None
-            # support for abstract methods
-            _has_method = bool(getattr(fget, '__isabstractmethod__', False))
-            self.__isabstractmethod__ = _has_method
+            super(DynamicClassAttribute, self).__init__(fget, fset, fdel, doc)
+            # support for abstract methods in Python 2
+            isabs = bool(getattr(fget, '__isabstractmethod__', False))
+            self.__isabstractmethod__ = isabs
 
-        def __get__(self, instance, ownerclass=None):
-            if instance is None:
+        def __get__(self, obj, owner=None):
+            if obj is None:
                 if self.__isabstractmethod__:
                     return self
-                raise AttributeError()
-            elif self.fget is None:
-                raise AttributeError("unreadable attribute")
-            return self.fget(instance)
-
-        def __set__(self, instance, value):
-            if self.fset is None:
-                raise AttributeError("can't set attribute")
-            self.fset(instance, value)
-
-        def __delete__(self, instance):
-            if self.fdel is None:
-                raise AttributeError("can't delete attribute")
-            self.fdel(instance)
-
-        def getter(self, fget):
-            fdoc = fget.__doc__ if self.overwrite_doc else None
-            cls = type(self)
-            result = cls(fget, self.fset, self.fdel, fdoc or self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
-
-        def setter(self, fset):
-            result = type(self)(self.fget, fset, self.fdel, self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
-
-        def deleter(self, fdel):
-            result = type(self)(self.fget, self.fset, fdel, self.__doc__)
-            result.overwrite_doc = self.overwrite_doc
-            return result
+                else:
+                    raise AttributeError()
+            else:
+                return super(DynamicClassAttribute, self).__get__(obj, owner)
 
     __all__.append('DynamicClassAttribute')
 
 try:
-    new_class
+    new_class    # noqa
 except NameError:
     from xoutil.eight._types import new_class    # noqa
     __all__.append('new_class')
 
 try:
-    prepare_class
+    prepare_class    # noqa
 except NameError:
     from xoutil.eight._types import prepare_class    # noqa
     __all__.append('prepare_class')
@@ -295,7 +273,7 @@ except ImportError:
 
 if __name__ == 'xoutil.types':
     from xoutil.deprecation import deprecated
-    from xoutil import Unset as _unset
+    from xoutil.symbols import Unset as _unset
     from collections import Mapping
     from xoutil.eight import force_type as type_coerce
 
@@ -694,5 +672,3 @@ if __name__ == 'xoutil.types':
         return all(not isinstance(subject, types) for subject in subjects)
 
     del deprecated
-
-del _py2, _py34

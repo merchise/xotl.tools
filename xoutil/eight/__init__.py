@@ -30,20 +30,11 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import)
 
-import sys
+from xoutil.versions import python_version
 
-# Python versions
-
-_py2 = sys.version_info[0] == 2
-_py3 = sys.version_info[0] == 3
-_py33 = sys.version_info >= (3, 3, 0)
-_py34 = sys.version_info >= (3, 4, 0)
-_pypy = sys.version.find('PyPy') >= 0
-
-del sys
 
 try:
-    from hashlib import sha1 as sha
+    from hashlib import sha1 as sha    # noqa
 except ImportError:
     from sha import sha    # noqa
 
@@ -54,14 +45,16 @@ except NameError:
     base_string = str
     string_types = (str, )
 
-if _py3:
+if python_version == 3:
     integer_types = int,
+    long_int = int
     class_types = type,
     text_type = str
     unichr = chr
 else:
     from types import ClassType
     integer_types = (int, long)
+    long_int = long
     class_types = (type, ClassType)
     text_type = unicode
     unichr = unichr
@@ -82,6 +75,17 @@ except NameError:
     # The `memoryview`:class: API is similar but not exactly the same as that
     # of `buffer`.
     buffer = memoryview
+
+
+# Python versions
+# TODO: deprecate all this in favor of direct use of 'python_version'
+
+_pyver = python_version.to_float()
+_py2 = python_version == 2
+_py3 = python_version == 3
+_py33 = python_version >= 3.3
+_py34 = python_version >= 3.4
+_pypy = python_version.pypy
 
 
 def typeof(obj):

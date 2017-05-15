@@ -36,8 +36,8 @@ def ppformat(obj):
 
     '''
     import io
-    from xoutil.eight import _py3, text_type
-    if _py3:
+    from xoutil.eight import python_version, text_type
+    if python_version == 3:
         stream = io.StringIO()
     else:
         stream = io.BytesIO()
