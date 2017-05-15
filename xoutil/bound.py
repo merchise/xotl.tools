@@ -473,7 +473,8 @@ def until(**kwargs):
     - ``until(pred=func, skipargs=skip)`` is the same as
       ``pred(func, skipargs=skip)``.
 
-    - ``until(errors=errors)`` is the same as ``until_errors(*errors)``.
+    - ``until(errors=errors, **kwargs)`` is the same as
+      ``until_errors(*errors, **kwargs)``.
 
     - ``until(accumulate=mass, path=path, initial=initial)`` is the same as
        ``accumulated(mass, *path.split('.'), initial=initial)``
