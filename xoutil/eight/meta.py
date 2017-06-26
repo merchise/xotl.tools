@@ -141,3 +141,5 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        type accepts (class name, tuple of base classes, attributes mapping).
 
 '''
+
+metaclass.__module__ = __name__
