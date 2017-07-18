@@ -41,7 +41,7 @@
    expect tuples.
 
 
-.. autofunc:: identity
+.. autofunction:: identity
 
 .. autoclass:: pos_args
 
