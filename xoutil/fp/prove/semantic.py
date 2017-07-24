@@ -12,10 +12,10 @@
 #
 # Created on 2017-04-14
 
-'''Prove validity of values - Base classes.
+'''Prove validity of values - Base predicate classes.
 
-A `coercer`:class: could combine two concepts (*validation* and *conversion*)
-in a single callable object.
+A `predicate`:class: could combine two concepts (*validation* and
+*conversion*) in a single callable object.
 
 '''
 
@@ -24,34 +24,31 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-class coercer(object):
-    '''Base class for value coercers.
+class predicate(object):
+    '''Base class for value proves using logic predicates.
 
-    A "coercer" could combine two concepts in a single callable object:
+    A predicate could combine two operations on values: *validation*, and
+    *conversion*.
 
-    - *validation*: , and *conversion* (see `coercer`:class:).
-
-    A coercer combine to operations on values: validity check and mould.
-
-    To signal that value as invalid, a coercer must return the special value
+    To signal that value as invalid, a predicate must return the special value
     `_wrong`.  Types work as in `isinstance`:func: standard function; callable
     functions mould a parameter value into a definitive form.
 
-    To use normal functions as a callable coercer, use `SafeCheck`:class: or
+    To use normal functions as a callable predicate, use `SafeCheck`:class: or
     `LogicalCheck`:class` to wrap them.
 
     When using a list to combine explicitly the two concepts, result of the
     check part is considered Boolean (True or False), and the second part
     alwasy return a moulded value.
 
-    When use a coercer, several definitions will be tried until one succeed.
+    When use a predicate, several definitions will be tried until one succeed.
 
     '''
     __slots__ = ('inner',)
 
     def __new__(cls, *args):
         from xoutil.eight import class_types, callable, type_name
-        if cls is coercer:    # Parse the right sub-type
+        if cls is predicate:    # Parse the right sub-type
             count = len(args)
             if count == 0:
                 msg = '{}() takes at least 1 argument (0 given)'
@@ -72,7 +69,7 @@ class coercer(object):
             else:
                 return MultiCheck(*args)
         else:
-            return super(coercer, cls).__new__(cls)
+            return super(predicate, cls).__new__(cls)
 
     def __init__(self, *args):
         pass
@@ -81,7 +78,7 @@ class coercer(object):
         return str(self)
 
 
-class TypeCheck(coercer):
+class TypeCheck(predicate):
     '''Check if value is instance of given types.'''
     __slots__ = ()
 
@@ -192,7 +189,7 @@ class TypeCast(TypeCheck):
         return 'none-or-{}'.format(aux)
 
 
-class CheckAndCast(coercer):
+class CheckAndCast(predicate):
     '''Check if value, if valid cast it.
 
     Result value must be valid also.
@@ -201,7 +198,7 @@ class CheckAndCast(coercer):
 
     def __new__(cls, check, cast):
         from xoutil.eight import callable, type_name
-        check = coercer(check)
+        check = predicate(check)
         if callable(cast):
             self = super(CheckAndCast, cls).__new__(cls)
             self.inner = (check, SafeCheck(cast))
@@ -232,14 +229,14 @@ class CheckAndCast(coercer):
         return fmt.format(crop(cast), check)
 
 
-class FunctionalCheck(coercer):
+class FunctionalCheck(predicate):
     '''Check if value is valid with a callable function.'''
     __slots__ = ()
 
     def __new__(cls, check):
         from xoutil.eight import callable, type_name
         # TODO: Change next, don't use isinstance
-        if isinstance(check, coercer):
+        if isinstance(check, predicate):
             return check
         elif callable(check):
             self = super(FunctionalCheck, cls).__new__(cls)
@@ -297,8 +294,8 @@ class SafeCheck(FunctionalCheck):
             return Wrong(error)
 
 
-class MultiCheck(coercer):
-    '''Return a wrong value only when all inner coercers fails.
+class MultiCheck(predicate):
+    '''Return a wrong value only when all inner predicates fails.
 
     Haskell: guards (pp. 132)
 
@@ -306,17 +303,17 @@ class MultiCheck(coercer):
     __slots__ = ()
 
     def __new__(cls, *args):
-        inner = tuple(coercer(arg) for arg in args)
+        inner = tuple(predicate(arg) for arg in args)
         self = super(MultiCheck, cls).__new__(cls)
         self.inner = inner
         return self
 
     def __call__(self, value):
         from xoutil.fp.monads.option import Just, Wrong, none
-        coercers = self.inner
+        predicates = self.inner
         i, res = 0, none
-        while isinstance(res, Wrong) and i < len(coercers):
-            res = coercers[i](value)
+        while isinstance(res, Wrong) and i < len(predicates):
+            res = predicates[i](value)
             i += 1
         return res.inner if isinstance(res, Just) and res.inner else res
 
