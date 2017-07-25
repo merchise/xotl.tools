@@ -1,8 +1,4 @@
 ---
 #  For xoutil we do both lints and tests with tox.
-
-test_format:
-  script: merchise_lint
-
 test_code:
   script: tox -epy27,py34
