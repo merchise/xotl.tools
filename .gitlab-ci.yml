@@ -1,4 +1,10 @@
 ---
-#  For xoutil we do both lints and tests with tox.
+stages:
+  - test
+
 test_code:
-  script: tox -epy27,py34
+  stage: test
+  script: tox -epy27,py35
+  tags:
+    - xoutil
+    - mercurio
