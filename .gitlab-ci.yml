@@ -4,7 +4,7 @@ stages:
 
 test_code:
   stage: test
-  script: tox -epy27,py35
+  script: tox -e2.7-unit,3.5-unit,2.7-greenlets
   tags:
     - xoutil
     - mercurio
