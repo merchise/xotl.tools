@@ -120,8 +120,7 @@ def test_union_commutable(ts1, ts2):
 def test_union_containment(ts1, ts2):
     union = ts1 + ts2
     if union is not None:
-        # The intersection must always be totally covered by both ts1 and ts2,
-        # unless ts1 and ts2 don't intersect
+        # The union must always be cover both ts1 and ts2
         assert (ts1 <= union) is True
         assert (ts2 <= union) is True
 
