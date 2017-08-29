@@ -1,8 +1,9 @@
----
-#  For xoutil we do both lints and tests with tox.
-
-test_format:
-  script: merchise_lint
+stages:
+  - test
 
 test_code:
-  script: tox -epy27,py34
+  stage: test
+  script: tox -e2.7-unit,3.5-unit,2.7-greenlets
+  tags:
+    - xoutil
+    - mercurio

@@ -326,6 +326,7 @@ class flextime(timedelta):
             return _super(cls, *args, **kwargs)
 
 
+# TODO: Merge this with the new time span.
 # daterange([start,] stop[, step])
 def daterange(*args):
     '''Returns an iterator that yields each date in the range of ``[start,
@@ -343,6 +344,8 @@ def daterange(*args):
     yielded. If it's negative `stop` should be before `start`.
 
     As with `range`, `stop` is never included in the yielded dates.
+
+    .. note:: In a future release this will be merged with `TimeSpan`:class:
 
     '''
     import operator
@@ -386,6 +389,390 @@ def without_tzinfo(dt):
 
     '''
     return datetime(*(dt.timetuple()[:6] + (dt.microsecond, )))
+
+
+try:
+    from xoutil.infinity import Infinity
+    date.today() < Infinity
+except TypeError:
+    class infinity_extended_date(date):
+        'A date that compares to Infinity'
+        def operator(name, T=True):
+            def result(self, other):
+                from xoutil.infinity import Infinity
+                if other is Infinity:
+                    return T
+                elif other is -Infinity:
+                    return not T
+                else:
+                    return getattr(date, name)(self, other)
+            return result
+
+        # It seems that @total_ordering is worthless because date implements
+        # this operators
+        __le__ = operator('__le__')
+        __ge__ = operator('__ge__', T=False)
+        __lt__ = operator('__lt__')
+        __gt__ = operator('__gt__', T=False)
+        del operator
+
+        def __eq__(self, other):
+            from xoutil.infinity import Infinity
+            # I have to put this because when doing ``timespan != date``
+            # Python 2 may chose to call date's __ne__ instead of
+            # TimeSpan.__ne__.  I assume the same applies to __eq__.
+            if isinstance(other, _EmptyTimeSpan):
+                return False
+            if isinstance(other, TimeSpan):
+                return TimeSpan.from_date(self) == other
+            elif other is Infinity or other is -Infinity:
+                return False
+            else:
+                return date.__eq__(self, other)
+
+        def __ne__(self, other):
+            return not (self == other)
+else:
+    infinity_extended_date = date
+
+
+class DateField(object):
+    '''A simple descriptor for dates.
+
+    Ensures that assigned values must be parseable dates and parses them.
+
+    '''
+    def __init__(self, name, nullable=False):
+        self.name = name
+        self.nullable = nullable
+
+    def __get__(self, instance, owner):
+        if instance is not None:
+            res = instance.__dict__[self.name]
+            if res:
+                return infinity_extended_date(res.year, res.month, res.day)
+            else:
+                return res
+        else:
+            return self
+
+    def __set__(self, instance, value):
+        from datetime import date  # all dates, not just xoutil's
+        if value in (None, False):
+            # We regard False as None, so that working with Odoo is easier:
+            # missing values in Odoo, often come as False instead of None.
+            if not self.nullable:
+                raise ValueError('Setting None to a required field')
+            else:
+                value = None
+        elif not isinstance(value, date):
+            value = parse_date(value)
+        instance.__dict__[self.name] = value
+
+
+class TimeSpan(object):
+    '''A *continuous* span of time.
+
+    You can initialize the time span by passing a single object from which it
+    will extract 'date_start' or 'start_date' and 'date_end' or 'end_date'; or
+    you can pass any of those attributes as keyword arguments.  Alternatively,
+    you may pass two positional arguments for the `start_date` and `end_date`.
+    Without arguments is the same as passing ``(None, None)`` (see below for
+    unbound time spans.)
+
+    Time spans objects are iterable.  They yield exactly two times: first the
+    start date, and then the end date::
+
+       >>> ts = TimeSpan('2017-08-01', '2017-09-01')
+       >>> tuple(ts)
+       (date(2017, 8, 1), date(2017, 9, 1))
+
+    Time spans objects have two items::
+
+       >>> ts[0]
+       date(2017, 8, 1)
+
+       >>> ts[1]
+       date(2017, 9, 1)
+
+       >>> ts[:]
+       (date(2017, 8, 1), date(2017, 9, 1))
+
+    Two time spans are equal if their start_date and end_date are equal.  When
+    comparing a time span with a date, the date is coerced to a time span
+    (`from_date`:meth:).
+
+    A time span with its `start` set to None is unbound to the past.  A time
+    span with its `end` set to None is unbound to the future.  A time span
+    that is both unbound to the past and the future contains all possible
+    dates.  A time span that is not unbound in any direction is
+    `bound <is_bound>`:attr:.
+
+    A bound time span is `valid`:attr: if its start date comes before its end
+    date.
+
+    Time spans can `intersect <__mul__>`:meth:, be `merged <__add__>`:meth:
+    and compared for containment.  In this regard they represent the set of
+    dates between `start` and `end` and set-theoretical operations apply.
+
+    Time spans don't implement the difference operation expected in sets
+    because the difference of two span is not necessarily *continuous*.
+
+    '''
+    start_date = DateField('start_date', nullable=True)
+    end_date = DateField('end_date', nullable=True)
+
+    def __init__(self, *args, **kwargs):
+        from xoutil.objects import get_first_of
+        if not args:
+            if kwargs:
+                version = kwargs
+            else:
+                version = dict(start_date=None, end_date=None)
+        elif len(args) == 1:
+            version = args[0]
+        elif len(args) == 2:
+            version = dict(start_date=args[0], end_date=args[1])
+        else:
+            raise TypeError
+        start_date = get_first_of(version, 'date_start', 'start_date',
+                                  default=None)
+        end_date = get_first_of(version, 'date_end', 'end_date',
+                                default=None)
+        self.start_date = start_date
+        self.end_date = end_date
+
+    @classmethod
+    def from_date(self, date):
+        '''Return a new time span that covers a single `date`.'''
+        return self(start_date=date, end_date=date)
+
+    @property
+    def is_past_unbound(self):
+        return self.start_date is None
+
+    @property
+    def is_future_unbound(self):
+        return self.end_date is None
+
+    @property
+    def is_unbound(self):
+        return self.is_future_unbound or self.is_past_unbound
+
+    @property
+    def is_bound(self):
+        return not self.is_unbound
+
+    @property
+    def valid(self):
+        if self.is_bound:
+            return self.start_date <= self.end_date
+        else:
+            return True
+
+    def __contains__(self, other):
+        '''Test if we completely cover `other` time span.
+
+        A time span completely cover another one if every day contained by
+        `other` is also contained by `self`.
+
+        Another way to define it is that ``self & other == other``.
+
+        '''
+        from datetime import date
+        if isinstance(other, date):
+            if self.start_date and self.end_date:
+                return self.start_date <= other <= self.end_date
+            elif self.start_date:
+                return self.start_date <= other
+            elif self.end_date:
+                return other <= self.end_date
+            else:
+                return True
+        else:
+            return False
+
+    def overlaps(self, other):
+        '''Test if the time spans overlaps.'''
+        return self <= other or other <= self
+
+    def isdisjoint(self, other):
+        return not self.overlaps(other)
+
+    def __le__(self, other):
+        return (self & other) == self
+
+    issubset = __le__
+
+    def __lt__(self, other):
+        return self != other and self <= other
+
+    def __gt__(self, other):
+        return self != other and self >= other
+
+    def __ge__(self, other):
+        # Notice that ge is not the opposite of lt.
+        return (self & other) == other
+
+    issuperset = covers = __ge__
+
+    def __iter__(self):
+        yield self.start_date
+        yield self.end_date
+
+    def __getitem__(self, index):
+        this = tuple(self)
+        return this[index]
+
+    def __eq__(self, other):
+        import datetime
+        from xoutil.objects import validate_attrs
+        if isinstance(other, datetime.date):
+            other = type(self).from_date(other)
+        if not isinstance(other, TimeSpan):
+            other = type(self)(other)
+        return validate_attrs(self, other, ('start_date', 'end_date'))
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __and__(self, other):
+        '''Get the time span that is the intersection with another time span.
+
+        If two time spans don't overlap, return None.
+
+        If `other` is not a TimeSpan we try to create one.  If `other` is a
+        date, we create the TimeSpan that starts and end that very day. Other
+        types are passed unchanged to the constructor.
+
+        '''
+        import datetime
+        from xoutil.infinity import Infinity
+        if isinstance(other, _EmptyTimeSpan):
+            return other
+        elif isinstance(other, datetime.date):
+            other = TimeSpan.from_date(other)
+        elif not isinstance(other, TimeSpan):
+            raise TypeError
+        start = max(self.start_date or -Infinity, other.start_date or -Infinity)
+        end = min(self.end_date or Infinity, other.end_date or Infinity)
+        if start <= end:
+            if start is -Infinity:
+                start = None
+            if end is Infinity:
+                end = None
+            return type(self)(start, end)
+        else:
+            return None
+    __mul__ = __and__
+
+    def intersection(self, *others):
+        import operator
+        from functools import reduce
+        return reduce(operator.mul, others, self)
+
+    def __or__(self, other):
+        import datetime
+        from xoutil.infinity import Infinity
+        if isinstance(other, _EmptyTimeSpan):
+            return self
+        elif isinstance(other, datetime.date):
+            other = TimeSpan.from_date(other)
+        elif not isinstance(other, TimeSpan):
+            raise TypeError
+        start = min(self.start_date or -Infinity, other.start_date or -Infinity)
+        end = max(self.end_date or Infinity, other.end_date or Infinity)
+        if start <= end:
+            if start is -Infinity:
+                start = None
+            if end is Infinity:
+                end = None
+            return type(self)(start, end)
+        else:
+            return EmptyTimeSpan
+    __add__ = __or__
+
+    def union(self, *others):
+        return sum(self, *others)
+
+    def __repr__(self):
+        start, end = self
+        return 'TimeSpan(%r, %r)' % (start.isoformat() if start else None,
+                                     end.isoformat() if end else None)
+
+
+class _EmptyTimeSpan(object):
+    def __bool__(self):
+        return False
+
+    __nonzero__ = __bool__
+
+    def __contains__(self, which):
+        return False  # I don't contain noone
+
+    # The empty is equal only to itself
+    def __eq__(self, which):
+        from datetime import date
+        if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
+            # We expect `self` to be a singleton
+            return self is which
+        else:
+            raise TypeError
+
+    def __ne__(self, which):
+        return not (self == which)
+
+    # The empty set is a subset of any other set.  dates are regarded as the
+    # set that contains that
+    def __le__(self, which):
+        from datetime import date
+        if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
+            return True
+        else:
+            raise TypeError
+
+    # The empty set is only a superset of itself.
+    __ge__ = covers = __eq__
+
+    # The empty set is a *proper* subset of any set but itself.  The empty
+    # set is disjoint with any other set but itself.
+    __lt__ = isdisjoint = __ne__
+
+    # The empty set is a *proper* superset of no one
+    def __gt__(self, which):
+        from datetime import date
+        if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
+            return True
+        else:
+            raise TypeError
+
+    # `empty | x == empty + x == x`
+    def __add__(self, which):
+        from datetime import date
+        if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
+            return which
+        else:
+            raise TypeError
+
+    __or__ = __add__
+
+    # `empty & x == empty * x == empty`
+    def __mul__(self, other):
+        from datetime import date
+        if isinstance(other, (TimeSpan, date, _EmptyTimeSpan)):
+            return self
+        else:
+            raise TypeError
+
+    __and__ = __mul__
+
+    def __repr__(self):
+        return 'EmptyTimeSpan'
+
+
+EmptyTimeSpan = _EmptyTimeSpan()
+
+_EmptyTimeSpan.__new__ = None  # Disallow creating more instances
 
 
 try:
