@@ -472,13 +472,6 @@ class DateField(object):
 class TimeSpan(object):
     '''A *continuous* span of time.
 
-    You can initialize the time span by passing a single object from which it
-    will extract 'date_start' or 'start_date' and 'date_end' or 'end_date'; or
-    you can pass any of those attributes as keyword arguments.  Alternatively,
-    you may pass two positional arguments for the `start_date` and `end_date`.
-    Without arguments is the same as passing ``(None, None)`` (see below for
-    unbound time spans.)
-
     Time spans objects are iterable.  They yield exactly two times: first the
     start date, and then the end date::
 
@@ -521,23 +514,7 @@ class TimeSpan(object):
     start_date = DateField('start_date', nullable=True)
     end_date = DateField('end_date', nullable=True)
 
-    def __init__(self, *args, **kwargs):
-        from xoutil.objects import get_first_of
-        if not args:
-            if kwargs:
-                version = kwargs
-            else:
-                version = dict(start_date=None, end_date=None)
-        elif len(args) == 1:
-            version = args[0]
-        elif len(args) == 2:
-            version = dict(start_date=args[0], end_date=args[1])
-        else:
-            raise TypeError
-        start_date = get_first_of(version, 'date_start', 'start_date',
-                                  default=None)
-        end_date = get_first_of(version, 'date_end', 'end_date',
-                                default=None)
+    def __init__(self, start_date=None, end_date=None):
         self.start_date = start_date
         self.end_date = end_date
 
