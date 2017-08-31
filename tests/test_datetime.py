@@ -160,3 +160,10 @@ def test_empty_timespan(ts):
 
     assert EmptyTimeSpan & ts == EmptyTimeSpan * ts == EmptyTimeSpan
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
+
+
+@given(time_span(unbounds='none'), time_span())
+def test_failure_of_triple_intersection(ts1, ts2):
+    from datetime import timedelta
+    ts0 = TimeSpan.from_date(ts1.start_date - timedelta(1))
+    assert not (ts0 & ts1 & ts2)

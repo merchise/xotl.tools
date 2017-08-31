@@ -663,7 +663,7 @@ class TimeSpan(object):
                 end = None
             return type(self)(start, end)
         else:
-            return None
+            return EmptyTimeSpan
     __mul__ = __and__
 
     def intersection(self, *others):
