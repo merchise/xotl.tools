@@ -84,6 +84,7 @@ version = VERSION[:VERSION.rfind('.')]
 
 try:
     from xoutil.release import RELEASE_TAG
+    release = VERSION
     if RELEASE_TAG:
         release += RELEASE_TAG
 except:
