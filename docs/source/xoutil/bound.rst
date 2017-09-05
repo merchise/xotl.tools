@@ -129,7 +129,7 @@ how a boundary condition could be implemented.
 
    @boundary
    def times(n):
-       '''Becomes True after a given the `nth` item have been produced.'''
+       '''Becomes True after the `nth` item have been produced.'''
        passed = 0
        yield False
        while passed < n:

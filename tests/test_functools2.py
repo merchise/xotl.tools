@@ -1,6 +1,6 @@
 # Copied from Python 3.3 base code
 #
-# Copyright (c) 2001-2012 Python Software Foundation.  All rights reserved.
+# Copyright (c) 2001-2012, 2017 Python Software Foundation.  All rights reserved.
 #
 
 from xoutil import functools
@@ -74,7 +74,6 @@ class TestLRU(unittest.TestCase):
             f_cnt += 1
             return 20
         self.assertEqual(f.cache_info().maxsize, 1)
-        global f_cnt
         f_cnt = 0
         for i in range(5):
             self.assertEqual(f(), 20)
@@ -91,7 +90,6 @@ class TestLRU(unittest.TestCase):
             f_cnt += 1
             return x*10
         self.assertEqual(f.cache_info().maxsize, 2)
-        global f_cnt
         f_cnt = 0
         for x in 7, 9, 7, 9, 7, 9, 8, 8, 8, 9, 9, 9, 8, 8, 8, 7:
             #    *  *              *                          *

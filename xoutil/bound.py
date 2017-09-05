@@ -416,7 +416,7 @@ def pred(func, skipargs=True):
     yield True
 
 
-def until_errors(*errors):
+def until_errors(*errors, **kwargs):
     '''Becomes True after any of `errors` has been raised.
 
     Any other exceptions (except GeneratorExit) is propagated.  You must pass
@@ -429,6 +429,14 @@ def until_errors(*errors):
     It's assumed that your job can be properly *finalized* after any of the
     given exceptions has been raised.
 
+    :keyword on_error: A callable that will only be called if the boundary
+                       condition is ever met, i.e if any of `errors` was
+                       raised.  The callback is called before yielding True.
+
+    .. versionadded:: 1.7.2
+
+    .. versionchanged:: 1.7.5 Added the keyword argument `on_error`.
+
     '''
     if not errors:
         raise TypeError('catch must be called with at least an exception')
@@ -438,6 +446,9 @@ def until_errors(*errors):
         )
     if any(issubclass(e, GeneratorExit) for e in errors):
         raise TypeError('You cannot catch GeneratorExit')
+    on_error = kwargs.pop('on_error', None)
+    if kwargs:
+        raise TypeError('Invalid keyword arguments: %s' % ', '.join(kwargs))
 
     @boundary(errors=errors)
     def _catch():
@@ -446,6 +457,8 @@ def until_errors(*errors):
             while True:
                 yield False
         except errors:
+            if on_error is not None:
+                on_error()
             yield True
     return _catch()
 
@@ -460,12 +473,15 @@ def until(**kwargs):
     - ``until(pred=func, skipargs=skip)`` is the same as
       ``pred(func, skipargs=skip)``.
 
-    - ``until(errors=errors)`` is the same as ``until_errors(*errors)``.
+    - ``until(errors=errors, **kwargs)`` is the same as
+      ``until_errors(*errors, **kwargs)``.
 
     - ``until(accumulate=mass, path=path, initial=initial)`` is the same as
        ``accumulated(mass, *path.split('.'), initial=initial)``
 
     .. warning:: You cannot mix many calls.
+
+    .. versionadded:: 1.7.2
 
     '''
     maxtime = kwargs.pop('maxtime', None)
