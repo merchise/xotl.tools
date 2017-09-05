@@ -13,6 +13,12 @@ Unreleased. Release 1.8.0
 1.7 series
 ----------
 
+2017-09-05.  Release 1.7.5
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.7.5.rst
+
+
 2017-04-06. Release 1.7.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
