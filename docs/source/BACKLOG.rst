@@ -11,7 +11,7 @@ Python 2 and 3 Compatibility
    :maxdepth: 1
    :glob:
 
-   backlog/glob
+   backlog/*
 
 
 All pending tasks listed

@@ -27,6 +27,11 @@
     'xoutil.future.functools'. Ask @manu for an equivalent tool he programmed.
     Use a similar mechanism also in 'xoutil.fp' for pattern matching.
 
+  - [ ] Improve special characters in a wild-carded name.  Python
+    'fnmatch.translate' standard function lacks of functionality present in
+    most shells (like alternation of comma-separated alternatives); thus,
+    ``foo{bar,lish}`` would be matched in 'foobar' or 'foolish'.
+
 
 ** Develop Monad concept into 'xoutil'. [/]
 
