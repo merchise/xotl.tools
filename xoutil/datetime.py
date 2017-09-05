@@ -524,20 +524,27 @@ class TimeSpan(object):
         return self(start_date=date, end_date=date)
 
     @property
-    def is_past_unbound(self):
+    def past_unbound(self):
+        'True if the time span is not bound into the past.'
         return self.start_date is None
 
     @property
-    def is_future_unbound(self):
+    def future_unbound(self):
+        'True if the time span is not bound into the future.'
         return self.end_date is None
 
     @property
-    def is_unbound(self):
-        return self.is_future_unbound or self.is_past_unbound
+    def unbound(self):
+        '''True if the time span is `unbound into the past <is_past_unbound>`:attr: or
+        `unbount into the future <is_future_unbound>`:attr: or both.
+
+        '''
+        return self.future_unbound or self.past_unbound
 
     @property
-    def is_bound(self):
-        return not self.is_unbound
+    def bound(self):
+        'True if the time span is not `unbound <is_unbound>`:attr:.'
+        return not self.unbound
 
     @property
     def valid(self):
