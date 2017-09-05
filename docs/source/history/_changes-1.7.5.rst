@@ -1,4 +1,4 @@
-- Added `xoutil.datetime.TimePeriod`:class:.
+- Added `xoutil.datetime.TimeSpan`:class:.
 
 - Added the module `xoutil.infinity`:mod:.
 
