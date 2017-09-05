@@ -12,7 +12,6 @@ Python 2 and 3 Compatibility
    :glob:
 
    backlog/misc
-   backlog/backlog-six2eight
    backlog/inspect
    backlog/glob
 
