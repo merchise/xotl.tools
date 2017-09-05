@@ -504,11 +504,12 @@ class TimeSpan(object):
     date.
 
     Time spans can `intersect <__mul__>`:meth:, be `merged <__add__>`:meth:
-    and compared for containment.  In this regard they represent the set of
-    dates between `start` and `end` and set-theoretical operations apply.
+    and compared for containment and subset/superset order.  In this regard,
+    they represent the *set* of dates between `start` and `end`, inclusively.
 
-    Time spans don't implement the difference operation expected in sets
-    because the difference of two span is not necessarily *continuous*.
+    .. warning:: Time spans don't implement the difference operation expected
+       in sets because the difference of two span is not necessarily
+       *continuous*.
 
     '''
     start_date = DateField('start_date', nullable=True)
@@ -548,6 +549,11 @@ class TimeSpan(object):
 
     @property
     def valid(self):
+        '''A bound time span is valid if it starts before it ends.
+
+        Unbound time spans are always valid.
+
+        '''
         if self.is_bound:
             return self.start_date <= self.end_date
         else:
@@ -583,17 +589,21 @@ class TimeSpan(object):
         return not self.overlaps(other)
 
     def __le__(self, other):
+        'True if `other` is a subset.'
         return (self & other) == self
 
     issubset = __le__
 
     def __lt__(self, other):
+        'True if `other` is a proper subset.'
         return self != other and self <= other
 
     def __gt__(self, other):
+        'True if `other` is a proper superset.'
         return self != other and self >= other
 
     def __ge__(self, other):
+        'True if `other` is a superset.'
         # Notice that ge is not the opposite of lt.
         return (self & other) == other
 
@@ -622,7 +632,8 @@ class TimeSpan(object):
     def __and__(self, other):
         '''Get the time span that is the intersection with another time span.
 
-        If two time spans don't overlap, return None.
+        If two time spans don't overlap, return the `empty time span
+        <EmptyTimeSpan>`:obj:.
 
         If `other` is not a TimeSpan we try to create one.  If `other` is a
         date, we create the TimeSpan that starts and end that very day. Other
@@ -650,11 +661,13 @@ class TimeSpan(object):
     __mul__ = __and__
 
     def intersection(self, *others):
+        'Return ``self [& other1 & ...]``.'
         import operator
         from functools import reduce
         return reduce(operator.mul, others, self)
 
     def __or__(self, other):
+        'Return the union of both time spans.'
         import datetime
         from .infinity import Infinity
         if isinstance(other, _EmptyTimeSpan):
@@ -676,6 +689,7 @@ class TimeSpan(object):
     __add__ = __or__
 
     def union(self, *others):
+        'Return ``self [| other1 | ...]``.'
         return sum(self, *others)
 
     def __repr__(self):
