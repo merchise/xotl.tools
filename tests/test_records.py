@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # test_records
-#----------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) 2015, 2016, 2017 Merchise and Contributors
 # Copyright (c) 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -25,8 +25,7 @@ from datetime import datetime, date
 from xoutil.records import record, datetime_reader, date_reader
 
 from hypothesis import given
-from hypothesis.strategies import composite, text, integers
-from hypothesis.extra.datetime import datetimes
+from hypothesis.strategies import composite, text, integers, datetimes
 
 
 FMT = '%Y-%m-%d'
@@ -55,12 +54,16 @@ class person(_table):
         return int(res.days//365.25)
 
 
+MIN_DATE = datetime(1920, 1, 1)
+MAX_DATE = datetime(2007, 12, 31)
+
+
 @composite
 def persons(draw):
     id = draw(integers())
     name = draw(text())
     lastname = draw(text())
-    birthday = draw(datetimes(min_year=1920, max_year=2007)).strftime(FMT)
+    birthday = draw(datetimes(MIN_DATE, MAX_DATE)).strftime(FMT)
     return (id, name, lastname, birthday), person((id, name, lastname, birthday))
 
 
@@ -83,7 +86,6 @@ class TestRecords(unittest.TestCase):
         self.assertEqual(r[1], p.name)
         self.assertEqual(r[2], p.lastname)
         self.assertEqual(r[3], p.birthdate.strftime(FMT))
-
 
     def test_descriptor(self):
         class INVOICE(record):
