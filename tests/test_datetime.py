@@ -167,3 +167,12 @@ def test_failure_of_triple_intersection(ts1, ts2):
     from datetime import timedelta
     ts0 = TimeSpan.from_date(ts1.start_date - timedelta(1))
     assert not (ts0 & ts1 & ts2)
+
+
+@given(strategies.dates())
+def test_xoutil_dates_are_representable(value):
+    from xoutil.datetime import date
+    class mydate(date):
+        pass
+    value = mydate(value.year, value.month, value.day)
+    assert value.strftime('%Y-%m-%d')
