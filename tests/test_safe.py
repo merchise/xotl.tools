@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # test_safe
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -21,7 +21,7 @@ from xoutil.tasking.safe import SafeData
 
 
 def test_safe():
-    from xoutil.threading import async_call
+    from xoutil.future.threading import async_call
     from time import sleep
 
     data = {}
