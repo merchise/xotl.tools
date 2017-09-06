@@ -99,6 +99,7 @@ def compose(*callables, **kwargs):
     return fp.compose(*reversed(callables))
 
 
+# TODO: Check relevance of the following function.
 # The real signature should be (*funcs, times)
 def power(*args):
     '''Returns the "power" composition of several functions.
@@ -117,6 +118,7 @@ def power(*args):
 
     '''
     from xoutil.fp.params import check_count
+    from xoutil.fp.tools import compose
     check_count(args, 2, caller='power')
     funcs, times = args[:-1], args[-1]
     if any(not callable(func) for func in funcs):
