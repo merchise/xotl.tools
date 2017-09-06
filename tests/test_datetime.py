@@ -171,7 +171,7 @@ def test_failure_of_triple_intersection(ts1, ts2):
 
 @given(strategies.dates())
 def test_xoutil_dates_are_representable(value):
-    from xoutil.datetime import date
+    from xoutil.future.datetime import date
     class mydate(date):
         pass
     value = mydate(value.year, value.month, value.day)
