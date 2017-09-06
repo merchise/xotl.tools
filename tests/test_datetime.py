@@ -177,3 +177,8 @@ def test_xoutil_dates_are_representable(value):
         pass
     value = mydate(value.year, value.month, value.day)
     assert value.strftime('%Y-%m-%d')
+
+
+@given(time_span('none'))
+def test_timespans_are_representable(value):
+    assert repr(value)

@@ -400,9 +400,7 @@ def daterange(*args):
 
 
 if sys.version_info < (3, 0):
-    from datetime import date as pydate
-
-    class infinity_extended_date(pydate):
+    class infinity_extended_date(date):
         'A date that compares to Infinity'
         def operator(name, T=True):
             def result(self, other):
@@ -435,7 +433,7 @@ if sys.version_info < (3, 0):
             elif other is Infinity or other is -Infinity:
                 return False
             else:
-                return pydate.__eq__(self, other)
+                return date.__eq__(self, other)
 
         def __ne__(self, other):
             return not (self == other)
