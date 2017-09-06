@@ -215,7 +215,16 @@ def strftime(dt, fmt):
     '''
     import time
     if dt.year >= 1900:
-        return super(type(dt), dt).strftime(fmt)
+        bases = type(dt).mro()
+        i = 0
+        base = _strftime = type(dt).strftime
+        while _strftime == base:
+            aux = getattr(bases[i], 'strftime', base)
+            if aux != base:
+                _strftime = aux
+            else:
+                i += 1
+        return _strftime(dt, fmt)
     else:
         illegal_formatting = _illegal_formatting.search(fmt)
         if illegal_formatting is None:
