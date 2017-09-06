@@ -14,12 +14,12 @@
 
 '''The Infinity value.
 
-Not all values are comparable with Infinity by default.  The ABC
+Not all values are comparable with `Infinity`:obj: by default.  The ABC
 `InfinityComparable`:class: holds the registry of such values.  Any `number
 <numbers.Number>`:class: is comparable with `Infinity`:obj:.
 
 `Dates <datetime.date>`:class:, `datetimes <datetime.datetime>`:class: and
-`time deltas <datetime.timedelta>`:class: are also supported.
+`time deltas <datetime.timedelta>`:class: are also registered by default.
 
 .. warning:: In Python 2, dates, datetimes and time deltas must be the right
              operand, as in ``Infinity > today``.  Doing ``today < Infinity``
@@ -43,9 +43,11 @@ from xoutil.eight.meta import metaclass
 class InfinityComparable(metaclass(abc.ABCMeta)):
     '''Any type that can be sensibly compared to infinity.
 
-    By default, all types in the number tower are comparable; and
-    `datetime.date`:class:, `datetime.datetime`:class:, and
-    `datetime.timedelta`:class:.
+    All types in the `number <numbers.Number>`:class: tower are *always*
+    comparable.
+
+    Classes `datetime.date`:class:, `datetime.datetime`:class:, and
+    `datetime.timedelta`:class: are automatically registered.
 
     '''
 

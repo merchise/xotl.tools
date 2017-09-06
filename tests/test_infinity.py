@@ -21,7 +21,6 @@ import sys
 import pytest
 
 from hypothesis import given, strategies as s
-import hypothesis.extra.datetime as d
 
 from xoutil.infinity import Infinity
 
@@ -31,7 +30,7 @@ def test_comparable_with_numbers(x):
     assert -Infinity < x < Infinity
 
 
-@given(d.dates() | d.datetimes())
+@given(s.dates() | s.datetimes())
 def test_comparable_with_dates(x):
     if sys.version_info < (3, 0):
         # In Python 2.7, x < Infinity fails because `date` implements that

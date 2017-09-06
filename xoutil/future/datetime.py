@@ -217,7 +217,16 @@ def strftime(dt, fmt):
     '''
     import time
     if dt.year >= 1900:
-        return super(type(dt), dt).strftime(fmt)
+        bases = type(dt).mro()
+        i = 0
+        base = _strftime = type(dt).strftime
+        while _strftime == base:
+            aux = getattr(bases[i], 'strftime', base)
+            if aux != base:
+                _strftime = aux
+            else:
+                i += 1
+        return _strftime(dt, fmt)
     else:
         illegal_formatting = _illegal_formatting.search(fmt)
         if illegal_formatting is None:
@@ -430,6 +439,7 @@ except TypeError:
             elif other is Infinity or other is -Infinity:
                 return False
             else:
+                # TODO: @med - > return pydate.__eq__(self, other)
                 return date.__eq__(self, other)
 
         def __ne__(self, other):
@@ -475,13 +485,6 @@ class DateField(object):
 class TimeSpan(object):
     '''A *continuous* span of time.
 
-    You can initialize the time span by passing a single object from which it
-    will extract 'date_start' or 'start_date' and 'date_end' or 'end_date'; or
-    you can pass any of those attributes as keyword arguments.  Alternatively,
-    you may pass two positional arguments for the `start_date` and `end_date`.
-    Without arguments is the same as passing ``(None, None)`` (see below for
-    unbound time spans.)
-
     Time spans objects are iterable.  They yield exactly two times: first the
     start date, and then the end date::
 
@@ -514,33 +517,18 @@ class TimeSpan(object):
     date.
 
     Time spans can `intersect <__mul__>`:meth:, be `merged <__add__>`:meth:
-    and compared for containment.  In this regard they represent the set of
-    dates between `start` and `end` and set-theoretical operations apply.
+    and compared for containment and subset/superset order.  In this regard,
+    they represent the *set* of dates between `start` and `end`, inclusively.
 
-    Time spans don't implement the difference operation expected in sets
-    because the difference of two span is not necessarily *continuous*.
+    .. warning:: Time spans don't implement the difference operation expected
+       in sets because the difference of two span is not necessarily
+       *continuous*.
 
     '''
     start_date = DateField('start_date', nullable=True)
     end_date = DateField('end_date', nullable=True)
 
-    def __init__(self, *args, **kwargs):
-        from xoutil.objects import get_first_of
-        if not args:
-            if kwargs:
-                version = kwargs
-            else:
-                version = dict(start_date=None, end_date=None)
-        elif len(args) == 1:
-            version = args[0]
-        elif len(args) == 2:
-            version = dict(start_date=args[0], end_date=args[1])
-        else:
-            raise TypeError
-        start_date = get_first_of(version, 'date_start', 'start_date',
-                                  default=None)
-        end_date = get_first_of(version, 'date_end', 'end_date',
-                                default=None)
+    def __init__(self, start_date=None, end_date=None):
         self.start_date = start_date
         self.end_date = end_date
 
@@ -550,23 +538,35 @@ class TimeSpan(object):
         return self(start_date=date, end_date=date)
 
     @property
-    def is_past_unbound(self):
+    def past_unbound(self):
+        'True if the time span is not bound into the past.'
         return self.start_date is None
 
     @property
-    def is_future_unbound(self):
+    def future_unbound(self):
+        'True if the time span is not bound into the future.'
         return self.end_date is None
 
     @property
-    def is_unbound(self):
-        return self.is_future_unbound or self.is_past_unbound
+    def unbound(self):
+        '''True if the time span is `unbound into the past <is_past_unbound>`:attr: or
+        `unbount into the future <is_future_unbound>`:attr: or both.
+
+        '''
+        return self.future_unbound or self.past_unbound
 
     @property
-    def is_bound(self):
-        return not self.is_unbound
+    def bound(self):
+        'True if the time span is not `unbound <is_unbound>`:attr:.'
+        return not self.unbound
 
     @property
     def valid(self):
+        '''A bound time span is valid if it starts before it ends.
+
+        Unbound time spans are always valid.
+
+        '''
         if self.is_bound:
             return self.start_date <= self.end_date
         else:
@@ -602,17 +602,21 @@ class TimeSpan(object):
         return not self.overlaps(other)
 
     def __le__(self, other):
+        'True if `other` is a subset.'
         return (self & other) == self
 
     issubset = __le__
 
     def __lt__(self, other):
+        'True if `other` is a proper subset.'
         return self != other and self <= other
 
     def __gt__(self, other):
+        'True if `other` is a proper superset.'
         return self != other and self >= other
 
     def __ge__(self, other):
+        'True if `other` is a superset.'
         # Notice that ge is not the opposite of lt.
         return (self & other) == other
 
@@ -641,7 +645,8 @@ class TimeSpan(object):
     def __and__(self, other):
         '''Get the time span that is the intersection with another time span.
 
-        If two time spans don't overlap, return None.
+        If two time spans don't overlap, return the `empty time span
+        <EmptyTimeSpan>`:obj:.
 
         If `other` is not a TimeSpan we try to create one.  If `other` is a
         date, we create the TimeSpan that starts and end that very day. Other
@@ -665,15 +670,17 @@ class TimeSpan(object):
                 end = None
             return type(self)(start, end)
         else:
-            return None
+            return EmptyTimeSpan
     __mul__ = __and__
 
     def intersection(self, *others):
+        'Return ``self [& other1 & ...]``.'
         import operator
         from functools import reduce
         return reduce(operator.mul, others, self)
 
     def __or__(self, other):
+        'Return the union of both time spans.'
         import datetime
         from xoutil.infinity import Infinity
         if isinstance(other, _EmptyTimeSpan):
@@ -695,6 +702,7 @@ class TimeSpan(object):
     __add__ = __or__
 
     def union(self, *others):
+        'Return ``self [| other1 | ...]``.'
         return sum(self, *others)
 
     def __repr__(self):

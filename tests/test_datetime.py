@@ -23,16 +23,16 @@ from xoutil.future.datetime import TimeSpan, EmptyTimeSpan
 
 import hypothesis
 from hypothesis import strategies, given
-from hypothesis.extra import datetime as dt
 
 
-maybe_date = dt.dates() | strategies.none()
+dates = strategies.dates
+maybe_date = dates() | strategies.none()
 
 
 @strategies.composite
 def time_span(draw, unbounds='any'):
-    date1 = draw(maybe_date if unbounds in ('any', 'past') else dt.dates())
-    date2 = draw(maybe_date if unbounds in ('any', 'future') else dt.dates())
+    date1 = draw(maybe_date if unbounds in ('any', 'past') else dates())
+    date2 = draw(maybe_date if unbounds in ('any', 'future') else dates())
     if date1 and date2:
         start1 = min(date1, date2)
         end1 = max(date1, date2)
@@ -124,7 +124,7 @@ def test_union_containment(ts1, ts2):
         assert (ts2 <= union) is True
 
 
-@given(time_span(), time_span(), dt.dates())
+@given(time_span(), time_span(), dates())
 def test_general_cmp_properties(ts1, ts2, date):
     assert bool(ts1 <= ts2) == bool(ts2 >= ts1)
     # In Python 2, dates have a __le__ that does no compare to timespans.
@@ -160,3 +160,19 @@ def test_empty_timespan(ts):
 
     assert EmptyTimeSpan & ts == EmptyTimeSpan * ts == EmptyTimeSpan
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
+
+
+@given(time_span(unbounds='none'), time_span())
+def test_failure_of_triple_intersection(ts1, ts2):
+    from datetime import timedelta
+    ts0 = TimeSpan.from_date(ts1.start_date - timedelta(1))
+    assert not (ts0 & ts1 & ts2)
+
+
+@given(strategies.dates())
+def test_xoutil_dates_are_representable(value):
+    from xoutil.future.datetime import date
+    class mydate(date):
+        pass
+    value = mydate(value.year, value.month, value.day)
+    assert value.strftime('%Y-%m-%d')
