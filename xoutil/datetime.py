@@ -220,7 +220,16 @@ def strfdelta(delta):
 
 def strftime(dt, fmt):
     if dt.year >= 1900:
-        return super(type(dt), dt).strftime(fmt)
+        bases = type(dt).mro()
+        i = 0
+        base = _strftime = type(dt).strftime
+        while _strftime == base:
+            aux = getattr(bases[i], 'strftime', base)
+            if aux != base:
+                _strftime = aux
+            else:
+                i += 1
+        return _strftime(dt, fmt)
     else:
         illegal_formatting = _illegal_formatting.search(fmt)
         if illegal_formatting is None:
@@ -391,9 +400,7 @@ def daterange(*args):
 
 
 if sys.version_info < (3, 0):
-    from datetime import date as pydate
-
-    class infinity_extended_date(pydate):
+    class infinity_extended_date(date):
         'A date that compares to Infinity'
         def operator(name, T=True):
             def result(self, other):
@@ -426,7 +433,7 @@ if sys.version_info < (3, 0):
             elif other is Infinity or other is -Infinity:
                 return False
             else:
-                return pydate.__eq__(self, other)
+                return date.__eq__(self, other)
 
         def __ne__(self, other):
             return not (self == other)
@@ -500,7 +507,7 @@ class TimeSpan(object):
     span with its `end` set to None is unbound to the future.  A time span
     that is both unbound to the past and the future contains all possible
     dates.  A time span that is not unbound in any direction is
-    `bound <is_bound>`:attr:.
+    `bound <bound>`:attr:.
 
     A bound time span is `valid`:attr: if its start date comes before its end
     date.
@@ -538,15 +545,15 @@ class TimeSpan(object):
 
     @property
     def unbound(self):
-        '''True if the time span is `unbound into the past <is_past_unbound>`:attr: or
-        `unbount into the future <is_future_unbound>`:attr: or both.
+        '''True if the time span is `unbound into the past <past_unbound>`:attr: or
+        `unbount into the future <future_unbound>`:attr: or both.
 
         '''
         return self.future_unbound or self.past_unbound
 
     @property
     def bound(self):
-        'True if the time span is not `unbound <is_unbound>`:attr:.'
+        'True if the time span is not `unbound <unbound>`:attr:.'
         return not self.unbound
 
     @property
@@ -556,7 +563,7 @@ class TimeSpan(object):
         Unbound time spans are always valid.
 
         '''
-        if self.is_bound:
+        if self.bound:
             return self.start_date <= self.end_date
         else:
             return True
