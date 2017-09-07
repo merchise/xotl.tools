@@ -182,3 +182,8 @@ def test_xoutil_dates_are_representable(value):
 @given(time_span('none'))
 def test_timespans_are_representable(value):
     assert repr(value)
+
+
+@given(time_span('none'))
+def test_generate_valid_timespans(ts):
+    assert ts.valid
