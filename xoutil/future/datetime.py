@@ -508,7 +508,7 @@ class TimeSpan(object):
     span with its `end` set to None is unbound to the future.  A time span
     that is both unbound to the past and the future contains all possible
     dates.  A time span that is not unbound in any direction is
-    `bound <is_bound>`:attr:.
+    `bound <bound>`:attr:.
 
     A bound time span is `valid`:attr: if its start date comes before its end
     date.
@@ -546,15 +546,15 @@ class TimeSpan(object):
 
     @property
     def unbound(self):
-        '''True if the time span is `unbound into the past <is_past_unbound>`:attr: or
-        `unbount into the future <is_future_unbound>`:attr: or both.
+        '''True if the time span is `unbound into the past <past_unbound>`:attr: or
+        `unbount into the future <future_unbound>`:attr: or both.
 
         '''
         return self.future_unbound or self.past_unbound
 
     @property
     def bound(self):
-        'True if the time span is not `unbound <is_unbound>`:attr:.'
+        'True if the time span is not `unbound <unbound>`:attr:.'
         return not self.unbound
 
     @property
@@ -564,7 +564,7 @@ class TimeSpan(object):
         Unbound time spans are always valid.
 
         '''
-        if self.is_bound:
+        if self.bound:
             return self.start_date <= self.end_date
         else:
             return True
