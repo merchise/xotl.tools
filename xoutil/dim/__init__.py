@@ -12,7 +12,7 @@
 #
 # Created on 2017-09-14
 
-'''Facilities to work with units of measure.
+'''Facilities to work with `concrete numbers`_.
 
 The name `dim`:mod: is a short of dimension.  We borrow it from the topic
 "dimensional analysis", even though the scope of this module is less
@@ -25,7 +25,14 @@ This module is divided in two major parts:
 
 - `xoutil.dim.app`:mod: which contains applications of the definitions in
   `~xoutil.dim.meta`:mod:.  In particular, `xoutil.dim.app.si`:mod: contains
-  the `base quantities`_ for the `Internation System of Units`_.
+  the `base quantities`_ for the `International System of Quantities`_.
+
+
+.. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number
+
+.. _base quantities: https://en.wikipedia.org/wiki/Base_quantity
+
+.. _International System of Quantities: https://en.wikipedia.org/wiki/International_System_of_Quantities
 
 '''
 

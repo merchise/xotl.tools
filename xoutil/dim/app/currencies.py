@@ -15,9 +15,9 @@
 '''Denominate numbers for money.
 
 You may have 10 dollars and 5 euros in your wallet, that does not mean that
-you have 15 of anything.  Though you may *evaluate* your cash in any other
-currency you don't have that value until you perform an exchange with a given
-rate.
+you have 15 of anything (but bills, perhaps).  Though you may *evaluate* your
+cash in any other currency you don't have that value until you perform an
+exchange with a given rate.
 
 This module support the family of currencies.  Usage::
 
@@ -47,8 +47,26 @@ module.
 
 We don't download rates from any source.
 
+This module allows you to trust your computations of money by allowing only
+sensible operations::
 
-_ISO 4217: https://en.wikipedia.org/wiki/ISO_4217
+  >>> dollar + euro  # doctest: +ELLIPSIS
+  Traceback (...)
+  ...
+  OperandTypeError: unsupported operand type(s) for +: '{USD}/{}' and '{EUR}/{}
+
+
+If you convert your euros to dollars::
+
+  >>> dollar + rate * euro
+  2.19196::{USD}/{}
+
+  # Or your dollars to euros
+  >>> dollar/rate + euro
+  1.83895432733::{EUR}/{}
+
+
+.. _ISO 4217: https://en.wikipedia.org/wiki/ISO_4217
 
 '''
 

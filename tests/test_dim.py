@@ -207,7 +207,7 @@ def test_any_magnitude_noinf(m):
 def test_currencies():
     from xoutil.dim.app.currencies import Rate, Valuation, currency
     dollar = USD = currency('USD')
-    EUR = currency('EUR')
+    euro = EUR = currency('EUR')
     rate = 1.19196 * USD / EUR
 
     assert isinstance(dollar, Valuation)
@@ -221,3 +221,6 @@ def test_currencies():
     assert not isinstance(dollar / dollar, Rate)
 
     assert currency('a') is currency('A')
+
+    with pytest.raises(TypeError):
+        dollar + euro

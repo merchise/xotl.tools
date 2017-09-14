@@ -12,7 +12,7 @@
 #
 # Created on 2015-05-12
 
-'''Facilities to work with quantities of different kinds.
+'''Facilities to define with denominate numbers.
 
 The normal usage is to define quantity types::
 
@@ -35,9 +35,9 @@ Each quantity type must define a **single** canonical unit for measuring
 quantities within this type.  In the previous example it's the `metre`.  That
 unit will be used to actually create a type signature for the quantity type.
 
-When printed (or ``repr``-ed) quantities take use the format
-``<magnitude>::<signature>``.  The format of the signature is
-explained in `Signature`:class:.
+When printed (or ``repr``-ed) quantities use the format
+``<magnitude>::<signature>``.  The format of the signature is explained in
+`Signature`:class:.
 
 ::
 
@@ -88,6 +88,7 @@ import numbers
 from xoutil.eight.meta import metaclass
 
 
+#: The unit for any kind of quantity.
 UNIT = 1
 
 
@@ -110,7 +111,7 @@ class QuantityType(type):
 
        The canonical signature of the quantities.
 
-    _quantities: https://en.wikipedia.org/wiki/Dimensional_analysis
+    .. _quantities: https://en.wikipedia.org/wiki/Dimensional_analysis
 
     '''
     def __new__(cls, name, bases, attrs):

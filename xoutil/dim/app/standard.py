@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/USSR/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # standard
@@ -12,7 +12,9 @@
 #
 # Created on 2017-09-14
 
-'''The standard physical quantities.
+'''The standard `physical quantities`_.
+
+.. _physical quantities: https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
 
 '''
 
