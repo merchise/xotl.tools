@@ -202,3 +202,22 @@ def test_any_magnitude_noinf(m):
     q = m * L.metre
     for f in (Int, float, abs, round, ceil, floor):
         assert f(q) == f(m)
+
+
+def test_currencies():
+    from xoutil.dim.app.currencies import Rate, Valuation, currency
+    dollar = USD = currency('USD')
+    EUR = currency('EUR')
+    rate = 1.19196 * USD / EUR
+
+    assert isinstance(dollar, Valuation)
+    assert isinstance(rate, Rate)
+
+    # Even 0 dollars are a valuation
+    assert isinstance(dollar - dollar, Valuation)
+
+    # But 1 is not a value nor a rate
+    assert not isinstance(dollar / dollar, Valuation)
+    assert not isinstance(dollar / dollar, Rate)
+
+    assert currency('a') is currency('A')
