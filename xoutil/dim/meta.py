@@ -623,9 +623,17 @@ POWER = lambda a, e: '{}_pow_{}'.format(a, e)
 
 class OperandTypeError(TypeError):
     def __init__(self, operand, val1, val2):
+        if isinstance(val1, Quantity):
+            t1 = val1.signature
+        else:
+            t1 = type(val1).__name__
+        if isinstance(val2, Quantity):
+            t2 = val2.signature
+        else:
+            t2 = type(val2).__name__
         super(OperandTypeError, self).__init__(
-            "unsupported operand type(s) for %s: '%s' and '%s" %
-            (operand, type(val1).__name__, type(val2).__name__)
+            "unsupported operand type(s) for %s: '%s' and '%s'" %
+            (operand, t1, t2)
         )
 
 
