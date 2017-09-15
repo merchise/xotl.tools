@@ -154,37 +154,37 @@ def test_quantity_math():
 
 
 def test_quantity_type_definitions():
-    from xoutil.dim.app.standard import Length as Distance, Time
-    assert isinstance(Distance, QuantityType)
+    from xoutil.dim.app.standard import Length, Time
+    assert isinstance(Length, QuantityType)
     assert isinstance(Time, QuantityType)
-    assert isinstance(Distance / Time, QuantityType)
-    assert isinstance(Distance**2, QuantityType)
-    assert Distance * Distance == Distance**2
+    assert isinstance(Length / Time, QuantityType)
+    assert isinstance(Length**2, QuantityType)
+    assert Length * Length == Length**2
 
     assert Time / Time == Scalar
     assert Time / Time * Time == Time
 
     with pytest.raises(TypeError):
-        Distance + Time
+        Length + Time
 
     with pytest.raises(TypeError):
-        Distance - Time
+        Length - Time
 
-    assert Distance**1 is Distance
-
-    with pytest.raises(TypeError):
-        Distance**1.2
+    assert Length**1 is Length
 
     with pytest.raises(TypeError):
-        Distance**0
-
-    assert Distance**-1 == 1 / Distance
+        Length**1.2
 
     with pytest.raises(TypeError):
-        2 / Distance
+        Length**0
+
+    assert Length**-1 == 1 / Length
 
     with pytest.raises(TypeError):
-        2 * Distance
+        2 / Length
+
+    with pytest.raises(TypeError):
+        2 * Length
 
 
 @given(s.floats(allow_nan=False) | s.integers())

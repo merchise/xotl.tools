@@ -41,18 +41,18 @@ When printed (or ``repr``-ed) quantities use the format
 
 ::
 
-   >>> metre = Distance.metre
+   >>> metre = Length.metre
    >>> metre
-   1::{<Distance.metre>}/{}
+   1::{<Length.metre>}/{}
 
 Quantities support the standard arithmetical operations of addition,
 subtraction, multiplication and division::
 
    >>> metre + metre
-   2::{<Distance.metre>}/{}
+   2::{<Length.metre>}/{}
 
    >>> metre*metre
-   1::{<Distance.metre>, <Distance.metre>}/{}
+   1::{<Length.metre>, <Length.metre>}/{}
 
 You can't add or subtract quantities of different kind::
 
