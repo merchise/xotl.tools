@@ -12,7 +12,7 @@
 #
 # Created on 2017-09-14
 
-'''Denominate numbers for money.
+'''Concrete numbers for money.
 
 You may have 10 dollars and 5 euros in your wallet, that does not mean that
 you have 15 of anything (but bills, perhaps).  Though you may *evaluate* your

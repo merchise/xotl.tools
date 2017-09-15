@@ -1,6 +1,6 @@
-====================================================================
- `xoutil.dim.meta`:mod: -- Meta-definitions for denominate numbers.
-====================================================================
+==================================================================
+ `xoutil.dim.meta`:mod: -- Meta-definitions for concrete numbers.
+==================================================================
 
 .. automodule:: xoutil.dim.meta
    :members: QuantityType, Signature, Quantity

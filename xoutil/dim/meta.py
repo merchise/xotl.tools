@@ -12,7 +12,7 @@
 #
 # Created on 2015-05-12
 
-'''Facilities to define with denominate numbers.
+'''Facilities to define concrete numbers.
 
 The normal usage is to define quantity types::
 
@@ -435,7 +435,7 @@ class BareReal(metaclass(_BareRealType)):
 
 @functools.total_ordering
 class Quantity(numbers.Real):
-    '''A denominate number.
+    '''A concrete number.
 
     .. seealso:: https://en.wikipedia.org/wiki/Concrete_number
 
