@@ -326,7 +326,7 @@ class Signature(object):
     You can multiply and divide signatures and simplification happens
     automatically.
 
-    Signatures are immutable.
+    You *should* signatures as immutable values.
 
     Examples::
 
