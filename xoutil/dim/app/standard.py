@@ -48,7 +48,7 @@ def nano(v):
     return v / (10**9)
 
 
-@QuantityType.new
+@QuantityType.new()
 class Length(object):
     metre = UNIT
     kilometer = km = kilo(metre)
@@ -74,27 +74,27 @@ second = s = Time.s = Time.second
 T = Time
 
 
-@QuantityType.new
+@QuantityType.new(unit_aliases=('kg', ))
 class Mass(object):
     kilogram = UNIT
     gram = kilogram / 1000
 
 
-kilogram = kg = Mass.kg = Mass.kilogram
+kilogram = kg = Mass.kg
 M = Mass
 
 
-@QuantityType.new
+@QuantityType.new(unit_aliases='A')
 class ElectricCurrent(object):
     ampere = UNIT
     milliampere = milli(ampere)
 
 
-A = ampere = ElectricCurrent.A = ElectricCurrent.ampere
+A = ampere = ElectricCurrent.A
 I = ElectricCurrent
 
 
-@QuantityType.new
+@QuantityType.new(unit_aliases='K')
 class Temperature(object):
     kelvin = UNIT
 
@@ -109,16 +109,16 @@ class Temperature(object):
         return (val + 459.67) * (5 / 9) * cls.kelvin
 
 
-K = kelvin = Temperature.K = Temperature.kelvin
+K = kelvin = Temperature.K
 O = Temperature   # The actual symbol would be the capital letter Theta: Θ
 
 
-@QuantityType.new
+@QuantityType.new(unit_alias='mol')
 class Substance(object):
     mole = UNIT
 
 
-mol = Substance.mol = Substance.mole
+mole = mol = Substance.mol
 N = Substance
 
 

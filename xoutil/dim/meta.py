@@ -171,14 +171,37 @@ class QuantityType(type):
         return self
 
     @classmethod
-    def new(cls, source):
+    def new(cls, *source, **kwargs):
         '''Define a new quantity type.
 
-        Usage:
+        This is wrapped decorator.  The actual possible signatures are:
 
-           >>> @QuantityType.new
+           - ``new(unit_alias=None, unit_aliases=None)(source)``
+
+           - ``new(source)``
+
+        This allows to use this method as decorator with or without arguments.
+
+        :param source: A class with at least the canonical unit definition.
+                       Other unit definitions will be automatically converted.
+
+                       This is the only
+
+        :keyword unit_alias: An alias for the canonical unit.  You cannot use
+                             a `source` with several canonical units.  This is
+                             a simple way to introduce a single alias.
+
+        :keyword unit_aliases: A sequence with the name of other aliases for
+                               the canonical unit.
+
+        Example:
+
+           >>> @QuantityType.new(unit_alias='man')
            ... class Workforce(object):
            ...    men = UNIT
+
+           >>> Workforce.men == Workforce.man == Workforce._unit_
+           True
 
         The  resulting class will be an instance of QuantityType:
 
@@ -191,8 +214,21 @@ class QuantityType(type):
            [...Workforce, object]
 
         '''
-        from xoutil.objects import copy_class
-        return copy_class(source, meta=cls)
+        from xoutil.decorator.meta import decorator
+
+        @decorator
+        def _new(source, unit_alias=None, unit_aliases=None):
+            from xoutil.objects import copy_class
+            res = copy_class(source, meta=cls)
+            if unit_alias:
+                setattr(res, unit_alias, res._unit_)
+            if unit_aliases:
+                for alias in unit_aliases:
+                    setattr(res, alias, res._unit_)
+            return res
+        if source and kwargs or len(source) > 1:
+            raise TypeError('Invalid signature')
+        return _new(*source, **kwargs)
 
     def __instancecheck__(self, instance):
         if isinstance(instance, Quantity):
