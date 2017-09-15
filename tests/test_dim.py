@@ -175,9 +175,7 @@ def test_quantity_type_definitions():
     with pytest.raises(TypeError):
         Length**1.2
 
-    with pytest.raises(TypeError):
-        Length**0
-
+    assert Length**0 == Scalar
     assert Length**-1 == 1 / Length
 
     with pytest.raises(TypeError):
@@ -185,6 +183,17 @@ def test_quantity_type_definitions():
 
     with pytest.raises(TypeError):
         2 * Length
+
+
+# A reasonable exponent.  We won't be dealing with universes of 100s
+# dimensions.
+exponents = s.integers(min_value=1, max_value=100)
+
+
+@given(exponents, exponents)
+def test_general_power_rules(n, m):
+    from xoutil.dim.base import L
+    assert L**n / L**m == L**(n - m)
 
 
 @given(s.floats(allow_nan=False) | s.integers())

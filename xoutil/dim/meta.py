@@ -277,8 +277,10 @@ class QuantityType(type):
             raise OperandTypeError('*', self, other)
 
     def __pow__(self, exp):
-        if isinstance(exp, numbers.Integral) and exp != 0:
-            if exp == 1:
+        if isinstance(exp, numbers.Integral):
+            if exp == 0:
+                return Scalar
+            elif exp == 1:
                 return self
             elif exp == 2:
                 return self * self
