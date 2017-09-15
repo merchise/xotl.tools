@@ -282,7 +282,10 @@ class QuantityType(type):
                 return self
             elif exp == 2:
                 return self * self
+            elif exp < 0:
+                return 1 / (self**-exp)
             else:
+                assert exp > 0
                 name = POWER(self.__name__, exp)
                 unit = POWER(self._unitname_, exp)
                 quant = Quantity(UNIT, self._signature_**exp)
@@ -689,7 +692,10 @@ class Scalar(metaclass(QuantityType)):
 TIMES = lambda a, b: '{}_{}'.format(a, b)
 PER = lambda a, b: '{}_per_{}'.format(a, b)
 SQUARED = lambda a: '{}_squared'.format(a)
-POWER = lambda a, e: '{}_pow_{}'.format(a, e)
+
+
+def POWER(a, e):
+    return '{}_pow_{}'.format(a, e)
 
 
 class OperandTypeError(TypeError):
