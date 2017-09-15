@@ -23,9 +23,10 @@ This module is divided in two major parts:
 - `xoutil.dim.meta`:mod: which allows to define almost any kind of quantity
   decorated with a unit.
 
-- `xoutil.dim.app`:mod: which contains applications of the definitions in
-  `~xoutil.dim.meta`:mod:.  In particular, `xoutil.dim.app.si`:mod: contains
-  the `base quantities`_ for the `International System of Quantities`_.
+- Other modules ``xoutil.dim.*`` which contains applications of the
+  definitions in `~xoutil.dim.meta`:mod:.  In particular,
+  `xoutil.dim.base`:mod: contains the `base quantities`_ for the
+  `International System of Quantities`_.
 
 
 .. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number

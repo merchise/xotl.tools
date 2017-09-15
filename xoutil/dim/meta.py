@@ -27,7 +27,7 @@ The normal usage is to define quantity types::
    ...     foot = feet = 12 * inches
 
 
-.. seealso:: Module `~xoutil.dim.app.standard`:mod: defines the standard base
+.. seealso:: Module `~xoutil.dim.base`:mod: defines the standard base
    quantities.
 
 
@@ -142,8 +142,7 @@ class QuantityType(type):
 
     .. _quantities: https://en.wikipedia.org/wiki/Dimensional_analysis
 
-    For instance, `~xoutil.dim.app.standard.Length`:class: has canonical `1
-    metre`::
+    For instance, `~xoutil.dim.base.Length`:class: has canonical `1 metre`::
 
       >>> Length._unit_ == Length.metre == Quantity(1, Length._signature_)
       True

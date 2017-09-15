@@ -93,7 +93,7 @@ def test_effort():
 
 
 def test_scalar_downgrade():
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     km = L.km
     assert not isinstance(km / km, Quantity)
     assert km / km == 1
@@ -105,7 +105,7 @@ def test_scalar_downgrade():
 
 
 def test_natural_downgrade():
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     km, cm = L.km, L.cm
     assert float(km) == 1000
     assert int(cm) == 0
@@ -113,7 +113,7 @@ def test_natural_downgrade():
 
 def test_decimals():
     import decimal
-    from xoutil.dim.app.standard import m
+    from xoutil.dim.base import m
     with pytest.raises(TypeError):
         third = decimal.Decimal('0.33') * m
         assert third < m
@@ -154,7 +154,7 @@ def test_quantity_math():
 
 
 def test_quantity_type_definitions():
-    from xoutil.dim.app.standard import Length, Time
+    from xoutil.dim.base import Length, Time
     assert isinstance(Length, QuantityType)
     assert isinstance(Time, QuantityType)
     assert isinstance(Length / Time, QuantityType)
@@ -189,13 +189,13 @@ def test_quantity_type_definitions():
 
 @given(s.floats(allow_nan=False) | s.integers())
 def test_any_magnitude(m):
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     assert float(m * L.metre) == float(m)
 
 
 @given(s.floats(allow_nan=False, allow_infinity=False) | s.integers())
 def test_any_magnitude_noinf(m):
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     from math import ceil, floor
     from six import integer_types
     Int = integer_types[-1]
@@ -205,7 +205,7 @@ def test_any_magnitude_noinf(m):
 
 
 def test_currencies():
-    from xoutil.dim.app.currencies import Rate, Valuation, currency
+    from xoutil.dim.currencies import Rate, Valuation, currency
     dollar = USD = currency('USD')
     euro = EUR = currency('EUR')
     rate = 1.19196 * USD / EUR
@@ -227,7 +227,7 @@ def test_currencies():
 
 
 def test_undistinguishable_definitions():
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
 
     @QuantityType.new
     class Length(object):

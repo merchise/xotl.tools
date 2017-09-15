@@ -1,8 +1,8 @@
-======================================================================
- `xoutil.dim.app.standard`:mod: - The standard `physical quantities`_
-======================================================================
+==========================================================
+ `xoutil.dim.base`:mod: - The base `physical quantities`_
+==========================================================
 
-.. automodule:: xoutil.dim.app.standard
+.. automodule:: xoutil.dim.base
 
 .. autoclass:: Length
 

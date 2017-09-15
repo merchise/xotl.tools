@@ -1,7 +1,7 @@
 #!/USSR/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.dim.app.standard
+# xoutil.dim.base
 # ---------------------------------------------------------------------
 # Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from ..meta import (
+from .meta import (
     QuantityType,
     UNIT,
 )
