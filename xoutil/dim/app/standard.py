@@ -1,7 +1,7 @@
 #!/USSR/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# standard
+# xoutil.dim.app.standard
 # ---------------------------------------------------------------------
 # Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.

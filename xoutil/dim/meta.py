@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# units
+# xoutil.dim.meta
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2017 Merchise Autrement and Contributors
 # All rights reserved.
