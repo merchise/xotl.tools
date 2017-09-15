@@ -27,8 +27,8 @@ The normal usage is to define quantity types::
    ...     foot = feet = 12 * inches
 
 
-.. seealso:: Module `~xoutil.dim.app.standard`:mod: which defines the standard
-   base quantities.
+.. seealso:: Module `~xoutil.dim.app.standard`:mod: defines the standard base
+   quantities.
 
 
 Each quantity type must define a **single** canonical unit for measuring
@@ -63,7 +63,7 @@ You can't add or subtract quantities of different kind::
    >>> metre + Time.second  # doctest: +ELLIPSIS
    Traceback (...)
    ...
-   TypeError: unsupported operator '+' for quantities of different types
+   OperandTypeError: unsupported operand type(s) for +: '{<Length.metre>}/{}' and '{<Time.second>}/{}'
 
 
 .. warning:: `decimal.Decimal`:py:class: are not supported.
@@ -105,13 +105,23 @@ class QuantityType(type):
 
     .. attribute:: _unit_
 
-       The canonical quantity
+       The canonical `quantity <Quantity>`:class:.  This value will have the
+       magnitude 1.
 
     .. attribute:: _signature_
 
-       The canonical signature of the quantities.
+       The canonical `signature <Signature>`:class: of the quantities.
+
+       It's always true that `Quantity`:class:\ ``(``\ `UNIT`:obj:\ ``,``
+       `_signature_`:attr:\ ``) ==`` `_unit_`:attr:.
 
     .. _quantities: https://en.wikipedia.org/wiki/Dimensional_analysis
+
+    For instance, `~xoutil.dim.app.standard.Length`:class: has canonical `1
+    metre`::
+
+      >>> Length._unit_ == Length.metre == Quantity(1, Length._signature_)
+      True
 
     '''
     def __new__(cls, name, bases, attrs):
@@ -172,7 +182,7 @@ class QuantityType(type):
 
         The  resulting class will be an instance of QuantityType:
 
-           >>> assert isinstance(Workforce, QuantityType)
+           >>> isinstance(Workforce, QuantityType)
            True
 
         The original class is totally missed:
