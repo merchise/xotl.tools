@@ -50,7 +50,6 @@ def nano(v):
 
 @QuantityType.new
 class Length(object):
-    'Length'
     metre = UNIT
     kilometer = km = kilo(metre)
     centimeter = cm = centi(metre)
@@ -64,10 +63,9 @@ L = Length
 
 @QuantityType.new
 class Time(object):
-    'Time'
     second = UNIT
-    millisecond = milli(second)
-    nanosecond = nano(second)
+    millisecond = ms = milli(second)
+    nanosecond = ns = nano(second)
     minute = second * 60
     hour = minute * 60
 
@@ -78,7 +76,6 @@ T = Time
 
 @QuantityType.new
 class Mass(object):
-    'Mass'
     kilogram = UNIT
     gram = kilogram / 1000
 
@@ -89,7 +86,6 @@ M = Mass
 
 @QuantityType.new
 class ElectricCurrent(object):
-    'Electric Current'
     ampere = UNIT
     milliampere = milli(ampere)
 
@@ -100,14 +96,20 @@ I = ElectricCurrent
 
 @QuantityType.new
 class Temperature(object):
-    'Thermodynamic temperature'
     kelvin = UNIT
-    C = celcius = kelvin - 273.15
-    F = fahrenheit = kelvin * (9 / 5) - 459.67
+
+    @classmethod
+    def from_celcius(cls, val):
+        'Convert `val` ºC to K'
+        return (val + 273.15) * cls.kelvin
+
+    @classmethod
+    def from_fahrenheit(cls, val):
+        'Convert `val` ºF to K'
+        return (val + + 459.67) * (9 / 5) * cls.kelvin
 
 
 K = kelvin = Temperature.K = Temperature.kelvin
-C = celcius = Temperature.C
 O = Temperature   # The actual symbol would be the capital letter Theta: Θ
 
 
@@ -122,7 +124,6 @@ N = Substance
 
 @QuantityType.new
 class Luminosity(object):
-    'Luminous intensity'
     candela = UNIT
 
 
