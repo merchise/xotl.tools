@@ -133,8 +133,21 @@ J = Luminosity
 # Derived quantities
 Area = L**2
 Volume = L**3
+Volume.metre_cubic = Volume._unit_
+Volume._unitname_ = 'metre_cubic'
+
 Frequency = T**-1
-Force = L * M * T**-2
-Presure = L**-1 * M * T**-2
-Velocity = L * T**-1
-Acceleration = L * T**-2
+Frequency.Hz = Frequency._unit_
+
+Force = L * M / T**2
+assert hasattr(Force, 'metre_kilogram_per_second_squared')
+assert Force == L * M * T**-2
+Force.Newton = Force.N = Force._unit_
+
+Presure = M / L / T**2
+assert hasattr(Presure, 'kilogram_per_metre_per_second_squared')
+assert Presure == L**-1 * M * T**-2, 'as defined in Wikipedia'
+Presure.Pascal = Presure.Pa = Presure._unit_
+
+Velocity = L / T
+Acceleration = L / T**2
