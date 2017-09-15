@@ -224,3 +224,20 @@ def test_currencies():
 
     with pytest.raises(TypeError):
         dollar + euro
+
+
+def test_undistinguishable_definitions():
+    from xoutil.dim.app.standard import L
+
+    @QuantityType.new
+    class Length(object):
+        metre = UNIT
+
+    assert L.metre == Length.metre
+
+    @QuantityType.new
+    class Length(object):
+        km = UNIT
+
+    with pytest.raises(TypeError):
+        assert L.metre != Length.km

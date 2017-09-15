@@ -77,6 +77,31 @@ You can't add or subtract quantities of different kind::
       ...
       TypeError: unsupported operand type(s) for +: 'Decimal' and 'float'
 
+
+The signature created by `QuantityType` for the canonical unit is simply a
+string that varies with the name of the quantity type and the canonical unit.
+This implies that you can *recreate* the same quantity type and it will be
+interoperable with the former:
+
+   >>> @QuantityType.new
+   ... class L(object):
+   ...    m = UNIT
+
+   >>> m = L.m  # Save this
+
+
+   >>> # Recreate the same quantity type.
+   >>> @QuantityType.new
+   ... class L(object):
+   ...    m = UNIT
+
+   >>> m == L.m
+   True
+
+Both the quantity type name and the canonical unit name *must* be the same for
+this to work.  We advice against declaring the same quantity type more than
+once.
+
 '''
 
 from __future__ import (division as _py3_division,
