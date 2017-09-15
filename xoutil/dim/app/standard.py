@@ -106,7 +106,7 @@ class Temperature(object):
     @classmethod
     def from_fahrenheit(cls, val):
         'Convert `val` ºF to K'
-        return (val + + 459.67) * (9 / 5) * cls.kelvin
+        return (val + 459.67) * (5 / 9) * cls.kelvin
 
 
 K = kelvin = Temperature.K = Temperature.kelvin
