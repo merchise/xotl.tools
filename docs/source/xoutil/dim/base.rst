@@ -246,5 +246,5 @@ from others by simply rules:
 
 - ``A**n``; when ``n=1`` this is the same as ``A``; when ``n=2`` this is the
   same as ``A * A``; for other positive values of ``n``, the canonical unit
-  name is `a_pow_n`; for negative values of ``n`` is the same as
-  ``1/A**n``; for ``n=0`` this is the `Scalar`:class: quantity.
+  name is `a_pow_n`; for negative values of ``n`` is the same as ``1/A**n``;
+  for ``n=0`` this is the `~xoutil.dim.meta.Scalar`:class: quantity.

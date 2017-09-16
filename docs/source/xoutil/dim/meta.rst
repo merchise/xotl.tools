@@ -3,7 +3,7 @@
 ==================================================================
 
 .. automodule:: xoutil.dim.meta
-   :members: QuantityType, Signature, Quantity
+   :members: QuantityType, Signature, Quantity, Scalar
 
 .. object:: UNIT
 

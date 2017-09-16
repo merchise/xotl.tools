@@ -687,6 +687,19 @@ SCALAR = Signature()
 class Scalar(metaclass(QuantityType)):
     '''A bare value whose signature is empty.
 
+    Most of the time you should not deal with this quantity.  Any normal
+    operation that results in a scalar gets reduced to Python's type:
+
+        >>> from xoutil.dim.base import L
+        >>> L.m/L.m
+        1.0
+
+    This type makes the operations on `quantity types <QuantityType>`:class:
+    closed under multiplication:
+
+        >>> Scalar * L == L == L * Scalar
+        True
+
     '''
     unit = Quantity(UNIT, SCALAR)
 
