@@ -1,1 +1,1 @@
-Nothing yet
+- Added `xoutil.dim`:mod:.

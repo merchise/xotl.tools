@@ -24,7 +24,7 @@ Contents
 
    xoutil/toplevel
    xoutil/*
-   xoutil/**
+   xoutil/eight/*
    others
    HISTORY
    BACKLOG
