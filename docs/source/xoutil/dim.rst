@@ -13,6 +13,7 @@ This module is divided in two major parts: meta-definitions and applications.
 .. toctree::
    :glob:
 
+   dim/meta
    dim/*
 
 .. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number
