@@ -5,7 +5,7 @@
 .. module:: xoutil.dim
 
 The name 'dim' is a short of dimension.  We borrow it from the topic
-"dimensional analysis", even though the scope of this module is less
+`dimensional analysis`_, even though the scope of this module is less
 ambitious.
 
 This module is divided in two major parts: meta-definitions and applications.
@@ -17,3 +17,4 @@ This module is divided in two major parts: meta-definitions and applications.
    dim/*
 
 .. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number
+.. _dimensional analysis: https://en.wikipedia.org/wiki/Dimensional_analysis
