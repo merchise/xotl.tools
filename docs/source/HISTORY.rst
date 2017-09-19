@@ -13,7 +13,7 @@ Unreleased. Release 1.8.0
 1.7 series
 ----------
 
-Unreleased.  1.7.8
+2017-09-19.  1.7.8
 ~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.7.8.rst
