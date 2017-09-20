@@ -272,6 +272,20 @@ class Dimension(type):
            >>> Workforce.mro()
            [...Workforce, object]
 
+        To complete the example, let's introduce the dimension Effort that
+        expresses the usual amount of men-power and time needed to complete
+        some task.  However `~xoutil.dim.base.Time`:class: has the second as
+        it canonical unit, but the standard for Effort is men-hour:
+
+           >>> class Effort(Workforce * Time):
+           ...    # Since the canonical unit of a composed quantity type is built from
+           ...    # the canonical units of the operands, but the true "canonical type"
+           ...    # of effort is usually men-hour we re-introduce it.
+           ...    men_hour = 60
+
+        This does not mean that ``Effort._unit_ == Effort.men_hour``.  The
+        canonical unit would be ``Effor.men_second``.
+
         '''
         from xoutil.decorator.meta import decorator
 
