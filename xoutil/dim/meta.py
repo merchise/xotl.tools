@@ -814,7 +814,7 @@ def downgrade_to_scalar(quantity):
 
 # Deprecated aliases
 class QuantityType(Dimension):
-    '''Deprecated alias for `Dimension`:class.
+    '''Deprecated alias for `Dimension`:class:.
 
     .. versionchanged:: 1.7.9 Deprecated.
 
