@@ -187,3 +187,22 @@ def test_timespans_are_representable(value):
 @given(time_span('none'))
 def test_generate_valid_timespans(ts):
     assert ts.valid
+
+
+@given(time_span('none'))
+def test_ts_returns_dates_not_subtypes(ts):
+    from datetime import date
+    assert type(ts.start_date) is date
+    assert type(ts.end_date) is date
+
+    from xoutil.context import context
+    from xoutil.datetime import infinity_extended_date, NEEDS_FLEX_DATE
+    with context(NEEDS_FLEX_DATE):
+        assert type(ts.start_date) is infinity_extended_date
+        assert type(ts.end_date) is infinity_extended_date
+
+
+@given(time_span('none'), strategies.dates())
+def test_operate_with_timespans(ts, d):
+    assert ts.start_date - d is not None
+    assert d - ts.start_date is not None

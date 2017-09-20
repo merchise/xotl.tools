@@ -455,9 +455,10 @@ class DateField(object):
         self.nullable = nullable
 
     def __get__(self, instance, owner):
+        from xoutil.context import context
         if instance is not None:
             res = instance.__dict__[self.name]
-            if res:
+            if res and NEEDS_FLEX_DATE in context:
                 return infinity_extended_date(res.year, res.month, res.day)
             else:
                 return res
@@ -563,10 +564,12 @@ class TimeSpan(object):
         Unbound time spans are always valid.
 
         '''
-        if self.bound:
-            return self.start_date <= self.end_date
-        else:
-            return True
+        from xoutil.context import context
+        with context(NEEDS_FLEX_DATE):
+            if self.bound:
+                return self.start_date <= self.end_date
+            else:
+                return True
 
     def __contains__(self, other):
         '''Test if we completely cover `other` time span.
@@ -651,14 +654,22 @@ class TimeSpan(object):
         '''
         import datetime
         from .infinity import Infinity
+        from xoutil.context import context
         if isinstance(other, _EmptyTimeSpan):
             return other
         elif isinstance(other, datetime.date):
             other = TimeSpan.from_date(other)
         elif not isinstance(other, TimeSpan):
             raise TypeError
-        start = max(self.start_date or -Infinity, other.start_date or -Infinity)
-        end = min(self.end_date or Infinity, other.end_date or Infinity)
+        with context(NEEDS_FLEX_DATE):
+            start = max(
+                self.start_date or -Infinity,
+                other.start_date or -Infinity
+            )
+            end = min(
+                self.end_date or Infinity,
+                other.end_date or Infinity
+            )
         if start <= end:
             if start is -Infinity:
                 start = None
@@ -679,14 +690,22 @@ class TimeSpan(object):
         'Return the union of both time spans.'
         import datetime
         from .infinity import Infinity
+        from xoutil.context import context
         if isinstance(other, _EmptyTimeSpan):
             return self
         elif isinstance(other, datetime.date):
             other = TimeSpan.from_date(other)
         elif not isinstance(other, TimeSpan):
             raise TypeError
-        start = min(self.start_date or -Infinity, other.start_date or -Infinity)
-        end = max(self.end_date or Infinity, other.end_date or Infinity)
+        with context(NEEDS_FLEX_DATE):
+            start = min(
+                self.start_date or -Infinity,
+                other.start_date or -Infinity
+            )
+            end = max(
+                self.end_date or Infinity,
+                other.end_date or Infinity
+            )
         if start <= end:
             if start is -Infinity:
                 start = None
@@ -779,3 +798,8 @@ class _EmptyTimeSpan(object):
 EmptyTimeSpan = _EmptyTimeSpan()
 
 _EmptyTimeSpan.__new__ = None  # Disallow creating more instances
+
+
+# A context to switch on/off returning a subtype of date from DateFields.
+# Used within TimeSpan to allow comparison with Infinity.
+NEEDS_FLEX_DATE = object()
