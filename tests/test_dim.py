@@ -22,19 +22,19 @@ from hypothesis import given, strategies as s
 from xoutil.dim.meta import (
     Signature,
     Quantity,
-    QuantityType,
+    Dimension,
     Scalar,
     UNIT,
 )
 
 
 def test_usage():
-    @QuantityType.new
+    @Dimension.new
     class L(object):
         metre = UNIT
         kilometre = 1000 * metre
 
-    @QuantityType.new
+    @Dimension.new
     class T(object):
         second = UNIT
 
@@ -75,11 +75,11 @@ def test_usage():
 
 
 def test_effort():
-    @QuantityType.new
+    @Dimension.new
     class Workforce(object):
         men = UNIT
 
-    @QuantityType.new
+    @Dimension.new
     class Time(object):
         second = UNIT
 
@@ -155,10 +155,10 @@ def test_quantity_math():
 
 def test_quantity_type_definitions():
     from xoutil.dim.base import Length, Time
-    assert isinstance(Length, QuantityType)
-    assert isinstance(Time, QuantityType)
-    assert isinstance(Length / Time, QuantityType)
-    assert isinstance(Length**2, QuantityType)
+    assert isinstance(Length, Dimension)
+    assert isinstance(Time, Dimension)
+    assert isinstance(Length / Time, Dimension)
+    assert isinstance(Length**2, Dimension)
     assert Length * Length == Length**2
 
     assert Time / Time == Scalar
@@ -238,13 +238,13 @@ def test_currencies():
 def test_undistinguishable_definitions():
     from xoutil.dim.base import L
 
-    @QuantityType.new
+    @Dimension.new
     class Length(object):
         metre = UNIT
 
     assert L.metre == Length.metre
 
-    @QuantityType.new
+    @Dimension.new
     class Length(object):
         km = UNIT
 

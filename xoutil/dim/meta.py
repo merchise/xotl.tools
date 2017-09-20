@@ -12,14 +12,23 @@
 #
 # Created on 2015-05-12
 
-'''Facilities to define concrete numbers.
+'''Facilities to work with `concrete numbers`_.
 
-The normal usage is to define quantity types::
+   A concrete number is a number associated with the things being counted, in
+   contrast to an abstract number which is a number as a single entity.
 
-   >>> from xoutil.dim.meta import QuantityType, UNIT
+   -- Wikipedia__
 
-   >>> @QuantityType.new
-   >>> class Length(object):
+
+__ `concrete numbers`_
+.. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number
+
+
+This module allows you to define dimensions (or quantity types):
+
+   >>> from xoutil.dim.meta import Dimension, UNIT
+   >>> @Dimension.new
+   ... class Length(object):
    ...     metre = UNIT
    ...     kilometre = 1000 * metre
    ...     centimetre = metre/100
@@ -33,23 +42,24 @@ The normal usage is to define quantity types::
    quantities.
 
 
-Each quantity type must define a **single** canonical `unit
-<xoutil.dim.meta.UNIT>`:const: for measuring quantities within this type.  In
-the previous example it's the `metre`.  That unit will be used to actually
-create a type signature for the quantity type.
+Each dimension **must** define a single *canonical unit* for measuring
+quantities within the dimension.  Values in the dimension are always expressed
+in terms of the canonical units.
 
-When printed (or ``repr``-ed) quantities use the format
-``<magnitude>::<signature>``.  The format of the signature is explained in
-`Signature`:class:.
+In the previous example the dimension Length defined the `metre` for its
+canonical unit.  The name of canonical unit defines the `signature
+<Signature>`:class: for the quantities in the dimension.
 
-::
+When printed (or ``repr``-ed) `quantities <Quantity>`:class: use the format
+``<magnitude>::<signature>``:
 
    >>> metre = Length.metre
    >>> metre
    1::{<Length.metre>}/{}
 
 Quantities support the standard arithmetical operations of addition,
-subtraction, multiplication and division::
+subtraction, multiplication and division.  In fact, you obtain different
+quantities in the dimension by multiplying with the canonical unit:
 
    >>> metre + metre
    2::{<Length.metre>}/{}
@@ -57,22 +67,38 @@ subtraction, multiplication and division::
    >>> metre*metre
    1::{<Length.metre>, <Length.metre>}/{}
 
-You can't add or subtract quantities of different kind::
+   >>> km = 1000 * metre
 
-   >>> @QuantityType.new
+   >>> 5 * km
+   5000::{<Length.metre>}/{}
+
+`Dimensional homogeneity`__ imposes restrictions on the allowed operations
+between quantities.  Only commensurable quantities (quantities of the same
+dimension) can be compared, equated, added, or subtracted.
+
+__ https://en.wikipedia.org/wiki/Dimensional_analysis#Dimensional_homogeneity
+
+   >>> @Dimension.new
    >>> class Time(object):
    ...     second = UNIT
 
    >>> metre + Time.second  # doctest: +ELLIPSIS
    Traceback (...)
    ...
-   OperandTypeError: unsupported operand type(s) for +: '{<Length.metre>}/{}' and '{<Time.second>}/{}'
+   OperandTypeError: unsupported operand type(s) for +:...
 
 
-.. warning:: `decimal.Decimal`:py:class: are not supported.
+However, you can take ratios of incommensurable quantities (quantities with
+different dimensions), and multiply or divide them.
+
+    >>> metre/Time.second
+    >>> 1::{<Length.metre>}/{<Time.second>}
+
+
+.. warning:: `Decimal numbers <decimal.Decimal>`:py:class: are not supported.
 
    This module makes not attempt to fix the standing incompatibility between
-   floats and `decimal.Decimal`::
+   floats and `decimal.Decimal`:py:class:\ :
 
       >>> import decimal
       >>> decimal.Decimal('0') + 0.1  # doctest: +ELLIPSIS
@@ -81,29 +107,31 @@ You can't add or subtract quantities of different kind::
       TypeError: unsupported operand type(s) for +: 'Decimal' and 'float'
 
 
-The signature created by `QuantityType` for the canonical unit is simply a
-string that varies with the name of the quantity type and the canonical unit.
-This implies that you can *recreate* the same quantity type and it will be
-interoperable with the former:
+The signature created by `Dimension`:class: for its canonical unit is simply a
+string that varies with the name of the dimension and that of the canonical
+unit.  This implies that you can *recreate* the same dimension and it will be
+interoperable with the former::
 
-   >>> @QuantityType.new
+   >>> @Dimension.new
    ... class L(object):
    ...    m = UNIT
 
    >>> m = L.m  # Save this
 
 
-   >>> # Recreate the same quantity type.
-   >>> @QuantityType.new
+   >>> # Recreate the same dimension.
+   >>> @Dimension.new
    ... class L(object):
    ...    m = UNIT
 
    >>> m == L.m
    True
 
-Both the quantity type name and the canonical unit name *must* be the same for
-this to work.  We advice against declaring the same quantity type more than
-once.
+Both the dimension name and the canonical unit name *must* be the same for
+this to work.
+
+.. note:: We advice to define a dimension only once and import it where
+   needed.
 
 '''
 
@@ -121,35 +149,37 @@ from xoutil.deprecation import deprecated
 UNIT = 1
 
 
-class QuantityType(type):
+class Dimension(type):
     '''A type for `quantities`_.
 
-    Every instance (class) will automatically have the following
-    attributes:
+    This is a metaclass for dimensions.  Every instance (class) will
+    automatically have the following attributes:
 
     .. attribute:: _unitname_
 
-       The name of canonical unit in the quantity type.  Notice that `aliases
+       The name of canonical unit in the dimension.  Notice that `aliases
        <new>`:meth: are created after the defined canonical unit.  This is the
-       name of the attribute provided in the class definition of the quantity
-       type with value equal to `UNIT`:const:.
+       name of the attribute provided in the class definition of the dimension
+       with value equal to `UNIT`:const:.
 
     .. attribute:: _unit_
 
-       The canonical `quantity <Quantity>`:class:.  This value will have the
-       magnitude 1.
+       The canonical `quantity <Quantity>`:class:.  This is the quantity 1
+       (`UNIT`:const:) expressed in terms of the canonical unit.
 
     .. attribute:: _signature_
 
        The canonical `signature <Signature>`:class: of the quantities.
 
-       It's always true that `Quantity`:class:\ ``(``\ `UNIT`:obj:\ ``,``
-       `_signature_`:attr:\ ``) ==`` `_unit_`:attr:.
+    It's always true that ``Quantity(UNIT, self._signature_) == self._unit_``.
 
-    .. _quantities: https://en.wikipedia.org/wiki/Dimensional_analysis
+    .. _quantities: https://en.wikipedia.org/wiki/Concrete_numbers
 
-    For instance, `~xoutil.dim.base.Length`:class: has the canonical unit
-    `1 metre`::
+    The provided dimension `~xoutil.dim.base.Length`:class: has the canonical
+    quantity `1 metre`::
+
+      >>> Length.metre
+      1::{<Length.metre>}/{}
 
       >>> Length._unit_ == Length.metre == Quantity(1, Length._signature_)
       True
@@ -192,8 +222,8 @@ class QuantityType(type):
                 signature.top = base_signature.top
                 signature.bottom = base_signature.bottom
         if unit is None:
-            raise TypeError('quantity type without a unit')
-        self = super(QuantityType, cls).__new__(
+            raise TypeError('dimension without a unit')
+        self = super(Dimension, cls).__new__(
             cls, name, bases, wrappedattrs
         )
         self._unitname_ = unit
@@ -203,7 +233,7 @@ class QuantityType(type):
 
     @classmethod
     def new(cls, *source, **kwargs):
-        '''Define a new quantity type.
+        '''Define a new dimension.
 
         This is a wrapped decorator.  The actual possible signatures are:
 
@@ -227,16 +257,16 @@ class QuantityType(type):
 
         Example:
 
-           >>> @QuantityType.new(unit_alias='man')
+           >>> @Dimension.new(unit_alias='man')
            ... class Workforce(object):
            ...    men = UNIT
 
            >>> Workforce.men == Workforce.man == Workforce._unit_
            True
 
-        The  resulting class will be an instance of QuantityType:
+        The resulting class will be an instance of `Dimension`:class::
 
-           >>> isinstance(Workforce, QuantityType)
+           >>> isinstance(Workforce, Dimension)
            True
 
         The original class is totally missed:
@@ -268,7 +298,7 @@ class QuantityType(type):
             return False
 
     def __mul__(self, other):
-        if isinstance(other, QuantityType):
+        if isinstance(other, Dimension):
             name = TIMES(self.__name__, other.__name__)
             if self == other:
                 unit = SQUARED(self._unitname_)
@@ -304,7 +334,7 @@ class QuantityType(type):
             raise OperandTypeError('**', self, exp)
 
     def __div__(self, other):
-        if isinstance(other, QuantityType):
+        if isinstance(other, Dimension):
             if self == other:
                 return Scalar
             else:
@@ -318,7 +348,7 @@ class QuantityType(type):
     __truediv__ = __floordiv__ = __div__
 
     def __rdiv__(self, numerator):
-        assert not isinstance(numerator, QuantityType)
+        assert not isinstance(numerator, Dimension)
         if numerator == 1:
             name = PER('unit', self.__name__)
             unit = PER('unit', self._unitname_)
@@ -329,9 +359,8 @@ class QuantityType(type):
             raise OperandTypeError('/', numerator, self)
     __rtruediv__ = __rfloordiv__ = __rdiv__
 
-
     def __eq__(self, other):
-        if isinstance(other, QuantityType):
+        if isinstance(other, Dimension):
             return self._signature_ == other._signature_
         else:
             raise TypeError(
@@ -531,14 +560,14 @@ class Quantity(numbers.Real):
     :param units: A `signature <Signature>`:class: for the units the
                   denominate the given quantity.
 
-    You can construct instances by operating with the attributes of a quantity
-    type.  For instance, this is 5 km:
+    You can construct instances by operating with the attributes of a
+    dimension.  For instance, this is 5 kilometres:
 
        >>> from xoutil.dim.base import L
        >>> 5 * L.km
        5000::{<Length.metre>}/{}
 
-    A quantity is of the type of is quantity type:
+    A concrete number is of the type of its dimension:
 
        >>> isinstance(5 * L.km, L)
        True
@@ -713,7 +742,8 @@ class Quantity(numbers.Real):
 SCALAR = Signature()
 
 
-class Scalar(metaclass(QuantityType)):
+@Dimension.new
+class Scalar(object):
     '''A quantity whose signature is always *empty*.
 
     Most of the time you should not deal with this quantity.  Any normal
@@ -723,8 +753,8 @@ class Scalar(metaclass(QuantityType)):
         >>> L.m/L.m
         1.0
 
-    This type makes the operations on `quantity types <QuantityType>`:class:
-    closed under multiplication:
+    This type makes the operations on `dimensions <Dimension>`:class: closed
+    under multiplication:
 
         >>> Scalar * L == L == L * Scalar
         True
@@ -768,3 +798,16 @@ def downgrade_to_scalar(quantity):
         return quantity.magnitude
     else:
         return quantity
+
+
+# Deprecated aliases
+class QuantityType(Dimension):
+    '''Deprecated alias for `Dimension`:class.
+
+    .. versionchanged:: 1.7.9 Deprecated.
+
+    '''
+    def __new__(self, *args, **kwargs):
+        import warnings
+        warnings.warn('QuantityType is deprecated.  Use Dimension')
+        return super(QuantityType, self).__new__(self, *args, **kwargs)
