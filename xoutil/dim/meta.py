@@ -284,7 +284,7 @@ class Dimension(type):
            ...    men_hour = 60
 
         This does not mean that ``Effort._unit_ == Effort.men_hour``.  The
-        canonical unit would be ``Effor.men_second``.
+        canonical unit would be ``Effort.men_second``.
 
         '''
         from xoutil.decorator.meta import decorator
