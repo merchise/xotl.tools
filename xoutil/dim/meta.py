@@ -246,8 +246,6 @@ class Dimension(type):
         :param source: A class with at least the canonical unit definition.
                        Other unit definitions will be automatically converted.
 
-                       This is the only
-
         :keyword unit_alias: An alias for the canonical unit.  You cannot use
                              a `source` with several canonical units.  This is
                              a simple way to introduce a single alias.
