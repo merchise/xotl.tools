@@ -9,3 +9,8 @@
 
    This the constant value ``1``.  It's given this name to emphasize it's the
    canonical unit for a quantity type.
+
+
+.. data:: SCALAR
+
+   The signature of dimensionless quantities.

@@ -114,6 +114,7 @@ from __future__ import (division as _py3_division,
 import functools
 import numbers
 from xoutil.eight.meta import metaclass
+from xoutil.deprecation import deprecated
 
 
 #: The unit for any kind of quantity.
@@ -405,8 +406,13 @@ class Signature(object):
     def __init__(self, top=None, bottom=None):
         self.top, self.bottom = self.simplify(top, bottom)
 
+    @deprecated(None, msg='isunit will be removed soon. Compare to SCALAR')
     def isunit(self):
-        '''Return True is this is the signature of the UNIT.'''
+        '''Return True is this is the signature of the UNIT.
+
+        .. versionchanged:: 1.7.9 Deprecated.  This is the same as comparing
+                            with `SCALAR`:const:.
+        '''
         return not self.top and not self.bottom
 
     def __eq__(self, other):

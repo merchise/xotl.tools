@@ -1,1 +1,1 @@
-Nothing yet.
+- Deprecate `xoutil.dim.meta.Signature.isunit`:meth:.
