@@ -4,10 +4,10 @@ Changelog
 1.7 series
 ----------
 
-Unreleased.  1.7.9
+2017-09-20.  1.7.9
 ~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.8.rst
+.. include:: history/_changes-1.7.9.rst
 
 
 
