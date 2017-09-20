@@ -3,9 +3,17 @@
 ==================================================================
 
 .. automodule:: xoutil.dim.meta
-   :members: QuantityType, Signature, Quantity, Scalar
+   :members: Dimension, Signature, Quantity, Scalar
 
-.. object:: UNIT
+.. data:: UNIT
 
-   This the value 1, but it's given this name to emphasize it's the canonical
-   unit for a quantity type.
+   This the constant value ``1``.  It's given this name to emphasize it's the
+   canonical unit for a dimension.
+
+
+.. data:: SCALAR
+
+   The signature of dimensionless quantities.
+
+
+.. autoclass:: QuantityType

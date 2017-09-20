@@ -12,7 +12,7 @@ Welcome to xoutil's documentation!
 What's new in |release|
 -----------------------
 
-.. include:: history/_changes-1.7.8.rst
+.. include:: history/_changes-1.7.9.rst
 
 
 Contents:
