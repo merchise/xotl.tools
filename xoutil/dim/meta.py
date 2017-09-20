@@ -16,6 +16,8 @@
 
 The normal usage is to define quantity types::
 
+   >>> from xoutil.dim.meta import QuantityType, UNIT
+
    >>> @QuantityType.new
    >>> class Length(object):
    ...     metre = UNIT
@@ -31,9 +33,10 @@ The normal usage is to define quantity types::
    quantities.
 
 
-Each quantity type must define a **single** canonical unit for measuring
-quantities within this type.  In the previous example it's the `metre`.  That
-unit will be used to actually create a type signature for the quantity type.
+Each quantity type must define a **single** canonical `unit
+<xoutil.dim.meta.UNIT>`:const: for measuring quantities within this type.  In
+the previous example it's the `metre`.  That unit will be used to actually
+create a type signature for the quantity type.
 
 When printed (or ``repr``-ed) quantities use the format
 ``<magnitude>::<signature>``.  The format of the signature is explained in
@@ -125,8 +128,10 @@ class QuantityType(type):
 
     .. attribute:: _unitname_
 
-       The names of canonical unit in the quantity type.  We don't
-       support aliases for the unit.
+       The name of canonical unit in the quantity type.  Notice that `aliases
+       <new>`:meth: are created after the defined canonical unit.  This is the
+       name of the attribute provided in the class definition of the quantity
+       type with value equal to `UNIT`:const:.
 
     .. attribute:: _unit_
 
@@ -142,7 +147,8 @@ class QuantityType(type):
 
     .. _quantities: https://en.wikipedia.org/wiki/Dimensional_analysis
 
-    For instance, `~xoutil.dim.base.Length`:class: has canonical `1 metre`::
+    For instance, `~xoutil.dim.base.Length`:class: has the canonical unit
+    `1 metre`::
 
       >>> Length._unit_ == Length.metre == Quantity(1, Length._signature_)
       True
@@ -198,7 +204,7 @@ class QuantityType(type):
     def new(cls, *source, **kwargs):
         '''Define a new quantity type.
 
-        This is wrapped decorator.  The actual possible signatures are:
+        This is a wrapped decorator.  The actual possible signatures are:
 
            - ``new(unit_alias=None, unit_aliases=None)(source)``
 
@@ -355,7 +361,8 @@ class Signature(object):
     You can multiply and divide signatures and simplification happens
     automatically.
 
-    You *should* signatures as immutable values.
+    You *should* regard signatures as immutable values.  In fact, this is kind
+    of an internal, but interesting, concept of this module.
 
     Examples::
 
@@ -510,18 +517,34 @@ class BareReal(metaclass(_BareRealType)):
 
 @functools.total_ordering
 class Quantity(numbers.Real):
-    '''A concrete number.
+    '''A concrete number of `quantity` (expressed in) `units`.
 
     .. seealso:: https://en.wikipedia.org/wiki/Concrete_number
+
+    :param quantity: A real number.
+    :param units: A `signature <Signature>`:class: for the units the
+                  denominate the given quantity.
+
+    You can construct instances by operating with the attributes of a quantity
+    type.  For instance, this is 5 km:
+
+       >>> from xoutil.dim.base import L
+       >>> 5 * L.km
+       5000::{<Length.metre>}/{}
+
+    A quantity is of the type of is quantity type:
+
+       >>> isinstance(5 * L.km, L)
+       True
 
     '''
     __slots__ = ('magnitude', 'signature')
 
-    def __init__(self, value, signature):
-        if not isinstance(value, BareReal):
+    def __init__(self, quantity, units):
+        if not isinstance(quantity, BareReal):
             raise TypeError('Quantities must be real numbers')
-        self.magnitude = value
-        self.signature = signature
+        self.magnitude = quantity
+        self.signature = units
 
     def __str__(self):
         return '{}::{}'.format(self.magnitude, self.signature)
@@ -685,7 +708,7 @@ SCALAR = Signature()
 
 
 class Scalar(metaclass(QuantityType)):
-    '''A bare value whose signature is empty.
+    '''A quantity whose signature is always *empty*.
 
     Most of the time you should not deal with this quantity.  Any normal
     operation that results in a scalar gets reduced to Python's type:
