@@ -17,7 +17,7 @@
 
 Contexts could be global, host local or application local.  All standard
 `uuid`:mod: tools are included in this one: `UUID`:class:, `uuid1`:func:,
-`uuid3`:func:, `uuid4`:func:, `uuid5`:func:, `getnode`:func:` and standard
+`uuid3`:func:, `uuid4`:func:, `uuid5`:func:, `getnode`:func: and standard
 UUIDs constants `NAMESPACE_DNS`, `NAMESPACE_URL`, `NAMESPACE_OID` and
 `NAMESPACE_X500`.
 

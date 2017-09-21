@@ -61,7 +61,7 @@ def copy_members(source=None, target=None):
 
     It's common in `xoutil` package to extend Python modules with the same
     name, for example `xoutil.datetime` has all public members of Python's
-    `datetime`.  :func:`copy_members` can be used to copy all members from the
+    `datetime`.  `copy_members`:func: can be used to copy all members from the
     original module to the extended one.
 
     :param source: string with source module name or module itself.
@@ -120,7 +120,7 @@ def customize(module, custom_attrs=None, meta=None):
 
     :returns: A tuple of ``(module, customized, class)`` with the module in
               the first place, `customized` will be True only if the module
-              was created (i.e :func:`customize` is idempotent), and the
+              was created (i.e `customize`:func: is idempotent), and the
               third item will be the class of the module (the first item).
 
     '''

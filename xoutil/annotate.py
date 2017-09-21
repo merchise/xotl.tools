@@ -11,7 +11,7 @@
 #
 # Created on 2012-04-03
 
-'''Provides Python 3k forward-compatible (:pep:`3107`) annotations.'''
+'''Provides Python 3k forward-compatible (`3107`:pep:) annotations.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -157,13 +157,13 @@ def annotate(func, signature=None, **keyword_annotations):
     '''Annotates a function with a Python 3k forward-compatible
     ``__annotations__`` mapping.
 
-    See :pep:`3107` for more details about annotations.
+    See `3107`:pep: for more details about annotations.
 
 
     :param signature: A string with the annotated signature of the
         decorated function.
 
-        This string should follow the annotations syntax in :pep:`3107`. But
+        This string should follow the annotations syntax in `3107`:pep:. But
         there are several deviations from the PEP text:
 
        - There's no support for the full syntax of Python 2 expressions; in

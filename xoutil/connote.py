@@ -19,7 +19,7 @@ by.  A predicate is therefore an expression that can be true of something
 (involve as a necessary condition of consequence).  Thus, the expression "is
 moving" is true of those things that are moving.
 
-The main class of this module is :class:`Predicate`.
+The main class of this module is `Predicate`:class:.
 
 .. versionadded:: 1.7.0
 
@@ -42,7 +42,7 @@ class Predicate(object):
       >>> from xoutil.predicate import Predicate
       >>> p = Predicate(int, is_valid_age=lambda age: 0 < age <= 120)
 
-    A lambda wrapper (:func:`lw`) can be used to decorate anonymous functions;
+    A lambda wrapper (`lw`:func:) can be used to decorate anonymous functions;
     so, last declaration is equivalent to::
 
       >>> p = Predicate(int, lw('is_valid_age', lambda age: 0 < age <= 120))
@@ -192,7 +192,7 @@ def _get_checker_name(checker, full=False):
 
     :param full: If True, return a detailed representation of the checker.
 
-    See :class:`Predicate` for possible checker kinds.
+    See `Predicate`:class: for possible checker kinds.
 
     '''
     from xoutil.symbols import boolean

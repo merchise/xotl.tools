@@ -219,12 +219,12 @@ except NameError:
         This is a descriptor, used to define attributes that act differently
         when accessed through an instance and through a class.  Instance
         access remains normal, but access to an attribute through a class will
-        be routed to the class's :meth:`~object.__getattr__`:meth: method;
+        be routed to the class's `~object.__getattr__`:meth: method;
         this is done by raising `AttributeError`:class:.
 
         This allows one to have properties active on an instance, and have
         virtual attributes on the class with the same name (see
-        :class:`~py3:enum.Enum`:class: for an example).
+        `~py3:enum.Enum`:class: for an example).
 
         .. versionadded:: 1.5.5
 
@@ -529,7 +529,7 @@ if __name__ == 'xoutil.types':
     def is_staticmethod(desc, name=_unset):
         '''Returns true if a `method` is a static method.
 
-        This function takes the same arguments as :func:`is_classmethod`.
+        This function takes the same arguments as `is_classmethod`:func:.
 
         '''
         if name:
@@ -553,7 +553,7 @@ if __name__ == 'xoutil.types':
                   descriptor**, i.e, taken from the class' `__dict__`
                   attribute. If instead you pass something like
                   ``cls.methodname``, this method will return False whilst
-                  :func:`is_instancemethod` will return True.
+                  `is_instancemethod`:func: will return True.
 
         :param name: The name of the method, if the first argument is the
                class.
@@ -568,7 +568,7 @@ if __name__ == 'xoutil.types':
         '''Returns true if a given `method` is neither a static method nor a class
         method.
 
-        This function takes the same arguments as :func:`is_classmethod`.
+        This function takes the same arguments as `is_classmethod`:func:.
 
         '''
         if name:
@@ -621,7 +621,7 @@ if __name__ == 'xoutil.types':
             >>> are_instances(int)
             True
 
-        .. seealso:: The function :func:`no_instances` allows to test for
+        .. seealso:: The function `no_instances`:func: allows to test for
                      subjects not being instances of types.
 
         '''
@@ -660,7 +660,7 @@ if __name__ == 'xoutil.types':
         .. note:: This is not the same as ``not are_instances(...)``.
 
            This function requires that *no* subject is an instance of `types`.
-           Negating :func:`are_instances` would be True if *any* subject is
+           Negating `are_instances`:func: would be True if *any* subject is
            not an instance of `types`.
 
         '''

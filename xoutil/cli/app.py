@@ -11,10 +11,10 @@
 #
 # Created on 7 mai 2013
 
-'''A simple :func:`main` entry point for CLI based applications.
+'''A simple `main`:func: entry point for CLI based applications.
 
-This module provides an example of how to use :mod:`xoutil.cli` to create a CLI
-application.
+This module provides an example of how to use `xoutil.cli`:mod: to create a
+CLI application.
 
 '''
 

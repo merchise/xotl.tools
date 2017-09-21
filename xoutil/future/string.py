@@ -146,7 +146,7 @@ def safe_encode(u, encoding=None):
 
     '''
     # TODO: This is not nice for Python 3, bytes is not valid string any more
-    #       See :func:`json.encoder.py_encode_basestring_ascii` of Python 2.x
+    #       See `json.encoder.py_encode_basestring_ascii`:func: of Python 2.x
     from xoutil.eight import string_types, text_type
     if isinstance(u, bytes):
         return u
@@ -717,7 +717,7 @@ def force_str(value, encoding=None):
                      or decoding should be performed on `value`.
 
                      The default is to use the same default as
-                     :func:`safe_encode` or :func:`safe_decode`.
+                     `safe_encode`:func: or :func:`safe_decode`.
 
     .. versionadded:: 1.2.0
 

@@ -15,7 +15,7 @@
 '''Extensions to Python's ``inspect`` module.
 
 You may use it as drop-in replacement of ``inspect``.  Although we don't
-document all items here.  Refer to :mod:`inspect's <inspect>` documentation.
+document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
 
 '''
 

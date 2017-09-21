@@ -83,8 +83,8 @@ if python_version < 3:
 
 
 def __error_info(tb, *args, **kwargs):
-    '''Internal function used by :func:`error_info` and
-    :func:`printable_error_info`.
+    '''Internal function used by `error_info`:func: and
+    `printable_error_info`:func:.
 
     '''
     # TODO: Formalize tests for this
@@ -193,7 +193,7 @@ def printable_error_info(base, *args, **kwargs):
 
     Return a formatted string with all information.
 
-    See :func:`error_info` for an example.
+    See `error_info`:func: for an example.
 
     '''
     import sys
@@ -242,7 +242,7 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
 def object_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
     '''Find an object of the given type through all arguments in stack frames.
 
-    The difference with :func:`object_info_finder` is that this function
+    The difference with `object_info_finder`:func: is that this function
     returns the object directly, not a tuple.
 
     '''

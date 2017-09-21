@@ -23,7 +23,7 @@
 '''Extensions to Python's ``collections`` module.
 
 You may use it as drop-in replacement of ``collections``. Although we don't
-document all items here. Refer to :mod:`collections <collections>`
+document all items here. Refer to `collections <collections>`:mod:
 documentation.
 
 '''
@@ -316,7 +316,7 @@ class SmartDictMixin(object):
 
     Note on using mixins in Python: method resolution order is calculated in
     the order of inheritance, if a mixin is defined to overwrite behavior
-    already existent, use first that classes with it. See :class:`SmartDict`
+    already existent, use first that classes with it. See `SmartDict`:class:
     below.
 
     '''
@@ -327,7 +327,7 @@ class SmartDictMixin(object):
         Each positional argument could be:
 
         - another mapping (any object implementing "keys" and
-          :meth:`~object.__getitem__` methods.
+          `~object.__getitem__`:meth: methods.
 
         - an iterable of (key, value) pairs.
 
@@ -368,7 +368,7 @@ class SmartDictMixin(object):
 class SmartDict(SmartDictMixin, dict):
     '''A "smart" dictionary that can receive a wide variety of arguments.
 
-    See :meth:`SmartDictMixin.update` and :meth:`SmartDictMixin.search`.
+    See `SmartDictMixin.update`:meth: and :meth:`SmartDictMixin.search`.
 
     '''
     def __init__(*args, **kwargs):
@@ -1561,21 +1561,21 @@ if python_version < 3.3:
 class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
     '''A multi-level mapping.
 
-    A level is entered by using the :meth:`push` and is leaved by calling
-    :meth:`pop`.
+    A level is entered by using the `push`:meth: and is leaved by calling
+    `pop`:meth:.
 
-    The property :attr:`level` returns the actual number of levels.
+    The property `level`:attr: returns the actual number of levels.
 
     When accessing keys they are searched from the latest level "upwards", if
     such a key does not exists in any level a KeyError is raised.
 
     Deleting a key only works in the *current level*; if it's not defined there
     a KeyError is raised. This means that you can't delete keys from the upper
-    levels without :func:`popping <pop>`.
+    levels without `popping <pop>`:func:.
 
     Setting the value for key, sets it in the current level.
 
-    .. versionchanged:: 1.5.2 Based on the newly introduced :class:`ChainMap`.
+    .. versionchanged:: 1.5.2 Based on the newly introduced `ChainMap`:class:.
 
     '''
     __slots__ = (safe.slot('inner', ChainMap),
@@ -1591,8 +1591,8 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
     def level(self):
         '''Return the current level number.
 
-        The first level is 0.  Calling :meth:`push` increases the current
-        level (and returns it), while calling :meth:`pop` decreases the
+        The first level is 0.  Calling `push`:meth: increases the current
+        level (and returns it), while calling `pop`:meth: decreases the
         current level (if possible).
 
         '''
@@ -1606,7 +1606,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
         :param kwargs: Values to fill the new level.
 
-        :returns: The pushed :attr:`level` number.
+        :returns: The pushed `level`:attr: number.
 
         '''
         self.inner = self.inner.new_child()
