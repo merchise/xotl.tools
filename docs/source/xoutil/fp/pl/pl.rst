@@ -1,5 +1,5 @@
 ========================================
- :mod:`xoutil.fp.pl` -- Predicate Logic
+ `xoutil.fp.pl`:mod: -- Predicate Logic
 ========================================
 
 .. automodule:: xoutil.fp.pl

@@ -40,7 +40,7 @@ from xoutil.deprecation import deprecated
 
 @deprecated(fp.pos_args)
 class ctuple(fp.pos_args):
-    '''Simple tuple marker for :func:`compose`.
+    '''Simple tuple marker for `compose`:func:.
 
     Since is a callable you may use it directly in ``compose`` instead of
     changing your functions to returns ctuples instead of tuples::
@@ -70,7 +70,7 @@ def compose(*callables, **kwargs):
     is to say that ``compose(f1, ... fn)`` is equivalent to ``lambda _x:
     fn(...(f1(_x))...)``.
 
-    If any "intermediate" function returns a :class:`ctuple` it is expanded as
+    If any "intermediate" function returns a `ctuple`:class: it is expanded as
     several positional arguments to the next function.
 
     .. versionchanged:: 1.5.5 At least a callable must be passed, otherwise a
@@ -99,6 +99,7 @@ def compose(*callables, **kwargs):
     return fp.compose(*reversed(callables))
 
 
+# TODO: Check relevance of the following function.
 # The real signature should be (*funcs, times)
 def power(*args):
     '''Returns the "power" composition of several functions.
@@ -117,6 +118,7 @@ def power(*args):
 
     '''
     from xoutil.fp.params import check_count
+    from xoutil.fp.tools import compose
     check_count(args, 2, caller='power')
     funcs, times = args[:-1], args[-1]
     if any(not callable(func) for func in funcs):

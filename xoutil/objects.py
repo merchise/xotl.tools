@@ -110,7 +110,7 @@ class SafeDataItem(object):
           the following names: `validator`, `checker` or `check`.  The checker
           could be a type, a tuple of types, a function receiving the value
           and return True or False, or a list containing arguments to use
-          :func:`xoutil.validators.check`.
+          `xoutil.validators.check`:func:.
 
         - Boolean `False` to avoid assigning the descriptor in the class
           context with the keyword argument `do_assigning`.  Any other value
@@ -662,7 +662,7 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None,
 
 # TODO: Fix signature after removal of attr_filter and value_filter
 def fdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None):
-    '''Similar to :func:`xdir` but yields only the attributes names.'''
+    '''Similar to `xdir`:func: but yields only the attributes names.'''
     full = xdir(obj,
                 filter=filter,
                 attr_filter=attr_filter,
@@ -771,7 +771,7 @@ def get_first_of(source, *keys, **kwargs):
     '''Return the value of the first occurrence of any of the specified `keys`
     in `source` that matches `pred` (if given).
 
-    Both `source` and `keys` has the same meaning as in :func:`iterate_over`.
+    Both `source` and `keys` has the same meaning as in `iterate_over`:func:.
 
     :param default: A value to be returned if no key is found in `source`.
 
@@ -901,7 +901,7 @@ get_and_del_attr = deprecated(popattr)(popattr)
 
 
 class lazy(object):
-    '''Marks a value as a lazily evaluated value. See :func:`setdefaultattr`.
+    '''Marks a value as a lazily evaluated value. See `setdefaultattr`:func:.
 
     '''
     def __init__(self, value, *args, **kwargs):
@@ -1228,13 +1228,12 @@ def smart_copy(*args, **kwargs):
     and one of its key is not found in any of the `sources`, then the value of
     the key in the dictionary is copied to `target` unless:
 
-    - It's the value :class:`xoutil.future.types.Required` or an instance of
-      Required.
+    - It's the value `~xoutil.symbols.Undefined`.
 
     - An exception object
 
     - A sequence with is first value being a subclass of Exception. In which
-      case :class:`adapt_exception` is used.
+      case `adapt_exception`:class: is used.
 
     In these cases a KeyError is raised if the key is not found in the
     sources.
@@ -1266,7 +1265,7 @@ def smart_copy(*args, **kwargs):
     '''
     from xoutil.eight import base_string, type_name, callable
     from xoutil.future.collections import MutableMapping, Mapping
-    from xoutil.types import Required
+    from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
     from xoutil.cl.simple import logic_iterable_coerce, nil
     defaults = kwargs.pop('defaults', False)
@@ -1296,7 +1295,7 @@ def smart_copy(*args, **kwargs):
                 else:
                     val = None
                 exc = adapt_exception(val, key=key)
-                if exc or val is Required or isinstance(val, Required):
+                if exc or val is Undefined:
                     raise KeyError(key)
             setter(key, val)
     else:
@@ -1380,7 +1379,7 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
     You may provide `sep` to change the default separator.
 
     You may provide a custom `getter`.  By default, does an
-    :func:`smart_getter` over the objects. If provided `getter` should have
+    `smart_getter`:func: over the objects. If provided `getter` should have
     the signature of `getattr`:func:.
 
     See `get_traverser`:func: if you need to apply the same path(s) to several
@@ -1449,12 +1448,12 @@ def dict_merge(*dicts, **others):
     Merging is similar to updating a dict, but if values are non-scalars they
     are also merged is this way:
 
-    - Any two :class:`sequences <collection.Sequence>` or :class:`sets
+    - Any two `sequences <collection.Sequence>`:class: or :class:`sets
       <collections.Set>` are joined together.
 
     - Any two mappings are recursively merged.
 
-    - Other types are just replaced like in :func:`update`.
+    - Other types are just replaced like in `update`:func:.
 
     If for a single key two values of incompatible types are found, raise a
     TypeError.  If the values for a single key are compatible but different
@@ -1466,10 +1465,8 @@ def dict_merge(*dicts, **others):
     Without arguments, return the empty dict.
 
     '''
-    from collections import Mapping, Sequence, Set
+    from collections import Mapping, Sequence, Set, Container
     from xoutil.eight import iteritems
-    from xoutil.objects import get_first_of
-    from xoutil.types import are_instances, no_instances
     if others:
         dicts = dicts + (others, )
     dicts = list(dicts)
@@ -1482,16 +1479,16 @@ def dict_merge(*dicts, **others):
                 val = {key: val[key] for key in val}
             value = result.setdefault(key, val)
             if value is not val:
-                if are_instances(value, val, collections):
+                if all(isinstance(v, collections) for v in (value, val)):
                     join = get_first_of((value, ), '__add__', '__or__')
                     if join:
                         constructor = type(value)
                         value = join(constructor(val))
                     else:
                         raise ValueError("Invalid value for key '%s'" % key)
-                elif are_instances(value, val, Mapping):
+                elif all(isinstance(v, Mapping) for v in (value, val)):
                     value = dict_merge(value, val)
-                elif no_instances(value, val, (Set, Sequence, Mapping)):
+                elif all(not isinstance(v, Container) for v in (value, val)):
                     value = val
                 else:
                     raise TypeError("Found incompatible values for key '%s'"

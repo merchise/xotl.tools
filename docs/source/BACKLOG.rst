@@ -11,11 +11,7 @@ Python 2 and 3 Compatibility
    :maxdepth: 1
    :glob:
 
-   backlog/misc
-   backlog/backlog-six2eight
-   backlog/inspect
-   backlog/glob
-   backlog/backlog-monads
+   backlog/*
 
 
 All pending tasks listed

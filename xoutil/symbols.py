@@ -91,7 +91,7 @@ class MetaSymbol(type):
 class symbol(metaclass(MetaSymbol), int):
     '''Instances are custom symbols.
 
-    See :meth:`~MetaSymbol.__getitem__` operator for information on
+    See `~MetaSymbol.__getitem__`:meth: operator for information on
     constructor arguments.
 
     For example::
@@ -159,7 +159,7 @@ class symbol(metaclass(MetaSymbol), int):
 class boolean(symbol):
     '''Instances are custom logical values (`True` or `False`).
 
-    See :meth:`~MetaSymbol.__getitem__` operator for information on
+    See `~MetaSymbol.__getitem__`:meth: operator for information on
     constructor arguments.
 
     For example::

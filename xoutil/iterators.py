@@ -169,7 +169,10 @@ def dict_update_new(target, source, fail=False):
 
 @deprecated('generator expression')
 def fake_dict_iteritems(source):
-    '''Iterate (key, value) in a source that have defined method "keys" and :meth:`~object.__getitem__`.
+    '''Iterate (key, value) in a source fake mapping.
+
+    A fake mapping must define at least methods `keys` and
+    `~object.__getitem__`:meth:.
 
     .. warning:: Deprecated since 1.7.0.  This was actually in risk since
                  1.4.0.
@@ -187,8 +190,8 @@ def delete_duplicates(seq, key=lambda x: x):
     Two items ``x`` and ``y`` are considered equal (duplicates) if
     ``key(x) == key(y)``.  By default `key` is the identity function.
 
-    Works with any sequence that supports :func:`len`,
-    :meth:`~object.__getitem__` and `addition <object.__add__>`:meth:.
+    Works with any sequence that supports `len`:func:,
+    `~object.__getitem__`:meth:, and `addition <object.__add__>`:meth:.
 
     .. note:: ``seq.__getitem__`` should work properly with slices.
 
@@ -249,7 +252,7 @@ def slides(iterable, width=2, fill=None):
         [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, None, None)]
 
     .. versionchanged:: 1.4.0 If the `fill` argument is a collection is cycled
-                        over to get the filling, just like in :func:`first_n`.
+                        over to get the filling, just like in `first_n`:func:.
 
     .. versionchanged:: 1.4.2 The `fill` argument now defaults to None,
                         instead of Unset.
@@ -282,7 +285,7 @@ def slides(iterable, width=2, fill=None):
 
 
 def continuously_slides(iterable, width=2, fill=None):
-    '''Similar to :func:`slides` but moves one item at the time (i.e
+    '''Similar to `slides`:func: but moves one item at the time (i.e
     continuously).
 
     `fill` is only used to fill the fist chunk if the `iterable` has less
@@ -313,7 +316,7 @@ def first_n(iterable, n=1, fill=Unset):
     '''Takes the first `n` items from iterable.
 
     If there are less than `n` items in the iterable and `fill` is
-    :class:`~xoutil.Unset`, a StopIteration exception is raised; otherwise
+    `~xoutil.Unset`:class:, a StopIteration exception is raised; otherwise
     it's used as a filling pattern as explained below.
 
     :param iterable: An iterable from which the first `n` items should be

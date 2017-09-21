@@ -49,7 +49,7 @@ PASS_PHRASE_LEVEL_MAPPED_DATED = 3
 #: Totally scramble the result, making very hard to predict the result.
 PASS_PHRASE_LEVEL_STRICT = 4
 
-#: The default level for :func:`generate_password`
+#: The default level for `generate_password`:func:
 DEFAULT_PASS_PHRASE_LEVEL = PASS_PHRASE_LEVEL_MAPPED_DATED
 
 
@@ -101,26 +101,26 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
 
     There are several definitions with numerical values for `level` (0-4):
 
-    :data:`PASS_PHRASE_LEVEL_BASIC`
+    `PASS_PHRASE_LEVEL_BASIC`:data:
 
         Generate the same pass-phrase, just removing invalid characters and
         converting the result to lower-case.
 
-    :data:`PASS_PHRASE_LEVEL_MAPPED`
+    `PASS_PHRASE_LEVEL_MAPPED`:data:
 
         Replace some characters with new values: ``'e'->'3'``, ``'i'->'1'``,
         ``'o'->'0'``, ``'s'->'5'``.
 
-    :data:`PASS_PHRASE_LEVEL_MAPPED_MIXED`
+    `PASS_PHRASE_LEVEL_MAPPED_MIXED`:data:
 
         Consonants characters before 'M' (included) are converted to
         upper-case, all other are kept lower-case.
 
-    :data:`PASS_PHRASE_LEVEL_MAPPED_DATED`
+    `PASS_PHRASE_LEVEL_MAPPED_DATED`:data:
 
         Adds a suffix with the year of current date ("<YYYY>").
 
-    :data:`PASS_PHRASE_LEVEL_STRICT`
+    `PASS_PHRASE_LEVEL_STRICT`:data:
 
         Randomly scramble previous result until unbreakable strong password is
         obtained.

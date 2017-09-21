@@ -132,7 +132,7 @@ class record(metaclass(_record_type)):
     underscore ("_").  External data lines are required to support indexes of
     those types.
 
-    You could use either the classmethod :func:`get_field` to get the value of
+    You could use either the classmethod `get_field`:func: to get the value of
     field in a single line (data as provided by the external source)::
 
         >>> line = (1, 'AA20X138874Z012')

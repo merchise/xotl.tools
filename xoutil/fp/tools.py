@@ -92,14 +92,19 @@ class compose(metaclass(MetaCompose)):
         count = len(functions)
         if count == 0:
             return identity
-        elif count == 1:
-            return functions[0]
         else:
-            from xoutil.symbols import Unset
-            self = super(compose, cls).__new__(cls)
-            self.inner = functions
-            self.scope = Unset
-            return self
+            from xoutil.eight import callable
+            if all(callable(f) for f in functions):
+                if count == 1:
+                    return functions[0]
+                else:
+                    from xoutil.symbols import Unset
+                    self = super(compose, cls).__new__(cls)
+                    self.inner = functions
+                    self.scope = Unset
+                    return self
+            else:
+                raise TypeError('at least one argument is not callable')
 
     def __call__(self, *args, **kwds):
         funcs = self.inner

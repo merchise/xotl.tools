@@ -1,5 +1,5 @@
 ==========================================================
- :mod:`xoutil.fp.tools` -- High-level pure function tools
+ `xoutil.fp.tools`:mod: -- High-level pure function tools
 ==========================================================
 
 .. automodule:: xoutil.fp.tools
