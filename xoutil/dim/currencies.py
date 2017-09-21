@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.dim.app.currencies
+# xoutil.dim.currencies
 # ---------------------------------------------------------------------
 # Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
@@ -21,7 +21,7 @@ exchange with a given rate.
 
 This module support the family of currencies.  Usage::
 
-  >>> from xoutil.dim.app.currencies import Rate, Valuation, currency
+  >>> from xoutil.dim.currencies import Rate, Valuation, currency
   >>> dollar = USD = currency('USD')
   >>> euro = EUR = currency('EUR')
   >>> rate = 1.19196 * USD/EUR
@@ -79,7 +79,7 @@ from xoutil.eight.meta import metaclass
 
 class ValueType(type):
     def __instancecheck__(self, which):
-        from ..meta import Quantity
+        from .meta import Quantity
         if isinstance(which, Quantity):
             return any(
                 which.signature is currency.signature
@@ -95,7 +95,7 @@ class Valuation(metaclass(ValueType)):
 
 class RateType(type):
     def __instancecheck__(self, which):
-        from ..meta import Quantity
+        from .meta import Quantity
         if isinstance(which, Quantity):
             top, bottom = which.signature.top, which.signature.bottom
             if len(top) == len(bottom) == 1:
@@ -116,7 +116,7 @@ class _Currency(object):
     units = {}
 
     def __new__(cls, name):
-        from ..meta import Quantity, Signature
+        from .meta import Quantity, Signature
         name = name.upper()
         res = cls.instances.get(name, None)
         if res is None:

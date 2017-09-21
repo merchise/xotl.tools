@@ -1,8 +1,8 @@
-======================================================================
- `xoutil.dim.app.standard`:mod: - The standard `physical quantities`_
-======================================================================
+==========================================================
+ `xoutil.dim.base`:mod: - The base `physical quantities`_
+==========================================================
 
-.. automodule:: xoutil.dim.app.standard
+.. automodule:: xoutil.dim.base
 
 .. autoclass:: Length
 
@@ -163,26 +163,88 @@ Derived quantities
 
    Defined as `L`:class:\ ``**2``.
 
+   .. attribute:: metre_squared
+
+      The canonical unit.
+
 .. class:: Volume
 
    Defined as `L`:class:\ ``**3``.
+
+   .. attribute:: metre_cubic
+
+      The canonical unit.
+
 
 .. class:: Frequency
 
    Defined as `T`:class:\ ``**-1`` (which is the same as ``1/T``).
 
+   .. attribute:: unit_per_second
+
+      The canonical unit.
+
+   Aliases of the canonical unit:
+
+   .. attribute:: Hz
+
+
 .. class:: Force
 
    Defined as `L`:class: ``*`` `M`:class: ``*`` `T`:class:\ ``**-2``.
+
+   .. attribute:: metre_kilogram_per_second_squared
+
+      The canonical unit.
+
+   Aliases of the canonical unit:
+
+   .. attribute:: N
+   .. attribute:: Newton
 
 .. class:: Presure
 
    Defined as `L`:class:\ ``**-1 *`` `M`:class: ``*`` `T`:class:\ ``**-2``.
 
+   .. attribute:: kilogram_per_metre_per_second_squared
+
+   Aliases of the canonical unit:
+
+   .. attribute:: pascal
+   .. attribute:: Pa
+
 .. class:: Velocity
 
    Defined as `L`:class: ``*`` `T`:class:\ ``**-1``.
 
+   .. attribute:: metre_per_second
+
+      The canonical unit.
+
 .. class:: Acceleration
 
    Defined as `L`:class: ``*`` `T`:class:\ ``**-2``.
+
+   .. attribute:: metre_per_second_squared
+
+      The canonical unit.
+
+
+On the automatically created names for derived quantities
+=========================================================
+
+We automatically create the name of the canonical unit of quantities derived
+from others by simply rules:
+
+- ``A * B`` joins the canonical unit names together with a low dash '_' in
+  between.  Let's represent it as `a_b`, where `a` stands for the name of the
+  canonical unit of ``A`` and `b`, the canonical unit of ``B``.
+
+  For the case, ``A * A`` the unit name is `a_squared`.
+
+- ``A/B`` gets the name `a_per_b`.  ``1/A`` gets the attribute `unit_per_a`
+
+- ``A**n``; when ``n=1`` this is the same as ``A``; when ``n=2`` this is the
+  same as ``A * A``; for other positive values of ``n``, the canonical unit
+  name is `a_pow_n`; for negative values of ``n`` is the same as ``1/A**n``;
+  for ``n=0`` this is the `~xoutil.dim.meta.Scalar`:class: quantity.

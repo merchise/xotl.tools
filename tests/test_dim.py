@@ -22,19 +22,19 @@ from hypothesis import given, strategies as s
 from xoutil.dim.meta import (
     Signature,
     Quantity,
-    QuantityType,
+    Dimension,
     Scalar,
     UNIT,
 )
 
 
 def test_usage():
-    @QuantityType.new
+    @Dimension.new
     class L(object):
         metre = UNIT
         kilometre = 1000 * metre
 
-    @QuantityType.new
+    @Dimension.new
     class T(object):
         second = UNIT
 
@@ -75,11 +75,11 @@ def test_usage():
 
 
 def test_effort():
-    @QuantityType.new
+    @Dimension.new
     class Workforce(object):
         men = UNIT
 
-    @QuantityType.new
+    @Dimension.new
     class Time(object):
         second = UNIT
 
@@ -93,7 +93,7 @@ def test_effort():
 
 
 def test_scalar_downgrade():
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     km = L.km
     assert not isinstance(km / km, Quantity)
     assert km / km == 1
@@ -105,7 +105,7 @@ def test_scalar_downgrade():
 
 
 def test_natural_downgrade():
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     km, cm = L.km, L.cm
     assert float(km) == 1000
     assert int(cm) == 0
@@ -113,7 +113,7 @@ def test_natural_downgrade():
 
 def test_decimals():
     import decimal
-    from xoutil.dim.app.standard import m
+    from xoutil.dim.base import m
     with pytest.raises(TypeError):
         third = decimal.Decimal('0.33') * m
         assert third < m
@@ -154,11 +154,11 @@ def test_quantity_math():
 
 
 def test_quantity_type_definitions():
-    from xoutil.dim.app.standard import Length, Time
-    assert isinstance(Length, QuantityType)
-    assert isinstance(Time, QuantityType)
-    assert isinstance(Length / Time, QuantityType)
-    assert isinstance(Length**2, QuantityType)
+    from xoutil.dim.base import Length, Time
+    assert isinstance(Length, Dimension)
+    assert isinstance(Time, Dimension)
+    assert isinstance(Length / Time, Dimension)
+    assert isinstance(Length**2, Dimension)
     assert Length * Length == Length**2
 
     assert Time / Time == Scalar
@@ -175,9 +175,7 @@ def test_quantity_type_definitions():
     with pytest.raises(TypeError):
         Length**1.2
 
-    with pytest.raises(TypeError):
-        Length**0
-
+    assert Length**0 == Scalar
     assert Length**-1 == 1 / Length
 
     with pytest.raises(TypeError):
@@ -187,15 +185,26 @@ def test_quantity_type_definitions():
         2 * Length
 
 
+# A reasonable exponent.  We won't be dealing with universes of 100s
+# dimensions.
+exponents = s.integers(min_value=1, max_value=100)
+
+
+@given(exponents, exponents)
+def test_general_power_rules(n, m):
+    from xoutil.dim.base import L
+    assert L**n / L**m == L**(n - m)
+
+
 @given(s.floats(allow_nan=False) | s.integers())
 def test_any_magnitude(m):
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     assert float(m * L.metre) == float(m)
 
 
 @given(s.floats(allow_nan=False, allow_infinity=False) | s.integers())
 def test_any_magnitude_noinf(m):
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
     from math import ceil, floor
     from six import integer_types
     Int = integer_types[-1]
@@ -205,7 +214,7 @@ def test_any_magnitude_noinf(m):
 
 
 def test_currencies():
-    from xoutil.dim.app.currencies import Rate, Valuation, currency
+    from xoutil.dim.currencies import Rate, Valuation, currency
     dollar = USD = currency('USD')
     euro = EUR = currency('EUR')
     rate = 1.19196 * USD / EUR
@@ -227,15 +236,15 @@ def test_currencies():
 
 
 def test_undistinguishable_definitions():
-    from xoutil.dim.app.standard import L
+    from xoutil.dim.base import L
 
-    @QuantityType.new
+    @Dimension.new
     class Length(object):
         metre = UNIT
 
     assert L.metre == Length.metre
 
-    @QuantityType.new
+    @Dimension.new
     class Length(object):
         km = UNIT
 

@@ -1,25 +1,22 @@
-`xoutil.eight`:mod: - Python 2 to Python 3 compatibility
-========================================================
+================================================================================
+ `xoutil.eight`:mod: -- Extensions for writing code that runs on Python 2 and 3
+================================================================================
 
-There is another module (`xoutil.future`:mod:) that is somewhat similar, but
-not exactly: `~xoutil.eight`:mod: creates peer compatibility (stuffs that are
-in both major version but in different syntax shapes); and
-`~xoutil.future`:mod: contains extensions that are implemented in Python 3 (or
-must be) but they are not currently supported at all in Python 2.
+.. module:: xoutil.eight
 
-.. automodule:: xoutil.eight
+.. TODO: check automodule\ :\ : xoutil.eight
    :members:
 
+The name comes from (Manu's idea') "2 raised to the power of 3".
 
-Tools
-=====
+This module is divided in several parts.
 
-.. automodule:: xoutil.eight.meta
-   :members: metaclass
+.. toctree::
+   :glob:
 
-.. automodule:: xoutil.eight.io
-   :members: is_file_like
-
-.. automodule:: xoutil.eight.exceptions
-
-.. automodule:: xoutil.eight.abc
+   eight/meta
+   eight/types
+   eight/io
+   eight/exceptions
+   eight/abc
+   eight/*
