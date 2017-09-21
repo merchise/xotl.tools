@@ -218,3 +218,8 @@ def test_union_is_illdefined(ts1, ts2):
     day = timedelta(1)
     for x in daterange(union.start_date, union.end_date + day):
         assert x in ts1 or x in ts2
+
+
+@given(time_span('none'), time_span('none'))
+def test_definition_of_overlaps(ts1, ts2):
+    assert ts1.overlaps(ts2) == bool(ts1 & ts2)

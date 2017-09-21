@@ -595,7 +595,7 @@ class TimeSpan(object):
 
     def overlaps(self, other):
         '''Test if the time spans overlaps.'''
-        return self <= other or other <= self
+        return bool(self & other)
 
     def isdisjoint(self, other):
         return not self.overlaps(other)
