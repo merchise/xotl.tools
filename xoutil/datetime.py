@@ -513,13 +513,14 @@ class TimeSpan(object):
     A bound time span is `valid`:attr: if its start date comes before its end
     date.
 
-    Time spans can `intersect <__mul__>`:meth:, be `merged <__add__>`:meth:
-    and compared for containment and subset/superset order.  In this regard,
-    they represent the *set* of dates between `start` and `end`, inclusively.
+    Time spans can `intersect <__mul__>`:meth:, compared for containment of
+    dates and by the subset/superset order operations (``<=``, ``>=``).  In
+    this regard, they represent the *set* of dates between `start` and `end`,
+    inclusively.
 
-    .. warning:: Time spans don't implement the difference operation expected
-       in sets because the difference of two span is not necessarily
-       *continuous*.
+    .. warning:: Time spans don't implement the union or difference operations
+       expected in sets because the difference/union of two span is not
+       necessarily *continuous*.
 
     '''
     start_date = DateField('start_date', nullable=True)
@@ -595,7 +596,7 @@ class TimeSpan(object):
 
     def overlaps(self, other):
         '''Test if the time spans overlaps.'''
-        return self <= other or other <= self
+        return bool(self & other)
 
     def isdisjoint(self, other):
         return not self.overlaps(other)
@@ -685,40 +686,6 @@ class TimeSpan(object):
         import operator
         from functools import reduce
         return reduce(operator.mul, others, self)
-
-    def __or__(self, other):
-        'Return the union of both time spans.'
-        import datetime
-        from .infinity import Infinity
-        from xoutil.context import context
-        if isinstance(other, _EmptyTimeSpan):
-            return self
-        elif isinstance(other, datetime.date):
-            other = TimeSpan.from_date(other)
-        elif not isinstance(other, TimeSpan):
-            raise TypeError
-        with context(NEEDS_FLEX_DATE):
-            start = min(
-                self.start_date or -Infinity,
-                other.start_date or -Infinity
-            )
-            end = max(
-                self.end_date or Infinity,
-                other.end_date or Infinity
-            )
-        if start <= end:
-            if start is -Infinity:
-                start = None
-            if end is Infinity:
-                end = None
-            return type(self)(start, end)
-        else:
-            return EmptyTimeSpan
-    __add__ = __or__
-
-    def union(self, *others):
-        'Return ``self [| other1 | ...]``.'
-        return sum(self, *others)
 
     def __repr__(self):
         start, end = self
