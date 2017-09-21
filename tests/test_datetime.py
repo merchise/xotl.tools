@@ -208,6 +208,7 @@ def test_operate_with_timespans(ts, d):
     assert d - ts.start_date is not None
 
 
+@pytest.mark.xfail()
 @given(time_span('none'), time_span('none'))
 def test_union_is_illdefined(ts1, ts2):
     from xoutil.datetime import timedelta, daterange
