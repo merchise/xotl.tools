@@ -206,3 +206,14 @@ def test_ts_returns_dates_not_subtypes(ts):
 def test_operate_with_timespans(ts, d):
     assert ts.start_date - d is not None
     assert d - ts.start_date is not None
+
+
+@given(time_span('none'), time_span('none'))
+def test_union_is_illdefined(ts1, ts2):
+    from xoutil.datetime import timedelta, daterange
+    # Test ts1 | ts2 contains elements which are not members of ts1 nor ts2.
+    hypothesis.assume(not (ts1 & ts2))
+    union = ts1 | ts2
+    day = timedelta(1)
+    for x in daterange(union.start_date, union.end_date + day):
+        assert x in ts1 or x in ts2
