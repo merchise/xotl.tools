@@ -45,13 +45,6 @@
 
    .. automethod:: intersection
 
-   .. automethod:: __or__
-   .. method:: __add__
-
-      An alias for `__or__`:meth:.
-
-   .. automethod:: union
-
 
 .. object:: EmptyTimeSpan
 
