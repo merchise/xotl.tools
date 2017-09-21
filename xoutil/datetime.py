@@ -686,40 +686,6 @@ class TimeSpan(object):
         from functools import reduce
         return reduce(operator.mul, others, self)
 
-    def __or__(self, other):
-        'Return the union of both time spans.'
-        import datetime
-        from .infinity import Infinity
-        from xoutil.context import context
-        if isinstance(other, _EmptyTimeSpan):
-            return self
-        elif isinstance(other, datetime.date):
-            other = TimeSpan.from_date(other)
-        elif not isinstance(other, TimeSpan):
-            raise TypeError
-        with context(NEEDS_FLEX_DATE):
-            start = min(
-                self.start_date or -Infinity,
-                other.start_date or -Infinity
-            )
-            end = max(
-                self.end_date or Infinity,
-                other.end_date or Infinity
-            )
-        if start <= end:
-            if start is -Infinity:
-                start = None
-            if end is Infinity:
-                end = None
-            return type(self)(start, end)
-        else:
-            return EmptyTimeSpan
-    __add__ = __or__
-
-    def union(self, *others):
-        'Return ``self [| other1 | ...]``.'
-        return sum(self, *others)
-
     def __repr__(self):
         start, end = self
         return 'TimeSpan(%r, %r)' % (start.isoformat() if start else None,
