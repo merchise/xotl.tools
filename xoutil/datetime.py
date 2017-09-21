@@ -513,13 +513,14 @@ class TimeSpan(object):
     A bound time span is `valid`:attr: if its start date comes before its end
     date.
 
-    Time spans can `intersect <__mul__>`:meth:, be `merged <__add__>`:meth:
-    and compared for containment and subset/superset order.  In this regard,
-    they represent the *set* of dates between `start` and `end`, inclusively.
+    Time spans can `intersect <__mul__>`:meth:, compared for containment of
+    dates and by the subset/superset order operations (``<=``, ``>=``).  In
+    this regard, they represent the *set* of dates between `start` and `end`,
+    inclusively.
 
-    .. warning:: Time spans don't implement the difference operation expected
-       in sets because the difference of two span is not necessarily
-       *continuous*.
+    .. warning:: Time spans don't implement the union or difference operations
+       expected in sets because the difference/union of two span is not
+       necessarily *continuous*.
 
     '''
     start_date = DateField('start_date', nullable=True)
