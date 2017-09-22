@@ -12,7 +12,7 @@
 # package.
 #
 # Based on code submitted to comp.lang.python by Andrew Dalke, copied from
-# DJango and generalized.
+# Django and generalized.
 #
 # Created on 2012-02-15
 # Migrated to 'future' on 2016-09-13
@@ -70,7 +70,7 @@ class ISOWEEKDAY:
 
 
 try:
-    date(1800, 1, 1).strftime("%Y")
+    date(1800, 1, 1).strftime("%Y")    # noqa
 except ValueError:
     # This happens in Pytnon 2.7, I was considering to replace `strftime`
     # function from `time` module, that is used for all `strftime` methods;
@@ -142,18 +142,25 @@ else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
 
 
-if __name__ == 'xoutil.datetime':
-    # to be deprecated
-    def new_date(d):
-        '''Generate a safe date from a legacy datetime date object.'''
-        return date(d.year, d.month, d.day)
 
-    def new_datetime(d):
-        '''Generate a safe datetime give a legacy date or datetime object.'''
-        args = [d.year, d.month, d.day]
-        if isinstance(d, datetime.__base__):    # legacy datetime
-            args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
-        return datetime(*args)
+from xoutil.deprecation import deprecated    # noqa
+
+
+@deprecated(assure)
+def new_date(d):
+    '''Generate a safe date from a legacy datetime date object.'''
+    return date(d.year, d.month, d.day)
+
+
+@deprecated(assure)
+def new_datetime(d):
+    '''Generate a safe datetime given a legacy date or datetime object.'''
+    args = [d.year, d.month, d.day]
+    if isinstance(d, datetime.__base__):    # legacy datetime
+        args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
+    return datetime(*args)
+
+del deprecated
 
 
 # This library does not support strftime's "%s" or "%y" format strings.
@@ -216,12 +223,11 @@ def strfdelta(delta):
 
 
 def strftime(dt, fmt):
-    '''Used in `strftime` method of `date` and `datetime` redefined classes.
+    '''Used as `strftime` method of `date` and `datetime` redefined classes.
 
     Also could be used with standard instances.
 
     '''
-    import time
     if dt.year >= 1900:
         bases = type(dt).mro()
         i = 0
@@ -344,9 +350,10 @@ class flextime(timedelta):
 
 
 # TODO: Merge this with the new time span.
-# daterange([start,] stop[, step])
 def daterange(*args):
-    '''Returns an iterator that yields each date in the range of ``[start,
+    '''Similar to standard 'range' function, but for date objets.
+
+    Returns an iterator that yields each date in the range of ``[start,
     stop)``, not including the stop.
 
     If `start` is given, it must be a date (or `datetime`) value; and in this
