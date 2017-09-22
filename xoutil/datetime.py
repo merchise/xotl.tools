@@ -14,7 +14,7 @@
 # Based on code submitted to comp.lang.python by Andrew Dalke, copied from
 # Django and generalized.
 #
-# Created on Feb 15, 2012
+# Created on 2012-02-15
 
 '''Extends the standard `datetime` module.
 
@@ -30,18 +30,14 @@ You may use this module as a drop-in replacement of the standard library
 
 '''
 
-# TODO: Consider use IoC to extend python datetime module
-
-
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import sys
 
 from datetime import *    # noqa
-from xoutil.deprecation import deprecated
+import datetime as _stdlib    # noqa
 
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
@@ -69,7 +65,7 @@ class ISOWEEKDAY:
 
 
 try:
-    date(1800, 1, 1).strftime("%Y")
+    date(1800, 1, 1).strftime("%Y")    # noqa
 except ValueError:
     # This happens in Pytnon 2.7, I was considering to replace `strftime`
     # function from `time` module, that is used for all `strftime` methods;
@@ -141,6 +137,10 @@ else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
 
 
+
+from xoutil.deprecation import deprecated    # noqa
+
+
 @deprecated(assure)
 def new_date(d):
     '''Generate a safe date from a legacy datetime date object.'''
@@ -149,14 +149,13 @@ def new_date(d):
 
 @deprecated(assure)
 def new_datetime(d):
-    '''Generate a safe "datetime" from a "datetime.date" or "datetime.datetime"
-    object.
-
-    '''
+    '''Generate a safe datetime given a legacy date or datetime object.'''
     args = [d.year, d.month, d.day]
     if isinstance(d, datetime.__base__):    # legacy datetime
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
     return datetime(*args)
+
+del deprecated
 
 
 # This library does not support strftime's "%s" or "%y" format strings.
@@ -219,6 +218,11 @@ def strfdelta(delta):
 
 
 def strftime(dt, fmt):
+    '''Used as `strftime` method of `date` and `datetime` redefined classes.
+
+    Also could be used with standard instances.
+
+    '''
     if dt.year >= 1900:
         bases = type(dt).mro()
         i = 0
@@ -248,9 +252,8 @@ def strftime(dt, fmt):
                 res = res[:site] + syear + res[site + 4:]
             return res
         else:
-            msg = ('strftime of dates before 1900 does not handle'
-                   ' %s') % illegal_formatting.group(0)
-            raise TypeError(msg)
+            msg = 'strftime of dates before 1900 does not handle  %s'
+            raise TypeError(msg % illegal_formatting.group(0))
 
 
 def parse_date(value=None):
@@ -343,7 +346,9 @@ class flextime(timedelta):
 
 # TODO: Merge this with the new time span.
 def daterange(*args):
-    '''Returns an iterator that yields each date in the range of ``[start,
+    '''Similar to standard 'range' function, but for date objets.
+
+    Returns an iterator that yields each date in the range of ``[start,
     stop)``, not including the stop.
 
     If `start` is given, it must be a date (or `datetime`) value; and in this
@@ -404,7 +409,7 @@ if sys.version_info < (3, 0):
         'A date that compares to Infinity'
         def operator(name, T=True):
             def result(self, other):
-                from .infinity import Infinity
+                from xoutil.infinity import Infinity
                 if other is Infinity:
                     return T
                 elif other is -Infinity:
@@ -422,7 +427,7 @@ if sys.version_info < (3, 0):
         del operator
 
         def __eq__(self, other):
-            from .infinity import Infinity
+            from xoutil.infinity import Infinity
             # I have to put this because when doing ``timespan != date``
             # Python 2 may chose to call date's __ne__ instead of
             # TimeSpan.__ne__.  I assume the same applies to __eq__.
@@ -654,7 +659,7 @@ class TimeSpan(object):
 
         '''
         import datetime
-        from .infinity import Infinity
+        from xoutil.infinity import Infinity
         from xoutil.context import context
         if isinstance(other, _EmptyTimeSpan):
             return other
