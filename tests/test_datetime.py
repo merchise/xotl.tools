@@ -102,27 +102,6 @@ def test_comparision(ts1, ts2):
         assert ts1 * ts1.start_date == ts1.start_date
         assert ts1.start_date in ts1
 
-    # Single day union and equality test
-    if ts1.start_date:
-        assert ts1 + ts1.start_date == ts1
-
-
-@given(time_span(), time_span())
-@hypothesis.example(TimeSpan(), time_span().example())
-def test_union_commutable(ts1, ts2):
-    # Commutable and alias
-    assert (ts2 | ts1) == (ts1 + ts2)
-
-
-@given(time_span(), time_span())
-@hypothesis.example(ts1=TimeSpan(), ts2=time_span().example())
-def test_union_containment(ts1, ts2):
-    union = ts1 + ts2
-    if union is not None:
-        # The union must always be cover both ts1 and ts2
-        assert (ts1 <= union) is True
-        assert (ts2 <= union) is True
-
 
 @given(time_span(), time_span(), dates())
 def test_general_cmp_properties(ts1, ts2, date):
@@ -205,3 +184,8 @@ def test_ts_returns_dates_not_subtypes(ts):
 def test_operate_with_timespans(ts, d):
     assert ts.start_date - d is not None
     assert d - ts.start_date is not None
+
+
+@given(time_span('none'), time_span('none'))
+def test_definition_of_overlaps(ts1, ts2):
+    assert ts1.overlaps(ts2) == bool(ts1 & ts2)
