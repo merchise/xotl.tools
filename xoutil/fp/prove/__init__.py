@@ -147,8 +147,6 @@ def safe(checker):
 
     '''
     def wrapper(func):
-        from xoutil.future.string import small, safe_str
-
         def inner(*args, **kwds):
             return checker(func, *args, **kwds)
 
@@ -156,6 +154,7 @@ def safe(checker):
             inner.__name__ = func.__name__
             inner.__doc__ = func.__doc__
         except BaseException:
+            from xoutil.future.string import small, safe_str
             inner.__name__ = safe_str(small(func))
         return inner
     return wrapper

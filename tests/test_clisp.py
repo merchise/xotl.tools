@@ -24,7 +24,7 @@ class TestCLisp(unittest.TestCase):
     def test_basic_coercers(self):
         from xoutil.eight import string_types
         from xoutil.cl import (identity_coerce, void_coerce, coercer,
-                               coercer_name, vouch, t, int_coerce,
+                               vouch, t, int_coerce,
                                float_coerce, create_int_range_coerce,
                                istype, typecast, iterable, mapping,
                                create_unique_member_coerce, nil)
