@@ -33,23 +33,6 @@ Instead of *None* or *Nothing*, `Wrong` is used because two reasons:
 also wraps incorrect values and can have several instances (not only a *null*
 value).
 
-It could be thought that this kind of concept is useless in Python because
-the dynamic nature of the language, but always there are certain logic systems
-that need to wrap "correct" false values and "incorrect" true values.
-
-Also, in functional programming, errors can be reasoned in a new way: more
-like as *error values* than in *exception handling*.  Where the `Maybe`:class:
-type expresses the failure possibility through `Wrong`:class: instances
-encapsulating errors.
-
-When receiving a `Wrong`:class: instance encapsulating an error, and want to
-recover the *exception propagation style* -instead of continue in *pure
-functional programming*-, to re-raise the exception, instead the `raise`
-Python statement, use `~xoutil.eight.errors.throw`:func:.
-
-See https://en.wikipedia.org/wiki/Monad_%28functional_programming%29\
-#The_Maybe_monad
-
 '''
 
 from __future__ import (division as _py3_division,
@@ -141,6 +124,109 @@ class Maybe(object):
     def __ne__(self, other):
         return not (self == other)
 
+    @classmethod
+    def triumph(cls, value):
+        '''Coerce to a logical Boolean value.
+
+        A wrapper `Just`:class: is logically true, and `Wrong` is false.
+
+        For example::
+
+            >>> Just.triumph([1])
+            [1]
+
+            >>> Just.triumph([])
+            Just([])
+
+            >>> Wrong.triumph([1])
+            Wrong([1])
+
+            >>> Wrong.triumph([])
+            []
+
+        '''
+        default = cls is Just
+        if bool(value) is default:
+            idx = 2 if arg is None else arg
+            if cls._singletons[idx] is None:
+                self = super(Maybe, cls).__new__(cls)
+                self.inner = arg
+                cls._singletons[idx] = self
+            return cls._singletons[idx]
+        elif cls is Maybe:
+            return (Just if arg else Wrong)(arg)
+        elif isinstance(arg, cls):
+            return arg
+        elif not isinstance(arg, Maybe):
+            self = super(Maybe, cls).__new__(cls)
+            self.inner = arg
+            return self
+        else:
+            msg = 're-wrapping inverted value: {}({})'
+            raise ValueError(msg.format(cls.__name__, arg))
+
+    @classmethod
+    def compel(cls, value):
+        '''Coerce to the correspondent logical Boolean value.
+
+        `Just`:class: is logically true, and `Wrong` is false.
+
+        For example::
+
+            >>> Just.compel([1])
+            [1]
+
+            >>> Just.compel([])
+            Just([])
+
+            >>> Wrong.compel([1])
+            Wrong([1])
+
+            >>> Wrong.compel([])
+            []
+
+        '''
+        from xoutil.eight import type_name
+        if cls is not Maybe:
+            test = cls is Just
+            dual = Wrong if test else Just
+            if bool(value) is test:
+                return value
+            elif not isinstance(value, dual):
+                return cls(value)
+            else:
+                msg = '''a "{}" value can't be coerced to "{}"'''
+                raise TypeError(msg.format(type_name(value), cls.__name__))
+        else:
+            raise TypeError('''don't call at Maybe base level''')
+
+    @classmethod
+    def choose(cls, *types):
+        '''Decorator to force `Maybe` values constraining to expecting types.
+
+        For example, a function that return a collection (tuple or list) if
+        valid or False if not, if not decorated could be ambiguous for an
+        empty collection::
+
+            >>> @Just.choose(tuple, list)
+            ... def check_range(values, min, max):
+            ...     if isinstance(values, (tuple, list)):
+            ...         return [v for v in values if min <= v <= max]
+            ...     else:
+            ...         return False
+
+            >>> check_range(range(10), 7, 17)
+            [7, 8, 9]
+
+            >>> check_range(range(10), 17, 27)
+            Just([])
+
+            >>> check_range(set(range(10)), 7, 17)
+            False
+
+        '''
+        pass
+
 
 class Just(Maybe):
     '''A wrapper for valid results.'''
@@ -164,6 +250,11 @@ class Wrong(Maybe):
             from xoutil.eight.exceptions import catch
             self.inner = catch(self.inner)
         return self
+
+
+def take(value):
+    '''Extract a value.'''
+    return value.inner if isinstance(value, Maybe) else value
 
 
 # ---- special singletons ----
