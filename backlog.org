@@ -4,18 +4,17 @@
 
 * Backlog for *xoutil*
 
-** Release version 1.8 <2017-10-21 sáb> [/]
+** Release version 1.8 <2017-10-21 sáb> [0/2]
 
-- [ ] 'future.threading' module has two errors in the documentation of
-  'stack_size' function.  Fix all documentation of all 'future' in order not
+- [ ] '[[file:xoutil/future/threading.py][future.threading]]' module has two errors in the documentation of
+  'stack_size' function.  Fix [[file:docs/source/xoutil/future][documentation]] of all 'future' in order not
   to use 'automodule'.
 
-- [ ] Fix deprecation warnings (code and documentation) for: [/]
+- [ ] Fix deprecation warnings (code and documentation) for: [0/2]
 
-  - [ ] 'xoutil.cl', replace it by 'xoutil.fp' sub-modules.
+  - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
 
-  - [ ] 'xoutil.html'
-
+  - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
 
 ** Development ideas. [/]
 
