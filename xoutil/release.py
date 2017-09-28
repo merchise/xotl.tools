@@ -18,7 +18,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.7.11'
+VERSION = '1.8.0'
 
 
 def dev_tag_installed():
@@ -31,6 +31,7 @@ def dev_tag_installed():
         return full_version[len(base):]
     except:
         return None
+
 
 RELEASE_TAG = dev_tag_installed() or ''
 
