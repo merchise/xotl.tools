@@ -139,26 +139,23 @@ def check_default(absent=Undefined):
     return default
 
 
-def single(*args, **kwds):
-    '''Valid if just only one argument is given.
+def single(args, kwds):
+    '''Return a true value only when a unique argument is given.
 
-    Return a valid boolean, maybe the argument value itself or an instance of
+    Wnen needed, the most suitable result will be wrapped using the
     `~xoutil.fp.monads.option.Maybe`:class:\ .
 
-    In the case of invalid argument number, `~xoutil.symbols.Invalid`:obj: is
-    returned.
-
     '''
-    from xoutil.symbols import Invalid
-    from xoutil.fp.monads.option import Maybe, Just
+    from xoutil.fp.monads.option import Just, Wrong, take
     if len(args) == 1 and not kwds:
-        res = args[0]
-    elif not args and len(kwds) == 1:
-        res = kwds[tuple(kwds)[0]]
-    else:
-        res = Invalid
-    if not res and not isinstance(res, Maybe):
+        res = take(args[0])
+        if not res:
+            res = Just(res)
         res = Just(res)
+    elif not args and len(kwds) == 1:
+        res = kwds
+    else:
+        res = Wrong((args, kwds))
     return res
 
 
