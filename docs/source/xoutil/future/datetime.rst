@@ -1,7 +1,26 @@
-``xoutil.future.datetime`` - Basic date and time types
-======================================================
+`xoutil.future.datetime`:mod: - Basic date and time types
+=========================================================
 
-.. automodule:: xoutil.future.datetime
+.. module:: xoutil.future.datetime
+
+This module extends the standard library's `datetime`:mod:.  You may use it
+as a drop-in replacement in many cases.
+
+Avoid importing ``*`` from this module since could be different in Python 2.7
+and Python 3.3.
+
+In Pytnon versions <= 3 date format fails for several dates, for example
+``date(1800, 1, 1).strftime("%Y")``.  So, classes `~datetime.date`:class: and
+`~datetime.datetime`:class: are redefined if that case.
+
+This problem could be solved by redefining the `strftime` function in the
+`time` module, because it is used for all `strftime` methods; but (WTF),
+Python double checks the year (in each method and then again in
+`time.strftime` function).
+
+.. autofunction:: assure
+
+We added the following features.
 
 .. autofunction:: strfdelta
 .. autofunction:: strftime
@@ -9,7 +28,12 @@
 .. autofunction:: get_month_last
 .. autofunction:: get_next_month
 .. autofunction:: is_full_month
+
+.. autoclass:: flextime
+
 .. autofunction:: daterange([start,] stop[, step])
+
+.. autoclass:: DateField
 
 .. autoclass:: TimeSpan
 

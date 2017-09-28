@@ -77,8 +77,8 @@ except ValueError:
     # but (WTF), Python double checks the year (in each method and then again
     # in `time.strftime` function).
 
-    class date(date):
-        __doc__ = date.__doc__
+    class date(date):             # noqa
+        __doc__ = date.__doc__    # noqa
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -86,8 +86,8 @@ except ValueError:
         def __sub__(self, other):
             return assure(super(date, self).__sub__(other))
 
-    class datetime(datetime):
-        __doc__ = datetime.__doc__
+    class datetime(datetime):         # noqa
+        __doc__ = datetime.__doc__    # noqa
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -125,7 +125,7 @@ except ValueError:
             else:
                 args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
                 return datetime(*args)
-        elif isinstance(obj, (time, timedelta)):
+        elif isinstance(obj, (time, timedelta)):    # noqa
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
@@ -140,7 +140,6 @@ else:
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
-
 
 
 from xoutil.deprecation import deprecated    # noqa
@@ -159,6 +158,7 @@ def new_datetime(d):
     if isinstance(d, datetime.__base__):    # legacy datetime
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
     return datetime(*args)
+
 
 del deprecated
 
@@ -328,7 +328,9 @@ def is_full_month(start, end):
             (em != (end + timedelta(1)).month))
 
 
-class flextime(timedelta):
+class flextime(timedelta):    # noqa
+    # TODO: document this class
+
     @classmethod
     def parse_simple_timeformat(cls, which):
         if 'h' in which:
