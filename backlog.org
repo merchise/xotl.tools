@@ -4,6 +4,19 @@
 
 * Backlog for *xoutil*
 
+** Release version 1.8 <2017-10-21 sáb> [/]
+
+- [ ] 'future.threading' module has two errors in the documentation of
+  'stack_size' function.  Fix all documentation of all 'future' in order not
+  to use 'automodule'.
+
+- [ ] Fix deprecation warnings (code and documentation) for: [/]
+
+  - [ ] 'xoutil.cl', replace it by 'xoutil.fp' sub-modules.
+
+  - [ ] 'xoutil.html'
+
+
 ** Development ideas. [/]
 
 - [ ] Refactor CLI.

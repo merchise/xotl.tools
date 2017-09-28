@@ -4,14 +4,11 @@ Work plans (backlogs)
 See at the end: `All pending tasks listed`_.
 
 
-Python 2 and 3 Compatibility
-----------------------------
+Using "Org Mode"
+----------------
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   backlog/*
+Except for to-do list, the management of the development of 'xoutil' was moved
+to ``backlog.org`` file, in the main project folder.
 
 
 All pending tasks listed
