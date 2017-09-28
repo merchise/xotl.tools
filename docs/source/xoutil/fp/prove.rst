@@ -1,34 +1,42 @@
 `xoutil.fp.prove`:mod: - Prove validity of values
 =================================================
 
-.. module:: xoutil.fp.prove
+Proving success or failure of a function call has two main patterns:
 
-.. sectionauthor:: Medardo Rodriguez <med@merchise.org>
+1. Predicative: a function call returns one or more values indicating a
+   failure, for example method ``find`` in strings returns ``-1`` if the
+   sub-string is not found.  In general this pattern considers a set of values
+   as logical Boolean true, an other set false.
 
+   Example::
+
+     index = s.find('x')
+     if index >= 0:
+         ...    # condition of success
+     else:
+         ...    # condition of failure
+
+
+
+2. Disruptive: a function call throws an exception on a failure breaking the
+   normal flow of execution, for example method ``index`` in strings.
+
+   Example::
+
+     try:
+         index = s.index('x)
+     except ValueError:
+         ...    # condition of failure
+     else:
+         ...    # condition of success
+
+   The exception object contains the semantics of the ""anomalous condition".
+   Exception handling can be used as flow control structures for execution
+   context inter-layer processing, or as a termination condition.
+
+
+Module content
 --------------
 
-There is an amalgam of mechanisms to validate function results in a "safe"
-way when there are possibilities of failures.  The best, or more clear method,
-is to raise an exception, but there are scenarios where a fail could be
-signaled with "special values".
-
-The function `validate`:func: manages these scenarios raising an exception every
-time a failure is detected.
-
-The function `affirm`:func: converts any function in a predicate.  Predicates
-(that which is affirmed or denied of a thing) are a complicated case: most
-implementations return a Boolean value expressing validity of a given
-argument.  In these cases, both functions (`validate`:func:, and
-`affirm`:func:) return the value (not ``True``) if valid.
-
-The `safe`:func: decorator could be used to mark any callable to be managed
-with `validate`:func: or `affirm`:func:.
-
-
-.. autofunction:: validate
-
-.. autofunction:: affirm
-
-.. autofunction:: safe
-
-.. autoclass:: Coercer
+.. automodule:: xoutil.fp.prove
+   :members: predicative, disruptive, enfold
