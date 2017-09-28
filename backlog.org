@@ -6,13 +6,13 @@
 
 ** Release version 1.8 <2017-10-21 sáb> [0/2]
 
-- [-] Fix 'future' documentation errors because 'automodule' use. [2/8]
+- [-] Fix 'future' documentation errors because 'automodule' use. [3/8]
 
   - [X] datetime
 
     [[file:docs/source/xoutil/future/datetime.rst][documentation]] --> [[file:xoutil/future/datetime.py][module]].
 
-  - [ ] functools
+  - [X] functools
 
     [[file:docs/source/xoutil/future/functools.rst][documentation]] --> [[file:xoutil/future/functools.py][module]].
 

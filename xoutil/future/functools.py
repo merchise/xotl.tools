@@ -336,7 +336,7 @@ if python_version < 3.3:
            This is a convenience function to simplify applying partial() to
            update_wrapper().
         """
-        return partial(update_wrapper, wrapped=wrapped,
+        return partial(update_wrapper, wrapped=wrapped,    # noqa
                        assigned=assigned, updated=updated)
 
     class _HashedSeq(list):
@@ -523,7 +523,8 @@ if python_version < 3.3:
                             # links.
                             root = _cache_vars[_ROOT] = oldroot[NEXT]
                             oldkey = root[KEY]
-                            oldresult = root[RESULT]
+                            # TODO: never used
+                            oldresult = root[RESULT]    # noqa
                             root[KEY] = root[RESULT] = None
                             # Now update the cache dictionary.
                             del cache[oldkey]
