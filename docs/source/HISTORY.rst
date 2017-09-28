@@ -31,7 +31,6 @@ Unreleased.  1.7.11
 .. include:: history/_changes-1.7.9.rst
 
 
-
 2017-09-19.  1.7.8
 ~~~~~~~~~~~~~~~~~~
 
