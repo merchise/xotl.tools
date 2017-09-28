@@ -14,9 +14,12 @@ This module is divided in several parts.
 .. toctree::
    :glob:
 
+   eight/exceptions
+
+.. to-do list:
+
+   eight/*
    eight/meta
    eight/types
    eight/io
-   eight/exceptions
    eight/abc
-   eight/*
