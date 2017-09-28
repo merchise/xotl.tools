@@ -6,9 +6,39 @@
 
 ** Release version 1.8 <2017-10-21 sáb> [0/2]
 
-- [ ] '[[file:xoutil/future/threading.py][future.threading]]' module has two errors in the documentation of
-  'stack_size' function.  Fix [[file:docs/source/xoutil/future][documentation]] of all 'future' in order not
-  to use 'automodule'.
+- [ ] Fix 'future' documentation errors because 'automodule' use. [0/8]
+
+  - [ ] datetime
+
+    [[file:docs/source/xoutil/future/datetime.rst][documentation]] --> [[file:xoutil/future/datetime.py][module]].
+
+  - [ ] functools
+
+    [[file:docs/source/xoutil/future/functools.rst][documentation]] --> [[file:xoutil/future/functools.py][module]].
+
+  - [ ] inspect
+
+    [[file:docs/source/xoutil/future/inspect.rst][documentation]] --> [[file:xoutil/future/inspect.py][module]].
+
+  - [ ] json
+
+    [[file:docs/source/xoutil/future/json.rst][documentation]] --> [[file:xoutil/future/json.py][module]].
+
+  - [ ] string
+
+    [[file:docs/source/xoutil/future/string.rst][documentation]] --> [[file:xoutil/future/string.py][module]].
+
+  - [ ] textwrap
+
+    [[file:docs/source/xoutil/future/textwrap.rst][documentation]] --> [[file:xoutil/future/textwrap.py][module]].
+
+  - [ ] threading
+
+    [[file:docs/source/xoutil/future/threading.rst][documentation]] --> [[file:xoutil/future/threading.py][module]].
+
+  - [ ] types
+
+    [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
 - [ ] Fix deprecation warnings (code and documentation) for: [0/2]
 
