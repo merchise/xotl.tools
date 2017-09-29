@@ -4,9 +4,9 @@
 
 * Backlog for *xoutil*
 
-** Release version 1.8 <2017-10-21 sáb> [0/4]
+** Release version 1.8 <2017-10-21 sáb> [1/4]
 
-- [-] Fix 'future' documentation errors because 'automodule' use. [7/8]
+- [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
   - [X] datetime
 
@@ -36,7 +36,7 @@
 
     [[file:docs/source/xoutil/future/threading.rst][documentation]] --> [[file:xoutil/future/threading.py][module]].
 
-  - [ ] types
+  - [X] types
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 

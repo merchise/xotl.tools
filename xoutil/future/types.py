@@ -108,13 +108,13 @@ except ImportError:
     __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
 
 try:
-    NoneType
+    NoneType    # noqa
 except NameError:
     NoneType = type(None)
     __all__.append('NoneType')
 
 try:
-    EllipsisType
+    EllipsisType    # noqa
 except NameError:
     EllipsisType = type(Ellipsis)
     __all__.append('EllipsisType')
