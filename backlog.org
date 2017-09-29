@@ -55,6 +55,9 @@
 
   - [[file:xoutil/eight/__init__.py::def%20type_name(obj):][xoutil.eight]]
 
+  - Document the argument `affirm` in xoutil.future.inspect.type_name.
+
+
 - [ ] Document and fix all "normalize_..." functions in module
   '[[file:xoutil/future/string.py::def%20normalize_unicode(value):][xoutil.future.string]]'.
 
