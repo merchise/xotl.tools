@@ -4,9 +4,9 @@
 
 * Backlog for *xoutil*
 
-** Release version 1.8 <2017-10-21 sáb> [0/2]
+** Release version 1.8 <2017-10-21 sáb> [0/3]
 
-- [-] Fix 'future' documentation errors because 'automodule' use. [3/8]
+- [-] Fix 'future' documentation errors because 'automodule' use. [4/8]
 
   - [X] datetime
 
@@ -16,7 +16,7 @@
 
     [[file:docs/source/xoutil/future/functools.rst][documentation]] --> [[file:xoutil/future/functools.py][module]].
 
-  - [ ] inspect
+  - [X] inspect
 
     [[file:docs/source/xoutil/future/inspect.rst][documentation]] --> [[file:xoutil/future/inspect.py][module]].
 
