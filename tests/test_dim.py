@@ -28,6 +28,12 @@ from xoutil.dim.meta import (
 )
 
 
+# A reasonable exponent.  We won't be dealing with universes of 100s
+# dimensions.
+exponents = s.integers(min_value=1, max_value=100)
+signatures = s.text(alphabet='abcdefghijok', min_size=0, max_size=50)
+
+
 def test_usage():
     @Dimension.new
     class L(object):
@@ -132,6 +138,20 @@ def test_signatures():
     assert speed**-3 == 1 / (speed**3)
 
 
+@given(signatures, signatures)
+def test_signatures_are_always_simplified(top, bottom):
+    s = Signature(top, bottom)
+    assert all(t not in s.bottom for t in s.top)
+    assert all(b not in s.top for b in s.bottom)
+    r = Signature(bottom, top)
+    assert s.top == r.bottom and s.bottom == r.top
+
+    s2 = Signature(top + bottom, bottom)
+    assert s2 == Signature(top, None)
+    s3 = Signature(top, top + bottom)
+    assert s3 == Signature(None, bottom)
+
+
 def test_quantity_math():
     metre = m = Quantity(1, Signature('m'))
     second = Quantity(1, Signature('s'))
@@ -183,11 +203,6 @@ def test_quantity_type_definitions():
 
     with pytest.raises(TypeError):
         2 * Length
-
-
-# A reasonable exponent.  We won't be dealing with universes of 100s
-# dimensions.
-exponents = s.integers(min_value=1, max_value=100)
 
 
 @given(exponents, exponents)
