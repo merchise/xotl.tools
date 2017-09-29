@@ -424,6 +424,7 @@ def hyphen_name(name, join_numbers=True):
 
 # TODO: Document and fix all these "normalize_..." functions
 def normalize_unicode(value):
+    # TODO: Deprecate
     # FIXME: i18n
     if (value is None) or (value is str('')):
         return ''
@@ -436,10 +437,12 @@ def normalize_unicode(value):
 
 
 def normalize_name(value):
+    # TODO: Deprecate
     return capitalize(normalize_unicode(value))
 
 
 def normalize_title(value):
+    # TODO: Deprecate
     return capitalize(normalize_unicode(value), True)
 
 

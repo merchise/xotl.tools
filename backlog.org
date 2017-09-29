@@ -58,6 +58,11 @@
 - [ ] Document and fix all "normalize_..." functions in module
   '[[file:xoutil/future/string.py::def%20normalize_unicode(value):][xoutil.future.string]]'.
 
+  There are several things that would probably dissapear: We can't be sure how
+  do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
+
+  - Deprecate functions with the mark [[file:xoutil/future/string.py::#%20TODO:%20Deprecate][TODO: Deprecate]]
+
 ** Development ideas. [/]
 
 - [ ] Refactor CLI.
