@@ -45,7 +45,7 @@
   - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
 
     Remove file:xoutil/fp/monads if it is not going to be part of this
-    release.  See file:xoutil/fp/discussion.org
+    release.  See file:xoutil/fp/monads/discussion.org
 
   - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
 
