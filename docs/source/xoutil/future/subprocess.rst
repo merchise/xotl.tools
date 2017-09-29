@@ -5,8 +5,8 @@
 
 .. versionadded:: 1.2.1
 
-This module contains extensions to the `subprocess` standard library
-module. It may be used as a replacement of the standard.
+This module contains extensions to the `subprocess`:mod: standard library
+module.  It may be used as a replacement of the standard.
 
 .. function:: call_and_check_output(args, *, stdin=None, shell=False)
 
