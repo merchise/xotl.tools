@@ -6,7 +6,7 @@
 
 ** Release version 1.8 <2017-10-21 sáb> [0/3]
 
-- [-] Fix 'future' documentation errors because 'automodule' use. [4/8]
+- [-] Fix 'future' documentation errors because 'automodule' use. [5/8]
 
   - [X] datetime
 
@@ -20,7 +20,7 @@
 
     [[file:docs/source/xoutil/future/inspect.rst][documentation]] --> [[file:xoutil/future/inspect.py][module]].
 
-  - [ ] json
+  - [X] json
 
     [[file:docs/source/xoutil/future/json.rst][documentation]] --> [[file:xoutil/future/json.py][module]].
 
