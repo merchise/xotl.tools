@@ -238,14 +238,14 @@ def simple_name(item, join=True):
 
     '''
     # TODO: deprecate `join` argument
-    from xoutil.future.inspect import type_name
+    from xoutil.future.inspect import safe_name
     singletons = (None, True, False, Ellipsis, NotImplemented)
     res = next((str(s) for s in singletons if s is item), None)
     if res is None:
-        res = type_name(item)
+        res = safe_name(item)
         if res is None:
             item = type(item)
-            res = type_name(item)
+            res = safe_name(item)
         if join:
             if join is True:
                 def join(arg):
@@ -285,7 +285,7 @@ def nameof(*args, **kwargs):
     `full`, `inner`, `safe` and `typed`.
 
     If `typed` is True and the object is not a type name or a callable (see
-    `xoutil.future.inspect.type_name`:func:), then the `type` of the object is
+    `xoutil.future.inspect.safe_name`:func:), then the `type` of the object is
     used instead.
 
     If `inner` is True we try to extract the name by introspection instead of
@@ -305,7 +305,7 @@ def nameof(*args, **kwargs):
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
     from xoutil.eight import range
-    from xoutil.future.inspect import type_name
+    from xoutil.future.inspect import safe_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
 
@@ -329,10 +329,10 @@ def nameof(*args, **kwargs):
 
     while vars.idx < arg_count:
         item = args[vars.idx]
-        if param('typed') and not type_name(item):
+        if param('typed') and not safe_name(item):
             item = type(item)
         if param('inner'):
-            res = type_name(item)
+            res = safe_name(item)
             if res:
                 if param('full'):
                     head = module_name(item)
@@ -371,7 +371,7 @@ def nameof(*args, **kwargs):
             if res:
                 grant('.'.join((head, res)) if head else res)
             else:
-                res = type_name(item)
+                res = safe_name(item)
                 if res:
                     grant(res)
                 else:

@@ -4,7 +4,7 @@
 
 * Backlog for *xoutil*
 
-** Release version 1.8 <2017-10-21 sáb> [1/4]
+** Release version 1.8 <2017-10-21 sáb> [2/4]
 
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
@@ -46,11 +46,14 @@
 
   - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
 
-- [ ] There is a function named 'type_name' in two different modules:
+- [X] There is a function named 'type_name' in two different modules:
 
   - [[file:xoutil/future/inspect.py::def%20type_name(obj,%20affirm%3DFalse):][xoutil.future.inspect]]
 
   - [[file:xoutil/eight/__init__.py::def%20type_name(obj):][xoutil.eight]]
+
+  Note: <2017-09-29> The function for the first module was renamed to
+  'safe_name' keeping the old name, but deprecated .
 
 - [ ] Document and fix all "normalize_..." functions in module
   '[[file:xoutil/future/string.py::def%20normalize_unicode(value):][xoutil.future.string]]'.

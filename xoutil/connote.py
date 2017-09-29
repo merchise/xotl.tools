@@ -198,7 +198,7 @@ def _get_checker_name(checker, full=False):
     from xoutil.symbols import boolean
     from xoutil.future.collections import Set, Mapping, PascalSet
     from xoutil.eight import callable
-    from xoutil.future.inspect import type_name
+    from xoutil.future.inspect import safe_name
     from xoutil.future.string import safe_str as sstr    # safe_repr as srepr
     srepr = repr
     if isinstance(checker, boolean):
@@ -206,7 +206,7 @@ def _get_checker_name(checker, full=False):
     elif isinstance(checker, Predicate):
         return str('p(%s)') % checker.get_name()
     elif isinstance(checker, type):
-        return type_name(checker, affirm=True)
+        return safe_name(checker, affirm=True)
     elif isinstance(checker, list):
         if not checker:
             return str(True)
@@ -216,7 +216,7 @@ def _get_checker_name(checker, full=False):
         if not checker:
             return str(False)
         elif all(isinstance(c, type) for c in checker):
-            return type_name(checker, affirm=True)
+            return safe_name(checker, affirm=True)
         else:
             res = str(' | ').join(_get_checker_name(c) for c in checker)
             return str('(%s)' % res)
@@ -240,7 +240,7 @@ def _get_checker_name(checker, full=False):
             aux = str()
         return str('{%s}') % aux
     elif callable(checker):
-        res = type_name(checker, affirm=True)
+        res = safe_name(checker, affirm=True)
         if 'lambda' in res:
             from inspect import getargspec
             res = res.replace('<lambda>', '<λ>')

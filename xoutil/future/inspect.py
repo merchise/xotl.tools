@@ -252,7 +252,7 @@ def get_attr_value(obj, name, *default):
 
 
 # TODO: There is a function in 'xoutil.eight'
-def type_name(obj, affirm=False):
+def safe_name(obj, affirm=False):
     '''Return the internal name for a type or a callable.
 
     This function is safe.  If :param obj: is not an instance of a proper type
@@ -266,19 +266,19 @@ def type_name(obj, affirm=False):
 
     Examples::
 
-      >>> type_name(int)
+      >>> safe_name(int)
       'int'
 
-      >>> type_name(0) is None
+      >>> safe_name(0) is None
       True
 
-      >>> type_name(0, affirm=True)
+      >>> safe_name(0, affirm=True)
       'int'
 
-      >>> type_name((0, 1.1)) is None
+      >>> safe_name((0, 1.1)) is None
       True
 
-      >>> type_name((0, 1.1), affirm=True)
+      >>> safe_name((0, 1.1), affirm=True)
       '(int, float)'
 
     '''
@@ -324,12 +324,19 @@ def type_name(obj, affirm=False):
                 head, tail = '[]'
             else:
                 head, tail = '{}'
-            items = ', '.join(type_name(t, affirm) for t in obj)
+            items = ', '.join(safe_name(t, affirm) for t in obj)
             return str('%s%s%s' % (head, items, tail))
         else:
-            return type_name(type(obj))
+            return safe_name(type(obj))
     else:
         return None
+
+
+from xoutil.deprecation import deprecated    # noqa
+
+type_name = deprecated(safe_name, removed_in_version='1.8.1')(safe_name)
+
+del deprecated
 
 
 def _static_issubclass(C, B):
