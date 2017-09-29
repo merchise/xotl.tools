@@ -126,7 +126,7 @@ def test_no_double_registration_with_inlinemetaclass():
 
 def test_inlinemetaclass_decorator_with_slots():
     from xoutil.eight.meta import metaclass
-    from xoutil.types import MemberDescriptorType
+    from xoutil.future.types import MemberDescriptorType
 
     class Meta(type):
         pass

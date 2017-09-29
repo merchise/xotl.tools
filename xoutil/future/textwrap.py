@@ -39,7 +39,7 @@ def dedent(text, skip_firstline=False):
     no common leading whitespace.
 
     If `skip_firstline` is True, the first line is separated from the rest of
-    the body.  This helps with docstrings that follow :pep:`257`.
+    the body.  This helps with docstrings that follow `257`:pep:.
 
     .. warning:: The `skip_firstline` argument is missing in standard library.
 
@@ -59,7 +59,7 @@ def dedent(text, skip_firstline=False):
 
 
 try:
-    indent
+    indent    # noqa
 except NameError:
     # The following is Copyright (c) of the Python Software Foundation.
     def indent(text, prefix, predicate=None):

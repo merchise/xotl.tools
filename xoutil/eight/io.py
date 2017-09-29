@@ -13,9 +13,9 @@
 '''Extensions to Python's ``io`` module.
 
 You may use it as drop-in replacement of ``io``.  Although we don't document
-all items here.  Refer to :mod:`io <io>` documentation.
+all items here.  Refer to `io`:mod: documentation.
 
-In Python 2, buil-int :func:`open` is different from :func:`io.open`; in
+In Python 2, buil-int `open`:func: is different from `io.open`:func:; in
 Python 3 are the same function.
 
 So, generated files with the built-in funtion in Python 2, can not be

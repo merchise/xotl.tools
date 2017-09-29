@@ -20,7 +20,7 @@ module's version.
 
 We scinded the decorator-making facilities from decorators per se to allow the
 module `xoutil.deprecation`:mod: to be used by decorators and at the same
-time, implement the decorator :func:`~xoutil.deprecation.deprecated` more
+time, implement the decorator `~xoutil.deprecation.deprecated`:func: more
 easily.
 
 

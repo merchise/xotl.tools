@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.future.datetime
 # ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~°/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -12,34 +12,30 @@
 # package.
 #
 # Based on code submitted to comp.lang.python by Andrew Dalke, copied from
-# DJango and generalized.
+# Django and generalized.
 #
 # Created on 2012-02-15
 # Migrated to 'future' on 2016-09-13
 
 '''Extends the standard `datetime` module.
 
-- Python's `datetime.datetime.strftime`:meth: doesn't handle dates previous to
-  1900.  This module define classes to override `date` and `datetime` to
-  support the formatting of a date through its full proleptic Gregorian date
-  range.
+- Python's ``datetime.strftime`` doesn't handle dates previous to 1900.
+  This module define classes to override `date` and `datetime` to support the
+  formatting of a date through its full proleptic Gregorian date range.
 
 Based on code submitted to comp.lang.python by Andrew Dalke, copied from
 Django and generalized.
 
 You may use this module as a drop-in replacement of the standard library
-`datetime`:mod: module.
-
-`date`:class: and `datetime`:class: classes are redefined if `strftime` method
-goes wrong with some dates; `_stdlib` contains original Python standard
-module and `_stdlib.date` and `_stdlib.datetime` can be used to get original
-definitions when redefined here.
+`datetime` module.
 
 '''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
+
+import sys
 
 from datetime import *    # noqa
 import datetime as _stdlib    # noqa
@@ -48,9 +44,12 @@ from xoutil.future import _past
 _past.dissuade()
 del _past
 
+from re import compile as _regex_compile
+from time import strftime as _time_strftime
 
+
+#: Simple constants for .weekday() method
 class WEEKDAY:
-    'Simple constants for ".weekday()" method'
     MONDAY = 0
     TUESDAY = 1
     WEDNESDAY = 2
@@ -61,7 +60,6 @@ class WEEKDAY:
 
 
 class ISOWEEKDAY:
-    'Simple constants for ".weekday()" method'
     MONDAY = 1
     TUESDAY = 2
     WEDNESDAY = 3
@@ -72,15 +70,15 @@ class ISOWEEKDAY:
 
 
 try:
-    date(1800, 1, 1).strftime("%Y")
+    date(1800, 1, 1).strftime("%Y")    # noqa
 except ValueError:
     # This happens in Pytnon 2.7, I was considering to replace `strftime`
     # function from `time` module, that is used for all `strftime` methods;
     # but (WTF), Python double checks the year (in each method and then again
     # in `time.strftime` function).
 
-    class date(date):
-        __doc__ = date.__doc__
+    class date(date):             # noqa
+        __doc__ = date.__doc__    # noqa
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -88,8 +86,8 @@ except ValueError:
         def __sub__(self, other):
             return assure(super(date, self).__sub__(other))
 
-    class datetime(datetime):
-        __doc__ = datetime.__doc__
+    class datetime(datetime):         # noqa
+        __doc__ = datetime.__doc__    # noqa
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -127,7 +125,7 @@ except ValueError:
             else:
                 args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
                 return datetime(*args)
-        elif isinstance(obj, (time, timedelta)):
+        elif isinstance(obj, (time, timedelta)):    # noqa
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
@@ -144,11 +142,35 @@ else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
 
 
+from xoutil.deprecation import deprecated    # noqa
+
+
+@deprecated(assure)
+def new_date(d):
+    '''Generate a safe date from a legacy datetime date object.'''
+    return date(d.year, d.month, d.day)
+
+
+@deprecated(assure)
+def new_datetime(d):
+    '''Generate a safe datetime given a legacy date or datetime object.'''
+    args = [d.year, d.month, d.day]
+    if isinstance(d, datetime.__base__):    # legacy datetime
+        args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
+    return datetime(*args)
+
+
+del deprecated
+
+
+# This library does not support strftime's "%s" or "%y" format strings.
+# Allowed if there's an even number of "%"s because they are escaped.
+_illegal_formatting = _regex_compile(br"((^|[^%])(%%)*%[sy])")
+
+
 def _year_find_all(fmt, year, no_year_tuple):
-    import re
-    import time
-    text = time.strftime(fmt, (year,) + no_year_tuple)
-    regex = re.compile(str(year))
+    text = _time_strftime(fmt, (year,) + no_year_tuple)
+    regex = _regex_compile(str(year))
     return {match.start() for match in regex.finditer(text)}
 
 
@@ -200,20 +222,12 @@ def strfdelta(delta):
     return res
 
 
-# This library does not support strftime's "%s" or "%y" format strings.
-# Allowed if there's an even number of "%"s because they are escaped.
-import re    # noqa
-_illegal_formatting = re.compile(br"((^|[^%])(%%)*%[sy])")
-del re
-
-
 def strftime(dt, fmt):
-    '''Used in `strftime` method of `date` and `datetime` redefined classes.
+    '''Used as `strftime` method of `date` and `datetime` redefined classes.
 
     Also could be used with standard instances.
 
     '''
-    import time
     if dt.year >= 1900:
         bases = type(dt).mro()
         i = 0
@@ -237,7 +251,7 @@ def strftime(dt, fmt):
             no_year_tuple = dt.timetuple()[1:]
             sites = _year_find_all(fmt, year, no_year_tuple)
             sites &= _year_find_all(fmt, year + 28, no_year_tuple)
-            res = time.strftime(fmt, (year,) + no_year_tuple)
+            res = _time_strftime(fmt, (year,) + no_year_tuple)
             syear = "%04d" % dt.year
             for site in sites:
                 res = res[:site] + syear + res[site + 4:]
@@ -314,7 +328,9 @@ def is_full_month(start, end):
             (em != (end + timedelta(1)).month))
 
 
-class flextime(timedelta):
+class flextime(timedelta):    # noqa
+    # TODO: document this class
+
     @classmethod
     def parse_simple_timeformat(cls, which):
         if 'h' in which:
@@ -336,9 +352,10 @@ class flextime(timedelta):
 
 
 # TODO: Merge this with the new time span.
-# daterange([start,] stop[, step])
 def daterange(*args):
-    '''Returns an iterator that yields each date in the range of ``[start,
+    '''Similar to standard 'range' function, but for date objets.
+
+    Returns an iterator that yields each date in the range of ``[start,
     stop)``, not including the stop.
 
     If `start` is given, it must be a date (or `datetime`) value; and in this
@@ -354,7 +371,8 @@ def daterange(*args):
 
     As with `range`, `stop` is never included in the yielded dates.
 
-    .. note:: In a future release this will be merged with `TimeSpan`:class:
+    .. note:: In a future release this will be merged with
+              `ClosedDateRange`:class:
 
     '''
     import operator
@@ -393,17 +411,7 @@ def daterange(*args):
     return _generator()
 
 
-def without_tzinfo(dt):
-    '''Return the given datetime value with tzinfo removed.
-
-    '''
-    return datetime(*(dt.timetuple()[:6] + (dt.microsecond, )))
-
-
-try:
-    from xoutil.infinity import Infinity
-    date.today() < Infinity
-except TypeError:
+if sys.version_info < (3, 0):
     class infinity_extended_date(date):
         'A date that compares to Infinity'
         def operator(name, T=True):
@@ -443,6 +451,9 @@ except TypeError:
             return not (self == other)
 else:
     infinity_extended_date = date
+
+
+del sys
 
 
 class DateField(object):

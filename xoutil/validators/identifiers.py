@@ -66,7 +66,7 @@ _FULL_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 def is_valid_full_identifier(name):
     '''Returns True if `name` is a valid dotted Python identifier.
 
-    See :func:`is_valid_identifier` for what "validity" means.
+    See `is_valid_identifier`:func: for what "validity" means.
     '''
     return (isinstance(name, string_types) and
             _FULL_IDENTIFIER_REGEX.match(name))
@@ -81,7 +81,7 @@ def is_valid_public_identifier(name):
 
     Convention says that any name starting with a "_" is not public.
 
-    See :func:`is_valid_identifier` for what "validity" means.
+    See `is_valid_identifier`:func: for what "validity" means.
 
     '''
     return (isinstance(name, string_types) and

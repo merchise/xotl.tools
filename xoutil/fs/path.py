@@ -17,7 +17,7 @@
 
 Functions inside this module must not have side-effects on the
 file-system. This module re-exports (without change) several functions from the
-:mod:`os.path` standard module.
+`os.path`:mod: standard module.
 
 '''
 
@@ -46,7 +46,7 @@ def rtrim(path, n=1):
     `path` is normalized before proceeding (but not tested to exists).
 
     .. versionchanged:: 1.5.5 `n` defaults to 1.  In this case rtrim is
-                        identical to :func:`os.path.dirname`.
+                        identical to `os.path.dirname`:func:.
 
     Example::
 

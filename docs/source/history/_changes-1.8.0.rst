@@ -26,4 +26,4 @@
   - `~xoutil.future.textwrap`:mod:.
 
 - Create ``__small__`` protocol for small string representations, see
-  `xoutil.string.small`:func: for more information.
+  `xoutil.future.string.small`:func: for more information.

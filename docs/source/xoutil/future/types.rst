@@ -1,10 +1,16 @@
-``xoutil.future.types`` - Names for built-in types and extensions
-=================================================================
-
-.. Unfortunately our customized modules is not compatible with sphinx
-   automodule
+`xoutil.future.types`:mod: - Names for built-in types and extensions
+====================================================================
 
 .. module:: xoutil.future.types
+
+This module extends the standard library's `functools`:mod:.  You may use it
+as a drop-in replacement in many cases.
+
+Avoid importing ``*`` from this module since could be different in Python 2.7
+and Python 3.3.
+
+We added mainly compatibility type definitions, those that each one could be in one
+version and not in other.
 
 .. autofunction:: new_class
 
@@ -26,7 +32,6 @@
 
    .. note:: In Python 3.3+ this is an alias for
       `types.MappingProxyType`:class: in the standard library.
-
 
 .. class:: SimpleNamespace
 

@@ -104,7 +104,8 @@ def force_encoding(encoding=None):
     # All these considerations where also proved in Mac-OS.
     import locale
     return encoding or locale.getpreferredencoding() or 'UTF-8'
-    # return (encoding or locale.getlocale()[1] or locale.getpreferredencoding()
+    # return (encoding or locale.getlocale()[1]
+    #         or locale.getpreferredencoding()
     #         or sys.getdefaultencoding() or 'UTF-8')
 
 
@@ -146,7 +147,7 @@ def safe_encode(u, encoding=None):
 
     '''
     # TODO: This is not nice for Python 3, bytes is not valid string any more
-    #       See :func:`json.encoder.py_encode_basestring_ascii` of Python 2.x
+    #       See `json.encoder.py_encode_basestring_ascii`:func: of Python 2.x
     from xoutil.eight import string_types, text_type
     if isinstance(u, bytes):
         return u
@@ -423,6 +424,7 @@ def hyphen_name(name, join_numbers=True):
 
 # TODO: Document and fix all these "normalize_..." functions
 def normalize_unicode(value):
+    # TODO: Deprecate
     # FIXME: i18n
     if (value is None) or (value is str('')):
         return ''
@@ -435,10 +437,12 @@ def normalize_unicode(value):
 
 
 def normalize_name(value):
+    # TODO: Deprecate
     return capitalize(normalize_unicode(value))
 
 
 def normalize_title(value):
+    # TODO: Deprecate
     return capitalize(normalize_unicode(value), True)
 
 
@@ -469,6 +473,8 @@ def normalize_ascii(value):
     return safe_str(res)
 
 
+# TODO: It's probable that there are more than one 'slug' functions.  Also,
+# this function is more proper in a module named 'identifier', or something.
 def normalize_slug(value, *args, **kwds):
     '''Return the normal-form of a given string value that is valid for slugs.
 
@@ -557,7 +563,7 @@ def normalize_slug(value, *args, **kwds):
     from xoutil.params import ParamManager
 
     from xoutil.cl import compose, istype
-    from xoutil.cl.simple import not_false, ascii_coerce, lower_ascii_coerce
+    from xoutil.cl.simple import not_false, ascii_coerce
 
     _str = compose(not_false(''), istype(string_types))
     _ascii = compose(_str, ascii_coerce)
@@ -717,7 +723,7 @@ def force_str(value, encoding=None):
                      or decoding should be performed on `value`.
 
                      The default is to use the same default as
-                     :func:`safe_encode` or :func:`safe_decode`.
+                     `safe_encode`:func: or :func:`safe_decode`.
 
     .. versionadded:: 1.2.0
 
@@ -889,4 +895,4 @@ __all__ += ['force_encoding', 'safe_decode', 'safe_encode', 'safe_str',
             'normalize_unicode', 'normalize_name', 'normalize_title',
             'normalize_str', 'normalize_ascii', 'normalize_slug',
             'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',
-            'force_str', 'make_a10z', 'crop']
+            'force_str', 'make_a10z', 'crop', crop_iterator, small]

@@ -1,8 +1,27 @@
-``xoutil.future.functools`` - Higher-order functions and callable objects
-=========================================================================
+`xoutil.future.functools`:mod: - Higher-order functions and callable objects
+============================================================================
 
-.. automodule:: xoutil.future.functools
-   :members: lru_cache
+.. module:: xoutil.future.functools
+
+This module extends the standard library's `functools`:mod:.  You may use it
+as a drop-in replacement in many cases.
+
+Avoid importing ``*`` from this module since could be different in Python 2.7
+and Python 3.3.
+
+We added the following features.
+
+.. autoclass:: ctuple
+
+.. autofunction:: compose(*funcs, math=True)
+
+.. autofunction:: power(*funcs, times)
+
+.. autoclass:: lwraps(f, n, *, name=None, doc=None, wrapped=None)
+
+.. autofunction:: curry
+
+We have backported several Python 3.3 features but maybe not all.
 
 .. function:: update_wrapper(wrapper, wrapped, assigned=WRAPPER_ASSIGNMENTS, updated=WRAPPER_UPDATES)
 
@@ -33,15 +52,6 @@
    object being wrapped are ignored (i.e.  this function will not attempt to
    set them on the wrapper function).  AttributeError is still raised if the
    wrapper function itself is missing any attributes named in updated.
-
-.. autofunction:: compose(*funcs, math=True)
-
-.. autofunction:: power(*funcs, times)
-
-.. autoclass:: ctuple
-
-.. autoclass:: lwraps(f, n, *, name=None, doc=None, wrapped=None)
-
 ..
    Local Variables:
    ispell-dictionary: "en"

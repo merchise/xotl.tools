@@ -12,18 +12,21 @@
 #
 # Created 2016-08-31
 
-'''Prove validity of values.
+'''Validity proofs for data values.
 
-There are a family of basic checker functions:
+There are some basic helper functions:
 
-- `validate`:func: raises an exception on failure, this is useful to call
-  functions that use "special" false values to signal a failure.
+- `predicative`:func: wraps a function in a way that a logical false value is
+  returned on failure.  If an exception is raised, it is returned wrapped as
+  an special false value.  See `~xoutil.fp.monads.option.Maybe`:class: monad
+  for more information.
 
-- `affirm`:func: returns a false value on failure, this is useful to call
-  functions that could raise an exception to signal a failure.
+- `disruptive`:func: wraps a function in a way that an exception is raised if
+  an invalid value (logical false by default) is returned.  This is useful to
+  call functions that use "special" false values to signal a failure.
 
-- `safe`:func: creates a decorator to convert a function to use either the
-  `validate`:func: or the `affirm`:func: protocol.
+- `enfold`:func: creates a decorator to convert a function to use either the
+  `predicative`:func: or the `disruptive`:func: protocol.
 
 .. versionadded:: 1.8.0
 
@@ -34,16 +37,57 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-def validate(function, *args, **kwds):
-    '''Call a `function` inner a safety wrapper raising an exception if fail.
+def predicative(function, *args, **kwds):
+    '''Call a function in a safety wrapper returning a false value if fail.
 
-    Fails could be signaled with special false values such as:
+    This converts any function into a predicate.  A predicate can be thought
+    as an operator or function that returns a value that is either true or
+    false.
 
-    - Any `~xoutil.fp.monads.option.Wrong`:class: instance; or
+    Predicates are sometimes used to indicate set membership: on certain
+    occasions it is inconvenient or impossible to describe a set by listing
+    all of its elements.  Thus, a predicate ``P(x)`` will be true or false,
+    depending on whether x belongs to a set.
 
-    - Any false value provable as instance of
-      `~xoutil.symbols.boolean`:class:, that doesn't include values as ``0``,
-      ``[]``, or ``None``.
+    If the argument `function` validates its arguments, return a valid true
+    value.  There are two special conditions: first, a value treated as false
+    for Python conventions (for example, ``0``, or an empty string); and
+    second, when an exception is raised; in both cases the predicate will
+    return an instance of `~xoutil.fp.monads.option.Maybe`:class:.
+
+    '''
+    from xoutil.symbols import boolean
+    from xoutil.fp.monads.option import Maybe, Just, Wrong
+    from xoutil.fp.params import single
+    # I don't understand anymore why a single argument must be a special case,
+    # maybe because the composition problem.
+    is_single = single(*args, **kwds)
+    try:
+        res = function(*args, **kwds)
+        if isinstance(res, (boolean, Maybe)):
+            if isinstance(res, Just) and res.inner:
+                return res.inner
+            elif isinstance(res, boolean) and is_single and args[0]:
+                return args
+            else:
+                return res
+        elif res:
+            return res
+        else:
+            return Just(res)
+    except BaseException as error:
+        if isinstance(error, ValueError) and is_single:
+            return Wrong(args[0])
+        else:
+            return Wrong(error)
+
+
+def disruptive(function, *args, **kwds):
+    '''Call a function in a safety wrapper raising an exception if it fails.
+
+    When the wrapped function fails, an exception must be raised.  A predicate
+    fails when it returns a false value.  To avoid treat false values of some
+    types as fails, use `Just`:class: to return that values wrapped.
 
     '''
     from xoutil.symbols import boolean, Invalid
@@ -76,52 +120,16 @@ def validate(function, *args, **kwds):
     return res
 
 
-def affirm(function, *args, **kwds):
-    '''Call a `function` inner a safety wrapper returning false if fail.
-
-    This converts any function in a predicate.  A predicate can be thought as
-    an operator or function that returns a value that is either true or false.
-    Predicates are sometimes used to indicate set membership: sometimes it is
-    inconvenient or impossible to describe a set by listing all of its
-    elements.  Thus, a predicate ``P(x)`` will be true or false, depending on
-    whether x belongs to a set.
-
-    If `function` validates its arguments, return a valid true value, could be
-    Always returns an instance of `~xoutil.fp.monads.option.Maybe`:class: or a
-    Boolean value.
-
-    '''
-    from xoutil.symbols import boolean
-    from xoutil.fp.monads.option import Maybe, Just, Wrong
-    try:
-        res = function(*args, **kwds)
-        if isinstance(res, (boolean, Maybe)):
-            if isinstance(res, Just) and res.inner:
-                return res.inner
-            elif isinstance(res, boolean) and len(args) == 1 and not kwds and args[0]:
-                return args
-            return res
-        elif res:
-            return res
-        else:
-            return Just(res)
-    except BaseException as error:
-        if isinstance(error, ValueError) and len(args) == 1 and not kwds:
-            return Wrong(args[0])
-        else:
-            return Wrong(error)
-
-
-def safe(checker):
+def enfold(checker):
     '''Create a decorator to execute a function inner a safety wrapper.
 
-    :param checker: Could be any function safe wrapper, but it's intended
-           mainly for `affirm`:func: or `validate`:func:.
+    :param checker: Could be any function to enfold, but it's intended mainly
+           for `predicative`:func:  or `disruptive`:func: functions.
 
     In the following example, the semantics of this function can be seen.  The
     definition::
 
-        >>> @safe(validate)
+        >>> @enfold(predicative)
         ... def test(x):
         ...     return 1 <= x <= 10
 
@@ -133,12 +141,12 @@ def safe(checker):
         >>> def test(x):
         ...     return 1 <= x <= 10
 
-        >>> validate(test, 5)
+        >>> predicative(test, 5)
         5
 
     In other hand::
 
-        >>> @safe(validate)
+        >>> @enfold(predicative)
         ... def test(x):
         ...     return 1 <= x <= 10
 
@@ -147,8 +155,6 @@ def safe(checker):
 
     '''
     def wrapper(func):
-        from xoutil.future.string import small, safe_str
-
         def inner(*args, **kwds):
             return checker(func, *args, **kwds)
 
@@ -156,6 +162,7 @@ def safe(checker):
             inner.__name__ = func.__name__
             inner.__doc__ = func.__doc__
         except BaseException:
+            from xoutil.future.string import small, safe_str
             inner.__name__ = safe_str(small(func))
         return inner
     return wrapper

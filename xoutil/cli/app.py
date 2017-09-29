@@ -11,10 +11,10 @@
 #
 # Created on 7 mai 2013
 
-'''A simple :func:`main` entry point for CLI based applications.
+'''A simple `main`:func: entry point for CLI based applications.
 
-This module provides an example of how to use :mod:`xoutil.cli` to create a CLI
-application.
+This module provides an example of how to use `xoutil.cli`:mod: to create a
+CLI application.
 
 '''
 
@@ -37,7 +37,7 @@ def main(default=None):
         cmd_name = args[0]
         args = args[1:]
     else:
-        cmd_name = (default or Command.get_setting('default_command') or
+        cmd_name = (default or Command.get_setting('default_command', None) or
                     HELP_NAME)
     cmds = Command.registry
     cmd = cmds.get(cmd_name)

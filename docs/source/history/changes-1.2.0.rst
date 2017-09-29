@@ -21,7 +21,7 @@ version number because we've removed some deprecated functions and/or modules.
   `!xoutil.aop.classical.weave`:func:.
 
 - Introduces `xoutil.iterators.first_n`:func: and deprecates
-  `xoutil.iterators.first`:func: and :func:`xoutil.iterators.get_first`.
+  `xoutil.iterators.first`:func: and `xoutil.iterators.get_first`:func:.
 
 - Removes the `zope.interface` awareness from `xoutil.context`:mod: since it
   contained a very hard to catch bug. Furthermore, this was included to help

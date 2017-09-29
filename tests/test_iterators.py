@@ -103,7 +103,7 @@ def test_dict_update_new(d1, d2):
 @given(s.lists(s.integers(), max_size=100))
 def test_delete_duplicates(l):
     from xoutil.iterators import delete_duplicates
-    from xoutil.collections import Counter
+    from xoutil.future.collections import Counter
     res = delete_duplicates(l)
     assert type(l) is type(res)  # noqa
     assert len(res) <= len(l)

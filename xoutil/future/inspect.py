@@ -15,7 +15,7 @@
 '''Extensions to Python's ``inspect`` module.
 
 You may use it as drop-in replacement of ``inspect``.  Although we don't
-document all items here.  Refer to :mod:`inspect's <inspect>` documentation.
+document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
 
 '''
 
@@ -30,11 +30,11 @@ _past.dissuade()
 del _past
 
 # TODO: @manu, migrate use of 'xoutil.inspect' in
-# 'xopgi.xopgi_mail_threads.mail_server.get_kwargs' to 'xoutil.future.inspect'
+# 'xopgi.xopgi_mail_threads.mail_server.get_kwargs' to this module
 
 
 try:
-    getfullargspec
+    getfullargspec    # noqa
 except NameError:
     from xoutil.future.collections import namedtuple
     FullArgSpec = namedtuple(
@@ -154,7 +154,7 @@ except ImportError:
         return _sentinel
 
 try:
-    getattr_static
+    getattr_static    # noqa
 except NameError:
     def _is_descriptor(klass_result):
         _ktype = type(klass_result)
@@ -224,7 +224,7 @@ def get_attr_value(obj, name, *default):
     default = check_default()(*default)
     is_type = isinstance(obj, type)
     res = getattr_static(obj, name, Undefined)
-    if isdatadescriptor(res):
+    if isdatadescriptor(res):    # noqa
         try:
             owner = type if is_type else type(obj)
             res = res.__get__(obj, owner)
@@ -233,7 +233,7 @@ def get_attr_value(obj, name, *default):
     if res is Undefined and not is_type:
         cls = type(obj)
         res = getattr_static(cls, name, Undefined)
-        if isdatadescriptor(res):
+        if isdatadescriptor(res):    # noqa
             try:
                 res = res.__get__(obj, cls)
             except:
@@ -251,6 +251,7 @@ def get_attr_value(obj, name, *default):
         raise AttributeError(msg % (type_name(obj), name))
 
 
+# TODO: There is a function in 'xoutil.eight'
 def type_name(obj, affirm=False):
     '''Return the internal name for a type or a callable.
 
@@ -296,7 +297,7 @@ def type_name(obj, affirm=False):
         try:
             res = getattr_static(obj, '__name__', None)
             if res:
-                if isdatadescriptor(res):
+                if isdatadescriptor(res):    # noqa
                     res = res.__get__(obj, type)
         except BaseException:
             res = None
@@ -311,7 +312,7 @@ def type_name(obj, affirm=False):
         # TODO: Why not use directly `get_attr_value``
         # FIX: Improve and standardize the combination of next code
         res = getattr_static(obj, '__name__', None)
-        if res and isdatadescriptor(res):
+        if res and isdatadescriptor(res):    # noqa
             res = res.__get__(obj, type(obj))
     if isinstance(res, string_types):
         return res

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.json
+# xoutil.future.json
 # ---------------------------------------------------------------------
 # Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
@@ -48,7 +48,7 @@ del _past
 
 class JSONEncoder(_stdlib.JSONEncoder):
     __doc__ = (_stdlib.JSONEncoder.__doc__ + '''
-    We also support:
+    Xoutil extends this class by supporting the following data-types:
 
     - `datetime`, `date` and `time` values, which are translated to strings
       using ISO format.
@@ -81,7 +81,7 @@ class JSONEncoder(_stdlib.JSONEncoder):
 
 
 try:
-    JSONDecodeError
+    JSONDecodeError    # noqa
 except NameError:
     # Python 2 implementation raises 'ValueError'
     JSONDecodeError = ValueError
@@ -89,7 +89,7 @@ except NameError:
 
 def file_load(filename):
     with file(filename, 'r') as f:
-        return load(f)
+        return load(f)    # noqa
 
 
 # --- encode strings ---

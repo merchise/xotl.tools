@@ -32,6 +32,7 @@ def dev_tag_installed():
     except:
         return None
 
+
 RELEASE_TAG = dev_tag_installed() or ''
 
 

@@ -59,7 +59,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
        deprecated.
 
     :param msg: A deprecation warning message template.  You should provide
-       keyword arguments for the :func:`format` function.  Currently we pass
+       keyword arguments for the `format`:func: function.  Currently we pass
        the current keyword arguments: `replacement` (after some processing),
        `funcname` with the name of the currently deprecated object and
        `in_version` with the version this object is going to be removed if

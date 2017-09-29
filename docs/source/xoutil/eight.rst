@@ -1,0 +1,25 @@
+================================================================================
+ `xoutil.eight`:mod: -- Extensions for writing code that runs on Python 2 and 3
+================================================================================
+
+.. module:: xoutil.eight
+
+.. TODO: check automodule\ :\ : xoutil.eight
+   :members:
+
+The name comes from (Manu's idea') "2 raised to the power of 3".
+
+This module is divided in several parts.
+
+.. toctree::
+   :glob:
+
+   eight/exceptions
+
+.. to-do list:
+
+   eight/*
+   eight/meta
+   eight/types
+   eight/io
+   eight/abc

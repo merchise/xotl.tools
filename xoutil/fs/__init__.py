@@ -16,7 +16,7 @@
 
 This module contains file-system utilities that could have side-effects. For
 path-handling functions that have no side-effects look at
-:mod:`xoutil.fs.path`.
+`xoutil.fs.path`:mod:.
 
 '''
 
@@ -142,7 +142,7 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     '''
     Iterate directories recursively.
 
-    The params have analagous meaning that in :func:`iter_files` and the same
+    The params have analagous meaning that in `iter_files`:func: and the same
     restrictions.
 
     '''
@@ -494,7 +494,7 @@ def ensure_filename(filename, yields=False):
     file) an OSError is raised.  If `exist_ok` is False the filename must not
     be taken; an OSError is raised otherwise.
 
-    The function creates all directories if needed. See :func:`makedirs` for
+    The function creates all directories if needed. See `makedirs`:func: for
     restrictions.
 
     If `yields` is True, returns the file object.  This way you may open a
@@ -529,7 +529,7 @@ def concatfiles(*files):
 
     Each positional argument must be either:
 
-    - a file-like object (ready to be passed to :func:`shutil.copyfileobj`)
+    - a file-like object (ready to be passed to `shutil.copyfileobj`:func:)
 
     - a string, the file path.
 

@@ -69,13 +69,12 @@ def test_lrucache_stats():
     pass
 
 
-from xoutil.future.functools import compose
+from xoutil.fp.tools import compose, identity
 
 
 class TestCompose(unittest.TestCase):
     def test_needs_at_least_an_argument(self):
-        with self.assertRaises(TypeError):
-            compose()
+        self.assertIs(compose(), identity)
 
     def test_single_argument_is_identitical(self):
         def anything():
@@ -100,21 +99,6 @@ class TestCompose(unittest.TestCase):
         add_3 = power(incr, 3)
         self.assertEqual(3, add_3(0))
 
-    def test_ctuple(self):
-        from xoutil.eight import range
-        from xoutil.future.functools import ctuple
-
-        def echo(*args):
-            return args
-
-        result = compose(echo, ctuple, list, range, math=False)(10)
-        expected = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-        self.assertEqual(expected, result)
-
-        # Without ctuple prints the list
-        result = compose(echo, list, range, math=False)(10)
-        expected = ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], )
-        self.assertEqual(expected, result)
 
 def test_lwraps():
     from xoutil.future.functools import lwraps

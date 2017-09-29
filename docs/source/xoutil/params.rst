@@ -29,7 +29,7 @@ methods.
 
 
 .. autoclass:: ParamScheme
-   :members: get, defaults, __call__, __len__, __getitem__, __iter__
+   :members: defaults, __call__, __len__, __getitem__, __iter__
 
 .. autoclass:: ParamSchemeRow
    :members: key, default, __call__

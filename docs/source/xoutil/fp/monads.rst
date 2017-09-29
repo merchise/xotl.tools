@@ -5,7 +5,7 @@
 
 
 Some thoughts about this package
-================================
+--------------------------------
 
 In pure *functional programming*, a monad is used to represent computations
 that requires sequenced operations, or to define arbitrary deterministic
@@ -19,3 +19,13 @@ But in Python (at least for me), Monads are a way to homogenize *functional
 programming* concepts with a simple syntax in order to code becomes easier to
 understand.  If you'd find the full-power of *Monads*, go to *Haskell*, or
 maybe to *Category Theory* in mathematics.
+
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   monads/*

@@ -55,13 +55,13 @@ metaclass.__doc__ = '''Define the metaclass of a class.
 
     Metaclasses are allowed to have a ``__prepare__`` classmethod to return
     the namespace into which the body of the class should be evaluated.  See
-    :pep:`3115`.
+    `3115`:pep:.
 
-    .. warning:: The :pep:`3115` is not possible to implement in Python 2.7.
+    .. warning:: The `3115`:pep: is not possible to implement in Python 2.7.
 
        Despite our best efforts to have a truly compatible way of creating
        meta classes in both Python 2.7 and 3.0+, there is an inescapable
-       difference in Python 2.7.  The :pep:`3115` states that ``__prepare__``
+       difference in Python 2.7.  The `3115`:pep: states that ``__prepare__``
        should be called before evaluating the body of the class.  This is not
        possible in Python 2.7, since ``__new__`` already receives the
        attributes collected in the body of the class.  So it's always too late
@@ -141,3 +141,5 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        type accepts (class name, tuple of base classes, attributes mapping).
 
 '''
+
+metaclass.__module__ = __name__
