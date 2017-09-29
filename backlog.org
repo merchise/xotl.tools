@@ -44,6 +44,9 @@
 
   - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
 
+    Remove file:xoutil/fp/monads if it is not going to be part of this
+    release.  See file:xoutil/fp/discussion.org
+
   - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
 
 - [ ] There is a function named 'type_name' in two different modules:
