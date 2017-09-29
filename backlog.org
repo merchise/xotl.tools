@@ -4,9 +4,9 @@
 
 * Backlog for *xoutil*
 
-** Release version 1.8 <2017-10-21 sáb> [0/3]
+** Release version 1.8 <2017-10-21 sáb> [0/4]
 
-- [-] Fix 'future' documentation errors because 'automodule' use. [5/8]
+- [-] Fix 'future' documentation errors because 'automodule' use. [6/8]
 
   - [X] datetime
 
@@ -24,7 +24,7 @@
 
     [[file:docs/source/xoutil/future/json.rst][documentation]] --> [[file:xoutil/future/json.py][module]].
 
-  - [ ] string
+  - [X] string
 
     [[file:docs/source/xoutil/future/string.rst][documentation]] --> [[file:xoutil/future/string.py][module]].
 
