@@ -59,7 +59,7 @@ def dedent(text, skip_firstline=False):
 
 
 try:
-    indent
+    indent    # noqa
 except NameError:
     # The following is Copyright (c) of the Python Software Foundation.
     def indent(text, prefix, predicate=None):

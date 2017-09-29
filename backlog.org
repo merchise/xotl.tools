@@ -6,7 +6,7 @@
 
 ** Release version 1.8 <2017-10-21 sáb> [0/4]
 
-- [-] Fix 'future' documentation errors because 'automodule' use. [6/8]
+- [-] Fix 'future' documentation errors because 'automodule' use. [7/8]
 
   - [X] datetime
 
@@ -28,7 +28,7 @@
 
     [[file:docs/source/xoutil/future/string.rst][documentation]] --> [[file:xoutil/future/string.py][module]].
 
-  - [ ] textwrap
+  - [X] textwrap
 
     [[file:docs/source/xoutil/future/textwrap.rst][documentation]] --> [[file:xoutil/future/textwrap.py][module]].
 
