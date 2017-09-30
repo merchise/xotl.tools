@@ -40,11 +40,32 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
-- [ ] Fix deprecation warnings (code and documentation) for: [0/2]
+- [ ] Manage deprecation warnings (code and documentation) for: [0/2]
 
   - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
 
+    It is used in Odoo's 'jobs.py' and 'xamatl'; also in 'xoutil' itself.  In
+    the branch 'merchise-develop-10.0' of Odoo there is a commit (8149227d4f1:
+    "Remove the need of 'xoutil.cl' here.") with a proposal to remove
+    completely the need of 'xoutil.cl'.
+
+    'xamatl' will be migrated together with 'xoutil'.
+
   - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
+
+  - [ ] Document and fix all "normalize_..." functions in module
+    '[[file:xoutil/future/string.py::def%20normalize_unicode(value):][xoutil.future.string]]'.
+
+    There are several things that would probably dissapear: We can't be sure
+    how do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
+
+   - [ ] Deprecate functions with the mark [[file:xoutil/future/string.py::#%20TODO:%20Deprecate][TODO: Deprecate]]
+
+   - [ ] Review when and how to remove symbolic linking to 'xoutil.future'.
+
+     - [[file:xoutil][main package]]
+
+     - [[file:xoutil/eight][xoutil.eight]]
 
 - [X] Remove file:xoutil/fp/monads if it is not going to be part of this
   release.  See file:xoutil/fp/monads/discussion.org
@@ -60,14 +81,6 @@
 
   - [ ] Document the argument `affirm` in xoutil.future.inspect.type_name.
 
-- [ ] Document and fix all "normalize_..." functions in module
-  '[[file:xoutil/future/string.py::def%20normalize_unicode(value):][xoutil.future.string]]'.
-
-  There are several things that would probably dissapear: We can't be sure how
-  do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
-
-  - Deprecate functions with the mark [[file:xoutil/future/string.py::#%20TODO:%20Deprecate][TODO: Deprecate]]
-
 ** Development ideas. [/]
 
 - [ ] Refactor CLI.
@@ -78,41 +91,53 @@
 
 ** Miscellaneous. [/]
 
-   - [ ] Add Python 3 'partialmethod' into 'xoutil.future.functools' (or maybe
-     into 'xoutil.eight').
+- [ ] Improve naming. [/]
 
-  - [ ] Review and fix 'xoutil.decorator' module.  Get ideas from
-    [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/extensionmethod.py][extensionmethod]] from OSlash in order to improve our module.
+  - [ ] A time ago, manu was arguing about the convenience of a package named
+    'xoutil.future', mainly having 'xoutil.eight'.
 
-  - [ ] Review [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/fn.py][fn]] from OSlash, generalize and integrate our 'compose' versions
-    in 'xoutil.future.functools' and 'xoutil.cl' using their ideas.
+    Anyway, I (med) think that is convenient two have two separate modules,
+    but reviewing 'future' name; some ideas:
 
-  - Implement Python 3 'functools.singledispatch' in our
-    'xoutil.future.functools'. Ask @manu for an equivalent tool he programmed.
-    Use a similar mechanism also in 'xoutil.fp' for pattern matching.
+    - 'enhancement': improvement that makes something more agreeable
 
-  - [ ] Improve special characters in a wild-carded name.  Python
-    'fnmatch.translate' standard function lacks of functionality present in
-    most shells (like alternation of comma-separated alternatives); thus,
-    ``foo{bar,lish}`` would be matched in 'foobar' or 'foolish'.
+    - 'improvement': change for the better; progress in development
+
+- [ ] Add Python 3 'partialmethod' into 'xoutil.future.functools' (or maybe
+  into 'xoutil.eight').
+
+- [ ] Review and fix 'xoutil.decorator' module.  Get ideas from
+  [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/extensionmethod.py][extensionmethod]] from OSlash in order to improve our module.
+
+- [ ] Review [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/fn.py][fn]] from OSlash, generalize and integrate our 'compose' versions
+  in 'xoutil.future.functools' and 'xoutil.cl' using their ideas.
+
+- Implement Python 3 'functools.singledispatch' in our
+  'xoutil.future.functools'. Ask @manu for an equivalent tool he programmed.
+  Use a similar mechanism also in 'xoutil.fp' for pattern matching.
+
+- [ ] Improve special characters in a wild-carded name.  Python
+  'fnmatch.translate' standard function lacks of functionality present in
+  most shells (like alternation of comma-separated alternatives); thus,
+  ``foo{bar,lish}`` would be matched in 'foobar' or 'foolish'.
 
 
 ** Develop Monad concept into 'xoutil'. [/]
 
-   There are several "old" modules that could be migrated (or integrated) into
-   new monads modules; these old modules could become clients of monads.
+There are several "old" modules that could be migrated (or integrated) into
+new monads modules; these old modules could become clients of monads.
 
-   - [ ] 'xoutil.connote': intends for to have predicates (commonly understood
-     to be Boolean-valued functions).
+- [ ] 'xoutil.connote': intends for to have predicates (commonly understood
+  to be Boolean-valued functions).
 
-   - [ ] 'xoutil.symbols': to be instance of and sub-class checks in
-     'MetaSymbol' class must be extended to be compliant with monads.
+- [ ] 'xoutil.symbols': to be instance of and sub-class checks in
+  'MetaSymbol' class must be extended to be compliant with monads.
 
-   - [ ] 'xoutil.cl': reproducing some concepts of "Common Lisp" in Python.
-     Value checkers are the best candidates to be monadic.
+- [ ] 'xoutil.cl': reproducing some concepts of "Common Lisp" in Python.
+  Value checkers are the best candidates to be monadic.
 
-   - [ ] 'xoutil.values': this module is deprecated but must be analyzed
-     during this proccess.
+- [ ] 'xoutil.values': this module is deprecated but must be analyzed
+  during this proccess.
 
 
 ** Errors
@@ -131,5 +156,3 @@
     import xoutil
     dreload(xoutil)
   #+end_src
-
-** Configuration. [/]
