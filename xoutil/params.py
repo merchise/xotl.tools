@@ -153,7 +153,7 @@ class ParamManager(object):
           information.
 
         '''
-        from xoutil.fp.monads.option import Just, Wrong, none
+        from xoutil.fp.option import Just, Wrong, none
         # TODO: Change this
         from xoutil.fp.prove.semantic import predicate as Coercer
         args, kwds = self.args, self.kwds
@@ -224,7 +224,7 @@ class ParamSchemeRow(object):
         from xoutil.eight import iteritems, string_types as strs
         from xoutil.eight.string import safe_isidentifier as iskey
         from xoutil.eight import type_name
-        from xoutil.fp.monads.option import none
+        from xoutil.fp.option import none
         # TODO: Change this
         from xoutil.fp.prove.semantic import predicate as Coercer
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
@@ -298,7 +298,7 @@ class ParamSchemeRow(object):
         If not defined, special value ``none`` is returned.
 
         '''
-        from xoutil.fp.monads.option import none
+        from xoutil.fp.option import none
         return self.options.get('default', none)
 
     @property
@@ -314,7 +314,7 @@ class ParamSchemeRow(object):
         '''
         # TODO: calculate the key value in the constructor
         from xoutil.eight import string_types as strs
-        from xoutil.fp.monads.option import none
+        from xoutil.fp.option import none
         res = self._key
         if res is none:
             res = next((k for k in self.ids if isinstance(k, strs)), None)
@@ -388,7 +388,7 @@ class ParamScheme(object):
         from xoutil.eight import type_name
 
         def ok(v):
-            from xoutil.fp.monads.option import Wrong
+            from xoutil.fp.option import Wrong
             return not isinstance(v, Wrong)
 
         pm = ParamManager(args, kwds)
@@ -418,7 +418,7 @@ class ParamScheme(object):
     def defaults(self):
         '''Return a mapping with all valid default values.'''
         def ok(v):
-            from xoutil.fp.monads.option import Wrong
+            from xoutil.fp.option import Wrong
             return not isinstance(v, Wrong)
 
         aux = ((row.key, row.default) for row in self)

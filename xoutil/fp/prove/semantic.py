@@ -99,7 +99,7 @@ class TypeCheck(predicate):
             raise TypeError(msg.format(wnames))
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Just, Wrong
+        from xoutil.fp.option import Just, Wrong
         ok = isinstance(value, self.inner)
         return (value if value else Just(value)) if ok else Wrong(value)
 
@@ -144,7 +144,7 @@ class NoneOrTypeCheck(TypeCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Wrong
+        from xoutil.fp.option import Wrong
         if value is None:
             _types = self.inner
             i, res = 0, None
@@ -168,7 +168,7 @@ class TypeCast(TypeCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Just
+        from xoutil.fp.option import Just
         res = super(TypeCast, self).__call__(value)
         if not res:
             _types = self.inner
@@ -208,7 +208,7 @@ class CheckAndCast(predicate):
             raise TypeError(msg.format(type_name(self), type_name(cast)))
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Wrong
+        from xoutil.fp.option import Wrong
         check, cast = self.inner
         aux = check(value)
         if aux:
@@ -262,7 +262,7 @@ class LogicalCheck(FunctionalCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Just, Wrong
+        from xoutil.fp.option import Just, Wrong
         try:
             res = self.inner(value)
             if res:
@@ -287,7 +287,7 @@ class SafeCheck(FunctionalCheck):
     __slots__ = ()
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Wrong
+        from xoutil.fp.option import Wrong
         try:
             return self.inner(value)
         except BaseException as error:
@@ -309,7 +309,7 @@ class MultiCheck(predicate):
         return self
 
     def __call__(self, value):
-        from xoutil.fp.monads.option import Just, Wrong, none
+        from xoutil.fp.option import Just, Wrong, none
         predicates = self.inner
         i, res = 0, none
         while isinstance(res, Wrong) and i < len(predicates):
