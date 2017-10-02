@@ -1,7 +1,7 @@
-`xoutil.fp.monads.option`:mod: - Functional Programming Option Type
-===================================================================
+`xoutil.fp.option`:mod: - Functional Programming Option Type
+============================================================
 
-.. automodule:: xoutil.fp.monads.option
+.. automodule:: xoutil.fp.option
    :members: Maybe, Just, Wrong, false, true, none
 
 

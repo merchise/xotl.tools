@@ -18,8 +18,8 @@ There are some basic helper functions:
 
 - `predicative`:func: wraps a function in a way that a logical false value is
   returned on failure.  If an exception is raised, it is returned wrapped as
-  an special false value.  See `~xoutil.fp.monads.option.Maybe`:class: monad
-  for more information.
+  an special false value.  See `~xoutil.fp.option.Maybe`:class: monad for more
+  information.
 
 - `disruptive`:func: wraps a function in a way that an exception is raised if
   an invalid value (logical false by default) is returned.  This is useful to
@@ -53,11 +53,11 @@ def predicative(function, *args, **kwds):
     value.  There are two special conditions: first, a value treated as false
     for Python conventions (for example, ``0``, or an empty string); and
     second, when an exception is raised; in both cases the predicate will
-    return an instance of `~xoutil.fp.monads.option.Maybe`:class:.
+    return an instance of `~xoutil.fp.option.Maybe`:class:.
 
     '''
     from xoutil.symbols import boolean
-    from xoutil.fp.monads.option import Maybe, Just, Wrong
+    from xoutil.fp.option import Maybe, Just, Wrong
     from xoutil.fp.params import single
     # I don't understand anymore why a single argument must be a special case,
     # maybe because the composition problem.
@@ -94,7 +94,7 @@ def disruptive(function, *args, **kwds):
     from xoutil.future.string import small
     from xoutil.eight import type_name
     from xoutil.eight.exceptions import throw
-    from xoutil.fp.monads.option import Just, Wrong
+    from xoutil.fp.option import Just, Wrong
     from xoutil.fp.params import single
     res = function(*args, **kwds)
     if isinstance(res, boolean):

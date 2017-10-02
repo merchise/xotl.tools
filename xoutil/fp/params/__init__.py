@@ -143,10 +143,10 @@ def single(args, kwds):
     '''Return a true value only when a unique argument is given.
 
     Wnen needed, the most suitable result will be wrapped using the
-    `~xoutil.fp.monads.option.Maybe`:class:\ .
+    `~xoutil.fp.option.Maybe`:class:\ .
 
     '''
-    from xoutil.fp.monads.option import Just, Wrong, take
+    from xoutil.fp.option import Just, Wrong, take
     if len(args) == 1 and not kwds:
         res = take(args[0])
         if not res:
