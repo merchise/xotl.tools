@@ -190,3 +190,9 @@ def test_operate_with_timespans(ts, d):
 @given(time_span('none'), time_span('none'))
 def test_definition_of_overlaps(ts1, ts2):
     assert ts1.overlaps(ts2) == bool(ts1 & ts2)
+
+
+@given(time_span('none'), time_span('none'))
+def test_duplication_of_timespans(ts1, ts2):
+    hypothesis.assume(ts1 == ts2)
+    assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
