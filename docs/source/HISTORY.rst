@@ -4,7 +4,7 @@ Changelog
 1.7 series
 ----------
 
-Unreleased.  1.7.11
+2017-10-05.  1.7.11
 ~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.7.11.rst
