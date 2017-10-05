@@ -637,12 +637,14 @@ class TimeSpan(object):
 
     def __eq__(self, other):
         import datetime
-        from xoutil.objects import validate_attrs
         if isinstance(other, datetime.date):
             other = type(self).from_date(other)
         if not isinstance(other, TimeSpan):
             other = type(self)(other)
-        return validate_attrs(self, other, ('start_date', 'end_date'))
+        return hash(self) == hash(other)
+
+    def __hash__(self):
+        return hash((self.start_date, self.end_date))
 
     def __ne__(self, other):
         return not (self == other)
