@@ -51,7 +51,7 @@
 
 - [ ] There is a function named 'type_name' in two different modules:
 
-  - [[file:xoutil/future/inspect.py::def%20type_name(obj,%20affirm%3DFalse):][xoutil.future.inspect]]
+  - [[file:xoutil/future/inspect.py::def%20safe_name(obj,%20affirm%3DFalse):][xoutil.future.inspect]]
 
   - [[file:xoutil/eight/__init__.py::def%20type_name(obj):][xoutil.eight]]
 
