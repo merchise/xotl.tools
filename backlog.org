@@ -6,6 +6,8 @@
 
 ** Release version 1.8 <2017-10-21 sáb> [2/5]
 
+- [ ] Prepare the [[file:docs/sources/history/_changes-1.8.0.rst][change log for 1.8.0]].
+
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
   - [X] datetime
