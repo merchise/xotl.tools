@@ -364,9 +364,6 @@ def daterange(*args):
 
     As with `range`, `stop` is never included in the yielded dates.
 
-    .. note:: In a future release this will be merged with
-              `ClosedDateRange`:class:
-
     '''
     import operator
     # Use base classes to allow broader argument values
