@@ -196,3 +196,10 @@ def test_definition_of_overlaps(ts1, ts2):
 def test_duplication_of_timespans(ts1, ts2):
     hypothesis.assume(ts1 == ts2)
     assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
+
+
+@given(time_span())
+def test_timespans_are_pickable(ts):
+    import pickle
+    assert ts == pickle.loads(pickle.dumps(ts))
+    assert ts == pickle.loads(pickle.dumps(ts, pickle.HIGHEST_PROTOCOL))
