@@ -698,6 +698,8 @@ class TimeSpan(object):
 
 
 class _EmptyTimeSpan(object):
+    __slots__ = []  # no inner structure
+
     def __bool__(self):
         return False
 
@@ -710,8 +712,9 @@ class _EmptyTimeSpan(object):
     def __eq__(self, which):
         from datetime import date
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
-            # We expect `self` to be a singleton
-            return self is which
+            # We expect `self` to be a singleton, but pickle protocol 1 does
+            # not warrant to call our __new__.
+            return isinstance(which, _EmptyTimeSpan)
         else:
             raise TypeError
 
@@ -765,10 +768,17 @@ class _EmptyTimeSpan(object):
     def __repr__(self):
         return 'EmptyTimeSpan'
 
+    def __new__(cls):
+        res = getattr(cls, '_instance', None)
+        if res is None:
+            res = cls._instance = super(_EmptyTimeSpan, cls).__new__(cls)
+        return res
+
+    def __getnewargs__(self):
+        return ()
+
 
 EmptyTimeSpan = _EmptyTimeSpan()
-
-_EmptyTimeSpan.__new__ = None  # Disallow creating more instances
 
 
 # A context to switch on/off returning a subtype of date from DateFields.

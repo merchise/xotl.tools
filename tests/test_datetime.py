@@ -135,8 +135,7 @@ def test_empty_timespan(ts):
 
     assert not (ts <= EmptyTimeSpan), 'Empty is not a superset of any TS'
 
-    with pytest.raises(TypeError):
-        type(EmptyTimeSpan)()
+    type(EmptyTimeSpan)() is EmptyTimeSpan
 
     assert EmptyTimeSpan & ts == EmptyTimeSpan * ts == EmptyTimeSpan
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
@@ -203,3 +202,11 @@ def test_timespans_are_pickable(ts):
     import pickle
     assert ts == pickle.loads(pickle.dumps(ts))
     assert ts == pickle.loads(pickle.dumps(ts, pickle.HIGHEST_PROTOCOL))
+
+
+def test_empty_timespan_is_pickable():
+    import pickle
+    assert EmptyTimeSpan == pickle.loads(pickle.dumps(EmptyTimeSpan))
+    assert EmptyTimeSpan is pickle.loads(
+        pickle.dumps(EmptyTimeSpan, pickle.HIGHEST_PROTOCOL)
+    )
