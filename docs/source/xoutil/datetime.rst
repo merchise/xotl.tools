@@ -56,3 +56,7 @@
    No date is a member of the empty time span.  The empty time span is a
    proper subset of any time span.  It's only a superset of itself.  It's not
    a proper superset of any other time span nor itself.
+
+   This instance is a singleton.  However, if you pickle it with protocol 1
+   and unpickle it, you'll lose that property.  It's best to test with the
+   equality operator ``==``.
