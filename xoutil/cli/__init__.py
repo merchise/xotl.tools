@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cli
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise and Contributors
 # Copyright (c) 2013, 2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
@@ -187,7 +187,8 @@ class Command(metaclass(ABCMeta)):
                     Command._settle_cache(target, cmd, recursed=recursed)
             else:   # Only branch commands are OK to execute
                 from types import MethodType
-                assert isinstance(source.run, MethodType)
+                assert isinstance(source.run, MethodType), \
+                    'Invalid type %r for source %r' % (type(source.run).__name__, source)
                 target[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)
