@@ -82,5 +82,4 @@ except NameError:
                 yield (prefix + line if predicate(line) else line)
         return ''.join(prefixed_lines())
 
-    __all__ = list(__all__)
     __all__.append('indent')

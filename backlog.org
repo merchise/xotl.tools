@@ -45,6 +45,11 @@
 
 - [ ] Manage deprecation warnings (code and documentation) for: [0/2]
 
+  - [ ] 'xoutil.future.string' must be fully deprecated.
+
+    See [[file:xoutil/future/string.py][module]].  There are some useful tools in there that must be migrated to
+    [[file:xoutil/future/textwrap.py][xoutil.future.textwrap]] and a new one [[file:xoutil/future/codecs.py][xoutil.future.codecs]].
+
   - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
 
     It is used in Odoo's 'jobs.py' and 'xamatl'; also in 'xoutil' itself.  In
