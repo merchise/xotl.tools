@@ -4,6 +4,9 @@
 
 * Backlog for *xoutil*
 
+# Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
+
+
 ** Release version 1.8 <2017-10-21 sáb> [2/5]
 
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
@@ -81,6 +84,14 @@
 
   - [ ] Document the argument `affirm` in xoutil.future.inspect.type_name.
 
+
+** Issues
+
+- [ ] =xoutil.cli= fails in Python 3.4+
+
+  See in [[https://gitlab.lahavane.com/merchise/xoutil/issues/10][gitlab]].
+
+
 ** Development ideas. [/]
 
 - [ ] Refactor CLI.
@@ -88,6 +99,7 @@
   See IPython's [[file:~/.local/lib/python2.7/site-packages/IPython/terminal/ipapp.py::addflag%20%3D%20lambda%20*args:%20frontend_flags.update(boolean_flag(*args))][addflag]].  Migrate the logic for sub-commands in 'argparse' by
   using [[file:/usr/share/doc/python/html/library/argparse.html?highlight%3Dargumentparser#argparse.ArgumentParser.add_subparsers][add_subparsers]] when definie method [[file:xoutil/cli/__init__.py::def%20get_arg_parser(cls):][get_arg_parser]] for sub-classes of
   [[file:xoutil/cli/__init__.py::class%20Command(ABC):][xoutil.cli.Command]].
+
 
 ** Miscellaneous. [/]
 
