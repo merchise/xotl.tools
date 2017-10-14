@@ -205,12 +205,18 @@ def safe_str(obj=str()):
 
 
 def safe_join(separator, iterable, encoding=None):
-    '''Similar to `join` method in string objects `separator.join(iterable)`, a
-    string which is the concatenation of the strings in the `iterable` with
-    `separator` as intermediate between elements. Return unicode or bytes
-    depending on type of `separator` and each item in `iterable`.
+    '''Similar to `join` method in string objects.
 
-    `encoding` is used in case of error to concatenate bytes + unicode.
+    The semantics is quivalent to ``separator.join(iterable)``.
+
+    Return a string which is the concatenation of the strings in the
+    `iterable`.  The `separator` between elements is the first argument.
+
+    The return type could be `unicode` or `bytes` depending on the `separator`
+    type, and the type of each item in the `iterable`.
+
+    Param `encoding` is used in case of error to concatenate `bytes` +
+    `unicode`.
 
     This function must be deprecated in Python 3.
 
