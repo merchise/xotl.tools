@@ -15,6 +15,8 @@
 
   - `~xoutil.future.string`:mod:.
 
+  - `~xoutil.future.codecs`:mod:.
+
   - `~xoutil.future.json`:mod:.
 
   - `~xoutil.future.threading`:mod:.

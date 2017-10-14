@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [3/7]
+** Release version 1.8 <2017-10-21 sáb> [2/4]
 
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
@@ -43,25 +43,25 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
-- [ ] Manage deprecation warnings (code and documentation) for: [0/1]
+- [-] Manage deprecation warnings (code and documentation) for: [0/3]
 
-  - [ ] 'xoutil.future.string' must be fully deprecated. [0/3]
+  - [-] 'xoutil.future.string' must be fully deprecated. [0/3]
 
     See [[file:xoutil/future/string.py][module]].
 
-    - [ ] There are some useful tools in there that must be migrated to
+    - [-] There are some useful tools in there that must be migrated to
       [[file:xoutil/future/textwrap.py][xoutil.future.textwrap]], [[file:xoutil/eight/__init__.py][xoutil.eight]], and a new one
       [[file:xoutil/future/codecs.py][xoutil.future.codecs]].
 
-      - [ ] xoutil.future.codecs [0/3]
+      - [X] xoutil.future.codecs [3/3]
 
-        - [ ] force_encoding
+        - [X] force_encoding
 
-        - [ ] safe_decode
+        - [X] safe_decode
 
-        - [ ] safe_encode
+        - [X] safe_encode
 
-      - [ ] xoutil.future.textwrap [0/3]
+      - [ ] xoutil.future.textwrap [0/6]
 
 	- [ ] cut_prefix
 
@@ -75,7 +75,7 @@
 
 	- [ ] cut_suffixes
 
-      - [ ] xoutil.eight [0/2]
+      - [ ] xoutil.eight [0/3]
 
         - [ ] safe_str
 
@@ -101,11 +101,11 @@
 
   - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
 
-   - [ ] Review when and how to remove symbolic linking to 'xoutil.future'.
+    - [ ] Review when and how to remove symbolic linking to 'xoutil.future'.
 
-     - [[file:xoutil][main package]]
+      - [[file:xoutil][main package]]
 
-     - [[file:xoutil/eight][xoutil.eight]]
+      - [[file:xoutil/eight][xoutil.eight]]
 
 - [X] Remove file:xoutil/fp/monads if it is not going to be part of this
   release.  See file:xoutil/fp/monads/discussion.org

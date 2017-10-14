@@ -19,18 +19,6 @@ from hypothesis import given, example
 from hypothesis.strategies import text, binary
 
 
-@given(s=binary())
-def test_safe_decode_dont_fail_uppon_invalid_encoding(s):
-    from xoutil.future.string import safe_decode
-    assert safe_decode(s, 'i-dont-exist') == safe_decode(s)
-
-
-@given(s=text())
-def test_safe_encode_dont_fail_uppon_invalid_encoding(s):
-    from xoutil.future.string import safe_encode
-    assert safe_encode(s, 'i-dont-exist') == safe_encode(s)
-
-
 def test_safe_string():
     from xoutil.future.string import safe_str
     # from xoutil.eight import python_version
