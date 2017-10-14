@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [2/5]
+** Release version 1.8 <2017-10-21 sáb> [3/7]
 
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
@@ -43,12 +43,52 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
-- [ ] Manage deprecation warnings (code and documentation) for: [0/2]
+- [ ] Manage deprecation warnings (code and documentation) for: [0/1]
 
-  - [ ] 'xoutil.future.string' must be fully deprecated.
+  - [ ] 'xoutil.future.string' must be fully deprecated. [0/3]
 
-    See [[file:xoutil/future/string.py][module]].  There are some useful tools in there that must be migrated to
-    [[file:xoutil/future/textwrap.py][xoutil.future.textwrap]] and a new one [[file:xoutil/future/codecs.py][xoutil.future.codecs]].
+    See [[file:xoutil/future/string.py][module]].
+
+    - [ ] There are some useful tools in there that must be migrated to
+      [[file:xoutil/future/textwrap.py][xoutil.future.textwrap]], [[file:xoutil/eight/__init__.py][xoutil.eight]], and a new one
+      [[file:xoutil/future/codecs.py][xoutil.future.codecs]].
+
+      - [ ] xoutil.future.codecs [0/3]
+
+        - [ ] force_encoding
+
+        - [ ] safe_decode
+
+        - [ ] safe_encode
+
+      - [ ] xoutil.future.textwrap [0/3]
+
+	- [ ] cut_prefix
+
+	- [ ] cut_any_prefix
+
+	- [ ] cut_prefixes
+
+	- [ ] cut_suffix
+
+	- [ ] cut_any_suffix
+
+	- [ ] cut_suffixes
+
+      - [ ] xoutil.eight [0/2]
+
+        - [ ] safe_str
+
+        - [ ] safe_join ?
+
+	- [ ] safe_strip
+
+    - [ ] Document and fix all "normalize_..." functions.
+
+      There are several things that would probably dissapear: We can't be sure
+      how do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
+
+    - [ ] Deprecate functions with the mark "TODO: Deprecate".
 
   - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
 
@@ -60,14 +100,6 @@
     'xamatl' will be migrated together with 'xoutil'.
 
   - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
-
-  - [ ] Document and fix all "normalize_..." functions in module
-    '[[file:xoutil/future/string.py::def%20normalize_unicode(value):][xoutil.future.string]]'.
-
-    There are several things that would probably dissapear: We can't be sure
-    how do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
-
-   - [ ] Deprecate functions with the mark [[file:xoutil/future/string.py::#%20TODO:%20Deprecate][TODO: Deprecate]]
 
    - [ ] Review when and how to remove symbolic linking to 'xoutil.future'.
 
