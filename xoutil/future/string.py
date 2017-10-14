@@ -113,6 +113,7 @@ def safe_str(obj=str()):
     .. versionadded:: 1.7.0
 
     '''
+    from xoutil.future.codecs import safe_decode, safe_encode
     if python_version == 3:
         if isinstance(obj, (bytes, bytearray)):
             return safe_decode(obj)
@@ -147,6 +148,7 @@ def safe_join(separator, iterable, encoding=None):
     .. warning:: The `force_separator_type` was removed in version 1.2.0.
 
     '''
+    from xoutil.future.codecs import force_encoding, safe_decode
     try:
         return separator.join(iterable)
     except:
@@ -191,6 +193,7 @@ def cut_prefix(value, prefix):
 
     '''
     from xoutil.eight import text_type as str, binary_type as bytes
+    from xoutil.future.codecs import safe_encode, safe_decode
     if isinstance(value, str) and isinstance(prefix, bytes):
         prefix = safe_decode(prefix)
     elif isinstance(value, bytes) and isinstance(prefix, str):
@@ -222,6 +225,7 @@ def cut_suffix(value, suffix):
 
     '''
     from xoutil.eight import text_type as str, binary_type as bytes
+    from xoutil.future.codecs import safe_decode, safe_encode
     if isinstance(value, str) and isinstance(suffix, bytes):
         suffix = safe_decode(suffix)
     elif isinstance(value, bytes) and isinstance(suffix, str):
@@ -354,6 +358,7 @@ def hyphen_name(name, join_numbers=True):
 def normalize_unicode(value):
     # TODO: Deprecate
     # FIXME: i18n
+    from xoutil.future.codecs import safe_decode
     if (value is None) or (value is str('')):
         return ''
     elif value is True:
@@ -394,6 +399,7 @@ def normalize_ascii(value):
 
     '''
     import unicodedata
+    from xoutil.future.codecs import safe_decode
     from xoutil.eight import text_type
     if not isinstance(value, text_type):
         value = safe_decode(value)
@@ -656,6 +662,7 @@ def force_str(value, encoding=None):
     .. versionadded:: 1.2.0
 
     '''
+    from xoutil.future.codecs import safe_decode, safe_encode
     if isinstance(value, str):
         return value
     elif str is bytes:      # Python 2
@@ -814,12 +821,11 @@ from xoutil.eight import input    # noqa
 input = deprecated(input, "xoutil.future.string.input is deprecated.  Use "
                    "xoutil.eight.input")(input)
 
-del deprecated
+del deprecated, inject_deprecated
 
-__all__ += ['force_encoding', 'safe_decode', 'safe_encode', 'safe_str',
-            'safe_join', 'safe_strip', 'cut_prefix', 'cut_any_prefix',
-            'cut_prefixes', 'cut_suffix', 'cut_any_suffix', 'cut_suffixes',
-            'capitalize_word', 'capitalize', 'hyphen_name',
+__all__ += ['safe_str', 'safe_join', 'safe_strip', 'cut_prefix',
+            'cut_any_prefix', 'cut_prefixes', 'cut_suffix', 'cut_any_suffix',
+            'cut_suffixes', 'capitalize_word', 'capitalize', 'hyphen_name',
             'normalize_unicode', 'normalize_name', 'normalize_title',
             'normalize_str', 'normalize_ascii', 'normalize_slug',
             'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',

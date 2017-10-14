@@ -462,7 +462,7 @@ if sys.version_info < (3, 4, 1):
 
         """
         from errno import EEXIST
-        from xoutil.future.string import safe_encode
+        from xoutil.future.codecs import safe_encode
         head, tail = os.path.split(name)
         if not tail:
             head, tail = os.path.split(head)

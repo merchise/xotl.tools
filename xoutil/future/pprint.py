@@ -47,5 +47,5 @@ def ppformat(obj):
     if isinstance(res, text_type):
         return res
     else:
-        from xoutil.future.string import safe_decode
+        from xoutil.future.codecs import safe_decode
         return safe_decode(res)

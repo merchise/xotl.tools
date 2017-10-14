@@ -69,7 +69,7 @@ def fix_encoding(name, encoding=None):
     '''
     if not isinstance(name, str):
         if not encoding:
-            from xoutil.future.string import force_encoding
+            from xoutil.future.codecs import force_encoding
             encoding = force_encoding(sys.getfilesystemencoding())
         fixer = name.decode if isinstance(name, bytes) else name.encode
         return fixer(encoding)

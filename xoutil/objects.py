@@ -496,7 +496,7 @@ def build_documentation(cls, get_doc=None, deep=1):
     no function is given, then attribute ``__doc__`` is used.
 
     '''
-    from xoutil.future.string import safe_decode
+    from xoutil.future.codecs import safe_decode
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if deep < 1:
         deep = 1
