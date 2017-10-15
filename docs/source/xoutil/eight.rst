@@ -16,5 +16,6 @@ This module is divided in several parts.
 
    eight/abc
    eight/meta
+   eight/mixins
    eight/io
    eight/exceptions
