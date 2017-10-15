@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [3/5]
+** Release version 1.8 <2017-10-21 sáb> [3/8]
 
 - [ ] Prepare the [[file:docs/sources/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
@@ -45,9 +45,9 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
-- [ ] Create documentations for 'eight' modules [/]
+- [-] Create documentations for 'eight' modules [1/7]
 
-  - [ ] abc.rst
+  - [X] abc.rst
 
   - [ ] io.rst
 
