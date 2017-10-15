@@ -45,13 +45,13 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
-- [-] Create documentations for 'eight' modules [2/7]
+- [-] Create documentations for 'eight' modules [3/7]
 
   - [X] abc.rst
 
   - [X] io.rst
 
-  - [ ] meta.rst
+  - [X] meta.rst
 
   - [ ] mixins.rst
 
