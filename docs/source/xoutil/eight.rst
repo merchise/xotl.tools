@@ -15,4 +15,5 @@ This module is divided in several parts.
    :glob:
 
    eight/abc
+   eight/io
    eight/exceptions
