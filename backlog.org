@@ -45,6 +45,22 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
+- [ ] Create documentations for 'eight' modules [/]
+
+  - [ ] abc.rst
+
+  - [ ] io.rst
+
+  - [ ] meta.rst
+
+  - [ ] mixins.rst
+
+  - [ ] queue.rst
+
+  - [ ] string.rst
+
+  - [ ] text.rst
+
 - [-] Manage deprecation warnings (code and documentation) for: [0/3]
 
   - [-] 'xoutil.future.string' must be fully deprecated. [0/3]
