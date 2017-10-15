@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [2/4]
+** Release version 1.8 <2017-10-21 sáb> [3/5]
 
 - [ ] Prepare the [[file:docs/sources/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
@@ -51,11 +51,9 @@
 
     See [[file:xoutil/future/string.py][module]].
 
-    - [-] There are some useful tools in there that must be migrated to
-      [[file:xoutil/future/textwrap.py][xoutil.future.textwrap]], [[file:xoutil/eight/__init__.py][xoutil.eight]], and a new one
-      [[file:xoutil/future/codecs.py][xoutil.future.codecs]].
+    - [-] Some useful tools in there that must be migrated [1/2]
 
-      - [X] xoutil.future.codecs [3/3]
+      - [X] [[file:xoutil/future/codecs.py][xoutil.future.codecs]]  [3/3]
 
         - [X] force_encoding
 
@@ -63,27 +61,11 @@
 
         - [X] safe_encode
 
-      - [ ] xoutil.future.textwrap [0/6]
+      - [ ] [[file:xoutil/eight][xoutil.eight]] [0/2]
 
-	- [ ] cut_prefix
+        - [ ] xoutil.eight.string [0/0]
 
-	- [ ] cut_any_prefix
-
-	- [ ] cut_prefixes
-
-	- [ ] cut_suffix
-
-	- [ ] cut_any_suffix
-
-	- [ ] cut_suffixes
-
-      - [ ] xoutil.eight [0/3]
-
-        - [ ] safe_str
-
-        - [ ] safe_join ?
-
-	- [ ] safe_strip
+        - [ ] xoutil.eight.text [0/0]
 
     - [ ] Document and fix all "normalize_..." functions.
 
@@ -112,7 +94,7 @@
 - [X] Remove file:xoutil/fp/monads if it is not going to be part of this
   release.  See file:xoutil/fp/monads/discussion.org
 
-- [ ] There is a function named 'type_name' in two different modules:
+- [X] There is a function named 'type_name' in two different modules:
 
   - [[file:xoutil/future/inspect.py::def%20safe_name(obj,%20affirm%3DFalse):][xoutil.future.inspect]]
 
@@ -121,7 +103,14 @@
   Note: <2017-09-29> The function for the first module was renamed to
   'safe_name' keeping the old name, but deprecated .
 
-  - [ ] Document the argument `affirm` in xoutil.future.inspect.type_name.
+  - [X] Document the argument `affirm` in xoutil.future.inspect.type_name.
+
+- [ ] Review [[file:xoutil/keywords.py][xoutil.keywords]], there is a standard module named ~keyword~ and
+  must be analyzed if create a new one in ~future~, or integrate it with
+  [[file:xoutil/eight/string.py][xoutil.eight.string]].
+
+- [ ] Review [[file:xoutil/names.py][xoutil.names]], analyze it to deprecate most parts and integrate
+  all useful with [[file:xoutil/eight/string.py][xoutil.eight.string]].
 
 
 ** Issues
