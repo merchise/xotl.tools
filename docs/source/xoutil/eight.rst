@@ -4,8 +4,8 @@
 
 .. module:: xoutil.eight
 
-.. TODO: check automodule\ :\ : xoutil.eight
-   :members:
+.. todo:: check automodule\ :\ : xoutil.eight
+   \ :members\ :
 
 The name comes from (Manu's idea') "2 raised to the power of 3".
 
@@ -18,6 +18,7 @@ This module is divided in several parts.
    eight/meta
    eight/mixins
    eight/string
+   eight/text
    eight/io
    eight/queue
    eight/exceptions
