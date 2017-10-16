@@ -45,7 +45,7 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
-- [-] Create documentations for 'eight' modules [4/7]
+- [-] Create documentations for 'eight' modules [5/7]
 
   - [X] abc.rst
 
@@ -55,7 +55,7 @@
 
   - [X] mixins.rst
 
-  - [ ] queue.rst
+  - [X] queue.rst
 
   - [ ] string.rst
 
