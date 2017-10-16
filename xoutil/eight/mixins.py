@@ -106,6 +106,7 @@ def helper_class(meta, name=None):
 
     :param name: The name (``__name__``) to assign to the returned class; if
            None is given, a nice name is calculated.
+
     For example::
 
       >>> from abc import ABCMeta
