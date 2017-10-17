@@ -82,10 +82,11 @@ DEFAULT_MAX_WIDTH = 64
 #: be less than this value.
 MIN_WIDTH = 8
 
-import xoutil.future.codecs      # noqa
+from xoutil.future import codecs      # noqa
 
-inject_deprecated(('force_encoding', 'safe_decode', 'safe_encode'),
-                  xoutil.future.codecs)
+inject_deprecated(('force_encoding', 'safe_decode', 'safe_encode'), codecs)
+
+del codecs
 
 
 def safe_str(obj=str()):
