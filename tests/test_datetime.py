@@ -134,8 +134,7 @@ def test_empty_timespan(ts):
 
     assert not (ts <= EmptyTimeSpan), 'Empty is not a superset of any TS'
 
-    with pytest.raises(TypeError):
-        type(EmptyTimeSpan)()
+    type(EmptyTimeSpan)() is EmptyTimeSpan
 
     assert EmptyTimeSpan & ts == EmptyTimeSpan * ts == EmptyTimeSpan
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
@@ -189,3 +188,24 @@ def test_operate_with_timespans(ts, d):
 @given(time_span('none'), time_span('none'))
 def test_definition_of_overlaps(ts1, ts2):
     assert ts1.overlaps(ts2) == bool(ts1 & ts2)
+
+
+@given(time_span('none'), time_span('none'))
+def test_duplication_of_timespans(ts1, ts2):
+    hypothesis.assume(ts1 == ts2)
+    assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
+
+
+@given(time_span())
+def test_timespans_are_pickable(ts):
+    import pickle
+    assert ts == pickle.loads(pickle.dumps(ts))
+    assert ts == pickle.loads(pickle.dumps(ts, pickle.HIGHEST_PROTOCOL))
+
+
+def test_empty_timespan_is_pickable():
+    import pickle
+    assert EmptyTimeSpan == pickle.loads(pickle.dumps(EmptyTimeSpan))
+    assert EmptyTimeSpan is pickle.loads(
+        pickle.dumps(EmptyTimeSpan, pickle.HIGHEST_PROTOCOL)
+    )

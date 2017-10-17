@@ -15,7 +15,6 @@
 # Django and generalized.
 #
 # Created on 2012-02-15
-# Migrated to 'future' on 2016-09-13
 
 '''Extends the standard `datetime` module.
 
@@ -77,8 +76,8 @@ except ValueError:
     # but (WTF), Python double checks the year (in each method and then again
     # in `time.strftime` function).
 
-    class date(date):             # noqa
-        __doc__ = date.__doc__    # noqa
+    class date(date):
+        __doc__ = date.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -86,8 +85,8 @@ except ValueError:
         def __sub__(self, other):
             return assure(super(date, self).__sub__(other))
 
-    class datetime(datetime):         # noqa
-        __doc__ = datetime.__doc__    # noqa
+    class datetime(datetime):
+        __doc__ = datetime.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -125,7 +124,7 @@ except ValueError:
             else:
                 args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
                 return datetime(*args)
-        elif isinstance(obj, (time, timedelta)):    # noqa
+        elif isinstance(obj, (time, timedelta)):
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
@@ -158,7 +157,6 @@ def new_datetime(d):
     if isinstance(d, datetime.__base__):    # legacy datetime
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
     return datetime(*args)
-
 
 del deprecated
 
@@ -328,9 +326,7 @@ def is_full_month(start, end):
             (em != (end + timedelta(1)).month))
 
 
-class flextime(timedelta):    # noqa
-    # TODO: document this class
-
+class flextime(timedelta):
     @classmethod
     def parse_simple_timeformat(cls, which):
         if 'h' in which:
@@ -370,9 +366,6 @@ def daterange(*args):
     yielded. If it's negative `stop` should be before `start`.
 
     As with `range`, `stop` is never included in the yielded dates.
-
-    .. note:: In a future release this will be merged with
-              `ClosedDateRange`:class:
 
     '''
     import operator
@@ -644,12 +637,14 @@ class TimeSpan(object):
 
     def __eq__(self, other):
         import datetime
-        from xoutil.objects import validate_attrs
         if isinstance(other, datetime.date):
             other = type(self).from_date(other)
         if not isinstance(other, TimeSpan):
             other = type(self)(other)
-        return validate_attrs(self, other, ('start_date', 'end_date'))
+        return hash(self) == hash(other)
+
+    def __hash__(self):
+        return hash((self.start_date, self.end_date))
 
     def __ne__(self, other):
         return not (self == other)
@@ -706,6 +701,8 @@ class TimeSpan(object):
 
 
 class _EmptyTimeSpan(object):
+    __slots__ = []  # no inner structure
+
     def __bool__(self):
         return False
 
@@ -718,8 +715,9 @@ class _EmptyTimeSpan(object):
     def __eq__(self, which):
         from datetime import date
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
-            # We expect `self` to be a singleton
-            return self is which
+            # We expect `self` to be a singleton, but pickle protocol 1 does
+            # not warrant to call our __new__.
+            return isinstance(which, _EmptyTimeSpan)
         else:
             raise TypeError
 
@@ -773,10 +771,17 @@ class _EmptyTimeSpan(object):
     def __repr__(self):
         return 'EmptyTimeSpan'
 
+    def __new__(cls):
+        res = getattr(cls, '_instance', None)
+        if res is None:
+            res = cls._instance = super(_EmptyTimeSpan, cls).__new__(cls)
+        return res
+
+    def __getnewargs__(self):
+        return ()
+
 
 EmptyTimeSpan = _EmptyTimeSpan()
-
-_EmptyTimeSpan.__new__ = None  # Disallow creating more instances
 
 
 # A context to switch on/off returning a subtype of date from DateFields.
