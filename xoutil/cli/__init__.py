@@ -167,6 +167,7 @@ class Command(metaclass(ABCMeta)):
     @staticmethod
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
+        import sys
         if recursed is None:
             recursed = set()
         # TODO: Convert check based in argument "recursed" in a decorator
@@ -186,8 +187,11 @@ class Command(metaclass(ABCMeta)):
                 for cmd in sub_commands:
                     Command._settle_cache(target, cmd, recursed=recursed)
             else:   # Only branch commands are OK to execute
-                from types import MethodType
-                assert isinstance(source.run, MethodType), \
+                if sys.version_info < (3, 0):
+                    from types import MethodType as ValidMethodType
+                else:
+                    from types import FunctionType as ValidMethodType
+                assert isinstance(source.run, ValidMethodType), \
                     'Invalid type %r for source %r' % (type(source.run).__name__, source)
                 target[command_name(source)] = source
         else:
