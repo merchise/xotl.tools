@@ -69,19 +69,11 @@
 
     - [-] Some useful tools in there that must be migrated [1/2]
 
-      - [X] [[file:xoutil/future/codecs.py][xoutil.future.codecs]]  [3/3]
+      - [X] force_encoding -> xoutil.future.codecs
 
-        - [X] force_encoding
+      - [X] safe_decode -> xoutil.future.codecs
 
-        - [X] safe_decode
-
-        - [X] safe_encode
-
-      - [ ] [[file:xoutil/eight][xoutil.eight]] [0/2]
-
-        - [ ] xoutil.eight.string [0/0]
-
-        - [ ] xoutil.eight.text [0/0]
+      - [X] safe_encode -> xoutil.future.codecs
 
     - [ ] Document and fix all "normalize_..." functions.
 
