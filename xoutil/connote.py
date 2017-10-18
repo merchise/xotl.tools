@@ -199,7 +199,7 @@ def _get_checker_name(checker, full=False):
     from xoutil.future.collections import Set, Mapping, PascalSet
     from xoutil.eight import callable
     from xoutil.future.inspect import safe_name
-    from xoutil.future.string import safe_str as sstr    # safe_repr as srepr
+    from xoutil.eight import string
     srepr = repr
     if isinstance(checker, boolean):
         return str(checker)
@@ -245,7 +245,7 @@ def _get_checker_name(checker, full=False):
             from inspect import getargspec
             res = res.replace('<lambda>', '<λ>')
             args = getargspec(checker).args
-            res = sstr('%s(%s)' % (res, ', '.join(args)))
+            res = string.force('%s(%s)' % (res, ', '.join(args)))
         return res
     else:
         return str('False(%)' % srepr(checker))

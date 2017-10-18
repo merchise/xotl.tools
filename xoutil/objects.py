@@ -1168,7 +1168,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     from xoutil.eight import iteritems, callable
     from xoutil.eight._types import new_class
     from xoutil.future.types import MemberDescriptorType
-    from xoutil.future.string import safe_str
+    from xoutil.eight import string
 
     def _get_ignored(what):
         if callable(what):
@@ -1196,7 +1196,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     def exec_body(ns):  # noqa: E306 new-line before def
         ns.update(attrs)
     if new_name:
-        name = safe_str(new_name)
+        name = string.force(new_name)
     else:
         name = cls.__name__
     result = new_class(name, cls.__bases__, {'metaclass': meta}, exec_body)

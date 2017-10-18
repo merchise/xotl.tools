@@ -19,18 +19,6 @@ from hypothesis import given, example
 from hypothesis.strategies import text, binary
 
 
-def test_safe_string():
-    from xoutil.future.string import safe_str
-    # from xoutil.eight import python_version
-    aux = lambda x: 2*x + 1
-    name = 'λ x: 2*x + 1'
-    aux.__name__ = safe_str(name)
-    delta = 0    # 1 if python_version == 2 else 0
-    # TODO: Because future unicode_literals was removed.  Maybe this test must
-    # be removed or reformulated.
-    assert len(aux.__name__) == len(name) + delta
-
-
 def test_normalize_slug():
     from xoutil.future.string import normalize_slug
     value = '  Á.e i  Ó  u  '

@@ -162,7 +162,8 @@ def enfold(checker):
             inner.__name__ = func.__name__
             inner.__doc__ = func.__doc__
         except BaseException:
-            from xoutil.future.string import small, safe_str
-            inner.__name__ = safe_str(small(func))
+            from xoutil.future.string import small
+            from xoutil.eight import string
+            inner.__name__ = string.force(small(func))
         return inner
     return wrapper

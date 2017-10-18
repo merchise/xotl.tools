@@ -29,3 +29,6 @@
 
 - Create ``__small__`` protocol for small string representations, see
   `xoutil.future.string.small`:func: for more information.
+
+- Migrate `xoutil.future.string.safe_str`:func: to
+  `xoutil.eight.string.force`:func:.

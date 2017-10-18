@@ -190,7 +190,7 @@ def lwraps(*args, **kwargs):
     from types import FunctionType, MethodType
     from xoutil.symbols import Unset
     from xoutil.eight import string_types, iteritems
-    from xoutil.future.string import safe_str
+    from xoutil.eight import string
     from xoutil.fp.params import check_count
 
     def repeated(name):
@@ -258,7 +258,7 @@ def lwraps(*args, **kwargs):
                 if name in source:
                     value = source.pop(name)
                     if name in safes:
-                        value = safe_str(value)
+                        value = string.force(value)
                     setattr(target, str(name), value)
                 d = source.pop('__dict__', Unset)
                 if d:
@@ -274,7 +274,7 @@ def lwraps(*args, **kwargs):
     return wrapper(target) if target else wrapper
 
     # TODO: Next code could be removed.
-    # func.__name__ = safe_str(name)
+    # func.__name__ = string.force(name)
     # if doc:
     #     func.__doc__ = doc
     # return func

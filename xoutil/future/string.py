@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # xoutil.future.string
 # ---------------------------------------------------------------------
@@ -87,45 +87,6 @@ from xoutil.future import codecs      # noqa
 inject_deprecated(('force_encoding', 'safe_decode', 'safe_encode'), codecs)
 
 del codecs
-
-
-def safe_str(obj=str()):
-    '''Convert to normal string type in a safe way.
-
-    Most of our Python 2.x code uses unicode as normal string, also in
-    Python 3 converting bytes or byte-arrays to strings includes the "b"
-    prefix in the resulting value.
-
-    This function is useful in some scenarios that require `str` type (for
-    example attribute ``__name__`` in functions and types).
-
-    As ``str is bytes`` in Python2, using str(value) assures correct these
-    scenarios in most cases, but in other is not enough, for example::
-
-      >>> from xoutil.future.string import safe_str as sstr
-      >>> def inverted_partial(func, *args, **keywords):
-      ...     def inner(*a, **kw):
-      ...         a += args
-      ...         kw.update(keywords)
-      ...         return func(*a, **kw)
-      ...     inner.__name__ = sstr(func.__name__.replace('lambda', u'λ'))
-      ...     return inner
-
-    .. versionadded:: 1.7.0
-
-    '''
-    from xoutil.future.codecs import safe_decode, safe_encode
-    if python_version == 3:
-        if isinstance(obj, (bytes, bytearray)):
-            return safe_decode(obj)
-        else:
-            return str(obj)
-    else:
-        try:
-            return str(obj)
-        except UnicodeEncodeError:
-            # assert isinstance(value, unicode)
-            return safe_encode(obj)
 
 
 def safe_join(separator, iterable, encoding=None):
@@ -402,10 +363,11 @@ def normalize_ascii(value):
     import unicodedata
     from xoutil.future.codecs import safe_decode
     from xoutil.eight import text_type
+    from xoutil.eight import string
     if not isinstance(value, text_type):
         value = safe_decode(value)
     res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    return safe_str(res)
+    return string.force(res)
 
 
 # TODO: It's probable that there are more than one 'slug' functions.  Also,
@@ -613,10 +575,11 @@ def parse_url_int(value, default=None):
 
     '''
     # TODO: Move to `xoutil.web`
+    from xoutil.eight import string
     if isinstance(value, (list, tuple, set)) and len(value) > 0:
         value = value[0]
     try:
-        return int(safe_strip(value))
+        return int(string.force(value))
     except:
         return default
 
@@ -625,11 +588,12 @@ def error2str(error):
     '''Convert an error to string.'''
     from xoutil.eight import string_types
     from xoutil.eight import force_type, type_name
+    from xoutil.eight import string
     if isinstance(error, string_types):
-        return safe_str(error)
+        return string.force(error)
     elif isinstance(error, BaseException):
         tname = type_name(error)
-        res = safe_str(error)
+        res = string.force(error)
         if tname in res:
             return res
         else:
@@ -643,7 +607,7 @@ def error2str(error):
         if cls is error:
             res = tname
         else:
-            res = safe_str(error)
+            res = string.force(error)
             if tname not in res:
                 res = str('{}({})').format(tname, res) if res else tname
         return prefix + res
@@ -824,7 +788,7 @@ input = deprecated(input, "xoutil.future.string.input is deprecated.  Use "
 
 del deprecated, inject_deprecated
 
-__all__ += ['safe_str', 'safe_join', 'safe_strip', 'cut_prefix',
+__all__ += ['safe_join', 'safe_strip', 'cut_prefix',
             'cut_any_prefix', 'cut_prefixes', 'cut_suffix', 'cut_any_suffix',
             'cut_suffixes', 'capitalize_word', 'capitalize', 'hyphen_name',
             'normalize_unicode', 'normalize_name', 'normalize_title',

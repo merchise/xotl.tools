@@ -1,31 +1,77 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-# ---------------------------------------------------------------------
-# xoutil.eight.string
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-10-29
 
-'''Checkers for simple types depending on differences between Python 2 and 3.
+'''Technical string handling.
 
-.. versionadded:: 1.7.1
+Technical strings are those that requires to be instances of `str` standard
+type.  See `py-string-ambiguity`:any: for more information.
+
+This module will be used mostly as a namespace, for example::
+
+  from xoutil.eight import string
+  Foobar.__name__ = string.force(class_name)
+
+If these functions are going to be used standalone, do something like::
+
+  from xoutil.eight.string import force as force_str
+  Foobar.__name__ = force_str(class_name)
 
 '''
 
-# TODO: Fix this documentation
-
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
+                        absolute_import as _py3_import)
 
-# TODO: Integrate -in one- this module with 'xoutil.keywords' and rename it.
 
+def force(obj=str()):
+    '''Convert any value to standard `str` type in a safe way.
+
+
+    Most of our Python 2 code uses unicode as normal string, also in Python 3
+    converting bytes or byte-arrays to strings includes the "b" prefix in the
+    resulting value.
+
+    This function is useful in some scenarios that require `str` type (for
+    example attribute ``__name__`` in functions and types).
+
+    As ``str is bytes`` in Python2, using str(value) assures correct these
+    scenarios in most cases, but in other is not enough, for example::
+
+      >>> from xoutil.eight import string
+      >>> def inverted_partial(func, *args, **keywords):
+      ...     def inner(*a, **kw):
+      ...         a += args
+      ...         kw.update(keywords)
+      ...         return func(*a, **kw)
+      ...     name = func.__name__.replace('lambda', u'λ')
+      ...     inner.__name__ = string.force(name)
+      ...     return inner
+
+    '''
+    from xoutil.eight import python_version    # noqa
+    from xoutil.future.codecs import safe_decode, safe_encode
+    if isinstance(obj, str):
+        return obj
+    elif python_version == 3:
+        if isinstance(obj, (bytes, bytearray)):
+            return safe_decode(obj)
+        else:
+            return str(obj)
+    else:
+        try:
+            return str(obj)
+        except UnicodeEncodeError:
+            # assert isinstance(value, unicode)
+            return safe_encode(obj)
+
+
+# ------------------ Here, the original file starts ------------------
 
 if hasattr(str, 'isidentifier'):
     def isidentifier(s):
