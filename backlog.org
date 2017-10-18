@@ -127,6 +127,8 @@
 
   See in [[https://gitlab.lahavane.com/merchise/xoutil/issues/10][gitlab]].
 
+- [ ] Rename "encoding" by "coding" in all =# -*- encoding:= headers.
+
 
 ** Development ideas. [/]
 
