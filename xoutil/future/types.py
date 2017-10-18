@@ -155,8 +155,8 @@ if MemberDescriptorType is GetSetDescriptorType:    # noqa
     MemberDescriptorType = type(_foo.bar)
     del _foo
 
-FuncTypes = tuple({FunctionType, MethodType, LambdaType, BuiltinFunctionType,
-                   BuiltinMethodType})
+FuncTypes = tuple({FunctionType, MethodType, LambdaType,    # noqa
+                   BuiltinFunctionType, BuiltinMethodType})    # noqa
 
 # These types are defined in `inspect` module for Python >= 3.3
 MethodWrapperType = type(all.__call__)
@@ -493,7 +493,7 @@ if __name__ == 'xoutil.types':
     def is_mapping(maybe):
         '''Test `maybe` to see if it is a valid mapping.'''
         from xoutil.future.collections import Mapping
-        return isinstance(obj, Mapping)
+        return isinstance(maybe, Mapping)
 
     # only referenced locally by `is_scalar`.
     def is_string_like(maybe):
@@ -573,12 +573,12 @@ if __name__ == 'xoutil.types':
         '''
         if name:
             desc = mro_dict(desc).get(name, None)
-        return isinstance(desc, FunctionType)
+        return isinstance(desc, FunctionType)    # noqa
 
     # not used outside this module.
     def is_module(maybe):
         '''Returns True if `maybe` is a module.'''
-        return isinstance(maybe, ModuleType)
+        return isinstance(maybe, ModuleType)    # noqa
 
     # TODO: @manu, @med, review external references to this function, and
     # remove them:
