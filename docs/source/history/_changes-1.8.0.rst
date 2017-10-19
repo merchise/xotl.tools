@@ -30,6 +30,9 @@
 - Create ``__small__`` protocol for small string representations, see
   `xoutil.future.string.small`:func: for more information.
 
+- Added function `xoutil.deprecation.import_deprecated`:func:,
+  `~xoutil.deprecation.inject_deprecated`:func: can be deprecated now.
+
 - Migrations related with full deprecation of `xoutil.future.string`:mod:
   module:
 

@@ -189,6 +189,8 @@ def inject_deprecated(funcnames, source, target=None):
             # As recommended to avoid memory leaks
             del frame
     else:
+        # FIX: @manu, there is a consistency error here, 'target_locals' is
+        # never assigned
         pass
     for targetname in funcnames:
         unset = object()
@@ -207,3 +209,84 @@ def inject_deprecated(funcnames, source, target=None):
             warnings.warn('{targetname} was expected to be in {source}'.
                           format(targetname=targetname,
                                  source=source.__name__), stacklevel=2)
+
+
+def import_deprecated(module, *names, **aliases):
+    '''Import functions deprecating them in the target module.
+
+    The target module is the caller of this function (only intended to be
+    called in the global part of a module).
+
+    :param module: The module from which functions will be imported.  Could be
+           a string, or an imported module.
+
+    :param names: The names of the functions to import.
+
+    :param aliases: Keys are the new names, values the old names.
+
+    :returns: The target module.
+
+    For example::
+
+      >>> from xoutil.deprecation import import_deprecated
+      >>> import math
+      >>> this = import_deprecated(math, 'sin', new_cos='cos')
+      >>> sin is this.sin
+      True
+      >>> sin is not math.sin
+      True
+
+    Next examples are all ``True``, but them print the deprecation warning
+    when executed::
+
+      >>> sin(math.pi/2) == math.sin(math.pi/2) == 1.0
+      >>> new_cos(2*math.pi)
+
+    If no identifier is given, it is assumed equivalent as ``from module
+    import *``.
+
+    The statement ``import_deprecated('math', 'sin', new_cos='cos')`` has the
+    same semantics as ``from math import sin, cos as new_cos``, but
+    deprecating current module symbols.
+
+    This function is provided for easing the deprecation of whole modules and
+    should not be used to do otherwise.
+
+    .. note:: 'inject_deprecated' could be deprecated now in favor of this
+              function.
+
+    '''
+    from xoutil.future.types import class_types, func_types
+    from xoutil.modules import force_module
+    src = force_module(module)
+    dst = force_module(2)
+    src_name = src.__name__
+    dst_name = dst.__name__
+    dst = force_module(2)
+    for name in names:
+        if name not in aliases:
+            aliases[name] = name
+        else:
+            msg = 'import_deprecated(): invalid repeated argument "{}"'
+            raise ValueError(msg.format(name))
+    if not aliases:
+        # from module import *
+        all = getattr(src, '__all__', None)
+        if not all:
+            all = (n for n in dir(src) if not n.startswith('_'))
+        aliases = {key: key for key in all}
+    unset = object()
+    test_classes = class_types + func_types
+    for alias in aliases:
+        name = aliases[alias]
+        target = getattr(src, name, unset)
+        if target is not unset:
+            if isinstance(target, test_classes):
+                replacement = src_name + '.' + name
+                deprecator = deprecated(replacement, DEFAULT_MSG, dst_name)
+                target = deprecator(target)
+            setattr(dst, alias, target)
+        else:
+            msg = "cannot import '{}' from '{}'"
+            raise ImportError(msg.format(name, src_name))
+    return dst

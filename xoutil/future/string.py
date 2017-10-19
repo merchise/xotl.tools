@@ -52,7 +52,7 @@ _past.dissuade()
 del _past
 
 from xoutil.deprecation import deprecated    # noqa
-from xoutil.deprecation import inject_deprecated    # noqa
+from xoutil.deprecation import import_deprecated    # noqa
 from xoutil.eight import python_version    # noqa
 
 
@@ -82,11 +82,10 @@ DEFAULT_MAX_WIDTH = 64
 #: be less than this value.
 MIN_WIDTH = 8
 
-from xoutil.future import codecs      # noqa
+_MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
 
-inject_deprecated(('force_encoding', 'safe_decode', 'safe_encode'), codecs)
-
-del codecs
+import_deprecated('xoutil.future.codecs', *_MIGRATED_TO_CODECS)
+import_deprecated('xoutil.eight.string', safe_str='force')
 
 
 def safe_join(separator, iterable, encoding=None):
@@ -786,7 +785,7 @@ from xoutil.eight import input    # noqa
 input = deprecated(input, "xoutil.future.string.input is deprecated.  Use "
                    "xoutil.eight.input")(input)
 
-del deprecated, inject_deprecated
+del deprecated, import_deprecated
 
 __all__ += ['safe_join', 'safe_strip', 'cut_prefix',
             'cut_any_prefix', 'cut_prefixes', 'cut_suffix', 'cut_any_suffix',

@@ -158,6 +158,9 @@ if MemberDescriptorType is GetSetDescriptorType:    # noqa
 FuncTypes = tuple({FunctionType, MethodType, LambdaType,    # noqa
                    BuiltinFunctionType, BuiltinMethodType})    # noqa
 
+from xoutil.eight import class_types    # noqa
+func_types = FuncTypes    # Just an alias
+
 # These types are defined in `inspect` module for Python >= 3.3
 MethodWrapperType = type(all.__call__)
 WrapperDescriptorType = type(type.__call__)    # In PyPy is MethodWrapperType

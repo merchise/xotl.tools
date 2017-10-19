@@ -34,6 +34,7 @@ def force_module(ref=None):
        implementations of Python.
 
     '''
+    from xoutil.eight import type_name
     if isinstance(ref, ModuleType):
         return ref
     else:
@@ -41,7 +42,12 @@ def force_module(ref=None):
             ref = 1
         if isinstance(ref, int):
             import sys
-            ref = sys._getframe(ref).f_globals['__name__']
+            frame = sys._getframe(ref)
+            try:
+                ref = frame.f_globals['__name__']
+            finally:
+                # As recommended to avoid memory leaks
+                del frame
         if not isinstance(ref, str):
             if isinstance(ref, bytes):
                 ref = ref.decode()  # Python 3.x
@@ -49,9 +55,8 @@ def force_module(ref=None):
                 try:
                     ref = ref.encode()  # Python 2.x
                 except:
-                    msg = ("invalid type '%s' for module name '%s'" %
-                           (type(ref), ref))
-                    raise TypeError(msg)
+                    msg = "invalid type '{}' for module name '{}'"
+                    raise TypeError(msg.format(type_name(ref), ref))
         return __import__(ref, fromlist=[ref], level=0)
 
 
