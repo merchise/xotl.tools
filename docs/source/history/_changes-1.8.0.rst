@@ -30,5 +30,11 @@
 - Create ``__small__`` protocol for small string representations, see
   `xoutil.future.string.small`:func: for more information.
 
-- Migrate `xoutil.future.string.safe_str`:func: to
-  `xoutil.eight.string.force`:func:.
+- Migrations related with full deprecation of `xoutil.future.string`:mod:
+  module:
+
+  - ``force_encoding``, ``safe_decode``, ``safe_encode`` ->
+    `xoutil.future.codecs`:mod:
+
+  - ``safe_str`` -> `xoutil.eight.string`:mod: module, renaming it for
+    ``force``.
