@@ -263,18 +263,17 @@ def import_deprecated(module, *names, **aliases):
     src_name = src.__name__
     dst_name = dst.__name__
     dst = force_module(2)
+    if not names and not aliases:
+        # from module import *
+        names = getattr(src, '__all__', None)
+        if not names:
+            names = (n for n in dir(src) if not n.startswith('_'))
     for name in names:
         if name not in aliases:
             aliases[name] = name
         else:
             msg = 'import_deprecated(): invalid repeated argument "{}"'
             raise ValueError(msg.format(name))
-    if not aliases:
-        # from module import *
-        all = getattr(src, '__all__', None)
-        if not all:
-            all = (n for n in dir(src) if not n.startswith('_'))
-        aliases = {key: key for key in all}
     unset = object()
     test_classes = class_types + func_types
     for alias in aliases:
