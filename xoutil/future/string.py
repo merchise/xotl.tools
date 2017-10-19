@@ -84,64 +84,15 @@ MIN_WIDTH = 8
 
 _MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
 
+import_deprecated('xoutil.eight', 'input')
 import_deprecated('xoutil.future.codecs', *_MIGRATED_TO_CODECS)
-import_deprecated('xoutil.eight.string', safe_str='force')
+import_deprecated('xoutil.eight.string', 'safe_join', safe_str='force')
 
 
-def safe_join(separator, iterable, encoding=None):
-    '''Similar to `join` method in string objects.
-
-    The semantics is quivalent to ``separator.join(iterable)``.
-
-    Return a string which is the concatenation of the strings in the
-    `iterable`.  The `separator` between elements is the first argument.
-
-    The return type could be `unicode` or `bytes` depending on the `separator`
-    type, and the type of each item in the `iterable`.
-
-    Param `encoding` is used in case of error to concatenate `bytes` +
-    `unicode`.
-
-    This function must be deprecated in Python 3.
-
-    .. versionadded:: 1.1.3
-
-    .. warning:: The `force_separator_type` was removed in version 1.2.0.
-
-    '''
-    from xoutil.future.codecs import force_encoding, safe_decode
-    try:
-        return separator.join(iterable)
-    except:
-        pass
-    encoding = force_encoding(encoding)
-    empty = True
-    for item in iterable:
-        if empty:
-            res = item
-            empty = False
-        else:
-            for tail in (separator, item):
-                try:
-                    res += tail
-                except:
-                    res = (safe_decode(res, encoding) +
-                           safe_decode(item, encoding))
-    return res if not empty else type(separator)()
-
-
-# Makes explicit the deprecation warning for py3k.
-if python_version == 3:
-    safe_join = deprecated('builtin join method of str',
-                           'safe_join is deprecated for Python 3. Use '
-                           'builtin join method of str.')(safe_join)
-
-
+@deprecated
 def safe_strip(value):
     '''Removes the leading and tailing space-chars from `value` if string, else
     return `value` unchanged.
-
-    .. versionadded:: 1.1.3
 
     '''
     from xoutil.eight import string_types
@@ -780,14 +731,9 @@ def small(obj, max_width=None):
     return res
 
 
-from xoutil.eight import input    # noqa
-
-input = deprecated(input, "xoutil.future.string.input is deprecated.  Use "
-                   "xoutil.eight.input")(input)
-
 del deprecated, import_deprecated
 
-__all__ += ['safe_join', 'safe_strip', 'cut_prefix',
+__all__ += ['cut_prefix',
             'cut_any_prefix', 'cut_prefixes', 'cut_suffix', 'cut_any_suffix',
             'cut_suffixes', 'capitalize_word', 'capitalize', 'hyphen_name',
             'normalize_unicode', 'normalize_name', 'normalize_title',

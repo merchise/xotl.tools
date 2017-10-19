@@ -32,15 +32,10 @@ from __future__ import (division as _py3_division,
 def force(obj=str()):
     '''Convert any value to standard `str` type in a safe way.
 
-
-    Most of our Python 2 code uses unicode as normal string, also in Python 3
-    converting bytes or byte-arrays to strings includes the "b" prefix in the
-    resulting value.
-
     This function is useful in some scenarios that require `str` type (for
     example attribute ``__name__`` in functions and types).
 
-    As ``str is bytes`` in Python2, using str(value) assures correct these
+    As ``str is bytes`` in Python 2, using str(value) assures correct these
     scenarios in most cases, but in other is not enough, for example::
 
       >>> from xoutil.eight import string
@@ -69,6 +64,25 @@ def force(obj=str()):
         except UnicodeEncodeError:
             # assert isinstance(value, unicode)
             return safe_encode(obj)
+
+
+
+def safe_join(separator, iterable):
+    '''Similar to `join` method in string objects.
+
+    The semantics is equivalent to ``separator.join(iterable)`` but forcing
+    separator and items to be of ``str`` standard type.
+
+    For example::
+
+      >>> safe_join('-', range(6))
+      '0-1-2-3-4-5'
+
+    Check that the expression ``'-'.join(range(6))`` raises a ``TypeError``.
+
+    '''
+    return force(separator).join(force(item) for item in iterable)
+
 
 
 # ------------------ Here, the original file starts ------------------

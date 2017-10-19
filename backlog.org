@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [4/8]
+** Release version 1.8 <2017-10-21 sáb> [4/10]
 
 - [ ] Prepare the [[file:docs/sources/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
@@ -63,11 +63,11 @@
 
 - [-] Manage deprecation warnings (code and documentation) for: [0/3]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [0/4]
+  - [-] 'xoutil.future.string' must be fully deprecated. [1/4]
 
     See [[file:xoutil/future/string.py][module]].
 
-    - [-] Some useful tools in there that must be migrated [3/4]
+    - [X] Some useful tools in there that must be migrated [7/7]
 
       - [X] force_encoding -> xoutil.future.codecs
 
@@ -75,7 +75,14 @@
 
       - [X] safe_encode -> xoutil.future.codecs
 
-      - [ ] safe_str -> xoutil.eight.string (as 'force')
+      - [X] safe_str -> xoutil.eight.string (as 'force')
+
+      - [X] safe_join -> xoutil.eight.string.  Also, a version is implemented
+        in 'xoutil.eight.text'.
+
+      - [X] safe_strip (deprecated in place)
+
+      - [X] A 'force' function is implemented in 'xoutil.eight.text'.
 
     - [ ] Search all migrated functions in all 'erp' repositories to migrate
       imports.

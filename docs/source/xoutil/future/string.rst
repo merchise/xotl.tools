@@ -11,10 +11,6 @@ and Python 3.3.
 
 We added the following features.
 
-.. autofunction:: safe_join
-
-.. autofunction:: safe_strip
-
 .. autofunction:: cut_prefix
 
 .. autofunction:: cut_any_prefix

@@ -21,7 +21,33 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_import)
 
 
-def decode(buffer, encoding=None):
-    ''''Decode any buffer using the codec registered for encoding.'''
+def force(buffer, encoding=None):
+    '''Convert any value to standard `text` type in a safe way.
+
+    The standard text type is ``unicode`` in Python 2 and ``str`` in
+    Python 3.
+
+    '''
     from xoutil.future.codecs import safe_decode
     return safe_decode(buffer, encoding=encoding)
+
+
+def safe_join(separator, iterable, encoding=None):
+    '''Similar to `join` method in string objects.
+
+    The semantics is equivalent to ``separator.join(iterable)`` but forcing
+    separator and items to be the valid instances of standard `text` type
+    (``unicode`` in Python 2 and ``str`` in Python 3).
+
+    For example::
+
+      >>> safe_join('-', range(6))
+      '0-1-2-3-4-5'
+
+    Check that the expression ``'-'.join(range(6))`` raises a ``TypeError``.
+
+    :param encoding: used to allow control, but won't be common to use it.
+
+    '''
+    sep = force(separator, encoding)
+    return sep.join(force(item, encoding) for item in iterable)
