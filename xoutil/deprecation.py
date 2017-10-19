@@ -23,7 +23,12 @@ import warnings
 from functools import wraps
 
 
-# TODO: Invalidate this module in favor of new 'xoutil.hints' when implemented
+# TODO: Invalidate this module in favor of new 'xoutil.suggest' when
+# implemented
+
+# FIX: 'warnings.warn' uses in this module 'UserWarning' instead of
+# 'DeprecationWarning'.  There is a way to signal the warning with the correct
+# type.
 
 DEFAULT_MSG = ('{funcname} is now deprecated and it will be '
                'removed{in_version}. Use {replacement} instead.')
@@ -46,12 +51,12 @@ def _nameof(item):
 
 
 def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
-               removed_in_version=None, check_version=False):
+               removed_in_version=None, check_version=False, new_name=None):
     '''Small decorator for deprecated functions.
 
     Usage::
 
-        @deprecate(new_function)
+        @deprecated(new_function)
         def deprecated_function(...):
             ...
 
@@ -66,20 +71,24 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
        `removed_in_version` argument is not None.
 
        Defaults to: "{funcname} is now deprecated and it will be
-       removed{in_version}. Use {replacement} instead."
+       removed{in_version}.  Use {replacement} instead."
 
     :param removed_in_version: The version the deprecated object is going to be
        removed.
 
     :param check_version: If True and `removed_in_version` is not None, then
-       declarations of obseleted objects will raise a DeprecationError. This
+       declarations of obseleted objects will raise a DeprecationError.  This
        helps the release manager to keep the release clean.
 
        .. note:: Currently only works with setuptools' installed distributions.
 
     :param deprecated_module: If provided, the name of the module the
-       deprecated object resides. Not needed if the deprecated object is a
+       deprecated object resides.  Not needed if the deprecated object is a
        function or class.
+
+    :param new_name: If provided, it's used as the name of the
+       deprecated object.  Needed to allow renaming in
+       `import_deprecated`:func: helper function.
 
     .. versionchanged:: 1.4.1 Introduces removed_in_version and check_version.
 
@@ -114,10 +123,11 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
 
     def decorator(target):
         from xoutil.eight import class_types
+        target_name = new_name if new_name else target.__name__
         if deprecated_module:
-            funcname = deprecated_module + '.' + target.__name__
+            funcname = deprecated_module + '.' + target_name
         else:
-            funcname = target.__name__
+            funcname = target_name
         if isinstance(replacement, class_types + (types.FunctionType, )):
             repl_name = replacement.__module__ + '.' + replacement.__name__
         else:
@@ -135,7 +145,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                                          in_version=in_version),
                               stacklevel=2)
                 return target.__new__(*args, **kwargs)
-            # Code copied and adapted from xoutil.objects.copy_class. This is
+            # Code copied and adapted from xoutil.objects.copy_class.  This is
             # done so because this module *must* not depends on any other,
             # otherwise an import cycle might be formed when deprecating a
             # class in xoutil.objects.
@@ -154,7 +164,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                      # created here.
                      if not isinstance(value, MemberDescriptorType)}
             attrs.update(__new__=new)
-            result = meta(target.__name__, target.__bases__, attrs)
+            result = meta(target_name, target.__bases__, attrs)
             return result
         else:
             @wraps(target)
@@ -166,18 +176,27 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                                          in_version=in_version),
                               stacklevel=2)
                 return target(*args, **kw)
+            if new_name:
+                inner.__name__ = new_name
             return inner
     return decorator
 
 
 def inject_deprecated(funcnames, source, target=None):
-    '''Takes a sequence of function names `funcnames` which reside in the
-    `source` module and injects them into `target` marked as deprecated. If
-    `target` is None then we inject the functions into the locals of the
-    calling code. It's expected it's a module.
+    '''Injects a set of functions from a module into another.
+
+    The functions will be marked as deprecated in the target module.
+
+    :param funcnames: function names to take from the source module.
+
+    :param source: the module where the functions resides.
+
+    :param target: the module that will contains the deprecated functions.  If
+           ``None`` will be the module calling this function.
 
     This function is provided for easing the deprecation of whole modules and
     should not be used to do otherwise.
+
     '''
     from xoutil.eight import class_types
     if not target:
@@ -224,23 +243,19 @@ def import_deprecated(module, *names, **aliases):
 
     :param aliases: Keys are the new names, values the old names.
 
-    :returns: The target module.
-
     For example::
 
       >>> from xoutil.deprecation import import_deprecated
       >>> import math
-      >>> this = import_deprecated(math, 'sin', new_cos='cos')
-      >>> sin is this.sin
-      True
+      >>> import_deprecated(math, 'sin', new_cos='cos')
       >>> sin is not math.sin
       True
 
     Next examples are all ``True``, but them print the deprecation warning
     when executed::
 
-      >>> sin(math.pi/2) == math.sin(math.pi/2) == 1.0
-      >>> new_cos(2*math.pi)
+      >>> sin(math.pi/2) == 1.0
+      >>> new_cos(2*math.pi) == math.cos(2*math.pi)
 
     If no identifier is given, it is assumed equivalent as ``from module
     import *``.
@@ -282,10 +297,10 @@ def import_deprecated(module, *names, **aliases):
         if target is not unset:
             if isinstance(target, test_classes):
                 replacement = src_name + '.' + name
-                deprecator = deprecated(replacement, DEFAULT_MSG, dst_name)
+                deprecator = deprecated(replacement, DEFAULT_MSG, dst_name,
+                                        new_name=alias)
                 target = deprecator(target)
             setattr(dst, alias, target)
         else:
             msg = "cannot import '{}' from '{}'"
             raise ImportError(msg.format(name, src_name))
-    return dst
