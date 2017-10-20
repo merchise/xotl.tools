@@ -23,13 +23,7 @@ We added the following features.
 
 .. autofunction:: cut_suffixes
 
-.. autofunction:: capitalize
-
 .. autofunction:: hyphen_name
-
-.. autofunction:: normalize_name
-
-.. autofunction:: normalize_title
 
 .. autofunction:: normalize_str
 

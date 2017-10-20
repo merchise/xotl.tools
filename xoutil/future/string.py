@@ -172,42 +172,6 @@ def cut_suffixes(value, *suffixes):
     return result
 
 
-def capitalize(value, title=True):
-    '''Capitalizes value according to whether it should be title-like.
-
-    Title-like means it will capitalize every word but the 3-letters or less
-    unless its the first word::
-
-        >>> capitalize('a group is its own worst enemy')
-        'A Group is its own Worst Enemy'
-
-    (This may be odd because, in the example above, own should be capitalized.)
-
-    Return bytes or unicode depending on type of `value`.
-
-        >>> from xoutil.eight import text_type
-        >>> type(capitalize(text_type('something'))) is text_type
-        True
-
-        >>> type(capitalize(str('something'))) is str
-        True
-
-    '''
-    tstr = type(value)
-    space, empty = tstr(' '), tstr('')
-    words = value.split() if value else None
-    if words:
-        count = len(words) if title else 1
-        for i in range(count):
-            word = words[i]
-            if len(word) > 3 or i == 0:
-                word = capitalize_word(word)
-                words[i] = word
-        return space.join(words)
-    else:
-        return empty
-
-
 def hyphen_name(name, join_numbers=True):
     '''Convert a name to a hyphened slug.
 
@@ -259,16 +223,6 @@ def hyphen_name(name, join_numbers=True):
             parts.append(part)
         i += 1
     return '-'.join(parts)
-
-
-def normalize_name(value):
-    # TODO: Deprecate
-    return capitalize(normalize_unicode(value))
-
-
-def normalize_title(value):
-    # TODO: Deprecate
-    return capitalize(normalize_unicode(value), True)
 
 
 def normalize_str(value):
@@ -690,10 +644,8 @@ def small(obj, max_width=None):
 
 del deprecated, import_deprecated
 
-__all__ += ['cut_prefix',
-            'cut_any_prefix', 'cut_prefixes', 'cut_suffix', 'cut_any_suffix',
-            'cut_suffixes', 'capitalize_word', 'capitalize', 'hyphen_name',
-            'normalize_unicode', 'normalize_name', 'normalize_title',
+__all__ += ['cut_prefix', 'cut_any_prefix', 'cut_prefixes', 'cut_suffix',
+            'cut_any_suffix', 'cut_suffixes', 'hyphen_name',
             'normalize_str', 'normalize_ascii', 'normalize_slug',
             'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',
-            'make_a10z', 'crop', crop_iterator, small]
+            'make_a10z', 'crop', 'crop_iterator', 'small']
