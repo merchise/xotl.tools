@@ -34,6 +34,7 @@ def force_module(ref=None):
        implementations of Python.
 
     '''
+    from importlib import import_module
     from xoutil.eight import type_name
     if isinstance(ref, ModuleType):
         return ref
@@ -57,7 +58,7 @@ def force_module(ref=None):
                 except:
                     msg = "invalid type '{}' for module name '{}'"
                     raise TypeError(msg.format(type_name(ref), ref))
-        return __import__(ref, fromlist=[ref], level=0)
+        return import_module(ref)
 
 
 # TODO: Deprecate this method in favor of ``from <module> import *``
