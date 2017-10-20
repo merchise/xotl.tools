@@ -172,14 +172,6 @@ def cut_suffixes(value, *suffixes):
     return result
 
 
-def capitalize_word(value):
-    'Capitalizes the first char of value'
-    if value and value[0].islower():
-        return value[0].upper() + value[1:]
-    else:
-        return value
-
-
 def capitalize(value, title=True):
     '''Capitalizes value according to whether it should be title-like.
 
@@ -267,21 +259,6 @@ def hyphen_name(name, join_numbers=True):
             parts.append(part)
         i += 1
     return '-'.join(parts)
-
-
-# TODO: Document and fix all these "normalize_..." functions
-def normalize_unicode(value):
-    # TODO: Deprecate
-    # FIXME: i18n
-    from xoutil.future.codecs import safe_decode
-    if (value is None) or (value is str('')):
-        return ''
-    elif value is True:
-        return safe_decode('Sí')
-    elif value is False:
-        return safe_decode('No')
-    else:
-        return safe_decode(value)
 
 
 def normalize_name(value):

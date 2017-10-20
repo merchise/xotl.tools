@@ -23,13 +23,9 @@ We added the following features.
 
 .. autofunction:: cut_suffixes
 
-.. autofunction:: capitalize_word
-
 .. autofunction:: capitalize
 
 .. autofunction:: hyphen_name
-
-.. autofunction:: normalize_unicode
 
 .. autofunction:: normalize_name
 
