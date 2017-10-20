@@ -84,9 +84,6 @@
 
       - [X] A 'force' function is implemented in 'xoutil.eight.text'.
 
-    - [ ] Search all migrated functions in all 'erp' repositories to migrate
-      imports.
-
     - [ ] Document and fix all "normalize_..." functions.
 
       There are several things that would probably dissapear: We can't be sure
