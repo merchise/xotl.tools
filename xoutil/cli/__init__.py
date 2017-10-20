@@ -48,7 +48,7 @@ class Command(ABC):
     def cli_name(cls):
         '''Calculate the command name.
 
-        Standard method uses `~xoutil.future.string.hyphen_name`.  Redefine it
+        Standard method uses `~xoutil.cli.tools.hyphen_name`.  Redefine it
         to obtain a different behaviour.
 
         Example::
@@ -61,7 +61,7 @@ class Command(ABC):
 
         '''
         from xoutil.eight import string_types
-        from xoutil.future.string import hyphen_name
+        from xoutil.cli.tools import hyphen_name
         unset = object()
         names = ('command_cli_name', '__command_name__')
         i, res = 0, unset

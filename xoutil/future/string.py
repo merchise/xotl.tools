@@ -172,59 +172,6 @@ def cut_suffixes(value, *suffixes):
     return result
 
 
-def hyphen_name(name, join_numbers=True):
-    '''Convert a name to a hyphened slug.
-
-    The name is normally an identifier in Camel-Case.
-
-    Also, all invalid characters (those invalid in Python identifiers) are
-    ignored.  Numbers are joined with preceding part when `join_numbers` is
-    True.
-
-    For example::
-
-      >>> hyphen_name('BaseNode') == 'base-node'
-      True
-
-      >>> hyphen_name('ICQNámeAc3P123') == 'icq-name-ac3-p123'
-      True
-
-      >> hyphen_name('--__ICQNámeP12_34Abc--') == 'icq-name-p12-34-abc'
-      True
-
-      >> hyphen_name('ICQNámeP12', join_numbers=False) == 'icq-name-p-12'
-      True
-
-    '''
-    import re
-    name = normalize_ascii(name)
-    regex = re.compile('[^A-Za-z0-9]+')
-    name = regex.sub('-', name)
-    regex = re.compile('([A-Z]+|[a-z]+|[0-9]+|-)')
-    all = regex.findall(name)
-    i, count, parts = 0, len(all), []
-    while i < count:
-        part = all[i]
-        if part != '-':
-            upper = 'A' <= part <= 'Z'
-            if upper:
-                part = part.lower()
-            j = i + 1
-            if j < count and upper and 'a' <= all[j] <= 'z':
-                aux = part[:-1]
-                if aux:
-                    parts.append(aux)
-                part = part[-1] + all[j]
-                i = j
-                j += 1
-            if j < count and '0' <= all[j] <= '9' and join_numbers:
-                part = part + all[j]
-                i = j
-            parts.append(part)
-        i += 1
-    return '-'.join(parts)
-
-
 def normalize_str(value):
     import re
     is_bytes = isinstance(value, bytes)

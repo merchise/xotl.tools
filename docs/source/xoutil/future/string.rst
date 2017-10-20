@@ -23,8 +23,6 @@ We added the following features.
 
 .. autofunction:: cut_suffixes
 
-.. autofunction:: hyphen_name
-
 .. autofunction:: normalize_str
 
 .. autofunction:: normalize_slug
