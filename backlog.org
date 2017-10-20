@@ -63,11 +63,11 @@
 
 - [-] Manage deprecation warnings (code and documentation) for: [0/3]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [1/4]
+  - [-] 'xoutil.future.string' must be fully deprecated. [0/4]
 
     See [[file:xoutil/future/string.py][module]].
 
-    - [X] Some useful tools in there that must be migrated [7/7]
+    - [-] Some useful tools in there that must be migrated [6/7]
 
       - [X] force_encoding -> xoutil.future.codecs
 
@@ -75,7 +75,12 @@
 
       - [X] safe_encode -> xoutil.future.codecs
 
-      - [X] safe_str -> xoutil.eight.string (as 'force')
+      - [-] safe_str -> xoutil.eight.string (as 'force').
+
+        - [X] 'force_str' is defined now as a alias of 'safe_str'.
+
+        - [ ] In 'xhg/conf.py.in' is used a parameter named 'cast' with a
+          default value of 'force_str'.  This must be checked.
 
       - [X] safe_join -> xoutil.eight.string.  Also, a version is implemented
         in 'xoutil.eight.text'.
