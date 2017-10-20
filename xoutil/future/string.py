@@ -334,15 +334,6 @@ def normalize_slug(value, *args, **kwds):
     return res
 
 
-def strfnumber(number, format_spec='%0.2f'):
-    res = format_spec % number
-    if '.' in res:
-        res = res.rstrip('0')
-        if res.endswith('.'):
-            res = res[:-1]
-    return res
-
-
 def parse_boolean(value):
     '''Parse a boolean from any value given a special treatment to
     strings.

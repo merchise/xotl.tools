@@ -25,8 +25,6 @@ We added the following features.
 
 .. autofunction:: normalize_slug
 
-.. autofunction:: strfnumber
-
 .. autofunction:: parse_boolean
 
 .. autofunction:: parse_url_int

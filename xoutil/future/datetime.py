@@ -175,6 +175,20 @@ def _year_find_all(fmt, year, no_year_tuple):
 _TD_LABELS = 'dhms'    # days, hours, minutes, seconds
 
 
+def _strfnumber(number, format_spec='%0.2f'):
+    '''Convert a floating point number into string using a smart way.
+
+    Used internally in strfdelta.
+
+    '''
+    res = format_spec % number
+    if '.' in res:
+        res = res.rstrip('0')
+        if res.endswith('.'):
+            res = res[:-1]
+    return res
+
+
 def strfdelta(delta):
     '''
     Format a timedelta using a smart pretty algorithm.
@@ -190,7 +204,6 @@ def strfdelta(delta):
         True
 
     '''
-    from xoutil.future.string import strfnumber
     ss, sss = str('%s%s'), str(' %s%s')
     if delta.days:
         days = delta.days
@@ -198,7 +211,7 @@ def strfdelta(delta):
         hours = delta.total_seconds() / 60 / 60
         res = ss % (days, _TD_LABELS[0])
         if hours >= 0.01:
-            res += sss % (strfnumber(hours), _TD_LABELS[1])
+            res += sss % (_strfnumber(hours), _TD_LABELS[1])
     else:
         seconds = delta.total_seconds()
         if seconds > 60:
@@ -208,15 +221,15 @@ def strfdelta(delta):
                 minutes -= hours * 60
                 res = ss % (hours, _TD_LABELS[1])
                 if minutes >= 0.01:
-                    res += sss % (strfnumber(minutes), _TD_LABELS[2])
+                    res += sss % (_strfnumber(minutes), _TD_LABELS[2])
             else:
                 minutes = int(minutes)
                 seconds -= 60 * minutes
                 res = ss % (minutes, _TD_LABELS[2])
                 if seconds >= 0.01:
-                    res += sss % (strfnumber(seconds), _TD_LABELS[3])
+                    res += sss % (_strfnumber(seconds), _TD_LABELS[3])
         else:
-            res = ss % (strfnumber(seconds, '%0.3f'), _TD_LABELS[3])
+            res = ss % (_strfnumber(seconds, '%0.3f'), _TD_LABELS[3])
     return res
 
 

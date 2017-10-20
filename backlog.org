@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [4/11]
+** Release version 1.8 <2017-10-21 sáb> [5/20]
 
 - [ ] Prepare the [[file:docs/sources/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
@@ -61,13 +61,13 @@
 
   - [X] text.rst
 
-- [-] Manage deprecation warnings (code and documentation) for: [0/3]
+- [-] Manage deprecation warnings (code and documentation) for: [0/1]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [0/4]
+  - [-] 'xoutil.future.string' must be fully deprecated. [0/1]
 
     See [[file:xoutil/future/string.py][module]].
 
-    - [-] Some useful tools in there that must be migrated [11/13]
+    - [-] Some useful tools in there that must be migrated [12/13]
 
       - [X] force_encoding -> xoutil.future.codecs
 
@@ -108,6 +108,8 @@
         'xoutil.eight.string'.
 
       - [X] Move 'hyphen_name' function to 'xoutil.cli.tools' module.
+
+      - [X] Move 'strfnumber' as an internal function of 'future.datetime'.
 
       - [ ] Integrate [[file:xoutil/cl/ids.py::def%20slugify][cl.ids.slugify]] with [[file:xoutil/future/string.py::def%20normalize_slug][future.string.normalize_slug]] and
         migrate result into [[file:xoutil/eight/text.py][eight.text]].
