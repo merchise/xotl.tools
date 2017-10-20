@@ -89,6 +89,9 @@
 
       - [X] A 'force' function is implemented in 'xoutil.eight.text'.
 
+      - [ ] Integrate [[file:xoutil/cl/ids.py::def%20slugify][cl.ids.slugify]] with [[file:xoutil/future/string.py::def%20normalize_slug][future.string.normalize_slug]] and
+        migrate result into [[file:xoutil/eight/text.py][eight.text]].
+
     - [ ] Search all migrated functions in all 'erp' repositories to migrate
       imports.
 
