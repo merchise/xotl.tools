@@ -146,6 +146,9 @@
   I think 'inject_deprecated' could be deprecated in favor of
   'import_deprecated'.
 
+- [ ] Functions starting with 'cut_' in [[file:xoutil/future/string.py][xoutil.future.string]] must be reviewed,
+  maybe migrated to some module dedicated to "string trimming".
+
 
 ** Issues
 

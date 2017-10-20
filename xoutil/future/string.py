@@ -100,6 +100,8 @@ def safe_strip(value):
     return value.strip() if isinstance(value, string_types) else value
 
 
+# TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
+# some module dedicated to "string trimming".
 def cut_prefix(value, prefix):
     '''Removes the leading `prefix` if exists, else return `value`
     unchanged.
