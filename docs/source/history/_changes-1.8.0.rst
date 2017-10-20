@@ -40,4 +40,5 @@
     `xoutil.future.codecs`:mod:
 
   - ``safe_str`` -> `xoutil.eight.string`:mod: module, renaming it for
-    ``force``.
+    ``force``.  ``force_str`` is defined as a duplicated alias of the
+    deprecated function.

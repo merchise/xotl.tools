@@ -49,8 +49,6 @@ We added the following features.
 
 .. autofunction:: error2str
 
-.. autofunction:: force_str
-
 .. autofunction:: make_a10z
 
 .. autofunction:: crop

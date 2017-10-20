@@ -29,7 +29,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_import)
 
 
-def force(obj=str()):
+def force(value=str()):
     '''Convert any value to standard `str` type in a safe way.
 
     This function is useful in some scenarios that require `str` type (for
@@ -49,21 +49,13 @@ def force(obj=str()):
       ...     return inner
 
     '''
-    from xoutil.eight import python_version    # noqa
     from xoutil.future.codecs import safe_decode, safe_encode
-    if isinstance(obj, str):
-        return obj
-    elif python_version == 3:
-        if isinstance(obj, (bytes, bytearray)):
-            return safe_decode(obj)
-        else:
-            return str(obj)
+    if isinstance(value, str):
+        return value
+    elif str is bytes:      # Python 2
+        return safe_encode(value)
     else:
-        try:
-            return str(obj)
-        except UnicodeEncodeError:
-            # assert isinstance(value, unicode)
-            return safe_encode(obj)
+        return safe_decode(value)
 
 
 

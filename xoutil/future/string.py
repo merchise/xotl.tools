@@ -86,8 +86,9 @@ _MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
 
 import_deprecated('xoutil.eight', 'input')
 import_deprecated('xoutil.future.codecs', *_MIGRATED_TO_CODECS)
-import_deprecated('xoutil.eight.string', 'safe_join', safe_str='force')
+import_deprecated('xoutil.eight.string', 'safe_join', force_str='force')
 
+safe_str = force_str    # noqa
 
 @deprecated
 def safe_strip(value):
@@ -563,29 +564,6 @@ def error2str(error):
         return prefix + res
 
 
-def force_str(value, encoding=None):
-    '''Force to string, the type is different in Python 2 or 3 (bytes or
-    unicode).
-
-    :param value: The value to convert to `str`.
-    :param encoding: The encoding which should be used if either encoding
-                     or decoding should be performed on `value`.
-
-                     The default is to use the same default as
-                     `safe_encode`:func: or :func:`safe_decode`.
-
-    .. versionadded:: 1.2.0
-
-    '''
-    from xoutil.future.codecs import safe_decode, safe_encode
-    if isinstance(value, str):
-        return value
-    elif str is bytes:      # Python 2
-        return safe_encode(value, encoding)
-    else:
-        return safe_decode(value, encoding)
-
-
 def make_a10z(string):
     '''Utility to find out that "internationalization" is "i18n".
 
@@ -739,4 +717,4 @@ __all__ += ['cut_prefix',
             'normalize_unicode', 'normalize_name', 'normalize_title',
             'normalize_str', 'normalize_ascii', 'normalize_slug',
             'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',
-            'force_str', 'make_a10z', 'crop', crop_iterator, small]
+            'make_a10z', 'crop', crop_iterator, small]
