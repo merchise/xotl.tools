@@ -172,18 +172,6 @@ def cut_suffixes(value, *suffixes):
     return result
 
 
-def normalize_str(value):
-    import re
-    is_bytes = isinstance(value, bytes)
-    regex, sep = r'(\S+)\s*', ' '
-    if is_bytes:
-        regex, sep = bytes(regex), bytes(sep)
-    regex = re.compile(regex)
-    matches = regex.findall(value)
-    names = (m.capitalize() if len(m) >= 3 else m.lower() for m in matches)
-    return sep.join(names)
-
-
 # TODO: It's probable that there are more than one 'slug' functions.  Also,
 # this function is more proper in a module named 'identifier', or something.
 def normalize_slug(value, *args, **kwds):
@@ -577,6 +565,6 @@ del deprecated, import_deprecated
 
 __all__ += ['cut_prefix', 'cut_any_prefix', 'cut_prefixes', 'cut_suffix',
             'cut_any_suffix', 'cut_suffixes',
-            'normalize_str', 'normalize_slug',
+            'normalize_slug',
             'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',
             'make_a10z', 'crop', 'crop_iterator', 'small']
