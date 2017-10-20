@@ -27,8 +27,6 @@ We added the following features.
 
 .. autofunction:: normalize_str
 
-.. autofunction:: normalize_ascii
-
 .. autofunction:: normalize_slug
 
 .. autofunction:: strfnumber

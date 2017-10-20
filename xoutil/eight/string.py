@@ -76,6 +76,22 @@ def safe_join(separator, iterable):
     return force(separator).join(force(item) for item in iterable)
 
 
+def force_ascii(value):
+    '''Return the string normal form for the `value`
+
+    Convert all non-ascii to valid characters using unicode 'NFKC'
+    normalization.
+
+    '''
+    import unicodedata
+    from xoutil.future.codecs import safe_decode
+    from xoutil.eight import text_type
+    from xoutil.eight import string
+    if not isinstance(value, text_type):
+        value = safe_decode(value)
+    res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    return string.force(res)
+
 
 # ------------------ Here, the original file starts ------------------
 

@@ -44,15 +44,16 @@ valid_replacements = text().filter(lambda x: '\\' not in x)
 @example(s='0/0', invalid_chars='-', replacement='-')
 def test_normalize_slug_hypothesis(s, invalid_chars, replacement):
     # TODO: (s='0:0', invalid_chars='z', replacement='ź')
-    from xoutil.future.string import normalize_slug, normalize_ascii
+    from xoutil.future.string import normalize_slug
+    from xoutil.eight.string import force_ascii
 
     assert ' ' not in normalize_slug(s), 'Slugs do not contain spaces'
 
     assert ' ' in normalize_slug(s + ' ', valid_chars=' '), \
         'Slugs do contain spaces if explicitly allowed'
 
-    replacement = normalize_ascii(replacement).lower()
-    invalid_chars = normalize_ascii(invalid_chars).lower()
+    replacement = force_ascii(replacement).lower()
+    invalid_chars = force_ascii(invalid_chars).lower()
     assert all(c not in normalize_slug(s, replacement, invalid_chars=c)
                for c in invalid_chars if c not in replacement), \
                    'Slugs dont contain invalid chars'

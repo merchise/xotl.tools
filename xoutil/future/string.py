@@ -237,23 +237,6 @@ def normalize_str(value):
     return sep.join(names)
 
 
-def normalize_ascii(value):
-    '''Return the string normal form for the `value`
-
-    Convert all non-ascii to valid characters using unicode 'NFKC'
-    normalization.
-
-    '''
-    import unicodedata
-    from xoutil.future.codecs import safe_decode
-    from xoutil.eight import text_type
-    from xoutil.eight import string
-    if not isinstance(value, text_type):
-        value = safe_decode(value)
-    res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    return string.force(res)
-
-
 # TODO: It's probable that there are more than one 'slug' functions.  Also,
 # this function is more proper in a module named 'identifier', or something.
 def normalize_slug(value, *args, **kwds):
@@ -341,6 +324,7 @@ def normalize_slug(value, *args, **kwds):
     '''
     import re
     from xoutil.eight import string_types
+    from xoutil.eight.string import force_ascii
     from xoutil.params import ParamManager
 
     from xoutil.cl import compose, istype
@@ -352,7 +336,7 @@ def normalize_slug(value, *args, **kwds):
 
     # local functions
     def _normalize(v):
-        return normalize_ascii(v).lower()
+        return force_ascii(v).lower()
 
     def _set(v):
         return re.escape(''.join(set(_normalize(v))))
@@ -645,7 +629,7 @@ def small(obj, max_width=None):
 del deprecated, import_deprecated
 
 __all__ += ['cut_prefix', 'cut_any_prefix', 'cut_prefixes', 'cut_suffix',
-            'cut_any_suffix', 'cut_suffixes', 'hyphen_name',
-            'normalize_str', 'normalize_ascii', 'normalize_slug',
+            'cut_any_suffix', 'cut_suffixes',
+            'normalize_str', 'normalize_slug',
             'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',
             'make_a10z', 'crop', 'crop_iterator', 'small']
