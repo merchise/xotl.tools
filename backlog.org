@@ -108,12 +108,6 @@
 
 	- [X] parse_url_int
 
-	- [ ] crop
-
-	- [ ] crop_iterator
-
-	- [ ] small
-
       - [X] Rename 'normalize_ascii' function to 'force_ascii'.  Migrate it to
         'xoutil.eight.string'.
 
@@ -123,6 +117,9 @@
 
       - [ ] Integrate [[file:xoutil/cl/ids.py::def%20slugify][cl.ids.slugify]] with [[file:xoutil/future/string.py::def%20normalize_slug][future.string.normalize_slug]] and
         migrate result into [[file:xoutil/eight/text.py][eight.text]].
+
+    - [ ] Move 'crop', and 'small' functions to a independent module.  This is
+      to clean up 'string' module.  Check [[file:xoutil/clipping.py][xoutil.clipping]].
 
     - [ ] Document and fix all "normalize_..." functions.
 

@@ -42,6 +42,28 @@ In Python there are three semantic types when handling character strings:
 __ https://en.wikipedia.org/wiki/Unicode
 
 
+Mismatch Semantics Comparison
+-----------------------------
+
+In Python 2 series, equal comparison for `unicode` an `str` types don't ever
+match.  The following example fails in that version::
+
+  >>> s = 'λ'
+  >>> u = u'λ'
+  >>> u == s
+  False
+
+Also a ``UnicodeWarning`` is issued with message "Unicode equal comparison
+failed to convert both arguments to Unicode - interpreting them as being
+unequal.
+
+To correctly compare, use the same type.  For example::
+
+  >>> from xoutil.eight.text import force
+  >>> force(s) == force(u)
+  True
+
+
 Compatibility Modules
 ---------------------
 

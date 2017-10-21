@@ -223,7 +223,7 @@ class CheckAndCast(predicate):
             return Wrong(value)
 
     def __str__(self):
-        from xoutil.string import crop
+        from xoutil.clipping import crop
         check, cast = self.inner
         fmt = '({}(…) if {}(…) else _wrong)'
         return fmt.format(crop(cast), check)
@@ -248,7 +248,7 @@ class FunctionalCheck(predicate):
 
     def __str__(self):
         from xoutil.eight import type_name
-        from xoutil.string import crop
+        from xoutil.clipping import crop
         suffix = 'check'
         kind = type_name(self).lower()
         if kind.endswith(suffix):
