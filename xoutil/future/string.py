@@ -334,35 +334,6 @@ def normalize_slug(value, *args, **kwds):
     return res
 
 
-def parse_boolean(value):
-    '''Parse a boolean from any value given a special treatment to
-    strings.
-
-    >>> parse_boolean('trUe')
-    True
-
-    >>> parse_boolean('faLSe')
-    False
-
-    '''
-    from xoutil.eight import string_types
-    if isinstance(value, string_types):
-        value = value.strip()
-        if value:
-            if value.isdigit():
-                return bool(int(value))
-            else:
-                if isinstance(value, bytes):
-                    falses = (b'false', b'no', b'not')
-                else:
-                    falses = ('false', 'no', 'not')
-                return value.lower() not in falses
-        else:
-            return False
-    else:
-        return bool(value)
-
-
 def parse_url_int(value, default=None):
     '''Parse an integer URL argument. Some operations treat simple
     arguments as a list of one element.
@@ -557,5 +528,5 @@ del deprecated, import_deprecated
 __all__ += ['cut_prefix', 'cut_any_prefix', 'cut_prefixes', 'cut_suffix',
             'cut_any_suffix', 'cut_suffixes',
             'normalize_slug',
-            'strfnumber', 'parse_boolean', 'parse_url_int', 'error2str',
+            'strfnumber', 'parse_url_int', 'error2str',
             'make_a10z', 'crop', 'crop_iterator', 'small']

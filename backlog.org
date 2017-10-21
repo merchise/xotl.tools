@@ -94,7 +94,7 @@
 
       - [X] 'normalize_unicode' was completely deleted, nobody was using it.
 
-      - [X] Following functions are deleted from [[file:xoutil/future/string.py][future.string]] [4/4]
+      - [X] Following functions are deleted from [[file:xoutil/future/string.py][future.string]] [5/5]
 
 	- [X] normalize_name
 
@@ -103,6 +103,8 @@
 	- [X] capitalize
 
 	- [X] normalize_str
+
+	- [X] parse_boolean
 
       - [X] Rename 'normalize_ascii' function to 'force_ascii'.  Migrate it to
         'xoutil.eight.string'.
