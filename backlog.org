@@ -63,7 +63,7 @@
 
 - [-] Manage deprecation warnings (code and documentation) for: [1/4]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [0/4]
+  - [-] 'xoutil.future.string' must be fully deprecated. [0/3]
 
     See [[file:xoutil/future/string.py][module]].
 
@@ -94,7 +94,7 @@
 
       - [X] 'normalize_unicode' was completely deleted, nobody was using it.
 
-      - [X] Following functions are deleted from [[file:xoutil/future/string.py][future.string]] [5/5]
+      - [X] Following functions are deleted from [[file:xoutil/future/string.py][future.string]] [6/6]
 
 	- [X] normalize_name
 
@@ -106,6 +106,8 @@
 
 	- [X] parse_boolean
 
+	- [X] parse_url_int
+
       - [X] Rename 'normalize_ascii' function to 'force_ascii'.  Migrate it to
         'xoutil.eight.string'.
 
@@ -115,9 +117,6 @@
 
       - [ ] Integrate [[file:xoutil/cl/ids.py::def%20slugify][cl.ids.slugify]] with [[file:xoutil/future/string.py::def%20normalize_slug][future.string.normalize_slug]] and
         migrate result into [[file:xoutil/eight/text.py][eight.text]].
-
-    - [ ] Search all migrated functions in all 'erp' repositories to migrate
-      imports.
 
     - [ ] Document and fix all "normalize_..." functions.
 

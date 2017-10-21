@@ -334,21 +334,6 @@ def normalize_slug(value, *args, **kwds):
     return res
 
 
-def parse_url_int(value, default=None):
-    '''Parse an integer URL argument. Some operations treat simple
-    arguments as a list of one element.
-
-    '''
-    # TODO: Move to `xoutil.web`
-    from xoutil.eight import string
-    if isinstance(value, (list, tuple, set)) and len(value) > 0:
-        value = value[0]
-    try:
-        return int(string.force(value))
-    except:
-        return default
-
-
 def error2str(error):
     '''Convert an error to string.'''
     from xoutil.eight import string_types
@@ -526,7 +511,5 @@ def small(obj, max_width=None):
 del deprecated, import_deprecated
 
 __all__ += ['cut_prefix', 'cut_any_prefix', 'cut_prefixes', 'cut_suffix',
-            'cut_any_suffix', 'cut_suffixes',
-            'normalize_slug',
-            'strfnumber', 'parse_url_int', 'error2str',
+            'cut_any_suffix', 'cut_suffixes', 'normalize_slug', 'error2str',
             'make_a10z', 'crop', 'crop_iterator', 'small']

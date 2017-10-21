@@ -25,8 +25,6 @@ We added the following features.
 
 .. autofunction:: normalize_slug
 
-.. autofunction:: parse_url_int
-
 .. autofunction:: error2str
 
 .. autofunction:: make_a10z
