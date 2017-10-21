@@ -143,7 +143,7 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
 
     '''
     from random import sample, randint
-    from xoutil.future.string import normalize_slug
+    from xoutil.string import normalize_slug
     level = _normalize_level(level)
     size = MAX_PASSWORD_SIZE + 1    # means, return all calculated
     required = min(max(level, 1)*BASIC_PASSWORD_SIZE, MAX_PASSWORD_SIZE)

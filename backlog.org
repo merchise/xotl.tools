@@ -165,6 +165,9 @@
 - [ ] Review [[file:xoutil/names.py][xoutil.names]], analyze it to deprecate most parts and integrate
   all useful with [[file:xoutil/eight/string.py][xoutil.eight.string]].
 
+- [ ] Review [[file:xoutil/validators/identifiers.py][xoutil.validators.identifiers]], analyze it to deprecate most parts
+  and integrate all useful with [[file:xoutil/eight/string.py][xoutil.eight.string]].
+
 - [ ] Fix that [[file:xoutil/modules/__init__.py][xoutil.modules]] is structured as a package and only have the
   =__init__.py= file.
 

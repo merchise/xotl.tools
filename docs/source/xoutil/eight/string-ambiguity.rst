@@ -61,19 +61,6 @@ __ https://docs.python.org/3/howto/pyporting.html#text-versus-binary-data
 
 These modules can be used transparently in both Python versions.
 
-There are a collection of old modules (being mostly deprecated\ [#]_ in
-``xoutil`` version 1.8) processing strings or related values:
-
-- `xoutil.future.string`:mod:
-
-- `xoutil.keywords`:mod:
-
-- `xoutil.names`:mod:
-
-- `xoutil.validators.identifiers`:mod:
-
-- `xoutil.cl.ids`:mod:
-
 
 Encoding Hell
 -------------

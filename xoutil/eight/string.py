@@ -58,7 +58,6 @@ def force(value=str()):
         return safe_decode(value)
 
 
-
 def safe_join(separator, iterable):
     '''Similar to `join` method in string objects.
 

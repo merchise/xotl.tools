@@ -14,8 +14,8 @@
 
 '''Simple or internal coercers.
 
-With coercers defined in this module, many of the `xoutil.future.string`
-utilities could be deprecated.
+With coercers defined in this module, many of the `xoutil.string` utilities
+could be deprecated.
 
 In Python 3, all arrays, not only those containing valid byte or unicode
 chars, are buffers.

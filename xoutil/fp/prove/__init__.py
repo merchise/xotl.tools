@@ -91,7 +91,7 @@ def disruptive(function, *args, **kwds):
 
     '''
     from xoutil.symbols import boolean, Invalid
-    from xoutil.future.string import small
+    from xoutil.string import small
     from xoutil.eight import type_name
     from xoutil.eight.exceptions import throw
     from xoutil.fp.option import Just, Wrong
@@ -162,7 +162,7 @@ def enfold(checker):
             inner.__name__ = func.__name__
             inner.__doc__ = func.__doc__
         except BaseException:
-            from xoutil.future.string import small
+            from xoutil.string import small
             from xoutil.eight import string
             inner.__name__ = string.force(small(func))
         return inner

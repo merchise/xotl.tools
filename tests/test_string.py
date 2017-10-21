@@ -20,7 +20,7 @@ from hypothesis.strategies import text, binary
 
 
 def test_normalize_slug():
-    from xoutil.future.string import normalize_slug
+    from xoutil.string import normalize_slug
     value = '  Á.e i  Ó  u  '
     assert normalize_slug(value) == 'a-e-i-o-u'
     assert normalize_slug(value, '.', invalid_chars='AU') == 'e.i.o'
@@ -44,7 +44,7 @@ valid_replacements = text().filter(lambda x: '\\' not in x)
 @example(s='0/0', invalid_chars='-', replacement='-')
 def test_normalize_slug_hypothesis(s, invalid_chars, replacement):
     # TODO: (s='0:0', invalid_chars='z', replacement='ź')
-    from xoutil.future.string import normalize_slug
+    from xoutil.string import normalize_slug
     from xoutil.eight.string import force_ascii
 
     assert ' ' not in normalize_slug(s), 'Slugs do not contain spaces'
@@ -61,7 +61,7 @@ def test_normalize_slug_hypothesis(s, invalid_chars, replacement):
 
 @given(s=text(), p=text())
 def test_cutting_is_inverse_to_adding(s, p):
-    from xoutil.future.string import cut_prefix, cut_suffix
+    from xoutil.string import cut_prefix, cut_suffix
     assert cut_prefix(p + s, p) == s
     assert cut_suffix(s + p, p) == s
     assert cut_suffix(s, '') == s
@@ -70,7 +70,7 @@ def test_cutting_is_inverse_to_adding(s, p):
 
 @given(s=text(), p=text())
 def test_cutting_is_stable(s, p):
-    from xoutil.future.string import cut_prefix, cut_suffix
+    from xoutil.string import cut_prefix, cut_suffix
     if not s.startswith(p):
         assert cut_prefix(s, p) == s == cut_prefix(cut_prefix(s, p), p)
     if not s.endswith(p):

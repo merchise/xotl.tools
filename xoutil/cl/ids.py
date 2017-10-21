@@ -52,7 +52,7 @@ def str_uuid(random=False):
     return '{}'.format(fn())
 
 
-# TODO: integrate with 'xoutil.future.string.normalize_slug'
+# TODO: integrate with 'xoutil.string.normalize_slug'
 def slugify(value, *args, **kwargs):
     '''Return the string normal form, valid for slugs, for a given value.
 
