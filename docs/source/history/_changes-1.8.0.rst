@@ -64,3 +64,19 @@
       function is useless, it's equivalent to::
 
         force(vale).join(force(item) for item in iterator)
+
+  - ``capitalize_word`` function was completely removed, use instead standard
+    method ``word.capitalize()``.
+
+  - Functions ``capitalize``, ``normalize_name``, ``normalize_title``,
+    ``normalize_str``, ``parse_boolean``, ``parse_url_int`` were completely
+    removed, nobody was using them.
+
+  - ``normalize_unicode`` was completely removed, nobody was using it and it's
+    equivalent to `xoutil.eight.text.force`:func:.
+
+  - ``hyphen_name`` was moved to `xoutil.cli.tools`:mod:.  It was only used in
+    this package.
+
+  - ``strfnumber`` was moved as an internal function of
+    'xoutil.future.datetime':mod: module.

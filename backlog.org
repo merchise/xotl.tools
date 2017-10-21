@@ -108,6 +108,12 @@
 
 	- [X] parse_url_int
 
+	- [ ] crop
+
+	- [ ] crop_iterator
+
+	- [ ] small
+
       - [X] Rename 'normalize_ascii' function to 'force_ascii'.  Migrate it to
         'xoutil.eight.string'.
 
