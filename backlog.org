@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [5/20]
+** Release version 1.8 <2017-10-21 sáb> [4/11]
 
 - [ ] Prepare the [[file:docs/sources/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
@@ -61,13 +61,13 @@
 
   - [X] text.rst
 
-- [-] Manage deprecation warnings (code and documentation) for: [0/1]
+- [-] Manage deprecation warnings (code and documentation) for: [1/4]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [0/1]
+  - [-] 'xoutil.future.string' must be fully deprecated. [0/4]
 
     See [[file:xoutil/future/string.py][module]].
 
-    - [-] Some useful tools in there that must be migrated [12/13]
+    - [-] Some useful tools in there that must be migrated [12/14]
 
       - [X] force_encoding -> xoutil.future.codecs
 
@@ -123,6 +123,8 @@
       how do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
 
     - [ ] Deprecate functions with the mark "TODO: Deprecate".
+
+  - [X] Remove unused and (undocumented) context 'events'.
 
   - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
 
