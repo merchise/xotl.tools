@@ -7,9 +7,9 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [4/11]
+** Release version 1.8 <2017-10-21 sáb> [4/12]
 
-- [ ] Prepare the [[file:docs/sources/history/_changes-1.8.0.rst][change log for 1.8.0]].
+- [ ] Prepare the [[file:docs/source/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
@@ -63,7 +63,7 @@
 
 - [-] Manage deprecation warnings (code and documentation) for: [1/4]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [0/3]
+  - [-] 'xoutil.future.string' must be fully deprecated. [0/4]
 
     See [[file:xoutil/future/string.py][module]].
 
