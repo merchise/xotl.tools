@@ -73,7 +73,7 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     import re
     from xoutil.eight import unichr, text_type
-    from xoutil.string import normalize_slug
+    from xoutil.string import slugify
     from xoutil.future.codecs import safe_decode
     if not isinstance(s, text_type):
         s = safe_decode(s)
@@ -97,4 +97,4 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
                        lambda m: unichr(int(m.group(1), 16)), s)
         except:
             pass
-    return normalize_slug(s, '-')
+    return slugify(s, '-')

@@ -115,8 +115,12 @@
 
       - [X] Move 'strfnumber' as an internal function of 'future.datetime'.
 
-      - [ ] Integrate [[file:xoutil/cl/ids.py::def%20slugify][cl.ids.slugify]] with [[file:xoutil/future/string.py::def%20normalize_slug][future.string.normalize_slug]] and
+      - [-] Integrate [[file:xoutil/cl/ids.py::def%20slugify][cl.ids.slugify]] with [[file:xoutil/future/string.py::def%20normalize_slug][future.string.normalize_slug]] and
         migrate result into [[file:xoutil/eight/text.py][eight.text]].
+
+	- [X] Rename 'normalize_slug' for 'slugify'.  Deprecate old name.
+
+	- [ ] ...
 
     - [X] Move 'crop', and 'small' functions to a independent module.  This is
       to clean up 'string' module.  Check [[file:xoutil/clipping.py][xoutil.clipping]].

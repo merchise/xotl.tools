@@ -121,9 +121,7 @@ def cut_suffixes(value, *suffixes):
     return result
 
 
-# TODO: It's probable that there are more than one 'slug' functions.  Also,
-# this function is more proper in a module named 'identifier', or something.
-def normalize_slug(value, *args, **kwds):
+def slugify(value, *args, **kwds):
     '''Return the normal-form of a given string value that is valid for slugs.
 
     Convert all non-ascii to valid characters, whenever possible, using
@@ -160,37 +158,37 @@ def normalize_slug(value, *args, **kwds):
 
     Examples::
 
-      >>> normalize_slug('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
+      >>> slugify('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
       True
 
-      >>> normalize_slug(' Á.e i  Ó  u  ', '.', invalid_chars='AU') == 'e.i.o'
+      >>> slugify(' Á.e i  Ó  u  ', '.', invalid_chars='AU') == 'e.i.o'
       True
 
-      >>> normalize_slug('  Á.e i  Ó  u  ', valid_chars='.') == 'a.e-i-o-u'
+      >>> slugify('  Á.e i  Ó  u  ', valid_chars='.') == 'a.e-i-o-u'
       True
 
-      >>> normalize_slug('_x', '_') == '_x'
+      >>> slugify('_x', '_') == '_x'
       True
 
-      >>> normalize_slug('-x', '_') == 'x'
+      >>> slugify('-x', '_') == 'x'
       True
 
-      >>> normalize_slug(None) == 'none'
+      >>> slugify(None) == 'none'
       True
 
-      >>> normalize_slug(1 == 1)  == 'true'
+      >>> slugify(1 == 1)  == 'true'
       True
 
-      >>> normalize_slug(1.0) == '1-0'
+      >>> slugify(1.0) == '1-0'
       True
 
-      >>> normalize_slug(135) == '135'
+      >>> slugify(135) == '135'
       True
 
-      >>> normalize_slug(123456, '', invalid_chars='52') == '1346'
+      >>> slugify(123456, '', invalid_chars='52') == '1346'
       True
 
-      >>> normalize_slug('_x', '_') == '_x'
+      >>> slugify('_x', '_') == '_x'
       True
 
     .. versionchanged:: 1.5.5 Added the `invalid_underscore` parameter.
@@ -240,9 +238,8 @@ def normalize_slug(value, *args, **kwds):
     elif isinstance(replacement, string_types):
         replacement = _normalize(replacement)
     else:
-        msg = ('normalize_slug() "replacement" ({}) must be a string or '
-               'None, not "{}".')
-        raise TypeError(msg.format(replacement, type(replacement)))
+        raise TypeError('slugify() replacement "{}" must be a string or None,'
+                        ' not "{}".'.format(replacement, type(replacement)))
     if invalid_chars is True:
         # Backward compatibility with former `invalid_underscore` argument
         invalid_chars = '_'
@@ -255,9 +252,8 @@ def normalize_slug(value, *args, **kwds):
     if invalid_chars:
         invalid_regex = re.compile(r'[{}]+'.format(invalid_chars))
         if invalid_regex.search(replacement):
-            msg = ('normalize_slug() replacement "{}" must not contain any '
-                   'character in the invalid set.')
-            raise ValueError(msg.format(replacement))
+            raise ValueError('slugify() replacement "{}" must not contain '
+                             'any invalid character.'.format(replacement))
     else:
         invalid_regex = None
     if valid_chars is None:
@@ -322,5 +318,7 @@ def make_a10z(string):
     '''
     return string[0] + str(len(string[1:-1])) + string[-1]
 
+
+normalize_slug = deprecated(slugify)(slugify)
 
 del deprecated, import_deprecated

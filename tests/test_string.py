@@ -19,42 +19,42 @@ from hypothesis import given, example
 from hypothesis.strategies import text, binary
 
 
-def test_normalize_slug():
-    from xoutil.string import normalize_slug
+def test_slugify():
+    from xoutil.string import slugify
     value = '  Á.e i  Ó  u  '
-    assert normalize_slug(value) == 'a-e-i-o-u'
-    assert normalize_slug(value, '.', invalid_chars='AU') == 'e.i.o'
-    assert normalize_slug(value, valid_chars='.') == 'a.e-i-o-u'
-    assert normalize_slug('_x', '_') == '_x'
-    assert normalize_slug('-x', '_') == 'x'
-    assert normalize_slug('-x-y-', '_') == 'x_y'
-    assert normalize_slug(None) == 'none'
-    assert normalize_slug(1 == 1) == 'true'
-    assert normalize_slug(1.0) == '1-0'
-    assert normalize_slug(135) == '135'
-    assert normalize_slug(123456, '', invalid_chars='52') == '1346'
-    assert normalize_slug('_x', '_') == '_x'
+    assert slugify(value) == 'a-e-i-o-u'
+    assert slugify(value, '.', invalid_chars='AU') == 'e.i.o'
+    assert slugify(value, valid_chars='.') == 'a.e-i-o-u'
+    assert slugify('_x', '_') == '_x'
+    assert slugify('-x', '_') == 'x'
+    assert slugify('-x-y-', '_') == 'x_y'
+    assert slugify(None) == 'none'
+    assert slugify(1 == 1) == 'true'
+    assert slugify(1.0) == '1-0'
+    assert slugify(135) == '135'
+    assert slugify(123456, '', invalid_chars='52') == '1346'
+    assert slugify('_x', '_') == '_x'
 
 
-# FIXME: Dont filter; `normalize_slug` should consider this.
+# FIXME: Dont filter; `slugify` should consider this.
 valid_replacements = text().filter(lambda x: '\\' not in x)
 
 
 @given(s=text(), invalid_chars=text(), replacement=valid_replacements)
 @example(s='0/0', invalid_chars='-', replacement='-')
-def test_normalize_slug_hypothesis(s, invalid_chars, replacement):
+def test_slugify_hypothesis(s, invalid_chars, replacement):
     # TODO: (s='0:0', invalid_chars='z', replacement='ź')
-    from xoutil.string import normalize_slug
+    from xoutil.string import slugify
     from xoutil.eight.string import force_ascii
 
-    assert ' ' not in normalize_slug(s), 'Slugs do not contain spaces'
+    assert ' ' not in slugify(s), 'Slugs do not contain spaces'
 
-    assert ' ' in normalize_slug(s + ' ', valid_chars=' '), \
+    assert ' ' in slugify(s + ' ', valid_chars=' '), \
         'Slugs do contain spaces if explicitly allowed'
 
     replacement = force_ascii(replacement).lower()
     invalid_chars = force_ascii(invalid_chars).lower()
-    assert all(c not in normalize_slug(s, replacement, invalid_chars=c)
+    assert all(c not in slugify(s, replacement, invalid_chars=c)
                for c in invalid_chars if c not in replacement), \
                    'Slugs dont contain invalid chars'
 
