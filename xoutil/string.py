@@ -126,31 +126,39 @@ def slugify(value, *args, **kwds):
 
     Convert all non-ascii to valid characters, whenever possible, using
     unicode 'NFKC' normalization and lower-case the result.  Replace unwanted
-    characters by the value of `replacement`.
+    characters by the value of `replacement` (remove extra when repeated).
 
     Default valid characters are ``[_a-z0-9]``.  Extra arguments
     `invalid_chars` and `valid_chars` can modify this standard behaviour, see
     next:
 
-    :param value: The value to normalize (a not empty string).
+    :param value: The source value to slugify.
 
-    :param replacement: Normally a one character string to use in place of
-           invalid parts.  Repeated instances of the replacement will be
-           converted to just one; if appearing at the beginning or at the end,
-           are striped.  The value of this argument not contain any in
-           `invalid_chars` (a contradiction).  If ``None`` or ``False``, it is
-           converted to an empty string for backward compatibility with old
-           versions of this function.
+    :param replacement: A character to be used as replacement for unwanted
+           characters.  Could be both, the first extra positional argument, or
+           as a keyword argument.  Default value is a hyphen ('-').
 
-    :param invalid_chars: Any collection of characters added to these that are
-           normally invalid (non-ascii or not included in valid characters).
-           Boolean ``True`` can be passed as a synonymous of ``"_"`` for
-           compatibility with old ``invalid_underscore`` argument.  ``False``
-           or ``None`` are assumed as an empty set for invalid characters.  If
-           given as a positional argument, must be the second in the `args`
-           tuple.  Default value is ``""``.
+           There will be a contradiction if this argument contains any invalid
+           character (see `invalid_chars`).  ``None``, or ``False``, will be
+           converted converted to an empty string for backward compatibility
+           with old versions of this function, but not use this, will be
+           deprecated.
 
-    .. todo:: check if "valid" plural is without "s" in English.
+    :param invalid_chars: Characters to be considered invalid.  There is a
+           default set of valid characters which are kept in the resulting
+           slug.  Characters given in this parameter are removed from the
+           resulting valid character set (see `valid_chars`).
+
+           Extra argument values can be used for compatibility with
+           `invalid_underscore` argument in deprecated `normalize_slug`
+           function:
+
+           - ``True`` is a synonymous of underscore ``"_"``.
+
+           - ``False`` or ``None``: An empty set.
+
+           Could be given as a name argument or in the second extra positional
+           argument.  Default value is an empty set.
 
     :param valid_chars: A collection of extra valid characters.  Could be
            either a valid string, any iterator of strings, or ``None`` to use
