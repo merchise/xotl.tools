@@ -46,18 +46,53 @@ import re
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
-from xoutil.symbols import Unset
-
-import warnings
-warnings.warn('"{}" module is completely deprecated; use "xoutil.fp" package '
-              'instead'.format(__name__),
-              UserWarning)
-del warnings
-
-from xoutil.fp.cl import logical, nil, t    # noqa
+from xoutil.symbols import boolean, Unset
 from xoutil.fp.prove import disruptive as vouch    # noqa
 
+
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
+
+
+class logical(boolean):
+    '''Represent Common Lisp two special values `t` and `nil`.
+
+    Include redefinition of `__call__`:meth: to check values with special
+    semantic:
+
+    - When called as ``t(arg)``, check if `arg` is not `nil` returning a
+      logical true: the same argument if `arg` is nil or a true boolean value,
+      else return `t`.  That means that `False` or `0` are valid true values
+      for Common Lisp but not for Python.
+
+    - When called as ``nil(arg)``, check if `arg` is `nil` returning `t` or
+      `nil` if not.
+
+    Constructor could receive a valid name ('nil' or 't') or any other
+    ``boolean`` instance.
+
+    '''
+    __slots__ = ()
+    _valid = {'nil': False, 't': True}
+
+    def __new__(cls, arg):
+        from xoutil.symbols import boolean
+        from xoutil.symbols import Invalid
+        name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
+        value = cls._valid.get(name, Invalid)
+        if value is not Invalid:
+            return super(logical, cls).__new__(cls, name, value)
+        else:
+            msg = 'retrieving invalid logical instance "{}"'
+            raise TypeError(msg.format(arg))
+
+    def __call__(self, arg):
+        if self:    # self is t
+            return arg if arg or arg is nil else self
+        else:    # self is nil
+            return t if arg is self else self
+
+
+nil, t = logical('nil'), logical('t')
 
 
 class MetaCoercer(ABCMeta):
