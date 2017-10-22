@@ -15,6 +15,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_import)
 
+from xoutil.eight import python_version    # noqa
+
 
 #: Value for `max_width` parameter in functions that reduce strings, must not
 #: be less than this value.

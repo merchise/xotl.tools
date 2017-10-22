@@ -63,7 +63,7 @@
 
 - [-] Manage deprecation warnings (code and documentation) for: [1/4]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [0/4]
+  - [-] 'xoutil.future.string' must be fully deprecated. [1/4]
 
     See [[file:xoutil/future/string.py][module]].
 
@@ -118,7 +118,7 @@
       - [ ] Integrate [[file:xoutil/cl/ids.py::def%20slugify][cl.ids.slugify]] with [[file:xoutil/future/string.py::def%20normalize_slug][future.string.normalize_slug]] and
         migrate result into [[file:xoutil/eight/text.py][eight.text]].
 
-    - [ ] Move 'crop', and 'small' functions to a independent module.  This is
+    - [X] Move 'crop', and 'small' functions to a independent module.  This is
       to clean up 'string' module.  Check [[file:xoutil/clipping.py][xoutil.clipping]].
 
     - [ ] Document and fix all "normalize_..." functions.

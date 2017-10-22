@@ -29,7 +29,6 @@ from __future__ import (division as _py3_division,
 
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.deprecation import import_deprecated    # noqa
-from xoutil.eight import python_version    # noqa
 
 
 _MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
