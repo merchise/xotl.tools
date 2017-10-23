@@ -165,6 +165,14 @@
 
   - [X] Document the argument `affirm` in xoutil.future.inspect.type_name.
 
+- [ ] Unify parameter management modules. [/]
+
+  - [ ] xoutil.fp.params
+
+  - [ ] [[file:xoutil/params.py][xoutil.params]]
+
+  - [ ] [[file:xoutil/values][xoutil.values.args]]
+
 - [ ] Review [[file:xoutil/keywords.py][xoutil.keywords]], there is a standard module named ~keyword~ and
   must be analyzed if create a new one in ~future~, or integrate it with
   [[file:xoutil/eight/string.py][xoutil.eight.string]].
