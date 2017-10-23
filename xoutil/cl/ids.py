@@ -52,7 +52,7 @@ def str_uuid(random=False):
     return '{}'.format(fn())
 
 
-# TODO: integrate with 'xoutil.string.normalize_slug'
+# TODO: integrate with 'xoutil.string.slugify'
 def slugify(value, *args, **kwargs):
     '''Return the string normal form, valid for slugs, for a given value.
 
@@ -150,9 +150,6 @@ def slugify(value, *args, **kwargs):
 
       >>> slugify('_x', replacement='_') == '_x'
       True
-
-    .. versionadded:: 1.7.0 To deprecate `normalize_slug` and add
-                      `crop_smalls` parameter.
 
     '''
     import re

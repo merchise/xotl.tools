@@ -103,6 +103,3 @@ For more references see `codecs`:mod: standard module.  Also the
 .. Local document hyper-links
 
 .. _unicode: https://docs.python.org/2/library/functions.html#unicode
-
-
-.. [#] Or migrated to `~xoutil.eight`:mod: sub-modules.
