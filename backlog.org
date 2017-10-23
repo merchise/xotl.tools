@@ -190,7 +190,7 @@
 
 ** Issues
 
-- [ ] =xoutil.cli= fails in Python 3.4+
+- [X] =xoutil.cli= fails in Python 3.4+
 
   See in [[https://gitlab.lahavane.com/merchise/xoutil/issues/10][gitlab]].
 
