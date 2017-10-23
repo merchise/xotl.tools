@@ -628,7 +628,7 @@ if __name__ == 'xoutil.types':
                      subjects not being instances of types.
 
         '''
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         check_count(args, 1, caller='are_instances')
         subjects, types = args[:-1], args[-1]
         if not subjects:
@@ -667,7 +667,7 @@ if __name__ == 'xoutil.types':
            not an instance of `types`.
 
         '''
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         check_count(args, 1, caller='no_instances')
         subjects, types = args[:-1], args[-1]
         if not subjects:

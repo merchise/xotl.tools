@@ -159,7 +159,7 @@ def slugify(value, *args, **kwargs):
     from xoutil.eight import string_types
     from xoutil.cl import compose, istype
     from xoutil.cl.simple import not_false, ascii_coerce, lower_ascii_coerce
-    from xoutil.params import ParamManager
+    from xoutil.params import ParamManager    # old params
     # local functions
     getarg = ParamManager(args, kwargs)
     _str = compose(not_false(''), istype(string_types))

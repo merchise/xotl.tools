@@ -86,7 +86,7 @@ def compose(*callables, **kwargs):
        `xoutil.fp.tools.compose`:class:
 
     '''
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
     check_count(callables, 1, caller='compose')
     if not all(callable(func) for func in callables):
         raise TypeError('Every func must a callable')
@@ -117,7 +117,7 @@ def power(*args):
        TypeError: power() takes at least 2 arguments (1 given)
 
     '''
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
     from xoutil.fp.tools import compose
     check_count(args, 2, caller='power')
     funcs, times = args[:-1], args[-1]
@@ -191,7 +191,7 @@ def lwraps(*args, **kwargs):
     from xoutil.symbols import Unset
     from xoutil.eight import string_types, iteritems
     from xoutil.eight import string
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
 
     def repeated(name):
         msg = "lwraps got multiple values for argument '{}'"

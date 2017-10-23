@@ -58,7 +58,7 @@ def predicative(function, *args, **kwds):
     '''
     from xoutil.symbols import boolean
     from xoutil.fp.option import Maybe, Just, Wrong
-    from xoutil.fp.params import single
+    from xoutil.params import single
     # I don't understand anymore why a single argument must be a special case,
     # maybe because the composition problem.
     is_single = single(*args, **kwds)
@@ -95,7 +95,7 @@ def disruptive(function, *args, **kwds):
     from xoutil.eight import type_name
     from xoutil.eight.exceptions import throw
     from xoutil.fp.option import Just, Wrong
-    from xoutil.fp.params import single
+    from xoutil.params import single
     res = function(*args, **kwds)
     if isinstance(res, boolean):
         if res:

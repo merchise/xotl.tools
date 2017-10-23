@@ -84,7 +84,7 @@ class TypeCheck(predicate):
 
     def __new__(cls, *args):
         from xoutil.eight import class_types as _types, type_name
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         check_count(len(args) + 1, 2, caller=cls.__name__)
         if len(args) == 1 and isinstance(args[0], tuple):
             args = args[0]

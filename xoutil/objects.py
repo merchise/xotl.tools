@@ -1406,7 +1406,7 @@ def get_traverser(*paths, **kw):
     .. versionadded:: 1.5.3
 
     '''
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
     check_count(paths, 1, caller='get_traverser')
 
     def _traverser(path, default=Unset, sep='.', getter=None):
