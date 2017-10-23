@@ -101,11 +101,9 @@ We divide xoutil modules into 4 tiers:
    This tier groups the modules that **must not** depend from other modules
    besides the standard library.  These modules implement some features that
    are exported through other xoutil modules.  These module are never
-   documented, but their re-exported features are documented elsewhere.  For
-   instance, `xoutil.type.UnsetType` is actually implemented in
-   ``xoutil._values``.
+   documented, but their re-exported features are documented elsewhere.
 
-   Also the exported module `xoutil.compat`:mod: is this tier.
+   Also the exported module `xoutil.eight`:mod: is this tier.
 
 #. Tier 1
 
@@ -119,7 +117,7 @@ We divide xoutil modules into 4 tiers:
      modules.
 
    - `xoutil.deprecation`:mod:.  It **must not** depend on any other module
-     besides `xoutil.compat`:mod:.  Many modules in `xoutil` will use this
+     besides `xoutil.eight`:mod:.  Many modules in `xoutil` will use this
      module at import time to declare deprecated features.
 
 #. Tier 2
