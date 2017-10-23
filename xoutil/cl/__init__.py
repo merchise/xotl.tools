@@ -46,18 +46,53 @@ import re
 from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
-from xoutil.symbols import Unset
-
-import warnings
-warnings.warn('"{}" module is completely deprecated; use "xoutil.fp" package '
-              'instead'.format(__name__),
-              UserWarning)
-del warnings
-
-from xoutil.fp.cl import logical, nil, t    # noqa
+from xoutil.symbols import boolean, Unset
 from xoutil.fp.prove import disruptive as vouch    # noqa
 
+
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
+
+
+class logical(boolean):
+    '''Represent Common Lisp two special values `t` and `nil`.
+
+    Include redefinition of `__call__`:meth: to check values with special
+    semantic:
+
+    - When called as ``t(arg)``, check if `arg` is not `nil` returning a
+      logical true: the same argument if `arg` is nil or a true boolean value,
+      else return `t`.  That means that `False` or `0` are valid true values
+      for Common Lisp but not for Python.
+
+    - When called as ``nil(arg)``, check if `arg` is `nil` returning `t` or
+      `nil` if not.
+
+    Constructor could receive a valid name ('nil' or 't') or any other
+    ``boolean`` instance.
+
+    '''
+    __slots__ = ()
+    _valid = {'nil': False, 't': True}
+
+    def __new__(cls, arg):
+        from xoutil.symbols import boolean
+        from xoutil.symbols import Invalid
+        name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
+        value = cls._valid.get(name, Invalid)
+        if value is not Invalid:
+            return super(logical, cls).__new__(cls, name, value)
+        else:
+            msg = 'retrieving invalid logical instance "{}"'
+            raise TypeError(msg.format(arg))
+
+    def __call__(self, arg):
+        if self:    # self is t
+            return arg if arg or arg is nil else self
+        else:    # self is nil
+            return t if arg is self else self
+
+
+nil, t = logical('nil'), logical('t')
 
 
 class MetaCoercer(ABCMeta):
@@ -130,30 +165,23 @@ class coercer(metaclass(MetaCoercer)):
 
 
 def coercer_name(arg, join=None):
-    '''
-    - (object-name OBJ &optional EXTRA)
-
-    - (object-class-name OBJ)
-
-    - (subr-name SUBR)
-
-    - (symbol-name SYMBOL)
-
-    Get the name of a coercer.
+    '''Get the name of a coercer.
 
     :param arg: Coercer to get the name.  Also processes collections (tuple,
-           list or set) of coercers.  Any other value is considered invalid
+           list, or set) of coercers.  Any other value is considered invalid
            and raises an exception.
 
     :param join: When a collection is used; if this argument is None a
            collection of names is returned, if not None then is used to join
-           the items in a resulting string.  For example::
+           the items in a resulting string.
+
+           For example::
 
              >>> coercer_name((int_coerce, float_coerce))
              ('int', 'float')
 
-             >>> coercer_name((int_coerce, float_coerce), '_')
-             'int_float'
+             >>> coercer_name((int_coerce, float_coerce), join='-')
+             'int-float'
 
            To obtain pretty-print tuples, use something like::
 
@@ -495,53 +523,29 @@ class custom(object):
     def __call__(self, arg):
         return nil
 
-    @classmethod
-    @coercer
-    def inward(cls, c):
-        '''Traverse inner if `c` is an instance of this class.
 
-        if not, check if `c` is a valid coercer.
-
-        '''
-        return c.inner if isinstance(c, cls) else c
-
-
-class flatten(custom):
+def flatten(arg, cls=custom):
     '''Flatten a coercer set.
 
-    There are several custom coercers or types that contain or represent other
-    inner coercers; i.g. tuples, lists, `compose`:class:, `some`:class:, etc.
+    :param arg: Could be a coercer representing other inner coercers, or a
+           tuple or list containing coercers.
 
-    An `inward` instance can break-up recursively any coercer collection
-    fulfilling the argument coercer to validate that there are other inner
-    coercers.
-
-    :param itemize: A coercer that will check if an item is a collection of
-           other items or must to be check as a single coercer.  This will
-           return a `tuple` or `list` if the argument can be iterated over, or
-           the same value is not.
+    :param cls: The class allowing go inward inner coercers.
 
     :param checker: A coercer that check if an item is valid to append to the
            resulting list.
 
     '''
-    __slots__ = 'checker'
-
-    def __init__(self, itemize=Unset, checker=Unset):
-        super(flatten, self).__init__()
-        self.inner = vouch(coercer, itemize or True)
-        self.checker = vouch(coercer, checker or coercer)
-
-    def __call__(self, arg):
-        aux = self.inner(arg)
-        if isinstance(aux, (tuple, list)):
-            res = types_tuple_coerce(aux)
-            if res is nil:
-                return [i for l in map(self, aux) for i in l]
-            else:
-                return [coercer(aux)]
+    aux = arg.inner if isinstance(arg, cls) else arg
+    if isinstance(aux, (tuple, list)):
+        res = types_tuple_coerce(aux)
+        if res is nil:
+            mapper = lambda item: flatten(item, cls=cls)
+            return [i for l in map(mapper, aux) for i in l]
         else:
-            return [vouch(self.checker, aux)]
+            return [coercer(aux)]
+    else:
+        return [aux]
 
 
 class istype(custom):
@@ -665,8 +669,8 @@ class compose(custom):
     __slots__ = ()
 
     def __new__(cls, *coercers, **kwds):
-        inner = tuple(c for c in flatten(cls.inward)(coercers)
-                      if c is not identity_coerce)
+        aux = flatten(coercers, cls=cls)
+        inner = tuple(c for c in aux if c is not identity_coerce)
         count = len(inner)
         if count > 1:
             self = super(compose, cls).__new__(cls)
@@ -711,8 +715,8 @@ class some(custom):
     __slots__ = ()
 
     def __new__(cls, *coercers):
-        inner = tuple(c for c in flatten(cls.inward)(coercers)
-                      if c is not void_coerce)
+        aux = flatten(coercers, cls=cls)
+        inner = tuple(c for c in aux if c is not void_coerce)
         if len(inner) > 1:
             self = super(some, cls).__new__(cls)
             self.inner = inner

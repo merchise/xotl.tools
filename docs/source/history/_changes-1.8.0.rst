@@ -13,8 +13,6 @@
 
   - `~xoutil.future.inspect`:mod:.
 
-  - `~xoutil.future.string`:mod:.
-
   - `~xoutil.future.codecs`:mod:.
 
   - `~xoutil.future.json`:mod:.
@@ -28,17 +26,57 @@
   - `~xoutil.future.textwrap`:mod:.
 
 - Create ``__small__`` protocol for small string representations, see
-  `xoutil.future.string.small`:func: for more information.
+  `xoutil.string.small`:func: for more information.
 
 - Added function `xoutil.deprecation.import_deprecated`:func:,
   `~xoutil.deprecation.inject_deprecated`:func: can be deprecated now.
 
-- Migrations related with full deprecation of `xoutil.future.string`:mod:
-  module:
+- The module ``xoutil.future.string`` was completelly removed in favor of:
 
-  - ``force_encoding``, ``safe_decode``, ``safe_encode`` ->
-    `xoutil.future.codecs`:mod:
+  - `xoutil.future.codecs`:mod:\ : Moved here functions
+    `~xoutil.future.codecs.force_encoding`,
+    `~xoutil.future.codecs.safe_decode`, and
+    `~xoutil.future.codecs.safe_encode`.
 
-  - ``safe_str`` -> `xoutil.eight.string`:mod: module, renaming it for
-    ``force``.  ``force_str`` is defined as a duplicated alias of the
-    deprecated function.
+  - `xoutil.eight.string`:mod:\ : Technical string handling.  In this module:
+
+    - `~xoutil.eight.string.force`:func:\ : Replaces old ``safe_str``, and
+      ``force_str`` versions.
+
+    - `~xoutil.eight.string.safe_join`:func:\ : Replaces old version in
+      ``future`` module.  This function is useless, it's equivalent to::
+
+        force(vale).join(force(item) for item in iterator)
+
+    - `~xoutil.eight.string.force_ascii`:func:\ : Replaces old
+      ``normalize_ascii``.   This function is safe and the result will be of
+      standard ``str`` type containing only equivalent ASCII characters from
+      the argument.
+
+  - `xoutil.eight.text`:mod:\ : Text handling, strings can be part of
+    internationalization processes.  In this module:
+
+    - `~xoutil.eight.text.force`:func:\ : Replaces old ``safe_str``, and
+      ``force_str`` versions, but always returning the text type.
+
+    - `~xoutil.eight.text.safe_join`:func:\ : Replaces old version in
+      ``future`` module, but in this case always return the text type.  This
+      function is useless, it's equivalent to::
+
+        force(vale).join(force(item) for item in iterator)
+
+  - ``capitalize_word`` function was completely removed, use instead standard
+    method ``word.capitalize()``.
+
+  - Functions ``capitalize``, ``normalize_name``, ``normalize_title``,
+    ``normalize_str``, ``parse_boolean``, ``parse_url_int`` were completely
+    removed, nobody was using them.
+
+  - ``normalize_unicode`` was completely removed, nobody was using it and it's
+    equivalent to `xoutil.eight.text.force`:func:.
+
+  - ``hyphen_name`` was moved to `xoutil.cli.tools`:mod:.  It was only used in
+    this package.
+
+  - ``strfnumber`` was moved as an internal function of
+    'xoutil.future.datetime':mod: module.

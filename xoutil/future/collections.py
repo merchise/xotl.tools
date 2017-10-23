@@ -303,9 +303,9 @@ class OpenDictMixin(object):
 
         '''
         from xoutil.keywords import suffix_kwd
-        from xoutil.future.string import normalize_slug
+        from xoutil.string import slugify
         from xoutil.validators import is_valid_identifier
-        res = key if is_valid_identifier(key) else normalize_slug(key, '_')
+        res = key if is_valid_identifier(key) else slugify(key, '_')
         return suffix_kwd(res)
 
 

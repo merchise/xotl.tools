@@ -107,7 +107,7 @@ class Context(metaclass(MetaContext), StackedDict):
         RuntimeError: Entering the same context level twice! ...
 
     '''
-    __slots__ = ('name', 'count', '_events')
+    __slots__ = ('name', 'count', )
 
     def __new__(cls, name, **data):
         self = cls[name]
@@ -117,7 +117,6 @@ class Context(metaclass(MetaContext), StackedDict):
             self.name = name
             self.count = 0
             # TODO: Redefine all event management
-            self._events = []
         return self(**data)
 
     def __init__(self, *args, **kwargs):
@@ -150,19 +149,9 @@ class Context(metaclass(MetaContext), StackedDict):
     def __exit__(self, exc_type, exc_value, traceback):
         self.count -= 1
         if self.count == 0:
-            for event in self.events:
-                event(self)
             del _data.contexts[self.name]
         self.pop_level()
         return False
-
-    @property
-    def events(self):
-        return self._events
-
-    @events.setter
-    def events(self, value):
-        self._events = list(value)
 
 
 # A simple alias for Context
@@ -210,10 +199,6 @@ class NullContext(object):
     @property
     def level(self):
         return 0
-
-    @property
-    def events(self):
-        return ()
 
 
 _null_context = NullContext()

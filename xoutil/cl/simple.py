@@ -14,7 +14,7 @@
 
 '''Simple or internal coercers.
 
-With coercers defined in this module, many of the `xoutil.future.string`:mod:
+With coercers defined in this module, many of the `xoutil.string`:mod:
 utilities could be deprecated.
 
 In Python 3, all arrays, not only those containing valid byte or unicode

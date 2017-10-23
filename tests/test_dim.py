@@ -30,8 +30,8 @@ from xoutil.dim.meta import (
 
 # A reasonable exponent.  We won't be dealing with universes of 100s
 # dimensions.
-exponents = s.integers(min_value=1, max_value=100)
-signatures = s.text(alphabet='abcdefghijok', min_size=0, max_size=50)
+exponents = s.integers(min_value=1, max_value=10)
+signatures = s.text(alphabet='abcdefghijok', min_size=0, max_size=10)
 
 
 def test_usage():
