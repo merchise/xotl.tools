@@ -252,17 +252,11 @@
 There are several "old" modules that could be migrated (or integrated) into
 new monads modules; these old modules could become clients of monads.
 
-- [ ] 'xoutil.connote': intends for to have predicates (commonly understood
-  to be Boolean-valued functions).
-
 - [ ] 'xoutil.symbols': to be instance of and sub-class checks in
   'MetaSymbol' class must be extended to be compliant with monads.
 
 - [ ] 'xoutil.cl': reproducing some concepts of "Common Lisp" in Python.
   Value checkers are the best candidates to be monadic.
-
-- [ ] 'xoutil.values': this module is deprecated but must be analyzed
-  during this proccess.
 
 
 ** Errors
@@ -275,6 +269,10 @@ new monads modules; these old modules could become clients of monads.
   having to exit.
 
   When it is run on =xoutil=:
+
+- [ ] Use =DeprecationWarning= instead =UserWarning= in module
+  [[file:xoutil/deprecation.py][xoutil.deprecation]] (see =warnings.simplefilter('default',
+  DeprecationWarning)=).
 
   #+begin_src python
     from IPython.lib.deepreload import reload as dreload
