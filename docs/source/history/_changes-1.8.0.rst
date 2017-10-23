@@ -80,3 +80,37 @@
 
   - ``strfnumber`` was moved as an internal function of
     'xoutil.future.datetime':mod: module.
+
+
+  - Function ``normalize_slug`` was deprecated as it, new version is
+    `~xoutil.string.slugify`:func:\ .
+
+- Module `xoutil.params`:mod: was recovered and integrated with several
+  dispare other modules to do the same thing.
+
+  - Added function `~xoutil.params.issue_9137`:func: -- Helper to fix issue
+    9137 (self ambiguity).
+
+  - Added function `~xoutil.params.check_count`:func: -- Checker for positional
+    arguments actual count against constrains.
+
+  - Added function `~xoutil.params.check_default`:func: -- Default value
+    getter when passed as a last excess positional argument.
+
+  - Added function `~xoutil.params.single`:func: -- Return true only when a
+    unique argument is given.
+
+  - Added function `~xoutil.params.keywords_only`:func: -- Decorator to make a
+    function to accepts its keywords arguments as keywords-only.
+
+  - Added function `~xoutil.params.pop_keyword_arg`:func: -- Tool to get a
+    value from keyword arguments using several possible names.
+
+  - Added class `~xoutil.params.ParamManager`:class: -- Parameter manager in a
+    "smart" way.
+
+  - Added class `~xoutil.params.ParamScheme`:class: -- Parameter scheme
+    definition for a manager.
+
+  - Added class `~xoutil.params.ParamSchemeRow`:class: -- Parameter scheme
+    complement.
