@@ -523,29 +523,25 @@ class custom(object):
     def __call__(self, arg):
         return nil
 
+    @classmethod
+    def flatten(cls, obj, avoid=Unset):
+        '''Flatten a coercer set.
 
-def flatten(arg, cls=custom):
-    '''Flatten a coercer set.
+        :param obj: Could be a coercer representing other inner coercers, or a
+               tuple or list containing coercers.
 
-    :param arg: Could be a coercer representing other inner coercers, or a
-           tuple or list containing coercers.
-
-    :param cls: The class allowing go inward inner coercers.
-
-    :param checker: A coercer that check if an item is valid to append to the
-           resulting list.
-
-    '''
-    aux = arg.inner if isinstance(arg, cls) else arg
-    if isinstance(aux, (tuple, list)):
-        res = types_tuple_coerce(aux)
-        if res is nil:
-            mapper = lambda item: flatten(item, cls=cls)
-            return [i for l in map(mapper, aux) for i in l]
+        '''
+        aux = obj.inner if isinstance(obj, cls) else obj
+        if isinstance(aux, (tuple, list)):
+            if not types_tuple_coerce(aux):
+                res = (i for l in map(cls.flatten, aux) for i in l)
+            else:
+                res = (coercer(aux),)
         else:
-            return [coercer(aux)]
-    else:
-        return [aux]
+            res = (aux,)
+        if avoid is not Unset:
+            res = (i for i in res if i is not avoid)
+        return tuple(res)
 
 
 class istype(custom):
@@ -669,8 +665,7 @@ class compose(custom):
     __slots__ = ()
 
     def __new__(cls, *coercers, **kwds):
-        aux = flatten(coercers, cls=cls)
-        inner = tuple(c for c in aux if c is not identity_coerce)
+        inner = cls.flatten(coercers, avoid=identity_coerce)
         count = len(inner)
         if count > 1:
             self = super(compose, cls).__new__(cls)
@@ -715,8 +710,7 @@ class some(custom):
     __slots__ = ()
 
     def __new__(cls, *coercers):
-        aux = flatten(coercers, cls=cls)
-        inner = tuple(c for c in aux if c is not void_coerce)
+        inner = cls.flatten(coercers, avoid=void_coerce)
         if len(inner) > 1:
             self = super(some, cls).__new__(cls)
             self.inner = inner
