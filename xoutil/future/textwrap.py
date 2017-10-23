@@ -22,9 +22,9 @@ import textwrap as _stdlib
 from textwrap import __all__    # noqa
 __all__ = list(__all__)
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 
 def dedent(text, skip_firstline=False):

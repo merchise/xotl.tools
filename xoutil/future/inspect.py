@@ -25,9 +25,9 @@ from __future__ import (division as _py3_division,
 
 from inspect import *    # noqa
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 # TODO: @manu, migrate use of 'xoutil.inspect' in
 # 'xopgi.xopgi_mail_threads.mail_server.get_kwargs' to this module

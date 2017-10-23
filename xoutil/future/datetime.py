@@ -39,9 +39,9 @@ import sys
 from datetime import *    # noqa
 import datetime as _stdlib    # noqa
 
-from xoutil.future import _past
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 from re import compile as _regex_compile
 from time import strftime as _time_strftime

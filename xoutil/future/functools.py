@@ -27,9 +27,9 @@ from __future__ import (division as _py3_division,
 from functools import *    # noqa
 import functools as _stdlib    # noqa
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 from xoutil.eight import python_version    # noqa
 from xoutil.eight import callable    # noqa

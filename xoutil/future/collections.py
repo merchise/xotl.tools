@@ -36,9 +36,9 @@ from collections import *    # noqa
 import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 try:
     from collection import _sys    # noqa
@@ -56,7 +56,7 @@ if python_version == 2:
     # Fix some sub-classing problems.
     from xoutil.future.types import MappingProxyType    # noqa
     del MappingProxyType    # already fixed there
-    MutableSequence.register(deque)
+    MutableSequence.register(deque)    # noqa
 
 
 class safe_dict_iter(tuple):

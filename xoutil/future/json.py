@@ -41,9 +41,9 @@ __all__ = list(__all__) + ['file_load', 'encode_string']
 
 from json import encoder, decoder    # noqa
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 
 class JSONEncoder(_stdlib.JSONEncoder):
