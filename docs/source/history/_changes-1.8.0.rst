@@ -31,6 +31,10 @@
 - Added function `xoutil.deprecation.import_deprecated`:func:,
   `~xoutil.deprecation.inject_deprecated`:func: can be deprecated now.
 
+- Added function `xoutil.deprecation.deprecate_linked`:func: to deprecate full
+  modules imported from a linked version.  The main example are all
+  sub-modules of `xoutil.future`:mod:.
+
 - The module ``xoutil.future.string`` was completelly removed in favor of:
 
   - `xoutil.future.codecs`:mod:\ : Moved here functions
