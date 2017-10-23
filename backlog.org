@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [4/12]
+** Release version 1.8 <2017-10-21 sáb> [5/13]
 
 - [ ] Prepare the [[file:docs/source/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
@@ -165,13 +165,13 @@
 
   - [X] Document the argument `affirm` in xoutil.future.inspect.type_name.
 
-- [ ] Unify parameter management modules. [/]
+- [X] Unify parameter management modules. [3/3]
 
-  - [ ] xoutil.fp.params
+  - [X] xoutil.fp.params - integrated with 'xoutil.params'
 
-  - [ ] [[file:xoutil/params.py][xoutil.params]]
+  - [X] [[file:xoutil/params.py][xoutil.params]]
 
-  - [ ] [[file:xoutil/values][xoutil.values.args]]
+  - [X] [[file:xoutil/values][xoutil.values.args]] - removed.
 
 - [ ] Review [[file:xoutil/keywords.py][xoutil.keywords]], there is a standard module named ~keyword~ and
   must be analyzed if create a new one in ~future~, or integrate it with
