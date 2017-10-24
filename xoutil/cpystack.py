@@ -229,7 +229,7 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
             ctx = getargvalues(frame)
             d = {arg_name: ctx.get(arg_name)} if arg_name is not None else ctx
             for key in d:
-                value = d[key]:
+                value = d[key]
                 if isinstance(value, obj_type):
                     res = (value, key, deep, frame)
             frame = frame.f_back
