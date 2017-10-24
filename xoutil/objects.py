@@ -435,7 +435,7 @@ def multi_getter(source, *ids):
         return next((i for i in map(getter, a) if i is not None), None)
 
     def get(a):
-        from xoutil.cl.simple import logic_iterable_coerce as many
+        from xoutil.values.simple import logic_iterable_coerce as many
         return first(a) if many(a) else getter(a)
 
     return (get(aux) for aux in ids)
@@ -736,8 +736,8 @@ def iterate_over(source, *keys):
     If any `key` is missing from `source` is ignored (not yielded).
 
     If `source` is a `collection
-    <xoutil.cl.simple.logic_collection_coerce>`:func:, iterate over each of
-    the items searching for any of keys.  This is not recursive.
+    <xoutil.values.simple.logic_collection_coerce>`:func:, iterate over each
+    of the items searching for any of keys.  This is not recursive.
 
     If no `keys` are provided, return an "empty" iterator -- i.e will raise
     StopIteration upon calling `next`.
@@ -745,7 +745,7 @@ def iterate_over(source, *keys):
     .. versionadded:: 1.5.2
 
     '''
-    from xoutil.cl.simple import logic_collection_coerce, nil
+    from xoutil.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter(source)
@@ -824,7 +824,7 @@ def pop_first_of(source, *keys, **kwargs):
         True
 
     '''
-    from xoutil.cl.simple import logic_collection_coerce, nil
+    from xoutil.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter_and_deleter(source)
@@ -1267,7 +1267,7 @@ def smart_copy(*args, **kwargs):
     from xoutil.future.collections import MutableMapping, Mapping
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
-    from xoutil.cl.simple import logic_iterable_coerce, nil
+    from xoutil.values.simple import logic_iterable_coerce, nil
     defaults = kwargs.pop('defaults', False)
     if kwargs:
         raise TypeError('smart_copy does not accept a "%s" keyword argument'

@@ -417,7 +417,7 @@ if __name__ == 'xoutil.types':
     #
     # - `odoo.addons.mail.xopgi.index`: can be replaced by a local function
     #   ``isinstance(maybe, (tuple, list, set))`` or by
-    #   `xoutil.cl.simple.logic_iterable_coerce`.
+    #   `xoutil.values.simple.logic_iterable_coerce`.
     #
     # - `xopgi.account.xopgi.xopgi_proper_currency.move`: ibidem
     #
@@ -425,7 +425,8 @@ if __name__ == 'xoutil.types':
     #   the first is similar to above examples, second use the concept of
     #   arrays (mappings are collections but not arrays) and maybe must
     #   consider to move this function to new `xoutil.future.collections` and
-    #   use it from there.  @med, consider `xoutil.cl.simple.array_coerce`.
+    #   use it from there.  @med, consider
+    #   `xoutil.values.simple.array_coerce`.
     #
     # - `xopgi.hr.xopgi.xopgi_hr_job_assets.hr_job`: ibidem to first.
     #
@@ -447,15 +448,16 @@ if __name__ == 'xoutil.types':
     #   uses.
     #
     # - `xoutil.cpystack`: migrated to use new
-    #   `xoutil.cl.simple.force_sequence_coerce`.
+    #   `xoutil.values.simple.force_sequence_coerce`.
     #
-    # - `xoutil.fs`: migrated to use `xoutil.cl.simple.force_iterable_coerce`.
+    # - `xoutil.fs`: migrated to use
+    #    `xoutil.values.simple.force_iterable_coerce`.
     #
     # - `xoutil.iterators`: replaced by ``isinstance(fill, Iterable)``.
     #
     # - `xoutil.objects`: replaced by
-    #   `xoutil.cl.simple.logic_collection_coerce` or
-    #   `xoutil.cl.simple.logic_iterable_coerce`.
+    #   `xoutil.values.simple.logic_collection_coerce` or
+    #   `xoutil.values.simple.logic_iterable_coerce`.
     def is_collection(maybe):
         '''Test `maybe` to see if it is a tuple, a list, a set or a generator
         function.
@@ -488,7 +490,7 @@ if __name__ == 'xoutil.types':
         .. versionchanged:: 1.5.5 UserList are collections.
 
         '''
-        from xoutil.cl.simple import logic_collection_coerce, nil
+        from xoutil.values.simple import logic_collection_coerce, nil
         return logic_collection_coerce(maybe) is not nil
 
     # TODO: There was only one reference to this in `xoutil.objects`, see how

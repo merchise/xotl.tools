@@ -22,7 +22,7 @@ from __future__ import (division as _py3_division,
 __all__ = ['uuid']
 
 from xoutil.deprecation import deprecated
-from xoutil.cl.ids import str_uuid
+from xoutil.values.ids import str_uuid
 
 
 @deprecated(str_uuid)

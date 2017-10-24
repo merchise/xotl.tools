@@ -543,7 +543,7 @@ def concatfiles(*files):
     '''
     import shutil
     from xoutil.eight import string_types
-    from xoutil.cl.simple import force_iterable_coerce
+    from xoutil.values.simple import force_iterable_coerce
     from xoutil.params import check_count
     check_count(files, 2, caller='concatfiles')
     if len(files) == 2:

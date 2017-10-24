@@ -23,11 +23,11 @@ import unittest
 class TestCLisp(unittest.TestCase):
     def test_basic_coercers(self):
         from xoutil.eight import string_types
-        from xoutil.cl import (identity_coerce, void_coerce, coercer,
-                               vouch, t, int_coerce,
-                               float_coerce, create_int_range_coerce,
-                               istype, typecast, iterable, mapping,
-                               create_unique_member_coerce, nil)
+        from xoutil.values import (identity_coerce, void_coerce, coercer,
+                                   vouch, t, int_coerce,
+                                   float_coerce, create_int_range_coerce,
+                                   istype, typecast, iterable, mapping,
+                                   create_unique_member_coerce, nil)
         d = {'1': 2, 3.0: '4', 5.0+0j: 7.3+0j, 1: '2'}
         s = {1, '2', 3.0, '1'}
         l = [1, '2', 3.0, '1', 'x10']
@@ -68,8 +68,8 @@ class TestCLisp(unittest.TestCase):
 
     def test_compound_coercers(self):
         from xoutil.eight import string_types
-        from xoutil.cl import (coercer, compose, some, combo, iterable,
-                               typecast, int_coerce, float_coerce, nil)
+        from xoutil.values import (coercer, compose, some, combo, iterable,
+                                   typecast, int_coerce, float_coerce, nil)
         isstr = coercer(string_types)
         strcast = typecast(string_types)
         toint = compose(isstr, int_coerce)

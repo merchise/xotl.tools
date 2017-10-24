@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.cl.simple
+# xoutil.values.simple
 # ---------------------------------------------------------------------
 # Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
@@ -26,7 +26,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.cl import coercer, nil
+from xoutil.values import coercer, nil
 
 
 @coercer

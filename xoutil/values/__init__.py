@@ -418,9 +418,8 @@ def create_unique_member_coerce(coerce, container):
 
     For example::
 
-      >>> from xoutil.cl import (mapping,
-      ...                        create_unique_member_coerce,
-      ...                        int_coerce, float_coerce)
+      >>> from xoutil.values import (mapping, create_unique_member_coerce,
+      ...                            int_coerce, float_coerce)
 
       >>> sample = {'1': 1, 2.0: '3', 1.0 + 0j: '4.1'}
 
@@ -810,7 +809,7 @@ class pargs(custom):
 
     In the following example::
 
-      >>> from xoutil.cl import (iterable, int_coerce)
+      >>> from xoutil.values import (iterable, int_coerce)
 
       >>> def foobar(*args):
       ...     coerce = iterable(int_coerce)
@@ -825,7 +824,7 @@ class pargs(custom):
 
     An example using `pargs`:class:\ ::
 
-      >>> from xoutil.cl import (pargs, int_coerce)
+      >>> from xoutil.values import (pargs, int_coerce)
 
       >>> def foobar(*args):
       ...     # Below, "coercer" receives the returned "inner"
@@ -913,8 +912,8 @@ class iterable(custom):
 
     For example::
 
-      >>> from xoutil.cl import (iterable, int_coerce,
-      ...                        create_unique_member_coerce)
+      >>> from xoutil.values import (iterable, int_coerce,
+      ...                            create_unique_member_coerce)
 
       >>> sample = {'1', 1, '1.0'}
 
@@ -1006,8 +1005,8 @@ class mapping(custom):
 
     For example::
 
-      >>> from xoutil.cl import (mapping, int_coerce, float_coerce,
-      ...                        create_unique_member_coerce)
+      >>> from xoutil.values import (mapping, int_coerce, float_coerce,
+      ...                            create_unique_member_coerce)
 
       >>> sample = {'1': 1, 2.0: '3', 1.0 + 0j: '4.1'}
 

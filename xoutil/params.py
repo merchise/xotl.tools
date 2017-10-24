@@ -550,8 +550,8 @@ if __name__ == '__main__':
 
     import sys
     from xoutil.eight import string_types
-    from xoutil.cl import (file_coerce as is_file,
-                           positive_int_coerce as positive_int)
+    from xoutil.values import (file_coerce as is_file,
+                               positive_int_coerce as positive_int)
 
     scheme, row = ParamScheme, ParamSchemeRow
 

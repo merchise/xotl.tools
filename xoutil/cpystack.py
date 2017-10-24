@@ -52,7 +52,7 @@ def getargvalues(frame):
         -10
 
     '''
-    from xoutil.cl.simple import force_sequence_coerce as array
+    from xoutil.values.simple import force_sequence_coerce as array
     from xoutil.iterators import flatten
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
