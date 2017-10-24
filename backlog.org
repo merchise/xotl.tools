@@ -130,9 +130,9 @@
 
   - [X] Remove unused and (undocumented) context 'events'.
 
-  - [-] Reformat 'xoutil.cl'. [1/2]
+  - [-] Remove 'xoutil.cl'. [2/2]
 
-    - [ ] Integrate it with 'xoutil.fp' sub-modules.
+    - [X] Integrate it with 'xoutil.fp' sub-modules.
 
     - [X] Rename 'xoutil.cl' by 'xoutil.values', deprecate the old name.
       Create proper documentation.
