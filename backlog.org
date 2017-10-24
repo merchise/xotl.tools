@@ -129,10 +129,8 @@
 
   - [X] Remove unused and (undocumented) context 'events'.
 
-  - [X] Reformat 'xoutil.cl'. [1/1]
-
-    - [X] Rename it by 'xoutil.values', deprecate the old name.
-      Create proper documentation.
+  - [X] Remove 'xoutil.cl'. Rename it by 'xoutil.values', deprecate the old
+    name.  Create proper documentation.
 
 - [X] Remove file:xoutil/fp/monads if it is not going to be part of this
   release.  See file:xoutil/fp/monads/discussion.org
@@ -243,6 +241,9 @@
 
 
 ** Miscellaneous. [/]
+
+- [ ] Fix that [[file:xoutil/modules/__init__.py][xoutil.modules]] is structured as a package and only have the
+  =__init__.py= file.
 
 - [ ] Improve naming. [/]
 
