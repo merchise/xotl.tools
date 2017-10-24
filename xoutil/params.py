@@ -114,7 +114,7 @@ def check_default(absent=Undefined):
     For example::
 
         def get(self, name, *default):
-            from xoutil.fp.tools import check_default, Undefined
+            from xoutil.params import check_default, Undefined
             if name in self.inner_data:
                 return self.inner_data[name]
             elif check_default()(*default) is not Undefined:
@@ -264,13 +264,13 @@ class ParamManager(object):
         - 'default': value used if the parameter is absent;
 
         - 'coerce': check if a value is valid or not and convert to its
-          definitive value; see `xoutil.fp.prove.Coercer`:class: for more
+          definitive value; see `xoutil.values`:mod: module for more
           information.
 
         '''
         from xoutil.fp.option import Just, Wrong, none
-        # TODO: Change this
-        from xoutil.fp.prove.semantic import predicate as Coercer
+        # TODO: Change this ``from xoutil.values import coercer``
+        from xoutil.fp.prove.semantic import predicate as coercer
         args, kwds = self.args, self.kwds
         i, res = 0, none
         while isinstance(res, Wrong) and i < len(ids):
@@ -285,7 +285,7 @@ class ParamManager(object):
             elif key in kwds:
                 res = kwds[key]
             if not isinstance(res, Wrong) and 'coerce' in options:
-                aux = Coercer(options['coerce'])(res)
+                aux = coercer(options['coerce'])(res)
                 res = aux.inner if isinstance(aux, Just) else aux
             if not isinstance(res, Wrong):
                 self.consumed.add(key)
@@ -340,8 +340,8 @@ class ParamSchemeRow(object):
         from xoutil.eight.string import safe_isidentifier as iskey
         from xoutil.eight import type_name
         from xoutil.fp.option import none
-        # TODO: Change this
-        from xoutil.fp.prove.semantic import predicate as Coercer
+        # TODO: Change this ``from xoutil.values import coercer``
+        from xoutil.fp.prove.semantic import predicate as coercer
         aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
@@ -367,7 +367,7 @@ class ParamSchemeRow(object):
         else:
             aux = {}
         if 'coerce' in options:
-            aux['coerce'] = Coercer(options.pop('coerce'))
+            aux['coerce'] = coercer(options.pop('coerce'))
         if options:
             msg = '{}(): received invalid keyword parameters: {}'
             raise TypeError(msg.format(type_name(self), set(options)))
