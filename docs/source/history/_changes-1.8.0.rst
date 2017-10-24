@@ -35,6 +35,9 @@
   modules imported from a linked version.  The main example are all
   sub-modules of `xoutil.future`:mod:.
 
+- Added function `xoutil.deprecation.deprecate_module`:func: to deprecate full
+  modules when imported.
+
 - The module ``xoutil.future.string`` was completelly removed in favor of:
 
   - `xoutil.future.codecs`:mod:\ : Moved here functions

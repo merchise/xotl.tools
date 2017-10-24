@@ -309,7 +309,7 @@ def import_deprecated(module, *names, **aliases):
 def deprecate_linked(check=None):
     '''Deprecate an entire module if used through a link.
 
-    This function must be called in the global context of a module.
+    This function must be called in the global context of the new module.
 
     :param check: Must be a module name to check, it must be part of the
            actual module name.  If not given 'xoutil.future' is assumed.
@@ -332,4 +332,32 @@ def deprecate_linked(check=None):
     if check not in name:
         msg = ('"{}" module is now deprecated and it will be removed; use '
                'the one in "{}" instead.').format(name, check)
-        warnings.warn(msg, stacklevel=3)
+        warnings.warn(msg, stacklevel=2)
+
+
+def deprecate_module(replacement):
+    '''Deprecate an entire module.
+
+    This function must be called in the global context of the deprecated
+    module.
+
+    :param replacement: Must be a module, or a module name to check, it must be part of the
+           actual module name.  If not given 'xoutil.future' is assumed.
+
+    For example::
+
+      >>> from xoutil.deprecation import deprecate_module
+      >>> deprecate_module('xoutil.symbols')
+      >>> del deprecate_module
+
+    '''
+    import inspect
+    frame = inspect.currentframe().f_back
+    try:
+        name = frame.f_globals.get('__name__')
+    finally:
+        # As recommended in Python's documentation to avoid memory leaks
+        del frame
+    msg = ('"{}" module is now deprecated and it will be removed; use "{}" '
+           'instead.').format(name, replacement)
+    warnings.warn(msg, stacklevel=2)
