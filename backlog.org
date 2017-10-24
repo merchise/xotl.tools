@@ -7,9 +7,9 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [6/14]
+** Release version 1.8 <2017-10-21 sáb> [10/10]
 
-- [ ] Prepare the [[file:docs/source/history/_changes-1.8.0.rst][change log for 1.8.0]].
+- [X] Prepare the [[file:docs/source/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
@@ -61,13 +61,13 @@
 
   - [X] text.rst
 
-- [-] Manage deprecation warnings (code and documentation) for: [1/4]
+- [X] Manage deprecation warnings (code and documentation) for: [3/3]
 
-  - [-] 'xoutil.future.string' must be fully deprecated. [2/4]
+  - [X] 'xoutil.future.string' must be fully deprecated. [4/4]
 
     See [[file:xoutil/future/string.py][module]].
 
-    - [-] Some useful tools in there that must be migrated [13/14]
+    - [X] Some useful tools in there that must be migrated [14/14]
 
       - [X] force_encoding -> xoutil.future.codecs
 
@@ -75,12 +75,11 @@
 
       - [X] safe_encode -> xoutil.future.codecs
 
-      - [-] safe_str -> xoutil.eight.string (as 'force').
+      - [X] safe_str -> xoutil.eight.string (as 'force').  'force_str' is
+        defined now as a alias of 'safe_str'.
 
-        - [X] 'force_str' is defined now as a alias of 'safe_str'.
-
-        - [ ] In 'xhg/conf.py.in' is used a parameter named 'cast' with a
-          default value of 'force_str'.  This must be checked.
+        In 'xhg/conf.py.in' is used a parameter named 'cast' with a default
+        value of 'force_str'.  This must be checked.
 
       - [X] safe_join -> xoutil.eight.string.  Also, a version is implemented
         in 'xoutil.eight.text'.
@@ -126,24 +125,14 @@
       There are several things that would probably dissapear: We can't be sure
       how do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
 
-    - [ ] Deprecate functions with the mark "TODO: Deprecate".
+    - [X] Deprecate functions with the mark "TODO: Deprecate".
 
   - [X] Remove unused and (undocumented) context 'events'.
 
-  - [-] Reformat 'xoutil.cl'. [1/2]
+  - [X] Reformat 'xoutil.cl'. [1/1]
 
-    - [ ] Integrate it with 'xoutil.fp' sub-modules.
-
-    - [X] Rename 'xoutil.cl' by 'xoutil.values', deprecate the old name.
+    - [X] Rename it by 'xoutil.values', deprecate the old name.
       Create proper documentation.
-
-  - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
-
-    - [ ] Review when and how to remove symbolic linking to 'xoutil.future'.
-
-      - [[file:xoutil][main package]]
-
-      - [[file:xoutil/eight][xoutil.eight]]
 
 - [X] Remove file:xoutil/fp/monads if it is not going to be part of this
   release.  See file:xoutil/fp/monads/discussion.org
@@ -179,27 +168,12 @@
 
   - [X] xoutil.connote
 
-- [ ] Review [[file:xoutil/keywords.py][xoutil.keywords]], there is a standard module named ~keyword~ and
-  must be analyzed if create a new one in ~future~, or integrate it with
-  [[file:xoutil/eight/string.py][xoutil.eight.string]].
-
-- [ ] Review [[file:xoutil/names.py][xoutil.names]], analyze it to deprecate most parts and integrate
-  all useful with [[file:xoutil/eight/string.py][xoutil.eight.string]].
-
-- [ ] Review [[file:xoutil/validators/identifiers.py][xoutil.validators.identifiers]], analyze it to deprecate most parts
-  and integrate all useful with [[file:xoutil/eight/string.py][xoutil.eight.string]].
-
-- [ ] Fix that [[file:xoutil/modules/__init__.py][xoutil.modules]] is structured as a package and only have the
+- [X] Fix that [[file:xoutil/modules/__init__.py][xoutil.modules]] is structured as a package and only have the
   =__init__.py= file.
 
-- [ ] Fix consistency error in [[file:xoutil/deprecation.py::def%20inject_deprecated(funcnames,%20source,%20target%3DNone):][inject_deprecated]], 'target_locals' is never
-  assigned if =target is not None=.
-
-  I think 'inject_deprecated' could be deprecated in favor of
-  'import_deprecated'.
-
-- [ ] Functions starting with 'cut_' in [[file:xoutil/future/string.py][xoutil.future.string]] must be reviewed,
-  maybe migrated to some module dedicated to "string trimming".
+- [X] Functions starting with 'cut_' in [[file:xoutil/future/string.py][xoutil.future.string]] must be reviewed,
+  maybe migrated to some module dedicated to "string trimming".  Move to a new
+  'clipping' module.
 
 
 ** Issues
