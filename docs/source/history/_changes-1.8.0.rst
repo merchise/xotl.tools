@@ -118,3 +118,6 @@
 
   - Added class `~xoutil.params.ParamSchemeRow`:class: -- Parameter scheme
     complement.
+
+- Module `xoutil.values`:mod: was recovered adding several new features (old
+  name ``xoutil.cl`` was deprecated).
