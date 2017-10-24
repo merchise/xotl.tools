@@ -15,7 +15,6 @@
 # Django and generalized.
 #
 # Created on 2012-02-15
-# Migrated to 'future' on 2016-09-13
 
 '''Extends the standard `datetime` module.
 
@@ -40,9 +39,9 @@ import sys
 from datetime import *    # noqa
 import datetime as _stdlib    # noqa
 
-from xoutil.future import _past
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
@@ -77,8 +76,8 @@ except ValueError:
     # but (WTF), Python double checks the year (in each method and then again
     # in `time.strftime` function).
 
-    class date(date):             # noqa
-        __doc__ = date.__doc__    # noqa
+    class date(date):
+        __doc__ = date.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -86,8 +85,8 @@ except ValueError:
         def __sub__(self, other):
             return assure(super(date, self).__sub__(other))
 
-    class datetime(datetime):         # noqa
-        __doc__ = datetime.__doc__    # noqa
+    class datetime(datetime):
+        __doc__ = datetime.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -125,7 +124,7 @@ except ValueError:
             else:
                 args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
                 return datetime(*args)
-        elif isinstance(obj, (time, timedelta)):    # noqa
+        elif isinstance(obj, (time, timedelta)):
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
@@ -159,7 +158,6 @@ def new_datetime(d):
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
     return datetime(*args)
 
-
 del deprecated
 
 
@@ -177,6 +175,20 @@ def _year_find_all(fmt, year, no_year_tuple):
 _TD_LABELS = 'dhms'    # days, hours, minutes, seconds
 
 
+def _strfnumber(number, format_spec='%0.2f'):
+    '''Convert a floating point number into string using a smart way.
+
+    Used internally in strfdelta.
+
+    '''
+    res = format_spec % number
+    if '.' in res:
+        res = res.rstrip('0')
+        if res.endswith('.'):
+            res = res[:-1]
+    return res
+
+
 def strfdelta(delta):
     '''
     Format a timedelta using a smart pretty algorithm.
@@ -192,7 +204,6 @@ def strfdelta(delta):
         True
 
     '''
-    from xoutil.future.string import strfnumber
     ss, sss = str('%s%s'), str(' %s%s')
     if delta.days:
         days = delta.days
@@ -200,7 +211,7 @@ def strfdelta(delta):
         hours = delta.total_seconds() / 60 / 60
         res = ss % (days, _TD_LABELS[0])
         if hours >= 0.01:
-            res += sss % (strfnumber(hours), _TD_LABELS[1])
+            res += sss % (_strfnumber(hours), _TD_LABELS[1])
     else:
         seconds = delta.total_seconds()
         if seconds > 60:
@@ -210,15 +221,15 @@ def strfdelta(delta):
                 minutes -= hours * 60
                 res = ss % (hours, _TD_LABELS[1])
                 if minutes >= 0.01:
-                    res += sss % (strfnumber(minutes), _TD_LABELS[2])
+                    res += sss % (_strfnumber(minutes), _TD_LABELS[2])
             else:
                 minutes = int(minutes)
                 seconds -= 60 * minutes
                 res = ss % (minutes, _TD_LABELS[2])
                 if seconds >= 0.01:
-                    res += sss % (strfnumber(seconds), _TD_LABELS[3])
+                    res += sss % (_strfnumber(seconds), _TD_LABELS[3])
         else:
-            res = ss % (strfnumber(seconds, '%0.3f'), _TD_LABELS[3])
+            res = ss % (_strfnumber(seconds, '%0.3f'), _TD_LABELS[3])
     return res
 
 
@@ -328,9 +339,7 @@ def is_full_month(start, end):
             (em != (end + timedelta(1)).month))
 
 
-class flextime(timedelta):    # noqa
-    # TODO: document this class
-
+class flextime(timedelta):
     @classmethod
     def parse_simple_timeformat(cls, which):
         if 'h' in which:
@@ -370,9 +379,6 @@ def daterange(*args):
     yielded. If it's negative `stop` should be before `start`.
 
     As with `range`, `stop` is never included in the yielded dates.
-
-    .. note:: In a future release this will be merged with
-              `ClosedDateRange`:class:
 
     '''
     import operator
@@ -708,6 +714,8 @@ class TimeSpan(object):
 
 
 class _EmptyTimeSpan(object):
+    __slots__ = []  # no inner structure
+
     def __bool__(self):
         return False
 
@@ -720,8 +728,9 @@ class _EmptyTimeSpan(object):
     def __eq__(self, which):
         from datetime import date
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
-            # We expect `self` to be a singleton
-            return self is which
+            # We expect `self` to be a singleton, but pickle protocol 1 does
+            # not warrant to call our __new__.
+            return isinstance(which, _EmptyTimeSpan)
         else:
             raise TypeError
 
@@ -775,10 +784,17 @@ class _EmptyTimeSpan(object):
     def __repr__(self):
         return 'EmptyTimeSpan'
 
+    def __new__(cls):
+        res = getattr(cls, '_instance', None)
+        if res is None:
+            res = cls._instance = super(_EmptyTimeSpan, cls).__new__(cls)
+        return res
+
+    def __getnewargs__(self):
+        return ()
+
 
 EmptyTimeSpan = _EmptyTimeSpan()
-
-_EmptyTimeSpan.__new__ = None  # Disallow creating more instances
 
 
 # A context to switch on/off returning a subtype of date from DateFields.

@@ -24,6 +24,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil.eight.meta import metaclass
 
+
 SYMBOL = 'symbol'
 BOOLEAN = 'boolean'
 

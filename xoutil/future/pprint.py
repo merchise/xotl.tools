@@ -23,9 +23,9 @@ from pprint import *    # noqa
 from pprint import __all__    # noqa
 __all__ = list(__all__) + ['ppformat']
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 
 def ppformat(obj):
@@ -47,5 +47,5 @@ def ppformat(obj):
     if isinstance(res, text_type):
         return res
     else:
-        from xoutil.future.string import safe_decode
+        from xoutil.future.codecs import safe_decode
         return safe_decode(res)

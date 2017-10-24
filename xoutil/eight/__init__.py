@@ -78,7 +78,6 @@ except NameError:
 
 
 # Python versions
-# TODO: deprecate all this in favor of direct use of 'python_version'
 
 _pyver = python_version.to_float()
 _py2 = python_version == 2

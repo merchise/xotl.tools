@@ -24,9 +24,9 @@ from subprocess import *    # noqa
 from pprint import __all__    # noqa
 __all__ = list(__all__) + ['call_and_check_output']
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 
 def call_and_check_output(*popenargs, **kwargs):

@@ -24,7 +24,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.deprecation import deprecated
-from xoutil.fp.params import check_default
+from xoutil.params import check_default
 
 
 # TODO: review this
@@ -81,8 +81,8 @@ def nameof(obj):
 def get_default(args, default=None):
     '''Get a default value passed as last positional argument.
 
-    See `xoutil.fp.params.check_default`:func: for a more accurate function
-    that replace this.
+    See `xoutil.params.check_default`:func: for a more accurate function that
+    replace this.
 
     .. deprecated:: 1.8.0
 

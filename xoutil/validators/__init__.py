@@ -248,7 +248,7 @@ def ok(value, *checkers, **kwargs):
     Keyword arguments are not validated to be correct.
 
     This function could be used with type-definitions for arguments, see
-    `xoutil.fp.prove.TypeCheck`:class:.
+    `xoutil.fp.prove.semantic.TypeCheck`:class:.
 
     Examples::
 

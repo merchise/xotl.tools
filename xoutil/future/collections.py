@@ -36,9 +36,9 @@ from collections import *    # noqa
 import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 try:
     from collection import _sys    # noqa
@@ -56,7 +56,7 @@ if python_version == 2:
     # Fix some sub-classing problems.
     from xoutil.future.types import MappingProxyType    # noqa
     del MappingProxyType    # already fixed there
-    MutableSequence.register(deque)
+    MutableSequence.register(deque)    # noqa
 
 
 class safe_dict_iter(tuple):
@@ -303,9 +303,9 @@ class OpenDictMixin(object):
 
         '''
         from xoutil.keywords import suffix_kwd
-        from xoutil.future.string import normalize_slug
+        from xoutil.string import slugify
         from xoutil.validators import is_valid_identifier
-        res = key if is_valid_identifier(key) else normalize_slug(key, '_')
+        res = key if is_valid_identifier(key) else slugify(key, '_')
         return suffix_kwd(res)
 
 
@@ -332,7 +332,7 @@ class SmartDictMixin(object):
         - an iterable of (key, value) pairs.
 
         '''
-        from xoutil.fp.params import issue_9137
+        from xoutil.params import issue_9137
         self, args = issue_9137(args)
         for key, value in smart_iter_items(*args, **kwds):
             self[key] = value
@@ -372,7 +372,7 @@ class SmartDict(SmartDictMixin, dict):
 
     '''
     def __init__(*args, **kwargs):
-        from xoutil.fp.params import issue_9137
+        from xoutil.params import issue_9137
         self, args = issue_9137(args)
         super(SmartDict, self).__init__()
         self.update(*args, **kwargs)
@@ -770,7 +770,7 @@ if python_version < 3.3:
     class UserDict(MutableMapping):
         # Start by filling-out the abstract methods
         def __init__(*args, **kwargs):
-            from xoutil.fp.params import issue_9137
+            from xoutil.params import issue_9137
             self, args = issue_9137(args)
             self.data = {}
             self.update(*args, **kwargs)
@@ -1227,7 +1227,7 @@ if python_version < 3.3:
             >>> c = Counter(a=4, b=2)        # a new counter from keyword args
 
             '''
-            from xoutil.fp.params import issue_9137
+            from xoutil.params import issue_9137
             self, args = issue_9137(args)
             self.data = {}
             super(Counter, self).__init__()
@@ -1304,7 +1304,7 @@ if python_version < 3.3:
             # counting contexts.  Instead, we implement straight-addition.
             # Both the inputs and outputs are allowed to contain zero and
             # negative counts.
-            from xoutil.fp.params import issue_9137, check_count
+            from xoutil.params import issue_9137, check_count
             self, args = issue_9137(args)
             check_count(args, 0, 1, caller='update')
             if args:
@@ -1355,7 +1355,7 @@ if python_version < 3.3:
               -1
 
             '''
-            from xoutil.fp.params import issue_9137, check_count
+            from xoutil.params import issue_9137, check_count
             self, args = issue_9137(args)
             check_count(args, 0, 1, caller='subtract')
             if args:
@@ -1583,7 +1583,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
 
     def __init__(*args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        from xoutil.fp.params import issue_9137
+        from xoutil.params import issue_9137
         self, args = issue_9137(args)
         self.update(*args, **kwargs)
 
@@ -1720,7 +1720,7 @@ class RankedDict(SmartDictMixin, dict):
         Use `rank`:meth: to change the precedence order in any moment.
 
         '''
-        from xoutil.fp.params import issue_9137
+        from xoutil.params import issue_9137
         self, args = issue_9137(args)
         # Ensure direct calls to ``__init__`` don't clear previous contents
         try:
@@ -1760,7 +1760,7 @@ class RankedDict(SmartDictMixin, dict):
                (name, value).
 
         '''
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         check_count(len(args) + len(kwds) + 1, 2, caller='swap_ranks')
         for key1, key2 in args:
             self._swap_ranks(key1, key2)
@@ -1912,7 +1912,7 @@ class RankedDict(SmartDictMixin, dict):
         raised.
 
         '''
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         count = len(args)
         check_count(count + 1, 1, 2, caller='pop')
         res = super(RankedDict, self).pop(key, Unset)
@@ -1979,7 +1979,7 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         arbitrary.
 
         '''
-        from xoutil.fp.params import issue_9137
+        from xoutil.params import issue_9137
         self, args = issue_9137(args)
         super(OrderedSmartDict, self).__init__()
         self.update(*args, **kwds)

@@ -94,9 +94,9 @@ from __future__ import (division as _py3_division,
 from types import *    # noqa
 import types as _stdlib    # noqa
 
-from xoutil.future import _past
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 from xoutil.eight import python_version    # noqa
 
@@ -155,8 +155,11 @@ if MemberDescriptorType is GetSetDescriptorType:    # noqa
     MemberDescriptorType = type(_foo.bar)
     del _foo
 
-FuncTypes = tuple({FunctionType, MethodType, LambdaType, BuiltinFunctionType,
-                   BuiltinMethodType})
+FuncTypes = tuple({FunctionType, MethodType, LambdaType,    # noqa
+                   BuiltinFunctionType, BuiltinMethodType})    # noqa
+
+from xoutil.eight import class_types    # noqa
+func_types = FuncTypes    # Just an alias
 
 # These types are defined in `inspect` module for Python >= 3.3
 MethodWrapperType = type(all.__call__)
@@ -414,7 +417,7 @@ if __name__ == 'xoutil.types':
     #
     # - `odoo.addons.mail.xopgi.index`: can be replaced by a local function
     #   ``isinstance(maybe, (tuple, list, set))`` or by
-    #   `xoutil.cl.simple.logic_iterable_coerce`.
+    #   `xoutil.values.simple.logic_iterable_coerce`.
     #
     # - `xopgi.account.xopgi.xopgi_proper_currency.move`: ibidem
     #
@@ -422,7 +425,8 @@ if __name__ == 'xoutil.types':
     #   the first is similar to above examples, second use the concept of
     #   arrays (mappings are collections but not arrays) and maybe must
     #   consider to move this function to new `xoutil.future.collections` and
-    #   use it from there.  @med, consider `xoutil.cl.simple.array_coerce`.
+    #   use it from there.  @med, consider
+    #   `xoutil.values.simple.array_coerce`.
     #
     # - `xopgi.hr.xopgi.xopgi_hr_job_assets.hr_job`: ibidem to first.
     #
@@ -444,15 +448,16 @@ if __name__ == 'xoutil.types':
     #   uses.
     #
     # - `xoutil.cpystack`: migrated to use new
-    #   `xoutil.cl.simple.force_sequence_coerce`.
+    #   `xoutil.values.simple.force_sequence_coerce`.
     #
-    # - `xoutil.fs`: migrated to use `xoutil.cl.simple.force_iterable_coerce`.
+    # - `xoutil.fs`: migrated to use
+    #    `xoutil.values.simple.force_iterable_coerce`.
     #
     # - `xoutil.iterators`: replaced by ``isinstance(fill, Iterable)``.
     #
     # - `xoutil.objects`: replaced by
-    #   `xoutil.cl.simple.logic_collection_coerce` or
-    #   `xoutil.cl.simple.logic_iterable_coerce`.
+    #   `xoutil.values.simple.logic_collection_coerce` or
+    #   `xoutil.values.simple.logic_iterable_coerce`.
     def is_collection(maybe):
         '''Test `maybe` to see if it is a tuple, a list, a set or a generator
         function.
@@ -485,7 +490,7 @@ if __name__ == 'xoutil.types':
         .. versionchanged:: 1.5.5 UserList are collections.
 
         '''
-        from xoutil.cl.simple import logic_collection_coerce, nil
+        from xoutil.values.simple import logic_collection_coerce, nil
         return logic_collection_coerce(maybe) is not nil
 
     # TODO: There was only one reference to this in `xoutil.objects`, see how
@@ -493,7 +498,7 @@ if __name__ == 'xoutil.types':
     def is_mapping(maybe):
         '''Test `maybe` to see if it is a valid mapping.'''
         from xoutil.future.collections import Mapping
-        return isinstance(obj, Mapping)
+        return isinstance(maybe, Mapping)
 
     # only referenced locally by `is_scalar`.
     def is_string_like(maybe):
@@ -573,12 +578,12 @@ if __name__ == 'xoutil.types':
         '''
         if name:
             desc = mro_dict(desc).get(name, None)
-        return isinstance(desc, FunctionType)
+        return isinstance(desc, FunctionType)    # noqa
 
     # not used outside this module.
     def is_module(maybe):
         '''Returns True if `maybe` is a module.'''
-        return isinstance(maybe, ModuleType)
+        return isinstance(maybe, ModuleType)    # noqa
 
     # TODO: @manu, @med, review external references to this function, and
     # remove them:
@@ -625,7 +630,7 @@ if __name__ == 'xoutil.types':
                      subjects not being instances of types.
 
         '''
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         check_count(args, 1, caller='are_instances')
         subjects, types = args[:-1], args[-1]
         if not subjects:
@@ -664,7 +669,7 @@ if __name__ == 'xoutil.types':
            not an instance of `types`.
 
         '''
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         check_count(args, 1, caller='no_instances')
         subjects, types = args[:-1], args[-1]
         if not subjects:

@@ -23,7 +23,7 @@ from xoutil.future import types
 
 def test_iscollection():
     # TODO: move this test to equivalent for
-    # `xoutil.cl.simple.logic_collection_coerce`
+    # `xoutil.values.simple.logic_collection_coerce`
     from xoutil.eight import range
     from xoutil.future.collections import UserList, UserDict
 

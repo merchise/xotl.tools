@@ -86,7 +86,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.eight import python_version, iteritems as iteritems_
-from xoutil.future.string import safe_decode
+from xoutil.future.codecs import safe_decode
 
 import warnings
 warnings.warn('xoutil.html is deprecated')
@@ -112,7 +112,7 @@ del name, entity, safe_decode, iteritems_
 
 def _further_escape(s):
     import re
-    from xoutil.future.string import safe_encode
+    from xoutil.future.codecs import safe_encode
     ASCII = getattr(re, 'ASCII', 0)  # Py3k
     what = re.compile(br'[\x00-\x1F\x80-\xFF]', ASCII)
     res, pos = b'', 0
@@ -145,7 +145,7 @@ if python_version < 3.2:
 
         """
         from xoutil.eight import text_type
-        from xoutil.future.string import safe_decode, safe_encode
+        from xoutil.future.codecs import safe_decode, safe_encode
         if not isinstance(s, text_type):
             arg = safe_decode(s)
         else:

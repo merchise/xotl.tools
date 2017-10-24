@@ -27,9 +27,9 @@ from __future__ import (division as _py3_division,
 from functools import *    # noqa
 import functools as _stdlib    # noqa
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 from xoutil.eight import python_version    # noqa
 from xoutil.eight import callable    # noqa
@@ -86,7 +86,7 @@ def compose(*callables, **kwargs):
        `xoutil.fp.tools.compose`:class:
 
     '''
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
     check_count(callables, 1, caller='compose')
     if not all(callable(func) for func in callables):
         raise TypeError('Every func must a callable')
@@ -117,7 +117,7 @@ def power(*args):
        TypeError: power() takes at least 2 arguments (1 given)
 
     '''
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
     from xoutil.fp.tools import compose
     check_count(args, 2, caller='power')
     funcs, times = args[:-1], args[-1]
@@ -190,8 +190,8 @@ def lwraps(*args, **kwargs):
     from types import FunctionType, MethodType
     from xoutil.symbols import Unset
     from xoutil.eight import string_types, iteritems
-    from xoutil.future.string import safe_str
-    from xoutil.fp.params import check_count
+    from xoutil.eight import string
+    from xoutil.params import check_count
 
     def repeated(name):
         msg = "lwraps got multiple values for argument '{}'"
@@ -258,7 +258,7 @@ def lwraps(*args, **kwargs):
                 if name in source:
                     value = source.pop(name)
                     if name in safes:
-                        value = safe_str(value)
+                        value = string.force(value)
                     setattr(target, str(name), value)
                 d = source.pop('__dict__', Unset)
                 if d:
@@ -274,7 +274,7 @@ def lwraps(*args, **kwargs):
     return wrapper(target) if target else wrapper
 
     # TODO: Next code could be removed.
-    # func.__name__ = safe_str(name)
+    # func.__name__ = string.force(name)
     # if doc:
     #     func.__doc__ = doc
     # return func

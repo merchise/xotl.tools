@@ -4,7 +4,12 @@
 
 * Backlog for *xoutil*
 
-** Release version 1.8 <2017-10-21 sáb> [2/5]
+# Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
+
+
+** Release version 1.8 <2017-10-21 sáb> [10/10]
+
+- [X] Prepare the [[file:docs/source/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
 - [X] Fix 'future' documentation errors because 'automodule' use. [8/8]
 
@@ -40,33 +45,143 @@
 
     [[file:docs/source/xoutil/future/types.rst][documentation]] --> [[file:xoutil/future/types.py][module]].
 
-- [ ] Fix deprecation warnings (code and documentation) for: [0/2]
+- [X] Create documentations for 'eight' modules [7/7]
 
-  - [ ] '[[file:xoutil/cl/__init__.py::import%20warnings][xoutil.cl]]', replace it by '[[file:xoutil/fp][xoutil.fp]]' sub-modules.
+  - [X] abc.rst
 
-  - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
+  - [X] io.rst
+
+  - [X] meta.rst
+
+  - [X] mixins.rst
+
+  - [X] queue.rst
+
+  - [X] string.rst
+
+  - [X] text.rst
+
+- [X] Manage deprecation warnings (code and documentation) for: [3/3]
+
+  - [X] 'xoutil.future.string' must be fully deprecated. [4/4]
+
+    See [[file:xoutil/future/string.py][module]].
+
+    - [X] Some useful tools in there that must be migrated [14/14]
+
+      - [X] force_encoding -> xoutil.future.codecs
+
+      - [X] safe_decode -> xoutil.future.codecs
+
+      - [X] safe_encode -> xoutil.future.codecs
+
+      - [X] safe_str -> xoutil.eight.string (as 'force').  'force_str' is
+        defined now as a alias of 'safe_str'.
+
+        In 'xhg/conf.py.in' is used a parameter named 'cast' with a default
+        value of 'force_str'.  This must be checked.
+
+      - [X] safe_join -> xoutil.eight.string.  Also, a version is implemented
+        in 'xoutil.eight.text'.
+
+      - [X] safe_strip (deprecated in place)
+
+      - [X] A 'force' function is implemented in 'xoutil.eight.text'.
+
+      - [X] 'capitalize_word' was completely deleted, use instead
+        =word.capitalize()=
+
+      - [X] 'normalize_unicode' was completely deleted, nobody was using it.
+
+      - [X] Following functions are deleted from [[file:xoutil/future/string.py][future.string]] [6/6]
+
+	- [X] normalize_name
+
+	- [X] normalize_title
+
+	- [X] capitalize
+
+	- [X] normalize_str
+
+	- [X] parse_boolean
+
+	- [X] parse_url_int
+
+      - [X] Rename 'normalize_ascii' function to 'force_ascii'.  Migrate it to
+        'xoutil.eight.string'.
+
+      - [X] Move 'hyphen_name' function to 'xoutil.cli.tools' module.
+
+      - [X] Move 'strfnumber' as an internal function of 'future.datetime'.
+
+      - [X] Rename 'normalize_slug' for 'slugify'.  Deprecate old name.
+
+    - [X] Move 'crop', and 'small' functions to a independent module.  This is
+      to clean up 'string' module.  Check [[file:xoutil/clipping.py][xoutil.clipping]].
+
+    - [X] Document and fix all "normalize_..." functions.  Almost all function
+      was removed or migrated to a new name.
+
+      There are several things that would probably dissapear: We can't be sure
+      how do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
+
+    - [X] Deprecate functions with the mark "TODO: Deprecate".
+
+  - [X] Remove unused and (undocumented) context 'events'.
+
+  - [X] Remove 'xoutil.cl'. Rename it by 'xoutil.values', deprecate the old
+    name.  Create proper documentation.
 
 - [X] Remove file:xoutil/fp/monads if it is not going to be part of this
   release.  See file:xoutil/fp/monads/discussion.org
 
-- [ ] There is a function named 'type_name' in two different modules:
+- [X] There is a function named 'type_name' in two different modules:
 
-  - [[file:xoutil/future/inspect.py::def%20type_name(obj,%20affirm%3DFalse):][xoutil.future.inspect]]
+  - [[file:xoutil/future/inspect.py::def%20safe_name(obj,%20affirm%3DFalse):][xoutil.future.inspect]]
 
   - [[file:xoutil/eight/__init__.py::def%20type_name(obj):][xoutil.eight]]
 
   Note: <2017-09-29> The function for the first module was renamed to
   'safe_name' keeping the old name, but deprecated .
 
-  - [ ] Document the argument `affirm` in xoutil.future.inspect.type_name.
+  - [X] Document the argument `affirm` in xoutil.future.inspect.type_name.
 
-- [ ] Document and fix all "normalize_..." functions in module
-  '[[file:xoutil/future/string.py::def%20normalize_unicode(value):][xoutil.future.string]]'.
+- [X] Unify parameter management modules. [3/3]
 
-  There are several things that would probably dissapear: We can't be sure how
-  do i18n [[file:xoutil/future/string.py::def%20normalize_unicode(value)][normalize_unicode]].
+  - [X] xoutil.fp.params - integrated with 'xoutil.params'
 
-  - Deprecate functions with the mark [[file:xoutil/future/string.py::#%20TODO:%20Deprecate][TODO: Deprecate]]
+  - [X] [[file:xoutil/params.py][xoutil.params]]
+
+  - [X] [[file:xoutil/values][xoutil.values.args]] - removed.
+
+- [X] Review suspected modules of having changes from 1.7.x to 1.8 [5/5]
+
+  - [X] xoutil.values
+
+  - [X] xoutil.uuid
+
+  - [X] xoutil.logical
+
+  - [X] UnsetType
+
+  - [X] xoutil.connote
+
+- [X] Fix that [[file:xoutil/modules/__init__.py][xoutil.modules]] is structured as a package and only have the
+  =__init__.py= file.
+
+- [X] Functions starting with 'cut_' in [[file:xoutil/future/string.py][xoutil.future.string]] must be reviewed,
+  maybe migrated to some module dedicated to "string trimming".  Move to a new
+  'clipping' module.
+
+
+** Issues
+
+- [X] =xoutil.cli= fails in Python 3.4+
+
+  See in [[https://gitlab.lahavane.com/merchise/xoutil/issues/10][gitlab]].
+
+- [ ] Rename "encoding" by "coding" in all =# -*- encoding:= headers.
+
 
 ** Development ideas. [/]
 
@@ -76,43 +191,101 @@
   using [[file:/usr/share/doc/python/html/library/argparse.html?highlight%3Dargumentparser#argparse.ArgumentParser.add_subparsers][add_subparsers]] when definie method [[file:xoutil/cli/__init__.py::def%20get_arg_parser(cls):][get_arg_parser]] for sub-classes of
   [[file:xoutil/cli/__init__.py::class%20Command(ABC):][xoutil.cli.Command]].
 
+
+** Prepare release 1.8.1 [/]
+
+- [ ] General review about many redundant features. [/]
+
+  - [ ] 'slugify'
+
+  - [ ] 'xoutil.validators' -> 'xoutil.values' (or viceversa).
+
+    - There is an amalgam of 'predicate' structures.
+
+  - [ ] 'xoutil.fp' must assume all functionalities related to most pure
+    functional programming.
+
+  - [ ] Review 'xoutil.params'.
+
+  - [ ] Review all related string modules: 'string', 'names', 'keywords',
+    'reprlib', 'clipping', 'future.textwrap', 'future.codecs', 'eight.string',
+    'eight.text', ...
+
+    - Check 'xoutil.inspect.safe_name'.
+
+    - There is a standard module named ~keyword~, we must analyze if ours with
+      the same name must be in =future or not.
+
+    - Review =xoutil.validators.identifiers=, analyze if deprecate most parts
+      of it or to integrate with resulting sub-string module.
+
+- [ ] Fully review [[file:xoutil/tools.py][xoutil.tools]].
+
+- [ ] Review that in 'xoutil.eight' there are several symbols to check Python
+  versions (_pyver, _py2, _py3, _py33, _py34, _pypy).  Deprecate all in favor
+  of 'python_version'
+
+- [ ] Deprecate 'invalids', and 'valids' argument names in the function
+  'xoutil.string.slugify'.
+
+- [ ] Decide what to do with 'xoutil.html' module (remove it?).
+
+- [ ] Review when and how to remove symbolic linking to 'xoutil.future'.
+
+- [ ] Fix consistency error in [[file:xoutil/deprecation.py::def%20inject_deprecated(funcnames,%20source,%20target%3DNone):][inject_deprecated]], 'target_locals' is never
+  assigned if =target is not None=.
+
+  I think 'inject_deprecated' could be deprecated in favor of
+  'import_deprecated'.
+
+
+
 ** Miscellaneous. [/]
 
   - [ ] Add Python 3 'partialmethod' into 'xoutil.future.functools' (or maybe
     into 'xoutil.eight').
 
-  - [ ] Review and fix 'xoutil.decorator' module.  Get ideas from
-    [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/extensionmethod.py][extensionmethod]] from OSlash in order to improve our module.
+- [ ] Improve naming. [/]
 
-  - [ ] Review [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/fn.py][fn]] from OSlash, generalize and integrate our 'compose' versions
-    in 'xoutil.future.functools' and 'xoutil.cl' using their ideas.
+  - [ ] A time ago, manu was arguing about the convenience of a package named
+    'xoutil.future', mainly having 'xoutil.eight'.
 
-  - Implement Python 3 'functools.singledispatch' in our
-    'xoutil.future.functools'. Ask @manu for an equivalent tool he programmed.
-    Use a similar mechanism also in 'xoutil.fp' for pattern matching.
+    Anyway, I (med) think that is convenient two have two separate modules,
+    but reviewing 'future' name; some ideas:
 
-  - [ ] Improve special characters in a wild-carded name.  Python
-    'fnmatch.translate' standard function lacks of functionality present in
-    most shells (like alternation of comma-separated alternatives); thus,
-    ``foo{bar,lish}`` would be matched in 'foobar' or 'foolish'.
+    - 'enhancement': improvement that makes something more agreeable
+
+    - 'improvement': change for the better; progress in development
+
+- [ ] Add Python 3 'partialmethod' into 'xoutil.future.functools' (or maybe
+  into 'xoutil.eight').
+
+- [ ] Review and fix 'xoutil.decorator' module.  Get ideas from
+  [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/extensionmethod.py][extensionmethod]] from OSlash in order to improve our module.
+
+- [ ] Review [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/fn.py][fn]] from OSlash, generalize and integrate our 'compose' versions
+  in 'xoutil.future.functools' and 'xoutil.cl' using their ideas.
+
+- Implement Python 3 'functools.singledispatch' in our
+  'xoutil.future.functools'. Ask @manu for an equivalent tool he programmed.
+  Use a similar mechanism also in 'xoutil.fp' for pattern matching.
+
+- [ ] Improve special characters in a wild-carded name.  Python
+  'fnmatch.translate' standard function lacks of functionality present in
+  most shells (like alternation of comma-separated alternatives); thus,
+  ``foo{bar,lish}`` would be matched in 'foobar' or 'foolish'.
 
 
 ** Develop Monad concept into 'xoutil'. [/]
 
-   There are several "old" modules that could be migrated (or integrated) into
-   new monads modules; these old modules could become clients of monads.
+There are several "old" modules that could be migrated (or integrated) into
+new monads modules; these old modules could become clients of monads.
 
-   - [ ] 'xoutil.connote': intends for to have predicates (commonly understood
-     to be Boolean-valued functions).
+- [ ] 'xoutil.symbols': to be instance of and sub-class checks in
+  'MetaSymbol' class must be extended to be compliant with monads.
 
-   - [ ] 'xoutil.symbols': to be instance of and sub-class checks in
-     'MetaSymbol' class must be extended to be compliant with monads.
-
-   - [ ] 'xoutil.cl': reproducing some concepts of "Common Lisp" in Python.
-     Value checkers are the best candidates to be monadic.
-
-   - [ ] 'xoutil.values': this module is deprecated but must be analyzed
-     during this proccess.
+- [ ] 'xoutil.cl': reproducing some concepts of "Common Lisp" in Python.
+  Value checkers are the best candidates to be monadic.
 
 
 ** Errors
@@ -126,10 +299,13 @@
 
   When it is run on =xoutil=:
 
+- [ ] Use =DeprecationWarning= instead =UserWarning= in module
+  [[file:xoutil/deprecation.py][xoutil.deprecation]] (see =warnings.simplefilter('default',
+  DeprecationWarning)=).
+
+
   #+begin_src python
     from IPython.lib.deepreload import reload as dreload
     import xoutil
     dreload(xoutil)
   #+end_src
-
-** Configuration. [/]
