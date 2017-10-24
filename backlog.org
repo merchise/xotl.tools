@@ -7,7 +7,7 @@
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
 
-** Release version 1.8 <2017-10-21 sáb> [5/13]
+** Release version 1.8 <2017-10-21 sáb> [6/14]
 
 - [ ] Prepare the [[file:docs/source/history/_changes-1.8.0.rst][change log for 1.8.0]].
 
@@ -166,6 +166,18 @@
   - [X] [[file:xoutil/params.py][xoutil.params]]
 
   - [X] [[file:xoutil/values][xoutil.values.args]] - removed.
+
+- [X] Review suspected modules of having changes from 1.7.x to 1.8 [5/5]
+
+  - [X] xoutil.values
+
+  - [X] xoutil.uuid
+
+  - [X] xoutil.logical
+
+  - [X] UnsetType
+
+  - [X] xoutil.connote
 
 - [ ] Review [[file:xoutil/keywords.py][xoutil.keywords]], there is a standard module named ~keyword~ and
   must be analyzed if create a new one in ~future~, or integrate it with

@@ -1,25 +1,21 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-# ---------------------------------------------------------------------
-# xoutil.logical
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-02-23
 
 '''This entire module is deprecated, use `xoutil.symbols` instead.'''
 
-from xoutil.symbols import boolean
-from xoutil.deprecation import deprecated
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        absolute_import as _py3_import)
+
+from xoutil.deprecation import deprecate_module
+deprecate_module(replacement='xoutil.symbols')
+del deprecate_module
 
 
-@deprecated(boolean)
-def Logical(*args, **kwargs):
-    'This was a type, and now is deprecated, use instead `symbols.boolean`'
-    return boolean(*args, **kwargs)
-
-del deprecated
+from xoutil.symbols import boolean as Logical    # noqa

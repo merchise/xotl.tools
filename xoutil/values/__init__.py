@@ -624,9 +624,8 @@ class safe(custom):
     Receives a coercer that expects only one argument and returns another
     value.
 
-    If the returned value is a ``boolean`` (maybe the coercer is a predicate,
-    see `~xoutil.connote`:mod: for more information), it's converted to a
-    ``logical`` instance.
+    If the returned value is a ``boolean`` (maybe the coercer is a predicate),
+    it's converted to a ``logical`` instance.
 
     The wrapped coercer is called in a safe way (inside try/except); if an
     exception is raised the coercer returns ``nil`` and the error is saved in
