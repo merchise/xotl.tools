@@ -7,9 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''doc
-
-'''
+'''Text clipping and trimming.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
