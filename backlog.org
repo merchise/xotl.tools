@@ -135,6 +135,7 @@
     - [ ] Integrate it with 'xoutil.fp' sub-modules.
 
     - [X] Rename 'xoutil.cl' by 'xoutil.values', deprecate the old name.
+      Create proper documentation.
 
   - [ ] '[[file:xoutil/html/__init__.py::import%20warnings][xoutil.html]]', also see '[[file:docs/source/xoutil/html.rst:::deprecated:][documentation file]]'.
 

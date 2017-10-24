@@ -849,7 +849,7 @@ class pargs(custom):
     Instance variable `scope` stores the last processed invalid argument.
 
     When executed, usually `arg` is a tuple received by a function as
-    ``*args`` form::
+    ``*args`` form.
 
     When executed, returns a tuple, or the same type of source iterable
     argument if possible.
