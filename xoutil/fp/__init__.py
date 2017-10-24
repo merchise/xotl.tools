@@ -14,7 +14,8 @@
 
 '''Advanced functional programming in Python.
 
-.. versionadded:: 1.8.0
+.. note:: This module is in **EXPERIMENTAL** state, we encourage not to use it
+   before declared stable.
 
 '''
 

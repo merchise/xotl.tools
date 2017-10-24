@@ -124,3 +124,6 @@
 
 - Module `xoutil.values`:mod: was recovered adding several new features (old
   name ``xoutil.cl`` was deprecated).
+
+- Add **experimental** module `xoutil.fp`:mod: for Functional Programming
+  stuffs.
