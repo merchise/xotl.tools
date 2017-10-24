@@ -21,12 +21,12 @@ There are some basic helper functions:
   an special false value.  See `~xoutil.fp.option.Maybe`:class: monad for more
   information.
 
-- `disruptive`:func: wraps a function in a way that an exception is raised if
+- `vouch`:func: wraps a function in a way that an exception is raised if
   an invalid value (logical false by default) is returned.  This is useful to
   call functions that use "special" false values to signal a failure.
 
 - `enfold`:func: creates a decorator to convert a function to use either the
-  `predicative`:func: or the `disruptive`:func: protocol.
+  `predicative`:func: or the `vouch`:func: protocol.
 
 .. versionadded:: 1.8.0
 
@@ -82,7 +82,7 @@ def predicative(function, *args, **kwds):
             return Wrong(error)
 
 
-def disruptive(function, *args, **kwds):
+def vouch(function, *args, **kwds):
     '''Call a function in a safety wrapper raising an exception if it fails.
 
     When the wrapped function fails, an exception must be raised.  A predicate
@@ -124,7 +124,7 @@ def enfold(checker):
     '''Create a decorator to execute a function inner a safety wrapper.
 
     :param checker: Could be any function to enfold, but it's intended mainly
-           for `predicative`:func:  or `disruptive`:func: functions.
+           for `predicative`:func:  or `vouch`:func: functions.
 
     In the following example, the semantics of this function can be seen.  The
     definition::

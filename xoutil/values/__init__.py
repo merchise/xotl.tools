@@ -46,7 +46,7 @@ from xoutil.eight.abc import ABCMeta
 from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
 from xoutil.symbols import boolean, Unset
-from xoutil.fp.prove import disruptive as vouch    # noqa
+from xoutil.fp.prove import vouch
 
 from xoutil.deprecation import deprecate_linked
 deprecate_linked(check='xoutil.values')
