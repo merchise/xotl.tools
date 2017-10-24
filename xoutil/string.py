@@ -233,7 +233,6 @@ def slugify(value, *args, **kwds):
 
     getarg = ParamManager(args, kwds)
     replacement = getarg('replacement', 0, default='-', coercers=string_types)
-    # TODO: deprecate 'invalids' and 'valids' names.
     invalid_chars = getarg('invalid_chars', 'invalid', 'invalids', 0,
                            default='', coercers=_ascii)
     valid_chars = getarg('valid_chars', 'valid', 'valids', 0, default='',

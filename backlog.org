@@ -220,6 +220,54 @@
   [[file:xoutil/cli/__init__.py::class%20Command(ABC):][xoutil.cli.Command]].
 
 
+** Prepare release 1.8.1 [/]
+
+- [ ] General review about many redundant features. [/]
+
+  - [ ] 'slugify'
+
+  - [ ] 'xoutil.validators' -> 'xoutil.values' (or viceversa).
+
+    - There is an amalgam of 'predicate' structures.
+
+  - [ ] 'xoutil.fp' must assume all functionalities related to most pure
+    functional programming.
+
+  - [ ] Review 'xoutil.params'.
+
+  - [ ] Review all related string modules: 'string', 'names', 'keywords',
+    'reprlib', 'clipping', 'future.textwrap', 'future.codecs', 'eight.string',
+    'eight.text', ...
+
+    - Check 'xoutil.inspect.safe_name'.
+
+    - There is a standard module named ~keyword~, we must analyze if ours with
+      the same name must be in =future or not.
+
+    - Review =xoutil.validators.identifiers=, analyze if deprecate most parts
+      of it or to integrate with resulting sub-string module.
+
+- [ ] Fully review [[file:xoutil/tools.py][xoutil.tools]].
+
+- [ ] Review that in 'xoutil.eight' there are several symbols to check Python
+  versions (_pyver, _py2, _py3, _py33, _py34, _pypy).  Deprecate all in favor
+  of 'python_version'
+
+- [ ] Deprecate 'invalids', and 'valids' argument names in the function
+  'xoutil.string.slugify'.
+
+- [ ] Decide what to do with 'xoutil.html' module (remove it?).
+
+- [ ] Review when and how to remove symbolic linking to 'xoutil.future'.
+
+- [ ] Fix consistency error in [[file:xoutil/deprecation.py::def%20inject_deprecated(funcnames,%20source,%20target%3DNone):][inject_deprecated]], 'target_locals' is never
+  assigned if =target is not None=.
+
+  I think 'inject_deprecated' could be deprecated in favor of
+  'import_deprecated'.
+
+
+
 ** Miscellaneous. [/]
 
 - [ ] Improve naming. [/]
@@ -279,6 +327,7 @@ new monads modules; these old modules could become clients of monads.
 - [ ] Use =DeprecationWarning= instead =UserWarning= in module
   [[file:xoutil/deprecation.py][xoutil.deprecation]] (see =warnings.simplefilter('default',
   DeprecationWarning)=).
+
 
   #+begin_src python
     from IPython.lib.deepreload import reload as dreload

@@ -251,7 +251,6 @@ def get_attr_value(obj, name, *default):
         raise AttributeError(msg % (type_name(obj), name))
 
 
-# TODO: There is a function in 'xoutil.eight'
 def safe_name(obj, affirm=False):
     '''Return the internal name for a type or a callable.
 
@@ -282,7 +281,6 @@ def safe_name(obj, affirm=False):
       '(int, float)'
 
     '''
-    # TODO: Review this very carefully, maybe deprecate it.
     from xoutil.eight import class_types, string_types
     from types import FunctionType, MethodType
     from types import BuiltinFunctionType, BuiltinMethodType
