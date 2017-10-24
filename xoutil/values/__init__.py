@@ -48,6 +48,10 @@ from xoutil.future.functools import lwraps
 from xoutil.symbols import boolean, Unset
 from xoutil.fp.prove import disruptive as vouch    # noqa
 
+from xoutil.deprecation import deprecate_linked
+deprecate_linked(check='xoutil.values')
+del deprecate_linked
+
 
 _coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
 
