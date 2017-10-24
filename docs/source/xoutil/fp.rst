@@ -6,8 +6,6 @@
               functions.
    :members:
 
-.. sectionauthor:: Medardo Rodriguez <med@merchise.org>
-
 --------------
 
 Ideally, a function only takes inputs and produce outputs, and doesn't have

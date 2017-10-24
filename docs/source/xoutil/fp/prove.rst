@@ -39,4 +39,4 @@ Module content
 --------------
 
 .. automodule:: xoutil.fp.prove
-   :members: predicative, disruptive, enfold
+   :members:
