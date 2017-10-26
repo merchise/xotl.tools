@@ -159,6 +159,7 @@ class Command(ABC):
     @staticmethod
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
+        # TODO: Convert check based in argument "recursed" in a decorator
         import sys
         if recursed is None:
             recursed = set()
