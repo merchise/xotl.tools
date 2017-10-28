@@ -131,3 +131,6 @@
   stuffs.
 
 - Add **experimental** module `xoutil.tasking`:mod:.
+
+- Remove deprecated module ``xoutil.data``.  Add
+  `xoutil.objects.adapt_exception`:func:.

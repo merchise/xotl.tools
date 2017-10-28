@@ -1118,7 +1118,7 @@ def adapt_exception(value, **kwargs):
     If the value is not an exception is expected to be a tuple/list which
     contains an Exception type as its first item.
 
-    .. versionchanged:: 1.7.1 Moved from `xoutil.data`:mod: module.
+    .. versionchanged:: 1.8.0 Moved from `xoutil.data`:mod: module.
 
     '''
     isi, ebc = isinstance, Exception    # TODO: Maybe must be `BaseException`
