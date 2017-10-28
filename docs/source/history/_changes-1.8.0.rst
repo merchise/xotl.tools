@@ -25,9 +25,6 @@
 
   - `~xoutil.future.textwrap`:mod:.
 
-- Create ``__small__`` protocol for small string representations, see
-  `xoutil.string.small`:func: for more information.
-
 - Added function `xoutil.deprecation.import_deprecated`:func:,
   `~xoutil.deprecation.inject_deprecated`:func: can be deprecated now.
 
@@ -87,12 +84,16 @@
   - ``strfnumber`` was moved as an internal function of
     'xoutil.future.datetime':mod: module.
 
-
-  - Function ``normalize_slug`` was deprecated as it, new version is
+  - Function ``normalize_slug`` is now deprecated.  You should use now
     `~xoutil.string.slugify`:func:\ .
 
-- Module `xoutil.params`:mod: was recovered and integrated with several
-  dispare other modules to do the same thing.
+- Create ``__small__`` protocol for small string representations, see
+  `xoutil.string.small`:func: for more information.
+
+- Remove ``xoutil.connote`` that was introduced provisionally in 1.7.1.
+
+- Module `xoutil.params`:mod: was introduced provisionally in 1.7.1, but now
+  has been fully recovered.
 
   - Added function `~xoutil.params.issue_9137`:func: -- Helper to fix issue
     9137 (self ambiguity).
@@ -120,6 +121,8 @@
 
   - Added class `~xoutil.params.ParamSchemeRow`:class: -- Parameter scheme
     complement.
+
+  - Removed ``xoutil.params.ParamConformer``.
 
 - Module `xoutil.values`:mod: was recovered adding several new features (old
   name ``xoutil.cl`` was deprecated).
