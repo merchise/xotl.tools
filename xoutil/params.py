@@ -15,7 +15,7 @@ avoiding the conflict expressed in issue 9137.
 Function `check_count`:func: allow to check positional arguments count against
 lower and upper limits.
 
-.. versionadded:: 1.7.0
+.. versionadded:: 1.7.1
 
 '''
 
@@ -46,6 +46,8 @@ def issue_9137(args):
 
     :returns: (self, remainder positional arguments in a tuple)
 
+    .. versionadded:: 1.8.0
+
     '''
     self = args[0]    # Issue 9137
     args = args[1:]
@@ -64,6 +66,9 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
 
     :param caller: Name of the function issuing the check, its value is used
            only for error reporting.
+
+    .. versionadded:: 1.8.0
+
 
     '''
     assert isinstance(low, int) and low >= 0
@@ -122,6 +127,9 @@ def check_default(absent=Undefined):
             else:
                 raise KeyError(name)
 
+    .. versionadded:: 1.8.0
+
+
     '''
     def default(res=absent):
         return res
@@ -133,6 +141,8 @@ def single(args, kwds):
 
     Wnen needed, the most suitable result will be wrapped using the
     `~xoutil.fp.option.Maybe`:class:\ .
+
+    .. versionadded:: 1.8.0
 
     '''
     from xoutil.fp.option import Just, Wrong, take
@@ -169,6 +179,8 @@ def keywords_only(func):
     In such a case if you call ``func(1, 2, b=3)`` we can't actually call
     the original function with ``a=1``, ``args=(2, )`` and ``b=3``.  This
     case also raises a TypeError.
+
+    .. versionadded:: 1.8.0
 
     '''
     import sys
@@ -214,6 +226,8 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
 
     :param default: The default value to return if no value is found.
 
+    .. versionadded:: 1.8.0
+
     '''
     from xoutil.eight import string_types
     if isinstance(names, string_types):
@@ -243,6 +257,8 @@ class ParamManager(object):
     See `ParamSchemeRow`:class: and `ParamScheme`:class: classes to
     pre-define and validate schemes for extracting parameter values in a
     consistent way.
+
+    .. versionadded:: 1.8.0
 
     '''
 
@@ -330,6 +346,8 @@ class ParamSchemeRow(object):
     - 'key': an identifier to be used when the parameter is only positional or
       when none of the possible keyword aliases must be used as the
       primary-key.
+
+    .. versionadded:: 1.8.0
 
     '''
     __slots__ = ('ids', 'options', '_key')
@@ -444,6 +462,8 @@ class ParamScheme(object):
 
     This class receives a set of `ParamSchemeRow`:class: instances and
     validate them as a whole.
+
+    .. versionadded:: 1.8.0
 
     '''
     __slots__ = ('rows', 'cache')

@@ -2006,7 +2006,7 @@ class PascalSet(metaclass(MetaSet)):
 
        PascalSet(*others) -> new set object
 
-    .. versionadded:: 1.7.0
+    .. versionadded:: 1.7.1
 
     '''
     __slots__ = ('_items',)
@@ -2623,7 +2623,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
 
         BitPascalSet(*others) -> new bit-set object
 
-    .. versionadded:: 1.7.0.
+    .. versionadded:: 1.7.1
 
     '''
     __slots__ = ('_items',)
