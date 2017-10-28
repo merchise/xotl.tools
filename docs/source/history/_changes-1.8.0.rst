@@ -38,7 +38,7 @@
 - Added function `xoutil.deprecation.deprecate_module`:func: to deprecate full
   modules when imported.
 
-- The module ``xoutil.future.string`` was completelly removed in favor of:
+- The module ``xoutil.string`` was completelly removed in favor of:
 
   - `xoutil.future.codecs`:mod:\ : Moved here functions
     `~xoutil.future.codecs.force_encoding`:func:,
