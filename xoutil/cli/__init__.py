@@ -159,10 +159,11 @@ class Command(ABC):
     @staticmethod
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
+        # TODO: Convert check based in argument "recursed" in a decorator
         import sys
+        from xoutil.names import nameof
         if recursed is None:
             recursed = set()
-        from xoutil.names import nameof
         name = nameof(source, inner=True, full=True)
         if name not in recursed:
             recursed.add(name)
