@@ -41,9 +41,9 @@
 - The module ``xoutil.future.string`` was completelly removed in favor of:
 
   - `xoutil.future.codecs`:mod:\ : Moved here functions
-    `~xoutil.future.codecs.force_encoding`,
-    `~xoutil.future.codecs.safe_decode`, and
-    `~xoutil.future.codecs.safe_encode`.
+    `~xoutil.future.codecs.force_encoding`:func:,
+    `~xoutil.future.codecs.safe_decode`:func:, and
+    `~xoutil.future.codecs.safe_encode`:func:.
 
   - `xoutil.eight.string`:mod:\ : Technical string handling.  In this module:
 
