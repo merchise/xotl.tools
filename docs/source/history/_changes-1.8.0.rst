@@ -77,13 +77,12 @@
 
   - Functions ``capitalize``, ``normalize_name``, ``normalize_title``,
     ``normalize_str``, ``parse_boolean``, ``parse_url_int`` were completely
-    removed, nobody was using them.
+    removed.
 
-  - ``normalize_unicode`` was completely removed, nobody was using it and it's
-    equivalent to `xoutil.eight.text.force`:func:.
+  - ``normalize_unicode`` was completely removed, it's now replaced by
+    `xoutil.eight.text.force`:func:.
 
-  - ``hyphen_name`` was moved to `xoutil.cli.tools`:mod:.  It was only used in
-    this package.
+  - ``hyphen_name`` was moved to `xoutil.cli.tools`:mod:.
 
   - ``strfnumber`` was moved as an internal function of
     'xoutil.future.datetime':mod: module.
