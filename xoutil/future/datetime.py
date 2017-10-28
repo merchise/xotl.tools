@@ -620,21 +620,21 @@ class TimeSpan(object):
         return not self.overlaps(other)
 
     def __le__(self, other):
-        'True if `other` is a subset.'
+        'True if `other` is a superset.'
         return (self & other) == self
 
     issubset = __le__
 
     def __lt__(self, other):
-        'True if `other` is a proper subset.'
+        'True if `other` is a proper superset.'
         return self != other and self <= other
 
     def __gt__(self, other):
-        'True if `other` is a proper superset.'
+        'True if `other` is a proper subset.'
         return self != other and self >= other
 
     def __ge__(self, other):
-        'True if `other` is a superset.'
+        'True if `other` is a subset.'
         # Notice that ge is not the opposite of lt.
         return (self & other) == other
 
