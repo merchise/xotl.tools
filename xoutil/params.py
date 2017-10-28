@@ -9,12 +9,6 @@
 
 '''Tools for managing function arguments.
 
-Function `issue_9137`:func: allow to parse positional arguments for methods
-avoiding the conflict expressed in issue 9137.
-
-Function `check_count`:func: allow to check positional arguments count against
-lower and upper limits.
-
 .. versionadded:: 1.7.1
 
 '''
