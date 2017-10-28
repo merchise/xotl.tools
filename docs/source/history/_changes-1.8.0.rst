@@ -25,17 +25,17 @@
 
   - `~xoutil.future.textwrap`:mod:.
 
-- Added function `xoutil.deprecation.import_deprecated`:func:,
+- Add function `xoutil.deprecation.import_deprecated`:func:,
   `~xoutil.deprecation.inject_deprecated`:func: can be deprecated now.
 
-- Added function `xoutil.deprecation.deprecate_linked`:func: to deprecate full
+- Add function `xoutil.deprecation.deprecate_linked`:func: to deprecate full
   modules imported from a linked version.  The main example are all
   sub-modules of `xoutil.future`:mod:.
 
-- Added function `xoutil.deprecation.deprecate_module`:func: to deprecate full
+- Add function `xoutil.deprecation.deprecate_module`:func: to deprecate full
   modules when imported.
 
-- The module ``xoutil.string`` was completelly removed in favor of:
+- Remove the module ``xoutil.string`` in favor of:
 
   - `xoutil.future.codecs`:mod:\ : Moved here functions
     `~xoutil.future.codecs.force_encoding`:func:,
@@ -95,37 +95,39 @@
 - Module `xoutil.params`:mod: was introduced provisionally in 1.7.1, but now
   has been fully recovered.
 
-  - Added function `~xoutil.params.issue_9137`:func: -- Helper to fix issue
-    9137 (self ambiguity).
+  - Add function `~xoutil.params.issue_9137`:func: -- Helper to fix issue 9137
+    (self ambiguity).
 
-  - Added function `~xoutil.params.check_count`:func: -- Checker for positional
+  - Add function `~xoutil.params.check_count`:func: -- Checker for positional
     arguments actual count against constrains.
 
-  - Added function `~xoutil.params.check_default`:func: -- Default value
-    getter when passed as a last excess positional argument.
+  - Add function `~xoutil.params.check_default`:func: -- Default value getter
+    when passed as a last excess positional argument.
 
-  - Added function `~xoutil.params.single`:func: -- Return true only when a
+  - Add function `~xoutil.params.single`:func: -- Return true only when a
     unique argument is given.
 
-  - Added function `~xoutil.params.keywords_only`:func: -- Decorator to make a
+  - Add function `~xoutil.params.keywords_only`:func: -- Decorator to make a
     function to accepts its keywords arguments as keywords-only.
 
-  - Added function `~xoutil.params.pop_keyword_arg`:func: -- Tool to get a
-    value from keyword arguments using several possible names.
+  - Add function `~xoutil.params.pop_keyword_arg`:func: -- Tool to get a value
+    from keyword arguments using several possible names.
 
-  - Added class `~xoutil.params.ParamManager`:class: -- Parameter manager in a
+  - Add class `~xoutil.params.ParamManager`:class: -- Parameter manager in a
     "smart" way.
 
-  - Added class `~xoutil.params.ParamScheme`:class: -- Parameter scheme
+  - Add class `~xoutil.params.ParamScheme`:class: -- Parameter scheme
     definition for a manager.
 
-  - Added class `~xoutil.params.ParamSchemeRow`:class: -- Parameter scheme
+  - Add class `~xoutil.params.ParamSchemeRow`:class: -- Parameter scheme
     complement.
 
-  - Removed ``xoutil.params.ParamConformer``.
+  - Remove ``xoutil.params.ParamConformer``.
 
 - Module `xoutil.values`:mod: was recovered adding several new features (old
   name ``xoutil.cl`` was deprecated).
 
 - Add **experimental** module `xoutil.fp`:mod: for Functional Programming
   stuffs.
+
+- Add **experimental** module `xoutil.tasking`:mod:.
