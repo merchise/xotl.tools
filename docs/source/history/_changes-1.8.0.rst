@@ -134,3 +134,5 @@
 
 - Remove deprecated module ``xoutil.data``.  Add
   `xoutil.objects.adapt_exception`:func:.
+
+- Remove deprecated `xoutil.dim.meta.Signature.isunit`:meth:.
