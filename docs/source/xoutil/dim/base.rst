@@ -234,15 +234,15 @@ On the automatically created names for derived quantities
 =========================================================
 
 We automatically create the name of the canonical unit of quantities derived
-from others by simply rules:
+from others by simple rules:
 
-- ``A * B`` joins the canonical unit names together with a low dash '_' in
-  between.  Let's represent it as `a_b`, where `a` stands for the name of the
-  canonical unit of ``A`` and `b`, the canonical unit of ``B``.
+- ``A * B`` joins the canonical unit names together with a low dash '_'
+  in-between.  Let's represent it as `a_b`, where `a` stands for the name of
+  the canonical unit of ``A`` and `b`, the canonical unit of ``B``.
 
   For the case, ``A * A`` the unit name is `a_squared`.
 
-- ``A/B`` gets the name `a_per_b`.  ``1/A`` gets the attribute `unit_per_a`
+- ``A/B`` gets the name `a_per_b`.  ``1/A`` gets the name `unit_per_a`
 
 - ``A**n``; when ``n=1`` this is the same as ``A``; when ``n=2`` this is the
   same as ``A * A``; for other positive values of ``n``, the canonical unit
