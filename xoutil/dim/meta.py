@@ -801,16 +801,3 @@ def downgrade_to_scalar(quantity):
         return quantity.magnitude
     else:
         return quantity
-
-
-# Deprecated aliases
-class QuantityType(Dimension):
-    '''Deprecated alias for `Dimension`:class:.
-
-    .. versionchanged:: 1.7.9 Deprecated.
-
-    '''
-    def __new__(self, *args, **kwargs):
-        import warnings
-        warnings.warn('QuantityType is deprecated.  Use Dimension')
-        return super(QuantityType, self).__new__(self, *args, **kwargs)

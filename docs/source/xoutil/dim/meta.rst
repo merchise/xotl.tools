@@ -14,6 +14,3 @@
 .. data:: SCALAR
 
    The signature of dimensionless quantities.
-
-
-.. autoclass:: QuantityType
