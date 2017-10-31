@@ -135,6 +135,9 @@
 
 - Add **experimental** module `xoutil.tasking`:mod:.
 
+- Add `xoutil.symbols`:mod:.  It replaces `!xoutil.logical`:mod: that was
+  introduced in 1.7.0, but never documented.
+
 - Remove deprecated module ``xoutil.data``.  Add
   `xoutil.objects.adapt_exception`:func:.
 
