@@ -25,6 +25,9 @@
 
   - `~xoutil.future.textwrap`:mod:.
 
+  .. note:: All modules remain importable from its future-less version,
+     however, deprecated.
+
 - Add function `xoutil.deprecation.import_deprecated`:func:,
   `~xoutil.deprecation.inject_deprecated`:func: can be deprecated now.
 
