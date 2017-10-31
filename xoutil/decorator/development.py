@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.decorator.development
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -14,12 +13,12 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
+from xoutil.decorator.meta import decorator
 
-from .meta import decorator
 
+# TODO: move to new module 'xoutil.hints' when fully implemented.
 
 @decorator
 def unstable(target, msg=None):
@@ -43,7 +42,7 @@ def unstable(target, msg=None):
     try:
         from zope.interface import Interface
     except ImportError:
-        from xoutil import Ignored as Interface
+        from xoutil.symbols import Ignored as Interface
     if isinstance(target, type(Interface)):
         objtype = 'interface'
     elif isinstance(target, class_types):

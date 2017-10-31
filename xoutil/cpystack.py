@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.cpystack
 # ---------------------------------------------------------------------
-# Copyright (c) 2015, 2016 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2009-2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -18,20 +17,18 @@
 '''Utilities to inspect the CPython's stack.'''
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        print_function as _py3_print)
+# TODO: Why not ``absolute_import``
 
 import inspect
 
-from xoutil.names import strlist as strs
-from xoutil.eight import _py3
+from xoutil.eight import python_version
 from xoutil.deprecation import deprecated
 
 
-__all__ = strs('MAX_DEEP', 'getargvalues', 'error_info',
-               'object_info_finder', 'object_finder', 'track_value',
-               'iter_stack', 'iter_frames')
-del strs
+__all__ = ('MAX_DEEP', 'getargvalues', 'error_info',
+           'object_info_finder', 'object_finder', 'track_value',
+           'iter_stack', 'iter_frames')
 
 MAX_DEEP = 25
 
@@ -55,14 +52,13 @@ def getargvalues(frame):
         -10
 
     '''
-    from xoutil.types import is_collection
+    from xoutil.values.simple import force_sequence_coerce as array
     from xoutil.iterators import flatten
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
     for keys in pos:
-        if not is_collection(keys):
-            keys = (keys,)
-        res.update({key: values[key] for key in flatten(keys)})
+        if keys:
+            res.update({key: values[key] for key in flatten(array(keys))})
     if args:
         i = 0
         for item in values[args]:
@@ -72,7 +68,7 @@ def getargvalues(frame):
         res.update(values[kwds])
     return res
 
-if not _py3:
+if python_version < 3:
     getargvalues.__doc__ += """
     In Python 2.7, packed arguments also works::
 
@@ -87,8 +83,8 @@ if not _py3:
 
 
 def __error_info(tb, *args, **kwargs):
-    '''Internal function used by :func:`error_info` and
-    :func:`printable_error_info`.
+    '''Internal function used by `error_info`:func: and
+    `printable_error_info`:func:.
 
     '''
     # TODO: Formalize tests for this
@@ -197,7 +193,7 @@ def printable_error_info(base, *args, **kwargs):
 
     Return a formatted string with all information.
 
-    See :func:`error_info` for an example.
+    See `error_info`:func: for an example.
 
     '''
     import sys
@@ -232,7 +228,8 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
         while (res is None) and (deep < max_deep) and (frame is not None):
             ctx = getargvalues(frame)
             d = {arg_name: ctx.get(arg_name)} if arg_name is not None else ctx
-            for key, value in d.iteritems():
+            for key in d:
+                value = d[key]
                 if isinstance(value, obj_type):
                     res = (value, key, deep, frame)
             frame = frame.f_back
@@ -245,7 +242,7 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
 def object_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
     '''Find an object of the given type through all arguments in stack frames.
 
-    The difference with :func:`object_info_finder` is that this function
+    The difference with `object_info_finder`:func: is that this function
     returns the object directly, not a tuple.
 
     '''
@@ -265,7 +262,8 @@ def track_value(value, max_deep=MAX_DEEP):
     res = None
     while (res is None) and (deep < max_deep) and (frame is not None):
         ctx = getargvalues(frame)
-        for _key, _value in ctx.iteritems():
+        for _key in ctx:
+            _value = ctx[_key]
             if (type(value) == type(_value)) and (value == _value):
                 res = (ctx, _key)
         frame = frame.f_back

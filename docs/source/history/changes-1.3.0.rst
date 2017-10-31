@@ -1,19 +1,19 @@
-- Removes deprecated module :mod:`!xoutil.mdeco`.
+- Removes deprecated module `!xoutil.mdeco`:mod:.
 
-- :class:`xoutil.context.Context` now inherit from the newly created stacked
-  dict class :class:`xoutil.collections.StackedDict`. Whenever you enter a
-  context a new level of the stacked dict is :meth:`pushed
-  <xoutil.collections.StackedDict.push>`, when you leave the context a level is
-  :meth:`poped <xoutil.collections.StackedDict.pop>`.
+- `xoutil.context.Context`:class: now inherit from the newly created stacked
+  dict class `xoutil.collections.StackedDict`:class:. Whenever you enter a
+  context a new level of the stacked dict is `pushed
+  <xoutil.collections.StackedDict.push>`:meth:, when you leave the context a
+  level is <xoutil.collections.StackedDict.pop>`:meth:.
 
   This also **removes** the `data` attribute execution context used to have,
   and, therefore, this is an incompatible change.
 
-- Introduces :class:`xoutil.collections.OpenDictMixin` and
-  :class:`xoutil.collections.StackedDict`.
+- Introduces `xoutil.collections.OpenDictMixin`:class: and
+  `xoutil.collections.StackedDict`:class:.
 
-- Fixes a bug in :func:`xoutil.decorator.compat.metaclass`: Slots were not
+- Fixes a bug in `xoutil.decorator.compat.metaclass`:func:\ : Slots were not
   properly handed.
 
-- Fixes a bug with the simple :class:`xoutil.collections.opendict` that allowed
+- Fixes a bug with the simple `xoutil.collections.opendict`:class: that allowed
   to shadow methods (even `__getitem__`) thus making the dict unusable.

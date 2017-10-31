@@ -13,14 +13,13 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import pytest
 
-from xoutil.datetime import date
-from xoutil.datetime import daterange
-from xoutil.datetime import TimeSpan, EmptyTimeSpan
+from xoutil.future.datetime import date
+from xoutil.future.datetime import daterange
+from xoutil.future.datetime import TimeSpan, EmptyTimeSpan
 
 import hypothesis
 from hypothesis import strategies, given
@@ -135,8 +134,7 @@ def test_empty_timespan(ts):
 
     assert not (ts <= EmptyTimeSpan), 'Empty is not a superset of any TS'
 
-    with pytest.raises(TypeError):
-        type(EmptyTimeSpan)()
+    type(EmptyTimeSpan)() is EmptyTimeSpan
 
     assert EmptyTimeSpan & ts == EmptyTimeSpan * ts == EmptyTimeSpan
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
@@ -151,7 +149,7 @@ def test_failure_of_triple_intersection(ts1, ts2):
 
 @given(strategies.dates())
 def test_xoutil_dates_are_representable(value):
-    from xoutil.datetime import date
+    from xoutil.future.datetime import date
     class mydate(date):
         pass
     value = mydate(value.year, value.month, value.day)
@@ -175,7 +173,7 @@ def test_ts_returns_dates_not_subtypes(ts):
     assert type(ts.end_date) is date
 
     from xoutil.context import context
-    from xoutil.datetime import infinity_extended_date, NEEDS_FLEX_DATE
+    from xoutil.future.datetime import infinity_extended_date, NEEDS_FLEX_DATE
     with context(NEEDS_FLEX_DATE):
         assert type(ts.start_date) is infinity_extended_date
         assert type(ts.end_date) is infinity_extended_date
@@ -196,3 +194,18 @@ def test_definition_of_overlaps(ts1, ts2):
 def test_duplication_of_timespans(ts1, ts2):
     hypothesis.assume(ts1 == ts2)
     assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
+
+
+@given(time_span())
+def test_timespans_are_pickable(ts):
+    import pickle
+    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
+        assert ts == pickle.loads(pickle.dumps(ts, proto))
+
+
+def test_empty_timespan_is_pickable():
+    import pickle
+    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
+        assert EmptyTimeSpan is pickle.loads(
+            pickle.dumps(EmptyTimeSpan, proto)
+        )

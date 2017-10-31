@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # xoutil.eight.io
 # ----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -13,9 +13,9 @@
 '''Extensions to Python's ``io`` module.
 
 You may use it as drop-in replacement of ``io``.  Although we don't document
-all items here.  Refer to :mod:`io <io>` documentation.
+all items here.  Refer to `io`:mod: documentation.
 
-In Python 2, buil-int :func:`open` is different from :func:`io.open`; in
+In Python 2, buil-int `open`:func: is different from `io.open`:func:; in
 Python 3 are the same function.
 
 So, generated files with the built-in funtion in Python 2, can not be
@@ -41,8 +41,7 @@ Another incompatibilities:
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import as _absolute_import)
+                        absolute_import as _py3_abs_import)
 
 # TODO: This is the initial state for a in-progress module.
 
@@ -56,8 +55,8 @@ from io import (DEFAULT_BUFFER_SIZE, IncrementalNewlineDecoder,    # noqa
 
 def is_file_like(obj):
     '''Return if `obj` is a valid file type or not.'''
-    from xoutil.eight import _py2, callable
-    types = (file, IOBase) if _py2 else (IOBase, )
+    from xoutil.eight import python_version, callable
+    types = (file, IOBase) if python_version == 2 else (IOBase, )
     if isinstance(obj, types):
         return True
     else:

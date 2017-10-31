@@ -1,5 +1,5 @@
 # Back-ported from Python 3.2.
-# Copyright (c) 2001-2012, 2014, 2015, Python Software Foundation; All rights reserved.
+# Copyright (c) 2001-2012, 2014-2016, Python Software Foundation; All rights reserved.
 # Retains the licence of the Python Software Foundation.
 
 """Redo the builtin repr() (representation) but with limits on most sizes."""
@@ -7,16 +7,16 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _py3_abs_import)
 
+# TODO: Must be moved to `eight` and remove `unicode_literals` import
 import sys
 
 if sys.version_info >= (3, 2, 0):
     from reprlib import Repr, repr, recursive_repr, __all__
 else:
     # Don't use name list here to avoid module recursive use
-    __all__ = (str("Repr"), str("repr"), str("recursive_repr"))
+    __all__ = ("Repr", "repr", "recursive_repr")
 
     if sys.version_info <= (3, 1, 0):
         import __builtin__ as builtins
@@ -81,8 +81,8 @@ else:
             return self.repr1(x, self.maxlevel)
 
         def repr1(self, x, level):
-            from xoutil.eight import typeof
-            typename = typeof(x).__name__
+            from xoutil.eight import type_name
+            typename = type_name(x)
             if ' ' in typename:
                 parts = typename.split()
                 typename = '_'.join(parts)

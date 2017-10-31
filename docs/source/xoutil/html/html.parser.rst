@@ -1,6 +1,6 @@
-============================================================================
-:mod:`xoutil.html.parser` -- A simple parser that can handle HTML and XHTML.
-============================================================================
+=============================================================================
+ `xoutil.html.parser`:mod: -- A simple parser that can handle HTML and XHTML
+=============================================================================
 
 .. module:: xoutil.html.parser
 
@@ -12,7 +12,7 @@ text files formatted in HTML (HyperText Mark-up Language) and XHTML.
 .. class:: HTMLParser(strict=True)
 
    Create a parser instance. If strict is True (the default), invalid HTML
-   results in :class:`HTMLParseError` exceptions [1]. If strict is False, the
+   results in `HTMLParseError`:class: exceptions [1].  If strict is False, the
    parser uses heuristics to make a best guess at the intention of any invalid
    HTML it encounters, similar to the way most browsers do. Using strict=False
    is advised.
@@ -30,7 +30,7 @@ text files formatted in HTML (HyperText Mark-up Language) and XHTML.
 
 .. class:: HTMLParseError
 
-   Exception raised by the :class:`HTMLParser` class when it encounters an
+   Exception raised by the `HTMLParser`:class: class when it encounters an
    error while parsing and strict is True. This exception provides three
    attributes: msg is a brief message explaining the error, lineno is the
    number of the line on which the broken construct was detected, and offset is

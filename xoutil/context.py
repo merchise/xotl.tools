@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.context
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -14,37 +13,24 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Mar 9, 2011
-#
+# Created on 2011-03-09
 
-
-'''
-A context manager for execution context flags.
-
-'''
+'''A context manager for execution context flags.'''
 
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-
-import sys
-if 'greenlet' in sys.modules:
-    from xoutil._local import local as _local
-else:
-    from threading import local as _local
-
+from xoutil.tasking import local as LocalData
 from xoutil.eight.meta import metaclass
-from xoutil.collections import StackedDict
+from xoutil.future.collections import StackedDict
 
-from xoutil.names import strlist as strs
-__all__ = strs('Context', 'context', 'NulContext')
-del strs
+__all__ = ('Context', 'context', 'NullContext')
 
 
-class LocalData(_local):
+class LocalData(LocalData):
+    '''Thread-local data for contexts.'''
     def __init__(self):
         super(LocalData, self).__init__()
         self.contexts = {}
@@ -80,7 +66,7 @@ class Context(metaclass(MetaContext), StackedDict):
         In context SOME_CONTEXT
 
     Note the difference creating the context and checking it: for entering a
-    context you should use ` context(name)`` for testing whether some piece of
+    context you should use ``context(name)`` for testing whether some piece of
     code is being executed inside a context you should use ``context[name]``;
     you may also use the syntax `name in context`.
 
@@ -100,8 +86,8 @@ class Context(metaclass(MetaContext), StackedDict):
 
     For data access, a mapping interface is provided for all contexts. If a
     data slot is deleted at some level, upper level is used to read
-    values. Each new written value is stored in current level without affecting
-    upper levels.
+    values. Each new written value is stored in current level without
+    affecting upper levels.
 
     For example::
 
@@ -121,7 +107,7 @@ class Context(metaclass(MetaContext), StackedDict):
         RuntimeError: Entering the same context level twice! ...
 
     '''
-    __slots__ = ('name', 'count', '_events')
+    __slots__ = ('name', 'count', )
 
     def __new__(cls, name, **data):
         self = cls[name]
@@ -131,7 +117,6 @@ class Context(metaclass(MetaContext), StackedDict):
             self.name = name
             self.count = 0
             # TODO: Redefine all event management
-            self._events = []
         return self(**data)
 
     def __init__(self, *args, **kwargs):
@@ -164,19 +149,9 @@ class Context(metaclass(MetaContext), StackedDict):
     def __exit__(self, exc_type, exc_value, traceback):
         self.count -= 1
         if self.count == 0:
-            for event in self.events:
-                event(self)
             del _data.contexts[self.name]
         self.pop_level()
         return False
-
-    @property
-    def events(self):
-        return self._events
-
-    @events.setter
-    def events(self, value):
-        self._events = list(value)
 
 
 # A simple alias for Context
@@ -224,10 +199,6 @@ class NullContext(object):
     @property
     def level(self):
         return 0
-
-    @property
-    def events(self):
-        return ()
 
 
 _null_context = NullContext()

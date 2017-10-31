@@ -1,28 +1,24 @@
-==============================================================================
-:mod:`xoutil.eight` -- Extensions for writing code that runs on Python 2 and 3
-==============================================================================
+================================================================================
+ `xoutil.eight`:mod: -- Extensions for writing code that runs on Python 2 and 3
+================================================================================
 
-.. automodule:: xoutil.eight
-   :members:
+.. module:: xoutil.eight
 
+.. todo:: check automodule\ :\ : xoutil.eight
+   \ :members\ :
 
-Tools
-=====
+The name comes from (Manu's idea') "2 raised to the power of 3".
 
-.. automodule:: xoutil.eight.meta
-   :members: metaclass
+This module is divided in several parts.
 
+.. toctree::
+   :glob:
 
-.. automodule:: xoutil.eight.types
-   :members: DictProxyType, MemberDescriptorType, NoneType, MappingProxyType,
-             SimpleNamespace, DynamicClassAttribute, new_class, prepare_class
-
-
-.. automodule:: xoutil.eight.io
-   :members: is_file_like
-
-.. automodule:: xoutil.eight.exceptions
-   :members: reraise
-
-
-.. automodule:: xoutil.eight.abc
+   eight/abc
+   eight/meta
+   eight/mixins
+   eight/string
+   eight/text
+   eight/io
+   eight/queue
+   eight/exceptions

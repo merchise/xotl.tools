@@ -12,19 +12,19 @@ Welcome to xoutil's documentation!
 What's new in |release|
 -----------------------
 
-.. include:: history/_changes-1.7.11.rst
+.. include:: history/_changes-1.8.0.rst
 
 
-Contents:
----------
+Contents
+--------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :glob:
 
    xoutil/toplevel
    xoutil/*
-   others
+   xoutil/eight/*
    HISTORY
    BACKLOG
    CONTRIBUTING
@@ -35,5 +35,5 @@ Contents:
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`search`
+* `genindex`:ref:
+* `search`:ref:

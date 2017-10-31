@@ -1,41 +1,43 @@
-- Refactors :mod:`xoutil.types` as explained in :ref:`types-140-refactor`.
+- Refactors `xoutil.types`:mod: as explained in `types-140-refactor`:ref:.
 
-- Changes involving :mod:`xoutil.collections`:
+- Changes involving `xoutil.collections`:mod:\ :
 
-  - Moves SmartDict and SortedSmartDict from :mod:`xoutil.data` to
+  - Moves SmartDict and SortedSmartDict from `xoutil.data`:mod: to
     `xoutil.collections`:mod:. They are still accessible from
     `!xoutil.data`:mod:.
 
-  - Also there is now a :class:`xoutil.collections.SmartDictMixin` that
+  - Also there is now a `xoutil.collections.SmartDictMixin`:class: that
     implements the `update` behind all smart dicts in xoutil.
 
-  - :class:`xoutil.collections.StackedDict` in now a SmartDict and thus gains
+  - `xoutil.collections.StackedDict`:class: in now a SmartDict and thus gains
     zero-level initialization data.
 
 - Removals of deprecated, poorly tested, or incomplete features:
 
-  - Removes deprecated :mod:`!xoutil.decorators`. Use :mod:`xoutil.decorator`.
+  - Removes deprecated `!xoutil.decorators`:mod:.  Use
+    `xoutil.decorator`:mod:.
 
-  - Removed :func:`!xoutil.iterators.first`, and
-    :func:`!xoutil.iterators.get_first`.
+  - Removed `!xoutil.iterators.first`:func:, and
+    `!xoutil.iterators.get_first`:func:.
 
-  - Removed :func:`!xoutil.string.names`, :func:`!xoutil.string.normalize_to_str`
-    and :func:`!xoutil.string.normalize_str_collection`.
+  - Removed `!xoutil.string.names`:func:,
+    `!xoutil.string.normalize_to_str`:func: and
+    `!xoutil.string.normalize_str_collection`:func:.
 
 - Newly deprecated functions:
 
-  - Deprecates :func:`xoutil.iterators.obtain`.
+  - Deprecates `xoutil.iterators.obtain`:func:.
 
-  - Deprecates :func:`xoutil.iterators.smart_dict` and
-    :func:`xoutil.data.smart_copy` in favor of :func:`xoutil.objects.smart_copy`.
+  - Deprecates `xoutil.iterators.smart_dict`:func: and
+    `xoutil.data.smart_copy` in favor of `xoutil.objects.smart_copy`:func:.
 
 - New features:
 
-  - Introduces :func:`xoutil.iterators.first_non_null`.
+  - Introduces `xoutil.iterators.first_non_null`:func:.
 
-  - Adds :func:`xoutil.objects.copy_class` and updates
-    :func:`xoutil.decorator.compat.metaclass` to use it.
+  - Adds `xoutil.objects.copy_class`:func: and updates
+    `xoutil.decorator.compat.metaclass`:func: to use it.
 
-- Fixes a bug with :func:`xoutil.deprecation.deprecated` when used with
+- Fixes a bug with `xoutil.deprecation.deprecated`:func: when used with
   classes: It changed the hierarchy and provoked infinite recursion in methods
   that use `super`.

@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
+# flake8:  noqa
 import os
 import sys
 from setuptools import setup, find_packages
 
 try:
-    execfile = execfile
+    execfile
 except NameError:
     def execfile(filename):
         'To run in Python 3'

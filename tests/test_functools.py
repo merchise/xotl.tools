@@ -3,8 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_functools
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -14,11 +13,10 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Jul 3, 2012
+# Created on 2012-07-03
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _absolute_import)
 
 import unittest
@@ -26,7 +24,7 @@ import unittest
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
-from xoutil.functools import lru_cache
+from xoutil.future.functools import lru_cache
 
 
 @lru_cache(3)
@@ -71,13 +69,12 @@ def test_lrucache_stats():
     pass
 
 
-from xoutil.functools import compose
+from xoutil.fp.tools import compose, identity
 
 
 class TestCompose(unittest.TestCase):
     def test_needs_at_least_an_argument(self):
-        with self.assertRaises(TypeError):
-            compose()
+        self.assertIs(compose(), identity)
 
     def test_single_argument_is_identitical(self):
         def anything():
@@ -95,25 +92,53 @@ class TestCompose(unittest.TestCase):
         self.assertEqual(3, add_3(0))
 
     def test_with_pow(self):
-        from xoutil.functools import power
+        from xoutil.future.functools import power
         incr = lambda x: x + 1
         add_1 = power(incr, 1)
         self.assertIs(incr, add_1)
         add_3 = power(incr, 3)
         self.assertEqual(3, add_3(0))
 
-    def test_ctuple(self):
-        from xoutil.eight import range
-        from xoutil.functools import ctuple
 
-        def echo(*args):
-            return args
+def test_lwraps():
+    from xoutil.future.functools import lwraps
 
-        result = compose(echo, ctuple, list, range, math=False)(10)
-        expected = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-        self.assertEqual(expected, result)
+    class foobar(object):
+        @lwraps('method-one', one=True)
+        def one(self):
+            return type(self).__name__
 
-        # Without ctuple prints the list
-        result = compose(echo, list, range, math=False)(10)
-        expected = ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], )
-        self.assertEqual(expected, result)
+        @lwraps('method-two', two=True)
+        @classmethod
+        def two(cls):
+            return cls.__name__
+
+        @lwraps('method-three', three=True)
+        @staticmethod
+        def three():
+            return 'foobar'
+
+    @lwraps('function-four', four=True, one=False)
+    def four(*args):
+        return [(arg.__name__, arg()) for arg in args]
+
+    f = foobar()
+    names = ('method-one', 'method-two', 'method-three', 'function-four')
+
+    assert four.__name__ == names[3]
+    assert foobar.one.__name__ == names[0]
+    assert foobar.two.__name__ == names[1]
+    assert foobar.three.__name__ == names[2]
+    assert f.one.__name__ == names[0]
+    assert f.two.__name__ == names[1]
+    assert f.three.__name__ == names[2]
+
+    assert four.four
+    assert not four.one
+    assert f.one.one
+    assert f.two.two
+    assert f.three.three
+
+    for i, (a, b) in enumerate(four(f.one, f.two, f.three)):
+        assert a == names[i]
+        assert b == 'foobar'

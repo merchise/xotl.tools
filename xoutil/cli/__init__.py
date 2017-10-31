@@ -3,20 +3,25 @@
 # ---------------------------------------------------------------------
 # xoutil.cli
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on 3 mai 2013
+# Created on 2013-05-03
 
-'''Define tools for command-line interface (CLI) applications.
+'''Tools for Command-Line Interface (CLI) applications.
 
-CLi is a means of interaction with a computer program where the user (or
+CLI is a mean of interaction with a computer program where the user (or
 client) issues commands to the program in the form of successive lines of text
 (command lines).
+
+Commands can be registered by:
+
+  - sub-classing the `Command`:class:,
+  - using `~abc.ABCMeta.register`:meth: ABC mechanism for virtual sub-classes,
+  - redefining `~`Command.sub_commands`` class method.
 
 .. versionadded:: 1.4.1
 
@@ -24,79 +29,53 @@ client) issues commands to the program in the form of successive lines of text
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
-from abc import abstractmethod, ABCMeta
-from xoutil.eight.meta import metaclass
-from xoutil.objects import classproperty
-from .tools import command_name, program_name
+from xoutil.eight.abc import abstractmethod, ABC
+from xoutil.objects import staticproperty
+from xoutil.cli.tools import command_name, program_name
 
 
-class RegistryDescriptor(object):
-    '''Define a mechanism to automatically obtain all registered commands.'''
-
-    __slots__ = [str('cache')]
-
-    def __init__(self):
-        self.cache = {}
-
-    def __get__(self, instance, owner):
-        if instance is None and owner is Command:
-            if not self.cache:
-                self._settle_cache(Command)
-                assert self.cache.pop(command_name(Command), None) is None
-            return self.cache
-        else:
-            if instance:
-                from xoutil.eight import typeof
-                obj = 'Instance %s of class %s' % (id(instance),
-                                                   typeof(instance).__name__)
-            else:
-                obj = 'Class %s' % owner.__name__
-            msg = 'Only allowed in class "Command"; used invalidly from "%s"!'
-            raise AttributeError(msg % obj)
-
-    def _settle_cache(self, source, recursed=set()):
-        # TODO: Convert check based in argument "recursed" in a decorator
-        name = source.__name__
-        if name not in recursed:
-            recursed.add(name)
-            sub_commands = source.__subclasses__()
-            sub_commands.extend(getattr(source, '_abc_registry', ()))
-            cmds = getattr(source, '__commands__', None)
-            if cmds:
-                sub_commands.extend(cmds())
-            if sub_commands:
-                for cmd in sub_commands:
-                    self._settle_cache(cmd, recursed=recursed)
-            else:   # Only branch commands are OK to execute
-                self.cache[command_name(source)] = source
-        else:
-            raise ValueError('Reused class name "%s"!' % name)
-
-
-class Command(metaclass(ABCMeta)):
-    '''A command base registry.
-
-    There are several methods to register new commands:
-
-      * Inheriting from this class
-      * Using the ABC mechanism of `register` virtual subclasses.
-      * Registering a class with the method "__commands__" defined.
-
-    If the method "__commands__" is used, it must be a class or static method.
-
-    Command names are calculated as class names in lower case inserting a
-    hyphen before each new capital letter. For example "MyCommand" will be
-    used as "my-command".
-
-    Each command could include its own argument parser, but it isn't used
-    automatically, all arguments will be passed as a single parameter to
-    :meth:`run` removing the command when obtained from "sys.argv".
+class Command(ABC):
+    '''Base for all commands.
 
     '''
-    __default_command__ = None
+    __settings__ = {
+        # 'default_command' : None
+    }
+
+    @classmethod
+    def cli_name(cls):
+        '''Calculate the command name.
+
+        Standard method uses `~xoutil.cli.tools.hyphen_name`.  Redefine it
+        to obtain a different behaviour.
+
+        Example::
+
+            >>> class MyCommand(Command):
+            ...     pass
+
+            >>> MyCommand.cli_name() == 'my-command'
+            True
+
+        '''
+        from xoutil.eight import string_types
+        from xoutil.cli.tools import hyphen_name
+        unset = object()
+        names = ('command_cli_name', '__command_name__')
+        i, res = 0, unset
+        while i < len(names) and res is unset:
+            name = names[i]
+            res = getattr(cls, names[i], unset)
+            if res is unset:
+                i += 1
+            elif not isinstance(res, string_types):
+                msg = "Attribute '{}' must be a string.".format(name)
+                raise TypeError(msg)
+        if res is unset:
+            res = hyphen_name(cls.__name__)
+        return res
 
     def __str__(self):
         return command_name(type(self))
@@ -104,35 +83,47 @@ class Command(metaclass(ABCMeta)):
     def __repr__(self):
         return '<command: %s>' % command_name(type(self))
 
-    @classproperty
-    def registry(cls):
+    @staticproperty
+    def registry():
         '''Obtain all registered commands.'''
-        if cls is Command:
-            name = '__registry__'
-            res = getattr(cls, name, {})
-            if not res:
-                cls._settle_cache(res, Command)
-                assert res.pop(command_name(Command), None) is None
-                cls._check_help(res)
-                setattr(cls, name, res)
-            return res
-        else:
-            msg = ('Invalid class "%s" for use this property, only allowed in '
-                   '"Command"!')
-            raise TypeError(msg % cls.__name__)
-        # = RegistryDescriptor()
+        name = '__registry__'
+        res = getattr(Command, name, {})
+        if not res:
+            Command._settle_cache(res, Command)
+            assert res.pop(command_name(Command), None) is None
+            Command._check_help(res)
+            setattr(Command, name, res)
+        return res
 
     @abstractmethod
     def run(self, args=None):
         '''Must return a valid value for "sys.exit"'''
-        if args is None:
-            args = []
         raise NotImplementedError
 
     @classmethod
+    def get_setting(cls, name, *default):
+        unset = object()
+        aux = len(default)
+        if aux == 0:
+            default = unset
+        elif aux == 1:
+            default = default[0]
+        else:
+            msg = 'get_setting() takes at most 3 arguments ({} given)'
+            raise TypeError(msg.format(aux + 2))
+        res = cls.__settings__.get(name, default)
+        if res is not unset:
+            return res
+        else:
+            raise KeyError(name)
+
+    @classmethod
+    def set_setting(cls, name, value):
+        cls.__settings__[name] = value    # TODO: Check type
+
+    @classmethod
     def set_default_command(cls, cmd=None):
-        '''A default command can be defined for call it when no one is
-        specified.
+        '''Default command is called when no one is specified.
 
         A command is detected when its name appears as the first command-line
         argument.
@@ -155,22 +146,24 @@ class Command(metaclass(ABCMeta)):
                 from xoutil.eight import string_types as text
                 name = cmd if isinstance(cmd, text) else command_name(cmd)
             else:
+                # TODO: consider reset to None
                 raise ValueError('missing command specification!')
         else:
             if cmd is None:
                 name = command_name(cls)
             else:
-                msg = 'redundant command specification: "%s" and "%s"!'
-                raise ValueError(msg % (cls, cmd))
-        Command.__default_command__ = name
+                raise ValueError('redundant command specification', cls, cmd)
+
+        Command.set_setting('default_command', name)
 
     @staticmethod
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
+        # TODO: Convert check based in argument "recursed" in a decorator
+        import sys
+        from xoutil.names import nameof
         if recursed is None:
             recursed = set()
-        # TODO: Convert check based in argument "recursed" in a decorator
-        from xoutil.names import nameof
         name = nameof(source, inner=True, full=True)
         if name not in recursed:
             recursed.add(name)
@@ -186,8 +179,12 @@ class Command(metaclass(ABCMeta)):
                 for cmd in sub_commands:
                     Command._settle_cache(target, cmd, recursed=recursed)
             else:   # Only branch commands are OK to execute
-                from types import MethodType
-                assert isinstance(source.run, MethodType)
+                if sys.version_info < (3, 0):
+                    from types import MethodType as ValidMethodType
+                else:
+                    from types import FunctionType as ValidMethodType
+                assert isinstance(source.run, ValidMethodType), \
+                    'Invalid type %r for source %r' % (type(source.run).__name__, source)
                 target[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)
@@ -202,7 +199,7 @@ class Command(metaclass(ABCMeta)):
 
 
 class Help(Command):
-    '''Show all commands
+    '''Show all commands.
 
     Define the class attribute `__order__` to sort commands in special command
     "help".
@@ -229,6 +226,7 @@ class Help(Command):
         Use class method "get
 
         '''
+        # TODO: Use 'add_subparsers' in this logic (see 'backlog.org').
         res = getattr(cls, '_arg_parser')
         if not res:
             from argparse import ArgumentParser
@@ -263,7 +261,7 @@ class Help(Command):
     def _strip_doc(doc):
         if doc:
             doc = str('%s' % doc).strip()
-            return str(doc.strip().split('\n')[0].strip('''.'" \t\n\r'''))
+            return str(doc.split('\n')[0].strip('''"' \t\n\r'''))
         else:
             return ''
 
@@ -272,6 +270,5 @@ HELP_NAME = command_name(Help)
 
 # TODO: Create "xoutil.config" here
 
-del RegistryDescriptor
-del abstractmethod, ABCMeta
-del metaclass, classproperty
+del abstractmethod, ABC
+del staticproperty

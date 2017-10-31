@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.progress
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -19,11 +18,10 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        absolute_import as _py3_abs_import)
 
-from xoutil.names import strlist as strs
-__all__ = strs('Progress')
-del strs
+
+__all__ = ['Progress']
 
 
 _HELIX = '|/-\\'
@@ -44,7 +42,7 @@ class Progress(object):
 
     def __init__(self, max_value=100, delta=1, first_message=None,
                  display_width=None):
-        from xoutil.datetime import datetime
+        from xoutil.future.datetime import datetime
         self.max_value = max_value
         self.delta = delta
         self.percent = self.value = 0
@@ -63,7 +61,7 @@ class Progress(object):
         percent = 100 * self.value // self.max_value
         if self.percent != percent:
             import sys
-            from xoutil.datetime import strfdelta
+            from xoutil.future.datetime import strfdelta
             self.percent = percent
             helix = _HELIX[percent % len(_HELIX)]
             elapsed = self.start_time.now() - self.start_time

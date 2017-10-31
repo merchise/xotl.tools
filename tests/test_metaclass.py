@@ -3,8 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_metaclass
 #----------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -14,9 +13,7 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
-
 
 try:
     from xoutil.release import VERSION_INFO
@@ -129,7 +126,7 @@ def test_no_double_registration_with_inlinemetaclass():
 
 def test_inlinemetaclass_decorator_with_slots():
     from xoutil.eight.meta import metaclass
-    from xoutil.types import MemberDescriptorType
+    from xoutil.future.types import MemberDescriptorType
 
     class Meta(type):
         pass
@@ -190,6 +187,9 @@ def test_prepare_a_class():
             assert attrs['__prepared__'] is True
             return super(Meta, cls).__new__(cls, name, bases, attrs)
 
+        def __init__(self, name, bases, attrs, **kwargs):
+            pass
+
     class AnotherClassDict(ClassDict):
         pass
 
@@ -204,6 +204,9 @@ def test_prepare_a_class():
                                               **kwargs)
             assert isinstance(attrs, AnotherClassDict)
             return res
+
+        def __init__(self, name, bases, attrs, **kwargs):
+            pass
 
     class SubmetaLight(Meta):
         pass

@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_abc
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -18,10 +18,11 @@ from __future__ import (division as _py3_division,
 
 import pytest
 from xoutil.eight.abc import ABC
-from xoutil.eight import _py3, _pypy
+from xoutil.eight import python_version
 
+skip_ver = python_version == 3 or python_version.pypy
 
-@pytest.mark.skipif(_py3 or _pypy, reason='My WTF about this not working.')
+@pytest.mark.skipif(skip_ver, reason='My WTF about this not working.')
 def test_abc_base():
     class MyError(ABC, Exception):
         pass
@@ -52,7 +53,7 @@ def test_abc_base():
     assert x == 2
 
 
-@pytest.mark.skipif(_py3 or _pypy, reason='My WTF about this not working.')
+@pytest.mark.skipif(skip_ver, reason='My WTF about this not working.')
 def test_abc_register():
     class MyError(Exception, ABC):
         pass

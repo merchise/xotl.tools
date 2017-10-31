@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.test_context
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -14,7 +13,6 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import unittest
@@ -24,7 +22,7 @@ import pytest
 # the greenlets.  We don't test isolation for threads cause that depends on
 # python's thread locals and we *rely* on its correctness.
 #
-# Since xoutil.context inspect sys.modules to test for greenlet presence we
+# Since xoutil.context inspects sys.modules to test for greenlet presence we
 # need to import greenlets before importing context.
 #
 try:
@@ -35,6 +33,7 @@ else:
     GREENLETS = True
 
 import sys
+sys.modules.pop('xoutil.tasking', None)
 sys.modules.pop('xoutil.context', None)
 del sys
 
@@ -120,7 +119,7 @@ def test_reusing_raises():
 @pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')
 def test_greenlet_contexts():
     import random
-    from xoutil import Unset
+    from xoutil.symbols import Unset
 
     class nonlocals:
         calls = 0

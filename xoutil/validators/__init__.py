@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.validators
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -13,8 +12,6 @@
 # This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
-#
-# Created 2014-05-06
 
 '''Some generic value validators and regular expressions and validation
 functions for several identifiers.
@@ -24,14 +21,14 @@ functions for several identifiers.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _py3_abs_imports)
 
-from .identifiers import (is_valid_identifier,   # noqa
-                          check_identifier,
-                          is_valid_full_identifier,
-                          is_valid_public_identifier,
-                          is_valid_slug)
+# TODO: Check next import, it looks like one of the modules must be deprecated
+from xoutil.validators.identifiers import (is_valid_identifier,   # noqa
+                                           check_identifier,
+                                           is_valid_full_identifier,
+                                           is_valid_public_identifier,
+                                           is_valid_slug)
 
 
 def _adorn_checker_name(name):
@@ -54,8 +51,8 @@ def _get_checker_name(checker):
     elif isinstance(checker, tuple):
         return l('_OR_')
     else:
-        from xoutil.inspect import type_name
-        res = type_name(checker, affirm=True)
+        from xoutil.future.inspect import safe_name
+        res = safe_name(checker, affirm=True)
         if not isinstance(checker, type):
             assert callable(checker)
             if 'lambda' in res:
@@ -153,14 +150,14 @@ def predicate(*checkers, **kwargs):
       False
 
     '''
-    from xoutil.logical import Logical
-    from xoutil.collections import Set, Mapping
+    from xoutil.symbols import boolean
+    from xoutil.future.collections import Set, Mapping
 
     def inner(obj):
         '''Check is `obj` is a valid instance for a set of checkers.'''
 
         def valid(chk):
-            if isinstance(chk, (bool, Logical)):
+            if isinstance(chk, boolean):
                 res = bool(chk)
             elif isinstance(chk, type):
                 res = isinstance(obj, chk)
@@ -177,6 +174,7 @@ def predicate(*checkers, **kwargs):
                 res = chk(obj)
             return res
 
+        # XXX: WTF, must be ``all(valid(chk) for chk in checkers)``
         return next((chk for chk in checkers if not valid(chk)), None) is None
 
     name = kwargs.get('name')
@@ -213,12 +211,12 @@ def check(value, validator, msg=None):
     if checker(value):
         return True
     else:
-        from xoutil.inspect import type_name
+        from xoutil.future.inspect import safe_name
         if not msg:
             # TODO: Use the name of validator with `inspect.getattr_static`
             # when `xoutil.future` is ready
             msg = 'Invalid value "%s" of type "%s"'
-        msg = msg.format(value=value, type=type_name(value, affirm=True))
+        msg = msg.format(value=value, type=safe_name(value, affirm=True))
         raise ValueError(msg)
 
 
@@ -250,7 +248,7 @@ def ok(value, *checkers, **kwargs):
     Keyword arguments are not validated to be correct.
 
     This function could be used with type-definitions for arguments, see
-    :class:`TypeChecker`.
+    `xoutil.fp.prove.semantic.TypeCheck`:class:.
 
     Examples::
 
@@ -280,9 +278,9 @@ def ok(value, *checkers, **kwargs):
         return value
     else:
         from xoutil.iterators import multi_get as get
-        from xoutil.inspect import type_name
+        from xoutil.future.inspect import safe_name
         msg = next(get(kwargs, 'message', 'msg'), 'Invalid {type}: {value}!')
-        msg = msg.format(value=value, type=type_name(value, affirm=True))
+        msg = msg.format(value=value, type=safe_name(value, affirm=True))
         raise ValueError(msg)
 
 

@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.release
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -17,10 +16,9 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
-VERSION = '1.7.11'
+VERSION = '1.8.0'
 
 
 def dev_tag_installed():
@@ -34,6 +32,7 @@ def dev_tag_installed():
     except:
         return None
 
+
 RELEASE_TAG = dev_tag_installed() or ''
 
 
@@ -42,6 +41,7 @@ def safe_int(x):
         return int(x)
     except ValueError:
         return x
+
 
 # I won't put the release tag in the version_info tuple.  Since PEP440 is on
 # the way.

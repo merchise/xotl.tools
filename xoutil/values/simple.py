@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.values.simple
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -14,12 +14,11 @@
 
 '''Simple or internal coercers.
 
-With coercers defined in this module, many of the `xoutil.string` utilities
-could be deprecated.
+With coercers defined in this module, many of the `xoutil.string`:mod:
+utilities could be deprecated.
 
 In Python 3, all arrays, not only those containing valid byte or unicode
 chars, are buffers.
-
 
 '''
 
@@ -27,53 +26,153 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from xoutil.values import coercer, nil
 
-from . import coercer
+
+@coercer
+def not_false_coercer(arg):
+    '''Validate that `arg` is not a false value.
+
+    Python convention for values considered True or False is not used here,
+    our false values are only `None` or any false instance of
+    `xoutil.symbols.boolean`:class: (of course including `False` itself).
+
+    '''
+    from xoutil.symbols import boolean
+    false = arg is None or (not arg and isinstance(arg, boolean))
+    return arg if not false else nil
+
+
+def not_false(default):
+    '''Create a coercer that returns `default` if `arg` is considered false.
+
+    See `not_false_coercer`:func: for more information on values considered
+    false.
+
+    '''
+    @coercer
+    def inner_coercer(arg):
+        coercer = not_false_coercer
+        return arg if coercer(arg) is arg else coercer(default)
+    return inner_coercer
+
+
+def isnot(value):
+    '''Create a coercer that returns `arg` if `arg` is not `value`.'''
+    @coercer
+    def inner_coercer(arg):
+        return arg if arg is not value else nil
+    return inner_coercer
 
 
 @coercer
 def name_coerce(arg):
-    '''If `arg` is a named object, return its name, else `Invalid`.
+    '''If `arg` is a named object, return its name, else `nil`.
 
     Object names are always of `str` type, other types are considered
-    invalids.
+    invalid.
 
-    Generator objects has the special `__name__` attribute, but are ignored
-    and considered invalids.
+    Generator objects has the special `__name__` attribute, but they are
+    ignored and considered invalid.
 
     '''
     from types import GeneratorType
-    from . import Invalid
     if isinstance(arg, GeneratorType):
-        return Invalid
+        return nil
     else:
         if isinstance(arg, (staticmethod, classmethod)):
             fn = getattr(arg, '__func__', None)
             if fn:
                 arg = fn
         res = getattr(arg, '__name__', None)
-        return res if isinstance(res, str) else Invalid
+        return res if isinstance(res, str) else nil
 
 
 @coercer
-def strict_iterable_coerce(arg):
-    '''Return the same argument if it is a strict iterable.
+def iterable_coerce(arg):
+    '''Return the same argument if it is an iterable.'''
+    from collections import Iterable
+    return arg if isinstance(arg, Iterable) else nil
 
-    Strings are excluded.
+
+def collection(arg=nil, avoid=(), force=False, base=None, name=None):
+    '''Coercer for logic collections.
+
+    Inner coercer returns the same argument if it is a strict iterable.  In
+    Python, strings are normally iterables, but never in our logic.  So::
+
+      >>> collection('abc') is nil
+      True
+
+    This function could directly check an argument if it isn't ``nil``, or
+    returns a coercer using extra parameters:
+
+    :param avoid: a type or tuple of extra types to ignore as valid
+           collections; for example::
+
+             >>> collection(avoid=dict)({}) is nil
+             True
+             >>> collection()({}) is nil
+             False
+
+    :param force: if main argument is not a valid collection, it is are
+           wrapped inner a list::
+
+             >>> collection(avoid=(dict,), force=True)({}) == [{}]
+             True
+
+    :param base: if not ``None``, must be the base to check instead of
+           `~collections.Iterable`:class:.
+
+    :param name: decorate inner coercer with that function name.
 
     '''
-    from xoutil.eight import string_types
-    from collections import Iterable
-    from . import Invalid
-    ok = not isinstance(arg, string_types) and isinstance(arg, Iterable)
-    return arg if ok else Invalid
+    if not base:
+        from collections import Iterable as base
+    if not isinstance(avoid, tuple):
+        avoid = (avoid, )
+
+    @coercer
+    def collection_coerce(arg):
+        from xoutil.eight import string_types
+        invalid = string_types + avoid
+        ok = not isinstance(arg, invalid) and isinstance(arg, base)
+        return arg if ok else ([arg] if force else nil)
+
+    if arg is nil:
+        doc = ('Return the same argument if it is a strict iterable.\n    '
+               'Strings{} are not considered valid iterables in this case.\n'
+               ).format(' and {}'.format(avoid) if avoid else '')
+        if force:
+            doc += '    A non iterable argument is wrapped in a list.\n'
+        collection_coerce.__doc__ = doc
+        del doc
+        if name:
+            collection_coerce.__name__ = name
+        return collection_coerce
+    else:
+        assert not name
+        return collection_coerce(arg)
+
+
+from collections import Mapping, Sequence    # noqa
+logic_iterable_coerce = collection(name='logic_iterable_coerce')
+force_iterable_coerce = collection(force=True, name='force_iterable_coerce')
+logic_collection_coerce = collection(avoid=Mapping,
+                                     name='logic_collection_coerce')
+force_collection_coerce = collection(avoid=Mapping, force=True,
+                                     name='force_collection_coerce')
+logic_sequence_coerce = collection(avoid=Mapping, base=Sequence,
+                                   name='logic_sequence_coerce')
+force_sequence_coerce = collection(avoid=Mapping, force=True, base=Sequence,
+                                   name='force_sequence_coerce')
+del Mapping, Sequence
 
 
 @coercer
 def decode_coerce(arg):
     '''Decode objects implementing the buffer protocol.'''
     import locale
-    from . import Invalid
     from xoutil.eight import text_type, callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     decode = getattr(arg, 'decode', None)
@@ -93,7 +192,7 @@ def decode_coerce(arg):
             import codecs
             res = codecs.decode(arg, encoding, 'replace')
         except BaseException:
-            res = Invalid
+            res = nil
     return res
 
 
@@ -101,7 +200,6 @@ def decode_coerce(arg):
 def encode_coerce(arg):
     '''Encode string objects.'''
     import locale
-    from . import Invalid
     from xoutil.eight import callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     encode = getattr(arg, 'encode', None)
@@ -119,7 +217,7 @@ def encode_coerce(arg):
             import codecs
             res = codecs.encode(arg, encoding, 'replace')
         except BaseException:
-            res = Invalid
+            res = nil
     return res
 
 
@@ -142,10 +240,9 @@ def unicode_coerce(arg):
 
     '''
     from array import array
-    from . import Invalid
     from xoutil.eight import text_type
     aux = name_coerce(arg)
-    if aux is not Invalid:
+    if aux is not nil:
         arg = aux
     if isinstance(arg, text_type):
         return arg
@@ -165,7 +262,7 @@ def unicode_coerce(arg):
                     return arg
 
     res = decode_coerce(arg)
-    return text_type(arg) if res is Invalid else res
+    return text_type(arg) if res is nil else res
 
 
 @coercer
@@ -197,10 +294,9 @@ def bytes_coerce(arg):
 
     '''
     from array import array
-    from . import Invalid
     from xoutil.eight import text_type
     aux = name_coerce(arg)
-    if aux is not Invalid:
+    if aux is not nil:
         arg = aux
     if isinstance(arg, bytes):
         return arg
@@ -217,7 +313,7 @@ def bytes_coerce(arg):
             except BaseException:
                 arg = text_type(arg)
     res = encode_coerce(arg)
-    return encode_coerce(text_type(arg)) if res is Invalid else res
+    return encode_coerce(text_type(arg)) if res is nil else res
 
 
 @coercer
@@ -230,9 +326,9 @@ def str_coerce(arg):
 
     '''
     # TODO: Analyze if promote to global::
-    #   str_coerce = unicode_coerce if _py3 else bytes_coerce
-    from xoutil.eight import _py3
-    return (unicode_coerce if _py3 else bytes_coerce)(arg)
+    #   str_coerce = unicode_coerce if python_version == 3 else bytes_coerce
+    from xoutil.eight import python_version
+    return (unicode_coerce if python_version == 3 else bytes_coerce)(arg)
 
 
 @coercer
@@ -259,7 +355,7 @@ def ascii_set_coerce(arg):
     normalization.
 
     '''
-    return str().join(set(ascii_coerce(arg)))
+    return ''.join(set(ascii_coerce(arg)))
 
 
 @coercer
@@ -281,9 +377,10 @@ def lower_ascii_set_coerce(arg):
     normalization.
 
     '''
-    return str().join(set(lower_ascii_coerce(arg)))
+    return ''.join(set(lower_ascii_coerce(arg)))
 
 
+@coercer
 def chars_coerce(arg):
     '''Convert to unicode characters.
 
@@ -292,16 +389,24 @@ def chars_coerce(arg):
     `unicode_coerce`:meth:.
 
     '''
-    from xoutil.eight import _py3, integer_types as ints
+    from xoutil.eight import integer_types as ints, unichr
     if isinstance(arg, ints) and 0 <= arg <= 0x10ffff:
-        return (chr if _py3 else unichr)(arg)
+        return unichr(arg)
     else:
         return unicode_coerce(arg)
 
 
-from xoutil.eight import text_type as text
+@coercer
+def strict_string_coerce(arg):
+    '''Coerce to string only if argument is a valid string type.'''
+    from xoutil.eight import string_types
+    return str_coerce(arg) if isinstance(arg, string_types) else nil
 
 
+from xoutil.eight import text_type as text    # noqa
+
+
+# TODO: Why is this here
 class text(text):
     '''Return a nice text representation of one object.
 

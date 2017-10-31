@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # tests.test_objects
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -379,12 +378,12 @@ def test_extract_attrs():
 
 
 def test_copy_class():
-    from xoutil import Unset
-    from xoutil.eight import _py3
+    from xoutil.symbols import Unset
+    from xoutil.eight import python_version
     from xoutil.eight.meta import metaclass
     from xoutil.objects import copy_class
 
-    u = str if _py3 else unicode
+    u = str if python_version == 3 else unicode
 
     class MetaFoo(type):
         pass
@@ -465,3 +464,58 @@ def test_memoized_classproperty():
     assert Foobar.prop == current
     current += 1
     assert Foobar.prop != current
+
+
+def test_properties():
+    from xoutil.objects import xproperty, classproperty, staticproperty
+
+    _x = 'static'
+
+    class Foobar(object):
+        _x = 'class'
+
+        def __init__(self):
+            self._x = 'instance'
+
+        @xproperty
+        def x(self):
+            return self._x
+
+        @classproperty
+        def cprop(cls):
+            return cls._x
+
+        @staticproperty
+        def sprop():
+            return _x
+
+    f = Foobar()
+
+    assert Foobar.x == 'class'
+    assert f.x == 'instance'
+
+    assert Foobar.cprop == 'class'
+    assert f.cprop == 'class'
+
+    assert Foobar.sprop == 'static'
+    assert f.sprop == 'static'
+
+
+def test_multi_getter_failure():
+    '''`multi_getter` is not the same as `traverse`.
+
+    When a collection of identifiers is given, it get the first valid value
+    (see the documentation).
+
+    '''
+    from xoutil.objects import multi_getter
+    from xoutil.objects import traverse
+
+    class new(object):
+        def __init__(self, **k):
+            self.__dict__.update(k)
+
+    top = new(d=dict(a=1, b=2), a=10, b=20)
+
+    assert traverse(top, 'd.a') == 1
+    assert next(multi_getter(top, ('d', 'a'))) == {'a': 1, 'b': 2}

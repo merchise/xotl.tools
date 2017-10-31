@@ -1,5 +1,5 @@
-:mod:`xoutil.string` - Common string operations.
-=====================================================
+`xoutil.string`:mod: - Common string operations
+===============================================
 
 .. automodule:: xoutil.string
    :members:

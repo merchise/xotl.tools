@@ -1,4 +1,4 @@
-:mod:`xoutil.infinity` - An infinite value
+`xoutil.infinity`:mod: - An infinite value
 ==========================================
 
 .. module:: xoutil.infinity

@@ -1,4 +1,4 @@
-:mod:`xoutil.formatter` - Formatting
+`xoutil.formatter`:mod: - Formatting
 ====================================
 
 .. automodule:: xoutil.formatter

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # test_cli
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -17,6 +17,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+import pytest
+
 
 def test_regression_Command_repr():
     from xoutil.cli import Command
@@ -27,3 +29,9 @@ def test_regression_Command_repr():
 
     cmd = MyCommand()
     assert repr(cmd) != ''
+
+
+def test_can_actually_run_the_help():
+    from xoutil.cli.app import main
+    with pytest.raises(SystemExit):
+        main(default='help')

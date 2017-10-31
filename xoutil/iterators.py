@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.iterators
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -21,14 +20,13 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _py3_abs_imports)
 
-from xoutil import Unset
-from xoutil.types import is_scalar
+from xoutil.symbols import Unset
 
 from xoutil.deprecation import deprecated
 
+# TODO: Evaluate rename to 'xoutil.future.itertools'.
 
 def first_non_null(iterable, default=None):
     '''Returns the first value from iterable which is non-null.
@@ -42,9 +40,12 @@ def first_non_null(iterable, default=None):
     return next((x for x in iter(iterable) if x), default)
 
 
-def flatten(sequence, is_scalar=is_scalar, depth=None):
-    '''Flattens out a sequence. It takes care of everything deemed a collection
-    (i.e, not a scalar according to the callabled passed in `is_scalar`)::
+def flatten(sequence, is_scalar=None, depth=None):
+    '''Flatten-out a sequence.
+
+    It takes care of everything deemed a collection (i.e, not a scalar
+    according to the callable passed in `is_scalar` argument; if ``None``,
+    `xoutil.types.is_scalar`:func: is assumed)::
 
         >>> from xoutil.eight import range
         >>> range_ = lambda *a: list(range(*a))
@@ -56,8 +57,8 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
     flattened up to that level. `depth=0` means not to flatten. Nested
     iterators are not "exploded" if under the stated `depth`::
 
-        # In the following doctest we use ``...range(...X)`` because the string
-        # repr of range differs in Py2 and Py3k.
+        # In the following doctest we use ``...range(...X)`` because the
+        # string repr of range differs in Py2 and Py3k.
 
         >>> tuple(flatten((range_(2), range(2, 4)), depth=0))  # doctest: +ELLIPSIS
         ([0, 1], ...range(2, 4))
@@ -66,6 +67,8 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
         (...range(...2), [2, 3])
 
     '''
+    if is_scalar is None:
+        from xoutil.types import is_scalar
     for item in sequence:
         if is_scalar(item):
             yield item
@@ -76,6 +79,29 @@ def flatten(sequence, is_scalar=is_scalar, depth=None):
                 depth = depth - 1
             for subitem in flatten(item, is_scalar, depth=depth):
                 yield subitem
+
+
+def pop_first(source, keys, default=None):
+    '''Pop first value from `source` from given `keys`.
+
+    :param source: Any compatible mapping.
+
+    :param keys: Reference keys to pop the value.
+
+    Examples::
+
+      >>> d = {'x': 1, 'y': 2, 'z': 3}
+      >>> pop_first(d, ('a', 'y', 'x'), '---')
+      2
+
+      >>> pop_first(d, ('a', 'y', 'x'), '---')
+      1
+
+      >>> pop_first(d, ('a', 'y', 'x'), '---')
+      '---'
+
+    '''
+    return next((source.pop(key) for key in keys if key in source), default)
 
 
 def multi_pop(source, *keys):
@@ -128,16 +154,25 @@ def multi_get(source, *keys):
     return (source.get(key) for key in keys if key in source)
 
 
-def dict_update_new(target, source):
-    '''Update values in `source` that are new (not present) in `target`.'''
+def dict_update_new(target, source, fail=False):
+    '''Update values in `source` that are new (not present) in `target`.
+
+    If `fail` is True and a value is already set, an error is raised.
+
+    '''
     for key in source:
         if key not in target:
             target[key] = source[key]
+        elif fail:
+            raise TypeError('key "{}" already in target'.format(key))
 
 
 @deprecated('generator expression')
 def fake_dict_iteritems(source):
-    '''Iterate (key, value) in a source that have defined method "keys" and :meth:`~object.__getitem__`.
+    '''Iterate (key, value) in a source fake mapping.
+
+    A fake mapping must define at least methods `keys` and
+    `~object.__getitem__`:meth:.
 
     .. warning:: Deprecated since 1.7.0.  This was actually in risk since
                  1.4.0.
@@ -155,8 +190,8 @@ def delete_duplicates(seq, key=lambda x: x):
     Two items ``x`` and ``y`` are considered equal (duplicates) if
     ``key(x) == key(y)``.  By default `key` is the identity function.
 
-    Works with any sequence that supports :func:`len`,
-    :meth:`~object.__getitem__` and `addition <object.__add__>`:meth:.
+    Works with any sequence that supports `len`:func:,
+    `~object.__getitem__`:meth:, and `addition <object.__add__>`:meth:.
 
     .. note:: ``seq.__getitem__`` should work properly with slices.
 
@@ -217,14 +252,14 @@ def slides(iterable, width=2, fill=None):
         [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, None, None)]
 
     .. versionchanged:: 1.4.0 If the `fill` argument is a collection is cycled
-                        over to get the filling, just like in :func:`first_n`.
+                        over to get the filling, just like in `first_n`:func:.
 
     .. versionchanged:: 1.4.2 The `fill` argument now defaults to None,
                         instead of Unset.
 
     '''
     from itertools import cycle, repeat
-    from xoutil.types import is_collection
+    from collections import Iterable
     pos = 0
     res = []
     iterator = iter(iterable)
@@ -239,7 +274,7 @@ def slides(iterable, width=2, fill=None):
             res = []
             pos = 0
     if res:
-        if is_collection(fill):
+        if isinstance(fill, Iterable):
             fill = cycle(fill)
         else:
             fill = repeat(fill)
@@ -250,7 +285,7 @@ def slides(iterable, width=2, fill=None):
 
 
 def continuously_slides(iterable, width=2, fill=None):
-    '''Similar to :func:`slides` but moves one item at the time (i.e
+    '''Similar to `slides`:func: but moves one item at the time (i.e
     continuously).
 
     `fill` is only used to fill the fist chunk if the `iterable` has less
@@ -281,8 +316,8 @@ def first_n(iterable, n=1, fill=Unset):
     '''Takes the first `n` items from iterable.
 
     If there are less than `n` items in the iterable and `fill` is
-    :class:`~xoutil.types.Unset`, a StopIteration exception is raised;
-    otherwise it's used as a filling pattern as explained below.
+    `~xoutil.Unset`:class:, a StopIteration exception is raised; otherwise
+    it's used as a filling pattern as explained below.
 
     :param iterable: An iterable from which the first `n` items should be
                      collected.
@@ -303,15 +338,21 @@ def first_n(iterable, n=1, fill=Unset):
 
     .. versionadded:: 1.2.0
 
-    .. versionchanged:: 1.4.0 The notion of collection for the `fill`
-                        argument uses :class:`xoutil.types.is_collection`
-                        instead of probing for the ``__iter__`` method.
+    .. versionchanged:: 1.4.0 The notion of collection for the `fill` argument
+                        uses `xoutil.types.is_collection`:func: instead of
+                        probing for the ``__iter__`` method.
+
+    .. versionchanged:: 1.7.2 The notion of collection for the `fill` argument
+                        uses ``isinstance(fill, Iterable)`` replacing
+                        `xoutil.types.is_collection`:func:.  We must be
+                        consistent with `iterable` argument that allow an
+                        string as a valid iterable and `is_collection` not.
 
     '''
     if fill is not Unset:
-        from xoutil.types import is_collection
+        from collections import Iterable
         from itertools import cycle, repeat, chain
-        if is_collection(fill):
+        if isinstance(fill, Iterable):
             fill = cycle(fill)
         else:
             fill = repeat(fill)
@@ -375,9 +416,9 @@ def ungroup(iterator):
 
 
 # Compatible zip and map
-from xoutil.eight import _py3
+from xoutil.eight import python_version
 
-if _py3:
+if python_version == 3:
     map = map
     zip = zip
     from itertools import zip_longest     # noqa

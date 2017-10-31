@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.records
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -28,8 +27,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoutil import Unset
-from xoutil.functools import lru_cache
+from xoutil.symbols import Unset
+from xoutil.future.functools import lru_cache
 from xoutil.eight.meta import metaclass
 
 
@@ -59,21 +58,21 @@ class _record_type(type):
 
     @staticmethod
     def is_reader(attr, func, fields=None):
-        from xoutil.types import FunctionType as function
-        from xoutil.types import is_staticmethod as static
+        from xoutil.future.types import FunctionType
         attr = attr.lower()
         good_name = attr.startswith('_') and attr.endswith('_reader')
-        good_type = isinstance(func, function) or static(func)
+        good_type = isinstance(func, (FunctionType, staticmethod))
         return good_name and good_type
 
     def __new__(cls, name, bases, attrs):
-        from xoutil.types import is_staticmethod as stm
+        def static(f):
+            return f if isinstance(f, staticmethod) else staticmethod(f)
+
         cls_fields = {attr: val for attr, val in attrs.items()
                       if cls._is_rec_definition(attr, val)}
         descriptors = {attr.lower(): field_descriptor(attr)()
                        for attr in cls_fields}
-        readers = {attr.lower(): staticmethod(func) if not stm(func) else func
-                   for attr, func in attrs.items()
+        readers = {attr.lower(): static(func) for attr, func in attrs.items()
                    if cls.is_reader(attr, func)}
         new_attrs = dict(attrs, **descriptors)
         new_attrs.update(readers)
@@ -96,7 +95,7 @@ class _record_type(type):
         return result
 
     def get_field(self, raw_data, field):
-        from xoutil import Undefined
+        from xoutil.symbols import Undefined
         field_name = self._rec_index[field]
         try:
             value = raw_data[field]
@@ -133,7 +132,7 @@ class record(metaclass(_record_type)):
     underscore ("_").  External data lines are required to support indexes of
     those types.
 
-    You could use either the classmethod :func:`get_field` to get the value of
+    You could use either the classmethod `get_field`:func: to get the value of
     field in a single line (data as provided by the external source)::
 
         >>> line = (1, 'AA20X138874Z012')
@@ -197,7 +196,7 @@ def isnull(val):
     '''Return True if `val` is null.
 
     Null values are None, the empty string and any False instance of
-    `xoutil.logical.Logical`:class:.
+    `xoutil.symbols.boolean`:class:.
 
     Notice that 0, the empty list and other false values in Python are not
     considered null.  This allows that the CSV null (the empty string) is
@@ -205,8 +204,8 @@ def isnull(val):
     valid number) are not misinterpreted as null.
 
     '''
-    from xoutil.logical import Logical
-    return val in (None, '') or (isinstance(val, Logical) and not val)
+    from xoutil.symbols import boolean
+    return val in (None, '') or (isinstance(val, boolean) and not val)
 
 
 # Standard readers

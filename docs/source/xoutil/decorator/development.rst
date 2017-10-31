@@ -1,6 +1,6 @@
-============================================================================
-:mod:`xoutil.decorator.development` - Decorators for development annotations
-============================================================================
+==============================================================================
+ `xoutil.decorator.development`:mod: - Decorators for development annotations
+==============================================================================
 
 .. automodule:: xoutil.decorator.development
 

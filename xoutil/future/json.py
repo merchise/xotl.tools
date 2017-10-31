@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# xoutil.future.json
+# ---------------------------------------------------------------------
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2011, 2012 Medardo Rodríguez
+# All rights reserved.
+#
+# Author: Medardo Rodriguez
+# Contributors: see CONTRIBUTORS and HISTORY file
+#
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
+#
+# Created on 2011-07-01
+# Migrated to 'future' on 2016-09-20
+
+'''Extensions to the `json` standard library module.
+
+It just adds the ability to encode/decode datetimes. But you should use the
+JSONEncoder yourself.
+
+You may use this module as drop-in replacement to Python's `json`.  Also it
+contains definitions to use C library JSON speedups or Python replacements in
+case that library is not installed in your system.
+
+'''
+
+# TODO: consider use IoC to extend python json module
+
+from __future__ import (division as _py3_division,
+                        print_function as _py3_print,
+                        absolute_import as _py3_abs_imports)
+
+from json import *    # noqa
+import json as _stdlib    # noqa
+
+from json import __all__    # noqa
+__all__ = list(__all__) + ['file_load', 'encode_string']
+
+from json import encoder, decoder    # noqa
+
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
+
+
+class JSONEncoder(_stdlib.JSONEncoder):
+    __doc__ = (_stdlib.JSONEncoder.__doc__ + '''
+    Xoutil extends this class by supporting the following data-types:
+
+    - `datetime`, `date` and `time` values, which are translated to strings
+      using ISO format.
+
+    - `Decimal` values, which are represented as a string representation.
+
+    - Iterables, which are represented as lists.
+
+    ''')
+    DATE_FORMAT = str("%Y-%m-%d")
+    TIME_FORMAT = str("%H:%M:%S")
+    DT_FORMAT = str("%s %s") % (DATE_FORMAT, TIME_FORMAT)
+
+    def default(self, obj):
+        from datetime import datetime, date, time
+        from decimal import Decimal
+        from collections import Iterable
+        from xoutil.future.datetime import assure
+        if isinstance(obj, datetime):
+            return assure(obj).strftime(self.DT_FORMAT)
+        elif isinstance(obj, date):
+            return assure(obj).strftime(self.DATE_FORMAT)
+        elif isinstance(obj, time):
+            return obj.strftime(self.TIME_FORMAT)
+        elif isinstance(obj, Decimal):
+            return str(obj)
+        elif isinstance(obj, Iterable):
+            return list(iter(obj))
+        return super(JSONEncoder, self).default(obj)
+
+
+try:
+    JSONDecodeError    # noqa
+except NameError:
+    # Python 2 implementation raises 'ValueError'
+    JSONDecodeError = ValueError
+
+
+def file_load(filename):
+    with file(filename, 'r') as f:
+        return load(f)    # noqa
+
+
+# --- encode strings ---
+
+from json.encoder import encode_basestring    # noqa
+
+try:
+    from _json import encode_basestring_ascii
+except ImportError:
+    from json.encoder import (py_encode_basestring_ascii as    # noqa
+                              encode_basestring_ascii)
+
+
+def encode_string(string, ensure_ascii=True):
+    '''Return a JSON representation of a Python string.
+
+     :param ensure_ascii: If True, the output is guaranteed to be of type
+         `str` with all incoming non-ASCII characters escaped.  If False, the
+         output can contain non-ASCII characters.
+
+    '''
+    encode = encode_basestring_ascii if ensure_ascii else encode_basestring
+    return encode(string)

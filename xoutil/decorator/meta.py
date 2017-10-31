@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.meta
+# xoutil.decorator.meta
 # ---------------------------------------------------------------------
-#
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
-# decorator function.
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
@@ -17,13 +15,13 @@
 '''Decorator-making facilities.
 
 This module provides a signature-keeping version of the
-:func:`xoutil.decorators.decorator`, which is now deprecated in favor of this
+`xoutil.decorators.decorator`:func:, which is now deprecated in favor of this
 module's version.
 
-
 We scinded the decorator-making facilities from decorators per se to allow the
-module :mod:`xoutil.deprecation` to be used by decorators and at the same time,
-implement the decorator :func:`~xoutil.deprecation.deprecated` more easily.
+module `xoutil.deprecation`:mod: to be used by decorators and at the same
+time, implement the decorator `~xoutil.deprecation.deprecated`:func: more
+easily.
 
 
 This module is an adapted work from the decorator version 3.3.2 package and is
@@ -57,7 +55,6 @@ Original copyright and license notices from decorator package:
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import sys
@@ -67,18 +64,13 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-from xoutil.eight import _py3
-
-
-if _py3:
+if sys.version_info[0] == 3:
     from inspect import getfullargspec as _getfullargspec
 else:
     from inspect import getargspec as _getfullargspec
 
 
-from xoutil.names import strlist as strs
-__all__ = strs('FunctionMaker', 'flat_decorator', 'decorator')
-del strs
+__all__ = ('FunctionMaker', 'flat_decorator', 'decorator')
 
 
 DEF = re.compile('\s*def\s*([_\w][_\w\d]*)\s*\(')
@@ -189,7 +181,10 @@ class FunctionMaker(object):
         added,
         if any.
         """
-        from xoutil.eight import string_types
+        try:
+            string_types = (str, unicode)
+        except NameError:
+            string_types = (str,)
         if isinstance(obj, string_types):  # "name(signature)"
             obj = str(obj)
             name, rest = obj.strip().split(str('('), 1)
@@ -242,8 +237,9 @@ def flat_decorator(caller, func=None):
 # -- End of decorators package
 
 
+# FIX: This meta-decorator fails in some scenarios (old classes?)
 def decorator(caller):
-    '''Eases the creation of decorators with arguments. Normally a decorator
+    '''Eases the creation of decorators with arguments.  Normally a decorator
     with arguments needs three nested functions like this::
 
         def decorator(*decorator_arguments):
@@ -323,7 +319,8 @@ def decorator(caller):
         try:
             from zope.interface import Interface
         except ImportError:
-            from xoutil import Unset as Interface
+            Interface = None
+            # from xoutil.symbols import Unset as Interface
         if (len(args) == 1 and not kwargs and
             (isinstance(args[0], (function, type)) or
              issubclass(type(args[0]), type(Interface)))):

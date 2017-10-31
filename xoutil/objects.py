@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.objects
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodriguez
 # All rights reserved.
 #
@@ -21,15 +20,10 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _py3_abs_import)
 
-from xoutil import Unset
-from xoutil.eight import callable, string_types as str_base
+from xoutil.symbols import Unset
 from xoutil.deprecation import deprecated
-
-from .eight.meta import metaclass as _metaclass    # noqa
-metaclass = deprecated('xoutil.eight.meta.metaclass')(_metaclass)
 
 
 __docstring_format__ = 'rst'
@@ -37,13 +31,20 @@ __docstring_format__ = 'rst'
 
 _INVALID_CLASS_TYPE_MSG = '``cls`` must be a class not an instance'
 
-# Safe length
-_len = lambda x: len(x) if x else 0
+
+def _len(x):
+    'Safe length'
+    return len(x) if x else 0
+
 
 # These two functions can be use to always return True or False
 # TODO: Deprecate both.
-_true = lambda *args, **kwargs: True
-_false = lambda *args, **kwargs: False
+def _true(*args, **kwargs):
+    return True
+
+
+def _false(*args, **kwargs):
+    return False
 
 
 class SafeDataItem(object):
@@ -109,7 +110,7 @@ class SafeDataItem(object):
           the following names: `validator`, `checker` or `check`.  The checker
           could be a type, a tuple of types, a function receiving the value
           and return True or False, or a list containing arguments to use
-          :func:`xoutil.validators.check`.
+          `xoutil.validators.check`:func:.
 
         - Boolean `False` to avoid assigning the descriptor in the class
           context with the keyword argument `do_assigning`.  Any other value
@@ -225,7 +226,7 @@ class SafeDataItem(object):
 
     def __get__(self, obj, owner):
         if obj is not None:
-            from xoutil.inspect import get_attr_value
+            from xoutil.future.inspect import get_attr_value
             res = get_attr_value(obj, self.inner_name, Unset)
             if res is not Unset:
                 return res
@@ -233,7 +234,6 @@ class SafeDataItem(object):
                 try:
                     res = self.init()
                 except:
-                    print('>>>', self.init, '::', type(self.init))
                     raise
                 self.__set__(obj, res)
                 return res
@@ -242,10 +242,9 @@ class SafeDataItem(object):
                 self.__set__(obj, res)
                 return res
             else:
-                from xoutil.eight import typeof
+                from xoutil.eight import type_name
                 msg = "'%s' object has no attribute '%s'"
-                raise AttributeError(msg % (typeof(obj).__name__,
-                                            self.attr_name))
+                raise AttributeError(msg % (type_name(obj), self.attr_name))
         else:
             return self
 
@@ -283,6 +282,7 @@ class SafeDataItem(object):
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
+        from xoutil.eight import callable
         from xoutil.validators import (is_valid_identifier, predicate)
         self.attr_name = Unset
         self.init = Unset
@@ -343,12 +343,13 @@ def smart_getter(obj, strict=False):
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     '''
-    from .types import is_mapping
-    if is_mapping(obj):
+    from xoutil.future.collections import Mapping
+    if isinstance(obj, Mapping):
         if not strict:
             return obj.get
         else:
-            def _get(key, default=Unset):
+            def getter(key, default=Unset):
+                "Get the given key. Raise an error when it doesn't exists."
                 try:
                     return obj[key]
                 except KeyError:
@@ -356,12 +357,16 @@ def smart_getter(obj, strict=False):
                         raise
                     else:
                         return default
-            return _get
+            return getter
     else:
         if not strict:
-            return lambda attr, default=None: getattr(obj, attr, default)
+            def getter(attr, default=None):
+                "Get the given attr. Return default if it doesn't exists."
+                return getattr(obj, attr, default)
+            return getter
         else:
-            def _partial(attr, default=Unset):
+            def getter(attr, default=Unset):
+                "Get the given attr. Raise an error when it doesn't exists."
                 try:
                     return getattr(obj, attr)
                 except AttributeError:
@@ -369,7 +374,7 @@ def smart_getter(obj, strict=False):
                         raise
                     else:
                         return default
-            return _partial
+            return getter
 
 
 def smart_getter_and_deleter(obj):
@@ -390,6 +395,9 @@ def smart_getter_and_deleter(obj):
         return partial(popattr, obj)
 
 
+# TODO: [med] See the get_traverser.  I think the function is actually
+# a subtype of that.  Also, this method sticks with the getter for the
+# top object, see the failing companion test in this commit.
 def multi_getter(source, *ids):
     '''Get values from `source` of all given `ids`.
 
@@ -421,12 +429,15 @@ def multi_getter(source, *ids):
     .. versionadded:: 1.7.1
 
     '''
-    from collections import Iterable as multi
-    from xoutil.eight import string_types as strs
     getter = smart_getter(source)
-    many = lambda a: isinstance(a, multi) and not isinstance(a, strs)
-    first = lambda a: next((i for i in map(getter, a) if i is not None), None)
-    get = lambda a: first(a) if many(a) else getter(a)
+
+    def first(a):
+        return next((i for i in map(getter, a) if i is not None), None)
+
+    def get(a):
+        from xoutil.values.simple import logic_iterable_coerce as many
+        return first(a) if many(a) else getter(a)
+
     return (get(aux) for aux in ids)
 
 
@@ -447,11 +458,11 @@ def fix_private_name(cls, name):
         return name
 
 
-# TODO: @med, @manu, Decide if it's best to create a 'xoutil.inspect' that
-# extends the standard library module 'inspect' and place this
-# signature-dealing functions there. Probably, to be consistent, this imposes
-# a refactoring of some of 'xoutil.types' and move all the "is_classmethod",
-# "is_staticmethod" and inspection-related functions there.
+# TODO: @med, @manu, Decide if it's best to create a 'xoutil.future.inspect'
+# that extends the standard library module 'inspect' and place this
+# signature-dealing functions there.  Probably, to be consistent, this imposes
+# a refactoring of some of 'xoutil.future.types' and move all the
+# "is_classmethod", "is_staticmethod" and inspection-related functions there.
 def get_method_function(cls, method_name):
     '''Get definition function given in its `method_name`.
 
@@ -460,6 +471,7 @@ def get_method_function(cls, method_name):
     method and this a python function.
 
     '''
+    from xoutil.eight import callable
     if not isinstance(cls, type):
         cls = cls.__class__
     mro = cls.mro()
@@ -484,7 +496,7 @@ def build_documentation(cls, get_doc=None, deep=1):
     no function is given, then attribute ``__doc__`` is used.
 
     '''
-    from xoutil.string import safe_decode
+    from xoutil.future.codecs import safe_decode
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if deep < 1:
         deep = 1
@@ -525,6 +537,7 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
                        characters, also are ignored.
 
     '''
+    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if _len(cls.__doc__) < min_length:
         ignore = ignore or ()
@@ -559,6 +572,7 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
                        characters, also are ignored.
 
     '''
+    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     method = get_method_function(cls, method_name)
     if method and _len(method.__doc__) < min_length:
@@ -583,21 +597,23 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
-    from xoutil.inspect import get_attr_value
-    res = set()
-    if isinstance(obj, type):
-        for cls in type.mro(obj):
-            res |= set(get_attr_value(cls, '__dict__', {}))
+    from xoutil.eight import typeof, class_types
+    from xoutil.future.inspect import get_attr_value, _static_getmro
+
+    def getdir(o):
+        return set(get_attr_value(o, '__dict__', {}))
+
+    if isinstance(obj, class_types):
+        res = set.union(getdir(cls) for cls in _static_getmro(obj))
     else:
-        res |= set(get_attr_value(obj, '__dict__', {}))
-    cls = type(obj)
-    if cls is not type:
-        res |= set(dir(cls))
-    return res
+        res = getdir(obj)
+    cls = typeof(obj)
+    return res if cls in class_types else res | set(dir(cls))
 
 
 # TODO: Fix signature after removal of attr_filter and value_filter
-def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None, _depth=0):
+def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None,
+         _depth=0):
     '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
     and ``value_filter(value)`` are both True.
 
@@ -646,7 +662,7 @@ def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None, _de
 
 # TODO: Fix signature after removal of attr_filter and value_filter
 def fdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None):
-    '''Similar to :func:`xdir` but yields only the attributes names.'''
+    '''Similar to `xdir`:func: but yields only the attributes names.'''
     full = xdir(obj,
                 filter=filter,
                 attr_filter=attr_filter,
@@ -719,8 +735,9 @@ def iterate_over(source, *keys):
 
     If any `key` is missing from `source` is ignored (not yielded).
 
-    If `source` is a `collection <xoutil.types.is_collection>`:func:, iterate
-    over each of the items searching for any of keys.  This is not recursive.
+    If `source` is a `collection
+    <xoutil.values.simple.logic_collection_coerce>`:func:, iterate over each
+    of the items searching for any of keys.  This is not recursive.
 
     If no `keys` are provided, return an "empty" iterator -- i.e will raise
     StopIteration upon calling `next`.
@@ -728,7 +745,7 @@ def iterate_over(source, *keys):
     .. versionadded:: 1.5.2
 
     '''
-    from xoutil.types import is_collection
+    from xoutil.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter(source)
@@ -743,7 +760,7 @@ def iterate_over(source, *keys):
             for key, val in generator:
                 yield key, val
 
-    if is_collection(source):
+    if logic_collection_coerce(source) is not nil:
         res = when_collection(source)
     else:
         res = inner(source)
@@ -754,7 +771,7 @@ def get_first_of(source, *keys, **kwargs):
     '''Return the value of the first occurrence of any of the specified `keys`
     in `source` that matches `pred` (if given).
 
-    Both `source` and `keys` has the same meaning as in :func:`iterate_over`.
+    Both `source` and `keys` has the same meaning as in `iterate_over`:func:.
 
     :param default: A value to be returned if no key is found in `source`.
 
@@ -776,7 +793,7 @@ def get_first_of(source, *keys, **kwargs):
 
 
 def pop_first_of(source, *keys, **kwargs):
-    '''Similar to :func:`get_first_of` using as `source` either an object or a
+    '''Similar to `get_first_of`:func: using as `source` either an object or a
     mapping and deleting the first attribute or key.
 
     Examples::
@@ -807,7 +824,7 @@ def pop_first_of(source, *keys, **kwargs):
         True
 
     '''
-    from xoutil.types import is_collection
+    from xoutil.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter_and_deleter(source)
@@ -817,7 +834,7 @@ def pop_first_of(source, *keys, **kwargs):
             i += 1
         return res
 
-    if is_collection(source):
+    if logic_collection_coerce(source) is not nil:
         res = Unset
         source = iter(source)
         probe = next(source, None)
@@ -884,8 +901,7 @@ get_and_del_attr = deprecated(popattr)(popattr)
 
 
 class lazy(object):
-    '''Marks a value as a lazily evaluated value. See
-    :func:`setdefaultattr`.
+    '''Marks a value as a lazily evaluated value. See `setdefaultattr`:func:.
 
     '''
     def __init__(self, value, *args, **kwargs):
@@ -894,27 +910,12 @@ class lazy(object):
         self.kwargs = kwargs
 
     def __call__(self):
+        from xoutil.eight import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
         else:
             return res
-
-
-# TODO: Implement this as an ABC
-def mixin(base):
-    '''Create a valid mixin base.
-
-    If several mixins with the same base are used all-together in a class
-    inheritance, Python generates ``TypeError: multiple bases have instance
-    lay-out conflict``.  To avoid that, inherit from the class this function
-    returns instead of desired `base`.
-
-    '''
-    org = "\n\nOriginal doc:\n\n%s" % base.__doc__ if base.__doc__ else ''
-    doc = "Generated mixin base from %s.%s" % (repr(base), org)
-    name = str('%s_base_mixin' % base.__name__)
-    return type(name, (base,), {'__doc__': doc})
 
 
 def iter_branch_subclasses(cls, include_this=True):
@@ -940,7 +941,48 @@ def get_branch_subclasses(cls):
     return list(iter_branch_subclasses(cls, include_this=False))
 
 
-class classproperty(object):
+# TODO: Check `xoutil.future.types.DynamicClassAttribute`:class: for more
+# information and to compare with this one.
+class xproperty(property):
+    '''Descriptor that gets values the same for instances and for classes.
+
+    Example of its use::
+
+        >>> class Foobar(object):
+        ...     _x = 'in the class'
+        ...
+        ...     def __init__(self):
+        ...         self._x = 'in the instance'
+        ...
+        ...     @xproperty
+        ...     def x(self):
+        ...         return self._x
+
+        >>> f = Foobar()
+
+        >>> Foobar.x
+        'in the class'
+
+        >>> f.x
+        'in the instance'
+
+    X-properties are always read-only, if attribute values must be set or
+    deleted, a metaclass must be defined.
+
+    .. versionadded:: 1.8.0
+
+    '''
+    def __init__(self, fget, doc=None):
+        if fget is not None:
+            super(xproperty, self).__init__(fget, doc=doc)
+        else:
+            raise TypeError('xproperty() the "fget" argument is requiered')
+
+    def __get__(self, instance, owner):
+        return self.fget(instance if instance is not None else owner)
+
+
+class classproperty(property):
     '''A descriptor that behaves like property for instances but for classes.
 
     Example of its use::
@@ -950,23 +992,82 @@ class classproperty(object):
             def getx(cls):
                 return cls._x
 
-    Class properties are always read-only, if attribute values must be set or
-    deleted, a metaclass must be defined.
+    A writable `classproperty` is difficult to define, and it's not intended
+    for that case because 'setter', and 'deleter' decorators can't be used for
+    obvious reasons.  For example::
+
+        class Foobar(object):
+            x = 1
+            def __init__(self, x=2):
+                self.x = x
+            def _get_name(cls):
+                return str(cls.x)
+            def _set_name(cls, x):
+                cls.x = int(x)
+            name = classproperty(_get_name, _set_name)
+
+    .. versionadded:: 1.4.1
+
+    .. versionchanged:: 1.8.0 Inherits from `property`
 
     '''
-    def __init__(self, fget):
-        '''Create the class property descriptor.
-
-          :param fget: is a function for getting the class attribute value
-
-        '''
-        self.__get = fget
-        self.__name__ = fget.__name__
-        self.__doc__ = fget.__doc__
-
     def __get__(self, instance, owner):
-        cls = type(instance) if instance is not None else owner
-        return self.__get(cls)
+        obj = type(instance) if instance is not None else owner
+        return super(classproperty, self).__get__(obj, owner)
+
+    def __set__(self, instance, value):
+        obj = instance if isinstance(instance, type) else type(instance)
+        super(classproperty, self).__set__(obj, value)
+
+    def __delete__(self, instance):
+        obj = instance if isinstance(instance, type) else type(instance)
+        super(classproperty, self).__delete__(obj)
+
+
+class staticproperty(property):
+    '''A descriptor that behaves like properties for instances but static.
+
+    Example of its use::
+
+        class Foobar(object):
+            @staticproperty
+            def getx():
+                return 'this is static'
+
+    A writable `staticproperty` is difficult to define, and it's not intended
+    for that case because 'setter', and 'deleter' decorators can't be used for
+    obvious reasons.  For example::
+
+        class Foobar(object):
+            x = 1
+            def __init__(self, x=2):
+                self.x = x
+            def _get_name():
+                return str(Foobar.x)
+            def _set_name(x):
+                Foobar.x = int(x)
+            name = staticproperty(_get_name, _set_name)
+
+    .. versionadded:: 1.8
+
+    '''
+    def __get__(self, instance, owner):
+        if self.fget is not None:
+            return self.fget()
+        else:
+            raise AttributeError('unreadable attribute')
+
+    def __set__(self, instance, value):
+        if self.fset is not None:
+            self.fset(value)
+        else:
+            raise AttributeError("can't set attribute")
+
+    def __delete__(self, instance):
+        if self.fdel is not None:
+            self.fdel()
+        else:
+            raise AttributeError("can't delete attribute")
 
 
 def setdefaultattr(obj, name, value):
@@ -1010,6 +1111,29 @@ def setdefaultattr(obj, name, value):
     return res
 
 
+def adapt_exception(value, **kwargs):
+    '''Like PEP-246, Object Adaptation, with ``adapt(value, Exception,
+    None)``.
+
+    If the value is not an exception is expected to be a tuple/list which
+    contains an Exception type as its first item.
+
+    .. versionchanged:: 1.8.0 Moved from `xoutil.data`:mod: module.
+
+    '''
+    isi, ebc = isinstance, Exception    # TODO: Maybe must be `BaseException`
+    issc = lambda maybe, cls: isi(maybe, type) and issubclass(maybe, cls)
+    if isi(value, ebc) or issc(value, ebc):
+        return value
+    elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
+        from xoutil.eight import string_types as strs
+        map = lambda x: x.format(**kwargs) if isinstance(x, strs) else x
+        ecls = value[0]
+        return ecls(*(map(x) for x in value[1:]))
+    else:
+        return None
+
+
 def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     '''Copies a class definition to a new class.
 
@@ -1043,8 +1167,8 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     '''
     from xoutil.eight import iteritems, callable
     from xoutil.eight._types import new_class
-    from xoutil.eight.types import MemberDescriptorType
-    from xoutil.string import safe_str
+    from xoutil.future.types import MemberDescriptorType
+    from xoutil.eight import string
 
     def _get_ignored(what):
         if callable(what):
@@ -1059,10 +1183,10 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
         ignored = lambda name: any(ignore(name) for ignore in ignores)
     else:
         ignored = None
-    valids = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
+    valid_names = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
     attrs = {name: value
              for name, value in iteritems(cls.__dict__)
-             if name not in valids
+             if name not in valid_names
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
              if not isinstance(value, MemberDescriptorType)
@@ -1072,7 +1196,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     def exec_body(ns):  # noqa: E306 new-line before def
         ns.update(attrs)
     if new_name:
-        name = safe_str(new_name)
+        name = string.force(new_name)
     else:
         name = cls.__name__
     result = new_class(name, cls.__bases__, {'metaclass': meta}, exec_body)
@@ -1104,12 +1228,12 @@ def smart_copy(*args, **kwargs):
     and one of its key is not found in any of the `sources`, then the value of
     the key in the dictionary is copied to `target` unless:
 
-    - It's the value :class:`xoutil.types.Required` or an instance of Required.
+    - It's the value `~xoutil.symbols.Undefined`.
 
     - An exception object
 
     - A sequence with is first value being a subclass of Exception. In which
-      case :class:`xoutil.data.adapt_exception` is used.
+      case `adapt_exception`:class: is used.
 
     In these cases a KeyError is raised if the key is not found in the
     sources.
@@ -1139,20 +1263,21 @@ def smart_copy(*args, **kwargs):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
-    from collections import MutableMapping
-    from xoutil.types import is_collection, is_mapping, Required
-    from xoutil.data import adapt_exception
+    from xoutil.eight import base_string, type_name, callable
+    from xoutil.future.collections import MutableMapping, Mapping
+    from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
+    from xoutil.values.simple import logic_iterable_coerce, nil
     defaults = kwargs.pop('defaults', False)
     if kwargs:
         raise TypeError('smart_copy does not accept a "%s" keyword argument'
                         % kwargs.keys()[0])
     sources, target = args[:-1], args[-1]
     if not sources:
-        raise TypeError('smart_copy requires at least one source')
-    if isinstance(target, (bool, type(None), int, float, str_base)):
-        raise TypeError('target should be a mutable object, not %s' %
-                        type(target))
+        raise TypeError('smart_copy() requires at least one source')
+    if isinstance(target, (bool, type(None), int, float, base_string)):
+        raise TypeError('target should be a mutable object, not '
+                        '{}'.format(type_name(target)))
     if isinstance(target, MutableMapping):
         def setter(key, val):
             target[key] = val
@@ -1160,8 +1285,8 @@ def smart_copy(*args, **kwargs):
         def setter(key, val):
             if is_valid_identifier(key):
                 setattr(target, key, val)
-    _mapping = is_mapping(defaults)
-    if _mapping or is_collection(defaults):
+    _mapping = isinstance(defaults, Mapping)
+    if _mapping or logic_iterable_coerce(defaults) is not nil:
         for key, val in ((key, get_first_of(sources, key, default=Unset))
                          for key in defaults):
             if val is Unset:
@@ -1170,19 +1295,16 @@ def smart_copy(*args, **kwargs):
                 else:
                     val = None
                 exc = adapt_exception(val, key=key)
-                if exc or val is Required or isinstance(val, Required):
+                if exc or val is Undefined:
                     raise KeyError(key)
             setter(key, val)
     else:
         keys = []
         for source in sources:
             get = smart_getter(source)
-            if is_mapping(source):
-                items = (name for name in source)
-            else:
-                items = dir(source)
+            items = source if isinstance(source, Mapping) else dir(source)
             for key in items:
-                private = isinstance(key, str_base) and key.startswith('_')
+                private = isinstance(key, base_string) and key.startswith('_')
                 if (defaults is False or defaults is None) and private:
                     copy = False
                 elif callable(defaults):
@@ -1221,7 +1343,7 @@ def extract_attrs(obj, *names, **kwargs):
     return getter(obj)
 
 
-# TODO: deprecate thid, use instead `xoutil.eight.abc.ABCMeta.adopt`
+@deprecated('xoutil.eight.abc.ABCMeta.register')
 def register_with(abc):
     '''Register a virtual `subclass` of an ABC.
 
@@ -1257,7 +1379,7 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
     You may provide `sep` to change the default separator.
 
     You may provide a custom `getter`.  By default, does an
-    :func:`smart_getter` over the objects. If provided `getter` should have
+    `smart_getter`:func: over the objects. If provided `getter` should have
     the signature of `getattr`:func:.
 
     See `get_traverser`:func: if you need to apply the same path(s) to several
@@ -1272,7 +1394,7 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
 
 def get_traverser(*paths, **kw):
     '''Combines the power of `traverse`:func: with the expectations from both
-    `operator.itergetter`:func: and `operator.attrgetter`:func:.
+    `operator.itemgetter`:func: and `operator.attrgetter`:func:.
 
     :param paths: Several paths to extract.
 
@@ -1284,6 +1406,9 @@ def get_traverser(*paths, **kw):
     .. versionadded:: 1.5.3
 
     '''
+    from xoutil.params import check_count
+    check_count(paths, 1, caller='get_traverser')
+
     def _traverser(path, default=Unset, sep='.', getter=None):
         if not getter:
             getter = lambda o, a, default=None: smart_getter(o)(a, default)
@@ -1307,31 +1432,28 @@ def get_traverser(*paths, **kw):
 
     if len(paths) == 1:
         result = _traverser(paths[0], **kw)
-    elif len(paths) > 1:
+    else:
         _traversers = tuple(_traverser(path, **kw) for path in paths)
 
         def _result(obj):
             return tuple(traverse(obj) for traverse in _traversers)
 
         result = _result
-    else:
-        raise TypeError('"get_traverser" requires at least a path')
     return result
 
 
 def dict_merge(*dicts, **others):
-
     '''Merges several dicts into a single one.
 
     Merging is similar to updating a dict, but if values are non-scalars they
     are also merged is this way:
 
-    - Any two :class:`sequences <collection.Sequence>` or :class:`sets
+    - Any two `sequences <collection.Sequence>`:class: or :class:`sets
       <collections.Set>` are joined together.
 
     - Any two mappings are recursively merged.
 
-    - Other types are just replaced like in :func:`update`.
+    - Other types are just replaced like in `update`:func:.
 
     If for a single key two values of incompatible types are found, raise a
     TypeError.  If the values for a single key are compatible but different
@@ -1343,10 +1465,8 @@ def dict_merge(*dicts, **others):
     Without arguments, return the empty dict.
 
     '''
-    from collections import Mapping, Sequence, Set
+    from collections import Mapping, Sequence, Set, Container
     from xoutil.eight import iteritems
-    from xoutil.objects import get_first_of
-    from xoutil.types import are_instances, no_instances
     if others:
         dicts = dicts + (others, )
     dicts = list(dicts)
@@ -1359,17 +1479,16 @@ def dict_merge(*dicts, **others):
                 val = {key: val[key] for key in val}
             value = result.setdefault(key, val)
             if value is not val:
-                if are_instances(value, val, collections):
+                if all(isinstance(v, collections) for v in (value, val)):
                     join = get_first_of((value, ), '__add__', '__or__')
                     if join:
                         constructor = type(value)
                         value = join(constructor(val))
                     else:
-                        raise ValueError("Invalid value for key '%s'"
-                                         % key)
-                elif are_instances(value, val, Mapping):
+                        raise ValueError("Invalid value for key '%s'" % key)
+                elif all(isinstance(v, Mapping) for v in (value, val)):
                     value = dict_merge(value, val)
-                elif no_instances(value, val, (Set, Sequence, Mapping)):
+                elif all(not isinstance(v, Container) for v in (value, val)):
                     value = val
                 else:
                     raise TypeError("Found incompatible values for key '%s'"

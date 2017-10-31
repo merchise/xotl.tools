@@ -1,9 +1,9 @@
-:mod:`xoutil.decorator` - Several decorators
+`xoutil.decorator`:mod: - Several decorators
 ============================================
 
 .. module:: xoutil.decorator
 
-This module contains several useful decorators, for several purposed. Also it
+This module contains several useful decorators, for several purposed.  Also it
 severs as a namespace for other well-defined types of decorators.
 
 .. warning:: This modules will be progressively deprecated during the 1.6

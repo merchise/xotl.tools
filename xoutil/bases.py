@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.bases
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -12,16 +11,13 @@
 #
 # Created on 2013-03-25
 
+'''Integer encoding and decoding in different bases.
+
+'''
+
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import as _py3_abs_imports)
-
-try:
-    _strs = basestring
-except:
-    _strs = str
-
+                        absolute_import as _py3_abs_import)
 
 _DEFAULT_TABLE = ("0123456789"
                   "abcdefghijklmnopqrstuvwxyz"
@@ -38,19 +34,19 @@ def _check_base(base):
     Return a tuple (base, table) if valid or raise an exception.
 
     '''
-    from xoutil.eight import integer_types
+    from xoutil.eight import integer_types, string_types
     if isinstance(base, integer_types):
         table = _DEFAULT_TABLE
         if not (1 < base <= _MAX_BASE):
             raise ValueError('`base` must be between 2 and %s' % _MAX_BASE)
-    elif isinstance(base, _strs):
+    elif isinstance(base, string_types):
         table = base
         base = len(table)
     else:
-        from xoutil.eight import typeof
+        from xoutil.eight import type_name
         msg = ('`base` must be an integer (base) or a string (table) with '
                'length greater or equal to 2; %s "%s" given')
-        raise TypeError(msg % (typeof(base).__name__, base))
+        raise TypeError(msg % (type_name(base), base))
     return base, table
 
 

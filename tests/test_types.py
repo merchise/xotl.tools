@@ -3,8 +3,7 @@
 #----------------------------------------------------------------------
 # xoutil.tests.test_types
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -14,19 +13,26 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _py3_abs_import)
 
 import unittest
 import pickle
 
-from xoutil import types
+from xoutil.future import types
 
 
 def test_iscollection():
+    # TODO: move this test to equivalent for
+    # `xoutil.values.simple.logic_collection_coerce`
     from xoutil.eight import range
-    from xoutil.types import is_collection
-    from xoutil.collections import UserList, UserDict
+    from xoutil.future.collections import UserList, UserDict
+
+    def is_collection(arg):
+        from collections import Iterable, Mapping
+        from xoutil.eight import StringTypes
+        avoid = StringTypes + (Mapping,)
+        return isinstance(arg, Iterable) and not isinstance(arg, avoid)
+
     assert is_collection('all strings are iterable') is False
     assert is_collection(1) is False
     assert is_collection(range(1)) is True
@@ -49,7 +55,7 @@ def test_iscollection():
 class NoneTypeTests(unittest.TestCase):
     'To avoid FlyCheck errors'
     def test_identity(self):
-        from xoutil.types import NoneType
+        from xoutil.future.types import NoneType
         self.assertIs(NoneType, type(None))
 
 
@@ -228,4 +234,4 @@ class SimpleNamespaceTests(unittest.TestCase):
 
 class TestDynamicClassAttribute(unittest.TestCase):
     def test_isimportable(self):
-        from xoutil.types import DynamicClassAttribute    # noqa
+        from xoutil.future.types import DynamicClassAttribute    # noqa

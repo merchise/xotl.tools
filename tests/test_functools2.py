@@ -3,7 +3,7 @@
 # Copyright (c) 2001-2012, 2017 Python Software Foundation.  All rights reserved.
 #
 
-from xoutil import functools
+from xoutil.future import functools
 import unittest
 from random import choice
 

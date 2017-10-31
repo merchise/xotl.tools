@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight.
+# xoutil.eight.abc
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise Autrement and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -12,11 +12,11 @@
 #
 # Created on 2015-10-18
 
-'''"""Abstract Base Classes (ABCs) according to PEP 3119."""
+'''Abstract Base Classes (ABCs) according to PEP 3119.
 
-Compatibility module between Python 2 and 3.
+Compatibility module between Python 2 and 3.
 
-This module defines one symbol that is defined in Python 3 as a class:
+This module defines one symbol that is defined in Python 3 as a class:
 
   class ABC(metaclass=ABCMeta):
       """Helper class that provides a standard way to create an ABC using
@@ -41,27 +41,36 @@ from __future__ import (division as _py3_division,
 
 
 from abc import ABCMeta, abstractmethod, abstractproperty    # noqa
-from .meta import helper_class
 
-
-# TODO: Develop tests for next method
-def adopt(cls, subclass):
-    '''Register a virtual subclass of an ABC.
-
-    Returns the subclass, to allow usage as a class decorator.  Using this
-    method, difference in Python versions from 3.3 of `register`:meth: method
-    is fixed.
-
-    '''
-    return cls.register(subclass) or subclass
-
-
-ABCMeta.adopt = adopt
-
+from xoutil.eight.mixins import helper_class
 
 ABC = helper_class(ABCMeta)
 
 del helper_class
+
+
+# TODO: Develop tests in order to demonstrate next method runs properly in all
+# Python versions.
+
+if ABCMeta('A', (object,), {}).register(int) is not int:
+    ABCMeta.__old_register__ = ABCMeta.register
+
+    def register(cls, subclass):
+        '''
+
+        Returns the subclass, to allow usage as a class decorator.  This
+        improvement was introduced in Python 3.3.
+
+        '''
+        ABCMeta.__old_register__(cls, subclass)
+        return subclass
+    register.__doc__ = ABCMeta.__old_register__.__doc__ + register.__doc__
+    ABCMeta.register = register
+    del register
+
+
+# TODO: Deprecate and remove this
+ABCMeta.adopt = ABCMeta.register
 
 
 try:

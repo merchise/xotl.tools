@@ -1,8 +1,23 @@
 Changelog
 =========
 
+1.8 series
+----------
+
+Unreleased. Release 1.8.0
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.8.0.rst
+
+
 1.7 series
 ----------
+
+2017-10-31. Release 1.7.12
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.7.12.rst
+
 
 2017-10-05.  1.7.11
 ~~~~~~~~~~~~~~~~~~~
@@ -20,7 +35,6 @@ Changelog
 ~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.7.9.rst
-
 
 
 2017-09-19.  1.7.8
@@ -250,16 +264,16 @@ Unreleased. Release 1.6.11
 2012-11-01. Release 1.1.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Introduces :func:`xoutil.compat.iteritems_`, :func:`xoutil.compat.iterkeys_`
-  and :func:`xoutil.compat.itervalues_`.
+- Introduces `xoutil.compat.iteritems_`:func:, `xoutil.compat.iterkeys_`:func:
+  and `xoutil.compat.itervalues_`:func:.
 
-- :mod:`execution context <xoutil.context>` are now aware of `zope.interface`
+- `execution context <xoutil.context>`:mod: are now aware of `zope.interface`
   interfaces; so that you may ask for a context name implementing a given
   interface, instead of the name itself.
 
 - Improves xoutil.formatter documentation.
 
-- Several fixes to :mod:`xoutil.aop.classical`. It has sudden backwards
+- Several fixes to `xoutil.aop.classical`:mod:. It has sudden backwards
   incompatible changes.
 
 - `before` and `after` methods may use the `*args, **kwargs` idiom to get the
@@ -270,14 +284,14 @@ Unreleased. Release 1.6.11
 2012-08-22. Release 1.1.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Adds function :func:`xoutil.fs.rmdirs` that removes empty dirs.
+- Adds function `xoutil.fs.rmdirs`:func: that removes empty dirs.
 
-- Adds functions :func:`xoutil.string.safe_join`,
-  :func:`xoutil.string.safe_encode`, :func:`xoutil.string.safe_decode`,
-  and :func:`xoutil.string.safe_strip`; and the class
-  :class:`xoutil.string.SafeFormatter`.
+- Adds functions `xoutil.string.safe_join`:func:,
+  `xoutil.string.safe_encode`:func:, `xoutil.string.safe_decode`:func:,
+  and `xoutil.string.safe_strip`:func:; and the class
+  `xoutil.string.SafeFormatter`:class:.
 
-- Adds function :func:`xoutil.cpystack.iter_frames`.
+- Adds function `xoutil.cpystack.iter_frames`:func:.
 
 2012-07-11. Release 1.1.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -296,7 +310,7 @@ Unreleased. Release 1.6.11
 
 - Improves deprecation warnings by pointing to the real calling filename
 - Removes all internal use of simple_memoize since it's deprecated. We now use
-  :func:`~xoutil.functools.lru_cache`.
+  `~xoutil.functools.lru_cache`:func:.
 
 2012-07-03. Release 1.1.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -307,15 +321,15 @@ Unreleased. Release 1.6.11
 
 - Removed xoutil.annotate, since it's not portable across Python's VMs.
 
-- Introduced module :mod:`xoutil.collections`
+- Introduced module `xoutil.collections`:mod:
 
-- Deprecated modules :mod:`xoutil.default_dict`, :mod:`xoutil.opendict` in
-  favor of :mod:`xoutil.collections`.
+- Deprecated modules `xoutil.default_dict`:mod:, `xoutil.opendict`:mod: in
+  favor of `xoutil.collections`:mod:.
 
-- Backported :func:`xoutil.functools.lru_cache` from Python 3.2.
+- Backported `xoutil.functools.lru_cache`:func: from Python 3.2.
 
-- Deprecated module :mod:`xoutil.memoize` in favor of
-  :func:`xoutil.functools.lru_cache`.
+- Deprecated module `xoutil.memoize`:mod: in favor of
+  `xoutil.functools.lru_cache`:func:.
 
 
 1.0 series
@@ -324,7 +338,7 @@ Unreleased. Release 1.6.11
 2012-06-15. Release 1.0.30
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Introduces a new module :py:mod:`xoutil.proxy`.
+- Introduces a new module :py`xoutil.proxy`:mod:.
 
 - Starts working on the sphinx documentation so that we move to 1.1 release we
   a decent documentation.
@@ -356,7 +370,7 @@ Unreleased. Release 1.6.11
 
   It is expected that the signature of those methods change in the future.
 
-- Introducing a default argument for :func:`xoutil.objects.get_first_of`.
+- Introducing a default argument for `xoutil.objects.get_first_of`:func:.
 
 - Other minor additions in the code. Refactoring and the like.
 
@@ -399,5 +413,5 @@ Unreleased. Release 1.6.11
 2012-04-03. Release 1.0.21
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Includes a new module :mod:`xoutil.annotate` that provides a way to place
+- Includes a new module `xoutil.annotate`:mod: that provides a way to place
   Python annotations in forward-compatible way.

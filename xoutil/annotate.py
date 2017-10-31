@@ -3,33 +3,29 @@
 # ---------------------------------------------------------------------
 # xoutil.annotate
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
 # the terms of the LICENCE attached in the distribution package.
 #
-# Created on Apr 3, 2012
+# Created on 2012-04-03
 
-'''Provides Python 3k forward-compatible (:pep:`3107`) annotations.'''
+'''Provides Python 3k forward-compatible (`3107`:pep:) annotations.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
-                        absolute_import)
+                        absolute_import as _py3_abs_import)
 
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
 
-from xoutil.functools import partial
+from xoutil.future.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
 from xoutil.decorator.meta import decorator
 
-from xoutil.names import strlist as strs
-__all__ = strs('annotate')
-del strs
+__all__ = ['annotate']
 
 
 _SIGNATURE = _regex_compile(r'''(?ixm)
@@ -112,19 +108,19 @@ def _parse_signature(signature):
             self.d = dict(init)
 
         def __getitem__(self, key):
-            from xoutil import Unset
+            from xoutil.symbols import Unset
             from xoutil.iterators import dict_update_new
-            from xoutil.eight import _py3
+            from xoutil.eight import python_version
             d = self.d
             res = d.get(key, Unset)
             f = self.f
             if res is Unset and f:
                 f_globals = self.f_globals
-                if _py3:
+                if python_version == 3:
                     # FIXME: This modifies f_globals! Use f_builtins of the
                     # frame.
 
-                    # In Py3k (at least Python 3.2) builtins are not directly
+                    # In Py3k (at least Python 3.2) builtins are not directly
                     # in f_globals but inside a __builtins__ key.
                     builtins = f_globals.get('__builtins__', {})
                     dict_update_new(f_globals, builtins)
@@ -158,19 +154,19 @@ def _parse_signature(signature):
 
 @decorator
 def annotate(func, signature=None, **keyword_annotations):
-    '''Annotates a function with a Python 3k forward-compatible
+    '''Annotates a function with a Python 3k forward-compatible
     ``__annotations__`` mapping.
 
-    See :pep:`3107` for more details about annotations.
+    See `3107`:pep: for more details about annotations.
 
 
     :param signature: A string with the annotated signature of the
         decorated function.
 
-        This string should follow the annotations syntax in :pep:`3107`. But
+        This string should follow the annotations syntax in `3107`:pep:. But
         there are several deviations from the PEP text:
 
-       - There's no support for the full syntax of Python 2 expressions; in
+       - There's no support for the full syntax of Python 2 expressions; in
          particular nested arguments are not supported since they are
          deprecated and are not valid in Py3k.
 

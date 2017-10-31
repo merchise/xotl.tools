@@ -1,4 +1,4 @@
-:mod:`xoutil.context` - Simple execution contexts
+`xoutil.context`:mod: - Simple execution contexts
 =================================================
 
 .. automodule:: xoutil.context

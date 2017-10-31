@@ -3,12 +3,12 @@
 # ---------------------------------------------------------------------
 # xoutil.names
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can redistribute it and/or modify it under the
+# terms of the LICENCE attached (see LICENCE file) in the distribution
+# package.
 #
 # Created 2013-04-15
 
@@ -16,13 +16,14 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
 
+# FIX: These imports must be local
+from xoutil.symbols import Undefined as _undef
+from xoutil.eight import base_string
 
-from xoutil import Undefined as _undef
-from .eight import base_string
 
+# TODO: This module must be reviewed and deprecate most of it.
 
 def _get_mappings(source):
     '''Return a sequence of mappings from `source`.
@@ -35,7 +36,7 @@ def _get_mappings(source):
     if isinstance(source, Mapping):
         return (source,)
     else:
-        from xoutil.inspect import get_attr_value
+        from xoutil.future.inspect import get_attr_value
         l = get_attr_value(source,  'f_locals', _undef)
         g = get_attr_value(source,  'f_globals', _undef)
         if isinstance(l, Mapping) and isinstance(g, Mapping):
@@ -162,12 +163,12 @@ def _get_best_name(names, safe=False, full=False):
         # TODO: Improve these methods to return False of reserved identifiers
         is_valid = is_valid_full_identifier if full else is_valid_identifier
         if not is_valid(res):
-            from xoutil.string import normalize_slug
+            from xoutil.string import slugify
             _mark = 'dot_dot_dot'
             full = full and '.' in res
             if full:
                 res = res.replace('.', _mark)
-            res = normalize_slug(res, '_')
+            res = slugify(res, '_')
             if full:
                 res = res.replace(_mark, '.')
             if not is_valid(res):
@@ -183,12 +184,12 @@ def module_name(item):
        >>> module_name(module_name)
        'xoutil.names'
 
-       >>> from xoutil import Unset
+       >>> from xoutil.symbols import Unset
        >>> module_name(Unset)
-       'xoutil.logical'
+       'xoutil.symbols'
 
     '''
-    from xoutil.inspect import get_attr_value
+    from xoutil.future.inspect import get_attr_value
     if item is None:
         res = ''
     elif isinstance(item, base_string):
@@ -222,9 +223,9 @@ def simple_name(item, join=True):
        >>> simple_name(simple_name)
        'xoutil.names.simple_name'
 
-       >>> from xoutil import Unset
+       >>> from xoutil.symbols import Unset
        >>> simple_name(Unset)
-       'xoutil.logical.Unset'
+       'xoutil.symbols.Unset'
 
     This function is intended for named objects (those with the `__name__`
     attribute), if an object without standard name is used, the type name is
@@ -236,18 +237,19 @@ def simple_name(item, join=True):
     To get a name in a more precise way, use `nameof`:func:.
 
     '''
-    # TODO: Use this function in `nameof`
-    from xoutil.inspect import type_name
+    # TODO: deprecate `join` argument
+    from xoutil.future.inspect import safe_name
     singletons = (None, True, False, Ellipsis, NotImplemented)
     res = next((str(s) for s in singletons if s is item), None)
     if res is None:
-        res = type_name(item)
+        res = safe_name(item)
         if res is None:
             item = type(item)
-            res = type_name(item)
+            res = safe_name(item)
         if join:
             if join is True:
-                join = lambda arg: str('.'.join(arg).strip('.'))
+                def join(arg):
+                    return str('.'.join(arg).strip('.'))
             res = join((module_name(item), res))
     return res
 
@@ -283,11 +285,11 @@ def nameof(*args, **kwargs):
     `full`, `inner`, `safe` and `typed`.
 
     If `typed` is True and the object is not a type name or a callable (see
-    `xoutil.inspect.type_name`:func:), then the `type` of the object is used
-    instead.
+    `xoutil.future.inspect.safe_name`:func:), then the `type` of the object is
+    used instead.
 
     If `inner` is True we try to extract the name by introspection instead of
-    looking for the object in the frame stack::
+    looking for the object in the frame stack.
 
     If `full` is True the full identifier of the object is preferred.  In this
     case if `inner` is False the local-name for the object is found.  If
@@ -303,7 +305,7 @@ def nameof(*args, **kwargs):
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
     from xoutil.eight import range
-    from xoutil.inspect import type_name
+    from xoutil.future.inspect import safe_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
 
@@ -327,10 +329,10 @@ def nameof(*args, **kwargs):
 
     while vars.idx < arg_count:
         item = args[vars.idx]
-        if param('typed') and not type_name(item):
+        if param('typed') and not safe_name(item):
             item = type(item)
         if param('inner'):
-            res = type_name(item)
+            res = safe_name(item)
             if res:
                 if param('full'):
                     head = module_name(item)
@@ -369,7 +371,7 @@ def nameof(*args, **kwargs):
             if res:
                 grant('.'.join((head, res)) if head else res)
             else:
-                res = type_name(item)
+                res = safe_name(item)
                 if res:
                     grant(res)
                 else:
@@ -403,7 +405,7 @@ def identifier_from(*args):
     '''
     if len(args) == 1:
         from xoutil.validators.identifiers import is_valid_identifier as valid
-        from xoutil.inspect import get_attr_value
+        from xoutil.future.inspect import get_attr_value
         res = None
         if isinstance(args[0], type):
             aux = get_attr_value(args[0], '__name__', None)
@@ -495,13 +497,14 @@ class strlist(list):
     '''Similar to list, but only intended for storing ``str`` instances.
 
     Constructors:
-        * strlist() -> new empty list
-        * strlist(collection) -> new list initialized from collection's items
-        * strlist(item, ...) -> new list initialized from severals items
+      * strlist() -> new empty list
+      * strlist(collection) -> new list initialized from collection's items
+      * strlist(item, ...) -> new list initialized from severals items
 
     Last versions of Python 2.x has a feature to use unicode as standard
     strings, but some object names can be only ``str``. To be compatible with
     Python 3.x in an easy way, use this list.
+
     '''
     def __init__(self, *args):
         if len(args) == 1:
@@ -558,7 +561,7 @@ class strlist(list):
 # Otherwise the `tests/` directory would need to be a proper package.
 
 import unittest as _utest
-from xoutil import Unset as _Unset   # Use a tier 0 module!
+from xoutil.symbols import Unset as _Unset   # Use a tier 0 module!
 
 
 class TestRelativeImports(_utest.TestCase):

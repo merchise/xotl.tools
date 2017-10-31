@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.fs
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -11,22 +10,20 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Nov 28, 2011
+# Created on 2011-11-28
 
 '''File system utilities.
 
 This module contains file-system utilities that could have side-effects. For
 path-handling functions that have no side-effects look at
-:mod:`xoutil.fs.path`.
+`xoutil.fs.path`:mod:.
 
 '''
 
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
-
 
 import sys
 import os
@@ -41,8 +38,10 @@ has_magic = lambda s: re_magic.search(s) is not None
 def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
     from functools import reduce
     import fnmatch
+    from xoutil.params import check_count
     arg_count = reduce(lambda count, p: count + (1 if p is not None else 0),
                        (pattern, regex_pattern, shell_pattern), 0)
+    check_count(arg_count, 0, 1, caller='_get_regex')    # XXX: WTF?!
     if arg_count == 1:
         if pattern is not None:
             if pattern.startswith('(?') or pattern.startswith('^(?'):
@@ -52,9 +51,6 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
         return _rcompile(regex_pattern or fnmatch.translate(shell_pattern))
     elif arg_count == 0:
         return None
-    else:
-        raise TypeError('"_get_regex()" takes at most 1 argument '
-                        '(%s given)' % arg_count)
 
 
 def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
@@ -146,7 +142,7 @@ def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
     '''
     Iterate directories recursively.
 
-    The params have analagous meaning that in :func:`iter_files` and the same
+    The params have analagous meaning that in `iter_files`:func: and the same
     restrictions.
 
     '''
@@ -466,7 +462,7 @@ if sys.version_info < (3, 4, 1):
 
         """
         from errno import EEXIST
-        from xoutil.string import safe_encode
+        from xoutil.future.codecs import safe_encode
         head, tail = os.path.split(name)
         if not tail:
             head, tail = os.path.split(head)
@@ -498,7 +494,7 @@ def ensure_filename(filename, yields=False):
     file) an OSError is raised.  If `exist_ok` is False the filename must not
     be taken; an OSError is raised otherwise.
 
-    The function creates all directories if needed. See :func:`makedirs` for
+    The function creates all directories if needed. See `makedirs`:func: for
     restrictions.
 
     If `yields` is True, returns the file object.  This way you may open a
@@ -533,7 +529,7 @@ def concatfiles(*files):
 
     Each positional argument must be either:
 
-    - a file-like object (ready to be passed to :func:`shutil.copyfileobj`)
+    - a file-like object (ready to be passed to `shutil.copyfileobj`:func:)
 
     - a string, the file path.
 
@@ -547,13 +543,11 @@ def concatfiles(*files):
     '''
     import shutil
     from xoutil.eight import string_types
-    from xoutil.types import is_collection
-    if len(files) < 2:
-        raise TypeError('At least 2 files must be passed to concatfiles.')
-    elif len(files) == 2:
-        files, target = files[0], files[1]
-        if not is_collection(files):
-            files = [files]
+    from xoutil.values.simple import force_iterable_coerce
+    from xoutil.params import check_count
+    check_count(files, 2, caller='concatfiles')
+    if len(files) == 2:
+        files, target = force_iterable_coerce(files[0]), files[1]
     else:
         files, target = files[:-1], files[-1]
     if isinstance(target, string_types):

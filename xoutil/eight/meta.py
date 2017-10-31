@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.eight.meta
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -16,7 +16,7 @@
 '''
 
 from . import _py3
-
+from ._meta import Mixin    # noqa
 
 if _py3:
     from ._meta3 import metaclass
@@ -55,13 +55,13 @@ metaclass.__doc__ = '''Define the metaclass of a class.
 
     Metaclasses are allowed to have a ``__prepare__`` classmethod to return
     the namespace into which the body of the class should be evaluated.  See
-    :pep:`3115`.
+    `3115`:pep:.
 
-    .. warning:: The :pep:`3115` is not possible to implement in Python 2.7.
+    .. warning:: The `3115`:pep: is not possible to implement in Python 2.7.
 
        Despite our best efforts to have a truly compatible way of creating
        meta classes in both Python 2.7 and 3.0+, there is an inescapable
-       difference in Python 2.7.  The :pep:`3115` states that ``__prepare__``
+       difference in Python 2.7.  The `3115`:pep: states that ``__prepare__``
        should be called before evaluating the body of the class.  This is not
        possible in Python 2.7, since ``__new__`` already receives the
        attributes collected in the body of the class.  So it's always too late
@@ -76,7 +76,7 @@ metaclass.__doc__ = '''Define the metaclass of a class.
          class Meta(type):
               @classmethod
               def __prepare__(cls, name, bases, **kwargs):
-                  from xoutil.collections import OrderedDict
+                  from xoutil.future.collections import OrderedDict
                   return OrderedDict()
 
          class Foo(metaclass(Meta)):
@@ -88,8 +88,8 @@ metaclass.__doc__ = '''Define the metaclass of a class.
        when creating the class ``Bar`` the ``__prepare__()`` class method is
        not called in Python 2.7!
 
-    .. seealso:: `xoutil.types.prepare_class`:func: and
-       `xoutil.types.new_class`:func:.
+    .. seealso:: `xoutil.future.types.prepare_class`:func: and
+       `xoutil.future.types.new_class`:func:.
 
     .. warning::
 
@@ -142,52 +142,4 @@ metaclass.__doc__ = '''Define the metaclass of a class.
 
 '''
 
-
-from re import compile
-_META_STRIP = compile('(?i)(^(meta(class)?|type)_{0,2}|'
-                      '_{0,2}(meta(class)?|type)$)')
-del compile
-
-
-def helper_class(meta, name=None, doc=None, adjust_module=True):
-    '''Create a helper class based in the meta-class concept.
-
-    :param meta: The meta-class type to base returned helper-class on it.
-
-    :param name: The name (``__name__``) to assign to the returned
-           helper-class; if None is given, a nice name is calculated.
-
-    :param doc: The documentation (``__doc__``) to assign to the returned
-           helper-class; if None is given, a nice one is calculated.
-
-    :param adjust_module: if True, the ``__module__`` helper-class attribute
-           is changed; if False is leaved unchanged.
-
-    For example::
-
-      >>> from abc import ABCMeta
-      >>> ABC = helper_class(ABCMeta)    # better than Python 3's abc.ABC :(
-      >>> class MyError(Exception, ABC):
-      ...     pass
-      >>> (MyError.__bases__ == (Exception,), hasattr(MyError, 'register'))
-      (True, True)
-
-    This function calls `metaclass`:func: internally.  So, in the example
-    anterior, `MyError` declaration is equivalent to::
-
-      >>> class MyError(Exception, metaclass(ABCMeta)):
-      ...     pass
-
-    '''
-    res = metaclass(meta)
-    name = name or _META_STRIP.sub('', meta.__name__)
-    doc = doc or ('Helper class.\n\nProvide a standard way to create `{name}`'
-                  ' sub-classes using inheritance.\n\n'
-                  'For example::\n\n'
-                  '  class My{name}({name}):\n'
-                  '      pass\n\n').format(name=name)
-    res.__name__ = name
-    res.__doc__ = doc
-    if adjust_module:
-        res.__module__ = '<helper::{}>'.format(meta.__module__)
-    return res
+metaclass.__module__ = __name__

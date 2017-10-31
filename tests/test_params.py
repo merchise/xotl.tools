@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # tests.test_params
 #----------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -13,81 +13,86 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 import sys
-from xoutil.params import ParamConformer
-
-
 from xoutil.eight import string_types
-from xoutil.values import file_coerce, positive_int_coerce
+from xoutil.values import file_coerce, positive_int_coerce as positive_int
 
-sample_scheme = {
-    'stream': (file_coerce, {0, 3}, {'output'}, sys.stdout),
-    'indent': (positive_int_coerce, {1}, 1),
-    'width': (positive_int_coerce, {2}, {'max_width'}, 79),
-    'newline': (string_types, '\n'), }
+# old params
+from xoutil.params import ParamSchemeRow as row, ParamScheme as scheme
 
-del file_coerce, positive_int_coerce, string_types
+sample_scheme = scheme(
+    row('stream', 0, -1, 'output', default=sys.stdout, coerce=file_coerce),
+    row('indent', 0, 1, default=1, coerce=positive_int),
+    row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
+    row('newline', default='\n', coerce=string_types))
+
+del file_coerce, positive_int, string_types
 
 
 def test_basic_params():
-    conformer = ParamConformer(sample_scheme)
 
     def get_values(*args, **kwargs):
-        conformer(args, kwargs)
-        return kwargs
+        return sample_scheme(args, kwargs)
 
     def foobar(**kwargs):
         from xoutil.eight import iteritems
-        res = {key: ps['default'] for key, ps in iteritems(conformer.scheme)}
+        res = sample_scheme.defaults
         for key, value in iteritems(kwargs):
             res[key] = value
         return res
 
-    assert get_values(4, 80) == foobar(indent=4, width=80)
-    assert get_values(2) == foobar(indent=2)
-    assert get_values(80, indent=4,
-                      extra="I'm OK!") == foobar(width=80, indent=4,
-                                                 extra="I'm OK!")
-    assert get_values(width=80) == foobar(width=80)
-    assert get_values(sys.stderr, 4, 80) == foobar(indent=4, width=80,
-                                                   stream=sys.stderr)
-    assert get_values(4, sys.stderr,
-                      newline='\n\r') == foobar(indent=4, stream=sys.stderr,
-                                                newline='\n\r')
-    assert get_values(4, output=sys.stderr) == foobar(indent=4,
-                                                      stream=sys.stderr)
-    assert get_values(4, max_width=80) == foobar(indent=4, width=80)
+    one, two = get_values(4, 80), foobar(indent=4, width=80)
+    assert one == two, '\n{} != \n{}'.format(one, two)
+    one, two = get_values(2), foobar(indent=2)
+    assert one == two, '\n{} != \n{}'.format(one, two)
+    one = get_values(80, indent=4, extra="I'm OK!")
+    two = foobar(width=80, indent=4, extra="I'm OK!")
+    assert one == two, '\n{} != \n{}'.format(one, two)
+    one, two = get_values(width=80), foobar(width=80)
+    assert one == two, '\n{} != \n{}'.format(one, two)
+    one = get_values(sys.stderr, 4, 80)
+    two = foobar(indent=4, width=80, stream=sys.stderr)
+    assert one == two, '\n{} != \n{}'.format(one, two)
+    one = get_values(4, sys.stderr, newline='\n\r')
+    two = foobar(indent=4, stream=sys.stderr, newline='\n\r')
+    assert one == two, '\n{} != \n{}'.format(one, two)
+    one = get_values(4, output=sys.stderr)
+    two = foobar(indent=4, stream=sys.stderr)
+    assert one == two, '\n{} != \n{}'.format(one, two)
+    one, two = get_values(4, max_width=80), foobar(indent=4, width=80)
+    assert one == two, '\n{} != \n{}'.format(one, two)
 
 
 def test_param_errors():
-    conformer = ParamConformer(sample_scheme)
 
     def get_values(*args, **kwargs):
-        conformer(args, kwargs)
-        return kwargs
+        return sample_scheme(args, kwargs, strict=True)
+
+    def error_repr(error):
+        return '{}()'.format(type(error).__name__, error)
+
+    msg = 'Must raised "{}", \n\tnot {}'
 
     try:
         get_values(sys.stderr, 4, output=sys.stderr)
         assert False, 'Should raise TypeError'
     except TypeError:
         pass
-    except:
-        assert False, 'Should have raised an TypeError'
+    except BaseException as error:
+        assert False, msg.format(TypeError.__name__, error_repr(error))
     try:
         get_values(4, -79)
         assert False, 'Should raise TypeError'
     except TypeError:
         pass
-    except:
-        assert False, 'Should have raised an TypeError'
-    conformer = ParamConformer(sample_scheme, __strict__=True)
+    except BaseException as error:
+        assert False, msg.format(TypeError.__name__, error_repr(error))
     try:
         get_values(80, indent=4, extra="I'm not OK!")
-        assert False, 'Should raise ValueError'
-    except ValueError:
+        assert False, 'Should raise TypeError'
+    except TypeError:
         pass
-    except:
-        assert False, 'Should have raised an ValueError'
+    except BaseException as error:
+        assert False, msg.format(TypeError.__name__, error_repr(error))

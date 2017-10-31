@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xotl.web
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2011, 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -14,22 +13,23 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Jun 28, 2011
+# Created on 2011-06-28
 
 '''Utils for Web applications.'''
 
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
-
-from xoutil.names import strlist as strs
-__all__ = strs('slugify')
-del strs
+                        print_function as _py3_print)
+# TODO: Why not ``absolute_import``?
 
 
+__all__ = ['slugify']
+
+
+# TODO: Why not deprecate this and use standard `xoutil.string.slugify`.
 def slugify(s, entities=True, decimal=True, hexadecimal=True):
-    '''
+    '''Convert a string to a slug representation.
+
     Normalizes string, converts to lower-case, removes non-alpha characters,
     and converts spaces to hyphens.
 
@@ -75,7 +75,8 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     import re
     from xoutil.eight import unichr, text_type
-    from xoutil.string import safe_decode, normalize_slug
+    from xoutil.string import slugify
+    from xoutil.future.codecs import safe_decode
     if not isinstance(s, text_type):
         s = safe_decode(s)
     if entities:
@@ -98,4 +99,4 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
                        lambda m: unichr(int(m.group(1), 16)), s)
         except:
             pass
-    return normalize_slug(s, '-')
+    return slugify(s, '-')

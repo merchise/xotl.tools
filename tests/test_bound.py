@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # test_routines
 # ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise and Contributors
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -12,12 +11,9 @@
 #
 # Created on 2014-07-21
 
-
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_import)
-
 
 import unittest
 from xoutil.bound import boundary, whenall, whenany

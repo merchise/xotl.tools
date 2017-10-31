@@ -3,8 +3,7 @@
 # ---------------------------------------------------------------------
 # xoutil.fs.path
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2013, 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Medardo Rodríguez
 # All rights reserved.
 #
@@ -12,54 +11,54 @@
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
-# Created on Feb 16, 2012
+# Created on 2012-02-16
 
 '''Extensions to os.path
 
 Functions inside this module must not have side-effects on the
 file-system. This module re-exports (without change) several functions from the
-:mod:`os.path` standard module.
+`os.path`:mod: standard module.
 
 '''
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        print_function as _py3_print)
+# TODO: Why not ``absolute_import``?
 
 import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
                      join as _orig_join)
 
-from xoutil.functools import power as pow_
-from xoutil.names import strlist as strs
-__all__ = strs('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
-               'fix_encoding', 'join', 'normalize_path',
-               'shorten_module_filename', 'shorten_user')
-del strs
+from xoutil.future.functools import power as pow_
+
+__all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
+           'fix_encoding', 'join', 'normalize_path',
+           'shorten_module_filename', 'shorten_user')
 
 
 # TODO: import all in "from os.path import *"
 
-rtrim = lambda path, n=1: pow_(dirname, n)(normalize_path(path))
-rtrim.__doc__ = """Trims the last `n` components of the pathname `path`.
+def rtrim(path, n=1):
+    """Trims the last `n` components of the pathname `path`.
 
-This basically applies `n` times the function `os.path.dirname` to `path`.
+    This basically applies `n` times the function `os.path.dirname` to `path`.
 
-`path` is normalized before proceeding (but not tested to exists).
+    `path` is normalized before proceeding (but not tested to exists).
 
-.. versionchanged:: 1.5.5 `n` defaults to 1.  In this case rtrim is identical
-                    to :func:`os.path.dirname`.
+    .. versionchanged:: 1.5.5 `n` defaults to 1.  In this case rtrim is
+                        identical to `os.path.dirname`:func:.
 
-Example::
+    Example::
 
-    >>> rtrim('/tmp/a/b/c/d', 3)
-    '/tmp/a'
+      >>> rtrim('/tmp/a/b/c/d', 3)
+      '/tmp/a'
 
-    # It does not matter if `/` is at the end
-    >>> rtrim('/tmp/a/b/c/d/', 3)
-    '/tmp/a'
+      # It does not matter if `/` is at the end
+      >>> rtrim('/tmp/a/b/c/d/', 3)
+      '/tmp/a'
 
-"""
+    """
+    return pow_(dirname, n)(normalize_path(path))
 
 
 def fix_encoding(name, encoding=None):
@@ -70,7 +69,7 @@ def fix_encoding(name, encoding=None):
     '''
     if not isinstance(name, str):
         if not encoding:
-            from xoutil.string import force_encoding
+            from xoutil.future.codecs import force_encoding
             encoding = force_encoding(sys.getfilesystemencoding())
         fixer = name.decode if isinstance(name, bytes) else name.encode
         return fixer(encoding)

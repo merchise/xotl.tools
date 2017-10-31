@@ -1,4 +1,4 @@
-:mod:`xoutil.progress` - Console progress utils
+`xoutil.progress`:mod: - Console progress utils
 ===============================================
 
 .. automodule:: xoutil.progress

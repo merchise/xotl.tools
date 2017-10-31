@@ -2,8 +2,7 @@
 # ---------------------------------------------------------------------
 # xoutil.crypto
 # ---------------------------------------------------------------------
-# Copyright (c) 2015 Merchise and Contributors
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # Author: Medardo Rodriguez
@@ -24,18 +23,15 @@ secury strong level.
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
 
 
-from xoutil.names import strlist as strs
-__all__ = strs('PASS_PHRASE_LEVEL_BASIC',
-               'PASS_PHRASE_LEVEL_MAPPED',
-               'PASS_PHRASE_LEVEL_MAPPED_MIXED',
-               'PASS_PHRASE_LEVEL_MAPPED_DATED',
-               'PASS_PHRASE_LEVEL_STRICT',
-               'generate_password')
-del strs
+__all__ = ('PASS_PHRASE_LEVEL_BASIC',
+           'PASS_PHRASE_LEVEL_MAPPED',
+           'PASS_PHRASE_LEVEL_MAPPED_MIXED',
+           'PASS_PHRASE_LEVEL_MAPPED_DATED',
+           'PASS_PHRASE_LEVEL_STRICT',
+           'generate_password')
 
 
 #: The most basic level (less ) for the password generation.
@@ -53,7 +49,7 @@ PASS_PHRASE_LEVEL_MAPPED_DATED = 3
 #: Totally scramble the result, making very hard to predict the result.
 PASS_PHRASE_LEVEL_STRICT = 4
 
-#: The default level for :func:`generate_password`
+#: The default level for `generate_password`:func:
 DEFAULT_PASS_PHRASE_LEVEL = PASS_PHRASE_LEVEL_MAPPED_DATED
 
 
@@ -105,26 +101,26 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
 
     There are several definitions with numerical values for `level` (0-4):
 
-    :data:`PASS_PHRASE_LEVEL_BASIC`
+    `PASS_PHRASE_LEVEL_BASIC`:data:
 
         Generate the same pass-phrase, just removing invalid characters and
         converting the result to lower-case.
 
-    :data:`PASS_PHRASE_LEVEL_MAPPED`
+    `PASS_PHRASE_LEVEL_MAPPED`:data:
 
         Replace some characters with new values: ``'e'->'3'``, ``'i'->'1'``,
         ``'o'->'0'``, ``'s'->'5'``.
 
-    :data:`PASS_PHRASE_LEVEL_MAPPED_MIXED`
+    `PASS_PHRASE_LEVEL_MAPPED_MIXED`:data:
 
         Consonants characters before 'M' (included) are converted to
         upper-case, all other are kept lower-case.
 
-    :data:`PASS_PHRASE_LEVEL_MAPPED_DATED`
+    `PASS_PHRASE_LEVEL_MAPPED_DATED`:data:
 
         Adds a suffix with the year of current date ("<YYYY>").
 
-    :data:`PASS_PHRASE_LEVEL_STRICT`
+    `PASS_PHRASE_LEVEL_STRICT`:data:
 
         Randomly scramble previous result until unbreakable strong password is
         obtained.
@@ -147,13 +143,13 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
 
     '''
     from random import sample, randint
-    from xoutil.string import normalize_slug
+    from xoutil.string import slugify
     level = _normalize_level(level)
     size = MAX_PASSWORD_SIZE + 1    # means, return all calculated
     required = min(max(level, 1)*BASIC_PASSWORD_SIZE, MAX_PASSWORD_SIZE)
     if pass_phrase:
         # PASS_PHRASE_LEVEL_BASIC
-        res = normalize_slug(pass_phrase, '', invalids='_')
+        res = slugify(pass_phrase, '', invalid_chars='_')
         if level >= PASS_PHRASE_LEVEL_MAPPED:
             for (old, new) in ('e3', 'i1', 'o0', 's5'):
                 res = res.replace(old, new)
