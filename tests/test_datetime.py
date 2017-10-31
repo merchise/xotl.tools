@@ -199,13 +199,13 @@ def test_duplication_of_timespans(ts1, ts2):
 @given(time_span())
 def test_timespans_are_pickable(ts):
     import pickle
-    assert ts == pickle.loads(pickle.dumps(ts))
-    assert ts == pickle.loads(pickle.dumps(ts, pickle.HIGHEST_PROTOCOL))
+    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
+        assert ts == pickle.loads(pickle.dumps(ts, proto))
 
 
 def test_empty_timespan_is_pickable():
     import pickle
-    assert EmptyTimeSpan == pickle.loads(pickle.dumps(EmptyTimeSpan))
-    assert EmptyTimeSpan is pickle.loads(
-        pickle.dumps(EmptyTimeSpan, pickle.HIGHEST_PROTOCOL)
-    )
+    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
+        assert EmptyTimeSpan is pickle.loads(
+            pickle.dumps(EmptyTimeSpan, proto)
+        )

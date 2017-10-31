@@ -730,7 +730,7 @@ class _EmptyTimeSpan(object):
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             # We expect `self` to be a singleton, but pickle protocol 1 does
             # not warrant to call our __new__.
-            return isinstance(which, _EmptyTimeSpan)
+            return self is which
         else:
             raise TypeError
 
@@ -790,8 +790,9 @@ class _EmptyTimeSpan(object):
             res = cls._instance = super(_EmptyTimeSpan, cls).__new__(cls)
         return res
 
-    def __getnewargs__(self):
-        return ()
+    def __reduce__(self):
+        # So that unpickling returns the singleton
+        return type(self), ()
 
 
 EmptyTimeSpan = _EmptyTimeSpan()
