@@ -7,4 +7,6 @@
 
 .. autofunction:: import_deprecated
 
-.. autofunction:: inject_deprecated
+.. autofunction:: deprecate_module
+
+.. autofunction:: deprecate_linked

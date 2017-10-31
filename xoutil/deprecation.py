@@ -290,8 +290,7 @@ def deprecate_module(replacement):
     This function must be called in the global context of the deprecated
     module.
 
-    :param replacement: Must be a module, or a module name to check, it must be part of the
-           actual module name.  If not given 'xoutil.future' is assumed.
+    :param replacement: The name of replacement module.
 
     For example::
 
