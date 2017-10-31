@@ -58,6 +58,8 @@ class ctuple(fp.pos_args):
        >>> compose(compat_print, list, range, math=False)(10)
        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+    .. deprecated:: 1.8.0 Use `xoutil.fp.tool.pos_args`:class:.
+
     '''
 
 
@@ -82,8 +84,7 @@ def compose(*callables, **kwargs):
                  last. If False, then the last function in `func` is applied
                  first.
 
-    .. versionchanged 1.8.0:: Deprecated in favor of
-       `xoutil.fp.tools.compose`:class:
+    .. deprecated:: 1.8.0 Use `xoutil.fp.tools.compose`:class:.
 
     '''
     from xoutil.params import check_count
