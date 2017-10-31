@@ -135,7 +135,7 @@ def check_default(absent=Undefined):
 def single(args, kwds):
     '''Return a true value only when a unique argument is given.
 
-    Wnen needed, the most suitable result will be wrapped using the
+    When needed, the most suitable result will be wrapped using the
     `~xoutil.fp.option.Maybe`:class:\ .
 
     .. versionadded:: 1.8.0
