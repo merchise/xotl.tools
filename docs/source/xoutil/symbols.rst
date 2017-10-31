@@ -1,5 +1,5 @@
-`xoutil.symbols`:mod: -- Basic function argument manager
-========================================================
+`xoutil.symbols`:mod: -- Logical values
+=======================================
 
 .. automodule:: xoutil.symbols
    :members:
