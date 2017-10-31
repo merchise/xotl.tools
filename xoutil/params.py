@@ -65,8 +65,10 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
 
 
     '''
-    assert isinstance(low, int) and low >= 0
-    assert isinstance(high, int) and high >= low
+    from xoeuf.eight import integer_types
+    # TODO: Shouldn't we use the TypeError and ValueError?
+    assert isinstance(low, integer_types) and low >= 0
+    assert isinstance(high, integer_types) and high >= low
     if isinstance(args, int):
         count = args
         if count < 0:
