@@ -55,7 +55,7 @@ class compose(metaclass(MetaCompose)):
     Functions are composed right to left.  A composition of zero functions
     gives back the `identity`:func: function.
 
-    Rules must be fulfilled (those inner `all`)::
+    The following rules (the arguments of `all`) are always true::
 
       >>> x = 15
       >>> f, g, h = x.__add__, x.__mul__, x.__xor__

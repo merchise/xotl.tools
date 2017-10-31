@@ -26,8 +26,10 @@ from __future__ import (division as _py3_division,
 __all__ = ['slugify']
 
 
+# TODO: Why not deprecate this and use standard `xoutil.string.slugify`.
 def slugify(s, entities=True, decimal=True, hexadecimal=True):
-    '''
+    '''Convert a string to a slug representation.
+
     Normalizes string, converts to lower-case, removes non-alpha characters,
     and converts spaces to hyphens.
 
@@ -73,7 +75,8 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
     '''
     import re
     from xoutil.eight import unichr, text_type
-    from xoutil.future.string import safe_decode, normalize_slug
+    from xoutil.string import slugify
+    from xoutil.future.codecs import safe_decode
     if not isinstance(s, text_type):
         s = safe_decode(s)
     if entities:
@@ -96,4 +99,4 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
                        lambda m: unichr(int(m.group(1), 16)), s)
         except:
             pass
-    return normalize_slug(s, '-')
+    return slugify(s, '-')

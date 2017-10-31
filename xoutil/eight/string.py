@@ -1,29 +1,98 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-# ---------------------------------------------------------------------
-# xoutil.eight.string
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-10-29
 
-'''Checkers for simple types depending on differences between Python 2 and 3.
+'''Technical string handling.
 
-.. versionadded:: 1.7.1
+Technical strings are those that requires to be instances of `str` standard
+type.  See `py-string-ambiguity`:any: for more information.
+
+This module will be used mostly as a namespace, for example::
+
+  from xoutil.eight import string
+  Foobar.__name__ = string.force(class_name)
+
+If these functions are going to be used standalone, do something like::
+
+  from xoutil.eight.string import force as force_str
+  Foobar.__name__ = force_str(class_name)
 
 '''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
+                        absolute_import as _py3_import)
 
-# TODO: Integrate -in one- this module with 'xoutil.keywords' and rename it.
 
+def force(value=str()):
+    '''Convert any value to standard `str` type in a safe way.
+
+    This function is useful in some scenarios that require `str` type (for
+    example attribute ``__name__`` in functions and types).
+
+    As ``str is bytes`` in Python 2, using str(value) assures correct these
+    scenarios in most cases, but in other is not enough, for example::
+
+      >>> from xoutil.eight import string
+      >>> def inverted_partial(func, *args, **keywords):
+      ...     def inner(*a, **kw):
+      ...         a += args
+      ...         kw.update(keywords)
+      ...         return func(*a, **kw)
+      ...     name = func.__name__.replace('lambda', u'λ')
+      ...     inner.__name__ = string.force(name)
+      ...     return inner
+
+    '''
+    from xoutil.future.codecs import safe_decode, safe_encode
+    if isinstance(value, str):
+        return value
+    elif str is bytes:      # Python 2
+        return safe_encode(value)
+    else:
+        return safe_decode(value)
+
+
+def safe_join(separator, iterable):
+    '''Similar to `join` method in string objects.
+
+    The semantics is equivalent to ``separator.join(iterable)`` but forcing
+    separator and items to be of ``str`` standard type.
+
+    For example::
+
+      >>> safe_join('-', range(6))
+      '0-1-2-3-4-5'
+
+    Check that the expression ``'-'.join(range(6))`` raises a ``TypeError``.
+
+    '''
+    return force(separator).join(force(item) for item in iterable)
+
+
+def force_ascii(value):
+    '''Return the string normal form for the `value`
+
+    Convert all non-ascii to valid characters using unicode 'NFKC'
+    normalization.
+
+    '''
+    import unicodedata
+    from xoutil.future.codecs import safe_decode
+    from xoutil.eight import text_type
+    from xoutil.eight import string
+    if not isinstance(value, text_type):
+        value = safe_decode(value)
+    res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    return string.force(res)
+
+
+# ------------------ Here, the original file starts ------------------
 
 if hasattr(str, 'isidentifier'):
     def isidentifier(s):

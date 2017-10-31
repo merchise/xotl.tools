@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # tests.test_params
 #----------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -17,8 +17,9 @@ from __future__ import (division as _py3_division,
 
 import sys
 from xoutil.eight import string_types
-from xoutil.cl import file_coerce, positive_int_coerce as positive_int
+from xoutil.values import file_coerce, positive_int_coerce as positive_int
 
+# old params
 from xoutil.params import ParamSchemeRow as row, ParamScheme as scheme
 
 sample_scheme = scheme(

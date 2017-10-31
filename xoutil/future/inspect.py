@@ -25,9 +25,9 @@ from __future__ import (division as _py3_division,
 
 from inspect import *    # noqa
 
-from xoutil.future import _past    # noqa
-_past.dissuade()
-del _past
+from xoutil.deprecation import deprecate_linked
+deprecate_linked()
+del deprecate_linked
 
 # TODO: @manu, migrate use of 'xoutil.inspect' in
 # 'xopgi.xopgi_mail_threads.mail_server.get_kwargs' to this module
@@ -220,7 +220,7 @@ def get_attr_value(obj, name, *default):
     `getattr_static`:func:.
 
     '''
-    from xoutil.fp.params import check_default, Undefined
+    from xoutil.params import check_default, Undefined
     default = check_default()(*default)
     is_type = isinstance(obj, type)
     res = getattr_static(obj, name, Undefined)
@@ -251,7 +251,6 @@ def get_attr_value(obj, name, *default):
         raise AttributeError(msg % (type_name(obj), name))
 
 
-# TODO: There is a function in 'xoutil.eight'
 def safe_name(obj, affirm=False):
     '''Return the internal name for a type or a callable.
 
@@ -282,7 +281,6 @@ def safe_name(obj, affirm=False):
       '(int, float)'
 
     '''
-    # TODO: Review this very carefully, maybe deprecate it.
     from xoutil.eight import class_types, string_types
     from types import FunctionType, MethodType
     from types import BuiltinFunctionType, BuiltinMethodType

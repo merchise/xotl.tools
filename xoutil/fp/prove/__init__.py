@@ -21,12 +21,12 @@ There are some basic helper functions:
   an special false value.  See `~xoutil.fp.option.Maybe`:class: monad for more
   information.
 
-- `disruptive`:func: wraps a function in a way that an exception is raised if
+- `vouch`:func: wraps a function in a way that an exception is raised if
   an invalid value (logical false by default) is returned.  This is useful to
   call functions that use "special" false values to signal a failure.
 
 - `enfold`:func: creates a decorator to convert a function to use either the
-  `predicative`:func: or the `disruptive`:func: protocol.
+  `predicative`:func: or the `vouch`:func: protocol.
 
 .. versionadded:: 1.8.0
 
@@ -58,7 +58,7 @@ def predicative(function, *args, **kwds):
     '''
     from xoutil.symbols import boolean
     from xoutil.fp.option import Maybe, Just, Wrong
-    from xoutil.fp.params import single
+    from xoutil.params import single
     # I don't understand anymore why a single argument must be a special case,
     # maybe because the composition problem.
     is_single = single(*args, **kwds)
@@ -82,7 +82,7 @@ def predicative(function, *args, **kwds):
             return Wrong(error)
 
 
-def disruptive(function, *args, **kwds):
+def vouch(function, *args, **kwds):
     '''Call a function in a safety wrapper raising an exception if it fails.
 
     When the wrapped function fails, an exception must be raised.  A predicate
@@ -91,11 +91,11 @@ def disruptive(function, *args, **kwds):
 
     '''
     from xoutil.symbols import boolean, Invalid
-    from xoutil.future.string import small
+    from xoutil.clipping import small
     from xoutil.eight import type_name
     from xoutil.eight.exceptions import throw
     from xoutil.fp.option import Just, Wrong
-    from xoutil.fp.params import single
+    from xoutil.params import single
     res = function(*args, **kwds)
     if isinstance(res, boolean):
         if res:
@@ -124,7 +124,7 @@ def enfold(checker):
     '''Create a decorator to execute a function inner a safety wrapper.
 
     :param checker: Could be any function to enfold, but it's intended mainly
-           for `predicative`:func:  or `disruptive`:func: functions.
+           for `predicative`:func:  or `vouch`:func: functions.
 
     In the following example, the semantics of this function can be seen.  The
     definition::
@@ -162,7 +162,8 @@ def enfold(checker):
             inner.__name__ = func.__name__
             inner.__doc__ = func.__doc__
         except BaseException:
-            from xoutil.future.string import small, safe_str
-            inner.__name__ = safe_str(small(func))
+            from xoutil.clipping import small
+            from xoutil.eight import string
+            inner.__name__ = string.force(small(func))
         return inner
     return wrapper

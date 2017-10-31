@@ -447,15 +447,6 @@ class Signature(object):
     def __init__(self, top=None, bottom=None):
         self.top, self.bottom = self.simplify(top, bottom)
 
-    @deprecated(None, msg='isunit will be removed soon. Compare to SCALAR')
-    def isunit(self):
-        '''Return True is this is the signature of the UNIT.
-
-        .. versionchanged:: 1.7.9 Deprecated.  This is the same as comparing
-                            with `SCALAR`:const:.
-        '''
-        return not self.top and not self.bottom
-
     def __eq__(self, other):
         try:
             from xoutil.future.collections import Counter
@@ -810,16 +801,3 @@ def downgrade_to_scalar(quantity):
         return quantity.magnitude
     else:
         return quantity
-
-
-# Deprecated aliases
-class QuantityType(Dimension):
-    '''Deprecated alias for `Dimension`:class:.
-
-    .. versionchanged:: 1.7.9 Deprecated.
-
-    '''
-    def __new__(self, *args, **kwargs):
-        import warnings
-        warnings.warn('QuantityType is deprecated.  Use Dimension')
-        return super(QuantityType, self).__new__(self, *args, **kwargs)

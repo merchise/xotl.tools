@@ -100,7 +100,7 @@ def test_dict_update_new(d1, d2):
     assert all(d1[key] == d2[key] for key in d2 if key not in d)
 
 
-@given(s.lists(s.integers(), max_size=100))
+@given(s.lists(s.integers(), max_size=30, average_size=10))
 def test_delete_duplicates(l):
     from xoutil.iterators import delete_duplicates
     from xoutil.future.collections import Counter
@@ -110,7 +110,7 @@ def test_delete_duplicates(l):
     assert all(Counter(res)[item] == 1 for item in l)
 
 
-@given(s.lists(s.integers()))
+@given(s.lists(s.integers(), max_size=30, average_size=10))
 def test_delete_duplicates_with_key(l):
     from xoutil.iterators import delete_duplicates
     res = delete_duplicates(l, key=lambda x: x % 3)

@@ -2,7 +2,7 @@
 ============================================================
 
 .. automodule:: xoutil.fp.option
-   :members: Maybe, Just, Wrong, false, true, none
+   :members:
 
 
 Further Notes

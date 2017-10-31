@@ -84,7 +84,7 @@ class TypeCheck(predicate):
 
     def __new__(cls, *args):
         from xoutil.eight import class_types as _types, type_name
-        from xoutil.fp.params import check_count
+        from xoutil.params import check_count
         check_count(len(args) + 1, 2, caller=cls.__name__)
         if len(args) == 1 and isinstance(args[0], tuple):
             args = args[0]
@@ -107,14 +107,14 @@ class TypeCheck(predicate):
         return self._str()
 
     def __crop__(self):
-        from xoutil.future.string import DEFAULT_MAX_WIDTH
+        from xoutil.string import DEFAULT_MAX_WIDTH
         return self._str(DEFAULT_MAX_WIDTH)
 
     def _str(self, max_width=None):
         '''Calculate both string versions (small and normal).'''
         from xoutil.symbols import Undefined
         from xoutil.eight import type_name
-        from xoutil.future.string import ELLIPSIS
+        from xoutil.string import ELLIPSIS
         if max_width is None:
             max_width = 1024    # a big number for this
         start, end = '{}('.format(type_name(self)), ')'
@@ -223,7 +223,7 @@ class CheckAndCast(predicate):
             return Wrong(value)
 
     def __str__(self):
-        from xoutil.future.string import crop
+        from xoutil.clipping import crop
         check, cast = self.inner
         fmt = '({}(…) if {}(…) else _wrong)'
         return fmt.format(crop(cast), check)
@@ -248,7 +248,7 @@ class FunctionalCheck(predicate):
 
     def __str__(self):
         from xoutil.eight import type_name
-        from xoutil.future.string import crop
+        from xoutil.clipping import crop
         suffix = 'check'
         kind = type_name(self).lower()
         if kind.endswith(suffix):

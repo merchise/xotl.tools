@@ -14,6 +14,10 @@
 
 '''Multitasking and concurrent programming tools.
 
+.. warning:: Experimental.  API is not settled.
+
+.. versionadded:: 1.8.0
+
 '''
 
 from __future__ import (division as _py3_division,

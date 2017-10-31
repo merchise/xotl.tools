@@ -1,5 +1,5 @@
 `xoutil` is a collection of disparate utilities that does not conform a
-framework for anything.  `xoutil` is essentially -but not exclusive- an
+framework for anything.  `xoutil` is essentially -but not exclusively- an
 extension to the Python's standard library.
 
 In `xoutil` you will probably find:

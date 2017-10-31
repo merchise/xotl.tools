@@ -38,7 +38,7 @@ has_magic = lambda s: re_magic.search(s) is not None
 def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
     from functools import reduce
     import fnmatch
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
     arg_count = reduce(lambda count, p: count + (1 if p is not None else 0),
                        (pattern, regex_pattern, shell_pattern), 0)
     check_count(arg_count, 0, 1, caller='_get_regex')    # XXX: WTF?!
@@ -462,7 +462,7 @@ if sys.version_info < (3, 4, 1):
 
         """
         from errno import EEXIST
-        from xoutil.future.string import safe_encode
+        from xoutil.future.codecs import safe_encode
         head, tail = os.path.split(name)
         if not tail:
             head, tail = os.path.split(head)
@@ -543,8 +543,8 @@ def concatfiles(*files):
     '''
     import shutil
     from xoutil.eight import string_types
-    from xoutil.cl.simple import force_iterable_coerce
-    from xoutil.fp.params import check_count
+    from xoutil.values.simple import force_iterable_coerce
+    from xoutil.params import check_count
     check_count(files, 2, caller='concatfiles')
     if len(files) == 2:
         files, target = force_iterable_coerce(files[0]), files[1]

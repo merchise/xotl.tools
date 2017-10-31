@@ -25,6 +25,55 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
+def hyphen_name(name, join_numbers=True):
+    '''Convert a name to a hyphened slug.
+
+    Expects a `name` in Camel-Case.  All invalid characters (those invalid in
+    Python identifiers) are ignored.  Numbers are joined with preceding part
+    when `join_numbers` is True.
+
+    For example::
+
+      >>> hyphen_name('BaseNode') == 'base-node'
+      True
+
+      >> hyphen_name('--__ICQNámeP12_34Abc--') == 'icq-name-p12-34-abc'
+      True
+
+      >> hyphen_name('ICQNámeP12', join_numbers=False) == 'icq-name-p-12'
+      True
+
+    '''
+    import re
+    from xoutil.eight.string import force_ascii
+    name = force_ascii(name)
+    regex = re.compile('[^A-Za-z0-9]+')
+    name = regex.sub('-', name)
+    regex = re.compile('([A-Z]+|[a-z]+|[0-9]+|-)')
+    all = regex.findall(name)
+    i, count, parts = 0, len(all), []
+    while i < count:
+        part = all[i]
+        if part != '-':
+            upper = 'A' <= part <= 'Z'
+            if upper:
+                part = part.lower()
+            j = i + 1
+            if j < count and upper and 'a' <= all[j] <= 'z':
+                aux = part[:-1]
+                if aux:
+                    parts.append(aux)
+                part = part[-1] + all[j]
+                i = j
+                j += 1
+            if j < count and '0' <= all[j] <= '9' and join_numbers:
+                part = part + all[j]
+                i = j
+            parts.append(part)
+        i += 1
+    return '-'.join(parts)
+
+
 def program_name():
     '''Calculate the program name from "sys.argv[0]".'''
     # TODO: Use 'argparse' standard (parser.prog)
@@ -72,7 +121,6 @@ def command_name(cls):
 
     '''
     from xoutil.eight import string_types
-    from xoutil.future.string import hyphen_name
     unset = object()
     names = ('command_cli_name', '__command_name__')
     i, res = 0, unset

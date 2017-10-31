@@ -48,7 +48,7 @@ class Command(ABC):
     def cli_name(cls):
         '''Calculate the command name.
 
-        Standard method uses `~xoutil.future.string.hyphen_name`.  Redefine it
+        Standard method uses `~xoutil.cli.tools.hyphen_name`.  Redefine it
         to obtain a different behaviour.
 
         Example::
@@ -61,7 +61,7 @@ class Command(ABC):
 
         '''
         from xoutil.eight import string_types
-        from xoutil.future.string import hyphen_name
+        from xoutil.cli.tools import hyphen_name
         unset = object()
         names = ('command_cli_name', '__command_name__')
         i, res = 0, unset
@@ -160,9 +160,10 @@ class Command(ABC):
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
         # TODO: Convert check based in argument "recursed" in a decorator
+        import sys
+        from xoutil.names import nameof
         if recursed is None:
             recursed = set()
-        from xoutil.names import nameof
         name = nameof(source, inner=True, full=True)
         if name not in recursed:
             recursed.add(name)
@@ -178,8 +179,12 @@ class Command(ABC):
                 for cmd in sub_commands:
                     Command._settle_cache(target, cmd, recursed=recursed)
             else:   # Only branch commands are OK to execute
-                from types import MethodType
-                assert isinstance(source.run, MethodType)
+                if sys.version_info < (3, 0):
+                    from types import MethodType as ValidMethodType
+                else:
+                    from types import FunctionType as ValidMethodType
+                assert isinstance(source.run, ValidMethodType), \
+                    'Invalid type %r for source %r' % (type(source.run).__name__, source)
                 target[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)

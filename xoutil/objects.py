@@ -435,7 +435,7 @@ def multi_getter(source, *ids):
         return next((i for i in map(getter, a) if i is not None), None)
 
     def get(a):
-        from xoutil.cl.simple import logic_iterable_coerce as many
+        from xoutil.values.simple import logic_iterable_coerce as many
         return first(a) if many(a) else getter(a)
 
     return (get(aux) for aux in ids)
@@ -496,7 +496,7 @@ def build_documentation(cls, get_doc=None, deep=1):
     no function is given, then attribute ``__doc__`` is used.
 
     '''
-    from xoutil.future.string import safe_decode
+    from xoutil.future.codecs import safe_decode
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if deep < 1:
         deep = 1
@@ -736,8 +736,8 @@ def iterate_over(source, *keys):
     If any `key` is missing from `source` is ignored (not yielded).
 
     If `source` is a `collection
-    <xoutil.cl.simple.logic_collection_coerce>`:func:, iterate over each of
-    the items searching for any of keys.  This is not recursive.
+    <xoutil.values.simple.logic_collection_coerce>`:func:, iterate over each
+    of the items searching for any of keys.  This is not recursive.
 
     If no `keys` are provided, return an "empty" iterator -- i.e will raise
     StopIteration upon calling `next`.
@@ -745,7 +745,7 @@ def iterate_over(source, *keys):
     .. versionadded:: 1.5.2
 
     '''
-    from xoutil.cl.simple import logic_collection_coerce, nil
+    from xoutil.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter(source)
@@ -824,7 +824,7 @@ def pop_first_of(source, *keys, **kwargs):
         True
 
     '''
-    from xoutil.cl.simple import logic_collection_coerce, nil
+    from xoutil.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter_and_deleter(source)
@@ -1118,7 +1118,7 @@ def adapt_exception(value, **kwargs):
     If the value is not an exception is expected to be a tuple/list which
     contains an Exception type as its first item.
 
-    .. versionchanged:: 1.7.1 Moved from `xoutil.data`:mod: module.
+    .. versionchanged:: 1.8.0 Moved from `xoutil.data`:mod: module.
 
     '''
     isi, ebc = isinstance, Exception    # TODO: Maybe must be `BaseException`
@@ -1168,7 +1168,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     from xoutil.eight import iteritems, callable
     from xoutil.eight._types import new_class
     from xoutil.future.types import MemberDescriptorType
-    from xoutil.future.string import safe_str
+    from xoutil.eight import string
 
     def _get_ignored(what):
         if callable(what):
@@ -1196,7 +1196,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     def exec_body(ns):  # noqa: E306 new-line before def
         ns.update(attrs)
     if new_name:
-        name = safe_str(new_name)
+        name = string.force(new_name)
     else:
         name = cls.__name__
     result = new_class(name, cls.__bases__, {'metaclass': meta}, exec_body)
@@ -1267,7 +1267,7 @@ def smart_copy(*args, **kwargs):
     from xoutil.future.collections import MutableMapping, Mapping
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
-    from xoutil.cl.simple import logic_iterable_coerce, nil
+    from xoutil.values.simple import logic_iterable_coerce, nil
     defaults = kwargs.pop('defaults', False)
     if kwargs:
         raise TypeError('smart_copy does not accept a "%s" keyword argument'
@@ -1406,7 +1406,7 @@ def get_traverser(*paths, **kw):
     .. versionadded:: 1.5.3
 
     '''
-    from xoutil.fp.params import check_count
+    from xoutil.params import check_count
     check_count(paths, 1, caller='get_traverser')
 
     def _traverser(path, default=Unset, sep='.', getter=None):

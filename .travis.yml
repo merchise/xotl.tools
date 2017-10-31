@@ -1,14 +1,12 @@
 language: python
-python: 2.7
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
 env:
-  - TOX_ENV=py27
-  - TOX_ENV=py33
-  - TOX_ENV=py34
-  - TOX_ENV=py35
-  - TOX_ENV=pypy
-  - TOX_ENV=gl27
-  - TOX_ENV=gl34
-  - TOX_ENV=gl35
-  - TOX_ENV=pypygl
-install: echo   - pip install tox
-script: echo   - tox -e $TOX_ENV
+  - TOX_ENV=unit
+  - TOX_ENV=greenlets
+
+install: pip install tox
+script: tox -e system-$TOX_ENV
