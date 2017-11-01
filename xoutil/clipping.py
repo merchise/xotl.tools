@@ -7,7 +7,23 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Text clipping and trimming.'''
+'''Complements for object string representation protocol.
+
+There are contexts that using ``str`` or ``repr`` protocol would be inadequate
+because shorter string representations are expecting (i.g. formatting
+recursive objects in `pprint`:mod: standard module that they have a new
+Boolean parameter in Python 3 named ``compact``).
+
+There is a protocol to complement operators used by standard string
+representation functions (``__str__``, ``__repr__``) by defining a new one
+with name ``__crop__``.
+
+This operator will receive some extra parameters with default values, see
+`short`:func: function for details.
+
+Also, this module includes some utility functions to trimming strings.
+
+'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -16,18 +32,18 @@ from __future__ import (division as _py3_division,
 from xoutil.eight import python_version    # noqa
 
 
-#: Value for `max_width` parameter in functions that reduce strings, must not
+#: Value for `max_width` parameter in functions that shorten strings, must not
 #: be less than this value.
 MIN_WIDTH = 8
 
-#: Default value for `max_width` parameter in functions that reduce strings,
-#: see `crop`:func: and `small`:func:.
+#: Default value for `max_width` parameter in functions that shorten strings,
+#: see `short`:func:.
 DEFAULT_MAX_WIDTH = 64
 
 ELLIPSIS_ASCII = '...'
 ELLIPSIS_UNICODE = '…'
 
-#: Value used as a fill when a string representation is brimmed over.
+#: Value used as a fill when a string representation overflows.
 ELLIPSIS = ELLIPSIS_UNICODE if python_version == 3 else ELLIPSIS_ASCII
 
 
