@@ -9,6 +9,63 @@
 
 '''Tools for managing function arguments.
 
+Process function arguments could be messy when a flexible schema is needed.
+With this module you can outline parameters schema using a smart way of
+processing actual arguments:
+
+A parameter row (see `ParamSchemeRow`:class:), allow several keywords IDs (one
+is required used as the final identifier for the actual argument). Also
+integer IDs expressing logical order for positional argument passing (negative
+values are for right-to-left indexing, like in sequences).  Several values
+means several possibilities.  For example::
+
+  >>> import sys
+  >>> from xoutil.eight import string_types
+  >>> from xoutil.values import file_coerce as is_file
+  >>> from xoutil.values import positive_int_coerce as positive_int
+  >>> from xoutil.params import ParamScheme as scheme, ParamSchemeRow as row
+
+  >>> sample_scheme = scheme(
+  ...     row('stream', 0, -1, 'output', default=sys.stdout, coerce=is_file),
+  ...     row('indent', 0, 1, default=1, coerce=positive_int),
+  ...     row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
+  ...     row('newline', default='\n', coerce=string_types))
+
+
+In this example, the parameter key-named "stream" could be also passed as name
+"output", must be a file, default value is ``stdout``, and if passed as
+positional, could be the first or the last one.
+
+Some tests::
+
+  >>> def test(*args, **kwargs):
+  ...     from xoutil.eight import type_name
+  ...     return sample_scheme(args, kwargs)
+
+  >>> test(4, 80)
+  {'indent': 4,
+   'newline': '\n',
+   'stream': <open file '<stdout>', mode 'w' at 0x7f927b32b150>,
+   'width': 80}
+
+  >>> test(2, '80')    # Because positive int coercer use valid string values
+  {'indent': 2,
+   'newline': '\n',
+   'stream': <open file '<stdout>', mode 'w' at 0x7f927b32b150>,
+   'width': 80}
+
+  >>> test(sys.stderr, 4, 80)
+  {'indent': 4,
+   'newline': '\n',
+   'stream': <open file '<stderr>', mode 'w' at 0x7f927b32b1e0>,
+   'width': 80}
+
+  >>> test(4, sys.stderr, newline='\n\r')
+  {'indent': 4,
+   'newline': '\n\r',
+   'stream': <open file '<stderr>', mode 'w' at 0x7f927b32b1e0>,
+   'width': 79}
+
 .. versionadded:: 1.7.1
 
 '''
