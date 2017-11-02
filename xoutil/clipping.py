@@ -10,9 +10,9 @@
 '''Complements for object string representation protocol.
 
 There are contexts that using ``str`` or ``repr`` protocol would be inadequate
-because shorter string representations are expecting (i.g. formatting
-recursive objects in `pprint`:mod: standard module that they have a new
-Boolean parameter in Python 3 named ``compact``).
+because shorter string representations are expected (e.g. formatting recursive
+objects in `pprint`:mod: standard module that they have a new Boolean
+parameter in Python 3 named ``compact``).
 
 There is a protocol to complement operators used by standard string
 representation functions (``__str__``, ``__repr__``) by defining a new one
@@ -20,8 +20,6 @@ with name ``__crop__``.
 
 This operator will receive some extra parameters with default values, see
 `crop`:func: function for details.
-
-Also, this module includes some utility functions for trimming strings.
 
 '''
 

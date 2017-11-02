@@ -1,5 +1,6 @@
-`xoutil.clipping`:mod: - Text clipping and trimming
-===================================================
+================================================================
+ `xoutil.clipping`:mod: - Object string representation protocol
+================================================================
 
 .. automodule:: xoutil.clipping
    :members:
