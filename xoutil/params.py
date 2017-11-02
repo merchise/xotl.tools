@@ -508,7 +508,7 @@ class ParamScheme(object):
         '''Iterate over all defined scheme-rows.'''
         return iter(self.rows)
 
-    def __call__(self, args, kwds, strict=False):
+    def __call__(self, args, kwds, strict=True):
         '''Get a mapping with all resulting values.
 
         If special value 'none' is used as 'default' option in a scheme-row,
@@ -559,40 +559,3 @@ class ParamScheme(object):
         if not self.cache:
             self.cache = {row.key: row for row in self}
         return self.cache
-
-
-if __name__ == '__main__':
-    print('Testing module `xoutil.params`')
-
-    import sys
-    from xoutil.eight import string_types
-    from xoutil.values import (file_coerce as is_file,
-                               positive_int_coerce as positive_int)
-
-    scheme, row = ParamScheme, ParamSchemeRow
-
-    sample_scheme = scheme(
-        row('stream', 0, -1, 'output', default=sys.stdout, coerce=is_file),
-        row('indent', 0, 1, default=1, coerce=positive_int),
-        row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
-        row('newline', default='\n', coerce=string_types))
-
-    def test(*args, **kwargs):
-        from xoutil.eight import type_name
-        print('-'*80)
-        print(">>>", args, "--", kwargs)
-        try:
-            print('...', sample_scheme.get(args, kwargs))
-        except BaseException as error:
-            print("???", '{}:'.format(type_name(error)), error)
-
-    test(4, 80)
-    test(2, '80')
-    test(4)
-    test(80, indent=4, extra="I'm OK!")
-    test(width=80)
-    test(sys.stderr, 4, 80)
-    test(4, sys.stderr, newline='\n\r')
-    test(sys.stderr, 4, output=sys.stderr)
-    test(sys.stderr, 4, 80, output=sys.stderr)
-    test(4, -79)
