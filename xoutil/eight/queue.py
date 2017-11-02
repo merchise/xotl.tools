@@ -12,9 +12,21 @@
 #
 # Created on 2015-11-19
 
-'''A multi-producer, multi-consumer queue.'''
+'''Standardization of Queue Processing.
 
-from __future__ import (division as _py3_division,
+In Python 2, the Queue processing module (A multi-producer, multi-consumer
+queue) has the name with initial capital letter, nevertheless in Python 3 the
+name is all in lower-case.
+
+This is a compatibility module, importing symbols from this will be the same
+in both versions of Python.
+
+In Python 3 module there are two symbols imported from ``heapq`` module, those
+are imported here for full compatibility.
+
+'''
+
+from __future__ import (division as _Ty3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
