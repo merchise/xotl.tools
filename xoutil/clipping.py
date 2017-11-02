@@ -16,10 +16,8 @@ parameter in Python 3 named ``compact``).
 
 There is a protocol to complement operators used by standard string
 representation functions (``__str__``, ``__repr__``) by defining a new one
-with name ``__crop__``.
-
-This operator will receive some extra parameters with default values, see
-`crop`:func: function for details.
+with name ``__crop__``.  This operator will receive some extra parameters with
+default values, see `crop`:func: function for details.
 
 '''
 
@@ -66,8 +64,15 @@ def _check_max_width(max_width, caller=None):
 def crop(obj, max_width=None, canonical=False):
     '''Return a reduced string representation of `obj`.
 
-    Classes can now define a new special method or attribute named
-    '__crop__'.
+    Classes can now define a new special attribute ``__crop__``.  It
+    can be a `string <str>`:class: (or `unicode`:class: in Python 2).  Or a
+    method::
+
+       def __crop__(self, max_width=None, canonical=False):
+           pass
+
+    If the `obj` does not implement the ``__crop__`` protocol, a standard one
+    is computed.
 
     :param max_width: Maximum length for the resulting string.  If is not
            given, defaults to `DEFAULT_MAX_WIDTH`:obj:.

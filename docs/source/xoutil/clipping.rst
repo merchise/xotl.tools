@@ -3,4 +3,4 @@
 ================================================================
 
 .. automodule:: xoutil.clipping
-   :members:
+   :members: crop, crop_iterator
