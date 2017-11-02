@@ -91,7 +91,7 @@
     `~xoutil.string.slugify`:func:\ .
 
 - Create ``__crop__`` protocol for small string representations, see
-  `xoutil.string.short`:func: for more information.
+  `xoutil.clipping.crop`:func: for more information.
 
   Because `~xoutil.clipping`:mod: module is still **experimental**, definitive
   names of operator and main function must be validated before it could be
