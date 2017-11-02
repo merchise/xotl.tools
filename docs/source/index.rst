@@ -26,7 +26,6 @@ Contents
    xoutil/*
    xoutil/eight/*
    HISTORY
-   BACKLOG
    CONTRIBUTING
    CONTRIBUTORS
    LICENSE

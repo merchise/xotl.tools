@@ -90,8 +90,13 @@
   - Function ``normalize_slug`` is now deprecated.  You should use now
     `~xoutil.string.slugify`:func:\ .
 
-- Create ``__small__`` protocol for small string representations, see
-  `xoutil.string.small`:func: for more information.
+- Create ``__crop__`` protocol for small string representations, see
+  `xoutil.clipping.crop`:func: for more information.
+
+  Because `~xoutil.clipping`:mod: module is still **experimental**, definitive
+  names of operator and main function must be validated before it could be
+  considered definitive.  Proposals are: "crop", "small", "short", "compact",
+  "abbr".
 
 - Remove ``xoutil.connote`` that was introduced provisionally in 1.7.1.
 
