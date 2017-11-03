@@ -35,7 +35,7 @@ from xoutil.symbols import Undefined    # used implicitly for absent default
 
 
 def issue_9137(args):
-    '''Parse arguments for methods, fixing issue 9137 (self ambiguity).
+    '''Parse arguments for methods, fixing `issue 9137`__ (self ambiguity).
 
     There are methods that expect 'self' as valid keyword argument, this is
     not possible if this name is used explicitly::
@@ -51,6 +51,8 @@ def issue_9137(args):
     :returns: (self, remainder positional arguments in a tuple)
 
     .. versionadded:: 1.8.0
+
+    __ https://bugs.python.org/issue9137
 
     '''
     self = args[0]    # Issue 9137
