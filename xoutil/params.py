@@ -19,7 +19,7 @@ integer IDs expressing logical order for positional argument passing (negative
 values are for right-to-left indexing, like in sequences).  Several values
 means several possibilities.
 
-.. versionadded:: 1.7.1
+.. versionadded:: 1.8.0
 
 '''
 
