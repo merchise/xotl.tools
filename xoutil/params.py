@@ -17,54 +17,7 @@ A parameter row (see `ParamSchemeRow`:class:), allow several keywords IDs (one
 is required used as the final identifier for the actual argument). Also
 integer IDs expressing logical order for positional argument passing (negative
 values are for right-to-left indexing, like in sequences).  Several values
-means several possibilities.  For example::
-
-  >>> import sys
-  >>> from xoutil.eight import string_types
-  >>> from xoutil.values import file_coerce as is_file
-  >>> from xoutil.values import positive_int_coerce as positive_int
-  >>> from xoutil.params import ParamScheme as scheme, ParamSchemeRow as row
-
-  >>> sample_scheme = scheme(
-  ...     row('stream', 0, -1, 'output', default=sys.stdout, coerce=is_file),
-  ...     row('indent', 0, 1, default=1, coerce=positive_int),
-  ...     row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
-  ...     row('newline', default='\n', coerce=string_types))
-
-
-In this example, the parameter key-named "stream" could be also passed as name
-"output", must be a file, default value is ``stdout``, and if passed as
-positional, could be the first or the last one.
-
-Some tests::
-
-  >>> def test(*args, **kwargs):
-  ...     from xoutil.eight import type_name
-  ...     return sample_scheme(args, kwargs)
-
-  >>> test(4, 80)
-  {'indent': 4,
-   'newline': '\n',
-   'stream': <open file '<stdout>', mode 'w' at 0x7f927b32b150>,
-   'width': 80}
-
-  >>> test(2, '80')    # Because positive int coercer use valid string values
-  {'indent': 2,
-   'newline': '\n',
-   'stream': <open file '<stdout>', mode 'w' at 0x7f927b32b150>,
-   'width': 80}
-
-  >>> test(sys.stderr, 4, 80)
-  {'indent': 4,
-   'newline': '\n',
-   'stream': <open file '<stderr>', mode 'w' at 0x7f927b32b1e0>,
-   'width': 80}
-
-  >>> test(4, sys.stderr, newline='\n\r')
-  {'indent': 4,
-   'newline': '\n\r',
-   'stream': <open file '<stderr>', mode 'w' at 0x7f927b32b1e0>,
-   'width': 79}
+means several possibilities.
 
 .. versionadded:: 1.7.1
 
@@ -307,9 +260,13 @@ class ParamManager(object):
           wrapped = pm(0, 1, 'wrapped', coerce=valid(callable))
           ...
 
-    See `ParamSchemeRow`:class: and `ParamScheme`:class: classes to
-    pre-define and validate schemes for extracting parameter values in a
-    consistent way.
+    When an instance of this class is called (``__call__`` operator), it is
+    used the same protocol as when creating an instance of a parameter
+    definition row (`ParamSchemeRow`:class:).
+
+    See `ParamScheme`:class: class as another way to define and validate
+    schemes for extracting parameter values in a consistent way.
+
 
     .. versionadded:: 1.8.0
 
@@ -322,21 +279,7 @@ class ParamManager(object):
         self.consumed = set()    # consumed identifiers
 
     def __call__(self, *ids, **options):
-        '''Get a parameter value.
-
-        :param ids: parameter identifiers.
-
-        :param options: keyword argument options.
-
-        Options could be:
-
-        - 'default': value used if the parameter is absent;
-
-        - 'coerce': check if a value is valid or not and convert to its
-          definitive value; see `xoutil.values`:mod: module for more
-          information.
-
-        '''
+        '''Get a parameter value.'''
         from xoutil.fp.option import Just, Wrong, none
         # TODO: Change this ``from xoutil.values import coercer``
         from xoutil.fp.prove.semantic import predicate as coercer
@@ -396,9 +339,19 @@ class ParamSchemeRow(object):
     Additionally to the options can be passed to
     `ParamManager.__call__`:meth:', this class can be instanced with:
 
-    - 'key': an identifier to be used when the parameter is only positional or
-      when none of the possible keyword aliases must be used as the
-      primary-key.
+    :param ids: positional variable number arguments, could be aliases for
+           keyword parameter passing, or integers for order (negative values
+           are means right-to-left indexing, like in sequences);
+
+    :param key: an identifier to be used when the parameter is only positional
+           or when none of the possible keyword aliases must be used as the
+           primary-key;
+
+    :param default: keyword argument, value used if the parameter is absent;
+
+    :param coerce: check if a value is valid or not and convert to its
+           definitive value; see `xoutil.values`:mod: module for more
+           information.
 
     .. versionadded:: 1.8.0
 

@@ -3,36 +3,105 @@
 ===============================================================
 
 .. automodule:: xoutil.params
-   :members:
 
-Because the nature of this tool, the term "parameter" will be used in this
-documentation to reference those of the represented client function, and the
-term "argument" for referencing those pertaining to `ParamManager`:class:
-methods.
+
+Examples
+========
+
+In next example, the parameter key-named "stream" could be also passed as name
+"output", must be a file, default value is ``stdout``, and if passed as
+positional, could be the first or the last one.
+
+
+  >>> import sys
+  >>> from xoutil.eight import string_types
+  >>> from xoutil.values import file_coerce as is_file
+  >>> from xoutil.values import positive_int_coerce as positive_int
+  >>> from xoutil.params import ParamScheme as scheme, ParamSchemeRow as row
+
+  >>> sample_scheme = scheme(
+  ...     row('stream', 0, -1, 'output', default=sys.stdout, coerce=is_file),
+  ...     row('indent', 0, 1, default=1, coerce=positive_int),
+  ...     row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
+  ...     row('newline', default='\n', coerce=string_types))
+
+
+Some tests::
+
+  >>> def test(*args, **kwargs):
+  ...     from xoutil.eight import type_name
+  ...     return sample_scheme(args, kwargs)
+
+  >>> test(4, 80)
+  {'indent': 4,
+   'newline': '\n',
+   'stream': <open file '<stdout>', mode 'w' at 0x7f927b32b150>,
+   'width': 80}
+
+  >>> test(2, '80')    # Because positive int coercer use valid string values
+  {'indent': 2,
+   'newline': '\n',
+   'stream': <open file '<stdout>', mode 'w' at 0x7f927b32b150>,
+   'width': 80}
+
+  >>> test(sys.stderr, 4, 80)
+  {'indent': 4,
+   'newline': '\n',
+   'stream': <open file '<stderr>', mode 'w' at 0x7f927b32b1e0>,
+   'width': 80}
+
+  >>> test(4, sys.stderr, newline='\n\r')
+  {'indent': 4,
+   'newline': '\n\r',
+   'stream': <open file '<stderr>', mode 'w' at 0x7f927b32b1e0>,
+   'width': 79}
+
+  >>> sample_scheme((4, 80), {'extra': 'extra param'}, strict=False)
+  {'extra': 'extra param',
+   'indent': 4,
+   'newline': '\n',
+   'stream': <open file '<stdout>', mode 'w' at 0x7f3c6815c150>,
+   'width': 80}
+
+Another way of use this is through a `ParamManager`:class: instance, using the
+actual arguments of a function to create it::
+
+  >>> def slugify(value, *args, **kwds):
+  ...     from xoutil.params import ParamManager
+  ...     getarg = ParamManager(args, kwds)
+  ...     replacement = getarg('replacement', 0, default='-',
+  ...                          coercers=string_types)
+  ...     invalid_chars = getarg('invalid_chars', 'invalid', 'invalids', 0,
+  ...                            default='', coercers=_ascii)
+  ...     valid_chars = getarg('valid_chars', 'valid', 'valids', 0,
+  ...                          default='', coercers=_ascii)
+  ...     # And so on.
+
+Notice that each call has the same protocol than a parameter definition row
+(see `ParamSchemeRow`:class:).
+
+
+Module Members
+==============
+
+.. autofunction:: issue_9137
+
+.. autofunction:: check_count
+
+.. autofunction:: check_default
+
+.. autofunction:: single
+
+.. autofunction:: keywords_only
+
+.. autofunction:: pop_keyword_arg
+
 
 .. autoclass:: ParamManager
    :members: __init__, __call__, remainder
-
-   When use this class as a callable, each identifier could be an integer or a
-   string, respectively representing indexes in the positional and names in
-   the keyword parameters.  Negative indexes are treated as in Python tuples
-   or lists.
-
-   Several identifiers must be unambiguous, or because some integers are
-   already marked as consumed in previous calls or because an option coerce
-   function validate only one position.  In the case of names, when one value
-   is hit, all remainder names must be absent in the `kwargs` parameters.
-
-   'coerce' option could be a callable, or a Python type (or a tuple of
-   types).  When callable, must return a coerced valid value or `Invalid`;
-   when type or types, `isinstance` standard function is used to check.
-
 
 .. autoclass:: ParamScheme
    :members: defaults, __call__, __len__, __getitem__, __iter__
 
 .. autoclass:: ParamSchemeRow
    :members: key, default, __call__
-
-   This class generates callable instances receiving one `ParamManager`:class:
-   instance as its single argument.
