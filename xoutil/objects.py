@@ -846,25 +846,6 @@ def pop_first_of(source, *keys, **kwargs):
     return res if res is not Unset else kwargs.get('default', None)
 
 
-get_and_del_first_of = deprecated(pop_first_of)(pop_first_of)
-
-
-@deprecated(get_first_of)
-def smart_getattr(name, *sources, **kwargs):
-    '''Gets an attr by `name` for the first source that has it.
-
-    This is roughly that same as::
-
-       get_first_of(sources, name, default=Unset, **kwargs)
-
-    .. warning:: Deprecated since 1.5.1
-
-    '''
-    from xoutil.iterators import dict_update_new
-    dict_update_new(kwargs, {'default': Unset})
-    return get_first_of(sources, name, **kwargs)
-
-
 def popattr(obj, name, default=None):
     '''Looks for an attribute in the `obj` and returns its value and removes
     the attribute. If the attribute is not found, `default` is returned
@@ -896,8 +877,6 @@ def popattr(obj, name, default=None):
             except AttributeError:
                 pass
     return res
-
-get_and_del_attr = deprecated(popattr)(popattr)
 
 
 class lazy(object):

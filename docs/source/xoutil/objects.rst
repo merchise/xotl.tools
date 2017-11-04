@@ -26,14 +26,6 @@
 
 .. autofunction:: pop_first_of(source, *keys, default=None)
 
-.. function:: get_and_del_attr(obj, name, default=None)
-
-   Deprecated alias for `popattr`:func:.
-
-.. function:: get_and_del_first_of(source, *keys, default=None)
-
-   Deprecated alias for `pop_first_of`:func:.
-
 .. autofunction:: fix_method_documentation
 
 .. autofunction:: multi_getter
