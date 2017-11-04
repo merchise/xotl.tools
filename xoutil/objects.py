@@ -611,64 +611,37 @@ def fulldir(obj):
     return res if cls in class_types else res | set(dir(cls))
 
 
-# TODO: Fix signature after removal of attr_filter and value_filter
-def xdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None,
-         _depth=0):
-    '''Return all ``(attr, value)`` pairs from `obj` that ``attr_filter(attr)``
-    and ``value_filter(value)`` are both True.
+def xdir(obj, getter=None, filter=None, _depth=0):
+    '''Return all ``(attr, value)`` pairs from `obj` make ``filter(attr, value)``
+    True.
 
     :param obj: The object to be instrospected.
 
-    :param filter: *optional* A filter that will be passed both the attribute
+    :param filter: A filter that will be passed both the attribute
        name and it's value as two positional arguments. It should return True
        for attrs that should be yielded.
 
-       .. note::
+       If None, all pairs will match.
 
-          If passed, both `attr_filter` and `value_filter` will be
-          ignored.
+    :param getter: A function with the same signature that
+                   ``getattr`` to be used to get the values from `obj`.  If
+                   None, use `getattr`:func:.
 
-    :param attr_filter: *optional* A filter for attribute names. *Deprecated
-         since 1.4.1*
-
-    :param value_filter: *optional* A filter for attribute values. *Deprecated
-         since 1.4.1*
-
-    :param getter: *optional* A function with the same signature that
-                   ``getattr`` to be used to get the values from `obj`.
-
-    .. deprecated:: 1.4.1 The use of params `attr_filter` and `value_filter`.
+    .. versionchanged:: 1.8.1 Removed deprecated `attr_filter` and
+       `value_filter` arguments.
 
     '''
     getter = getter or getattr
     attrs = dir(obj)
-    if attr_filter or value_filter:
-        import warnings
-        msg = ('Arguments of `attr_filter` and `value_filter` are deprecated. '
-               'Use argument `filter` instead.')
-        warnings.warn(msg, stacklevel=_depth + 1)
-    if filter:
-        attr_filter = None
-        value_filter = None
-    if attr_filter:
-        attrs = (attr for attr in attrs if attr_filter(attr))
     res = ((a, getter(obj, a)) for a in attrs)
-    if value_filter:
-        res = ((a, v) for a, v in res if value_filter(v))
     if filter:
         res = ((a, v) for a, v in res if filter(a, v))
     return res
 
 
-# TODO: Fix signature after removal of attr_filter and value_filter
-def fdir(obj, attr_filter=None, value_filter=None, getter=None, filter=None):
+def fdir(obj, getter=None, filter=None):
     '''Similar to `xdir`:func: but yields only the attributes names.'''
-    full = xdir(obj,
-                filter=filter,
-                attr_filter=attr_filter,
-                value_filter=value_filter,
-                getter=getter,
-                _depth=1)
+    full = xdir(obj, getter=getter, filter=filter, _depth=1)
     return (attr for attr, _v in full)
 
 
