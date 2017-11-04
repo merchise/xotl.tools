@@ -106,17 +106,13 @@ class TypeCheck(predicate):
     def __str__(self):
         return self._str()
 
-    def __crop__(self):
-        from xoutil.string import DEFAULT_MAX_WIDTH
-        return self._str(DEFAULT_MAX_WIDTH)
-
-    def _str(self, max_width=None):
+    def __crop__(self, max_width=None, canonical=False):
         '''Calculate both string versions (small and normal).'''
         from xoutil.symbols import Undefined
         from xoutil.eight import type_name
-        from xoutil.string import ELLIPSIS
+        from xoutil.clipping import ELLIPSIS, DEFAULT_MAX_WIDTH
         if max_width is None:
-            max_width = 1024    # a big number for this
+            max_width = DEFAULT_MAX_WIDTH    # a big number for this
         start, end = '{}('.format(type_name(self)), ')'
         borders_len = len(start) + len(end)
         sep = ', '
