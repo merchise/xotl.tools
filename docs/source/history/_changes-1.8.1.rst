@@ -4,3 +4,8 @@
 
 - Remove deprecated arguments from `xoutil.objects.xdir`:func: and
   `xoutil.objects.fdir`:func:.
+
+- Fix bug `#17`_: `xoutil.fp.tools.compose`:class: is not wrappable.
+
+
+.. _#17: https://gitlab.lahavane.com/merchise/xoutil/issues/17
