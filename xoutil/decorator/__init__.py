@@ -272,6 +272,9 @@ class memoized_property(object):
         obj.__dict__[self.__name__] = result = self.fget(obj)
         return result
 
+    def reset(self, instance):
+        instance.__dict__.pop(self.__name__, None)
+
 
 class memoized_instancemethod(object):
     """Decorate a method memoize its return value.
@@ -316,6 +319,10 @@ class memoized_instancemethod(object):
 
 
 def reset_memoized(instance, name):
+    from warnings import warn
+    msg = ('"reset_memoized" is now deprecated and it will be '
+           'removed. Use "memoized_property.reset".')
+    warn(msg, stacklevel=2)
     instance.__dict__.pop(name, None)
 
 

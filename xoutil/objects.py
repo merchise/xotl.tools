@@ -1022,7 +1022,6 @@ class staticproperty(property):
             raise AttributeError("can't delete attribute")
 
 
-
 # The following is extracted from the SQLAlchemy project's codebase, merit and
 # copyright goes to SQLAlchemy authors.
 #
@@ -1054,6 +1053,9 @@ class memoized_property(object):
         obj.__dict__[self.__name__] = result = self.fget(obj)
         return result
 
+    def reset(self, instance):
+        '''Clear the cached value of `instance`.'''
+        instance.__dict__.pop(self.__name__, None)
 
 
 def setdefaultattr(obj, name, value):

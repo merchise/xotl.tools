@@ -12,4 +12,7 @@
 
 - Deprecate `xoutil.decorator.memoized_instancemethod`:class:.
 
+- Deprecate `xoutil.decorator.reset_memoized`:func:.  Use
+  `~xoutil.decorator.memoized_property.reset`:meth:.
+
 .. _#17: https://gitlab.lahavane.com/merchise/xoutil/issues/17
