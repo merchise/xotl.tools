@@ -36,7 +36,7 @@ Top-level decorators
 
    Deprecated alias of `xoutil.objects.memoized_property`:class:.
 
-   .. versionchanged:: 1.8.0 Deprecated in favor of
+   .. versionchanged:: 1.8.1 Deprecated in favor of
                        `xoutil.objects.memoized_property`:class:.
 
 

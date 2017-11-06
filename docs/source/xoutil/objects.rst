@@ -33,3 +33,6 @@
 .. autofunction:: get_branch_subclasses
 
 .. autoclass:: memoized_property
+
+   .. versionadded:: 1.8.1 Ported from
+      `xoutil.decorator.memoized_property`:class:.

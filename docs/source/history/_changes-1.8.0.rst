@@ -91,6 +91,3 @@
   `xoutil.objects.adapt_exception`:func:.
 
 - Remove deprecated `xoutil.dim.meta.Signature.isunit`:meth:.
-
-- Migrate ``memoized_property`` class from `xoutil.decorator`:mod: to
-  `xoutil.objects`:mod: module.  Deprecate the first.
