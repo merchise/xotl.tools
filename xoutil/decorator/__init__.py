@@ -31,7 +31,7 @@ from xoutil.decorator.meta import decorator
 
 
 __all__ = ('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
-           'assignment_operator', 'instantiate', 'memoized_property',
+           'assignment_operator', 'instantiate',
            'memoized_instancemethod', 'reset_memoized')
 
 
@@ -249,28 +249,19 @@ def singleton(target, *args, **kwargs):
     return res
 
 
-
-# The following is extracted from the SQLAlchemy project's codebase, merit and
-# copyright goes to SQLAlchemy authors::
-#
-# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
-#
-# This module is part of SQLAlchemy and is released under the MIT License:
-# http://www.opensource.org/licenses/mit-license.php
-#
 class memoized_property(object):
-    """A read-only property that is only evaluated once.
+    '''A read-only property that is only evaluated once.
 
-    This is extracted from the SQLAlchemy project's codebase, merit and
-    copyright goes to SQLAlchemy authors::
+    Deprecated in favor of `xoutil.objects.memoized_property`:class:.
 
-      Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
-
-      This module is part of SQLAlchemy and is released under the MIT License:
-      http://www.opensource.org/licenses/mit-license.php
-
-    """
+    '''
     def __init__(self, fget, doc=None):
+        # XXX: The code was replicated in order to avoid module dependency
+        # conflicts
+        from warnings import warn
+        msg = ('"memoized_property" is now deprecated and it will be '
+               'removed. Use the one in "{}" module instead.')
+        warn(msg.format(aux.__module__), stacklevel=2)
         self.fget = fget
         self.__doc__ = doc or fget.__doc__
         self.__name__ = fget.__name__

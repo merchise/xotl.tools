@@ -37,8 +37,8 @@ def _len(x):
     return len(x) if x else 0
 
 
-# These two functions can be use to always return True or False
-# TODO: Deprecate both.
+# TODO: Deprecate these two functions, can be used to always return True or
+# False
 def _true(*args, **kwargs):
     return True
 
@@ -1068,6 +1068,40 @@ class staticproperty(property):
             self.fdel()
         else:
             raise AttributeError("can't delete attribute")
+
+
+
+# The following is extracted from the SQLAlchemy project's codebase, merit and
+# copyright goes to SQLAlchemy authors.
+#
+# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+#
+# This module is part of SQLAlchemy and is released under the MIT License:
+# http://www.opensource.org/licenses/mit-license.php
+#
+class memoized_property(object):
+    """A read-only property that is only evaluated once.
+
+    This is extracted from the SQLAlchemy project's codebase, merit and
+    copyright goes to SQLAlchemy authors::
+
+      Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+
+      This module is part of SQLAlchemy and is released under the MIT License:
+      http://www.opensource.org/licenses/mit-license.php
+
+    """
+    def __init__(self, fget, doc=None):
+        self.fget = fget
+        self.__doc__ = doc or fget.__doc__
+        self.__name__ = fget.__name__
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        obj.__dict__[self.__name__] = result = self.fget(obj)
+        return result
+
 
 
 def setdefaultattr(obj, name, value):
