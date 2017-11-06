@@ -47,3 +47,5 @@
 .. autofunction:: multi_getter
 
 .. autofunction:: get_branch_subclasses
+
+.. autoclass:: memoized_property
