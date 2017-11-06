@@ -85,7 +85,7 @@ class compose(metaclass(MetaCompose)):
     expect tuples.
 
     '''
-    __slots__ = ('inner', 'scope')
+    # TODO: __slots__ = ('inner', 'scope')
 
     def __new__(cls, *functions):
         functions = [fn for fn in functions if fn is not identity]
@@ -152,8 +152,27 @@ class compose(metaclass(MetaCompose)):
                 res = 'Composed function: <{!r}>'.format(self)
             return res
 
-    __name__ = property(__repr__)
-    __doc__ = property(__str__)
+    def _get_name(self):
+        res = self.__dict__.get('__name__')
+        if res is None:
+            res = repr(self)
+        return res
+
+    def _set_name(self, value):
+        self.__dict__['__name__'] = value
+
+    __name__ = property(_get_name, _set_name)
+
+    def _get_doc(self):
+        res = self.__dict__.get('__doc__')
+        if res is None:
+            res = str(self)
+        return res
+
+    def _set_doc(self, value):
+        self.__dict__['__doc__'] = value
+
+    __doc__ = property(_get_doc, _set_doc)
 
     def __eq__(self, other):
         if isinstance(type(other), MetaCompose):
