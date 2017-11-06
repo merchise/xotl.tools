@@ -122,7 +122,8 @@ class RegressionTests(unittest.TestCase):
 class Memoizations(unittest.TestCase):
     def test_memoized_property(self):
         from xoutil.future.inspect import getattr_static
-        from xoutil.decorator import memoized_property, reset_memoized
+        from xoutil.objects import memoized_property
+        from xoutil.decorator import reset_memoized
 
         class Foobar(object):
             @memoized_property
