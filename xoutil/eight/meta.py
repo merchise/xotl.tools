@@ -26,9 +26,7 @@ else:
 
 metaclass.__doc__ = '''Define the metaclass of a class.
 
-    .. versionadded:: 1.7.0  It's available as
-       `xoutil.objects.metaclass`:func: since 1.4.1.  That alias is now
-       deprecated and will be removed in 1.8.
+    .. versionadded:: 1.7.0
 
     This function allows to define the metaclass of a class equally in Python
     2 and 3.

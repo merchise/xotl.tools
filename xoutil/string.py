@@ -215,7 +215,7 @@ def slugify(value, *args, **kwds):
     import re
     from xoutil.eight import string_types
     from xoutil.eight.string import force_ascii
-    from xoutil.params import ParamManager    # Old module
+    from xoutil.params import ParamManager
 
     from xoutil.values import compose, istype
     from xoutil.values.simple import not_false, ascii_coerce

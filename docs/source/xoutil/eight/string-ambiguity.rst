@@ -99,7 +99,64 @@ represents an actual "hell" for programmers.
 For more references see `codecs`:mod: standard module.  Also the
 `xoutil.future.codecs`:mod:, and `xoutil.eight.text`:mod: extension modules.
 
-
 .. Local document hyper-links
 
 .. _unicode: https://docs.python.org/2/library/functions.html#unicode
+
+
+
+.. |xoutil-string-1_8| replace:: Changes in 1.8.0 in `xoutil.string`:mod:.
+.. _xoutil-string-1_8:
+
+|xoutil-string-1_8|
+-------------------
+
+- `xoutil.future.codecs`:mod:\ : Moved here functions
+  `~xoutil.future.codecs.force_encoding`:func:,
+  `~xoutil.future.codecs.safe_decode`:func:, and
+  `~xoutil.future.codecs.safe_encode`:func:.
+
+- `xoutil.eight.string`:mod:\ : Technical string handling.  In this module:
+
+  - `~xoutil.eight.string.force`:func:\ : Replaces old ``safe_str``, and
+    ``force_str`` versions.
+
+  - `~xoutil.eight.string.safe_join`:func:\ : Replaces old version in
+    ``future`` module.  This function is useless, it's equivalent to::
+
+      force(vale).join(force(item) for item in iterator)
+
+  - `~xoutil.eight.string.force_ascii`:func:\ : Replaces old
+    ``normalize_ascii``.   This function is safe and the result will be of
+    standard ``str`` type containing only equivalent ASCII characters from
+    the argument.
+
+- `xoutil.eight.text`:mod:\ : Text handling, strings can be part of
+  internationalization processes.  In this module:
+
+  - `~xoutil.eight.text.force`:func:\ : Replaces old ``safe_str``, and
+    ``force_str`` versions, but always returning the text type.
+
+  - `~xoutil.eight.text.safe_join`:func:\ : Replaces old version in
+    ``future`` module, but in this case always return the text type.  This
+    function is useless, it's equivalent to::
+
+      force(vale).join(force(item) for item in iterator)
+
+- ``capitalize_word`` function was completely removed, use instead standard
+  method ``word.capitalize()``.
+
+- Functions ``capitalize``, ``normalize_name``, ``normalize_title``,
+  ``normalize_str``, ``parse_boolean``, ``parse_url_int`` were completely
+  removed.
+
+- ``normalize_unicode`` was completely removed, it's now replaced by
+  `xoutil.eight.text.force`:func:.
+
+- ``hyphen_name`` was moved to `xoutil.cli.tools`:mod:.
+
+- ``strfnumber`` was moved as an internal function of
+  'xoutil.future.datetime':mod: module.
+
+- Function ``normalize_slug`` is now deprecated.  You should use now
+  `~xoutil.string.slugify`:func:\ .
