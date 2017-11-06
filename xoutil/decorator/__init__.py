@@ -290,6 +290,10 @@ class memoized_instancemethod(object):
 
     """
     def __init__(self, fget, doc=None):
+        from warnings import warn
+        msg = ('"memoized_instancemethod" is now deprecated and it will be '
+               'removed.')
+        warn(msg, stacklevel=2)
         self.fget = fget
         self.__doc__ = doc or fget.__doc__
         self.__name__ = fget.__name__

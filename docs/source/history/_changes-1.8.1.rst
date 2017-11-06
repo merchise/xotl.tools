@@ -10,4 +10,6 @@
 - Move `xoutil.decorator.memoized_property`:class: to
   `xoutil.objects.memoized_property`:class: module.  Deprecate the first.
 
+- Deprecate `xoutil.decorator.memoized_instancemethod`:class:.
+
 .. _#17: https://gitlab.lahavane.com/merchise/xoutil/issues/17
