@@ -186,7 +186,7 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
 
     The parameter `base` serves the purpose of changing the base for the
     property.  For instance, this allows you to have `memoized_properties
-    <xoutil.decorator.memoized_property>`:func: at the module-level::
+    <xoutil.objects.memoized_property>`:func: at the module-level::
 
         def memoized(self):
             return self

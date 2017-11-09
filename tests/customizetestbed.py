@@ -16,7 +16,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.modules import moduleproperty
-from xoutil.decorator import memoized_property
+from xoutil.objects import memoized_property
 
 
 @moduleproperty

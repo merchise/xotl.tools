@@ -7,5 +7,12 @@
 
 - Fix bug `#17`_: `xoutil.fp.tools.compose`:class: is not wrappable.
 
+- Move `xoutil.decorator.memoized_property`:class: to
+  `xoutil.objects.memoized_property`:class: module.  Deprecate the first.
+
+- Deprecate `xoutil.decorator.memoized_instancemethod`:class:.
+
+- Deprecate `xoutil.decorator.reset_memoized`:func:.  Use
+  `~xoutil.decorator.memoized_property.reset`:meth:.
 
 .. _#17: https://gitlab.lahavane.com/merchise/xoutil/issues/17
