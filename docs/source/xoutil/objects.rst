@@ -26,24 +26,14 @@
 
 .. autofunction:: pop_first_of(source, *keys, default=None)
 
-.. function:: get_and_del_attr(obj, name, default=None)
-
-   Deprecated alias for `popattr`:func:.
-
-.. function:: get_and_del_first_of(source, *keys, default=None)
-
-   Deprecated alias for `pop_first_of`:func:.
-
-.. class:: metaclass(meta, **kwargs)
-
-   Deprecated alias of `xoutil.eight.meta.metaclass`:class:.
-
-   .. versionadded:: 1.4.1
-
-   .. versionchanged:: 1.7.0 Deprecated in favor of `xoutil.eight.meta.metaclass`:func:.
-
 .. autofunction:: fix_method_documentation
 
 .. autofunction:: multi_getter
 
 .. autofunction:: get_branch_subclasses
+
+.. autoclass:: memoized_property
+   :members: reset
+
+   .. versionadded:: 1.8.1 Ported from
+      `xoutil.decorator.memoized_property`:class:.

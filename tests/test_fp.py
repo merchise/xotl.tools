@@ -57,6 +57,20 @@ def test_fp_compose():
     assert compose(h, g, f)(x) == h(g(f(x)))
 
 
+def test_fp_compose_wrapable():
+    from functools import wraps
+    from xoutil.fp.tools import compose
+
+    def wrapper():
+        'X'
+        pass
+
+    res = wraps(wrapper)(compose(wrapper, lambda: None))
+    assert res.__name__ == wrapper.__name__
+    assert res.__doc__ == wrapper.__doc__
+    assert res.__module__ == wrapper.__module__
+
+
 def test_fp_tools():
     from xoutil.fp.tools import identity, compose
 

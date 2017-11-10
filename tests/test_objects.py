@@ -445,7 +445,7 @@ def test_validate_attrs():
 
 @pytest.mark.xfail()
 def test_memoized_classproperty():
-    from xoutil.decorator import memoized_property
+    from xoutil.objects import memoized_property
     from xoutil.objects import classproperty
 
     current = 1

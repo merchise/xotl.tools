@@ -30,9 +30,15 @@ Top-level decorators
 
 .. autofunction:: instantiate(target, *args, **kwargs)
 
-.. autoclass:: memoized_property
-
 .. autoclass:: memoized_instancemethod
+
+.. class:: memoized_property
+
+   Deprecated alias of `xoutil.objects.memoized_property`:class:.
+
+   .. versionchanged:: 1.8.1 Deprecated in favor of
+                       `xoutil.objects.memoized_property`:class:.
+
 
 
 Sub packages
