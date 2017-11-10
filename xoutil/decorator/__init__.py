@@ -260,8 +260,8 @@ class memoized_property(object):
         # conflicts
         from warnings import warn
         msg = ('"memoized_property" is now deprecated and it will be '
-               'removed. Use the one in "{}" module instead.')
-        warn(msg.format(aux.__module__), stacklevel=2)
+               'removed. Use the one in "xoutil.objects" module instead.')
+        warn(msg, stacklevel=2)
         self.fget = fget
         self.__doc__ = doc or fget.__doc__
         self.__name__ = fget.__name__
