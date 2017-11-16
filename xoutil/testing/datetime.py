@@ -25,13 +25,13 @@ def timespans(draw, dates=None, unbounds='any', always_valid=True):
 
     `unbounds` should be one of the strings 'none', 'any', 'past', 'future'.
     If 'any' then the generated time span can be `unbound
-    <xoutil.future.datetime.TimeSpan.unbound>`:prop:.  If 'past' it can be
+    <xoutil.future.datetime.TimeSpan.unbound>`:attr:.  If 'past' it can be
     unbound to the past.  If 'future', it can be unbound to the future.  If
     'none', the generated time span will always be bound.  In all cases that
     generate unbound time spans, we can also generate bound time spans.
 
     If `always_valid` is True all generated time spans will be `valid
-    <xoutil.future.datetime.TimeSpan.valid>`:prop:.  Otherwise we may generate
+    <xoutil.future.datetime.TimeSpan.valid>`:attr:.  Otherwise we may generate
     invalid ones.
 
     Usage::
