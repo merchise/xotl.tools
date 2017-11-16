@@ -21,7 +21,7 @@ def timespans(draw, dates=None, unbounds='any', always_valid=True):
     This is a `hypothesis`_ strategy.
 
     `dates` should be None or generator of `datetime.date`:class: objects.
-    It defaults to `hypothesis.dates`:class:
+    It defaults to `hypothesis.strategies.dates`:func:
 
     `unbounds` should be one of the strings 'none', 'any', 'past', 'future'.
     If 'any' then the generated time span can be `unbound
