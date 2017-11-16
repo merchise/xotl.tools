@@ -22,8 +22,6 @@
 
 .. autofunction:: dict_merge(*dicts, **other)
 
-.. autofunction:: smart_getattr(name, *sources, **kwargs)
-
 .. autofunction:: pop_first_of(source, *keys, default=None)
 
 .. autofunction:: fix_method_documentation
