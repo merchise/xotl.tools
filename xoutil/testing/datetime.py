@@ -16,7 +16,7 @@ from hypothesis import strategies
 
 @strategies.composite
 def timespans(draw, dates=None, unbounds='any', always_valid=True):
-    '''A strategy that generates `xoutil.future.datetime.TimeSpan`.
+    '''A strategy that generates `xoutil.future.datetime.TimeSpan`:class:.
 
     This is a `hypothesis`_ strategy.
 
