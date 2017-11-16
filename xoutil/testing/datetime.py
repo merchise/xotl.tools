@@ -43,6 +43,8 @@ def timespans(draw, dates=None, unbounds='any', always_valid=True):
        ... def test_timespan(ts):
        ...    pass
 
+    .. _hypothesis: https://hypothesis.readthedocs.io/
+
     '''
     from xoutil.future.datetime import TimeSpan
     if dates is None:
