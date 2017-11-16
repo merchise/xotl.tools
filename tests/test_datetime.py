@@ -146,17 +146,17 @@ def test_xoutil_dates_are_representable(value):
     assert value.strftime('%Y-%m-%d')
 
 
-@given(timespans('none'))
+@given(timespans(unbounds='none'))
 def test_timespans_are_representable(value):
     assert repr(value)
 
 
-@given(timespans('none'))
+@given(timespans(unbounds='none'))
 def test_generate_valid_timespans(ts):
     assert ts.valid
 
 
-@given(timespans('none'))
+@given(timespans(unbounds='none'))
 def test_ts_returns_dates_not_subtypes(ts):
     from datetime import date
     assert type(ts.start_date) is date
@@ -169,18 +169,18 @@ def test_ts_returns_dates_not_subtypes(ts):
         assert type(ts.end_date) is infinity_extended_date
 
 
-@given(timespans('none'), strategies.dates())
+@given(timespans(unbounds='none'), strategies.dates())
 def test_operate_with_timespans(ts, d):
     assert ts.start_date - d is not None
     assert d - ts.start_date is not None
 
 
-@given(timespans('none'), timespans('none'))
+@given(timespans(unbounds='none'), timespans(unbounds='none'))
 def test_definition_of_overlaps(ts1, ts2):
     assert ts1.overlaps(ts2) == bool(ts1 & ts2)
 
 
-@given(timespans('none'), timespans('none'))
+@given(timespans(unbounds='none'), timespans(unbounds='none'))
 def test_duplication_of_timespans(ts1, ts2):
     hypothesis.assume(ts1 == ts2)
     assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'

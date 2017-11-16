@@ -14,20 +14,54 @@ from __future__ import (division as _py3_division,
 from hypothesis import strategies
 
 
-dates = strategies.dates
-maybe_date = dates() | strategies.none()
-
-
 @strategies.composite
-def timespans(draw, unbounds='any'):
+def timespans(draw, dates=None, unbounds='any', always_valid=True):
     '''A strategy that generates `xoutil.future.datetime.TimeSpan`.
 
+    This is a `hypothesis`_ strategy.
+
+    `dates` should be None or generator of `datetime.date`:class: objects.
+    It defaults to `hypothesis.dates`:class:
+
+    `unbounds` should be one of the strings 'none', 'any', 'past', 'future'.
+    If 'any' then the generated time span can be `unbound
+    <xoutil.future.datetime.TimeSpan.unbound>`:prop:.  If 'past' it can be
+    unbound to the past.  If 'future', it can be unbound to the future.  If
+    'none', the generated time span will always be bound.  In all cases that
+    generate unbound time spans, we can also generate bound time spans.
+
+    If `always_valid` is True all generated time spans will be `valid
+    <xoutil.future.datetime.TimeSpan.valid>`:prop:.  Otherwise we may generate
+    invalid ones.
+
+    Usage::
+
+       >>> from hypothesis import given
+       >>> from xoutil.testing.datetime import timespans
+
+       >>> @given(timespans())
+       ... def test_timespan(ts):
+       ...    pass
 
     '''
     from xoutil.future.datetime import TimeSpan
-    date1 = draw(maybe_date if unbounds in ('any', 'past') else dates())
-    date2 = draw(maybe_date if unbounds in ('any', 'future') else dates())
-    if date1 and date2:
+    if dates is None:
+        dates = strategies.dates()
+    maybe = strategies.none() | dates
+    if unbounds in ('any', 'past', 'future', 'none'):
+        if unbounds in ('any', 'past'):
+            date1 = draw(maybe)
+        else:
+            date1 = draw(dates)
+        if unbounds in ('any', 'future'):
+            date2 = draw(maybe)
+        else:
+            date2 = draw(dates)
+    else:
+        raise ValueError(
+            "unbounds should be one of 'any', 'past', or 'future'."
+        )
+    if date1 and date2 and always_valid:
         start1 = min(date1, date2)
         end1 = max(date1, date2)
     else:
