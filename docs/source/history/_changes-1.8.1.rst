@@ -15,4 +15,8 @@
 - Deprecate `xoutil.decorator.reset_memoized`:func:.  Use
   `~xoutil.decorator.memoized_property.reset`:meth:.
 
+- Fix bug (unregistered): `xoutil.objects.traverse`:func: ignores its
+  `getter`.
+
+
 .. _#17: https://gitlab.lahavane.com/merchise/xoutil/issues/17

@@ -1376,7 +1376,7 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
         get_traverser(path, default=default, sep=sep, getter=getter)(obj)
 
     '''
-    _traverser = get_traverser(path, default=default, sep=sep, getter=None)
+    _traverser = get_traverser(path, default=default, sep=sep, getter=getter)
     return _traverser(obj)
 
 

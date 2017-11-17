@@ -234,6 +234,22 @@ def test_traversing():
     assert traverser(obj) == (1, 2, None)
 
 
+def test_traversing_bug_ignoring_getter():
+    import mock
+    from xoutil.objects import traverse
+    sentinel = object()
+
+    class Me(object):
+        def __getattr__(self, attr):
+            return self
+
+    return_sentinel = mock.Mock(return_value=sentinel)
+
+    me = Me()
+    assert traverse(me, 'x.y', getter=return_sentinel) is sentinel
+    assert return_sentinel.called
+
+
 def test_dict_merge_base_cases():
     from xoutil.objects import dict_merge
     base = {'a': 'a', 'd': {'attr1': 2}}
