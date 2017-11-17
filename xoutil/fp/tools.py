@@ -205,11 +205,11 @@ class compose(metaclass(MetaCompose)):
 
 
 class pos_args(tuple):
-    '''Mark variable number positional arguments (see `fargs`:class:).'''
+    '''Mark variable number positional arguments (see `full_args`:class:).'''
 
 
 class kw_args(dict):
-    '''Mark variable number keyword arguments (see `fargs`:class:).'''
+    '''Mark variable number keyword arguments (see `full_args`:class:).'''
 
 
 class full_args(tuple):
