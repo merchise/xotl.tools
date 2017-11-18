@@ -22,6 +22,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from contextlib import contextmanager
+
 from xoutil.symbols import Unset
 from xoutil.deprecation import deprecated
 
@@ -1499,3 +1501,30 @@ def dict_merge(*dicts, **others):
                                     % key)
                 result[key] = value
     return result
+
+
+@contextmanager
+def save_attrs(obj, *attrs, **kwargs):
+    '''A context manager that restores `obj` attributes at exit.
+
+    We deal with `obj`\ 's attributes with `smart_getter`:func: and
+    `smart_setter`:func:. You can override passing keyword `getter` and
+    `setter`.  They must take the object and return a callable to get/set the
+    its attributes.
+
+    '''
+    from xoutil.params import check_count
+    check_count(attrs, 1)
+    getter = kwargs.get('getter', smart_getter)
+    setter = kwargs.get('setter', smart_setter)
+    get_ = getter(obj)
+    set_ = setter(obj)
+    props = {attr: get_(attr) for attr in attrs}
+    try:
+        yield obj
+    finally:
+        for attr, val in props.items():
+            set_(attr, val)
+
+
+del contextmanager
