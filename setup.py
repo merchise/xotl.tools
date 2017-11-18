@@ -75,7 +75,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        # TODO: 'six>=1.5.0,<2', removed
+        'monotonic',
     ],
     extras_require={
         'extra': ['python-dateutil', ],
