@@ -377,6 +377,22 @@ def smart_getter(obj, strict=False):
             return getter
 
 
+def smart_setter(obj):
+    '''Returns a smart setter for `obj`.
+
+    If `obj` is a mutable mapping, it returns the ``.__setitem__()`` method
+    bound to the object `obj`, otherwise it returns a partial of ``setattr``
+    on `obj`.
+
+    '''
+    from xoutil.future.functools import partial
+    from xoutil.future.collections import MutableMapping
+    if isinstance(obj, MutableMapping):
+        return obj.__setitem__
+    else:
+        return partial(setattr, obj)
+
+
 def smart_getter_and_deleter(obj):
     '''Returns a function that get and deletes either a key or an attribute of
     obj depending on the type of `obj`.
