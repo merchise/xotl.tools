@@ -158,6 +158,7 @@ def new_datetime(d):
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
     return datetime(*args)
 
+
 del deprecated
 
 
@@ -701,6 +702,61 @@ class TimeSpan(object):
             return EmptyTimeSpan
     __mul__ = __and__
 
+    def __bool__(self):
+        return True
+
+    __nonzero__ = __bool__
+
+    def __len__(self):
+        '''The amount of dates in the span.
+
+        .. warning:: If the time span is `unbound`:attr: this method returns
+                     NotImplemented.  This will make python complain with a
+                     TypeError.
+
+        .. versionadded:: 1.8.2
+
+        '''
+        if self.bound:
+            return (self.end_date - self.start_date).days
+        else:
+            return NotImplemented
+
+    def __lshift__(self, delta):
+        '''Return the time span displaced to the past in `delta`.
+
+        :param delta: The number of days to displace.  It can be either an
+                      integer or a `datetime.timedelta`:class:.  The integer
+                      will be converted to ``timedelta(days=delta)``.
+
+        .. note:: Delta values that don't amount to at least a day will be the
+                  same as 0.
+
+        .. versionadded:: 1.8.2
+
+        '''
+        import numbers
+        if isinstance(delta, numbers.Integral):
+            delta = timedelta(days=delta)   # noqa
+        start = self.start_date - delta if self.start_date else None
+        end = self.end_date - delta if self.end_date else None
+        return type(self)(start, end)
+
+    def __rshift__(self, delta):
+        '''Return the time span displaced to the future in `delta`.
+
+        :param delta: The number of days to displace.  It can be either an
+                      integer or a `datetime.timedelta`:class:.  The integer
+                      will be converted to ``timedelta(days=delta)``.
+
+        .. note:: Delta values that don't amount to at least a day will be the
+                  same as 0.
+
+        .. versionadded:: 1.8.2
+
+        '''
+        return self << -delta
+
     def intersection(self, *others):
         'Return ``self [& other1 & ...]``.'
         import operator
@@ -793,6 +849,15 @@ class _EmptyTimeSpan(object):
     def __reduce__(self):
         # So that unpickling returns the singleton
         return type(self), ()
+
+    def __len__(self):
+        return 0
+
+    def __lshift__(self, delta):
+        return self
+
+    def __rshift__(self, delta):
+        return self
 
 
 EmptyTimeSpan = _EmptyTimeSpan()

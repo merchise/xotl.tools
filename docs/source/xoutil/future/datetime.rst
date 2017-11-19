@@ -69,6 +69,12 @@ We added the following features.
 
    .. automethod:: intersection
 
+   .. automethod:: __lshift__
+
+   .. automethod:: __rshift__
+
+   .. automethod:: __len__
+
 
 .. object:: EmptyTimeSpan
 
