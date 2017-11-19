@@ -186,6 +186,44 @@ def test_duplication_of_timespans(ts1, ts2):
     assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
 
 
+@given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
+def test_timespans_displacement_reversed(ts1, delta):
+    assert (ts1 << delta) == (ts1 >> -delta)
+
+
+@given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
+def test_timespans_displacement_keeps_unbounds(ts1, delta):
+    assert ts1.unbound == (ts1 << delta).unbound
+    assert ts1.future_unbound == (ts1 << delta).future_unbound
+    assert ts1.past_unbound == (ts1 << delta).past_unbound
+
+
+@given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
+def test_timespans_displacement_doubled(ts1, delta):
+    assert ((ts1 << delta) << delta) == (ts1 << (2 * delta))
+
+
+@given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
+def test_timespans_displacement_backandforth(ts1, delta):
+    assert ts1 == ((ts1 << delta) >> delta) == (ts1 << 0) == (ts1 >> 0)
+
+
+@given(timespans(unbounds='none'), strategies.integers(min_value=-1000, max_value=1000))
+def test_timespans_displacement_dates(ts1, delta):
+    res = ts1 << delta
+    assert (res.start_date - ts1.start_date).days == -delta
+    assert (res.end_date - ts1.end_date).days == -delta
+    res = ts1 >> delta
+    assert (res.start_date - ts1.start_date).days == delta
+    assert (res.end_date - ts1.end_date).days == delta
+
+
+@given(timespans(unbounds='none'), strategies.integers(min_value=-1000, max_value=1000))
+def test_timespans_displacement_keeps_the_len(ts1, delta):
+    res = ts1 << delta
+    assert len(ts1) == len(res)
+
+
 @given(timespans())
 def test_timespans_are_pickable(ts):
     import pickle
