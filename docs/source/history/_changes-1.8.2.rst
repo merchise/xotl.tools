@@ -2,3 +2,6 @@
   <xoutil.future.datetime.TimeSpan.__lshift__>`:meth: and `right shift (>>)
   <xoutil.future.datetime.TimeSpan.__rshift__>`:meth: for
   `~xoutil.future.datetime.TimeSpan`:class:.
+
+- Add `xoutil.objects.smart_getter`:func: and
+  `xoutil.objects.save_attributes`:func:.

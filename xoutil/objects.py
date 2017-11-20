@@ -386,6 +386,8 @@ def smart_setter(obj):
     bound to the object `obj`, otherwise it returns a partial of ``setattr``
     on `obj`.
 
+    .. versionadded:: 1.8.2
+
     '''
     from xoutil.future.functools import partial
     from xoutil.future.collections import MutableMapping
@@ -1504,13 +1506,59 @@ def dict_merge(*dicts, **others):
 
 
 @contextmanager
-def save_attrs(obj, *attrs, **kwargs):
+def save_attributes(obj, *attrs, **kwargs):
     '''A context manager that restores `obj` attributes at exit.
 
     We deal with `obj`\ 's attributes with `smart_getter`:func: and
-    `smart_setter`:func:. You can override passing keyword `getter` and
+    `smart_setter`:func:.  You can override passing keyword `getter` and
     `setter`.  They must take the object and return a callable to get/set the
     its attributes.
+
+    Basic example:
+
+      >>> from xoutil.future.types import SimpleNamespace as new
+      >>> obj = new(a=1, b=2)
+
+      >>> with save_attributes(obj, 'a'):
+      >>>    obj.a = 2
+      >>>    obj.b = 3
+
+      >>> obj.a
+      1
+
+      >>> obj.b
+      3
+
+    Depending on the behavior of `getter` and or the object itself, it may be
+    an error to get an attribute or key that does not exists.
+
+      >>> getter = lambda o: lambda a: getattr(o, a)
+      >>> with save_attributes(obj, 'c', getter=getter):   # doctest: +ELLIPSIS
+      ...    pass
+      Traceback (...)
+      ...
+      AttributeError: ...
+
+    Beware, however, that `smart_getter`:func: is non-strict by default and it
+    returns None for a non-existing key or attribute.  In this case, we
+    attempt to set that attribute or key at exit:
+
+      >>> with save_attributes(obj, 'x'):
+      ...   pass
+
+      >>> obj.x is None
+      True
+
+    But, then, setting the value may fail:
+
+      >>> obj = object()
+      >>> with save_attribute(obj, 'x'):  # doctest: +ELLIPSIS
+      ...   pass
+      Traceback (...)
+      ...
+      AttributeError: ...
+
+    .. versionadded:: 1.8.2
 
     '''
     from xoutil.params import check_count
