@@ -113,9 +113,65 @@ class BackoffWait(object):
         return res
 
 
+def dispatch(fn, args, kwargs, max_tries=None, max_time=None,
+             wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
+    '''Run `fn` with args and kwargs in an auto-retrying loop.
+
+    See `dispatcher`:class:.  This is just::
+
+       >>> dispatcher(max_tries=max_tries, max_time=max_time, wait=wait,
+       ...            retry_only=retry_only)(fn, *args, **kwargs)
+
+    '''
+    return dispatcher(max_tries=max_tries, max_time=max_time, wait=wait,
+                      retry_only=retry_only)(fn, *args, **kwargs)
+
+
+def dispatcher(max_tries=None, max_time=None,
+               wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
+    '''An auto-retrying dispatcher.
+
+    Instances are callables that take another callable (`func`) and its
+    arguments and run the callable in an auto-retrying loop.
+
+    If func raises any exception that is not one in `reraise`, and it has
+    being tried less than `tries` and the time spent executing the function
+    (waiting included) has not reached `time`, the function will be retried.
+
+    `wait` can be a callable or a number.  If `wait` is callable, it must take
+    a single (optional) argument with the previous waiting we did (or None for
+    the first retry) and return the number of seconds to wait before retrying.
+
+    If `wait` is a number, we convert it to a callable with
+    `StandardWait(wait) <StandardWait>`:class:.
+
+    .. seealso:: `BackoffWait`:class:
+
+    If `retry_only` is None, all exceptions (that inherits from Exception)
+    will be retried.  Otherwise, only the exceptions in `retry_only` will be
+    retried.
+
+    Waiting is done with `time.sleep`:func:.  Time tracking is done with
+    `time.monotonic`:func:.
+
+    '''
+    decorator = _autoretry(
+        max_tries=max_tries,
+        max_time=max_time,
+        wait=wait,
+        retry_only=retry_only
+    )
+
+    # TODO: Create __doc__ and __name__?
+    def caller(fn, *args, **kwargs):
+        return decorator(fn)(*args, **kwargs)
+
+    return caller
+
+
 @decorator
-def autoretry(func, tries=None, time=None, wait=DEFAULT_WAIT_INTERVAL,
-              retry_only=None):
+def _autoretry(func, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL,
+               retry_only=None):
     '''Decorate `func` so that it is tried several times upon failures.
 
     If func raises any exception that is not one in `reraise`, and it has
@@ -140,10 +196,9 @@ def autoretry(func, tries=None, time=None, wait=DEFAULT_WAIT_INTERVAL,
 
     '''
     from xoutil.eight import callable
-    from xoutil.future.time import monotonic
-    from functools import wraps
+    from xoutil.future.time import monotonic, sleep
 
-    if not tries and not time:
+    if not max_tries and not max_time:
         raise TypeError('One of tries or times must be set')
 
     if not retry_only:
@@ -152,7 +207,6 @@ def autoretry(func, tries=None, time=None, wait=DEFAULT_WAIT_INTERVAL,
     if not callable(wait):
         wait = StandardWait(wait)
 
-    @wraps(func)
     def inner(*args, **kwargs):
         t = 0
         done = False
@@ -163,10 +217,10 @@ def autoretry(func, tries=None, time=None, wait=DEFAULT_WAIT_INTERVAL,
                 return func(*args, **kwargs)
             except retry_only:
                 t += 1
-                retry = t < tries and monotonic() - start < time
+                retry = t < max_tries and monotonic() - start < max_time
                 if retry:
                     waited = wait(waited)
-                    time.sleep(waited)
+                    sleep(waited)
 
     return inner
 
