@@ -12,7 +12,7 @@
 #
 # Created on 2015-10-25
 
-'''Multitasking and concurrent programming tools.
+'''Task, multitasking, and concurrent programming tools.
 
 .. warning:: Experimental.  API is not settled.
 
@@ -66,9 +66,13 @@ class AutoLocal(local):
 
 
 #: The minimal time (in seconds) to wait between retries.
+#:
+#: .. versionadded:: 1.8.2
 MIN_WAIT_INTERVAL = 20 / 1000  # 20 ms
 
 #: The default time (in seconds) to wait between retries.
+#:
+#: .. versionadded:: 1.8.2
 DEFAULT_WAIT_INTERVAL = 50 / 1000  # 50 ms
 
 
@@ -79,6 +83,8 @@ class StandardWait(object):
     `wait` argument.  This callable always the same `wait` value.
 
     We never wait less than `MIN_WAIT_INTERVAL`:data:.
+
+    .. versionadded:: 1.8.2
 
     '''
     def __init__(self, wait=DEFAULT_WAIT_INTERVAL):
@@ -102,6 +108,8 @@ class BackoffWait(object):
 
     We never wait less than `MIN_WAIT_INTERVAL`:data:.
 
+    .. versionadded:: 1.8.2
+
     '''
     def __init__(self, wait=DEFAULT_WAIT_INTERVAL, backoff=5):
         self.wait = max(MIN_WAIT_INTERVAL, wait)
@@ -122,6 +130,8 @@ def dispatch(fn, args, kwargs, max_tries=None, max_time=None,
        >>> dispatcher(max_tries=max_tries, max_time=max_time, wait=wait,
        ...            retry_only=retry_only)(fn, *args, **kwargs)
 
+    .. versionadded:: 1.8.2
+
     '''
     return dispatcher(max_tries=max_tries, max_time=max_time, wait=wait,
                       retry_only=retry_only)(fn, *args, **kwargs)
@@ -131,16 +141,17 @@ def dispatcher(max_tries=None, max_time=None,
                wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
     '''An auto-retrying dispatcher.
 
-    Instances are callables that take another callable (`func`) and its
-    arguments and run the callable in an auto-retrying loop.
+    Return a callable that take another callable (`func`) and its arguments
+    and runs it in an auto-retrying loop.
 
-    If func raises any exception that is not one in `reraise`, and it has
-    being tried less than `tries` and the time spent executing the function
-    (waiting included) has not reached `time`, the function will be retried.
+    If `func` raises any exception that is in `retry_only`, and it has being
+    tried less than `max_tries` and the time spent executing the function
+    (waiting included) has not reached `max_time`, the function will be
+    retried.
 
     `wait` can be a callable or a number.  If `wait` is callable, it must take
-    a single (optional) argument with the previous waiting we did (or None for
-    the first retry) and return the number of seconds to wait before retrying.
+    a single argument with the previous waiting we did (or None for the first
+    retry) and return the number of seconds to wait before retrying.
 
     If `wait` is a number, we convert it to a callable with
     `StandardWait(wait) <StandardWait>`:class:.
@@ -153,6 +164,8 @@ def dispatcher(max_tries=None, max_time=None,
 
     Waiting is done with `time.sleep`:func:.  Time tracking is done with
     `time.monotonic`:func:.
+
+    .. versionadded:: 1.8.2
 
     '''
     decorator = _autoretry(
@@ -174,25 +187,7 @@ def _autoretry(func, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL,
                retry_only=None):
     '''Decorate `func` so that it is tried several times upon failures.
 
-    If func raises any exception that is not one in `reraise`, and it has
-    being tried less than `tries` and the time spent executing the function
-    (waiting included) has not reached `time`, the function will be retried.
-
-    `wait` can be a callable or a number.  If `wait` is callable, it must take
-    a single (optional) argument with the previous waiting we did (or None for
-    the first retry) and return the number of seconds to wait before retrying.
-
-    If `wait` is a number, we convert it to a callable with
-    `StandardWait(wait) <StandardWait>`:class:.
-
-    .. seealso:: `BackoffWait`:class:
-
-    If `retry_only` is None, all exceptions (that inherits from Exception)
-    will be retried.  Otherwise, only the exceptions in `retry_only` will be
-    retried.
-
-    Waiting is done with `time.sleep`:func:.  Time tracking is done with
-    `time.monotonic`:func:.
+    Arguments have the same meanings as in `dispatcher`:func:.
 
     '''
     from xoutil.eight import callable
