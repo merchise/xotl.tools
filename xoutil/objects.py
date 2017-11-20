@@ -1520,8 +1520,8 @@ def save_attributes(obj, *attrs, **kwargs):
       >>> obj = new(a=1, b=2)
 
       >>> with save_attributes(obj, 'a'):
-      >>>    obj.a = 2
-      >>>    obj.b = 3
+      ...    obj.a = 2
+      ...    obj.b = 3
 
       >>> obj.a
       1
