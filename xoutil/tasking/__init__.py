@@ -140,7 +140,7 @@ def autoretry(func, tries=None, time=None, wait=DEFAULT_WAIT_INTERVAL,
 
     '''
     from xoutil.eight import callable
-    from monotonic import monotonic
+    from xoutil.future.time import monotonic
     from functools import wraps
 
     if not tries and not time:
