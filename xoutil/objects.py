@@ -1508,9 +1508,27 @@ def save_attrs(obj, *attrs, **kwargs):
     '''A context manager that restores `obj` attributes at exit.
 
     We deal with `obj`\ 's attributes with `smart_getter`:func: and
-    `smart_setter`:func:. You can override passing keyword `getter` and
+    `smart_setter`:func:.  You can override passing keyword `getter` and
     `setter`.  They must take the object and return a callable to get/set the
     its attributes.
+
+    For example::
+
+      >>> class foobar(object):
+      ...     def __init__(self, **kwds):
+      ...         for attr in kwds:
+      ...             setattr(self, attr, kwds[attr])
+
+      >>> obj = foobar(one=1, two=2)
+      >>> print(obj.one, obj.two)
+      1 2
+
+      >>> with save_attrs(obj, 'one'):
+      ...     obj.one = 1.0
+      ...     obj.two = obj.one*2
+
+      >>> print(obj.one, obj.two)
+      1 2.0
 
     '''
     from xoutil.params import check_count
