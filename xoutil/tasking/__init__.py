@@ -191,7 +191,8 @@ def _autoretry(func, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL,
 
     '''
     from xoutil.eight import callable
-    from xoutil.future.time import monotonic, sleep
+    from xoutil.eight.exceptions import throw
+    from xoutil.future.time import monotonic as clock, sleep
 
     if not max_tries and not max_time:
         raise TypeError('One of tries or times must be set')
@@ -205,17 +206,21 @@ def _autoretry(func, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL,
     def inner(*args, **kwargs):
         t = 0
         done = False
-        start = monotonic()
+        start = clock()
         waited = None
         while not done:
             try:
                 return func(*args, **kwargs)
-            except retry_only:
+            except retry_only as error:
                 t += 1
-                retry = t < max_tries and monotonic() - start < max_time
+                reached_max_tries = max_tries and t >= max_tries
+                max_time_elapsed = max_time and clock() - start >= max_time
+                retry = not reached_max_tries and not max_time_elapsed
                 if retry:
                     waited = wait(waited)
                     sleep(waited)
+                else:
+                    throw(error)
 
     return inner
 
