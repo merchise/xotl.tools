@@ -121,8 +121,7 @@ class BackoffWait(object):
         return res
 
 
-def dispatch(fn, args, kwargs, max_tries=None, max_time=None,
-             wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
+def dispatch(fn, *args, **kwargs):
     '''Run `fn` with args and kwargs in an auto-retrying loop.
 
     See `dispatcher`:class:.  This is just::
@@ -133,8 +132,17 @@ def dispatch(fn, args, kwargs, max_tries=None, max_time=None,
     .. versionadded:: 1.8.2
 
     '''
+    from xoutil.params import ParamManager, check_count
+    check_count(args, 0, 2)
+    pm = ParamManager(args, kwargs)
+    fnargs = pm(0, 'args', default=())
+    fnkwargs = pm(1, 'kwargs', default={})
+    max_tries = pm('max_tries', default=None)
+    max_time = pm('max_time', default=None)
+    wait = pm('wait', default=DEFAULT_WAIT_INTERVAL)
+    retry_only = pm('retry_only', default=None)
     return dispatcher(max_tries=max_tries, max_time=max_time, wait=wait,
-                      retry_only=retry_only)(fn, *args, **kwargs)
+                      retry_only=retry_only)(fn, *fnargs, **fnkwargs)
 
 
 def dispatcher(max_tries=None, max_time=None,
