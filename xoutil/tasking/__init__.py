@@ -79,8 +79,8 @@ DEFAULT_WAIT_INTERVAL = 50 / 1000  # 50 ms
 class StandardWait(object):
     '''A standard constant wait algorithm.
 
-    Instances are callables that comply with the need of `autoretry`:func:\ 's
-    `wait` argument.  This callable always the same `wait` value.
+    Instances are callables that comply with the need of `dispatcher`:func:\
+    's `wait` argument.  This callable always return the same `wait` value.
 
     We never wait less than `MIN_WAIT_INTERVAL`:data:.
 
@@ -100,8 +100,8 @@ class StandardWait(object):
 class BackoffWait(object):
     '''A wait algorithm with an exponential backoff.
 
-    Instances are callables that comply with the need of `autoretry`:func:\ 's
-    `wait` argument.
+    Instances are callables that comply with the need of `dispatcher`:func:\
+    's `wait` argument.
 
     At each call the wait is increased by doubling `backoff` (given in
     milliseconds).
@@ -158,8 +158,8 @@ def dispatcher(max_tries=None, max_time=None,
     retried.
 
     `wait` can be a callable or a number.  If `wait` is callable, it must take
-    a single argument with the previous waiting we did (or None for the first
-    retry) and return the number of seconds to wait before retrying.
+    a single argument with the previous waiting we did (`None`:data: for the
+    first retry) and return the number of seconds to wait before retrying.
 
     If `wait` is a number, we convert it to a callable with
     `StandardWait(wait) <StandardWait>`:class:.
