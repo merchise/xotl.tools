@@ -207,6 +207,8 @@ class retrier(object):
         from xoutil.eight.exceptions import throw
         from xoutil.future.time import monotonic as clock, sleep
         from xoutil.future.functools import wraps
+        max_time = self.max_time
+        max_tries = self.max_tries
 
         @wraps(fn)
         def inner(*args, **kwargs):
@@ -219,8 +221,8 @@ class retrier(object):
                     return fn(*args, **kwargs)
                 except self.retry_only as error:
                     t += 1
-                    reached_max_tries = self.max_tries and t >= self.max_tries
-                    max_time_elapsed = self.max_time and clock() - start >= self.max_time
+                    reached_max_tries = max_tries and t >= max_tries
+                    max_time_elapsed = max_time and clock() - start >= max_time
                     retry = not reached_max_tries and not max_time_elapsed
                     if retry:
                         waited = self.wait(waited)
