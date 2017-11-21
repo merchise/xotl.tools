@@ -22,6 +22,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from contextlib import contextmanager
+
 from xoutil.symbols import Unset
 from xoutil.deprecation import deprecated
 
@@ -375,6 +377,24 @@ def smart_getter(obj, strict=False):
                     else:
                         return default
             return getter
+
+
+def smart_setter(obj):
+    '''Returns a smart setter for `obj`.
+
+    If `obj` is a mutable mapping, it returns the ``.__setitem__()`` method
+    bound to the object `obj`, otherwise it returns a partial of ``setattr``
+    on `obj`.
+
+    .. versionadded:: 1.8.2
+
+    '''
+    from xoutil.future.functools import partial
+    from xoutil.future.collections import MutableMapping
+    if isinstance(obj, MutableMapping):
+        return obj.__setitem__
+    else:
+        return partial(setattr, obj)
 
 
 def smart_getter_and_deleter(obj):
@@ -1483,3 +1503,76 @@ def dict_merge(*dicts, **others):
                                     % key)
                 result[key] = value
     return result
+
+
+@contextmanager
+def save_attributes(obj, *attrs, **kwargs):
+    '''A context manager that restores `obj` attributes at exit.
+
+    We deal with `obj`\ 's attributes with `smart_getter`:func: and
+    `smart_setter`:func:.  You can override passing keyword `getter` and
+    `setter`.  They must take the object and return a callable to get/set the
+    its attributes.
+
+    Basic example:
+
+      >>> from xoutil.future.types import SimpleNamespace as new
+      >>> obj = new(a=1, b=2)
+
+      >>> with save_attributes(obj, 'a'):
+      ...    obj.a = 2
+      ...    obj.b = 3
+
+      >>> obj.a
+      1
+
+      >>> obj.b
+      3
+
+    Depending on the behavior of `getter` and or the object itself, it may be
+    an error to get an attribute or key that does not exists.
+
+      >>> getter = lambda o: lambda a: getattr(o, a)
+      >>> with save_attributes(obj, 'c', getter=getter):   # doctest: +ELLIPSIS
+      ...    pass
+      Traceback (...)
+      ...
+      AttributeError: ...
+
+    Beware, however, that `smart_getter`:func: is non-strict by default and it
+    returns None for a non-existing key or attribute.  In this case, we
+    attempt to set that attribute or key at exit:
+
+      >>> with save_attributes(obj, 'x'):
+      ...   pass
+
+      >>> obj.x is None
+      True
+
+    But, then, setting the value may fail:
+
+      >>> obj = object()
+      >>> with save_attribute(obj, 'x'):  # doctest: +ELLIPSIS
+      ...   pass
+      Traceback (...)
+      ...
+      AttributeError: ...
+
+    .. versionadded:: 1.8.2
+
+    '''
+    from xoutil.params import check_count
+    check_count(attrs, 1)
+    getter = kwargs.get('getter', smart_getter)
+    setter = kwargs.get('setter', smart_setter)
+    get_ = getter(obj)
+    set_ = setter(obj)
+    props = {attr: get_(attr) for attr in attrs}
+    try:
+        yield obj
+    finally:
+        for attr, val in props.items():
+            set_(attr, val)
+
+
+del contextmanager
