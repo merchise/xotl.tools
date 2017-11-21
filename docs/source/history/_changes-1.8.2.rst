@@ -5,3 +5,5 @@
 
 - Add `xoutil.objects.smart_getter`:func: and
   `xoutil.objects.save_attributes`:func:.
+
+- Document experimental module `xoutil.tasking`:mod:.
