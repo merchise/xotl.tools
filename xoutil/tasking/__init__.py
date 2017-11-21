@@ -25,7 +25,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 import sys
-from xoutil.decorator.meta import decorator
 
 
 # TODO: Must be implemented using `xoutil.api` mechanisms for correct driver
@@ -230,6 +229,3 @@ class retrier(object):
                         throw(error)
 
         return inner
-
-
-del decorator
