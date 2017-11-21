@@ -370,6 +370,24 @@ def test_smart_getter():
     assert getter('key3', None) is None
 
 
+def test_smart_setter():
+    from xoutil.objects import smart_setter
+
+    class new(object):
+        pass
+
+    o = new()
+    setter = smart_setter(o)
+    setter('attr1', 1)
+    setter('attr2', 1)
+    assert o.attr1 == o.attr2 == 1
+
+    d = {'key1': 1, 'key2': 1}
+    setter = smart_setter(d)
+    setter('key1', 10)
+    assert d['key1'] == 10
+
+
 def test_extract_attrs():
     from xoutil.objects import extract_attrs
     d = dict(a=(1,), b=2, c=3, x=4)
@@ -535,3 +553,36 @@ def test_multi_getter_failure():
 
     assert traverse(top, 'd.a') == 1
     assert next(multi_getter(top, ('d', 'a'))) == {'a': 1, 'b': 2}
+
+
+def test_save_attributes():
+    from xoutil.future.types import SimpleNamespace as new
+    from xoutil.objects import save_attributes
+    obj = new(a=1, b=2)
+    with save_attributes(obj, 'a'):
+        obj.a = 2
+        obj.b = 3
+        assert obj.a == 2
+
+    assert obj.a == 1
+    assert obj.b == 3
+
+
+def test_save_raises_errors():
+    from xoutil.future.types import SimpleNamespace as new
+    from xoutil.objects import save_attributes
+    getter = lambda o: lambda a: getattr(o, a)
+    obj = new(a=1, b=2)
+    with pytest.raises(AttributeError):
+        with save_attributes(obj, 'c', getter=getter):
+            pass
+
+    with save_attributes(obj, 'x'):
+        pass
+
+    assert obj.x is None
+
+    obj = object()
+    with pytest.raises(AttributeError):
+        with save_attributes(obj, 'x'):
+            pass
