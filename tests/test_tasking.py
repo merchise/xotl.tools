@@ -12,7 +12,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 import pytest
-from xoutil.tasking import dispatch
+from xoutil.tasking import retry
 
 
 class FailingMock(object):
@@ -35,28 +35,28 @@ class FailingMock(object):
 def test_retrying_max_tries_not_enough_tries():
     fn = FailingMock(threshold=1000000, sleeper=0.5)
     with pytest.raises(ValueError):
-        dispatch(fn, max_tries=3)
+        retry(fn, max_tries=3)
 
 
 def test_retrying_max_tries_enough_tries():
     fn = FailingMock()
-    assert dispatch(fn, max_tries=10) == 5
+    assert retry(fn, max_tries=10) == 5
 
 
 def test_retrying_max_time_runout():
     fn = FailingMock(threshold=1000000, sleeper=0.2)
     with pytest.raises(ValueError):
-        dispatch(fn, max_time=0.3)
+        retry(fn, max_time=0.3)
 
 
 def test_retrying_max_time():
     fn = FailingMock(sleeper=0.2)
-    assert dispatch(fn, max_time=0.2 * 5) == 5
+    assert retry(fn, max_time=0.2 * 5) == 5
 
 
 def test_signature():
     fn = FailingMock()
     with pytest.raises(TypeError):
-        assert dispatch(fn, (), {}, 5)
+        assert retry(fn, (), {}, 5)
     with pytest.raises(TypeError):
-        assert dispatch(fn, (), {}, x=5)
+        assert retry(fn, (), {}, x=5)

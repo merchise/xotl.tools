@@ -5,9 +5,10 @@
 .. automodule:: xoutil.tasking
 
 
-.. autofunction:: dispatcher(max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None)
+.. autoclass:: retrier(max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None)
+   :members: decorate
 
-.. autofunction:: dispatch(fn, args=None, kwargs=None, *, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None)
+.. autofunction:: retry(fn, args=None, kwargs=None, *, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None)
 
 .. autoclass:: StandardWait(wait=DEFAULT_WAIT_INTERVAL)
 

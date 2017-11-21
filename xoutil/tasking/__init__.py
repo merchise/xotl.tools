@@ -79,8 +79,8 @@ DEFAULT_WAIT_INTERVAL = 50 / 1000  # 50 ms
 class StandardWait(object):
     '''A standard constant wait algorithm.
 
-    Instances are callables that comply with the need of `dispatcher`:func:\
-    's `wait` argument.  This callable always return the same `wait` value.
+    Instances are callables that comply with the need of the `wait` argument
+    for `retrier`:class:.  This callable always return the same `wait` value.
 
     We never wait less than `MIN_WAIT_INTERVAL`:data:.
 
@@ -100,8 +100,8 @@ class StandardWait(object):
 class BackoffWait(object):
     '''A wait algorithm with an exponential backoff.
 
-    Instances are callables that comply with the need of `dispatcher`:func:\
-    's `wait` argument.
+    Instances are callables that comply with the need of the `wait` argument
+    for `retrier`:class:.  This callable always return the same `wait` value.
 
     At each call the wait is increased by doubling `backoff` (given in
     milliseconds).
@@ -121,13 +121,13 @@ class BackoffWait(object):
         return res
 
 
-def dispatch(fn, *args, **kwargs):
+def retry(fn, *args, **kwargs):
     '''Run `fn` with args and kwargs in an auto-retrying loop.
 
-    See `dispatcher`:class:.  This is just::
+    See `retrier`:class:.  This is just::
 
-       >>> dispatcher(max_tries=max_tries, max_time=max_time, wait=wait,
-       ...            retry_only=retry_only)(fn, *args, **kwargs)
+       >>> retrier(max_tries=max_tries, max_time=max_time, wait=wait,
+       ...         retry_only=retry_only)(fn, *args, **kwargs)
 
     .. versionadded:: 1.8.2
 
@@ -141,12 +141,11 @@ def dispatch(fn, *args, **kwargs):
     max_time = pm('max_time', default=None)
     wait = pm('wait', default=DEFAULT_WAIT_INTERVAL)
     retry_only = pm('retry_only', default=None)
-    return dispatcher(max_tries=max_tries, max_time=max_time, wait=wait,
-                      retry_only=retry_only)(fn, *fnargs, **fnkwargs)
+    return retrier(max_tries=max_tries, max_time=max_time, wait=wait,
+                   retry_only=retry_only)(fn, *fnargs, **fnkwargs)
 
 
-def dispatcher(max_tries=None, max_time=None,
-               wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
+class retrier(object):
     '''An auto-retrying dispatcher.
 
     Return a callable that take another callable (`func`) and its arguments
@@ -176,61 +175,61 @@ def dispatcher(max_tries=None, max_time=None,
     .. versionadded:: 1.8.2
 
     '''
-    decorator = _autoretry(
-        max_tries=max_tries,
-        max_time=max_time,
-        wait=wait,
-        retry_only=retry_only
-    )
+    def __init__(self, max_tries=None, max_time=None,
+                 wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
+        from xoutil.eight import callable
+        if not max_tries and not max_time:
+            raise TypeError('One of tries or times must be set')
+        self.max_tries = max_tries
+        self.max_time = max_time
+        if not callable(wait):
+            self.wait = StandardWait(wait)
+        else:
+            self.wait = wait
+        if not retry_only:
+            self.retry_only = (Exception, )
+        else:
+            self.retry_only = retry_only
 
-    # TODO: Create __doc__ and __name__?
-    def caller(fn, *args, **kwargs):
-        return decorator(fn)(*args, **kwargs)
+    def __call__(self, fn, *args, **kwargs):
+        return self.decorate(fn)(*args, **kwargs)
 
-    return caller
+    def decorate(self, fn):
+        '''Return `fn` decorated to run in an auto-retry loop.
 
+        You can use this to decorate a function you'll always run inside a
+        retrying loop:
 
-@decorator
-def _autoretry(func, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL,
-               retry_only=None):
-    '''Decorate `func` so that it is tried several times upon failures.
+           >>> @retrier(max_tries=5, retry_only=TransientError).decorate
+           ... def read_from_url(url):
+           ...     pass
 
-    Arguments have the same meanings as in `dispatcher`:func:.
+        '''
+        from xoutil.eight.exceptions import throw
+        from xoutil.future.time import monotonic as clock, sleep
+        from xoutil.future.functools import wraps
 
-    '''
-    from xoutil.eight import callable
-    from xoutil.eight.exceptions import throw
-    from xoutil.future.time import monotonic as clock, sleep
+        @wraps(fn)
+        def inner(*args, **kwargs):
+            t = 0
+            done = False
+            start = clock()
+            waited = None
+            while not done:
+                try:
+                    return fn(*args, **kwargs)
+                except self.retry_only as error:
+                    t += 1
+                    reached_max_tries = self.max_tries and t >= self.max_tries
+                    max_time_elapsed = self.max_time and clock() - start >= self.max_time
+                    retry = not reached_max_tries and not max_time_elapsed
+                    if retry:
+                        waited = self.wait(waited)
+                        sleep(waited)
+                    else:
+                        throw(error)
 
-    if not max_tries and not max_time:
-        raise TypeError('One of tries or times must be set')
-
-    if not retry_only:
-        retry_only = (Exception, )
-
-    if not callable(wait):
-        wait = StandardWait(wait)
-
-    def inner(*args, **kwargs):
-        t = 0
-        done = False
-        start = clock()
-        waited = None
-        while not done:
-            try:
-                return func(*args, **kwargs)
-            except retry_only as error:
-                t += 1
-                reached_max_tries = max_tries and t >= max_tries
-                max_time_elapsed = max_time and clock() - start >= max_time
-                retry = not reached_max_tries and not max_time_elapsed
-                if retry:
-                    waited = wait(waited)
-                    sleep(waited)
-                else:
-                    throw(error)
-
-    return inner
+        return inner
 
 
 del decorator
