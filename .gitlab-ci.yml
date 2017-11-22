@@ -98,7 +98,7 @@ build documentation:
   stage: build
   script:
     - virtualenv /tmp/venv-$CI_COMMIT_SHA
-    - source /tmp/venv-$CI_COMMIT_SHA/activate
+    - source /tmp/venv-$CI_COMMIT_SHA/bin/activate
     - pip install -e .
     - pip install sphinx sphinx_rtd_theme
     - make -C docs html
