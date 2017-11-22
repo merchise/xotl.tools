@@ -2,13 +2,15 @@
  `xoutil.html.entities`:mod: -- Definitions of HTML general entities
 =====================================================================
 
+.. deprecated:: 1.8.0
+
 .. module:: xoutil.html.entities
 
 This module defines tree dictionaries, ``name2codepoint``, ``codepoint2name``,
 and ``entitydefs``.
 
 ``entitydefs`` is used to provide the `entitydefs` attribute of the
-`xoutil.html.parser.HTMLParser`:class: class. The definition provided here
+``xoutil.html.parser.HTMLParser`` class.  The definition provided here
 contains all the entities defined by XHTML 1.0 that can be handled using simple
 textual substitution in the Latin-1 character set (ISO-8859-1).
 

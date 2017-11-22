@@ -2,6 +2,8 @@
  `xoutil.html.parser`:mod: -- A simple parser that can handle HTML and XHTML
 =============================================================================
 
+.. deprecated:: 1.8.0
+
 .. module:: xoutil.html.parser
 
 This module defines a class HTMLParser which serves as the basis for parsing

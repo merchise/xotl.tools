@@ -8,6 +8,7 @@
    :members: escape
    :deprecated:
 
+.. todo:: Remove this documentation.
 
 
 Sub-modules on this package
