@@ -205,6 +205,40 @@ def instantiate(target, *args, **kwargs):
 
 
 @decorator
+def constant_bagger(func, *args, **kwds):
+    '''Create a "bag" with constant values.
+
+    Decorated object must be a callable, but the result will be a class
+    containing the constant values.
+
+    For example::
+
+      >>> @constant_bagger
+      ... def MYBAG():
+      ...     return dict(X=1, Y=2)
+
+    It will generate::
+
+      class MYBAG:
+          X = 1
+          Y = 2
+
+    When called with arguments, these will be used as actual arguments for the
+    decorated function::
+
+      >>> @constant_bagger(X=1, Y=2)
+      ... def MYBAG(**kwds):
+      ...     return kwds
+
+    '''
+    name = func.__name__
+    keys = ('__doc__', '__module__')
+    attrs = {a: v for (a, v) in ((k, getattr(func, k)) for k in keys) if v}
+    attrs.update(func(*args, **kwds))
+    return type(name, (object,), attrs)
+
+
+@decorator
 def singleton(target, *args, **kwargs):
     '''Instantiate a class and assign the instance to the declared symbo.
 
