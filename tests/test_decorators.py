@@ -149,5 +149,32 @@ class Memoizations(unittest.TestCase):
         self.assertNotEquals(getattr_static(foo, 'prop'), foo)
 
 
+class ConstantBags(unittest.TestCase):
+    def test_constant_bags_decorator(self):
+        from xoutil.decorator import constant_bagger as typify
+
+        unique = {1, 2, 3}
+
+        @typify(UNIQUE=unique, EQUAL=set(unique))
+        def ONE(**kwds):
+            return kwds
+
+        @typify(UNIQUE=unique, EQUAL=set(unique))
+        def TWO(**kwds):
+            return kwds
+
+        def THREE(**kwds):
+            return kwds
+
+        self.assertEquals(type(ONE), type(TWO))
+        self.assertNotEquals(type(ONE), type(THREE))
+        self.assertIs(type(ONE), type)
+        self.assertIs(ONE.UNIQUE, TWO.UNIQUE)
+        self.assertEquals(ONE.EQUAL, TWO.EQUAL)
+        self.assertIsNot(ONE.EQUAL, TWO.EQUAL)
+        self.assertEquals(ONE.UNIQUE, ONE.EQUAL)
+        self.assertIsNot(ONE.UNIQUE, ONE.EQUAL)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
