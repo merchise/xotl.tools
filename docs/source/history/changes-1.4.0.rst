@@ -1,4 +1,4 @@
-- Refactors `xoutil.types`:mod: as explained in `types-140-refactor`:ref:.
+- Refactors `xoutil.types`:mod: as explained in ``types-140-refactor``.
 
 - Changes involving `xoutil.collections`:mod:\ :
 
