@@ -79,6 +79,7 @@ setup(
     ],
     extras_require={
         'extra': ['python-dateutil', ],
+        'testing': ['hypothesis>=3.34', ],
     },
     cmdclass={'test': PyTest},
 )
