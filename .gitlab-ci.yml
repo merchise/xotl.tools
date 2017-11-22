@@ -16,6 +16,10 @@ run all tests:
     - python
     - virtualenv
     - tox
+  only:
+    - branches
+  exclude:
+    - tags
 
 check signature of tag:
   stage: check
