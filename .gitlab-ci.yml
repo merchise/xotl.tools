@@ -37,6 +37,8 @@ build source distribution:
   artifacts:
     paths:
       - dist/
+  only:
+    - tags
 
 build binary distribution:
   stage: build
@@ -48,6 +50,8 @@ build binary distribution:
   artifacts:
     paths:
       - dist/
+  only:
+    - tags
 
 publish_locally:
   stage: publish
