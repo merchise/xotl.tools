@@ -152,27 +152,23 @@ class ConstantBags(unittest.TestCase):
     def test_constant_bags_decorator(self):
         from xoutil.decorator import constant_bagger as typify
 
-        unique = {1, 2, 3}
-
-        @typify(UNIQUE=unique, EQUAL=set(unique))
-        def ONE(**kwds):
+        def func(**kwds):
             return kwds
 
-        @typify(UNIQUE=unique, EQUAL=set(unique))
-        def TWO(**kwds):
+        bag = func(ONE=1, TWO=2)
+
+        @typify(ONE=1, TWO=2)
+        def BAG(**kwds):
             return kwds
 
-        def THREE(**kwds):
-            return kwds
-
-        self.assertEquals(type(ONE), type(TWO))
-        self.assertNotEquals(type(ONE), type(THREE))
-        self.assertIs(type(ONE), type)
-        self.assertIs(ONE.UNIQUE, TWO.UNIQUE)
-        self.assertEquals(ONE.EQUAL, TWO.EQUAL)
-        self.assertIsNot(ONE.EQUAL, TWO.EQUAL)
-        self.assertEquals(ONE.UNIQUE, ONE.EQUAL)
-        self.assertIsNot(ONE.UNIQUE, ONE.EQUAL)
+        self.assertIs(type(BAG), type)
+        self.assertIn('ONE', bag)
+        self.assertEquals(bag['ONE'], BAG.ONE)
+        self.assertEquals(BAG.TWO, 2*BAG.ONE)
+        with self.assertRaises(AttributeError):
+            self.assertEquals(bag.TWO, 2*bag.ONE)
+        with self.assertRaises(TypeError):
+            self.assertEquals(BAG['TWO'], 2*BAG['ONE'])
 
 
 if __name__ == "__main__":
