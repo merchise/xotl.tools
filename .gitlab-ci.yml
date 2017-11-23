@@ -70,6 +70,9 @@ publish_locally:
     - check signature of tag
     - build source distribution
     - build binary distribution
+  environment:
+    name: repo.lahavane.com
+    url: http://repo.lahavane.com/pypi/$PROJECT_NAME
 
 
 publish_pypi:
