@@ -48,8 +48,7 @@ setup(
     version=version,
     description=("Collection of usefull algorithms and other very "
                  "disparate stuff"),
-    long_description=open(
-        os.path.join(_current_dir, 'docs', 'readme.txt')).read(),
+    long_description=open(os.path.join(_current_dir, 'README.rst')).read(),
     classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
         dev_classifier,
@@ -79,6 +78,7 @@ setup(
     ],
     extras_require={
         'extra': ['python-dateutil', ],
+        'testing': ['hypothesis>=3.34', ],
     },
     cmdclass={'test': PyTest},
 )

@@ -7,3 +7,5 @@
   `xoutil.objects.save_attributes`:func:.
 
 - Document experimental module `xoutil.tasking`:mod:.
+
+- Add extra (and experimental) module `xoutil.testing`:mod:.

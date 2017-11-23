@@ -285,6 +285,7 @@ intersphinx_mapping = {
     'py3': ('http://docs.python.org/3.6/', None),
     'gevent': ('http://gevent.org', None),
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),
+    'hypothesis': ('https://hypothesis.readthedocs.io/en/latest/', None),
 }
 
 # Maintain the cache forever.
