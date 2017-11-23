@@ -231,11 +231,9 @@ def constant_bagger(func, *args, **kwds):
       ...     return kwds
 
     '''
-    name = func.__name__
-    keys = ('__doc__', '__module__')
-    attrs = {a: v for (a, v) in ((k, getattr(func, k)) for k in keys) if v}
-    attrs.update(func(*args, **kwds))
-    return type(name, (object,), attrs)
+    wraps = ((a, getattr(func, a, None)) for a in ('__doc__', '__module__'))
+    attrs = dict({a: v for (a, v) in wraps if v}, **func(*args, **kwds))
+    return type(func.__name__, (object,), attrs)
 
 
 @decorator
