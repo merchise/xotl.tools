@@ -123,7 +123,6 @@ class Memoizations(unittest.TestCase):
     def test_memoized_property(self):
         from xoutil.future.inspect import getattr_static
         from xoutil.objects import memoized_property
-        from xoutil.decorator import reset_memoized
 
         class Foobar(object):
             @memoized_property
@@ -145,7 +144,7 @@ class Memoizations(unittest.TestCase):
         self.assertIs(foo.prop, foo)
         self.assertIs(getattr_static(foo, 'prop'), foo)
         # After the first invocation, the static attr is the result.
-        reset_memoized(foo, 'prop')
+        Foobar.prop.reset(foo)
         self.assertNotEquals(getattr_static(foo, 'prop'), foo)
 
 
