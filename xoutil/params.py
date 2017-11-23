@@ -193,7 +193,7 @@ def keywords_only(func):
     '''
     import sys
     from functools import wraps
-    from xoutil.inspect import getfullargspec
+    from xoutil.future.inspect import getfullargspec
     if sys.version_info >= (3, 0):
         return func
 
