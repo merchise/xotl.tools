@@ -29,9 +29,6 @@ from xoutil.deprecation import deprecate_linked
 deprecate_linked()
 del deprecate_linked
 
-# TODO: @manu, migrate use of 'xoutil.inspect' in
-# 'xopgi.xopgi_mail_threads.mail_server.get_kwargs' to this module
-
 
 try:
     getfullargspec    # noqa
