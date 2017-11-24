@@ -204,6 +204,13 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
+def __new__(cls, **attrs):
+    # Used internally in 'constant_bagger'
+    for attr in attrs:
+        setattr(cls, attr, attrs[attr])
+    return cls
+
+
 @decorator
 def constant_bagger(func, *args, **kwds):
     '''Create a "bag" with constant values.
@@ -230,9 +237,18 @@ def constant_bagger(func, *args, **kwds):
       ... def MYBAG(**kwds):
       ...     return kwds
 
+    Constant bags are singletons that can be updated::
+
+      >>> MYBAG(Z=3) is MYBAG
+      True
+
+      >>> MYBAG.Z
+      3
+
     '''
     wraps = ((a, getattr(func, a, None)) for a in ('__doc__', '__module__'))
-    attrs = dict({a: v for (a, v) in wraps if v}, **func(*args, **kwds))
+    attrs = {a: v for (a, v) in wraps if v}
+    attrs.update(__new__=__new__, **func(*args, **kwds))
     return type(func.__name__, (object,), attrs)
 
 
