@@ -204,13 +204,6 @@ def instantiate(target, *args, **kwargs):
     return target
 
 
-def __new__(cls, **attrs):
-    # Used internally in 'constant_bagger'
-    for attr in attrs:
-        setattr(cls, attr, attrs[attr])
-    return cls
-
-
 @decorator
 def constant_bagger(func, *args, **kwds):
     '''Create a "bag" with constant values.
@@ -246,9 +239,10 @@ def constant_bagger(func, *args, **kwds):
       3
 
     '''
+    from xoutil.objects import mass_setattr
     wraps = ((a, getattr(func, a, None)) for a in ('__doc__', '__module__'))
     attrs = {a: v for (a, v) in wraps if v}
-    attrs.update(__new__=__new__, **func(*args, **kwds))
+    attrs.update(__new__=mass_setattr, **func(*args, **kwds))
     return type(func.__name__, (object,), attrs)
 
 
