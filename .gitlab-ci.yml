@@ -7,6 +7,7 @@ stages:
   - check
   - build
   - publish
+  - tweet
   - clean
 
 run all tests:
@@ -75,7 +76,7 @@ publish_locally:
     url: http://repo.lahavane.com/pypi/$PROJECT_NAME
 
 
-publish_pypi:
+publish in pypi:
   variables:
     GIT_STRATEGY: none
   stage: publish
@@ -92,6 +93,19 @@ publish_pypi:
   environment:
     name: pypi
     url: https://pypi.python.org/pypi/$PROJECT_NAME
+
+brag about new release in twitter:
+  variables:
+    GIT_STRATEGY: none
+  stage: tweet
+  script:
+    - twitter set "New version of xoutil -- https://pypi.python.org/pypi/xoutil"
+  tags:
+    - twitter
+  only:
+    - tags
+  dependencies:
+    - publish in pypi
 
 
 clean_build:
