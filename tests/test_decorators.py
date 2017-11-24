@@ -169,6 +169,10 @@ class ConstantBags(unittest.TestCase):
             self.assertEquals(bag.TWO, 2*bag.ONE)
         with self.assertRaises(TypeError):
             self.assertEquals(BAG['TWO'], 2*BAG['ONE'])
+        with self.assertRaises(AttributeError):
+            self.assertEquals(BAG.THREE, 3)
+        self.assertIs(BAG(THREE=3), BAG)
+        self.assertEquals(BAG.THREE, 3)
 
 
 if __name__ == "__main__":
