@@ -123,7 +123,6 @@ class Memoizations(unittest.TestCase):
     def test_memoized_property(self):
         from xoutil.future.inspect import getattr_static
         from xoutil.objects import memoized_property
-        from xoutil.decorator import reset_memoized
 
         class Foobar(object):
             @memoized_property
@@ -145,8 +144,35 @@ class Memoizations(unittest.TestCase):
         self.assertIs(foo.prop, foo)
         self.assertIs(getattr_static(foo, 'prop'), foo)
         # After the first invocation, the static attr is the result.
-        reset_memoized(foo, 'prop')
+        Foobar.prop.reset(foo)
         self.assertNotEquals(getattr_static(foo, 'prop'), foo)
+
+
+class ConstantBags(unittest.TestCase):
+    def test_constant_bags_decorator(self):
+        from xoutil.decorator import constant_bagger as typify
+
+        def func(**kwds):
+            return kwds
+
+        bag = func(ONE=1, TWO=2)
+
+        @typify(ONE=1, TWO=2)
+        def BAG(**kwds):
+            return kwds
+
+        self.assertIs(type(BAG), type)
+        self.assertIn('ONE', bag)
+        self.assertEquals(bag['ONE'], BAG.ONE)
+        self.assertEquals(BAG.TWO, 2*BAG.ONE)
+        with self.assertRaises(AttributeError):
+            self.assertEquals(bag.TWO, 2*bag.ONE)
+        with self.assertRaises(TypeError):
+            self.assertEquals(BAG['TWO'], 2*BAG['ONE'])
+        with self.assertRaises(AttributeError):
+            self.assertEquals(BAG.THREE, 3)
+        self.assertIs(BAG(THREE=3), BAG)
+        self.assertEquals(BAG.THREE, 3)
 
 
 if __name__ == "__main__":

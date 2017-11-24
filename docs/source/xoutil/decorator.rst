@@ -30,6 +30,8 @@ Top-level decorators
 
 .. autofunction:: instantiate(target, *args, **kwargs)
 
+.. autofunction:: constant_bagger(func, *args, **kwds)
+
 .. autoclass:: memoized_instancemethod
 
 .. class:: memoized_property

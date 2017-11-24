@@ -461,6 +461,14 @@ def multi_getter(source, *ids):
     return (get(aux) for aux in ids)
 
 
+def mass_setattr(obj, **attrs):
+    '''Set all given attributes and return the same object.'''
+    # See 'xoutil.decorator.constant_bagger' ;)
+    for attr in attrs:
+        setattr(obj, attr, attrs[attr])
+    return obj
+
+
 def is_private_name(name):
     '''Return if `name` is private or not.'''
     prefix = '__'
