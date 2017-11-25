@@ -137,7 +137,6 @@ def check_default(absent=Undefined):
 
     .. versionadded:: 1.8.0
 
-
     '''
     def default(res=absent):
         return res
@@ -249,6 +248,33 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
         else:
             res = aux
     return res if res is not Undefined else default
+
+
+def pop_keyword_values(kwargs, *names):
+    '''Return a list with all keyword argument values.
+
+    :param kwargs: The mapping with passed keyword arguments.
+
+    :param names: Argument names to retrieve.
+
+    Not given arguments are signaled with special value
+    `~xoutil.symbols.Undefined`:obj:.  For example::
+
+      >>> get_keyword_values({'b': 1}, 'a', 'b')
+      [Undefined, 1]
+
+    If there are remaining values, after all names are processed, a
+    `TypeError`:class: is raised.
+
+    '''
+    res = []
+    for name in names:
+        res.append(kwargs.pop(name, Undefined))
+    if not kwargs:
+        return res
+    else:
+        msg = 'calling function got unexpected keyword arguments "{}"'
+        raise TypeError(msg.format(tuple(kwargs)))
 
 
 class ParamManager(object):
