@@ -24,10 +24,24 @@ from __future__ import (division as _py3_division,
 from csv import *    # noqa
 import csv as _stdlib    # noqa
 
-from csv import unix_dialect
+
+try:
+    from csv import unix_dialect
+except ImportError:
+    # Not defined in Python 2
+    class unix_dialect(Dialect):    # noqa
+        '''Describe the usual properties of Unix-generated CSV files.'''
+        delimiter = ','
+        quotechar = '"'
+        doublequote = True
+        skipinitialspace = False
+        lineterminator = '\n'
+        quoting = QUOTE_ALL    # noqa
+
+    register_dialect("unix", unix_dialect)    # noqa
 
 
-#: Define 'unix dialect' as our base default Dialect.
+#: Define 'unix dialect' as our base default.
 DefaultDialect = unix_dialect
 
 
