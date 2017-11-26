@@ -1231,6 +1231,25 @@ class TestBitPascalSet(unittest.TestCase):
         self.assertEqual(state, 'ok')
 
 
+class TestCodeDict(unittest.TestCase):
+
+    def test_formatter(self):
+        from xoutil.future.collections import codedict
+        cd = codedict(x=1, y=2, z=3.0)
+        self.assertEqual(
+            '{_[x + y]} is 3 --  {_[x + z]} is 4.0'.format(_=cd),
+            '3 is 3 --  4.0 is 4.0'
+        )
+        self.assertEqual(
+            cd >> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1',
+            '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+        )
+        self.assertEqual(
+            '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1' << cd,
+            '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+        )
+
+
 def test_abcs():
     from xoutil.future.collections import Container    # noqa
     from xoutil.future.collections import Iterable    # noqa
