@@ -2,4 +2,3 @@
 ====================================
 
 .. automodule:: xoutil.formatter
-   :members:
