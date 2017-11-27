@@ -250,15 +250,16 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
     return res if res is not Undefined else default
 
 
-def pop_keyword_values(kwargs, *names):
+def pop_keyword_values(kwargs, *names, **options):
     '''Return a list with all keyword argument values.
 
     :param kwargs: The mapping with passed keyword arguments.
 
     :param names: Argument names to retrieve.
 
-    Not given arguments are signaled with special value
-    `~xoutil.symbols.Undefined`:obj:.  For example::
+    :param default: Keyword only option to define a default value to be used
+           in place of not given arguments.  If none is given, it is used
+           special value `~xoutil.symbols.Undefined`:obj:.
 
       >>> get_keyword_values({'b': 1}, 'a', 'b')
       [Undefined, 1]
@@ -267,9 +268,10 @@ def pop_keyword_values(kwargs, *names):
     `TypeError`:class: is raised.
 
     '''
+    default = options.get('default', Undefined)
     res = []
     for name in names:
-        res.append(kwargs.pop(name, Undefined))
+        res.append(kwargs.pop(name, default))
     if not kwargs:
         return res
     else:
