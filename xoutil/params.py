@@ -255,7 +255,9 @@ def pop_keyword_values(kwargs, *names, **options):
 
     :param kwargs: The mapping with passed keyword arguments.
 
-    :param names: Argument names to retrieve.
+    :param names: Each item will be a definition of keyword argument name to
+           retrieve.  Could be a string with a name, or a list of alternatives
+           (aliases).
 
     :param default: Keyword only option to define a default value to be used
            in place of not given arguments.  If none is given, it is used
@@ -266,7 +268,7 @@ def pop_keyword_values(kwargs, *names, **options):
            raised.  If this keyword only option is True, this function returns
            normally.
 
-    For example::
+    Examples::
 
       >>> pop_keyword_values({'b': 1}, 'a', 'b')
       [Undefined, 1]
@@ -274,8 +276,8 @@ def pop_keyword_values(kwargs, *names, **options):
     '''
     default = options.get('default', Undefined)
     res = []
-    for name in names:
-        res.append(kwargs.pop(name, default))
+    for item in names:
+        res.append(pop_keyword_arg(kwargs, item, default=default))
     if kwargs and not options.get('ignore_error', False):
         msg = 'calling function got unexpected keyword arguments "{}"'
         raise TypeError(msg.format(tuple(kwargs)))
