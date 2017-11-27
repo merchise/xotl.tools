@@ -96,3 +96,28 @@ def test_param_errors():
         pass
     except BaseException as error:
         assert False, msg.format(TypeError.__name__, error_repr(error))
+
+
+def pop_keyword_values():
+    from xoutil.params import pop_keyword_values as popkw, Undefined
+
+    kwds = dict(default=None, values=[1, 2, 3], collector=sum)
+    names = (('func', 'collector'), 'default')
+
+    assert popkw(dict(kwds), 'values', *names) == [[1, 2, 3], sum, None]
+
+    try:
+        assert popkw(dict(kwds), *names) == 'whatever'
+    except TypeError:
+        assert True
+
+    try:
+        assert popkw(dict(kwds), *names, ignore_error=True) == [sum, None]
+    except TypeError:
+        assert False
+
+    test = [Undefined, [1, 2, 3], sum, None]
+    assert popkw(dict(kwds), 'x', 'values', *names) == test
+
+    test = [None, [1, 2, 3], sum, None]
+    assert popkw(dict(kwds), 'x', 'values', *names, default=None) == test
