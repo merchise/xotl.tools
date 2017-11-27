@@ -261,22 +261,25 @@ def pop_keyword_values(kwargs, *names, **options):
            in place of not given arguments.  If none is given, it is used
            special value `~xoutil.symbols.Undefined`:obj:.
 
-      >>> get_keyword_values({'b': 1}, 'a', 'b')
-      [Undefined, 1]
+    :param ignore_error: By default, when there are remaining values in
+           `kwargs`, after all names are processed, a `TypeError`:class: is
+           raised.  If this keyword only option is True, this function returns
+           normally.
 
-    If there are remaining values, after all names are processed, a
-    `TypeError`:class: is raised.
+    For example::
+
+      >>> pop_keyword_values({'b': 1}, 'a', 'b')
+      [Undefined, 1]
 
     '''
     default = options.get('default', Undefined)
     res = []
     for name in names:
         res.append(kwargs.pop(name, default))
-    if not kwargs:
-        return res
-    else:
+    if kwargs and not options.get('ignore_error', False):
         msg = 'calling function got unexpected keyword arguments "{}"'
         raise TypeError(msg.format(tuple(kwargs)))
+    return res
 
 
 class ParamManager(object):
