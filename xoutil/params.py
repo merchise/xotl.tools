@@ -273,6 +273,19 @@ def pop_keyword_values(kwargs, *names, **options):
       >>> pop_keyword_values({'b': 1}, 'a', 'b')
       [Undefined, 1]
 
+      >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
+      >>> try:
+      ...     res = pop_keyword_values(kwargs, 'a', 'b')
+      ... except TypeError as error:
+      ...     res = error
+      >>> type(res)
+      TypeError
+
+      >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
+      >>> options = dict(ignore_error=True, default=None)
+      >>> pop_keyword_values(kwargs, 'a', ('B', 'b'), **options)
+      [1, 2]
+
     '''
     default = options.get('default', Undefined)
     res = []
