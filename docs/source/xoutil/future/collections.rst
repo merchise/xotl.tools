@@ -16,6 +16,8 @@ We have backported several Python 3.3 features but not all.
 
 .. autoclass:: opendict
 
+.. autoclass:: codedict
+
 .. autoclass:: Counter
 
    .. note:: Backported from Python 3.3. In Python 3.3 this is an alias.
