@@ -395,6 +395,46 @@ class opendict(OpenDictMixin, dict, object):
     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
 
+class codedict(OpenDictMixin, dict, object):
+    '''A dictionary implementation that evaluate keys as Python expressions.
+
+    This is also a open dict (see `OpenDictMixin`:class: for more info).
+
+    Example:
+
+      >>> cd = codedict(x=1, y=2, z=3.0)
+      >>> '{_[x + y]} is 3 --  {_[x + z]} is 4.0'.format(_=cd)
+      '3 is 3 --  4.0 is 4.0'
+
+    It supports the right shift (``>>``) operator as a format operand (using
+    ``_`` as the special name for the code dict):
+
+      >>> cd >> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1'
+      '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+
+    It also implements the left shift (``<<``) operator:
+
+      >>> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1' << cd
+      '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+
+    .. versionadded:: 1.8.3
+
+    '''
+    def __getitem__(self, key):
+        from xoutil.eight import string_types
+        try:
+            return super(codedict, self).__getitem__(key)
+        except KeyError:
+            if isinstance(key, string_types):
+                return eval(key, dict(self))
+            else:
+                raise
+
+    def __rshift__(self, arg):
+        return arg.format(_=self, **self)
+
+    __rlshift__ = __rshift__
+
 # From this point below: Copyright (c) 2001-2013, Python Software
 # Foundation; All rights reserved.
 if python_version < 3.3:

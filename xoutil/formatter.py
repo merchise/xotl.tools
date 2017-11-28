@@ -15,7 +15,11 @@
 # package.
 
 
-'''Smart formatting.'''
+'''Smart formatting.
+
+.. deprecated:: 1.8.3  Use `~xoutil.future.collections.codedict`:class:.
+
+'''
 
 
 from __future__ import (division as _py3_division,
@@ -24,6 +28,10 @@ from __future__ import (division as _py3_division,
 
 from xoutil.eight import string_types as _str_base
 from xoutil.eight.meta import metaclass
+from xoutil.deprecation import deprecate_module
+
+
+deprecate_module('xoutil.future.collections.codedict')
 
 
 class DelimiterFactory(object):
