@@ -259,11 +259,21 @@ def pop_keyword_values(kwargs, *names, **options):
            retrieve.  Could be a string with a name, or a list of alternatives
            (aliases).
 
-    :param default: Keyword only option to define a default value to be used
-           in place of not given arguments.  If none is given, it is used
+    :keyword default: Keyword only option to define a default value to be used
+           in place of not given arguments.  If not given, it is used
            special value `~xoutil.symbols.Undefined`:obj:.
 
-    :param ignore_error: By default, when there are remaining values in
+    :keyword defaults: A dictionary with default values per argument name. If
+           none is given, use `default`.
+
+           .. note:: `defaults` trumps `default`.
+
+           .. warning:: For the case where a single name has several
+              alternatives, you may choose any of the alternatives.  If you
+              pass several diverging defaults for different alternatives, the
+              result is undefined.
+
+    :keyword ignore_error: By default, when there are remaining values in
            `kwargs`, after all names are processed, a `TypeError`:class: is
            raised.  If this keyword only option is True, this function returns
            normally.
@@ -287,10 +297,19 @@ def pop_keyword_values(kwargs, *names, **options):
       [1, 2]
 
     '''
+    from xoutil.eight import string_types
     default = options.get('default', Undefined)
+    defaults = options.get('defaults', {})
     res = []
     for item in names:
-        res.append(pop_keyword_arg(kwargs, item, default=default))
+        val = pop_keyword_arg(kwargs, item, default=Undefined)
+        if val is Undefined:
+            if isinstance(item, string_types):
+                val = defaults.get(item, default)
+            else:
+                val = next((defaults[alt] for alt in item if alt in defaults),
+                           default)
+        res.append(val)
     if kwargs and not options.get('ignore_error', False):
         msg = 'calling function got unexpected keyword arguments "{}"'
         raise TypeError(msg.format(tuple(kwargs)))
