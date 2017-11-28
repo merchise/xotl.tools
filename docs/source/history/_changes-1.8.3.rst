@@ -1,1 +1,1 @@
-Nothing yet
+- Add `xoutil.params.pop_keyword_values`:func:.

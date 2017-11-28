@@ -290,6 +290,8 @@ def pop_keyword_values(kwargs, *names, **options):
       >>> pop_keyword_values(kwargs, 'a', ('B', 'b'), **options)
       [1, 2]
 
+    .. versionadded:: 1.8.3
+
     '''
     default = options.get('default', Undefined)
     defaults = options.get('defaults', {})
