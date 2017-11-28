@@ -417,6 +417,8 @@ class codedict(OpenDictMixin, dict, object):
       >>> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1' << cd
       '3 is 3 --  4.0 is 4.0 -- 1 is 1'
 
+    .. versionadded:: 1.8.3
+
     '''
     def __getitem__(self, key):
         from xoutil.eight import string_types
