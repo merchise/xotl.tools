@@ -411,12 +411,12 @@ class codedict(OpenDictMixin, dict, object):
       '3 is 3 --  4.0 is 4.0'
 
     It supports the right shift (``>>``) operator as a format operand (using
-    ``_`` as the special name for the code dict):
+    ``_`` as the special name for the code dict)::
 
       >>> cd >> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1'
       '3 is 3 --  4.0 is 4.0 -- 1 is 1'
 
-    It also implements the left shift (``<<``) operator:
+    It also implements the left shift (``<<``) operator::
 
       >>> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1' << cd
       '3 is 3 --  4.0 is 4.0 -- 1 is 1'
