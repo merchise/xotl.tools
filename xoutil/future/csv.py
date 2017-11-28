@@ -73,8 +73,13 @@ def parse(*data, **kwds):
     from csv import reader
     from xoutil.eight import string_types, callable, string, text
     from xoutil.fp.tools import compose
-    from xoutil.params import get_keyword_values
-    mould, dialect = get_keyword_values(kwds, 'mould', 'dialect')
+    try:
+        from xoutil.params import pop_keyword_values as get_options
+    except ImportError:
+        # TODO: @manu delete this code
+        def get_options(kw, *names):
+            return [kw.get(name) for name in names]
+    mould, dialect = get_options(kwds, 'mould', 'dialect')
     cast = compose(*(f for f in (mould, dialect, text.force) if callable(f)))
     lines = (string.force(line + linesep) for line in data)
     rows = reader(lines, **({'dialect': dialect} if dialect else {}))
