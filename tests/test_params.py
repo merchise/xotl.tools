@@ -98,7 +98,7 @@ def test_param_errors():
         assert False, msg.format(TypeError.__name__, error_repr(error))
 
 
-def pop_keyword_values():
+def test_pop_keyword_values():
     from xoutil.params import pop_keyword_values as popkw, Undefined
 
     kwds = dict(default=None, values=[1, 2, 3], collector=sum)
