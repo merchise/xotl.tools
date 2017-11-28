@@ -237,17 +237,11 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
 
     '''
     from xoutil.eight import string_types
+    from xoutil.objects import pop_first_of
     if isinstance(names, string_types):
         names = (names,)
-    i, count = 0, len(names)
-    res = Undefined
-    while res is Undefined and i < count:
-        aux = kwargs.pop(names[i], Undefined)
-        if aux is Undefined:
-            i += 1
-        else:
-            res = aux
-    return res if res is not Undefined else default
+    options = dict(default=default)
+    return pop_first_of(kwargs, *names, **options)
 
 
 def pop_keyword_values(kwargs, *names, **options):
