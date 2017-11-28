@@ -240,8 +240,7 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
     from xoutil.objects import pop_first_of
     if isinstance(names, string_types):
         names = (names,)
-    options = dict(default=default)
-    return pop_first_of(kwargs, *names, **options)
+    return pop_first_of(kwargs, *names, default=default)
 
 
 def pop_keyword_values(kwargs, *names, **options):
