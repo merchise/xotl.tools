@@ -297,18 +297,13 @@ def pop_keyword_values(kwargs, *names, **options):
       [1, 2]
 
     '''
-    from xoutil.eight import string_types
     default = options.get('default', Undefined)
     defaults = options.get('defaults', {})
     res = []
     for item in names:
         val = pop_keyword_arg(kwargs, item, default=Undefined)
         if val is Undefined:
-            if isinstance(item, string_types):
-                val = defaults.get(item, default)
-            else:
-                val = next((defaults[alt] for alt in item if alt in defaults),
-                           default)
+            val = pop_keyword_arg(defaults, item, default=default)
         res.append(val)
     if kwargs and not options.get('ignore_error', False):
         msg = 'calling function got unexpected keyword arguments "{}"'
