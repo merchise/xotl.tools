@@ -71,7 +71,7 @@ def parse(*data, **kwds):
     '''
     from os import linesep
     from csv import reader
-    from xoutil.eight import string_types, callable, string, text
+    from xoutil.eight import callable, string, text
     from xoutil.fp.tools import compose
     from xoutil.params import get_keyword_values
     mould, dialect = get_keyword_values(kwds, 'mould', 'dialect')
