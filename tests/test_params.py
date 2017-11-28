@@ -99,6 +99,7 @@ def test_param_errors():
 
 
 def test_pop_keyword_values():
+    from xoutil.symbols import Unset
     from xoutil.params import pop_keyword_values as popkw, Undefined
 
     kwds = dict(default=None, values=[1, 2, 3], collector=sum)
@@ -121,3 +122,7 @@ def test_pop_keyword_values():
 
     test = [None, [1, 2, 3], sum, None]
     assert popkw(dict(kwds), 'x', 'values', *names, default=None) == test
+
+    test = [Unset, [1, 2, 3], sum, None]
+    defaults = dict(x=Unset)
+    assert popkw(dict(kwds), 'x', 'values', *names, defaults=defaults) == test
