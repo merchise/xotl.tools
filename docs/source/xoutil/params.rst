@@ -96,6 +96,7 @@ Module Members
 
 .. autofunction:: pop_keyword_arg
 
+.. autofunction:: pop_keyword_values
 
 .. autoclass:: ParamManager
    :members: __init__, __call__, remainder
