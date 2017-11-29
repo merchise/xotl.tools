@@ -37,23 +37,15 @@ except AttributeError:
     pass
 
 
-def _get_month_name_list():
-    import sys
-    import locale
-    try:
-        locale.setlocale(locale.LC_TIME, ('en_US', 'UTF-8'))
-        mod = sys.modules[__name__]
-        month = 1
-        while month <= 12:
-            name = _stdlib.month_name[month]
-            if not hasattr(mod, name):
-                setattr(mod, name, month)
-                month += 1
-    finally:
-        locale.resetlocale(locale.LC_TIME)
-
-
-
-_get_month_name_list()
-
-del _get_month_name_list
+January = 1
+February = 2
+March = 3
+April = 4
+May = 5
+June = 6
+July = 7
+August = 8
+September = 9
+October = 10
+November = 11
+December = 12
