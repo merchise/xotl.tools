@@ -38,44 +38,52 @@ except ImportError:
         lineterminator = '\n'
         quoting = QUOTE_ALL    # noqa
 
-    register_dialect("unix", unix_dialect)    # noqa
+    register_dialect('unix', unix_dialect)    # noqa
 
 
 #: Define 'unix dialect' as our base default.
 DefaultDialect = unix_dialect
 
 
-def parse(*data, **kwds):
+def parse(data, *dialect, **options):
     '''Parse `data` into a sheet.
 
-    :param data: A collection of string lines to parse.
+    This function has the exact parameters protocol as `~csv.reader`:func:\ ::
 
-    :param dialect: The `csv.Dialect`:class: sub-class to be used in the
-           reader.  Keyword only parameter.  If no value is given,
-           `~csv.reader`:func: uses its default.
+      reader(data [, dialect='excel'] [, optional keyword options])
 
-    :param mould: A function for moulding each cell value.  Keyword only
-           parameter.
+    :param data: Can be any object that returns a line of input for each
+           iteration, such as a file object or a list.
+
+    :param dialect: An optional parameter can be given which is used to define
+           a set of parameters specific to a particular CSV dialect.  It may
+           be an instance of a subclass of the `~csv.Dialect`:class: class or
+           one of the strings returned by the `~csv.list_dialects`:func:
+           function.
+
+    The other optional keyword arguments can be given to override
+    individual formatting parameters in the current `dialect`.
+
+    When reading a value, `csv`:mod: for Python version 2 doesn't accept
+    unicode text, so given data lines are forced to be `str`:class: values
+    before processed by `~csv.reader`:func:.  Each cell is converted to
+    unicode text after read.
 
     :returns: The parsed matrix.
 
-    Coercion:
+    A short usage example::
 
-    - When reading a value, Python version 2 doesn't accept unicode,
-      so given data lines are coerced to be `str`:class: values.
-
-    - Each cell is converted to unicode text; then processed with the
-      `dialect` (if given and callable); and lastly, the `mould` function is
-      used.
+      >>> from xoutil.future import csv
+      >>> with open('test.csv', newline='') as data:
+      ...     matrix = csv.parse(data)
+      ...     for row in matrix:
+      ...         print(', '.join(row))
+      Last name, First Name
+      van Rossum, Guido
+      Stallman, Richard
 
     '''
-    from os import linesep
-    from csv import reader
-    from xoutil.eight import callable, string, text
-    from xoutil.fp.tools import compose
-    from xoutil.params import pop_keyword_values
-    mould, dialect = pop_keyword_values(kwds, 'mould', 'dialect')
-    cast = compose(*(f for f in (mould, dialect, text.force) if callable(f)))
-    lines = (string.force(line + linesep) for line in data)
-    rows = reader(lines, **({'dialect': dialect} if dialect else {}))
-    return [[cast(cell) for cell in row] for row in rows]
+    from xoutil.eight import string, text
+    lines = (string.force(line) for line in data)
+    rows = reader(lines, *dialect, **options)    # noqa
+    return ((text.force(cell) for cell in row) for row in rows)
