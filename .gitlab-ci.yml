@@ -99,7 +99,7 @@ brag about new release in twitter:
     GIT_STRATEGY: none
   stage: tweet
   script:
-    - twitter set "New version of xoutil -- https://pypi.python.org/pypi/xoutil"
+    - twitter set "New version $CI_COMMIT_REF_NAME of xoutil -- https://pypi.python.org/pypi/xoutil"
   tags:
     - twitter
   only:
