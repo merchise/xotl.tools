@@ -41,8 +41,10 @@ except ImportError:
     register_dialect('unix', unix_dialect)    # noqa
 
 
-#: Define 'unix dialect' as our base default.
+#: Define 'unix dialect' as our base default for inheritance.
 DefaultDialect = unix_dialect
+
+reader = _stdlib.reader
 
 
 def parse(data, *dialect, **options):
@@ -84,6 +86,5 @@ def parse(data, *dialect, **options):
 
     '''
     from xoutil.eight import string, text
-    lines = (string.force(line) for line in data)
-    rows = reader(lines, *dialect, **options)    # noqa
-    return ((text.force(cell) for cell in row) for row in rows)
+    rows = reader((string.force(line) for line in data), *dialect, **options)
+    return [[text.force(cell) for cell in row] for row in rows]
