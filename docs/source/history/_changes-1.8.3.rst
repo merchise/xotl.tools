@@ -1,4 +1,4 @@
-- Fix bug #20_: `xoutil.calendar`:mod: may fail at import time.
+- Fix bug `#20`_: `xoutil.calendar`:mod: may fail at import time.
 
 - Add `xoutil.params.pop_keyword_values`:func:.
 
