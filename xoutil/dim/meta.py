@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.dim.meta
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it
-# under the terms of the LICENCE attached (see LICENCE file) in the
-# distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-05-12
 
 '''Facilities to work with `concrete numbers`_.
 

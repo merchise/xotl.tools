@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
-# xoutil.tests.testbed
-#----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2012 Medardo Rodríguez
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# Author: Manuel Vázquez Acosta
-# Contributors: see CONTRIBUTORS and HISTORY file
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
-#
-# Created on 2012-04-29
 
 '''This module simply serves the purposes of the testing weaving modules'''
 

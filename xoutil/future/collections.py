@@ -1,24 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------
-# xoutil.future.collections
-# ----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
+# All rights reserved.
 #
-# Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
-# implementations.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# The implementation of OrderedDict is the copyright of the Python
-# Software Foundation.
-#
-# This file is distributed under the terms of the LICENCE distributed
-# with this package.
-#
-# Created: 2012-07-03
-# Migrated to 'future' on 2016-09-14
-#
-# Contributors from Medardo Rodríguez:
-#    - Manuel Vázquez Acosta <manu@merchise.org>
-#    - Medardo Rodriguez <med@merchise.org>
 
 '''Extensions to Python's ``collections`` module.
 
