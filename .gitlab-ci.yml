@@ -39,6 +39,7 @@ build source distribution:
   tags:
     - python
   artifacts:
+    expire_in: 4 hours
     paths:
       - dist/
   only:
@@ -52,6 +53,7 @@ build binary distribution:
   tags:
     - wheel
   artifacts:
+    expire_in: 4 hours
     paths:
       - dist/
   only:
