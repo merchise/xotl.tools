@@ -22,17 +22,16 @@ def test_csv():
             '''"One, comma","""double quotes""",I'm a single quote,Inglés'''
     ]
 
-    class CoerceNumbersDialect(DefaultDialect):
-        def __call__(self, cell):
+    def forge(cell):
+        try:
+            return int(cell)
+        except ValueError:
             try:
-                return int(cell)
+                return float(cell)
             except ValueError:
-                try:
-                    return float(cell)
-                except ValueError:
-                    return cell
+                return cell
 
-    matrix = parse(*data, dialect=CoerceNumbersDialect())
+    matrix = [[forge(cell) for cell in row] for row in parse(data)]
 
     sum_int, sum_float = 0, 0.0
     count_int, count_float, count_text = 0, 0, 0
