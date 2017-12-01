@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''CSV parsing and writing Xoutil extensions.
+'''CSV parsing and writing extensions.
 
 This module is an extension of `csv`:mod: Python standard module, it provides
 classes and tools that assist in the reading and writing of `Comma Separated
