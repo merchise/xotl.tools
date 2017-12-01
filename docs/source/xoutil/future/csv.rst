@@ -3,6 +3,8 @@
 
 .. module:: xoutil.future.csv
 
+.. versionadded:: 1.8.4
+
 This module extends the standard library's `csv`:mod:.  You may use it
 as a drop-in replacement in many cases.
 
