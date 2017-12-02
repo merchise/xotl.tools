@@ -52,7 +52,7 @@ def parse(data, *dialect, **options):
 
     This function has the exact parameters protocol as `~csv.reader`:func:\ ::
 
-      reader(data [, dialect='excel'] [, optional keyword options])
+      parse(data [, dialect='excel'] [, optional keyword options])
 
     :param data: Can be any object that returns a line of input for each
            iteration, such as a file object or a list.
