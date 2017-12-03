@@ -12,7 +12,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from hypothesis import given, example
-from hypothesis.strategies import text, binary
+from hypothesis.strategies import text
 
 
 def test_slugify():
