@@ -403,7 +403,7 @@ if __name__ == 'xoutil.types':
         '''
         try:
             iter(maybe)
-        except:
+        except TypeError:
             return False
         else:
             return True
