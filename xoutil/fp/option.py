@@ -142,23 +142,23 @@ class Maybe(object):
         '''
         default = cls is Just
         if bool(value) is default:
-            idx = 2 if arg is None else arg
+            idx = 2 if value is None else value
             if cls._singletons[idx] is None:
                 self = super(Maybe, cls).__new__(cls)
-                self.inner = arg
+                self.inner = value
                 cls._singletons[idx] = self
             return cls._singletons[idx]
         elif cls is Maybe:
-            return (Just if arg else Wrong)(arg)
-        elif isinstance(arg, cls):
-            return arg
-        elif not isinstance(arg, Maybe):
+            return (Just if value else Wrong)(value)
+        elif isinstance(value, cls):
+            return value
+        elif not isinstance(value, Maybe):
             self = super(Maybe, cls).__new__(cls)
-            self.inner = arg
+            self.inner = value
             return self
         else:
             msg = 're-wrapping inverted value: {}({})'
-            raise ValueError(msg.format(cls.__name__, arg))
+            raise ValueError(msg.format(cls.__name__, value))
 
     @classmethod
     def compel(cls, value):
