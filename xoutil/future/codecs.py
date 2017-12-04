@@ -19,7 +19,6 @@ from __future__ import (division as _py3_division,
 
 
 from codecs import *    # noqa
-import codecs as _stdlib
 from codecs import __all__    # noqa
 __all__ = list(__all__)
 
@@ -79,7 +78,7 @@ def safe_decode(s, encoding=None):
         except LookupError:
             # The provided enconding is not know, try with no encoding.
             return safe_decode(s)
-        except:
+        except TypeError:
             # For numbers and other stuff.
             return text_type(s)
 
@@ -109,7 +108,7 @@ def safe_encode(u, encoding=None):
                     return bytes(u)
                 else:
                     return text_type(u).encode(encoding, 'replace')
-            except:
+            except (UnicodeError, TypeError):
                 return text_type(u).encode(encoding, 'replace')
         except LookupError:
             return safe_encode(u)
