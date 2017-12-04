@@ -118,7 +118,9 @@ class compose(metaclass(MetaCompose)):
                         res = fn(*res[0], **res[1])
                     else:
                         res = fn(res)
-                except BaseException:
+                except Exception:
+                    # TODO: @med What's the point of of resetting scope under
+                    # exception?  Should this `try..` even be?
                     self.scope = (count - i, fn)
                     raise
                 i += 1
