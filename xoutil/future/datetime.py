@@ -129,7 +129,7 @@ else:
         if isinstance(obj, (date, datetime, time, timedelta)):
             return obj
         else:
-            raise TypeError('Not valid type for datetime assuring: %s' % name)
+            raise TypeError('Not valid type for datetime assuring: %s' % obj)
 
 
 from xoutil.deprecation import deprecated    # noqa
