@@ -125,7 +125,7 @@ build documentation:
     - source envs/$CI_COMMIT_SHA/bin/activate
     - pip install sphinx
     - pip install -e .
-    - make html
+    - make -C docs/ html
     - cd docs/build/html
     - tar -cf ../../../$CI_PROJECT_NAME-$CI_COMMIT_SHA.tar ./
   artifacts:
