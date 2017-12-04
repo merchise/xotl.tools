@@ -19,7 +19,7 @@ from xoutil.decorator import singleton
 
 try:
     _str_types = (str, unicode)
-except:
+except NameError:
     _str_types = (str,)
 
 
@@ -202,7 +202,7 @@ def _get_mod_version(mod):
         if version is not None:
             try:
                 res = _check(version)
-            except:
+            except TypeError:
                 pass
         i += 1
     if not res:
@@ -211,7 +211,7 @@ def _get_mod_version(mod):
             path = os.path.dirname(os.__file__)
             if mod.__file__.startswith(path):
                 res = python_version
-        except:
+        except Exception:  # TODO: @med which exceptions?
             pass
     return res
 
@@ -245,18 +245,20 @@ class PackageVersion(ThreeNumbersVersion):
                     dist = pkg_resources.get_distribution(package_name)
                     try:
                         res = dist.parsed_version.base_version
-                    except:
+                    except AttributeError:
                         res = dist.version
-                except:
+                except Exception:  # TODO: @med which exceptions?
                     from importlib import import_module
                     try:
-                        mod = import_module('.'.join((package_name, 'release')))
+                        mod = import_module('.'.join(
+                            (package_name, 'release')
+                        ))
                         res = _get_mod_version(mod)
-                    except:
+                    except ImportError:
                         try:
                             mod = import_module(package_name)
                             res = _get_mod_version(mod)
-                        except:
+                        except ImportError:
                             mod = __import__(package_name)
                             res = _get_mod_version(mod)
                 if not res:
