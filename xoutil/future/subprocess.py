@@ -15,8 +15,7 @@ from __future__ import (division as _py3_division,
 
 
 from subprocess import *    # noqa
-
-from pprint import __all__    # noqa
+from subprocess import __all__, Popen, PIPE   # noqa
 __all__ = list(__all__) + ['call_and_check_output']
 
 from xoutil.deprecation import deprecate_linked
