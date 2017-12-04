@@ -28,6 +28,7 @@ from __future__ import (division as _py3_division,
 import sys
 
 from datetime import *    # noqa
+from datetime import timedelta
 import datetime as _stdlib    # noqa
 
 from xoutil.deprecation import deprecate_linked
@@ -67,8 +68,8 @@ except ValueError:
     # but (WTF), Python double checks the year (in each method and then again
     # in `time.strftime` function).
 
-    class date(date):
-        __doc__ = date.__doc__
+    class date(_stdlib.date):
+        __doc__ = _stdlib.date.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -76,8 +77,8 @@ except ValueError:
         def __sub__(self, other):
             return assure(super(date, self).__sub__(other))
 
-    class datetime(datetime):
-        __doc__ = datetime.__doc__
+    class datetime(_stdlib.datetime):
+        __doc__ = _stdlib.datetime.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -115,7 +116,7 @@ except ValueError:
             else:
                 args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
                 return datetime(*args)
-        elif isinstance(obj, (time, timedelta)):
+        elif isinstance(obj, (_stdlib.time, timedelta)):
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
@@ -126,7 +127,7 @@ else:
         This is only a type checker alternative to standard library.
 
         '''
-        if isinstance(obj, (date, datetime, time, timedelta)):
+        if isinstance(obj, (date, datetime, _stdlib.time, timedelta)):
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % obj)
@@ -860,12 +861,12 @@ NEEDS_FLEX_DATE = object()
 
 
 try:
-    timezone
+    timezone  # noqa
 except NameError:
     # Copied from Python 3.5.2
     # TODO: Document this in xoutil
 
-    class timezone(tzinfo):
+    class timezone(_stdlib.tzinfo):
         '''Fixed offset from UTC implementation of tzinfo.'''
 
         __slots__ = '_offset', '_name'
@@ -893,7 +894,7 @@ except NameError:
 
         @classmethod
         def _create(cls, offset, name=None):
-            self = tzinfo.__new__(cls)
+            self = _stdlib.tzinfo.__new__(cls)
             self._offset = offset
             self._name = name
             return self
