@@ -10,6 +10,13 @@ stages:
   - tweet
   - clean
 
+lint:
+  stage: test
+  script:
+    - merchise_lint
+  tags:
+    - merchise-lint
+
 run all tests (if needed):
   stage: test
   script:
