@@ -7,6 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
+# TODO: Document (version.rst) this module.  Add tests.
 '''Versions API
 
 '''
