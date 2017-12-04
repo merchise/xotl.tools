@@ -127,10 +127,10 @@ build documentation:
     - pip install -e .
     - make -C docs/ html
     - cd docs/build/html
-    - tar -cf ../../../$CI_PROJECT_NAME-$CI_COMMIT_SHA.tar ./
+    - tar -cjf ../../../$CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 ./
   artifacts:
     paths:
-      - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar
+      - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
     expire_in: 4 hours
   tags:
     - virtualenv
@@ -141,11 +141,11 @@ build documentation:
 publish in our rtd:
   stage: publish
   script:
-    - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar rtd@docs.lahavane.com:.
+    - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 rtd@docs.lahavane.com:.
     - ssh rtd@docs.lahavane.com mkdir -p $CI_PROJECT_NAME/.$CI_COMMIT_SHA
-    - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
+    - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
     - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -sr /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
-    - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar
+    - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
   tags:
     - rtd@docs.lahavane.com
   dependencies:
