@@ -11,10 +11,9 @@
 Regular expressions and validation functions for several identifiers.
 '''
 
-
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print)
-# TODO: Why not ``absolute_import``?
+                        print_function as _py3_print,
+                        absolute_import as _py3_abs_import)
 
 from re import compile as _regex_compile
 from xoutil.eight import string_types

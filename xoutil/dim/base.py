@@ -9,7 +9,8 @@
 
 '''The standard `physical quantities`_.
 
-.. _physical quantities: https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
+.. _physical quantities: \
+https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
 
 '''
 

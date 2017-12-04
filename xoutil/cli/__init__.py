@@ -180,7 +180,10 @@ class Command(ABC):
                 else:
                     from types import FunctionType as ValidMethodType
                 assert isinstance(source.run, ValidMethodType), \
-                    'Invalid type %r for source %r' % (type(source.run).__name__, source)
+                    'Invalid type %r for source %r' % (
+                        type(source.run).__name__,
+                        source
+                    )  # noqa
                 target[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)
@@ -250,7 +253,7 @@ class Help(Command):
                     doc = '"%s"' % (doc if doc else mod_name)
                 else:
                     doc = '"%s"' % mod_name
-            head = ' '*3 + cmd + ' '*(2 + max_len - len(cmd))
+            head = ' ' * 3 + cmd + ' ' * (2 + max_len - len(cmd))
             print(head, doc)
 
     @staticmethod

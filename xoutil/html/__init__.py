@@ -94,7 +94,7 @@ if python_version == 3:
     from html import parser
 else:
     import htmlentitydefs as entities
-    import HTMLParser as parser
+    import HTMLParser as parser  # noqa
 
 
 entities.entitydefs_unicode = {}

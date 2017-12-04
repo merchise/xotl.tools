@@ -113,7 +113,7 @@ def str2int(src, base=_DEFAULT_BASE):
         res *= base
         res += table.index(src[i])
         i += 1
-    return sign*res
+    return sign * res
 
 
 class BaseConvertor(object):

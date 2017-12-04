@@ -29,7 +29,7 @@ from __future__ import (division as _py3_division,
 
 
 #: The maximum number of positional arguments allowed when calling a function.
-MAX_ARG_COUNT = 1024*1024    # just any large number
+MAX_ARG_COUNT = 1024 * 1024    # just any large number
 
 from xoutil.symbols import Undefined    # used implicitly for absent default
 

@@ -118,6 +118,7 @@ def intern(string):
         string = string.encode('utf-8')
     return __intern(string)
 
+
 # Avoid a Sphinx error
 intern.__doc__ = __intern.__doc__.replace("``", '"').replace("''", '"')
 
@@ -157,8 +158,8 @@ else:
 
 
 try:
-   import __builtin__    # noqa
-   builtins = __builtin__
+    import __builtin__    # noqa
+    builtins = __builtin__
 except ImportError:
     import builtins    # noqa
     __builtin__ = builtins

@@ -28,7 +28,8 @@ This module is divided in two major parts:
 
 .. _base quantities: https://en.wikipedia.org/wiki/Base_quantity
 
-.. _International System of Quantities: https://en.wikipedia.org/wiki/International_System_of_Quantities
+.. _International System of Quantities: \
+   https://en.wikipedia.org/wiki/International_System_of_Quantities
 
 '''
 

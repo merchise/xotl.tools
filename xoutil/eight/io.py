@@ -43,6 +43,7 @@ from __future__ import (division as _py3_division,
 # TODO: This is the initial state for a in-progress module.
 
 from io import *    # noqa
+from io import IOBase
 
 # Next three members are not included in ``__all__`` definition
 

@@ -190,10 +190,10 @@ class SafeDataItem(object):
             from xoutil.validators import check
             FUNC_KINDS = ('normal', 'static', 'class')
             FUNC_TYPES = (function, staticmethod, classmethod)
+            IN_FUNC_TYPES = FUNC_KINDS.__contains__
             KIND_NAME = 'kind'
             kind = kwargs.pop(KIND_NAME, FUNC_KINDS[0])
-            if (check(kind, lambda k: k in FUNC_KINDS)
-                    and check(method, FUNC_TYPES)):
+            if check(kind, IN_FUNC_TYPES) and check(method, FUNC_TYPES):
                 kwargs['do_assigning'] = False
 
                 def init():
@@ -268,7 +268,7 @@ class SafeDataItem(object):
         '''Generate a unique new name.'''
         from time import time
         from xoutil.bases import int2str
-        return '_%s' % int2str(int(1000000*time()))
+        return '_%s' % int2str(int(1000000 * time()))
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
@@ -714,6 +714,7 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
                 res = False
         j += 1
     return res
+
 
 # Mark this so that informed people may use it.
 validate_attrs._positive_testing = True
@@ -1187,7 +1188,8 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
         ignored = lambda name: any(ignore(name) for ignore in ignores)
     else:
         ignored = None
-    valid_names = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
+    valid_names = ('__class__', '__mro__', '__name__', '__weakref__',
+                   '__dict__')
     attrs = {name: value
              for name, value in iteritems(cls.__dict__)
              if name not in valid_names

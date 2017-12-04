@@ -19,6 +19,7 @@ from xoutil.deprecation import deprecated
 
 # TODO: Evaluate rename to 'xoutil.future.itertools'.
 
+
 def first_non_null(iterable, default=None):
     '''Returns the first value from iterable which is non-null.
 
@@ -51,10 +52,10 @@ def flatten(sequence, is_scalar=None, depth=None):
         # In the following doctest we use ``...range(...X)`` because the
         # string repr of range differs in Py2 and Py3k.
 
-        >>> tuple(flatten((range_(2), range(2, 4)), depth=0))  # doctest: +ELLIPSIS
+        >>> tuple(flatten((range_(2), range(2, 4)), depth=0))  # doctest: +ELLIPSIS  # noqa
         ([0, 1], ...range(2, 4))
 
-        >>> tuple(flatten((range(2), range_(2, 4)), depth=0))  # doctest: +ELLIPSIS
+        >>> tuple(flatten((range(2), range_(2, 4)), depth=0))  # doctest: +ELLIPSIS  # noqa
         (...range(...2), [2, 3])
 
     '''
@@ -202,7 +203,7 @@ def delete_duplicates(seq, key=lambda x: x):
             done.add(k)
             i += 1
         else:
-            seq = seq[:i] + seq[i+1:]
+            seq = seq[:i] + seq[i + 1:]
     return seq
 
 

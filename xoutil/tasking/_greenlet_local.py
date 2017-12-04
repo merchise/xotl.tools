@@ -99,7 +99,10 @@ class local(_localbase):
 
     def __setattr__(self, name, value):
         if name == '__dict__':
-            raise AttributeError("%r object attribute '__dict__' is read-only" % self.__class__.__name__)
+            clsname = self.__class__.__name__
+            raise AttributeError(
+                "%r object attribute '__dict__' is read-only" % clsname
+            )
         d = object.__getattribute__(self, '_local__dicts').get(getcurrent())
         if d is None:
             lock = object.__getattribute__(self, '_local__lock')
@@ -115,7 +118,10 @@ class local(_localbase):
 
     def __delattr__(self, name):
         if name == '__dict__':
-            raise AttributeError("%r object attribute '__dict__' is read-only" % self.__class__.__name__)
+            clsname = self.__class__.__name__
+            raise AttributeError(
+                "%r object attribute '__dict__' is read-only" % clsname
+            )
         d = object.__getattribute__(self, '_local__dicts').get(getcurrent())
         if d is None:
             lock = object.__getattribute__(self, '_local__lock')

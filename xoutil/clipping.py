@@ -46,7 +46,7 @@ ELLIPSIS = ELLIPSIS_UNICODE if python_version == 3 else ELLIPSIS_ASCII
 #: shortening.
 OPERATOR_NAME = '__crop__'
 
-_LAMBDA_NAME = (lambda:0).__name__
+_LAMBDA_NAME = (lambda: 0).__name__
 
 
 def _check_max_width(max_width, caller=None):

@@ -139,7 +139,7 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
     from xoutil.string import slugify
     level = _normalize_level(level)
     size = MAX_PASSWORD_SIZE + 1    # means, return all calculated
-    required = min(max(level, 1)*BASIC_PASSWORD_SIZE, MAX_PASSWORD_SIZE)
+    required = min(max(level, 1) * BASIC_PASSWORD_SIZE, MAX_PASSWORD_SIZE)
     if pass_phrase:
         # PASS_PHRASE_LEVEL_BASIC
         res = slugify(pass_phrase, '', invalid_chars='_')
@@ -158,7 +158,7 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
             size = required
     else:
         size = required
-        count = randint(BASIC_PASSWORD_SIZE, 2*BASIC_PASSWORD_SIZE)
+        count = randint(BASIC_PASSWORD_SIZE, 2 * BASIC_PASSWORD_SIZE)
         res = ''.join(sample(SAMPLE, count))
     if size <= MAX_PASSWORD_SIZE:
         if len(res) < size:

@@ -14,8 +14,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from pprint import *    # noqa
-
-from pprint import __all__    # noqa
+from pprint import __all__, pprint    # noqa
 __all__ = list(__all__) + ['ppformat']
 
 from xoutil.deprecation import deprecate_linked

@@ -145,7 +145,6 @@ def grab(self=None, trace=None):
         return self
 
 
-
 def throw(error, tb=None):
     '''Unify syntax for raising an error with trace-back information.
 

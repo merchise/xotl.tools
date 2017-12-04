@@ -71,7 +71,7 @@ def _parse_signature(signature):
             else:
                 raise
 
-    class l(object):
+    class l(object):  # noqa: E742
         '''A locals implementation that skip some levels up in order to
         protect annotation's own locals.
 

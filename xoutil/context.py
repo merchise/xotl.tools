@@ -27,6 +27,7 @@ class LocalData(LocalData):
         super(LocalData, self).__init__()
         self.contexts = {}
 
+
 _data = LocalData()
 
 

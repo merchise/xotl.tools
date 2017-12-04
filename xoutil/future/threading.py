@@ -12,7 +12,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from threading import *    # noqa
-
+from threading import Event, Thread, RLock, Timer
 from xoutil.deprecation import deprecate_linked
 deprecate_linked()
 del deprecate_linked

@@ -39,6 +39,7 @@ import_deprecated('xoutil.eight.string', 'safe_join', force_str='force')
 
 safe_str = force_str    # noqa
 
+
 @deprecated
 def safe_strip(value):
     '''Removes the leading and tailing space-chars from `value` if string, else
