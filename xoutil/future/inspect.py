@@ -220,7 +220,7 @@ def get_attr_value(obj, name, *default):
         try:
             owner = type if is_type else type(obj)
             res = res.__get__(obj, owner)
-        except:
+        except Exception:  # TODO: @med Which expections.
             res = Undefined
     if res is Undefined and not is_type:
         cls = type(obj)
@@ -228,10 +228,10 @@ def get_attr_value(obj, name, *default):
         if isdatadescriptor(res):    # noqa
             try:
                 res = res.__get__(obj, cls)
-            except:
+            except Exception:  # TODO: @med Which?
                 try:
                     res = res.__get__(cls, type)
-                except:
+                except Exception:  # TODO: @med Which?
                     res = Undefined
     if res is not Undefined:
         return res

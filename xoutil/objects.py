@@ -224,10 +224,7 @@ class SafeDataItem(object):
             if res is not Unset:
                 return res
             elif self.init is not Unset:
-                try:
-                    res = self.init()
-                except:
-                    raise
+                res = self.init()
                 self.__set__(obj, res)
                 return res
             elif self.default is not Unset:

@@ -22,7 +22,7 @@ def dev_tag_installed():
         # FIX: Below line is not working anymore
         base = dist.parsed_version.base_version
         return full_version[len(base):]
-    except:
+    except Exception:
         return None
 
 

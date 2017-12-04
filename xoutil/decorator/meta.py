@@ -156,7 +156,7 @@ class FunctionMaker(object):
             code = compile(src, '<string>', 'single')
             # print >> sys.stderr, 'Compiling %s' % src
             eval(code, evaldict, evaldict)
-        except:
+        except Exception:
             print >> sys.stderr, 'Error in generated code:'
             print >> sys.stderr, src
             raise

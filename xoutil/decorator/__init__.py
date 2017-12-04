@@ -242,7 +242,7 @@ def constant_bagger(func, *args, **kwds):
 
 @decorator
 def singleton(target, *args, **kwargs):
-    '''Instantiate a class and assign the instance to the declared symbo.
+    '''Instantiate a class and assign the instance to the declared symbol.
 
     Every argument, positional or keyword, is passed as such when invoking the
     target. The following two code samples show two cases::
@@ -280,7 +280,7 @@ def singleton(target, *args, **kwargs):
                 msg = "'{}' is a singleton, it can be instantiated only once"
                 raise TypeError(msg.format(target.__name__))
             target.__init__ = __init__
-        except:
+        except Exception:
             pass
     return res
 

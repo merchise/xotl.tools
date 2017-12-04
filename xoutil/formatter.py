@@ -185,7 +185,7 @@ class Template(metaclass(_TemplateClass)):
                 else:
                     try:
                         res += item(kwargs)
-                    except:
+                    except Exception:  # TODO: @med which exceptions expected?
                         res += str('')    # item.match
         return res
 

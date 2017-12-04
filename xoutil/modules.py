@@ -51,7 +51,7 @@ def force_module(ref=None):
             else:
                 try:
                     ref = ref.encode()  # Python 2.x
-                except:
+                except Exception:  # TODO: @med which exceptions expected?
                     msg = "invalid type '{}' for module name '{}'"
                     raise TypeError(msg.format(type_name(ref), ref))
         return import_module(ref)
