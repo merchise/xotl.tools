@@ -144,7 +144,7 @@ publish in our rtd:
     - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar rtd@docs.lahavane.com:.
     - ssh rtd@docs.lahavane.com mkdir -p $CI_PROJECT_NAME/.$CI_COMMIT_SHA
     - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
-    - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -s /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
+    - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -sr /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
     - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar
   tags:
     - rtd@docs.lahavane.com
