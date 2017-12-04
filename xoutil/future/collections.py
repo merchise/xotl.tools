@@ -20,6 +20,15 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from collections import *    # noqa
+from collections import (
+    Set,
+    Iterable,
+    Sized,
+    Container,
+    MutableSet,
+    Mapping,
+    MutableMapping
+)
 import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
@@ -110,7 +119,7 @@ class safe_dict_iter(tuple):
                 yield (key, self._mapping[key])
 
 
-class defaultdict(defaultdict):
+class defaultdict(_stdlib.defaultdict):
     '''A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
 
@@ -232,7 +241,7 @@ class OpenDictMixin(object):
         if desc is not None:    # Prioritize descriptors
             try:
                 desc.__set__(self, value)
-            except:
+            except Exception:
                 pass
         key = (~self).get(name)
         if key:
@@ -421,6 +430,7 @@ class codedict(OpenDictMixin, dict, object):
         return arg.format(_=self, **self)
 
     __rlshift__ = __rshift__
+
 
 # From this point below: Copyright (c) 2001-2013, Python Software
 # Foundation; All rights reserved.
@@ -849,7 +859,7 @@ if python_version < 3.3:
                 d[key] = value
             return d
 
-    class UserList(MutableSequence):
+    class UserList(_stdlib.MutableSequence):
         '''A more or less complete user-defined wrapper around lists.'''
         def __init__(self, initlist=None):
             if initlist is not None:
@@ -925,7 +935,7 @@ if python_version < 3.3:
             return self
 
         def __mul__(self, n):
-            return self.__class__(self.data*n)
+            return self.__class__(self.data * n)
 
         __rmul__ = __mul__
 
@@ -969,7 +979,7 @@ if python_version < 3.3:
             else:
                 self.data.extend(other)
 
-    class UserString(Sequence):
+    class UserString(_stdlib.Sequence):
         def __init__(self, seq):
             if isinstance(seq, str):
                 self.data = seq
@@ -1050,7 +1060,7 @@ if python_version < 3.3:
             return self.__class__(str(other) + self.data)
 
         def __mul__(self, n):
-            return self.__class__(self.data*n)
+            return self.__class__(self.data * n)
 
         __rmul__ = __mul__
 
@@ -2536,7 +2546,7 @@ class PascalSet(metaclass(MetaSet)):
         if isinstance(other, integer_types):
             l = self._items
             start, end = 0, len(l)
-            res, pivot = False, 2*(end // 4)
+            res, pivot = False, 2 * (end // 4)
             while not res and start < end:
                 s, e = l[pivot], l[pivot + 1]
                 if other < s:
@@ -2545,7 +2555,7 @@ class PascalSet(metaclass(MetaSet)):
                     start = pivot + 2
                 else:
                     res = True
-                pivot = start + 2*((end - start) // 4)
+                pivot = start + 2 * ((end - start) // 4)
             return res, pivot
         else:
             raise self._invalid_value(other)
@@ -2630,7 +2640,7 @@ class PascalSet(metaclass(MetaSet)):
         '''This is totally a funny test method.'''
         from xoutil.eight import range
         res = cls[2:limit]
-        for i in range(2, limit//2 + 1):
+        for i in range(2, limit // 2 + 1):
             if i in res:
                 aux = i + i
                 while aux < limit:
@@ -2687,7 +2697,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
         sm = self._items
         for k in sorted(sm):
             v = sm[k]
-            base = k*bl
+            base = k * bl
             i = 0
             ref = 1
             while i < bl:
@@ -3021,7 +3031,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
             bl = self._bit_length
             k, v = next(iteritems(sm))
             assert v
-            base = k*bl
+            base = k * bl
             i = 0
             ref = 1
             res = None
@@ -3142,7 +3152,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
         '''This is totally a funny test method.'''
         from xoutil.eight import range
         res = cls[2:limit]
-        for i in range(2, limit//2 + 1):
+        for i in range(2, limit // 2 + 1):
             if i in res:
                 aux = i + i
                 while aux < limit:
