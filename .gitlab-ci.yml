@@ -117,6 +117,42 @@ brag about new release in twitter:
   dependencies:
     - publish in pypi
 
+build documentation:
+  stage: build
+  script:
+    - mkdir -p envs
+    - virtualenv envs/$CI_COMMIT_SHA
+    - source envs/$CI_COMMIT_SHA/bin/activate
+    - pip install sphinx
+    - pip install -e .
+    - make html
+    - cd docs/build/html
+    - tar -cf ../../../$CI_PROJECT_NAME-$CI_COMMIT_SHA.tar ./
+  artifacts:
+    paths:
+      - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar
+    expire_in: 4 hours
+  tags:
+    - virtualenv
+  only:
+    - tags
+    - branches
+
+publish in our rtd:
+  stage: publish
+  script:
+    - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar rtd@docs.lahavane.com:.
+    - ssh rtd@docs.lahavane.com mkdir -p $CI_PROJECT_NAME/.$CI_COMMIT_SHA
+    - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
+    - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -s /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
+    - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar
+  tags:
+    - rtd@docs.lahavane.com
+  dependencies:
+    - build documentation
+  only:
+    - tags
+    - branches
 
 clean_build:
   variables:
