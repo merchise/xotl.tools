@@ -527,4 +527,5 @@ def concatfiles(*files):
         if opened:
             target.close()
 
+
 del sys

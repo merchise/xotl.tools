@@ -16,4 +16,4 @@ diversity of scenarios where compatibility is an important issue.
 '''
 
 # TODO: Deprecate this import
-from .symbols import Unset, Undefined, Ignored, Invalid
+from .symbols import Unset, Undefined, Ignored, Invalid  # noqa

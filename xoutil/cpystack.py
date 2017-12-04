@@ -61,6 +61,7 @@ def getargvalues(frame):
         res.update(values[kwds])
     return res
 
+
 if python_version < 3:
     getargvalues.__doc__ += """
     In Python 2.7, packed arguments also works::
@@ -271,12 +272,12 @@ def iter_stack(max_deep=MAX_DEEP):
 
       frame = next(f for f in iter_stack() if condition(f))
 
-    Using the previous pattern, functions `object_info_finder`,
-    `object_finder` and `track_value` can be reprogrammed or deprecated.
-
     .. versionadded:: 1.6.8
 
     '''
+    # Using the previous pattern, functions `object_info_finder`,
+    # `object_finder` and `track_value` can be reprogrammed or deprecated.
+
     frame = inspect.currentframe()
     try:
         deep = 0
