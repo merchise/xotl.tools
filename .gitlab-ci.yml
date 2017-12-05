@@ -150,6 +150,9 @@ publish in our rtd:
     - rtd@docs.lahavane.com
   dependencies:
     - build documentation
+  environment:
+    name: docs.lahavane.com
+    url: http://docs.lahavane.com/$PROJECT_NAME/$CI_COMMIT_REF_NAME
   only:
     - tags
     - branches
