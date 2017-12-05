@@ -327,6 +327,9 @@ def make_a10z(string):
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 
-normalize_slug = deprecated(slugify)(slugify)
+@deprecated(slugify)
+def normalize_slug(value, *args, **kwds):
+    return slugify(value, *args, **kwds)
+
 
 del deprecated, import_deprecated
