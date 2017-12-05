@@ -23,13 +23,13 @@ from xoutil.eight import python_version
 
 
 if python_version == 3:
-    from urllib.error import ContentTooShortError
-    from urllib.error import HTTPError, URLError
+    from urllib.error import ContentTooShortError    # noqa
+    from urllib.error import HTTPError, URLError    # noqa
 else:
-    from urllib import ContentTooShortError
+    from urllib import ContentTooShortError    # noqa
 
     try:
-        from urllib2 import HTTPError, URLError
+        from urllib2 import HTTPError, URLError    # noqa
     except ImportError:
         pass
 

@@ -20,7 +20,6 @@ from __future__ import (division as _py3_division,
 from xoutil.eight import python_version
 
 
-
 if python_version == 3:
     # Python 3 __all__ in Python 2 urllib
     from urllib.request import (    # noqa

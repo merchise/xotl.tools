@@ -64,8 +64,7 @@ else:
 
     # Python 3 __all__ but not in Python 2
     DefragResult = DefragResultBytes = tuple
-    ParseResult = ParseResultBytes = tuple
-    SplitResult = SplitResultBytes = tuple
+    ParseResultBytes = SplitResultBytes = tuple
 
     def quote_from_bytes(bs, safe='/'):
         '''Like `quote`, but accepts a bytes object rather than a str.
@@ -84,12 +83,10 @@ else:
         else:
             raise TypeError("quote_from_bytes() expected bytes")
 
-
     def unquote_to_bytes(string):
         '''unquote_to_bytes('abc%20def') -> b'abc def'.'''
         from xoutil.eight import string
         return string.force(unquote(string))
-
 
     # Not in Python 3 __all__ in Python 2 urlparse
     try:
