@@ -37,7 +37,7 @@ def flatten(sequence, is_scalar=None, depth=None):
 
     It takes care of everything deemed a collection (i.e, not a scalar
     according to the callable passed in `is_scalar` argument; if ``None``,
-    `xoutil.types.is_scalar`:func: is assumed)::
+    `xoutil.future.types.is_scalar`:func: is assumed)::
 
         >>> from xoutil.eight import range
         >>> range_ = lambda *a: list(range(*a))
@@ -60,7 +60,7 @@ def flatten(sequence, is_scalar=None, depth=None):
 
     '''
     if is_scalar is None:
-        from xoutil.types import is_scalar
+        from xoutil.future.types import is_scalar
     for item in sequence:
         if is_scalar(item):
             yield item
@@ -331,14 +331,14 @@ def first_n(iterable, n=1, fill=Unset):
     .. versionadded:: 1.2.0
 
     .. versionchanged:: 1.4.0 The notion of collection for the `fill` argument
-                        uses `xoutil.types.is_collection`:func: instead of
-                        probing for the ``__iter__`` method.
+                        uses ``xoutil.types.is_collection`` instead of probing
+                        for the ``__iter__`` method.
 
     .. versionchanged:: 1.7.2 The notion of collection for the `fill` argument
                         uses ``isinstance(fill, Iterable)`` replacing
-                        `xoutil.types.is_collection`:func:.  We must be
-                        consistent with `iterable` argument that allow an
-                        string as a valid iterable and `is_collection` not.
+                        ``xoutil.types.is_collection``.  We must be consistent
+                        with `iterable` argument that allow an string as a
+                        valid iterable and `is_collection` not.
 
     '''
     if fill is not Unset:
