@@ -162,19 +162,14 @@ WrapperDescriptorType = type(type.__call__)    # In PyPy is MethodWrapperType
 ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
 
 
-sn_ok = python_version >= 3.4
-if sn_ok:
-    try:
-        SimpleNamespace    # noqa
-    except NameError:
-        sn_ok = False
-        __all__.append('SimpleNamespace')
-
-if not sn_ok:
+try:
+    SimpleNamespace    # noqa
+except NameError:
     from abc import ABCMeta
     from xoutil.eight.meta import metaclass
-
     from xoutil.reprlib import recursive_repr
+
+    __all__.append('SimpleNamespace')
 
     class SimpleNamespace(metaclass(ABCMeta)):
         '''A simple attribute-based namespace.
@@ -198,14 +193,6 @@ if not sn_ok:
             return "{}({})".format('namespace', ", ".join(items))
 
     del recursive_repr, ABCMeta, metaclass
-
-    try:
-        from types import SimpleNamespace as _sns
-        # TODO: @manu, why needed in this case?
-        SimpleNamespace.register(_sns)
-        del _sns
-    except ImportError:
-        pass
 
 try:
     DynamicClassAttribute    # noqa
