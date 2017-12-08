@@ -11,6 +11,8 @@
 
 This module reexport all functions the *current* version of Python.
 
+.. versionadded:: 1.8.4
+
 '''
 
 
