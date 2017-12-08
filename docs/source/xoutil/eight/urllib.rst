@@ -3,6 +3,8 @@
 
 .. automodule:: xoutil.eight.urllib
 
+.. versionadded:: 1.8.4
+
 ``urllib`` is maybe the hardest module to use from Python 2/3 compatible code.
 You may like to use Requests_ instead.  In this implementation is used the
 module structure in Python 3 but only the functions that are already in both
