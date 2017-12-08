@@ -1,3 +1,5 @@
+:orphan:
+
 - Lots of removals.  Practically all deprecated since 1.4.0 (or before).  Let's
   list a few but not all:
 

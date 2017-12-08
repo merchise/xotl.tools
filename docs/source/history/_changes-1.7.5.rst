@@ -1,3 +1,5 @@
+:orphan:
+
 - Added `xoutil.datetime.TimeSpan`:class:.
 
 - Added the module `xoutil.infinity`:mod:.

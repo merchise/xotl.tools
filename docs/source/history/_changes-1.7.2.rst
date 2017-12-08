@@ -1,3 +1,5 @@
+:orphan:
+
 - Add `xoutil.bound.until`:func: and `xoutil.bound.until_errors`:func:.
 
 - Fix issue that made `xoutil.uuid`:mod: unusable.  Introduced in

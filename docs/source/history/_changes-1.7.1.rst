@@ -1,3 +1,5 @@
+:orphan:
+
 - Add `xoutil.collections.PascalSet`:class: and
   `xoutil.collections.BitPascalSet`:class:.
 
