@@ -162,16 +162,15 @@ class defaultdict(_stdlib.defaultdict):
 class OpenDictMixin(object):
     '''A mixin for mappings implementation that expose keys as attributes.
 
-    For example::
+    For example:
 
       >>> from xoutil.objects import SafeDataItem as safe
-
       >>> class MyOpenDict(OpenDictMixin, dict):
       ...     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
       >>> d = MyOpenDict({'es': 'spanish'})
       >>> d.es
-    'spanish'
+      'spanish'
 
       >>> d['es'] = 'espanol'
       >>> d.es
