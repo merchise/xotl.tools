@@ -197,7 +197,6 @@ except NameError:
 try:
     DynamicClassAttribute    # noqa
 except NameError:
-    # TODO: Add tests
     class DynamicClassAttribute(property):
         '''Route attribute access on a class to `~object.__getattr__`:meth:.
 
@@ -257,15 +256,15 @@ except ImportError:
     from xoutil.eight._types import _calculate_meta    # noqa
 
 
-# TODO: @manu, consider for future types
 import re
 RegexPattern = type(re.compile(''))
 del re
 
 
-# TODO: used internally in this module
 class mro_dict(Mapping):
     '''Utility behaving like a read-only dict of `target` MRO attributes.
+
+    Used internally in this module.
 
     For example::
 
