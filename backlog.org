@@ -6,6 +6,10 @@
 
 # Gitlab closes issues if ~Fixes #8.~ appears in the correspondent commit.
 
+** Releases 1.8.x
+
+- [ ] does 'xoutil.reprlib' must be in 'future'?
+
 
 ** Release version 1.8 <2017-10-21 sáb> [10/10]
 
