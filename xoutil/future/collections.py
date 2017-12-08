@@ -185,12 +185,12 @@ class OpenDictMixin(object):
 
     This mixin defines the following features that can be redefined:
 
-    _key2identifier
+    ``_key2identifier``
 
         Protected method, receive a key as argument and return a valid
         identifier that is used instead the key as an extended attribute.
 
-    __cache_name__
+    ``__cache_name__``
 
         Inner field to store a cached mapping between actual keys and
         calculated attribute names.  The field must be always implemented as a
