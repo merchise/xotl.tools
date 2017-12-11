@@ -70,7 +70,7 @@ def predicative(function, *args, **kwds):
             return res
         else:
             return Just(res)
-    except BaseException as error:
+    except Exception as error:
         if isinstance(error, ValueError) and is_single:
             return Wrong(args[0])
         else:
@@ -156,7 +156,7 @@ def enfold(checker):
         try:
             inner.__name__ = func.__name__
             inner.__doc__ = func.__doc__
-        except BaseException:
+        except Exception:
             from xoutil.clipping import small
             from xoutil.eight import string
             inner.__name__ = string.force(small(func))

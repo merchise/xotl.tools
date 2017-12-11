@@ -7,17 +7,27 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Several util functions for iterators'''
+'''Several util functions for iterators.
+
+.. versionchanged:: 1.8.4 Renamed to `xoutil.future.iterator`:mod:.  The
+   ``xoutil.iterators`` is now a deprecated alias.
+
+'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
+from itertools import *    # noqa
+import itertools as _stdlib    # noqa
+
+from xoutil.deprecation import deprecate_linked
+deprecate_linked(msg=('"xoutil.iterators" is deprecated. '
+                      'Use "xoutil.future.itertools".'))
+del deprecate_linked
+
 from xoutil.symbols import Unset
-
 from xoutil.deprecation import deprecated
-
-# TODO: Evaluate rename to 'xoutil.future.itertools'.
 
 
 def first_non_null(iterable, default=None):
@@ -28,6 +38,7 @@ def first_non_null(iterable, default=None):
          next((x for x in iter(iterable) if x), default)
 
     .. versionadded:: 1.4.0
+
     '''
     return next((x for x in iter(iterable) if x), default)
 
@@ -405,6 +416,61 @@ def ungroup(iterator):
     for _, xs in iterator:
         for x in xs:
             yield x
+
+
+# Signature is `(*iterables, key=None)`.
+def merge(*iterables, **kwargs):
+    '''Merge the iterables in order.
+
+    Return an iterator that yields all items from `iterables` following the
+    order given by `key`.  If `key` is not given we compare the items.
+
+    If the `iterables` yield their items in order (w.r.t `key`), the result is
+    also ordered (like a merge sort).
+
+    ``merge()`` returns the *empty* iterator.
+
+    '''
+    from xoutil.symbols import Undefined
+    from xoutil.params import ParamManager
+    from xoutil.future.collections import Iterable, Iterator
+    pm = ParamManager((), kwargs)
+    key = pm('key', default=lambda x: x)
+
+    def _merge(iter1, iter2):
+        iter1 = iter(iter1)
+        iter2 = iter(iter2)
+        item1 = next(iter1, Undefined)
+        item2 = next(iter2, Undefined)
+        while item1 is not Undefined and item2 is not Undefined:
+            if key(item1) <= key(item2):
+                yield item1
+                item1 = next(iter1, Undefined)
+            else:
+                yield item2
+                item2 = next(iter2, Undefined)
+        # One of the iterators (or both) has been exhausted, consume the
+        # other.
+        while item1 is not Undefined:
+            yield item1
+            item1 = next(iter1, Undefined)
+        while item2 is not Undefined:
+            yield item2
+            item2 = next(iter2, Undefined)
+
+    def _empty():
+        return
+        yield
+
+    if not all(isinstance(iter_, (Iterable, Iterator)) for iter_ in iterables):
+        raise TypeError('Positional argument must be iterables or iterators')
+    if iterables:
+        res = iterables[0]
+        for iter_ in iterables[1:]:
+            res = _merge(res, iter_)
+    else:
+        res = _empty()
+    return res
 
 
 # Compatible zip and map

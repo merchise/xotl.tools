@@ -1,3 +1,5 @@
+:orphan:
+
 This is the last release of the 1.6 series.  It's being synchronized with
 release 1.7.0 to deprecate here what's being changed there.
 
