@@ -418,15 +418,15 @@ def ungroup(iterator):
             yield x
 
 
-# Signature is `(*iterators, key=None)`.
-def merge(*iterators, **kwargs):
-    '''Merge the iterators in order.
+# Signature is `(*iterables, key=None)`.
+def merge(*iterables, **kwargs):
+    '''Merge the iterables in order.
 
-    Return a iterator that yields all items from `iterators` following the
+    Return an iterator that yields all items from `iterables` following the
     order given by `key`.  If `key` is not given we compare the items.
 
-    If the `iterators` yield their items in order (w.r.t `key`), the result is
-    also ordered.
+    If the `iterables` yield their items in order (w.r.t `key`), the result is
+    also ordered (like a merge sort).
 
     ``merge()`` returns the *empty* iterator.
 
@@ -462,11 +462,11 @@ def merge(*iterators, **kwargs):
         return
         yield
 
-    if not all(isinstance(iter_, (Iterable, Iterator)) for iter_ in iterators):
+    if not all(isinstance(iter_, (Iterable, Iterator)) for iter_ in iterables):
         raise TypeError('Positional argument must be iterables or iterators')
-    if iterators:
-        res = iterators[0]
-        for iter_ in iterators[1:]:
+    if iterables:
+        res = iterables[0]
+        for iter_ in iterables[1:]:
             res = _merge(res, iter_)
     else:
         res = _empty()
