@@ -1,3 +1,5 @@
+:orphan:
+
 - The `defaults` argument in `xoutil.objects.smart_copy`:func: is now
   keyword-only.
 

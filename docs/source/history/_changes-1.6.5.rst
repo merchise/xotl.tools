@@ -1,3 +1,5 @@
+:orphan:
+
 - Added the module `xoutil.records`:mod:.
 
 - Deleted deprecated ``xoutil.compat``.

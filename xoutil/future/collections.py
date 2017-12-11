@@ -160,20 +160,21 @@ class defaultdict(_stdlib.defaultdict):
 
 
 class OpenDictMixin(object):
-    '''A mixin for mappings implementation that expose keys as attributes::
+    '''A mixin for mappings implementation that expose keys as attributes.
 
-        >>> from xoutil.objects import SafeDataItem as safe
+    For example:
 
-        >>> class MyOpenDict(OpenDictMixin, dict):
-        ...     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
+      >>> from xoutil.objects import SafeDataItem as safe
+      >>> class MyOpenDict(OpenDictMixin, dict):
+      ...     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
-        >>> d = MyOpenDict({'es': 'spanish'})
-        >>> d.es
-        'spanish'
+      >>> d = MyOpenDict({'es': 'spanish'})
+      >>> d.es
+      'spanish'
 
-        >>> d['es'] = 'espanol'
-        >>> d.es
-        'espanol'
+      >>> d['es'] = 'espanol'
+      >>> d.es
+      'espanol'
 
     When setting or deleting an attribute, the attribute name is regarded as
     key in the mapping if neither of the following condition holds:
@@ -184,12 +185,12 @@ class OpenDictMixin(object):
 
     This mixin defines the following features that can be redefined:
 
-    _key2identifier
+    ``_key2identifier``
 
         Protected method, receive a key as argument and return a valid
         identifier that is used instead the key as an extended attribute.
 
-    __cache_name__
+    ``__cache_name__``
 
         Inner field to store a cached mapping between actual keys and
         calculated attribute names.  The field must be always implemented as a
@@ -207,11 +208,11 @@ class OpenDictMixin(object):
             ...     safe(OpenDictMixin.__cache_name__, dict)
 
 
-    Classes or Mixins that can be integrated with `dict` by inheritance
-        must not have a `__slots__` definition.  Because of that, this mixin
-        must not declare any slot.  If needed, it must be declared explicitly
-        in customized classed like in the example in the first part of this
-        documentation or in the definition of `opendict` class.
+    Classes or Mixins that can be integrated with `dict` by inheritance must
+    not have a `__slots__` definition.  Because of that, this mixin must not
+    declare any slot.  If needed, it must be declared explicitly in customized
+    classed like in the example in the first part of this documentation or in
+    the definition of `opendict` class.
 
     '''
     __cache_name__ = str('_inverted_cache')
@@ -375,17 +376,23 @@ class SmartDict(SmartDictMixin, dict):
 
 
 class opendict(OpenDictMixin, dict, object):
-    '''A dictionary implementation that mirrors its keys as attributes::
+    '''A dictionary implementation that mirrors its keys as attributes.
 
-         >>> d = opendict({'es': 'spanish'})
-         >>> d.es
-         'spanish'
+    For example::
 
-         >>> d['es'] = 'espanol'
-         >>> d.es
-         'espanol'
+      >>> d = opendict(es='spanish')
+      >>> d.es
+      'spanish'
 
-    Setting attributes *does not* makes them keys.
+      >>> d['es'] = 'espanol'
+      >>> d.es
+      'espanol'
+
+    Setting attributes not already included  *does not* makes them keys::
+
+      >>> d.en = 'English'
+      >>> set(d)
+      {'es'}
 
     '''
     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)

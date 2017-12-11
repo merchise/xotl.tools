@@ -1,3 +1,5 @@
+:orphan:
+
 - Deprecated function `xoutil.objects.get_and_del_key`:func:.  Use the
   `dict.pop`:meth: directly.
 

@@ -120,47 +120,6 @@ class Maybe(object):
         return not (self == other)
 
     @classmethod
-    def triumph(cls, value):
-        '''Coerce to a logical Boolean value.
-
-        A wrapper `Just`:class: is logically true, and `Wrong` is false.
-
-        For example::
-
-            >>> Just.triumph([1])
-            [1]
-
-            >>> Just.triumph([])
-            Just([])
-
-            >>> Wrong.triumph([1])
-            Wrong([1])
-
-            >>> Wrong.triumph([])
-            []
-
-        '''
-        default = cls is Just
-        if bool(value) is default:
-            idx = 2 if arg is None else arg
-            if cls._singletons[idx] is None:
-                self = super(Maybe, cls).__new__(cls)
-                self.inner = arg
-                cls._singletons[idx] = self
-            return cls._singletons[idx]
-        elif cls is Maybe:
-            return (Just if arg else Wrong)(arg)
-        elif isinstance(arg, cls):
-            return arg
-        elif not isinstance(arg, Maybe):
-            self = super(Maybe, cls).__new__(cls)
-            self.inner = arg
-            return self
-        else:
-            msg = 're-wrapping inverted value: {}({})'
-            raise ValueError(msg.format(cls.__name__, arg))
-
-    @classmethod
     def compel(cls, value):
         '''Coerce to the correspondent logical Boolean value.
 

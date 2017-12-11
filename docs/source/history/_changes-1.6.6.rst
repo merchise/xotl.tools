@@ -1,3 +1,5 @@
+:orphan:
+
 - Improved the `xoutil.string.normalize_slug`:func: by providing both valid
   and invalid chars.
 
