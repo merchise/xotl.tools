@@ -444,16 +444,14 @@ def merge(*iterators, **kwargs):
             else:
                 yield item2
                 item2 = next(iter2, Undefined)
-        if item1 is not Undefined:
-            assert item2 is Undefined
-        if item2 is not Undefined:
-            assert item1 is Undefined
+        # One of the iterators (or both) has been exhausted, consume the
+        # other.
         while item1 is not Undefined:
             yield item1
             item1 = next(iter1, Undefined)
         while item2 is not Undefined:
             yield item2
-            item1 = next(iter1, Undefined)
+            item2 = next(iter2, Undefined)
 
     def _empty():
         return
