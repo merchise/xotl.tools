@@ -407,6 +407,63 @@ def ungroup(iterator):
             yield x
 
 
+# Signature is `(*iterators, key=None)`.
+def merge(*iterators, **kwargs):
+    '''Merge the iterators in order.
+
+    Return a iterator that yields all items from `iterators` following the
+    order given by `key`.  If `key` is not given we compare the items.
+
+    If the `iterators` yield their items in order (w.r.t `key`), the result is
+    also ordered.
+
+    ``merge()`` returns the *empty* iterator.
+
+    '''
+    from xoutil.symbols import Undefined
+    from xoutil.params import ParamManager
+    from xoutil.future.collections import Iterable, Iterator
+    pm = ParamManager((), kwargs)
+    key = pm('key', default=lambda x: x)
+
+    def _merge(iter1, iter2):
+        iter1 = iter(iter1)
+        iter2 = iter(iter2)
+        item1 = next(iter1, Undefined)
+        item2 = next(iter2, Undefined)
+        while item1 is not Undefined and item2 is not Undefined:
+            if key(item1) <= key(item2):
+                yield item1
+                item1 = next(iter1, Undefined)
+            else:
+                yield item2
+                item2 = next(iter2, Undefined)
+        if item1 is not Undefined:
+            assert item2 is Undefined
+        if item2 is not Undefined:
+            assert item1 is Undefined
+        while item1 is not Undefined:
+            yield item1
+            item1 = next(iter1, Undefined)
+        while item2 is not Undefined:
+            yield item2
+            item1 = next(iter1, Undefined)
+
+    def _empty():
+        return
+        yield
+
+    if not all(isinstance(iter_, (Iterable, Iterator)) for iter_ in iterators):
+        raise TypeError('Positional argument must be iterables or iterators')
+    if iterators:
+        res = iterators[0]
+        for iter_ in iterators[1:]:
+            res = _merge(res, iter_)
+    else:
+        res = _empty()
+    return res
+
+
 # Compatible zip and map
 from xoutil.eight import python_version
 
