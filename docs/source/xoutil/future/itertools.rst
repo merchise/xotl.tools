@@ -1,9 +1,11 @@
-`xoutil.iterators`:mod: -   Functions creating iterators for efficient looping
-==============================================================================
+`xoutil.future.itertools`:mod: - Functions creating iterators for efficient looping
+===================================================================================
 
-.. automodule:: xoutil.iterators
+.. automodule:: xoutil.future.itertools
    :members: dict_update_new, first_n, first_non_null,
-	     slides, continuously_slides, ungroup
+	         slides, continuously_slides, ungroup
+
+.. autofunction:: merge(*iterables, key=None)
 
 .. autofunction:: delete_duplicates(seq[, key=lambda x: x])
 

@@ -7,7 +7,12 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Several util functions for iterators'''
+'''Several util functions for iterators.
+
+.. versionchanged:: 1.8.4 Renamed to `xoutil.future.iterator`:mod:.  The
+   ``xoutil.iterators`` is now a deprecated alias.
+
+'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
