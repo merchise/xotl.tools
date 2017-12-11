@@ -142,7 +142,7 @@ class NoneOrTypeCheck(TypeCheck):
             while res is None and i < len(_types):
                 try:
                     res = _types[i]()
-                except BaseException:
+                except Exception:
                     pass
                 i += 1
             return res if res is not None else Wrong(None)
@@ -169,7 +169,7 @@ class TypeCast(TypeCheck):
                     res = _types[i](value)
                     if not res:
                         res = Just(res)
-                except BaseException:
+                except Exception:
                     pass
                 i += 1
         return res
@@ -269,7 +269,7 @@ class LogicalCheck(FunctionalCheck):
                 return Wrong(value)
             else:
                 return Wrong(res)
-        except BaseException as error:
+        except Exception as error:
             return Wrong(error)
 
 
@@ -281,7 +281,7 @@ class SafeCheck(FunctionalCheck):
         from xoutil.fp.option import Wrong
         try:
             return self.inner(value)
-        except BaseException as error:
+        except Exception as error:
             return Wrong(error)
 
 

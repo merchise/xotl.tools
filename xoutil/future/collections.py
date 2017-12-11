@@ -352,7 +352,7 @@ class SmartDictMixin(object):
         cls = type(self)
         try:
             res = cls()
-        except BaseException:
+        except Exception:
             from xoutil.future.inspect import get_attr_value
             creator = get_attr_value(cls, '__search_result_type__', None)
             res = creator() if creator else {}
