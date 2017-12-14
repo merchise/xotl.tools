@@ -529,33 +529,33 @@ def is_staticmethod(cls, name):
     return isinstance(desc, staticmethod)
 
 
-# TODO: @manu, @med, review external references to this function, and
-# remove them.
-def is_classmethod(desc, name=_unset):
+def is_classmethod(cls, name):
     '''Returns true if a `method` is a class method.
 
-    :param desc: This may be the method descriptor or the class that holds
-           the method, in the second case you must provide the `name` of
-           the method.
+    :param cls: The class or object that holds the method.
 
-           .. note::
+    :param name: The name of the method.
 
-              Notice that in the first case what is needed is the **method
-              descriptor**, i.e, taken from the class' `__dict__`
-              attribute. If instead you pass something like
-              ``cls.methodname``, this method will return False whilst
-              `is_instancemethod`:func: will return True.
+    When a class-method is declared, you can not test that condition using the
+    traditional way::
 
-    :param name: The name of the method, if the first argument is the
-           class.
+      >>> class Foo(object):
+      ...     @classmethod
+      ...     def bar(cls):
+      ...         pass
+      >>> isinstance(Foo.bar, classmethod)
+      False
+
+    Using this function::
+
+      >>> is_classmethod(Foo, 'bar')
+      True
 
     '''
-    if name:
-        desc = mro_dict(desc).get(name, None)
+    desc = _get_mro_attr(cls, name)
     return isinstance(desc, classmethod)
 
 
-# not used outside this module.
 def is_instancemethod(desc, name=_unset):
     '''Returns true if a given `method` is neither a static method nor a class
     method.
