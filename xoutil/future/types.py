@@ -261,6 +261,46 @@ RegexPattern = type(re.compile(''))
 del re
 
 
+def _get_mro_attr(target, name, *default):
+    '''Get a named attribute from a type.
+
+    Similar to `getattr` but looking in the MRO dictionaries for the type.
+    Used internally in this module.
+
+    For example::
+
+      >>> class A(SimpleNamespace):
+      ...     x = 12
+      ...     y = 34
+
+      >>> class B(A):
+      ...     y = 56
+
+      >>> b = B(x=1, y=2)
+
+      >>> _get_mro_attr(b, 'x')
+      12
+
+      >>> _get_mro_attr(b, 'y')
+      56
+
+    '''
+    from xoutil.future.inspect import _static_getmro
+    from xoutil.eight import force_type
+    from xoutil.params import check_default, Undefined
+    target = force_type(target)
+    target_mro = _static_getmro(target)
+    cls = next((c for c in target_mro if name in c.__dict__), _unset)
+    if cls is not _unset:
+        return cls.__dict__[name]
+    elif check_default()(*default) is not Undefined:
+        return default[0]
+    else:
+        msg = "'{}' type has no attribute '{}'"
+        raise AttributeError(msg.format(target, name))
+
+
+@deprecated(_get_mro_attr)
 class mro_dict(Mapping):
     '''Utility behaving like a read-only dict of `target` MRO attributes.
 
@@ -288,7 +328,6 @@ class mro_dict(Mapping):
       78
 
     '''
-    # TODO: What is the application for this utility?
     __slots__ = ('_probes', '_keys')
 
     def __init__(self, target):
