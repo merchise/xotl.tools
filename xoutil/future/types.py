@@ -502,16 +502,30 @@ def is_scalar(maybe):
     return is_string_like(maybe) or not is_iterable(maybe)
 
 
-# TODO: @manu, @med, review external references to this function, and
-# remove them.
-def is_staticmethod(desc, name=_unset):
+def is_staticmethod(cls, name):
     '''Returns true if a `method` is a static method.
 
-    This function takes the same arguments as `is_classmethod`:func:.
+    :param cls: The class or object that holds the method.
+
+    :param name: The name of the method.
+
+    When a static-method is declared, you can not test that condition using
+    the traditional way::
+
+      >>> class Foo(object):
+      ...     @staticmethod
+      ...     def bar():
+      ...         pass
+      >>> isinstance(Foo.bar, staticmethod)
+      False
+
+    Using this function::
+
+      >>> is_staticmethod(Foo, 'bar')
+      True
 
     '''
-    if name:
-        desc = mro_dict(desc).get(name, None)
+    desc = _get_mro_attr(cls, name)
     return isinstance(desc, staticmethod)
 
 
