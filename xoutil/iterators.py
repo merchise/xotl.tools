@@ -37,16 +37,18 @@ def flatten(sequence, is_scalar=None, depth=None):
 
     It takes care of everything deemed a collection (i.e, not a scalar
     according to the callable passed in `is_scalar` argument; if ``None``,
-    `xoutil.future.types.is_scalar`:func: is assumed)::
+    iterables -but strings- will be considered as scalars.
+
+    For example::
 
         >>> from xoutil.eight import range
         >>> range_ = lambda *a: list(range(*a))
         >>> tuple(flatten((1, range_(2, 5), range(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)
 
-    If `depth` is None the collection is flattened recursiverly until the
-    "bottom" is reached. If `depth` is an integer then the collection is
-    flattened up to that level. `depth=0` means not to flatten. Nested
+    If `depth` is None the collection is flattened recursively until the
+    "bottom" is reached.  If `depth` is an integer then the collection is
+    flattened up to that level.  `depth=0` means not to flatten.  Nested
     iterators are not "exploded" if under the stated `depth`::
 
         # In the following doctest we use ``...range(...X)`` because the
@@ -58,9 +60,19 @@ def flatten(sequence, is_scalar=None, depth=None):
         >>> tuple(flatten((range(2), range_(2, 4)), depth=0))  # doctest: +ELLIPSIS  # noqa
         (...range(...2), [2, 3])
 
+    .. note:: Compatibility issue
+
+       In Python 2 ``bytes`` is the standard string but in Python 3 is a
+       binary buffer, so ``flatten([b'abc', [1, 2, 3]])`` will deliver
+       different results.
+
     '''
     if is_scalar is None:
-        from xoutil.future.types import is_scalar
+        def is_scalar(maybe):
+            '''Returns if `maybe` is not not an iterable or a string.'''
+            from collections import Iterable
+            from xoutil.eight import string_types as strs
+            return isinstance(maybe, strs) or not isinstance(maybe, Iterable)
     for item in sequence:
         if is_scalar(item):
             yield item
