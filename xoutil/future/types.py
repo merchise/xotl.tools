@@ -499,6 +499,7 @@ def is_staticmethod(cls, name):
       ...     @staticmethod
       ...     def bar():
       ...         pass
+
       >>> isinstance(Foo.bar, staticmethod)
       False
 
@@ -513,7 +514,7 @@ def is_staticmethod(cls, name):
 
 
 def is_classmethod(cls, name):
-    '''Returns true if a `method` is a class method.
+    '''Returns if a `method` is a class method.
 
     :param cls: The class or object that holds the method.
 
@@ -526,6 +527,7 @@ def is_classmethod(cls, name):
       ...     @classmethod
       ...     def bar(cls):
       ...         pass
+
       >>> isinstance(Foo.bar, classmethod)
       False
 
@@ -539,15 +541,36 @@ def is_classmethod(cls, name):
     return isinstance(desc, classmethod)
 
 
-def is_instancemethod(desc, name=_unset):
-    '''Returns true if a given `method` is neither a static method nor a class
-    method.
+def is_instancemethod(cls, name):
+    '''Returns if a `method` is neither a static nor a class method.
 
-    This function takes the same arguments as `is_classmethod`:func:.
+    :param cls: The class or object that holds the method.
+
+    :param name: The name of the method.
+
+    To find out if a method is "normal", ``isinstance(obj.method,
+    MethodType)`` can't be used::
+
+      >>> class Foobar(object):
+      ...     @classmethod
+      ...     def cm(cls):
+      ...         pass
+      ...     def im(self):
+      ...         pass
+
+      >>> isinstance(Foobar.cm, MethodType)
+      True
+
+    Using this function::
+
+      >>> is_instancemethod(Foobar, 'im')
+      True
+
+      >>> is_instancemethod(Foobar, 'cm')
+      False
 
     '''
-    if name:
-        desc = mro_dict(desc).get(name, None)
+    desc = _get_mro_attr(cls, name)
     return isinstance(desc, FunctionType)    # noqa
 
 
