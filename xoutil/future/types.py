@@ -574,15 +574,12 @@ def is_instancemethod(cls, name):
     return isinstance(desc, FunctionType)    # noqa
 
 
-# not used outside this module.
+@deprecated('``isinstance(maybe, ModuleType)``')
 def is_module(maybe):
     '''Returns True if `maybe` is a module.'''
     return isinstance(maybe, ModuleType)    # noqa
 
 
-# TODO: @manu, @med, review external references to this function, and
-# remove them.
-# Real "Py4k" signature ``are_instances(*subjects, types)``.
 @deprecated('``all(isinstance(obj, types) for obj in subjects)``')
 def are_instances(*args):
     '''Return True if every `subject` is an instance of (any) `types`.
@@ -614,8 +611,6 @@ def are_instances(*args):
     return all(isinstance(subject, types) for subject in subjects)
 
 
-# TODO: @manu, @med, review external references to this function, and
-# remove them.
 @deprecated('``all(not isinstance(obj, types) for obj in subjects)``')
 def no_instances(*args):
     '''Return True if every `subject` is **not** an instance of (neither)
