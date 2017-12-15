@@ -460,15 +460,13 @@ def is_collection(maybe):
     return logic_collection_coerce(maybe) is not nil
 
 
-# TODO: There was only one reference to this in `xoutil.objects`, see how
-# was replaced in the new body of this function
 @deprecated('``isinstance(maybe, Mapping)``')
 def is_mapping(maybe):
     '''Test `maybe` to see if it is a valid mapping.'''
     return isinstance(maybe, Mapping)
 
 
-# only referenced locally by `is_scalar`.
+@deprecated('``maybe + ""`` in an exception management block.')
 def is_string_like(maybe):
     '''Returns True if `maybe` acts like a string'''
     try:
