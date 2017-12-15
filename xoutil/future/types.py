@@ -130,12 +130,6 @@ except NameError:
         MappingProxyType.register(DictProxyType)
     __all__.append('MappingProxyType')
 
-if python_version == 2:
-    if not issubclass(MappingProxyType, Mapping):
-        # TODO: when implement `xoutil.future.collections`, fix this problem
-        # there.
-        Mapping.register(MappingProxyType)
-
 try:
     NotImplementedType    # noqa
 except NameError:
