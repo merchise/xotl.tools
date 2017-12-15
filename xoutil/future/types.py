@@ -382,17 +382,11 @@ def mro_get_full_mapping(cls, name):
     return {t: t.__dict__[name] for t in mro if name in t.__dict__}
 
 
-# TODO: Many of is_*method methods here are needed to be compared against
-# the standard lib's module inspect versions.  If they behave the same,
-# these should be deprecated in favor of the standards.
-
-# TODO: use in `xoutil.json.JSONEncoder` was replaced by
-# ``isinstance(maybe, Iterable)``, so now is used only internally.
+@deprecated('``iter(maybe)`` in an exception management block.')
 def is_iterable(maybe):
-    '''Returns True if `maybe` is an iterable object (e.g. implements the
-    `__iter__` method):
+    '''Returns True if `maybe` is an iterable object.
 
-    ::
+    e.g. implements the `__iter__` method::
 
         >>> is_iterable('all strings are iterable')
         True
