@@ -11,3 +11,10 @@
   deprecated alias.
 
 - Add `xoutil.future.itertools.merge`:func:.
+
+- Add `xoutil.future.types._get_mro_attr`:func: function.
+
+- Deprecate in `xoutil.future.types`:mod: module: ``mro_dict`` class; and the
+  functions ``mro_get_value_list``, ``mro_get_full_mapping``, ``is_iterable``,
+  ``is_collection``, ``is_mapping``, ``is_string_like``, ``is_scalar``,
+  ``is_module``, ``are_instances``, and ``no_instances``.
