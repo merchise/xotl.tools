@@ -1,3 +1,5 @@
+:orphan:
+
 - Now `xoutil` supports Python 2.7, and 3.1+.  Python 3.0 was not tested.
 
 - Added a `strict` parameter to `xoutil.objects.smart_getter`:func:.

@@ -1,3 +1,5 @@
+:orphan:
+
 - Adds `xoutil.datetime.daterange`:func:.
 
 - Adds `xoutil.objects.traverse`:func:.

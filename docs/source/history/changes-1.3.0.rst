@@ -1,3 +1,5 @@
+:orphan:
+
 - Removes deprecated module `!xoutil.mdeco`:mod:.
 
 - `xoutil.context.Context`:class: now inherit from the newly created stacked

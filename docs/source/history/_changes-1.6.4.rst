@@ -1,1 +1,3 @@
+:orphan:
+
 - Fix bug in `xoutil.fs.concatfiles`:func:\ : There were leaked opened files.

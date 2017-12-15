@@ -263,7 +263,7 @@ def import_deprecated(module, *names, **aliases):
             raise ImportError(msg.format(name, src_name))
 
 
-def deprecate_linked(check=None):
+def deprecate_linked(check=None, msg=None):
     '''Deprecate an entire module if used through a link.
 
     This function must be called in the global context of the new module.
@@ -287,8 +287,9 @@ def deprecate_linked(check=None):
         # As recommended in Python's documentation to avoid memory leaks
         del frame
     if check not in name:
-        msg = ('"{}" module is now deprecated and it will be removed; use '
-               'the one in "{}" instead.').format(name, check)
+        if msg is None:
+            msg = ('"{}" module is now deprecated and it will be removed; use '
+                   'the one in "{}" instead.').format(name, check)
         warnings.warn(msg, stacklevel=2)
 
 

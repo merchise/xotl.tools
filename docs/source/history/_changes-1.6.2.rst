@@ -1,3 +1,5 @@
+:orphan:
+
 - Fix encoding issues in `xoutil.string.cut_prefix`:func: and
   `xoutil.string.cut_suffix`:func:.
 

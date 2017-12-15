@@ -289,7 +289,7 @@ def safe_name(obj, affirm=False):
             if res:
                 if isdatadescriptor(res):    # noqa
                     res = res.__get__(obj, type)
-        except BaseException:
+        except Exception:
             res = None
         if res is None:
             try:

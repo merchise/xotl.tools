@@ -200,7 +200,7 @@ def coercer_name(arg, join=None):
     else:
         try:
             res = arg.__name__
-        except BaseException:
+        except Exception:
             res = str(arg)
         suffix = str('_coerce')
         if res.endswith(suffix):
@@ -638,7 +638,7 @@ class safe(custom):
             from xoutil.symbol import boolean
             res = self.inner(arg)
             return logical(res) if isinstance(res, boolean) else res
-        except BaseException as error:
+        except Exception as error:
             self.scope = (arg, error)
             return nil
 
@@ -787,7 +787,7 @@ class combo(custom):
             if t(res):
                 try:
                     res = type(arg)(res)
-                except BaseException:
+                except Exception:
                     pass
         else:
             res = nil
@@ -988,7 +988,7 @@ class iterable(custom):
                 elif retyped:
                     try:
                         res = type(arg)(res)
-                    except BaseException:
+                    except Exception:
                         pass
         else:
             self.scope = arg
@@ -1087,7 +1087,7 @@ class mapping(custom):
             if t(res) and retyped:
                 try:
                     res = type(arg)(res)
-                except BaseException:
+                except Exception:
                     pass
         else:
             self.scope = ()

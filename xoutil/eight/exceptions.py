@@ -31,7 +31,7 @@ a homogeneous syntax using a `trace` extra argument::
     >>> divisor = 0
     >>> try:
     ...     inverted = 1/divisor
-    ... except BaseException:
+    ... except Exception:
     ...     raise catch(ValueError('Invalid divisor.'))
 
 If you want to be completely compatible raising exceptions with trace-backs,

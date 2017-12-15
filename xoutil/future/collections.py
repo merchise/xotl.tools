@@ -162,16 +162,15 @@ class defaultdict(_stdlib.defaultdict):
 class OpenDictMixin(object):
     '''A mixin for mappings implementation that expose keys as attributes.
 
-    For example::
+    For example:
 
       >>> from xoutil.objects import SafeDataItem as safe
-
       >>> class MyOpenDict(OpenDictMixin, dict):
       ...     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
       >>> d = MyOpenDict({'es': 'spanish'})
       >>> d.es
-    'spanish'
+      'spanish'
 
       >>> d['es'] = 'espanol'
       >>> d.es
@@ -186,12 +185,12 @@ class OpenDictMixin(object):
 
     This mixin defines the following features that can be redefined:
 
-    _key2identifier
+    ``_key2identifier``
 
         Protected method, receive a key as argument and return a valid
         identifier that is used instead the key as an extended attribute.
 
-    __cache_name__
+    ``__cache_name__``
 
         Inner field to store a cached mapping between actual keys and
         calculated attribute names.  The field must be always implemented as a
@@ -353,7 +352,7 @@ class SmartDictMixin(object):
         cls = type(self)
         try:
             res = cls()
-        except BaseException:
+        except Exception:
             from xoutil.future.inspect import get_attr_value
             creator = get_attr_value(cls, '__search_result_type__', None)
             res = creator() if creator else {}
@@ -411,12 +410,12 @@ class codedict(OpenDictMixin, dict, object):
       '3 is 3 --  4.0 is 4.0'
 
     It supports the right shift (``>>``) operator as a format operand (using
-    ``_`` as the special name for the code dict)::
+    ``_`` as the special name for the code dict):
 
       >>> cd >> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1'
       '3 is 3 --  4.0 is 4.0 -- 1 is 1'
 
-    It also implements the left shift (``<<``) operator::
+    It also implements the left shift (``<<``) operator:
 
       >>> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1' << cd
       '3 is 3 --  4.0 is 4.0 -- 1 is 1'

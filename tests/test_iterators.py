@@ -11,18 +11,14 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from hypothesis import strategies as s, given, assume
+import pytest
+from hypothesis import strategies as s, given
 
 
 def test_first_n_no_filling():
     from xoutil.iterators import first_n
-    try:
+    with pytest.raises(StopIteration):
         next(first_n((), 1))
-        assert False, 'Should have raised an StopIteration'
-    except StopIteration:
-        pass
-    except:
-        assert False, 'Should have raised an StopIteration'
 
 
 def test_first_n_filling_by_cycling():
@@ -119,3 +115,22 @@ def test_iter_delete_duplicates():
     assert list(iter_delete_duplicates('AAAaBBBA')) == ['A', 'a', 'B', 'A']
     assert list(iter_delete_duplicates('AAAaBBBA', key=lambda x: x.lower())) ==\
         ['A', 'B', 'A']
+
+
+@given(s.lists(s.integers(), max_size=30, average_size=10),
+       s.lists(s.integers(), max_size=30, average_size=10),
+       s.lists(s.integers(), max_size=30, average_size=10))
+def test_merge(l1, l2, l3):
+    from xoutil.future.itertools import merge
+    l1 = sorted(l1)
+    l2 = sorted(l2)
+    l3 = sorted(l3)
+    # Accumulate and catch if yielding more than necessary
+    iter_ = merge(l1, l2, l3)
+    expected = sorted(l1 + l2 + l3)
+    result = []
+    for _ in range(len(expected)):
+        result.append(next(iter_))
+    with pytest.raises(StopIteration):
+        last = next(iter_)  # noqa: There cannot be more items in the merge
+    assert result == expected
