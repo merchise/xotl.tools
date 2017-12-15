@@ -477,14 +477,12 @@ def is_string_like(maybe):
         return True
 
 
-# TODO: @manu, @med, review external references to this function, and
-# remove them.
+@deprecated('None', '"is_scalar" will be removed.')
 def is_scalar(maybe):
-    '''Returns True if `maybe` is a string, an int, or some other scalar type
-    (i.e not an iterable.)
-
-    '''
-    return is_string_like(maybe) or not is_iterable(maybe)
+    '''Returns if `maybe` is not not an iterable or a string.'''
+    from collections import Iterable
+    from xoutil.eight import string_types
+    return isinstance(maybe, string_types) or not isinstance(maybe, Iterable)
 
 
 def is_staticmethod(cls, name):
