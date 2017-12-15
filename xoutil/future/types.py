@@ -321,6 +321,8 @@ class mro_dict(Mapping):
       >>> d['z']
       78
 
+    .. deprecated:: 1.8.4
+
     '''
     __slots__ = ('_probes', '_keys')
 
@@ -359,7 +361,11 @@ class mro_dict(Mapping):
 
 @deprecated('None', '"mro_get_value_list" will be removed.')
 def mro_get_value_list(cls, name):
-    '''Return a list with all `cls` class attributes in MRO.'''
+    '''Return a list with all `cls` class attributes in MRO.
+
+    .. deprecated:: 1.8.4
+
+    '''
     return list(mro_get_full_mapping(cls, name).values())
 
 
@@ -368,6 +374,8 @@ def mro_get_full_mapping(cls, name):
     '''Return a dictionary with all items from `cls` in MRO.
 
     All values corresponding to `name` must be valid mappings.
+
+    .. deprecated:: 1.8.4
 
     '''
     from xoutil.future.inspect import _static_getmro
@@ -401,6 +409,8 @@ def is_iterable(maybe):
 
         >>> is_iterable(set())
         True
+
+    .. deprecated:: 1.8.4
 
     '''
     try:
@@ -449,6 +459,8 @@ def is_collection(maybe):
 
     .. versionchanged:: 1.5.5 UserList are collections.
 
+    .. deprecated:: 1.8.4
+
     '''
     from xoutil.values.simple import logic_collection_coerce, nil
     return logic_collection_coerce(maybe) is not nil
@@ -456,13 +468,21 @@ def is_collection(maybe):
 
 @deprecated('``isinstance(maybe, Mapping)``')
 def is_mapping(maybe):
-    '''Test `maybe` to see if it is a valid mapping.'''
+    '''Test `maybe` to see if it is a valid mapping.
+
+    .. deprecated:: 1.8.4
+
+    '''
     return isinstance(maybe, Mapping)
 
 
 @deprecated('``maybe + ""`` in an exception management block.')
 def is_string_like(maybe):
-    '''Returns True if `maybe` acts like a string'''
+    '''Returns True if `maybe` acts like a string.
+
+    .. deprecated:: 1.8.4
+
+    '''
     try:
         maybe + ""
     except TypeError:
@@ -473,7 +493,11 @@ def is_string_like(maybe):
 
 @deprecated('None', '"is_scalar" will be removed.')
 def is_scalar(maybe):
-    '''Returns if `maybe` is not not an iterable or a string.'''
+    '''Returns if `maybe` is not not an iterable or a string.
+
+    .. deprecated:: 1.8.4
+
+    '''
     from collections import Iterable
     from xoutil.eight import string_types
     return isinstance(maybe, string_types) or not isinstance(maybe, Iterable)
@@ -570,7 +594,11 @@ def is_instancemethod(cls, name):
 
 @deprecated('``isinstance(maybe, ModuleType)``')
 def is_module(maybe):
-    '''Returns True if `maybe` is a module.'''
+    '''Returns True if `maybe` is a module.
+
+    .. deprecated:: 1.8.4
+
+    '''
     return isinstance(maybe, ModuleType)    # noqa
 
 
@@ -595,6 +623,8 @@ def are_instances(*args):
 
     .. seealso:: The function `no_instances`:func: allows to test for
                  subjects not being instances of types.
+
+    .. deprecated:: 1.8.4
 
     '''
     from xoutil.params import check_count
@@ -630,6 +660,8 @@ def no_instances(*args):
        This function requires that *no* subject is an instance of `types`.
        Negating `are_instances`:func: would be True if *any* subject is
        not an instance of `types`.
+
+    .. deprecated:: 1.8.4
 
     '''
     from xoutil.params import check_count
