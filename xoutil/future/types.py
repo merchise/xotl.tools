@@ -417,8 +417,13 @@ def is_iterable(maybe):
         return True
 
 
-# TODO: @manu, external uses to be upgraded.
-# @deprecated('xoutil.values.simple.logic_collection_coerce')
+_is_collection_replacement = '''::
+    from xoutil.values.simple import collection, nil
+    collection(avoid=Mapping)(maybe) is not nil
+'''
+
+
+@deprecated(_is_collection_replacement)
 def is_collection(maybe):
     '''Test `maybe` to see if it is a tuple, a list, a set or a generator
     function.
