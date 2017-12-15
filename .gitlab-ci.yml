@@ -136,7 +136,8 @@ build documentation:
     - virtualenv
   only:
     - tags
-    - branches
+    - /^releases-/
+    - master
 
 publish in our rtd:
   stage: publish
