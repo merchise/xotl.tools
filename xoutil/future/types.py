@@ -363,40 +363,28 @@ class mro_dict(Mapping):
                     self._keys.add(key)
 
 
-# TODO: used internally in this module
+@deprecated('None', '"mro_get_value_list" will be removed.')
 def mro_get_value_list(cls, name):
     '''Return a list with all `cls` class attributes in MRO.'''
-    from xoutil.future.inspect import _static_getmro
-    from xoutil.eight import force_type as type_coerce
-    mro = _static_getmro(type_coerce(cls))
-    return [t.__dict__[name] for t in mro if name in t.__dict__]
+    return list(mro_get_full_mapping(cls, name).values())
 
 
-# TODO: not further use
+@deprecated('None', '"mro_get_full_mapping" will be removed.')
 def mro_get_full_mapping(cls, name):
     '''Return a dictionary with all items from `cls` in MRO.
 
     All values corresponding to `name` must be valid mappings.
 
     '''
-    aux = mro_get_value_list(cls, name)
-    count = len(aux)
-    if count == 0:
-        return {}
-    elif count == 1:
-        return aux[0]
-    else:
-        res = {}
-        for m in aux:
-            for key in m:
-                if key not in res:
-                    res[key] = m[key]
-        return res
+    from xoutil.future.inspect import _static_getmro
+    from xoutil.eight import force_type as type_coerce
+    mro = _static_getmro(type_coerce(cls))
+    return {t: t.__dict__[name] for t in mro if name in t.__dict__}
+
 
 # TODO: Many of is_*method methods here are needed to be compared against
 # the standard lib's module inspect versions.  If they behave the same,
 # these should be deprecated in favor of the standards.
-
 
 # TODO: use in `xoutil.json.JSONEncoder` was replaced by
 # ``isinstance(maybe, Iterable)``, so now is used only internally.
