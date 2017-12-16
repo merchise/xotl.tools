@@ -131,7 +131,7 @@ build documentation:
   artifacts:
     paths:
       - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
-    expire_in: 4 hours
+    expire_in: 4 days
   tags:
     - virtualenv
   only:
@@ -156,7 +156,8 @@ publish in our rtd:
     url: http://docs.lahavane.com/$PROJECT_NAME/$CI_COMMIT_REF_NAME
   only:
     - tags
-    - branches
+    - /^releases-/
+    - master
 
 clean_build:
   variables:
