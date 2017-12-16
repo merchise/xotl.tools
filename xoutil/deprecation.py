@@ -84,6 +84,14 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
        deprecated object.  Needed to allow renaming in
        `import_deprecated`:func: helper function.
 
+    .. note:: Deprecating some classes in Python 3 could fail.  This is
+       because those classes do not declare a '__new__' par of the declared
+       '__init__'.  The problem is solved if the '__new__' of the super-class
+       has no arguments.  This doesn't happen in Python 2.
+
+       To solve these cases mark the deprecation in a comment and issue the
+       warning directly in the constructor code.
+
     .. versionchanged:: 1.4.1 Introduces removed_in_version and check_version.
 
     '''
@@ -138,7 +146,12 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                                          replacement=repl_name,
                                          in_version=in_version),
                               stacklevel=2)
-                return target.__new__(*args, **kwargs)
+                try:
+                    return target.__new__(*args, **kwargs)
+                except TypeError:
+                    # XXX: Some classes in Python 3 don't declare an
+                    # equivalent '__new__'
+                    return super(result, args[0]).__new__(args[0])
             # Code copied and adapted from xoutil.objects.copy_class.  This is
             # done so because this module *must* not depends on any other,
             # otherwise an import cycle might be formed when deprecating a
