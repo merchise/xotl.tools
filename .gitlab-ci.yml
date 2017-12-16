@@ -1,7 +1,4 @@
 ---
-variables:
-  PROJECT_NAME: xoutil
-
 stages:
   - test
   - check
@@ -70,8 +67,8 @@ publish_locally:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/$PROJECT_NAME"
-    - scp dist/* manu@gestion.lahavane.com:Repos/$PROJECT_NAME/
+    - ssh manu@gestion.lahavane.com "mkdir -p Repos/$CI_PROJECT_NAME"
+    - scp dist/* manu@gestion.lahavane.com:Repos/$CI_PROJECT_NAME/
   tags:
     - repo.lahavane.com
   only:
@@ -82,7 +79,7 @@ publish_locally:
     - build binary distribution
   environment:
     name: repo.lahavane.com
-    url: http://repo.lahavane.com/pypi/$PROJECT_NAME
+    url: http://repo.lahavane.com/pypi/$CI_PROJECT_NAME
 
 
 publish in pypi:
@@ -101,7 +98,7 @@ publish in pypi:
     - build binary distribution
   environment:
     name: pypi
-    url: https://pypi.python.org/pypi/$PROJECT_NAME
+    url: https://pypi.python.org/pypi/$CI_PROJECT_NAME
 
 brag about new release in twitter:
   variables:
@@ -152,7 +149,7 @@ publish in our rtd:
     - build documentation
   environment:
     name: docs.lahavane.com
-    url: http://docs.lahavane.com/$PROJECT_NAME/$CI_COMMIT_REF_NAME
+    url: http://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
   only:
     - tags
     - /^releases-/
