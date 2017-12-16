@@ -8,7 +8,6 @@ stages:
   - build
   - publish
   - tweet
-  - clean
 
 lint:
   stage: test
@@ -158,17 +157,3 @@ publish in our rtd:
     - tags
     - /^releases-/
     - master
-
-clean_build:
-  variables:
-    GIT_STRATEGY: none
-  stage: clean
-  script:
-    - rm -f dist/*
-  tags:
-    - python
-  when: always
-  allow_failure: true
-  dependencies:
-    - build source distribution
-    - build binary distribution
