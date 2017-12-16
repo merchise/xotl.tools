@@ -140,7 +140,6 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             in_version = ''
         if isinstance(target, class_types):
             def new(*args, **kwargs):
-                from xoutil.versions import python_version
                 if check_version and removed_in_version:
                     raise_if_deprecated(target, removed_in_version)
                 warnings.warn(msg.format(funcname=funcname,
