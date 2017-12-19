@@ -442,6 +442,8 @@ def merge(*iterables, **kwargs):
 
     ``merge()`` returns the *empty* iterator.
 
+    .. versionadded:: 1.8.4
+
     '''
     from xoutil.symbols import Undefined
     from xoutil.params import ParamManager
