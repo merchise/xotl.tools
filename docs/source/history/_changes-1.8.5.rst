@@ -1,1 +1,1 @@
-Nothing yet
+- Deprecate module ``xoutil.logger``.
