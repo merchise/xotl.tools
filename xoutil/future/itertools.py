@@ -182,23 +182,6 @@ def dict_update_new(target, source, fail=False):
             raise TypeError('key "{}" already in target'.format(key))
 
 
-@deprecated('generator expression')
-def fake_dict_iteritems(source):
-    '''Iterate (key, value) in a source fake mapping.
-
-    A fake mapping must define at least methods `keys` and
-    `~object.__getitem__`:meth:.
-
-    .. warning:: Deprecated since 1.7.0.  This was actually in risk since
-                 1.4.0.
-
-    '''
-    import warnings
-    warnings.warn('fake_dict_iteritems is in risk for deprecation')
-    for key in source.keys():
-        yield key, source[key]
-
-
 def delete_duplicates(seq, key=lambda x: x):
     '''Remove all duplicate elements from `seq`.
 

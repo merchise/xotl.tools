@@ -11,8 +11,6 @@
 
 .. autofunction:: iter_delete_duplicates(iter[, key=lambda x: x])
 
-.. autofunction:: fake_dict_iteritems(source)
-
 .. autofunction:: flatten(sequence, is_scalar=xoutil.types.is_scalar, depth=None)
 
 .. function:: xoutil.iterators.zip([iter1[, iter2[, ...]]])

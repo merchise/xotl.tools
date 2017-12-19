@@ -13,7 +13,7 @@ The following is the list of changes:
   pop a stack level.  The same is done for the
   `~xoutil.collections.StackedDict.pop`:meth: method.
 
-- Deprecates `xoutil.iterators.fake_dict_iteritems`:func:.
+- Deprecates function ``xoutil.iterators.fake_dict_iteritems``.
 
 - Deprecates `xoutil.objects.metaclass`:class: in favor for
   `xoutil.eight.meta.metaclass`:func:.
