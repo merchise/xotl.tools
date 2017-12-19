@@ -1,5 +1,3 @@
-:orphan:
-
 - UserList are now collections in the sense of
   `xoutil.types.is_collection`:func:.
 

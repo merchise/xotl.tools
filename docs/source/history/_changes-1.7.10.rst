@@ -1,5 +1,3 @@
-:orphan:
-
 - Fix bug `#6`_: `TimeSpan.overlaps <xoutil.datetime.TimeSpan.overlaps>`:meth:
   was incorrectly defined.
 

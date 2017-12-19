@@ -1,5 +1,3 @@
-:orphan:
-
 - Added the `strict` argument to `xoutil.records.datetime_reader`:func:.
 
 - You may now install ``xoutil[extra]`` so that not required but useful

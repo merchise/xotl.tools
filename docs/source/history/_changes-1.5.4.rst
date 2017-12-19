@@ -1,5 +1,3 @@
-:orphan:
-
 - Fix a bug in `xoutil.objects.extract_attrs`:func:.  It was not raising
   exceptions when some attribute was not found and `default` was not provided.
 

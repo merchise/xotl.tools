@@ -1,5 +1,3 @@
-:orphan:
-
 - Added `xoutil.records.date_reader`:func:.
 
 - Added a forward-compatible ``xoutil.inspect.getfullargspec``.

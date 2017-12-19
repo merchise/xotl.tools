@@ -1,5 +1,3 @@
-:orphan:
-
 This is the first of the 1.2.0 series. It's been given a bump in the minor
 version number because we've removed some deprecated functions and/or modules.
 

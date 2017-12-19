@@ -1,5 +1,3 @@
-:orphan:
-
 - Changes the signature of `xoutil.names.nameof`:func:, also the semantics of
   the `full` parameter is improved.
 
