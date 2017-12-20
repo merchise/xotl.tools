@@ -568,7 +568,7 @@ def test_temp_attributes():
     from xoutil.future.types import SimpleNamespace as new
     from xoutil.objects import temp_attributes
     obj = new(a=1, b=2)
-    with these_attributes(obj, dict(a=2)):
+    with temp_attributes(obj, dict(a=2)):
         assert obj.a == 2
         assert obj.b == 2
         obj.b = 3
