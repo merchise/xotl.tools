@@ -27,7 +27,6 @@ deprecate_linked(msg=('"xoutil.iterators" is deprecated. '
 del deprecate_linked
 
 from xoutil.symbols import Unset
-from xoutil.deprecation import deprecated
 
 
 def first_non_null(iterable, default=None):
