@@ -1573,4 +1573,25 @@ def save_attributes(obj, *attrs, **kwargs):
             set_(attr, val)
 
 
+@contextmanager
+def temp_attributes(obj, attrs, **kwargs):
+    '''A context manager that temporarily sets attributes.
+
+    `attrs` is a dictionary containing the attributes to set.
+
+    Keyword arguments `getter` and `setter` have the same meaning as in
+    `save_attributes`:func:.  We also use the `setter` to set the values
+    provided in `attrs`.
+
+    .. versionadded:: 1.8.5
+
+    '''
+    setter = kwargs.get('setter', smart_setter)
+    set_ = setter(obj)
+    with save_attributes(obj, *tuple(attrs.keys()), **kwargs):
+        for attr, value in attrs.items():
+            set_(attr, value)
+        yield
+
+
 del contextmanager

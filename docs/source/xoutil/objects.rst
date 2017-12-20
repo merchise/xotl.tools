@@ -32,6 +32,8 @@
 
 .. autofunction:: save_attributes(obj, *attributes, getter=None, setter=None)
 
+.. autofunction:: temp_attributes(obj, attrs, getter=None, setter=None)
+
 .. autoclass:: memoized_property
    :members: reset
 

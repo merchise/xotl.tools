@@ -564,6 +564,19 @@ def test_save_attributes():
     assert obj.b == 3
 
 
+def test_temp_attributes():
+    from xoutil.future.types import SimpleNamespace as new
+    from xoutil.objects import temp_attributes
+    obj = new(a=1, b=2)
+    with these_attributes(obj, dict(a=2)):
+        assert obj.a == 2
+        assert obj.b == 2
+        obj.b = 3
+
+    assert obj.a == 1
+    assert obj.b == 3
+
+
 def test_save_raises_errors():
     from xoutil.future.types import SimpleNamespace as new
     from xoutil.objects import save_attributes
