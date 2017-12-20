@@ -16,7 +16,7 @@ lint:
 run all tests (if needed):
   stage: test
   script:
-    - git show --oneline --name-only $CI_COMMIT_SHA | grep \.py$ && tox -e2.7-unit,3.5-unit,2.7-greenlets || echo "Skip running test... no Python file touched in $CI_COMMIT_REF_NAME ($CI_COMMIT_SHA)"
+    - git show --oneline --name-only $CI_COMMIT_SHA | grep \.py$ && tox -e2.7-unit,3.5-unit,2.7-greenlets
   tags:
     - python
     - virtualenv
