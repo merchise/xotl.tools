@@ -31,8 +31,8 @@ def fst(pair, strict=True):
     `strict` is False this is the same as ``pair[0]``.
 
     .. note:: This is an idiomatic function intended for using in compositions
-       or as the argument or high-level functions.  Don't use it in your code as
-       a replacement of ``x[0]``.
+       or as the argument or high-level functions.  Don't use it in your code
+       as a replacement of ``x[0]``.
 
     .. versionadded:: 1.8.5
 
