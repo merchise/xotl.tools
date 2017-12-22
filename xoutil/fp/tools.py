@@ -24,7 +24,48 @@ def identity(arg):
     return arg
 
 
+def fst(pair, strict=True):
+    '''Return the first element of `pair`.
+
+    If `strict` is True, `pair` needs to unpack to exactly two values.  If
+    `strict` is False this is the same as ``pair[0]``.
+
+    .. note:: This is an idiomatic function intended for using in compositions
+       or as the argument or high-level functions.  Don't use it in your code as
+       a replacement of ``x[0]``.
+
+    .. versionadded:: 1.8.5
+
+    '''
+    if strict:
+        res, _ = pair
+        return res
+    else:
+        return pair[0]
+
+
+def snd(pair, strict=True):
+    '''Return the second element of `pair`.
+
+    If `strict` is True, `pair` needs to unpack to exactly two values.  If
+    `strict` is False this is the same as ``pair[1]``.
+
+    .. note:: This is an idiomatic function intended for using in compositions
+       or as the argument or high-level functions.  Don't use it in your code
+       as a replacement of ``x[1]``.
+
+    .. versionadded:: 1.8.5
+
+    '''
+    if strict:
+        _, res = pair
+        return res
+    else:
+        return pair[1]
+
+
 class MetaCompose(ABCMeta):
+
     '''Meta-class for function composition.'''
     def __instancecheck__(self, instance):
         '''Override for ``isinstance(instance, self)``.'''
