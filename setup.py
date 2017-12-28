@@ -12,8 +12,8 @@ except NameError:
         'To run in Python 3'
         import builtins
         exec_ = getattr(builtins, 'exec')
-        with open(filename, "r") as f:
-            code = compile(f.read(), filename, 'exec')
+        with open(filename, "rb") as f:
+            code = compile(f.read().decode('utf-8'), filename, 'exec')
             return exec_(code, globals())
 
 
