@@ -1234,7 +1234,7 @@ def smart_copy(*args, **kwargs):
     and one of its key is not found in any of the `sources`, then the value of
     the key in the dictionary is copied to `target` unless:
 
-    - It's the value `~xoutil.symbols.Undefined`.
+    - It's the value `~xoutil.symbols.Undefined`:obj:.
 
     - An exception object
 
