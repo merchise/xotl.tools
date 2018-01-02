@@ -204,7 +204,8 @@ def test_timespans_displacement_backandforth(ts1, delta):
     assert ts1 == ((ts1 << delta) >> delta) == (ts1 << 0) == (ts1 >> 0)
 
 
-@given(timespans(unbounds='none'), strategies.integers(min_value=-1000, max_value=1000))
+@given(timespans(unbounds='none'),
+       strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_dates(ts1, delta):
     res = ts1 << delta
     assert (res.start_date - ts1.start_date).days == -delta
@@ -214,7 +215,8 @@ def test_timespans_displacement_dates(ts1, delta):
     assert (res.end_date - ts1.end_date).days == delta
 
 
-@given(timespans(unbounds='none'), strategies.integers(min_value=-1000, max_value=1000))
+@given(timespans(unbounds='none'),
+       strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_keeps_the_len(ts1, delta):
     res = ts1 << delta
     assert len(ts1) == len(res)
