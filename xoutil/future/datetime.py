@@ -477,7 +477,7 @@ class DateField(object):
             return self
 
     def __set__(self, instance, value):
-        from datetime import datetime as dt, date  # all dates, not just xoutil's
+        from datetime import datetime as dt, date
         if value in (None, False):
             # We regard False as None, so that working with Odoo is easier:
             # missing values in Odoo, often come as False instead of None.
