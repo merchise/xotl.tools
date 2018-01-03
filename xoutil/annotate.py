@@ -105,7 +105,7 @@ def _parse_signature(signature):
 
         def __getitem__(self, key):
             from xoutil.symbols import Unset
-            from xoutil.iterators import dict_update_new
+            from xoutil.future.itertools import dict_update_new
             from xoutil.eight import python_version
             d = self.d
             res = d.get(key, Unset)

@@ -86,17 +86,17 @@ class TestModuleDecorators(unittest.TestCase):
 
 def test_get_module_path_by_module_object():
     import xoutil
-    import xoutil.iterators
+    import xoutil.future.itertools
     from os.path import join
     from xoutil.modules import get_module_path
     top = xoutil.__path__[0]
     expected = top
     assert get_module_path(xoutil) == expected
 
-    expected = (join(top, 'iterators.py'),
-                join(top, 'iterators.pyc'),
-                join(top, 'iterators.pyo'))
-    assert get_module_path(xoutil.iterators) in expected
+    expected = (join(top, 'future', 'itertools.py'),
+                join(top, 'future', 'itertools.pyc'),
+                join(top, 'future', 'itertools.pyo'))
+    assert get_module_path(xoutil.future.itertools) in expected
 
 
 def test_get_module_path_by_module_string_abs():
@@ -106,10 +106,10 @@ def test_get_module_path_by_module_string_abs():
     top = xoutil.__path__[0]
     expected = top
     assert get_module_path('xoutil') == expected
-    expected = (join(top, 'iterators.py'),
-                join(top, 'iterators.pyc'),
-                join(top, 'iterators.pyo'))
-    assert get_module_path('xoutil.iterators') in expected
+    expected = (join(top, 'future', 'itertools.py'),
+                join(top, 'future', 'itertools.pyc'),
+                join(top, 'future', 'itertools.pyo'))
+    assert get_module_path('xoutil.future.itertools') in expected
 
 
 def test_get_module_path_by_module_string_rel():

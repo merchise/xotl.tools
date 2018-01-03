@@ -271,7 +271,7 @@ def ok(value, *checkers, **kwargs):
     if pred(value):
         return value
     else:
-        from xoutil.iterators import multi_get as get
+        from xoutil.future.itertools import multi_get as get
         from xoutil.future.inspect import safe_name
         msg = next(get(kwargs, 'message', 'msg'), 'Invalid {type}: {value}!')
         msg = msg.format(value=value, type=safe_name(value, affirm=True))

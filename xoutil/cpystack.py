@@ -46,7 +46,7 @@ def getargvalues(frame):
 
     '''
     from xoutil.values.simple import force_sequence_coerce as array
-    from xoutil.iterators import flatten
+    from xoutil.future.itertools import flatten
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
     for keys in pos:
