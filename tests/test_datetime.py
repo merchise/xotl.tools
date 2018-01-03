@@ -235,3 +235,13 @@ def test_empty_timespan_is_pickable():
         assert EmptyTimeSpan is pickle.loads(
             pickle.dumps(EmptyTimeSpan, proto)
         )
+
+
+@given(strategies.datetimes(), strategies.datetimes())
+def test_timespan_with_datetimes(d1, d2):
+    from datetime import datetime as dt, date as d
+    ts = TimeSpan(d1, d2)
+    assert not isinstance(ts.start_date, dt)
+    assert isinstance(ts.start_date, d)
+    assert not isinstance(ts.end_date, dt)
+    assert isinstance(ts.end_date, d)
