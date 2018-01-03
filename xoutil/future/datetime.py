@@ -477,7 +477,7 @@ class DateField(object):
             return self
 
     def __set__(self, instance, value):
-        from datetime import date  # all dates, not just xoutil's
+        from datetime import datetime as dt, date  # all dates, not just xoutil's
         if value in (None, False):
             # We regard False as None, so that working with Odoo is easier:
             # missing values in Odoo, often come as False instead of None.
@@ -485,6 +485,8 @@ class DateField(object):
                 raise ValueError('Setting None to a required field')
             else:
                 value = None
+        elif isinstance(value, dt):
+            value = value.date()
         elif not isinstance(value, date):
             value = parse_date(value)
         instance.__dict__[self.name] = value
