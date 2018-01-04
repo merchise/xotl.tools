@@ -37,7 +37,7 @@ def force_encoding(encoding=None):
 
     .. versionchanged:: 1.8.0 migrated to 'future.codecs'
 
-    .. versionchanges:: 1.8.7 Stop using `locale.getpreferrededencoding`:func:
+    .. versionchanged:: 1.8.7 Stop using `locale.getpreferrededencoding`:func:
        and improve documentation.
 
     '''
