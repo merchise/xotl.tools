@@ -49,10 +49,7 @@ def force_encoding(encoding=None):
     #
     # All these considerations where also proved in Mac-OS.
     import locale
-    return encoding or locale.getpreferredencoding() or 'UTF-8'
-    # return (encoding or locale.getlocale()[1]
-    #         or locale.getpreferredencoding()
-    #         or sys.getdefaultencoding() or 'UTF-8')
+    return encoding or locale.getdefaultlocale()[1] or 'UTF-8'
 
 
 def safe_decode(s, encoding=None):
