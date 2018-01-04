@@ -18,9 +18,10 @@ from hypothesis.strategies import text
 def test_slugify():
     from xoutil.string import slugify
     value = '  Á.e i  Ó  u  '
-    assert slugify(value) == 'a-e-i-o-u'
-    assert slugify(value, '.', invalid_chars='AU') == 'e.i.o'
-    assert slugify(value, valid_chars='.') == 'a.e-i-o-u'
+    options = dict(encoding='utf-8')
+    assert slugify(value, **options) == 'a-e-i-o-u'
+    assert slugify(value, '.', invalid_chars='AU', **options) == 'e.i.o'
+    assert slugify(value, valid_chars='.', **options) == 'a.e-i-o-u'
     assert slugify('_x', '_') == '_x'
     assert slugify('-x', '_') == 'x'
     assert slugify('-x-y-', '_') == 'x_y'

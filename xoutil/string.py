@@ -165,6 +165,9 @@ def slugify(value, *args, **kwds):
            either a valid string, any iterator of strings, or ``None`` to use
            only default valid characters.  Non-ASCII characters are ignored.
 
+    :param encoding: If `value` is not a text (unicode), it is decoded before
+           ASCII normalization.
+
     Examples::
 
       >>> slugify('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
@@ -212,6 +215,8 @@ def slugify(value, *args, **kwds):
        of `invalid_chars`, also deprecate the `valids` paremeter name in favor
        of `valid_chars`.
 
+    .. versionchanged:: 1.8.0 Add parameter 'encoding'.
+
     '''
     import re
     from xoutil.eight import string_types
@@ -227,7 +232,7 @@ def slugify(value, *args, **kwds):
 
     # local functions
     def _normalize(v):
-        return force_ascii(v).lower()
+        return force_ascii(v, encoding=encoding).lower()
 
     def _set(v):
         return re.escape(''.join(set(_normalize(v))))
@@ -238,6 +243,7 @@ def slugify(value, *args, **kwds):
                            default='', coercers=_ascii)
     valid_chars = getarg('valid_chars', 'valid', 'valids', 0, default='',
                          coercers=_ascii)
+    encoding = getarg('encoding', default=None)
     replacement = args[0] if args else kwds.pop('replacement', '-')
     # TODO: check unnecessary arguments, raising errors
     if replacement in (None, False):
