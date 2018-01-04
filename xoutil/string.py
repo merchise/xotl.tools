@@ -166,7 +166,7 @@ def slugify(value, *args, **kwds):
            only default valid characters.  Non-ASCII characters are ignored.
 
     :param encoding: If `value` is not a text (unicode), it is decoded before
-           ASCII normalization.
+           `ASCII normalization <xoutil.eight.string.force_ascii>`:func:.
 
     Examples::
 
@@ -215,7 +215,7 @@ def slugify(value, *args, **kwds):
        of `invalid_chars`, also deprecate the `valids` paremeter name in favor
        of `valid_chars`.
 
-    .. versionchanged:: 1.8.0 Add parameter 'encoding'.
+    .. versionchanged:: 1.8.7 Add parameter 'encoding'.
 
     '''
     import re

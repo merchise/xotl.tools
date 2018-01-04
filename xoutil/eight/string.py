@@ -82,7 +82,10 @@ def force_ascii(value, encoding=None):
     normalization.
 
     :param encoding: If `value` is not a text (unicode), it is decoded before
-           ASCII normalization.
+           ASCII normalization using this encoding.  If not provided use the
+           return of `~xoutil.future.codecs.force_encoding`:func:.
+
+    .. versionchanged:: 1.8.7 Add parameter 'encoding'.
 
     '''
     import unicodedata

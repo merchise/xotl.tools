@@ -28,11 +28,17 @@ del deprecate_linked
 
 
 def force_encoding(encoding=None):
-    '''Validates an encoding value; if None use `locale.getlocale()[1]`; else
-    return the same value.
+    '''Validates an encoding value.
+
+    If `encoding` is None use `locale.getdefaultlocale`:func:.  If that is
+    also none, return 'UTF-8'.
 
     .. versionadded:: 1.2.0
+
     .. versionchanged:: 1.8.0 migrated to 'future.codecs'
+
+    .. versionchanges:: 1.8.7 Stop using `locale.getpreferrededencoding`:func:
+       and improve documentation.
 
     '''
     # TODO: This mechanism is tricky, we must find out how to unroll the mess
