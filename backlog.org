@@ -87,4 +87,4 @@ documentation could be found in the [[file:docs/source/backlog][backlog]] direct
     from IPython.lib.deepreload import reload as dreload
     import xoutil
     dreload(xoutil)
-  #+end_sr
+  #+end_src
