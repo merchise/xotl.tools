@@ -676,7 +676,7 @@ class TimeSpan(object):
         elif isinstance(other, datetime.date):
             other = TimeSpan.from_date(other)
         elif not isinstance(other, TimeSpan):
-            raise TypeError
+            raise TypeError("Invalid type '%s'" % type(other).__name__)
         with context(NEEDS_FLEX_DATE):
             start = max(
                 self.start_date or -Infinity,
