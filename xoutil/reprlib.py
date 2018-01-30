@@ -9,7 +9,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-# TODO: Must be moved to `eight` and remove `unicode_literals` import
 import sys
 
 if sys.version_info >= (3, 2, 0):
