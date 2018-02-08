@@ -127,10 +127,10 @@ except ImportError:
             return True
 
     def _shadowed_dict(klass):
-        if isinstance(klass, type):
-            dict_get = type.__dict__["__dict__"].__get__
-        else:
-            def dict_get(item):
+        def dict_get(item):
+            if isinstance(item, type):
+                return type.__dict__["__dict__"].__get__(item)
+            else:
                 return {'__dict__': item.__dict__}
         for entry in _static_getmro(klass):
             try:
