@@ -308,6 +308,9 @@ class OpenDictMixin(object):
         is not possible.
 
         '''
+        # TODO: Improve this in order to obtain a full-mapping.  For example,
+        # the corresponding attribute names for the keys ``'-x-y'`` and
+        # ``'x-y'`` are the same, in that case only one will be returning.
         from xoutil.keywords import suffix_kwd
         from xoutil.string import slugify
         from xoutil.validators import is_valid_identifier
