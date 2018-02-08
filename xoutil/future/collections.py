@@ -187,7 +187,7 @@ class OpenDictMixin(object):
 
     ``_key2identifier``
 
-        Protected method, receive a key as argument and return a valid
+        Protected method, receives a key as argument and must return a valid
         identifier that is used instead the key as an extended attribute.
 
     ``__cache_name__``
@@ -258,9 +258,10 @@ class OpenDictMixin(object):
             super(OpenDictMixin, self).__delattr__(name)
 
     def __invert__(self):
-        '''Return an inverted mapping between key and attribute names (keys of
-        the resulting dictionary are identifiers for attribute names and values
-        are original key names).
+        '''Return an inverted mapping between key and attribute names.
+
+        Keys of the resulting dictionary are identifiers for attribute names
+        and values are original key names.
 
         Class attribute "__separators__" are used to calculate it and is
         cached in '_inverted_cache slot safe variable.
