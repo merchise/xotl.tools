@@ -225,8 +225,9 @@ class OpenDictMixin(object):
 
     def __getattr__(self, name):
         from xoutil.future.inspect import get_attr_value
-        res = get_attr_value(self, name, Unset)
-        if res is not Unset:
+        _mark = object()
+        res = get_attr_value(self, name, _mark)
+        if res is not _mark:
             return res
         else:
             key = (~self).get(name)
