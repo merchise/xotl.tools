@@ -207,7 +207,6 @@ class OpenDictMixin(object):
             >>> class MyOpenDict(OpenDictMixin, dict):
             ...     safe(OpenDictMixin.__cache_name__, dict)
 
-
     Classes or Mixins that can be integrated with `dict` by inheritance must
     not have a `__slots__` definition.  Because of that, this mixin must not
     declare any slot.  If needed, it must be declared explicitly in customized
@@ -273,10 +272,9 @@ class OpenDictMixin(object):
         To obtain this mapping you can use as the unary operator "~".
 
         '''
-        from xoutil.future.inspect import get_attr_value
         KEY_LENGTH = 'length'
         KEY_MAPPING = 'mapping'
-        cache = get_attr_value(self, type(self).__cache_name__)
+        cache = self._cache
         cached_length = cache.setdefault(KEY_LENGTH, 0)
         length = len(self)
         if cached_length != length:
@@ -291,6 +289,15 @@ class OpenDictMixin(object):
                 res = {}
                 cache[KEY_MAPPING] = res
         return res
+
+    @property
+    def _cache(self):
+        from xoutil.future.inspect import get_attr_value
+        try:
+            return get_attr_value(self, type(self).__cache_name__)
+        except AttributeError:
+            res = setattr(self, type(self).__cache_name__, dict())
+            return res
 
     @staticmethod
     def _key2identifier(key):
