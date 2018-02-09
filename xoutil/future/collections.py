@@ -187,7 +187,7 @@ class OpenDictMixin(object):
 
     ``_key2identifier``
 
-        Protected method, receive a key as argument and return a valid
+        Protected method, receives a key as argument and must return a valid
         identifier that is used instead the key as an extended attribute.
 
     ``__cache_name__``
@@ -207,7 +207,6 @@ class OpenDictMixin(object):
             >>> class MyOpenDict(OpenDictMixin, dict):
             ...     safe(OpenDictMixin.__cache_name__, dict)
 
-
     Classes or Mixins that can be integrated with `dict` by inheritance must
     not have a `__slots__` definition.  Because of that, this mixin must not
     declare any slot.  If needed, it must be declared explicitly in customized
@@ -225,8 +224,9 @@ class OpenDictMixin(object):
 
     def __getattr__(self, name):
         from xoutil.future.inspect import get_attr_value
-        res = get_attr_value(self, name, Unset)
-        if res is not Unset:
+        _mark = object()
+        res = get_attr_value(self, name, _mark)
+        if res is not _mark:
             return res
         else:
             key = (~self).get(name)
@@ -258,9 +258,10 @@ class OpenDictMixin(object):
             super(OpenDictMixin, self).__delattr__(name)
 
     def __invert__(self):
-        '''Return an inverted mapping between key and attribute names (keys of
-        the resulting dictionary are identifiers for attribute names and values
-        are original key names).
+        '''Return an inverted mapping between key and attribute names.
+
+        Keys of the resulting dictionary are identifiers for attribute names
+        and values are original key names.
 
         Class attribute "__separators__" are used to calculate it and is
         cached in '_inverted_cache slot safe variable.
@@ -271,10 +272,9 @@ class OpenDictMixin(object):
         To obtain this mapping you can use as the unary operator "~".
 
         '''
-        from xoutil.future.inspect import get_attr_value
         KEY_LENGTH = 'length'
         KEY_MAPPING = 'mapping'
-        cache = get_attr_value(self, type(self).__cache_name__)
+        cache = self._cache
         cached_length = cache.setdefault(KEY_LENGTH, 0)
         length = len(self)
         if cached_length != length:
@@ -290,6 +290,15 @@ class OpenDictMixin(object):
                 cache[KEY_MAPPING] = res
         return res
 
+    @property
+    def _cache(self):
+        from xoutil.future.inspect import get_attr_value
+        try:
+            return get_attr_value(self, type(self).__cache_name__)
+        except AttributeError:
+            res = setattr(self, type(self).__cache_name__, dict())
+            return res
+
     @staticmethod
     def _key2identifier(key):
         '''Convert keys to valid identifiers.
@@ -299,6 +308,9 @@ class OpenDictMixin(object):
         is not possible.
 
         '''
+        # TODO: Improve this in order to obtain a full-mapping.  For example,
+        # the corresponding attribute names for the keys ``'-x-y'`` and
+        # ``'x-y'`` are the same, in that case only one will be returning.
         from xoutil.keywords import suffix_kwd
         from xoutil.string import slugify
         from xoutil.validators import is_valid_identifier

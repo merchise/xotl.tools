@@ -9,6 +9,34 @@ documentation could be found in the [[file:docs/source/backlog][backlog]] direct
 
 * General Ideas. [/]
 
+- [ ] Implement a new class (which name could be ~AttributeMappe~)
+  complementing ~xoutil.future.collections.OpenDictMixin~ in order to have the
+  following two extensions:
+
+  - Separate key/identifier mapping in a different aspect allowing to reuse
+    this behaviour in several additional open mapping implementations.
+    Instances of ~AttributeMapper~ could be used as the ~OpenDictMixin~
+    inverted cache as well.
+
+  - Use ~AttributeMapper~ as a decorator of any class to "weave" the open
+    mapping behavior:
+
+    #+begin_src python
+      from xoutil.future.collections import AttributeMapper as attr_mapper
+
+      # (1) Instances will be open mappings.
+      # This is the current behavior when ~OpenDictMixin~ is used now.
+      @attr_mapper.weave
+      class MyMapping(dict):
+          ...
+
+      # (2) Use an inner attribute as the mapping to expose
+      @attr_mapper.weave('inner')
+      class MyMapping(object):
+          def __init__(self, **kwds):
+              self.inner = kwds
+    #+end_src
+
 - [ ] 'xoutil.reprlib' must be implemented as part of 'xoutil.eight'.
 
   Python 3 library 'reprlib' is 'repr' in Python 2.
