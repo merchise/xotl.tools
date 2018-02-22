@@ -143,7 +143,7 @@ publish in our rtd:
     - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
     - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -sr /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
     - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
-    - ssh rtd@docs.lahavane.com "cd /var/www/html/$CI_PROJECT_NAME; ls -al | grep -E '\.([0-9]|[a-z]).*$' | awk '{print $NF}' | sort | uniq -c | grep '1 ' | awk '{print $NF}' | xargs rm -rf"
+    - ssh rtd@docs.lahavane.com "cd /var/www/html/$CI_PROJECT_NAME; find -maxdepth 1 -mindepth 1 -name '.*' | cut -b3- | grep -E '\.([0-9]|[a-z]).*$' | awk '{print $NF}' | sort | uniq -c | grep '1 ' | awk '{print $NF}' | xargs rm -rf"
   tags:
     - rtd@docs.lahavane.com
   dependencies:
