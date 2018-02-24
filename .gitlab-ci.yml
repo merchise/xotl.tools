@@ -9,9 +9,9 @@ stages:
 lint:
   stage: test
   script:
-    - merchise_lint
+    - merchise_lint3
   tags:
-    - merchise-lint
+    - merchise-lint3
 
 run all tests (if needed):
   stage: test
