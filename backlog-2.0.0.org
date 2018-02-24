@@ -9,7 +9,7 @@ of Python 2 support in the code and documentation.
 
 - [ ] Don't run tests in Python 2.
 
-- [ ] Package for Python 3.4+.
+- [X] Package for Python 3.4+.
 
 - [ ] Rework module ~xoutil.eight~ to keep the current API but to remove code
   that's Python 2 only.
