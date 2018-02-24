@@ -176,9 +176,9 @@ def test_definition_of_overlaps(ts1, ts2):
     assert ts1.overlaps(ts2) == bool(ts1 & ts2)
 
 
-@given(timespans(unbounds='none'), timespans(unbounds='none'))
-def test_duplication_of_timespans(ts1, ts2):
-    hypothesis.assume(ts1 == ts2)
+@given(timespans(unbounds='none'))
+def test_duplication_of_timespans(ts1):
+    ts2 = TimeSpan(ts1.start_date, ts1.end_date)
     assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
 
 
