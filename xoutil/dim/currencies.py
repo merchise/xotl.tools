@@ -69,8 +69,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.eight.meta import metaclass
-
 
 class ValueType(type):
     def __instancecheck__(self, which):
@@ -84,7 +82,7 @@ class ValueType(type):
             return False
 
 
-class Valuation(metaclass(ValueType)):
+class Valuation(metaclass=ValueType):
     pass
 
 
@@ -102,7 +100,7 @@ class RateType(type):
             return False
 
 
-class Rate(metaclass(RateType)):
+class Rate(metaclass=RateType):
     pass
 
 

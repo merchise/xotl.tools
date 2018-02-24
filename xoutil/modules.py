@@ -128,7 +128,6 @@ def customize(module, custom_attrs=None, meta=None):
     '''
     if not isinstance(module, _CustomModuleBase):
         import sys
-        from xoutil.eight.meta import metaclass
         meta_base = meta if meta else type
 
         class CustomModuleType(meta_base):
@@ -138,7 +137,7 @@ def customize(module, custom_attrs=None, meta=None):
                 return super(CustomModuleType, cls).__new__(cls, name, bases,
                                                             attrs)
 
-        class CustomModule(metaclass(CustomModuleType), _CustomModuleBase):
+        class CustomModule(_CustomModuleBase, metaclass=CustomModuleType):
             def __getattr__(self, attr):
                 self.__dict__[attr] = result = getattr(module, attr)
                 return result

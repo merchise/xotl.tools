@@ -45,7 +45,6 @@ from xoutil.deprecation import deprecated    # noqa
 from xoutil.eight import python_version    # noqa
 from xoutil.symbols import Unset    # noqa
 from xoutil.objects import SafeDataItem as safe    # noqa
-from xoutil.eight.meta import metaclass    # noqa
 from xoutil.reprlib import recursive_repr    # noqa
 
 if python_version == 2:
@@ -2055,7 +2054,7 @@ class MetaSet(type):
         return cls(*ranges) if isinstance(ranges, tuple) else cls(ranges)
 
 
-class PascalSet(metaclass(MetaSet)):
+class PascalSet(metaclass=MetaSet):
     '''Collection of unique integer elements (implemented with intervals).
 
     ::
@@ -2672,7 +2671,7 @@ class PascalSet(metaclass(MetaSet)):
 MutableSet.register(PascalSet)
 
 
-class BitPascalSet(object, metaclass(MetaSet)):
+class BitPascalSet(metaclass=MetaSet):
     '''Collection of unique integer elements (implemented with bit-wise sets).
 
     ::
@@ -3221,5 +3220,4 @@ def smart_iter_items(*args, **kwds):
 
 
 # get rid of unused global variables
-del metaclass
 del deprecated, recursive_repr

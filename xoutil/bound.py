@@ -50,7 +50,6 @@ from __future__ import (division as _py3_division,
 
 from types import GeneratorType
 from xoutil.decorator.meta import decorator
-from xoutil.eight.meta import metaclass
 
 
 class BoundedType(type):
@@ -58,7 +57,7 @@ class BoundedType(type):
     pass
 
 
-class Bounded(metaclass(BoundedType)):
+class Bounded(metaclass=BoundedType):
     '''The bounded function.
 
     This is the result of applying a `boundary definition` to an `unbounded
@@ -637,4 +636,4 @@ def whenany(*preds):
         pred.close()
 
 
-del decorator, metaclass
+del decorator

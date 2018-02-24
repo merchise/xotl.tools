@@ -38,7 +38,6 @@ from __future__ import (division as _py3_division,
 
 import re
 from xoutil.eight.abc import ABCMeta
-from xoutil.eight.meta import metaclass
 from xoutil.future.functools import lwraps
 from xoutil.symbols import boolean, Unset
 from xoutil.fp.prove import vouch
@@ -114,7 +113,7 @@ class MetaCoercer(ABCMeta):
                 super(MetaCoercer, self).__instancecheck__(instance))
 
 
-class coercer(metaclass(MetaCoercer)):
+class coercer(metaclass=MetaCoercer):
     '''Special coercer class.
 
     This class has several facets:
@@ -1095,4 +1094,4 @@ class mapping(custom):
         return res
 
 
-del re, ABCMeta, metaclass, lwraps
+del re, ABCMeta, lwraps

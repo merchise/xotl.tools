@@ -18,4 +18,7 @@ of Python 2 support in the code and documentation.
 
   - [X] Deprecate ~xoutil.eight.meta.metaclass~.
 
-  - [ ] Stop using Python 2 metaclass syntax.
+  - [X] Stop using Python 2 metaclass syntax.
+
+  - [ ] Review ~xoutil.eight.mixins~, it has two standing uses of
+    ~xoutil.eight.meta.metaclass~.

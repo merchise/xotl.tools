@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (c) Merchise Autrement [~º/~] and Contributors
@@ -11,11 +11,6 @@
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
-from xoutil.eight.meta import metaclass
 from xoutil.eight.abc import ABCMeta
 
 
@@ -85,7 +80,7 @@ class MetaCompose(ABCMeta):
         return res
 
 
-class compose(metaclass(MetaCompose)):
+class compose(metaclass=MetaCompose):
     '''Composition of several functions.
 
     Functions are composed right to left.  A composition of zero functions
