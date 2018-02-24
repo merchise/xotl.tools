@@ -27,3 +27,6 @@
 
   - ``xoutil.annotate``
   - ``xoutil.eight``
+
+
+- Remove deprecated module ``xoutil.html``.
