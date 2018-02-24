@@ -18,8 +18,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.eight.meta import metaclass
-
 
 SYMBOL = 'symbol'
 BOOLEAN = 'boolean'
@@ -85,7 +83,7 @@ class MetaSymbol(type):
             raise NameError(msg.format(name))
 
 
-class symbol(metaclass(MetaSymbol), int):
+class symbol(int, metaclass=MetaSymbol):
     '''Instances are custom symbols.
 
     See `~MetaSymbol.__getitem__`:meth: operator for information on
@@ -221,6 +219,3 @@ Invalid = boolean('Invalid')
 
 #: To be used as a mark for current context as a mechanism of comfort.
 This = boolean('This', True)
-
-
-del metaclass

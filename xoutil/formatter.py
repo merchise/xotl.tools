@@ -20,7 +20,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 from xoutil.eight import string_types as _str_base
-from xoutil.eight.meta import metaclass
 from xoutil.deprecation import deprecate_module
 
 
@@ -102,7 +101,7 @@ class _TemplateClass(type):
         cls.factories = factories
 
 
-class Template(metaclass(_TemplateClass)):
+class Template(metaclass=_TemplateClass):
     '''
     A string class for supporting $-substitutions.
 

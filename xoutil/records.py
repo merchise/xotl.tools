@@ -24,7 +24,6 @@ from __future__ import (division as _py3_division,
 
 from xoutil.symbols import Unset
 from xoutil.future.functools import lru_cache
-from xoutil.eight.meta import metaclass
 
 
 @lru_cache()
@@ -104,7 +103,7 @@ class _record_type(type):
             return value
 
 
-class record(metaclass(_record_type)):
+class record(metaclass=_record_type):
     '''Base record class.
 
     Records allow to represent a sequence or mapping of values extracted from
@@ -346,4 +345,4 @@ def float_reader(nullable=False, default=None):
     return reader
 
 
-del metaclass, lru_cache
+del lru_cache

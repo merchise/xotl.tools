@@ -1,0 +1,24 @@
+#+TITLE: Backlog to drop Python 2 support in *xoutil*.
+#+AUTHOR: Merchise Autrement [~º/~]
+#+DESCRIPTION: Development planning for this package.
+
+This file only describe tasks, issues, and ideas strictly related to the drop
+of Python 2 support in the code and documentation.
+
+* Tasks. [2/3]
+
+- [X] Don't run tests in Python 2.
+
+- [X] Package for Python 3.4+.
+
+- [ ] Rework module ~xoutil.eight~ to keep the current API but to remove code
+  that's Python 2 only.
+
+  - [X] Remove ~xoutil.eight._meta2~.
+
+  - [X] Deprecate ~xoutil.eight.meta.metaclass~.
+
+  - [X] Stop using Python 2 metaclass syntax.
+
+  - [ ] Review ~xoutil.eight.mixins~, it has two standing uses of
+    ~xoutil.eight.meta.metaclass~.

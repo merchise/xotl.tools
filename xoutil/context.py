@@ -15,7 +15,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from xoutil.tasking import local as LocalData
-from xoutil.eight.meta import metaclass
 from xoutil.future.collections import StackedDict
 
 __all__ = ('Context', 'context', 'NullContext')
@@ -46,7 +45,7 @@ class MetaContext(type(StackedDict)):
         return bool(self[name])
 
 
-class Context(metaclass(MetaContext), StackedDict):
+class Context(StackedDict, metaclass=MetaContext):
     '''An execution context manager with parameters (or flags).
 
     Use as::

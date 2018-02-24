@@ -119,6 +119,11 @@ def helper_class(meta, name=None):
 
     '''
     from xoutil.eight.meta import metaclass
+    # TODO: Find a replacement for function `metaclass`.  I tried
+    #     class res(metaclass=meta):
+    #         pass
+    #
+    # But it make test_mixins fail.
     res = metaclass(meta)
     doc = ('Helper class.\n\nProvide a standard way to create classes with '
            'the meta-class `{meta}` using inheritance.\n\nFor example::\n\n'
@@ -173,6 +178,12 @@ def mixin(*args, **kwargs):
             meta = metas[0]
         else:
             meta = mixin(*metas, name='MultiMixinMeta', __nobase__=True, **kw)
+        # TODO: Find a replacement for function `metaclass`.  I tried to do:
+        #
+        #   class base(metaclass=meta, **kw):
+        #       pass
+        #
+        # But it fails with TypeError: __init_subclass__() takes no keyword arguments
         bases = bases + (metaclass(meta, **kw), )
     attrs = dict(kwargs, __doc__=doc)
     if mod:

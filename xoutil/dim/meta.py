@@ -136,7 +136,6 @@ from __future__ import (division as _py3_division,
 
 import functools
 import numbers
-from xoutil.eight.meta import metaclass
 
 
 #: The unit for any kind of quantity.
@@ -544,7 +543,7 @@ class _BareRealType(type):
         return isinstance(i, numbers.Real) and not isinstance(i, Quantity)
 
 
-class BareReal(metaclass(_BareRealType)):
+class BareReal(metaclass=_BareRealType):
     '''Any real that is not a Quantity instance.'''
 
 

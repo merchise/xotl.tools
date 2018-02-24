@@ -157,38 +157,6 @@ ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
 
 
 try:
-    SimpleNamespace    # noqa
-except NameError:
-    from abc import ABCMeta
-    from xoutil.eight.meta import metaclass
-    from xoutil.reprlib import recursive_repr
-
-    __all__.append('SimpleNamespace')
-
-    class SimpleNamespace(metaclass(ABCMeta)):
-        '''A simple attribute-based namespace.
-
-        SimpleNamespace(**kwargs)
-
-        '''
-
-        def __init__(self, **kwargs):
-            self.__dict__.update(kwargs)
-
-        def __eq__(self, other):
-            # TODO: This method is not implemented in py33
-            ok = isinstance(other, SimpleNamespace)
-            return ok and self.__dict__ == other.__dict__
-
-        @recursive_repr(str('namespace(...)'))
-        def __repr__(self):
-            keys = sorted(self.__dict__)
-            items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
-            return "{}({})".format('namespace', ", ".join(items))
-
-    del recursive_repr, ABCMeta, metaclass
-
-try:
     DynamicClassAttribute    # noqa
 except NameError:
     class DynamicClassAttribute(property):

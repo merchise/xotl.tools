@@ -281,7 +281,6 @@ texinfo_documents = [
 
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'py2': ('http://docs.python.org/2.7/', None),
     'py3': ('http://docs.python.org/3.6/', None),
     'gevent': ('http://gevent.org', None),
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),

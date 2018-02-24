@@ -32,10 +32,8 @@ import datetime
 from numbers import Number
 from functools import total_ordering
 
-from xoutil.eight.meta import metaclass
 
-
-class InfinityComparable(metaclass(abc.ABCMeta)):
+class InfinityComparable(metaclass=abc.ABCMeta):
     '''Any type that can be sensibly compared to infinity.
 
     All types in the `number <numbers.Number>`:class: tower are *always*
