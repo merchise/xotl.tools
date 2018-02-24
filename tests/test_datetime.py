@@ -176,9 +176,9 @@ def test_definition_of_overlaps(ts1, ts2):
     assert ts1.overlaps(ts2) == bool(ts1 & ts2)
 
 
-@given(timespans(unbounds='none'), timespans(unbounds='none'))
-def test_duplication_of_timespans(ts1, ts2):
-    hypothesis.assume(ts1 == ts2)
+@given(timespans(unbounds='none'))
+def test_duplication_of_timespans(ts1):
+    ts2 = TimeSpan(ts1.start_date, ts1.end_date)
     assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
 
 
@@ -207,12 +207,25 @@ def test_timespans_displacement_backandforth(ts1, delta):
 @given(timespans(unbounds='none'),
        strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_dates(ts1, delta):
-    res = ts1 << delta
-    assert (res.start_date - ts1.start_date).days == -delta
-    assert (res.end_date - ts1.end_date).days == -delta
-    res = ts1 >> delta
-    assert (res.start_date - ts1.start_date).days == delta
-    assert (res.end_date - ts1.end_date).days == delta
+    try:
+        res = ts1 << delta
+    except OverflowError:
+        # Ignore if the date it's being displaced to non-supported date,
+        # that's for the client to deal with
+        pass
+    else:
+        assert (res.start_date - ts1.start_date).days == -delta
+        assert (res.end_date - ts1.end_date).days == -delta
+    try:
+        res = ts1 >> delta
+    except OverflowError:
+        # Ignore if the date it's being displaced to non-supported date,
+        # that's for the client to deal with
+        pass
+    else:
+        assert (res.start_date - ts1.start_date).days == delta
+        assert (res.end_date - ts1.end_date).days == delta
+
 
 
 @given(timespans(unbounds='none'),
