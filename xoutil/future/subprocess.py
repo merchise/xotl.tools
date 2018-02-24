@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.future.subprocess
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2013-01-11
-# Migrated to 'future' on 2016-09-20
 
 '''Extensions the `subprocess` module in the standard library.'''
 
@@ -20,8 +15,7 @@ from __future__ import (division as _py3_division,
 
 
 from subprocess import *    # noqa
-
-from pprint import __all__    # noqa
+from subprocess import __all__, Popen, PIPE   # noqa
 __all__ = list(__all__) + ['call_and_check_output']
 
 from xoutil.deprecation import deprecate_linked

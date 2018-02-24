@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.values.simple
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-08-26
 
 '''Simple or internal coercers.
 
@@ -181,7 +176,7 @@ def decode_coerce(arg):
             res = decode(encoding, 'replace')
             if not isinstance(res, text_type):
                 res = None
-        except BaseException:
+        except Exception:
             res = None
     else:
         res = None
@@ -191,7 +186,7 @@ def decode_coerce(arg):
             # valid byte or unicode characters.
             import codecs
             res = codecs.decode(arg, encoding, 'replace')
-        except BaseException:
+        except Exception:
             res = nil
     return res
 
@@ -208,7 +203,7 @@ def encode_coerce(arg):
             res = encode(encoding, 'replace')
             if not isinstance(res, bytes):
                 res = None
-        except BaseException:
+        except Exception:
             res = None
     else:
         res = None
@@ -216,7 +211,7 @@ def encode_coerce(arg):
         try:
             import codecs
             res = codecs.encode(arg, encoding, 'replace')
-        except BaseException:
+        except Exception:
             res = nil
     return res
 
@@ -253,10 +248,10 @@ def unicode_coerce(arg):
     elif isinstance(arg, array):
         try:
             return arg.tounicode()
-        except BaseException:
+        except Exception:
             try:
                 arg = bytes(bytearray(arg.tolist()))
-            except BaseException:
+            except Exception:
                 arg = str(arg)
                 if str is text_type:
                     return arg
@@ -307,10 +302,10 @@ def bytes_coerce(arg):
     elif isinstance(arg, array):
         try:
             arg = arg.tounicode()
-        except BaseException:
+        except Exception:
             try:
                 return bytes(bytearray(arg.tolist()))
-            except BaseException:
+            except Exception:
                 arg = text_type(arg)
     res = encode_coerce(arg)
     return encode_coerce(text_type(arg)) if res is nil else res

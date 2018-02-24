@@ -1,15 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.decorator.meta
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
-#
-# Created on 2013-01-03
+# This is free software; you can do what the LICENCE file allows you to.
 #
 
 '''Decorator-making facilities.
@@ -161,7 +156,7 @@ class FunctionMaker(object):
             code = compile(src, '<string>', 'single')
             # print >> sys.stderr, 'Compiling %s' % src
             eval(code, evaldict, evaldict)
-        except:
+        except Exception:
             print >> sys.stderr, 'Error in generated code:'
             print >> sys.stderr, src
             raise

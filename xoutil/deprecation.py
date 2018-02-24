@@ -1,17 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.deprecation
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2012 Medardo Rodriguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on Feb 15, 2012
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -90,6 +84,14 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
        deprecated object.  Needed to allow renaming in
        `import_deprecated`:func: helper function.
 
+    .. note:: Deprecating some classes in Python 3 could fail.  This is
+       because those classes do not declare a '__new__' par of the declared
+       '__init__'.  The problem is solved if the '__new__' of the super-class
+       has no arguments.  This doesn't happen in Python 2.
+
+       To solve these cases mark the deprecation in a comment and issue the
+       warning directly in the constructor code.
+
     .. versionchanged:: 1.4.1 Introduces removed_in_version and check_version.
 
     '''
@@ -144,7 +146,12 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                                          replacement=repl_name,
                                          in_version=in_version),
                               stacklevel=2)
-                return target.__new__(*args, **kwargs)
+                try:
+                    return target.__new__(*args, **kwargs)
+                except TypeError:
+                    # XXX: Some classes in Python 3 don't declare an
+                    # equivalent '__new__'
+                    return super(result, args[0]).__new__(args[0])
             # Code copied and adapted from xoutil.objects.copy_class.  This is
             # done so because this module *must* not depends on any other,
             # otherwise an import cycle might be formed when deprecating a
@@ -255,7 +262,7 @@ def import_deprecated(module, *names, **aliases):
             raise ImportError(msg.format(name, src_name))
 
 
-def deprecate_linked(check=None):
+def deprecate_linked(check=None, msg=None):
     '''Deprecate an entire module if used through a link.
 
     This function must be called in the global context of the new module.
@@ -279,8 +286,9 @@ def deprecate_linked(check=None):
         # As recommended in Python's documentation to avoid memory leaks
         del frame
     if check not in name:
-        msg = ('"{}" module is now deprecated and it will be removed; use '
-               'the one in "{}" instead.').format(name, check)
+        if msg is None:
+            msg = ('"{}" module is now deprecated and it will be removed; use '
+                   'the one in "{}" instead.').format(name, check)
         warnings.warn(msg, stacklevel=2)
 
 

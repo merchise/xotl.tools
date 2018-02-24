@@ -1,15 +1,11 @@
-# -*- encoding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.future.textwrap
-# ---------------------------------------------------------------------
-# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the Python Software Licence as of Python 3.3.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2014-02-26
-# Migrated to 'future' on 2016-09-18
 
 '''Text wrapping and filling.'''
 

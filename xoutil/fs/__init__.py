@@ -1,16 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.fs
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2011, 2012 Medardo Rodríguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2011-11-28
 
 '''File system utilities.
 
@@ -234,45 +229,6 @@ def regex_rename(top, pattern, repl, maxdepth=None):
             depth += 1
             if depth >= maxdepth:
                 _dirs[:] = []
-
-
-def rename_wrong(top='.', current_encoding=None, target_encoding=None,
-                 verbose=False):
-    '''Converts wrong filenames from one encoding to another.'''
-    # FIXME: Not finished
-    raise NotImplementedError
-    import sys
-    wrongs = []
-    if current_encoding is None:
-        current_encoding = sys.getfilesystemencoding() or 'utf-8'
-    for fn in os.listdir(top):
-        encoding = sys.getfilesystemencoding() or 'utf-8'
-        try:
-            test = fn.decode(encoding) if isinstance(fn, bytes) else fn
-            if verbose:
-                print('>>> No problem with:', test)
-        except:
-            wrongs.append(fn)
-        if wrongs:
-            if target_encoding is None:
-                try:
-                    import chardet
-                except:
-                    chardet = None
-            else:
-                te = target_encoding
-        try:
-            if verbose:
-                print('>>> PROBLEM with:', fn)
-            if target_encoding is None:
-                dir = os.path.dirname(fn)
-            else:
-                te = target_encoding
-            new = fn.decode()    # Use "chardet.detect" or 'ibm857'
-            os.rename(fn, new)
-            print('*'*8, new)
-        except Exception:
-            pass
 
 
 filter_not_hidden = lambda path, _st: (path[0] != '.') and ('/.' not in path)
@@ -570,5 +526,6 @@ def concatfiles(*files):
     finally:
         if opened:
             target.close()
+
 
 del sys

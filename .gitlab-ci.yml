@@ -1,21 +1,28 @@
 ---
-variables:
-  PROJECT_NAME: xoutil
-
 stages:
   - test
   - check
   - build
   - publish
-  - clean
+  - tweet
 
-run all tests:
+lint:
   stage: test
-  script: tox -e2.7-unit,3.5-unit,2.7-greenlets
+  script:
+    - merchise_lint
+  tags:
+    - merchise-lint
+
+run all tests (if needed):
+  stage: test
+  script:
+    - if git show --oneline --name-only $CI_COMMIT_SHA | grep \.py$; then tox -e2.7-unit,3.5-unit,2.7-greenlets; fi
   tags:
     - python
     - virtualenv
     - tox
+  only:
+    - branches
 
 check signature of tag:
   stage: check
@@ -35,6 +42,7 @@ build source distribution:
   tags:
     - python
   artifacts:
+    expire_in: 4 hours
     paths:
       - dist/
   only:
@@ -48,16 +56,19 @@ build binary distribution:
   tags:
     - wheel
   artifacts:
+    expire_in: 4 hours
     paths:
       - dist/
   only:
     - tags
 
 publish_locally:
+  variables:
+    GIT_STRATEGY: none
   stage: publish
   script:
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/$PROJECT_NAME"
-    - scp dist/* manu@gestion.lahavane.com:Repos/$PROJECT_NAME/
+    - ssh manu@gestion.lahavane.com "mkdir -p Repos/$CI_PROJECT_NAME"
+    - scp dist/* manu@gestion.lahavane.com:Repos/$CI_PROJECT_NAME/
   tags:
     - repo.lahavane.com
   only:
@@ -66,9 +77,14 @@ publish_locally:
     - check signature of tag
     - build source distribution
     - build binary distribution
+  environment:
+    name: repo.lahavane.com
+    url: http://repo.lahavane.com/pypi/$CI_PROJECT_NAME
 
 
-publish_pypi:
+publish in pypi:
+  variables:
+    GIT_STRATEGY: none
   stage: publish
   script:
     - twine upload dist/*
@@ -82,17 +98,60 @@ publish_pypi:
     - build binary distribution
   environment:
     name: pypi
-    url: https://pypi.python.org/pypi/$PROJECT_NAME
+    url: https://pypi.python.org/pypi/$CI_PROJECT_NAME
 
-
-clean_build:
-  stage: clean
+brag about new release in twitter:
+  variables:
+    GIT_STRATEGY: none
+  stage: tweet
   script:
-    - rm -f dist/*
+    - twitter set "New version $CI_COMMIT_REF_NAME of xoutil -- https://pypi.python.org/pypi/xoutil"
   tags:
-    - python
-  when: always
-  allow_failure: true
+    - twitter
+  only:
+    - tags
   dependencies:
-    - build source distribution
-    - build binary distribution
+    - publish in pypi
+
+build documentation:
+  stage: build
+  script:
+    - mkdir -p envs
+    - virtualenv envs/$CI_COMMIT_SHA
+    - source envs/$CI_COMMIT_SHA/bin/activate
+    - pip install sphinx sphinx-rtd-theme
+    - pip install -e .
+    - make -C docs/ html
+    - cd docs/build/html
+    - tar -cjf ../../../$CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 ./
+  artifacts:
+    paths:
+      - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
+    expire_in: 4 days
+  tags:
+    - virtualenv
+  only:
+    - tags
+    - /^releases-/
+    - master
+
+publish in our rtd:
+  stage: publish
+  script:
+    - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 rtd@docs.lahavane.com:.
+    - ssh rtd@docs.lahavane.com mkdir -p $CI_PROJECT_NAME/.$CI_COMMIT_SHA
+    - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
+    - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -sr /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
+    - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
+    - ssh rtd@docs.lahavane.com "cd /var/www/html/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
+  tags:
+    - rtd@docs.lahavane.com
+  dependencies:
+    - build documentation
+  environment:
+    name: docs.lahavane.com
+    url: http://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+  only:
+    - tags
+    - /^releases-/
+    - master

@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.tests.test_modules
-#----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2013-01-28
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -90,17 +86,17 @@ class TestModuleDecorators(unittest.TestCase):
 
 def test_get_module_path_by_module_object():
     import xoutil
-    import xoutil.iterators
+    import xoutil.future.itertools
     from os.path import join
     from xoutil.modules import get_module_path
     top = xoutil.__path__[0]
     expected = top
     assert get_module_path(xoutil) == expected
 
-    expected = (join(top, 'iterators.py'),
-                join(top, 'iterators.pyc'),
-                join(top, 'iterators.pyo'))
-    assert get_module_path(xoutil.iterators) in expected
+    expected = (join(top, 'future', 'itertools.py'),
+                join(top, 'future', 'itertools.pyc'),
+                join(top, 'future', 'itertools.pyo'))
+    assert get_module_path(xoutil.future.itertools) in expected
 
 
 def test_get_module_path_by_module_string_abs():
@@ -110,10 +106,10 @@ def test_get_module_path_by_module_string_abs():
     top = xoutil.__path__[0]
     expected = top
     assert get_module_path('xoutil') == expected
-    expected = (join(top, 'iterators.py'),
-                join(top, 'iterators.pyc'),
-                join(top, 'iterators.pyo'))
-    assert get_module_path('xoutil.iterators') in expected
+    expected = (join(top, 'future', 'itertools.py'),
+                join(top, 'future', 'itertools.pyc'),
+                join(top, 'future', 'itertools.pyo'))
+    assert get_module_path('xoutil.future.itertools') in expected
 
 
 def test_get_module_path_by_module_string_rel():

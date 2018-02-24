@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-02-26
 
 '''Python 2 and Python 3 compatibility.
 
@@ -111,19 +107,19 @@ def type_name(obj):
 
 
 try:
-    __intern = intern
-except NameError:
-    from sys import intern as __intern    # noqa
+    from sys import intern
+except ImportError:
+    from __builtin__ import intern as __intern
 
+    def intern(string):
+        # Avoid problems in Python 2.x when using unicode
+        if _py2 and isinstance(string, unicode):
+            string = string.encode('utf-8')
+        return __intern(string)
 
-def intern(string):
-    # Avoid problems in Python 2.x when using unicode
-    if not isinstance(string, str):
-        string = string.encode('utf-8')
-    return __intern(string)
+    # Avoid a Sphinx error
+    intern.__doc__ = __intern.__doc__.replace("``", '"').replace("''", '"')
 
-# Avoid a Sphinx error
-intern.__doc__ = __intern.__doc__.replace("``", '"').replace("''", '"')
 
 if _py3:
     input = input
@@ -161,8 +157,8 @@ else:
 
 
 try:
-   import __builtin__    # noqa
-   builtins = __builtin__
+    import __builtin__    # noqa
+    builtins = __builtin__
 except ImportError:
     import builtins    # noqa
     __builtin__ = builtins

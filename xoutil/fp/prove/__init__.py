@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.fp.prove
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created 2016-08-31
 
 '''Validity proofs for data values.
 
@@ -75,7 +70,7 @@ def predicative(function, *args, **kwds):
             return res
         else:
             return Just(res)
-    except BaseException as error:
+    except Exception as error:
         if isinstance(error, ValueError) and is_single:
             return Wrong(args[0])
         else:
@@ -161,7 +156,7 @@ def enfold(checker):
         try:
             inner.__name__ = func.__name__
             inner.__doc__ = func.__doc__
-        except BaseException:
+        except Exception:
             from xoutil.clipping import small
             from xoutil.eight import string
             inner.__name__ = string.force(small(func))

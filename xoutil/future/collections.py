@@ -1,24 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------
-# xoutil.future.collections
-# ----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
+# All rights reserved.
 #
-# Copyright 2012 Medardo Rodríguez for the defaultdict and opendict
-# implementations.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# The implementation of OrderedDict is the copyright of the Python
-# Software Foundation.
-#
-# This file is distributed under the terms of the LICENCE distributed
-# with this package.
-#
-# Created: 2012-07-03
-# Migrated to 'future' on 2016-09-14
-#
-# Contributors from Medardo Rodríguez:
-#    - Manuel Vázquez Acosta <manu@merchise.org>
-#    - Medardo Rodriguez <med@merchise.org>
 
 '''Extensions to Python's ``collections`` module.
 
@@ -33,6 +20,15 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from collections import *    # noqa
+from collections import (
+    Set,
+    Iterable,
+    Sized,
+    Container,
+    MutableSet,
+    Mapping,
+    MutableMapping
+)
 import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
@@ -123,7 +119,7 @@ class safe_dict_iter(tuple):
                 yield (key, self._mapping[key])
 
 
-class defaultdict(defaultdict):
+class defaultdict(_stdlib.defaultdict):
     '''A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
 
@@ -164,20 +160,21 @@ class defaultdict(defaultdict):
 
 
 class OpenDictMixin(object):
-    '''A mixin for mappings implementation that expose keys as attributes::
+    '''A mixin for mappings implementation that expose keys as attributes.
 
-        >>> from xoutil.objects import SafeDataItem as safe
+    For example:
 
-        >>> class MyOpenDict(OpenDictMixin, dict):
-        ...     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
+      >>> from xoutil.objects import SafeDataItem as safe
+      >>> class MyOpenDict(OpenDictMixin, dict):
+      ...     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
-        >>> d = MyOpenDict({'es': 'spanish'})
-        >>> d.es
-        'spanish'
+      >>> d = MyOpenDict({'es': 'spanish'})
+      >>> d.es
+      'spanish'
 
-        >>> d['es'] = 'espanol'
-        >>> d.es
-        'espanol'
+      >>> d['es'] = 'espanol'
+      >>> d.es
+      'espanol'
 
     When setting or deleting an attribute, the attribute name is regarded as
     key in the mapping if neither of the following condition holds:
@@ -188,12 +185,12 @@ class OpenDictMixin(object):
 
     This mixin defines the following features that can be redefined:
 
-    _key2identifier
+    ``_key2identifier``
 
-        Protected method, receive a key as argument and return a valid
+        Protected method, receives a key as argument and must return a valid
         identifier that is used instead the key as an extended attribute.
 
-    __cache_name__
+    ``__cache_name__``
 
         Inner field to store a cached mapping between actual keys and
         calculated attribute names.  The field must be always implemented as a
@@ -210,12 +207,11 @@ class OpenDictMixin(object):
             >>> class MyOpenDict(OpenDictMixin, dict):
             ...     safe(OpenDictMixin.__cache_name__, dict)
 
-
-    Classes or Mixins that can be integrated with `dict` by inheritance
-        must not have a `__slots__` definition.  Because of that, this mixin
-        must not declare any slot.  If needed, it must be declared explicitly
-        in customized classed like in the example in the first part of this
-        documentation or in the definition of `opendict` class.
+    Classes or Mixins that can be integrated with `dict` by inheritance must
+    not have a `__slots__` definition.  Because of that, this mixin must not
+    declare any slot.  If needed, it must be declared explicitly in customized
+    classed like in the example in the first part of this documentation or in
+    the definition of `opendict` class.
 
     '''
     __cache_name__ = str('_inverted_cache')
@@ -228,8 +224,9 @@ class OpenDictMixin(object):
 
     def __getattr__(self, name):
         from xoutil.future.inspect import get_attr_value
-        res = get_attr_value(self, name, Unset)
-        if res is not Unset:
+        _mark = object()
+        res = get_attr_value(self, name, _mark)
+        if res is not _mark:
             return res
         else:
             key = (~self).get(name)
@@ -245,7 +242,7 @@ class OpenDictMixin(object):
         if desc is not None:    # Prioritize descriptors
             try:
                 desc.__set__(self, value)
-            except:
+            except Exception:
                 pass
         key = (~self).get(name)
         if key:
@@ -261,9 +258,10 @@ class OpenDictMixin(object):
             super(OpenDictMixin, self).__delattr__(name)
 
     def __invert__(self):
-        '''Return an inverted mapping between key and attribute names (keys of
-        the resulting dictionary are identifiers for attribute names and values
-        are original key names).
+        '''Return an inverted mapping between key and attribute names.
+
+        Keys of the resulting dictionary are identifiers for attribute names
+        and values are original key names.
 
         Class attribute "__separators__" are used to calculate it and is
         cached in '_inverted_cache slot safe variable.
@@ -274,10 +272,9 @@ class OpenDictMixin(object):
         To obtain this mapping you can use as the unary operator "~".
 
         '''
-        from xoutil.future.inspect import get_attr_value
         KEY_LENGTH = 'length'
         KEY_MAPPING = 'mapping'
-        cache = get_attr_value(self, type(self).__cache_name__)
+        cache = self._cache
         cached_length = cache.setdefault(KEY_LENGTH, 0)
         length = len(self)
         if cached_length != length:
@@ -293,6 +290,15 @@ class OpenDictMixin(object):
                 cache[KEY_MAPPING] = res
         return res
 
+    @property
+    def _cache(self):
+        from xoutil.future.inspect import get_attr_value
+        try:
+            return get_attr_value(self, type(self).__cache_name__)
+        except AttributeError:
+            res = setattr(self, type(self).__cache_name__, dict())
+            return res
+
     @staticmethod
     def _key2identifier(key):
         '''Convert keys to valid identifiers.
@@ -302,6 +308,9 @@ class OpenDictMixin(object):
         is not possible.
 
         '''
+        # TODO: Improve this in order to obtain a full-mapping.  For example,
+        # the corresponding attribute names for the keys ``'-x-y'`` and
+        # ``'x-y'`` are the same, in that case only one will be returning.
         from xoutil.keywords import suffix_kwd
         from xoutil.string import slugify
         from xoutil.validators import is_valid_identifier
@@ -355,7 +364,7 @@ class SmartDictMixin(object):
         cls = type(self)
         try:
             res = cls()
-        except BaseException:
+        except Exception:
             from xoutil.future.inspect import get_attr_value
             creator = get_attr_value(cls, '__search_result_type__', None)
             res = creator() if creator else {}
@@ -379,20 +388,67 @@ class SmartDict(SmartDictMixin, dict):
 
 
 class opendict(OpenDictMixin, dict, object):
-    '''A dictionary implementation that mirrors its keys as attributes::
+    '''A dictionary implementation that mirrors its keys as attributes.
 
-         >>> d = opendict({'es': 'spanish'})
-         >>> d.es
-         'spanish'
+    For example::
 
-         >>> d['es'] = 'espanol'
-         >>> d.es
-         'espanol'
+      >>> d = opendict(es='spanish')
+      >>> d.es
+      'spanish'
 
-    Setting attributes *does not* makes them keys.
+      >>> d['es'] = 'espanol'
+      >>> d.es
+      'espanol'
+
+    Setting attributes not already included  *does not* makes them keys::
+
+      >>> d.en = 'English'
+      >>> set(d)
+      {'es'}
 
     '''
     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
+
+
+class codedict(OpenDictMixin, dict, object):
+    '''A dictionary implementation that evaluate keys as Python expressions.
+
+    This is also a open dict (see `OpenDictMixin`:class: for more info).
+
+    Example:
+
+      >>> cd = codedict(x=1, y=2, z=3.0)
+      >>> '{_[x + y]} is 3 --  {_[x + z]} is 4.0'.format(_=cd)
+      '3 is 3 --  4.0 is 4.0'
+
+    It supports the right shift (``>>``) operator as a format operand (using
+    ``_`` as the special name for the code dict):
+
+      >>> cd >> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1'
+      '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+
+    It also implements the left shift (``<<``) operator:
+
+      >>> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1' << cd
+      '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+
+    .. versionadded:: 1.8.3
+
+    '''
+    def __getitem__(self, key):
+        from xoutil.eight import string_types
+        try:
+            return super(codedict, self).__getitem__(key)
+        except KeyError:
+            if isinstance(key, string_types):
+                return eval(key, dict(self))
+            else:
+                raise
+
+    def __rshift__(self, arg):
+        return arg.format(_=self, **self)
+
+    __rlshift__ = __rshift__
 
 
 # From this point below: Copyright (c) 2001-2013, Python Software
@@ -822,7 +878,7 @@ if python_version < 3.3:
                 d[key] = value
             return d
 
-    class UserList(MutableSequence):
+    class UserList(_stdlib.MutableSequence):
         '''A more or less complete user-defined wrapper around lists.'''
         def __init__(self, initlist=None):
             if initlist is not None:
@@ -898,7 +954,7 @@ if python_version < 3.3:
             return self
 
         def __mul__(self, n):
-            return self.__class__(self.data*n)
+            return self.__class__(self.data * n)
 
         __rmul__ = __mul__
 
@@ -942,7 +998,7 @@ if python_version < 3.3:
             else:
                 self.data.extend(other)
 
-    class UserString(Sequence):
+    class UserString(_stdlib.Sequence):
         def __init__(self, seq):
             if isinstance(seq, str):
                 self.data = seq
@@ -1023,7 +1079,7 @@ if python_version < 3.3:
             return self.__class__(str(other) + self.data)
 
         def __mul__(self, n):
-            return self.__class__(self.data*n)
+            return self.__class__(self.data * n)
 
         __rmul__ = __mul__
 
@@ -2509,7 +2565,7 @@ class PascalSet(metaclass(MetaSet)):
         if isinstance(other, integer_types):
             l = self._items
             start, end = 0, len(l)
-            res, pivot = False, 2*(end // 4)
+            res, pivot = False, 2 * (end // 4)
             while not res and start < end:
                 s, e = l[pivot], l[pivot + 1]
                 if other < s:
@@ -2518,7 +2574,7 @@ class PascalSet(metaclass(MetaSet)):
                     start = pivot + 2
                 else:
                     res = True
-                pivot = start + 2*((end - start) // 4)
+                pivot = start + 2 * ((end - start) // 4)
             return res, pivot
         else:
             raise self._invalid_value(other)
@@ -2603,7 +2659,7 @@ class PascalSet(metaclass(MetaSet)):
         '''This is totally a funny test method.'''
         from xoutil.eight import range
         res = cls[2:limit]
-        for i in range(2, limit//2 + 1):
+        for i in range(2, limit // 2 + 1):
             if i in res:
                 aux = i + i
                 while aux < limit:
@@ -2660,7 +2716,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
         sm = self._items
         for k in sorted(sm):
             v = sm[k]
-            base = k*bl
+            base = k * bl
             i = 0
             ref = 1
             while i < bl:
@@ -2994,7 +3050,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
             bl = self._bit_length
             k, v = next(iteritems(sm))
             assert v
-            base = k*bl
+            base = k * bl
             i = 0
             ref = 1
             res = None
@@ -3115,7 +3171,7 @@ class BitPascalSet(object, metaclass(MetaSet)):
         '''This is totally a funny test method.'''
         from xoutil.eight import range
         res = cls[2:limit]
-        for i in range(2, limit//2 + 1):
+        for i in range(2, limit // 2 + 1):
             if i in res:
                 aux = i + i
                 while aux < limit:

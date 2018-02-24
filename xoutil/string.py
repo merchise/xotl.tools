@@ -39,6 +39,7 @@ import_deprecated('xoutil.eight.string', 'safe_join', force_str='force')
 
 safe_str = force_str    # noqa
 
+
 @deprecated
 def safe_strip(value):
     '''Removes the leading and tailing space-chars from `value` if string, else
@@ -164,6 +165,9 @@ def slugify(value, *args, **kwds):
            either a valid string, any iterator of strings, or ``None`` to use
            only default valid characters.  Non-ASCII characters are ignored.
 
+    :param encoding: If `value` is not a text (unicode), it is decoded before
+           `ASCII normalization <xoutil.eight.string.force_ascii>`:func:.
+
     Examples::
 
       >>> slugify('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
@@ -211,6 +215,8 @@ def slugify(value, *args, **kwds):
        of `invalid_chars`, also deprecate the `valids` paremeter name in favor
        of `valid_chars`.
 
+    .. versionchanged:: 1.8.7 Add parameter 'encoding'.
+
     '''
     import re
     from xoutil.eight import string_types
@@ -226,7 +232,7 @@ def slugify(value, *args, **kwds):
 
     # local functions
     def _normalize(v):
-        return force_ascii(v).lower()
+        return force_ascii(v, encoding=encoding).lower()
 
     def _set(v):
         return re.escape(''.join(set(_normalize(v))))
@@ -237,6 +243,7 @@ def slugify(value, *args, **kwds):
                            default='', coercers=_ascii)
     valid_chars = getarg('valid_chars', 'valid', 'valids', 0, default='',
                          coercers=_ascii)
+    encoding = getarg('encoding', default=None)
     replacement = args[0] if args else kwds.pop('replacement', '-')
     # TODO: check unnecessary arguments, raising errors
     if replacement in (None, False):
@@ -326,6 +333,9 @@ def make_a10z(string):
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 
-normalize_slug = deprecated(slugify)(slugify)
+@deprecated(slugify)
+def normalize_slug(value, *args, **kwds):
+    return slugify(value, *args, **kwds)
+
 
 del deprecated, import_deprecated

@@ -11,7 +11,7 @@
 
 - Remove long deprecated modules: `!xoutil.aop`:mod: and `!xoutil.proxy`:mod:.
 
-- Deprecate `xoutil.html` entirely.
+- Deprecate ``xoutil.html`` entirely.
 
 - The following modules are included on a *provisional basis*.  Backwards
   incompatible changes (up to and including removal of the module) may occur

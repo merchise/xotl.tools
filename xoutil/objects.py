@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.objects
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2012 Medardo Rodriguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# Author: Medardo Rodríguez
-# Contributors: see CONTRIBUTORS and HISTORY file
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
-#
-# Created 2012-02-17
 
 '''Several utilities for objects in general.'''
 
@@ -199,10 +190,10 @@ class SafeDataItem(object):
             from xoutil.validators import check
             FUNC_KINDS = ('normal', 'static', 'class')
             FUNC_TYPES = (function, staticmethod, classmethod)
+            IN_FUNC_TYPES = FUNC_KINDS.__contains__
             KIND_NAME = 'kind'
             kind = kwargs.pop(KIND_NAME, FUNC_KINDS[0])
-            if (check(kind, lambda k: k in FUNC_KINDS)
-                    and check(method, FUNC_TYPES)):
+            if check(kind, IN_FUNC_TYPES) and check(method, FUNC_TYPES):
                 kwargs['do_assigning'] = False
 
                 def init():
@@ -233,10 +224,7 @@ class SafeDataItem(object):
             if res is not Unset:
                 return res
             elif self.init is not Unset:
-                try:
-                    res = self.init()
-                except:
-                    raise
+                res = self.init()
                 self.__set__(obj, res)
                 return res
             elif self.default is not Unset:
@@ -280,7 +268,7 @@ class SafeDataItem(object):
         '''Generate a unique new name.'''
         from time import time
         from xoutil.bases import int2str
-        return '_%s' % int2str(int(1000000*time()))
+        return '_%s' % int2str(int(1000000 * time()))
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
@@ -459,6 +447,14 @@ def multi_getter(source, *ids):
         return first(a) if many(a) else getter(a)
 
     return (get(aux) for aux in ids)
+
+
+def mass_setattr(obj, **attrs):
+    '''Set all given attributes and return the same object.'''
+    # See 'xoutil.decorator.constant_bagger' ;)
+    for attr in attrs:
+        setattr(obj, attr, attrs[attr])
+    return obj
 
 
 def is_private_name(name):
@@ -719,6 +715,7 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
         j += 1
     return res
 
+
 # Mark this so that informed people may use it.
 validate_attrs._positive_testing = True
 
@@ -748,7 +745,7 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from xoutil.iterators import map
+        from xoutil.future.itertools import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val
@@ -1191,7 +1188,8 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
         ignored = lambda name: any(ignore(name) for ignore in ignores)
     else:
         ignored = None
-    valid_names = ('__class__', '__mro__', '__name__', '__weakref__', '__dict__')
+    valid_names = ('__class__', '__mro__', '__name__', '__weakref__',
+                   '__dict__')
     attrs = {name: value
              for name, value in iteritems(cls.__dict__)
              if name not in valid_names
@@ -1236,7 +1234,7 @@ def smart_copy(*args, **kwargs):
     and one of its key is not found in any of the `sources`, then the value of
     the key in the dictionary is copied to `target` unless:
 
-    - It's the value `~xoutil.symbols.Undefined`.
+    - It's the value `~xoutil.symbols.Undefined`:obj:.
 
     - An exception object
 
@@ -1573,6 +1571,27 @@ def save_attributes(obj, *attrs, **kwargs):
     finally:
         for attr, val in props.items():
             set_(attr, val)
+
+
+@contextmanager
+def temp_attributes(obj, attrs, **kwargs):
+    '''A context manager that temporarily sets attributes.
+
+    `attrs` is a dictionary containing the attributes to set.
+
+    Keyword arguments `getter` and `setter` have the same meaning as in
+    `save_attributes`:func:.  We also use the `setter` to set the values
+    provided in `attrs`.
+
+    .. versionadded:: 1.8.5
+
+    '''
+    setter = kwargs.get('setter', smart_setter)
+    set_ = setter(obj)
+    with save_attributes(obj, *tuple(attrs.keys()), **kwargs):
+        for attr, value in attrs.items():
+            set_(attr, value)
+        yield
 
 
 del contextmanager

@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.future.calendar
-# ---------------------------------------------------------------------
-# Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2017-06-29
 
 '''Extends the standard `calendar` module.
 
@@ -37,23 +32,5 @@ except AttributeError:
     pass
 
 
-def _get_month_name_list():
-    import sys
-    import locale
-    try:
-        locale.setlocale(locale.LC_TIME, ('en_US', 'UTF-8'))
-        mod = sys.modules[__name__]
-        month = 1
-        while month <= 12:
-            name = _stdlib.month_name[month]
-            if not hasattr(mod, name):
-                setattr(mod, name, month)
-                month += 1
-    finally:
-        locale.resetlocale(locale.LC_TIME)
-
-
-
-_get_month_name_list()
-
-del _get_month_name_list
+(January, February, March, April, May, June,
+ July, August, September, October, November, December) = range(1, 13)

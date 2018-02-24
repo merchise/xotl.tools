@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.future.datetime
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~°/~] and Contributors
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Based on code submitted to comp.lang.python by Andrew Dalke, copied from
-# Django and generalized.
-#
-# Created on 2012-02-15
 
 '''Extends the standard `datetime` module.
 
@@ -37,6 +28,7 @@ from __future__ import (division as _py3_division,
 import sys
 
 from datetime import *    # noqa
+from datetime import timedelta
 import datetime as _stdlib    # noqa
 
 from xoutil.deprecation import deprecate_linked
@@ -76,8 +68,8 @@ except ValueError:
     # but (WTF), Python double checks the year (in each method and then again
     # in `time.strftime` function).
 
-    class date(date):
-        __doc__ = date.__doc__
+    class date(_stdlib.date):
+        __doc__ = _stdlib.date.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -85,8 +77,8 @@ except ValueError:
         def __sub__(self, other):
             return assure(super(date, self).__sub__(other))
 
-    class datetime(datetime):
-        __doc__ = datetime.__doc__
+    class datetime(_stdlib.datetime):
+        __doc__ = _stdlib.datetime.__doc__
 
         def strftime(self, fmt):
             return strftime(self, fmt)
@@ -124,7 +116,7 @@ except ValueError:
             else:
                 args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
                 return datetime(*args)
-        elif isinstance(obj, (time, timedelta)):
+        elif isinstance(obj, (_stdlib.time, timedelta)):
             return obj
         else:
             raise TypeError('Not valid type for datetime assuring: %s' % name)
@@ -135,10 +127,10 @@ else:
         This is only a type checker alternative to standard library.
 
         '''
-        if isinstance(obj, (date, datetime, time, timedelta)):
+        if isinstance(obj, (date, datetime, _stdlib.time, timedelta)):
             return obj
         else:
-            raise TypeError('Not valid type for datetime assuring: %s' % name)
+            raise TypeError('Not valid type for datetime assuring: %s' % obj)
 
 
 from xoutil.deprecation import deprecated    # noqa
@@ -485,7 +477,7 @@ class DateField(object):
             return self
 
     def __set__(self, instance, value):
-        from datetime import date  # all dates, not just xoutil's
+        from datetime import datetime as dt, date
         if value in (None, False):
             # We regard False as None, so that working with Odoo is easier:
             # missing values in Odoo, often come as False instead of None.
@@ -493,6 +485,8 @@ class DateField(object):
                 raise ValueError('Setting None to a required field')
             else:
                 value = None
+        elif isinstance(value, dt):
+            value = value.date()
         elif not isinstance(value, date):
             value = parse_date(value)
         instance.__dict__[self.name] = value
@@ -682,7 +676,7 @@ class TimeSpan(object):
         elif isinstance(other, datetime.date):
             other = TimeSpan.from_date(other)
         elif not isinstance(other, TimeSpan):
-            raise TypeError
+            raise TypeError("Invalid type '%s'" % type(other).__name__)
         with context(NEEDS_FLEX_DATE):
             start = max(
                 self.start_date or -Infinity,
@@ -869,12 +863,12 @@ NEEDS_FLEX_DATE = object()
 
 
 try:
-    timezone
+    timezone  # noqa
 except NameError:
     # Copied from Python 3.5.2
     # TODO: Document this in xoutil
 
-    class timezone(tzinfo):
+    class timezone(_stdlib.tzinfo):
         '''Fixed offset from UTC implementation of tzinfo.'''
 
         __slots__ = '_offset', '_name'
@@ -902,7 +896,7 @@ except NameError:
 
         @classmethod
         def _create(cls, offset, name=None):
-            self = tzinfo.__new__(cls)
+            self = _stdlib.tzinfo.__new__(cls)
             self._offset = offset
             self._name = name
             return self
@@ -1065,16 +1059,3 @@ if 'eight' in __name__:
     # def strftime(self, fmt):    # Method for class date
     #     "Format using strftime()."
     #     return _wrap_strftime(self, fmt, self.timetuple())
-
-if __name__ == 'xoutil.datetime':
-    # to be deprecated
-    def new_date(d):
-        '''Generate a safe date from a legacy datetime date object.'''
-        return date(d.year, d.month, d.day)
-
-    def new_datetime(d):
-        '''Generate a safe datetime give a legacy date or datetime object.'''
-        args = [d.year, d.month, d.day]
-        if isinstance(d, datetime.__base__):    # legacy datetime
-            args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
-        return datetime(*args)

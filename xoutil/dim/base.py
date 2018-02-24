@@ -1,20 +1,16 @@
-#!/USSR/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.dim.base
-# ---------------------------------------------------------------------
-# Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2017-09-14
 
 '''The standard `physical quantities`_.
 
-.. _physical quantities: https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
+.. _physical quantities: \
+https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
 
 '''
 

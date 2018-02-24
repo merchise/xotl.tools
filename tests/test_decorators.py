@@ -1,23 +1,15 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
-# xoutil.tests.test_decorators
-#----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2011, 2012 Medardo Rodríguez
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# Contributors: see CONTRIBUTORS and HISTORY file
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
-#
-# Created on 2011-11-18
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print)
-# Why not "absolute_import"?
+                        print_function as _py3_print,
+                        absolute_import as _py3_abs_import)
 
 import unittest
 from xoutil.decorator import assignment_operator
@@ -123,7 +115,6 @@ class Memoizations(unittest.TestCase):
     def test_memoized_property(self):
         from xoutil.future.inspect import getattr_static
         from xoutil.objects import memoized_property
-        from xoutil.decorator import reset_memoized
 
         class Foobar(object):
             @memoized_property
@@ -145,8 +136,35 @@ class Memoizations(unittest.TestCase):
         self.assertIs(foo.prop, foo)
         self.assertIs(getattr_static(foo, 'prop'), foo)
         # After the first invocation, the static attr is the result.
-        reset_memoized(foo, 'prop')
+        Foobar.prop.reset(foo)
         self.assertNotEquals(getattr_static(foo, 'prop'), foo)
+
+
+class ConstantBags(unittest.TestCase):
+    def test_constant_bags_decorator(self):
+        from xoutil.decorator import constant_bagger as typify
+
+        def func(**kwds):
+            return kwds
+
+        bag = func(ONE=1, TWO=2)
+
+        @typify(ONE=1, TWO=2)
+        def BAG(**kwds):
+            return kwds
+
+        self.assertIs(type(BAG), type)
+        self.assertIn('ONE', bag)
+        self.assertEquals(bag['ONE'], BAG.ONE)
+        self.assertEquals(BAG.TWO, 2*BAG.ONE)
+        with self.assertRaises(AttributeError):
+            self.assertEquals(bag.TWO, 2*bag.ONE)
+        with self.assertRaises(TypeError):
+            self.assertEquals(BAG['TWO'], 2*BAG['ONE'])
+        with self.assertRaises(AttributeError):
+            self.assertEquals(BAG.THREE, 3)
+        self.assertIs(BAG(THREE=3), BAG)
+        self.assertEquals(BAG.THREE, 3)
 
 
 if __name__ == "__main__":

@@ -1,24 +1,17 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.cpystack
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2009-2012 Medardo Rodríguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# Author: Medardo Rodriguez
-# Contributors: see CONTRIBUTORS and HISTORY file
-#
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
 
 '''Utilities to inspect the CPython's stack.'''
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print)
-# TODO: Why not ``absolute_import``
+                        print_function as _py3_print,
+                        absolute_import as _py3_imports)
 
 import inspect
 
@@ -53,7 +46,7 @@ def getargvalues(frame):
 
     '''
     from xoutil.values.simple import force_sequence_coerce as array
-    from xoutil.iterators import flatten
+    from xoutil.future.itertools import flatten
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
     for keys in pos:
@@ -67,6 +60,7 @@ def getargvalues(frame):
     if kwds:
         res.update(values[kwds])
     return res
+
 
 if python_version < 3:
     getargvalues.__doc__ += """
@@ -278,12 +272,12 @@ def iter_stack(max_deep=MAX_DEEP):
 
       frame = next(f for f in iter_stack() if condition(f))
 
-    Using the previous pattern, functions `object_info_finder`,
-    `object_finder` and `track_value` can be reprogrammed or deprecated.
-
     .. versionadded:: 1.6.8
 
     '''
+    # Using the previous pattern, functions `object_info_finder`,
+    # `object_finder` and `track_value` can be reprogrammed or deprecated.
+
     frame = inspect.currentframe()
     try:
         deep = 0

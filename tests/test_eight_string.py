@@ -11,9 +11,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_import)
 
-from hypothesis import given, example
-from hypothesis.strategies import text, binary
-
 
 def test_force_string():
     from xoutil.eight import string

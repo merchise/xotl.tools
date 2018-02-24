@@ -1,30 +1,27 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
-# xoutil.tests.test_string
-#----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2013-01-16
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
 from hypothesis import given, example
-from hypothesis.strategies import text, binary
+from hypothesis.strategies import text
 
 
 def test_slugify():
     from xoutil.string import slugify
     value = '  Á.e i  Ó  u  '
-    assert slugify(value) == 'a-e-i-o-u'
-    assert slugify(value, '.', invalid_chars='AU') == 'e.i.o'
-    assert slugify(value, valid_chars='.') == 'a.e-i-o-u'
+    options = dict(encoding='utf-8')
+    assert slugify(value, **options) == 'a-e-i-o-u'
+    assert slugify(value, '.', invalid_chars='AU', **options) == 'e.i.o'
+    assert slugify(value, valid_chars='.', **options) == 'a.e-i-o-u'
     assert slugify('_x', '_') == '_x'
     assert slugify('-x', '_') == 'x'
     assert slugify('-x-y-', '_') == 'x_y'

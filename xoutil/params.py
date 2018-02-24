@@ -29,7 +29,7 @@ from __future__ import (division as _py3_division,
 
 
 #: The maximum number of positional arguments allowed when calling a function.
-MAX_ARG_COUNT = 1024*1024    # just any large number
+MAX_ARG_COUNT = 1024 * 1024    # just any large number
 
 from xoutil.symbols import Undefined    # used implicitly for absent default
 
@@ -137,7 +137,6 @@ def check_default(absent=Undefined):
 
     .. versionadded:: 1.8.0
 
-
     '''
     def default(res=absent):
         return res
@@ -193,7 +192,7 @@ def keywords_only(func):
     '''
     import sys
     from functools import wraps
-    from xoutil.inspect import getfullargspec
+    from xoutil.future.inspect import getfullargspec
     if sys.version_info >= (3, 0):
         return func
 
@@ -238,17 +237,73 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
 
     '''
     from xoutil.eight import string_types
+    from xoutil.objects import pop_first_of
     if isinstance(names, string_types):
         names = (names,)
-    i, count = 0, len(names)
-    res = Undefined
-    while res is Undefined and i < count:
-        aux = kwargs.pop(names[i], Undefined)
-        if aux is Undefined:
-            i += 1
-        else:
-            res = aux
-    return res if res is not Undefined else default
+    return pop_first_of(kwargs, *names, default=default)
+
+
+def pop_keyword_values(kwargs, *names, **options):
+    '''Return a list with all keyword argument values.
+
+    :param kwargs: The mapping with passed keyword arguments.
+
+    :param names: Each item will be a definition of keyword argument name to
+           retrieve.  Could be a string with a name, or a list of alternatives
+           (aliases).
+
+    :keyword default: Keyword only option to define a default value to be used
+           in place of not given arguments.  If not given, it is used
+           special value `~xoutil.symbols.Undefined`:obj:.
+
+    :keyword defaults: A dictionary with default values per argument name. If
+           none is given, use `default`.
+
+           .. note:: `defaults` trumps `default`.
+
+           .. warning:: For the case where a single name has several
+              alternatives, you may choose any of the alternatives.  If you
+              pass several diverging defaults for different alternatives, the
+              result is undefined.
+
+    :keyword ignore_error: By default, when there are remaining values in
+           `kwargs`, after all names are processed, a `TypeError`:class: is
+           raised.  If this keyword only option is True, this function returns
+           normally.
+
+    Examples::
+
+      >>> pop_keyword_values({'b': 1}, 'a', 'b')
+      [Undefined, 1]
+
+      >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
+      >>> try:
+      ...     res = pop_keyword_values(kwargs, 'a', 'b')
+      ... except TypeError as error:
+      ...     res = error
+      >>> type(res)
+      TypeError
+
+      >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
+      >>> options = dict(ignore_error=True, default=None)
+      >>> pop_keyword_values(kwargs, 'a', ('B', 'b'), **options)
+      [1, 2]
+
+    .. versionadded:: 1.8.3
+
+    '''
+    default = options.get('default', Undefined)
+    defaults = options.get('defaults', {})
+    res = []
+    for item in names:
+        val = pop_keyword_arg(kwargs, item, default=Undefined)
+        if val is Undefined:
+            val = pop_keyword_arg(defaults, item, default=default)
+        res.append(val)
+    if kwargs and not options.get('ignore_error', False):
+        msg = 'calling function got unexpected keyword arguments "{}"'
+        raise TypeError(msg.format(tuple(kwargs)))
+    return res
 
 
 class ParamManager(object):

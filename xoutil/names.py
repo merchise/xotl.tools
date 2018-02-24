@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.names
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created 2013-04-15
 
 '''A protocol to obtain or manage object names.'''
 
@@ -37,8 +32,8 @@ def _get_mappings(source):
         return (source,)
     else:
         from xoutil.future.inspect import get_attr_value
-        l = get_attr_value(source,  'f_locals', _undef)
-        g = get_attr_value(source,  'f_globals', _undef)
+        l = get_attr_value(source, 'f_locals', _undef)
+        g = get_attr_value(source, 'f_globals', _undef)
         if isinstance(l, Mapping) and isinstance(g, Mapping):
             return (l,) if l is g else (l, g)
         else:
@@ -571,12 +566,14 @@ class TestRelativeImports(_utest.TestCase):
     def test_relative_imports(self):
         self.assertEquals(nameof(self.RelativeUnset), '_Unset')
         self.assertEquals(nameof(self.RelativeUnset, inner=True), 'Unset')
+
+        # Even relative imports are resolved properly with `full=True`
         self.assertEquals(nameof(self.RelativeUnset, full=True),
-                          'xoutil.names._Unset')  # Even relative imports are
-                                                  # resolved properly with
-                                                  # `full=True`
+                          'xoutil.names._Unset')
+
         self.assertEquals(nameof(self.AbsoluteUndefined, full=True),
                           'xoutil.names._undef')
+
 
 # Don't delete the _Unset name, so that the nameof inside the test could find
 # them in the module.

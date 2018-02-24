@@ -1,22 +1,17 @@
-# -*- encoding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.records
-# ---------------------------------------------------------------------
-# Copyright (c) 2014-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2014-09-22
-
 
 '''Records definitions.
 
 A record allows to describe plain external data and a simplified model to
 *read* it.  The main use of records is to represent data that is read from a
-CSV file.
+`CSV  file <305>`:pep:.
 
 See the `record`:class: class to find out how to use it.
 
@@ -115,8 +110,9 @@ class record(metaclass(_record_type)):
     Records allow to represent a sequence or mapping of values extracted from
     external sources into a dict-like Python value.
 
-    The first use-case for this abstraction is importing data from a CSV file.
-    You could represent each line as an instance of a properly defined record.
+    The first use-case for this abstraction is importing data from a `CSV file
+    <305>`:pep:.  You could represent each line as an instance of a properly
+    defined record.
 
     An instance of a record would represent a single `line` (or row) from the
     external data source.
@@ -158,17 +154,14 @@ class record(metaclass(_record_type)):
     Readers are always cast as `staticmethods`, whether or not you have
     explicitly stated that fact::
 
-
         >>> from dateutil import parser
         >>> class BETTER_INVOICE(INVOICE):
         ...     CREATED_TIME = 2
         ...     _created_time_reader = lambda val: parser.parse(val)
-        ...
 
         >>> line = (1, 'AA20X138874Z012', '2014-02-17T17:29:21.965053')
         >>> BETTER_INVOICE.get_field(line, BETTER_INVOICE.CREATED_TIME)
         datetime.datetime(2014, 2, 17, 17, 29, 21, 965053)
-
 
     .. warning:: Creating readers for fields defined in super classes is not
        directly supported.  To do so, you **must** declare the reader as a

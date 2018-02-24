@@ -1,18 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.future.functools
-# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
+# All rights reserved.
 #
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Most of the code of this file is backported from Python 3.2 standard library
-# with minor modifications to make it works on Python 2.7. So, this file is
-# distributed under the terms of the Python Software Foundatation Licence for
-# Python 3.2.
-#
-# Created on 2013-02-22
-# Migrated to 'future' on 2016-09-16
 
 '''Extensions to the `functools` module from the Python's standard library.
 

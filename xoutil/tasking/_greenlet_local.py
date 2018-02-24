@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.tasking._greenlet_local
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2016 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-02-10
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -104,7 +99,10 @@ class local(_localbase):
 
     def __setattr__(self, name, value):
         if name == '__dict__':
-            raise AttributeError("%r object attribute '__dict__' is read-only" % self.__class__.__name__)
+            clsname = self.__class__.__name__
+            raise AttributeError(
+                "%r object attribute '__dict__' is read-only" % clsname
+            )
         d = object.__getattribute__(self, '_local__dicts').get(getcurrent())
         if d is None:
             lock = object.__getattribute__(self, '_local__lock')
@@ -120,7 +118,10 @@ class local(_localbase):
 
     def __delattr__(self, name):
         if name == '__dict__':
-            raise AttributeError("%r object attribute '__dict__' is read-only" % self.__class__.__name__)
+            clsname = self.__class__.__name__
+            raise AttributeError(
+                "%r object attribute '__dict__' is read-only" % clsname
+            )
         d = object.__getattribute__(self, '_local__dicts').get(getcurrent())
         if d is None:
             lock = object.__getattribute__(self, '_local__lock')

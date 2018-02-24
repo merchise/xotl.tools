@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.html
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2013-04-18
 
 '''This module defines utilities to manipulate HTML.
 
@@ -26,9 +22,9 @@ This module defines tree dictionaries, ``name2codepoint``, ``codepoint2name``,
 and ``entitydefs``.
 
 ``entitydefs`` is used to provide the `entitydefs` attribute of the
-`xoutil.html.parser.HTMLParser`:class: class. The definition provided here
-contains all the entities defined by XHTML 1.0 that can be handled using
-simple textual substitution in the Latin-1 character set (ISO-8859-1).
+``xoutil.html.parser.HTMLParser`` class.  The definition provided here contains
+all the entities defined by XHTML 1.0 that can be handled using simple textual
+substitution in the Latin-1 character set (ISO-8859-1).
 
 .. data:: entitydefs
 
@@ -98,7 +94,7 @@ if python_version == 3:
     from html import parser
 else:
     import htmlentitydefs as entities
-    import HTMLParser as parser
+    import HTMLParser as parser  # noqa
 
 
 entities.entitydefs_unicode = {}

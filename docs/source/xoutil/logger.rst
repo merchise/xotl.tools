@@ -3,6 +3,8 @@
 
 .. module:: xoutil.logger
 
+.. deprecated:: 1.8.5
+
 Usage::
 
     logger.debug('Some debug message')
