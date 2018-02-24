@@ -19,7 +19,6 @@ from __future__ import (division as _py3_division,
 
 
 from codecs import *    # noqa
-import codecs as _stdlib
 from codecs import __all__    # noqa
 __all__ = list(__all__)
 
@@ -29,11 +28,17 @@ del deprecate_linked
 
 
 def force_encoding(encoding=None):
-    '''Validates an encoding value; if None use `locale.getlocale()[1]`; else
-    return the same value.
+    '''Validates an encoding value.
+
+    If `encoding` is None use `locale.getdefaultlocale`:func:.  If that is
+    also none, return 'UTF-8'.
 
     .. versionadded:: 1.2.0
+
     .. versionchanged:: 1.8.0 migrated to 'future.codecs'
+
+    .. versionchanged:: 1.8.7 Stop using `locale.getpreferrededencoding`:func:
+       and improve documentation.
 
     '''
     # TODO: This mechanism is tricky, we must find out how to unroll the mess
@@ -50,10 +55,7 @@ def force_encoding(encoding=None):
     #
     # All these considerations where also proved in Mac-OS.
     import locale
-    return encoding or locale.getpreferredencoding() or 'UTF-8'
-    # return (encoding or locale.getlocale()[1]
-    #         or locale.getpreferredencoding()
-    #         or sys.getdefaultencoding() or 'UTF-8')
+    return encoding or locale.getdefaultlocale()[1] or 'UTF-8'
 
 
 def safe_decode(s, encoding=None):
@@ -79,7 +81,7 @@ def safe_decode(s, encoding=None):
         except LookupError:
             # The provided enconding is not know, try with no encoding.
             return safe_decode(s)
-        except:
+        except TypeError:
             # For numbers and other stuff.
             return text_type(s)
 
@@ -109,7 +111,7 @@ def safe_encode(u, encoding=None):
                     return bytes(u)
                 else:
                     return text_type(u).encode(encoding, 'replace')
-            except:
+            except (UnicodeError, TypeError):
                 return text_type(u).encode(encoding, 'replace')
         except LookupError:
             return safe_encode(u)

@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.dim.meta
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it
-# under the terms of the LICENCE attached (see LICENCE file) in the
-# distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-05-12
 
 '''Facilities to work with `concrete numbers`_.
 
@@ -142,7 +137,6 @@ from __future__ import (division as _py3_division,
 import functools
 import numbers
 from xoutil.eight.meta import metaclass
-from xoutil.deprecation import deprecated
 
 
 #: The unit for any kind of quantity.
@@ -278,9 +272,10 @@ class Dimension(type):
         it canonical unit, but the standard for Effort is men-hour:
 
            >>> class Effort(Workforce * Time):
-           ...    # Since the canonical unit of a composed quantity type is built from
-           ...    # the canonical units of the operands, but the true "canonical type"
-           ...    # of effort is usually men-hour we re-introduce it.
+           ...    # Since the canonical unit of a composed quantity type is
+           ...    # built from the canonical units of the operands, but the
+           ...    # true "canonical type" of effort is usually men-hour we
+           ...    # re-introduce it.
            ...    men_hour = 60
 
         This does not mean that ``Effort._unit_ == Effort.men_hour``.  The

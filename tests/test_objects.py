@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# tests.test_objects
-#----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2013-04-16
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -563,6 +559,19 @@ def test_save_attributes():
         obj.a = 2
         obj.b = 3
         assert obj.a == 2
+
+    assert obj.a == 1
+    assert obj.b == 3
+
+
+def test_temp_attributes():
+    from xoutil.future.types import SimpleNamespace as new
+    from xoutil.objects import temp_attributes
+    obj = new(a=1, b=2)
+    with temp_attributes(obj, dict(a=2)):
+        assert obj.a == 2
+        assert obj.b == 2
+        obj.b = 3
 
     assert obj.a == 1
     assert obj.b == 3

@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.tests.test_collections
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# Contributors: see CONTRIBUTORS and HISTORY file
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
-#
-# Created on 2012-07-03
-
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -1229,6 +1220,25 @@ class TestBitPascalSet(unittest.TestCase):
             else:
                 state = 'safe-not-less'
         self.assertEqual(state, 'ok')
+
+
+class TestCodeDict(unittest.TestCase):
+
+    def test_formatter(self):
+        from xoutil.future.collections import codedict
+        cd = codedict(x=1, y=2, z=3.0)
+        self.assertEqual(
+            '{_[x + y]} is 3 --  {_[x + z]} is 4.0'.format(_=cd),
+            '3 is 3 --  4.0 is 4.0'
+        )
+        self.assertEqual(
+            cd >> '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1',
+            '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+        )
+        self.assertEqual(
+            '{_[x + y]} is 3 --  {_[x + z]} is 4.0 -- {x} is 1' << cd,
+            '3 is 3 --  4.0 is 4.0 -- 1 is 1'
+        )
 
 
 def test_abcs():

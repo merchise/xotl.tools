@@ -1,7 +1,7 @@
 # Back-ported from Python 3.2.
 # Copyright (c) 2001-2012, 2014-2016, Python Software Foundation; All rights reserved.
 # Retains the licence of the Python Software Foundation.
-
+# flake8: noqa
 """Redo the builtin repr() (representation) but with limits on most sizes."""
 
 
@@ -9,7 +9,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-# TODO: Must be moved to `eight` and remove `unicode_literals` import
 import sys
 
 if sys.version_info >= (3, 2, 0):

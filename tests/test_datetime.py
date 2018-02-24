@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-# ----------------------------------------------------------------------
-# xoutil.tests.test_datetime
-# ----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~°/~] and Contributors
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2013-03-25
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -208,7 +204,8 @@ def test_timespans_displacement_backandforth(ts1, delta):
     assert ts1 == ((ts1 << delta) >> delta) == (ts1 << 0) == (ts1 >> 0)
 
 
-@given(timespans(unbounds='none'), strategies.integers(min_value=-1000, max_value=1000))
+@given(timespans(unbounds='none'),
+       strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_dates(ts1, delta):
     res = ts1 << delta
     assert (res.start_date - ts1.start_date).days == -delta
@@ -218,7 +215,8 @@ def test_timespans_displacement_dates(ts1, delta):
     assert (res.end_date - ts1.end_date).days == delta
 
 
-@given(timespans(unbounds='none'), strategies.integers(min_value=-1000, max_value=1000))
+@given(timespans(unbounds='none'),
+       strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_keeps_the_len(ts1, delta):
     res = ts1 << delta
     assert len(ts1) == len(res)
@@ -237,3 +235,13 @@ def test_empty_timespan_is_pickable():
         assert EmptyTimeSpan is pickle.loads(
             pickle.dumps(EmptyTimeSpan, proto)
         )
+
+
+@given(strategies.datetimes(), strategies.datetimes())
+def test_timespan_with_datetimes(d1, d2):
+    from datetime import datetime as dt, date as d
+    ts = TimeSpan(d1, d2)
+    assert not isinstance(ts.start_date, dt)
+    assert isinstance(ts.start_date, d)
+    assert not isinstance(ts.end_date, dt)
+    assert isinstance(ts.end_date, d)

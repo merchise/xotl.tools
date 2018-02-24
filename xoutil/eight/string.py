@@ -75,11 +75,17 @@ def safe_join(separator, iterable):
     return force(separator).join(force(item) for item in iterable)
 
 
-def force_ascii(value):
+def force_ascii(value, encoding=None):
     '''Return the string normal form for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization.
+
+    :param encoding: If `value` is not a text (unicode), it is decoded before
+           ASCII normalization using this encoding.  If not provided use the
+           return of `~xoutil.future.codecs.force_encoding`:func:.
+
+    .. versionchanged:: 1.8.7 Add parameter 'encoding'.
 
     '''
     import unicodedata
@@ -87,7 +93,7 @@ def force_ascii(value):
     from xoutil.eight import text_type
     from xoutil.eight import string
     if not isinstance(value, text_type):
-        value = safe_decode(value)
+        value = safe_decode(value, encoding=encoding)
     res = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     return string.force(res)
 

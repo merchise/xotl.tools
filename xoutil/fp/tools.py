@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.fp.tools
-# ---------------------------------------------------------------------
-# Copyright (c) 2016, 2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2016-10-05
 
 '''Tools for working with functions in a more "pure" way.
 
@@ -29,7 +24,48 @@ def identity(arg):
     return arg
 
 
+def fst(pair, strict=True):
+    '''Return the first element of `pair`.
+
+    If `strict` is True, `pair` needs to unpack to exactly two values.  If
+    `strict` is False this is the same as ``pair[0]``.
+
+    .. note:: This is an idiomatic function intended for using in compositions
+       or as the argument or high-level functions.  Don't use it in your code
+       as a replacement of ``x[0]``.
+
+    .. versionadded:: 1.8.5
+
+    '''
+    if strict:
+        res, _ = pair
+        return res
+    else:
+        return pair[0]
+
+
+def snd(pair, strict=True):
+    '''Return the second element of `pair`.
+
+    If `strict` is True, `pair` needs to unpack to exactly two values.  If
+    `strict` is False this is the same as ``pair[1]``.
+
+    .. note:: This is an idiomatic function intended for using in compositions
+       or as the argument or high-level functions.  Don't use it in your code
+       as a replacement of ``x[1]``.
+
+    .. versionadded:: 1.8.5
+
+    '''
+    if strict:
+        _, res = pair
+        return res
+    else:
+        return pair[1]
+
+
 class MetaCompose(ABCMeta):
+
     '''Meta-class for function composition.'''
     def __instancecheck__(self, instance):
         '''Override for ``isinstance(instance, self)``.'''
@@ -123,7 +159,9 @@ class compose(metaclass(MetaCompose)):
                         res = fn(*res[0], **res[1])
                     else:
                         res = fn(res)
-                except BaseException:
+                except Exception:
+                    # TODO: @med What's the point of of resetting scope under
+                    # exception?  Should this `try..` even be?
                     self.scope = (count - i, fn)
                     raise
                 i += 1

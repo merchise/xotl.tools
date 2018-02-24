@@ -1,17 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.fs.path
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2012 Medardo Rodríguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2012-02-16
 
 '''Extensions to os.path
 
@@ -22,8 +16,8 @@ file-system. This module re-exports (without change) several functions from the
 '''
 
 from __future__ import (division as _py3_division,
-                        print_function as _py3_print)
-# TODO: Why not ``absolute_import``?
+                        print_function as _py3_print,
+                        absolute_import as _py3_abs_import)
 
 import sys
 from os.path import (abspath, expanduser, dirname, sep, normpath,
@@ -88,7 +82,7 @@ def join(base, *extras):
     '''
     try:
         path = _orig_join(base, *extras)
-    except:
+    except Exception:  # TODO: @med which exceptions expected?
         base = fix_encoding(base)
         extras = [fix_encoding(extra) for extra in extras]
         path = _orig_join(base, *extras)
@@ -106,7 +100,7 @@ def normalize_path(base, *extras):
     # FIXME: [med] Redundant "path" in name "xoutil.fs.path.normalize_path"
     try:
         path = _orig_join(base, *extras)
-    except:
+    except Exception:  # TODO: @med which exceptions expected?
         path = join(base, *extras)
     return abspath(expanduser(path))
 

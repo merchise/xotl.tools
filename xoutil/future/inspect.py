@@ -1,16 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------
-# xoutil.future.inspect
-# ----------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# All rights reserved
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
+# All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created 2014-05-02
-# Migrated to 'future' on 2016-09-19
 
 '''Extensions to Python's ``inspect`` module.
 
@@ -28,9 +23,6 @@ from inspect import *    # noqa
 from xoutil.deprecation import deprecate_linked
 deprecate_linked()
 del deprecate_linked
-
-# TODO: @manu, migrate use of 'xoutil.inspect' in
-# 'xopgi.xopgi_mail_threads.mail_server.get_kwargs' to this module
 
 
 try:
@@ -135,10 +127,10 @@ except ImportError:
             return True
 
     def _shadowed_dict(klass):
-        if isinstance(klass, type):
-            dict_get = type.__dict__["__dict__"].__get__
-        else:
-            def dict_get(item):
+        def dict_get(item):
+            if isinstance(item, type):
+                return type.__dict__["__dict__"].__get__(item)
+            else:
                 return {'__dict__': item.__dict__}
         for entry in _static_getmro(klass):
             try:
@@ -228,7 +220,7 @@ def get_attr_value(obj, name, *default):
         try:
             owner = type if is_type else type(obj)
             res = res.__get__(obj, owner)
-        except:
+        except Exception:  # TODO: @med Which expections.
             res = Undefined
     if res is Undefined and not is_type:
         cls = type(obj)
@@ -236,10 +228,10 @@ def get_attr_value(obj, name, *default):
         if isdatadescriptor(res):    # noqa
             try:
                 res = res.__get__(obj, cls)
-            except:
+            except Exception:  # TODO: @med Which?
                 try:
                     res = res.__get__(cls, type)
-                except:
+                except Exception:  # TODO: @med Which?
                     res = Undefined
     if res is not Undefined:
         return res
@@ -297,7 +289,7 @@ def safe_name(obj, affirm=False):
             if res:
                 if isdatadescriptor(res):    # noqa
                     res = res.__get__(obj, type)
-        except BaseException:
+        except Exception:
             res = None
         if res is None:
             try:

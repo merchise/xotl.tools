@@ -1,14 +1,11 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------
-# xoutil.eight.io
-# ----------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-07-13
 
 '''Extensions to Python's ``io`` module.
 
@@ -46,6 +43,7 @@ from __future__ import (division as _py3_division,
 # TODO: This is the initial state for a in-progress module.
 
 from io import *    # noqa
+from io import IOBase
 
 # Next three members are not included in ``__all__`` definition
 

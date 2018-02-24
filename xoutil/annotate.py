@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.annotate
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2012-04-03
 
 '''Provides Python 3k forward-compatible (`3107`:pep:) annotations.'''
 
@@ -75,7 +71,7 @@ def _parse_signature(signature):
             else:
                 raise
 
-    class l(object):
+    class l(object):  # noqa: E742
         '''A locals implementation that skip some levels up in order to
         protect annotation's own locals.
 
@@ -109,7 +105,7 @@ def _parse_signature(signature):
 
         def __getitem__(self, key):
             from xoutil.symbols import Unset
-            from xoutil.iterators import dict_update_new
+            from xoutil.future.itertools import dict_update_new
             from xoutil.eight import python_version
             d = self.d
             res = d.get(key, Unset)

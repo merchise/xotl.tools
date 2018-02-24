@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.fp.option
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-12-07
 
 '''Functional Programming *Option Type* definition.
 
@@ -123,47 +118,6 @@ class Maybe(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-    @classmethod
-    def triumph(cls, value):
-        '''Coerce to a logical Boolean value.
-
-        A wrapper `Just`:class: is logically true, and `Wrong` is false.
-
-        For example::
-
-            >>> Just.triumph([1])
-            [1]
-
-            >>> Just.triumph([])
-            Just([])
-
-            >>> Wrong.triumph([1])
-            Wrong([1])
-
-            >>> Wrong.triumph([])
-            []
-
-        '''
-        default = cls is Just
-        if bool(value) is default:
-            idx = 2 if arg is None else arg
-            if cls._singletons[idx] is None:
-                self = super(Maybe, cls).__new__(cls)
-                self.inner = arg
-                cls._singletons[idx] = self
-            return cls._singletons[idx]
-        elif cls is Maybe:
-            return (Just if arg else Wrong)(arg)
-        elif isinstance(arg, cls):
-            return arg
-        elif not isinstance(arg, Maybe):
-            self = super(Maybe, cls).__new__(cls)
-            self.inner = arg
-            return self
-        else:
-            msg = 're-wrapping inverted value: {}({})'
-            raise ValueError(msg.format(cls.__name__, arg))
 
     @classmethod
     def compel(cls, value):

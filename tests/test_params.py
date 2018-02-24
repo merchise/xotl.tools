@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-#----------------------------------------------------------------------
-# tests.test_params
-#----------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-07-14
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -96,3 +92,33 @@ def test_param_errors():
         pass
     except BaseException as error:
         assert False, msg.format(TypeError.__name__, error_repr(error))
+
+
+def test_pop_keyword_values():
+    from xoutil.symbols import Unset
+    from xoutil.params import pop_keyword_values as popkw, Undefined
+
+    kwds = dict(default=None, values=[1, 2, 3], collector=sum)
+    names = (('func', 'collector'), 'default')
+
+    assert popkw(dict(kwds), 'values', *names) == [[1, 2, 3], sum, None]
+
+    try:
+        assert popkw(dict(kwds), *names) == 'whatever'
+    except TypeError:
+        assert True
+
+    try:
+        assert popkw(dict(kwds), *names, ignore_error=True) == [sum, None]
+    except TypeError:
+        assert False
+
+    test = [Undefined, [1, 2, 3], sum, None]
+    assert popkw(dict(kwds), 'x', 'values', *names) == test
+
+    test = [None, [1, 2, 3], sum, None]
+    assert popkw(dict(kwds), 'x', 'values', *names, default=None) == test
+
+    test = [Unset, [1, 2, 3], sum, None]
+    defaults = dict(x=Unset)
+    assert popkw(dict(kwds), 'x', 'values', *names, defaults=defaults) == test

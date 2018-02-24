@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.fp.prove.base
-# ---------------------------------------------------------------------
-# Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2017-04-14
 
 '''Prove validity of values - Base predicate classes.
 
@@ -147,7 +142,7 @@ class NoneOrTypeCheck(TypeCheck):
             while res is None and i < len(_types):
                 try:
                     res = _types[i]()
-                except BaseException:
+                except Exception:
                     pass
                 i += 1
             return res if res is not None else Wrong(None)
@@ -174,7 +169,7 @@ class TypeCast(TypeCheck):
                     res = _types[i](value)
                     if not res:
                         res = Just(res)
-                except BaseException:
+                except Exception:
                     pass
                 i += 1
         return res
@@ -274,7 +269,7 @@ class LogicalCheck(FunctionalCheck):
                 return Wrong(value)
             else:
                 return Wrong(res)
-        except BaseException as error:
+        except Exception as error:
             return Wrong(error)
 
 
@@ -286,7 +281,7 @@ class SafeCheck(FunctionalCheck):
         from xoutil.fp.option import Wrong
         try:
             return self.inner(value)
-        except BaseException as error:
+        except Exception as error:
             return Wrong(error)
 
 

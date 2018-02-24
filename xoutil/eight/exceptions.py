@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.eight.exceptions
-# ---------------------------------------------------------------------
-# Copyright (c) 2015-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2015-10-14
 
 '''Solve compatibility issues for exceptions handling.
 
@@ -36,7 +31,7 @@ a homogeneous syntax using a `trace` extra argument::
     >>> divisor = 0
     >>> try:
     ...     inverted = 1/divisor
-    ... except BaseException:
+    ... except Exception:
     ...     raise catch(ValueError('Invalid divisor.'))
 
 If you want to be completely compatible raising exceptions with trace-backs,
@@ -148,7 +143,6 @@ def grab(self=None, trace=None):
         self = with_traceback(self, traceback)
         self = with_cause(self, cause)
         return self
-
 
 
 def throw(error, tb=None):

@@ -4,7 +4,37 @@ Changelog
 1.8 series
 ----------
 
-Unreleased. Release 1.8.3
+Unreleased. Release 1.8.8
+-------------------------
+
+.. include:: history/_changes-1.8.8.rst
+
+
+2018-01-06. Release 1.8.7
+-------------------------
+
+.. include:: history/_changes-1.8.7.rst
+
+
+2018-01-02. Release 1.8.6
+-------------------------
+
+.. include:: history/_changes-1.8.6.rst
+
+
+2017-12-22. Release 1.8.5
+-------------------------
+
+.. include:: history/_changes-1.8.5.rst
+
+
+2017-12-15. Release 1.8.4
+-------------------------
+
+.. include:: history/_changes-1.8.4.rst
+
+
+2017-11-28. Release 1.8.3
 -------------------------
 
 .. include:: history/_changes-1.8.3.rst

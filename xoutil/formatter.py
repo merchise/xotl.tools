@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.formatter
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
-# Copyright (c) 2009-2012 Medardo Rodríguez
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# Author: Medardo Rodriguez
-# Contributors: see CONTRIBUTORS and HISTORY file
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
 
 
-'''Smart formatting.'''
+'''Smart formatting.
+
+.. deprecated:: 1.8.3  Use `~xoutil.future.collections.codedict`:class:.
+
+'''
 
 
 from __future__ import (division as _py3_division,
@@ -24,6 +21,10 @@ from __future__ import (division as _py3_division,
 
 from xoutil.eight import string_types as _str_base
 from xoutil.eight.meta import metaclass
+from xoutil.deprecation import deprecate_module
+
+
+deprecate_module('xoutil.future.collections.codedict')
 
 
 class DelimiterFactory(object):
@@ -184,7 +185,7 @@ class Template(metaclass(_TemplateClass)):
                 else:
                     try:
                         res += item(kwargs)
-                    except:
+                    except Exception:  # TODO: @med which exceptions expected?
                         res += str('')    # item.match
         return res
 

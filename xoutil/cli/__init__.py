@@ -1,15 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# xoutil.cli
-# ---------------------------------------------------------------------
-# Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the LICENCE attached in the distribution package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2013-05-03
 
 '''Tools for Command-Line Interface (CLI) applications.
 
@@ -184,7 +180,10 @@ class Command(ABC):
                 else:
                     from types import FunctionType as ValidMethodType
                 assert isinstance(source.run, ValidMethodType), \
-                    'Invalid type %r for source %r' % (type(source.run).__name__, source)
+                    'Invalid type %r for source %r' % (
+                        type(source.run).__name__,
+                        source
+                    )  # noqa
                 target[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)
@@ -254,7 +253,7 @@ class Help(Command):
                     doc = '"%s"' % (doc if doc else mod_name)
                 else:
                     doc = '"%s"' % mod_name
-            head = ' '*3 + cmd + ' '*(2 + max_len - len(cmd))
+            head = ' ' * 3 + cmd + ' ' * (2 + max_len - len(cmd))
             print(head, doc)
 
     @staticmethod

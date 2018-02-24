@@ -43,6 +43,10 @@
 
 .. autofunction:: identity
 
+.. autofunction:: fst
+
+.. autofunction:: snd
+
 .. autoclass:: pos_args
 
 .. autoclass:: kw_args
