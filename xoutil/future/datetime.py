@@ -728,6 +728,9 @@ class TimeSpan(object):
 
         .. versionadded:: 1.8.2
 
+        .. warning:: Python does have a boundaries for the dates it can
+           represent, so displacing a TimeSpan can cause OverflowError.
+
         '''
         import numbers
         if isinstance(delta, numbers.Integral):
@@ -747,6 +750,9 @@ class TimeSpan(object):
                   same as 0.
 
         .. versionadded:: 1.8.2
+
+        .. warning:: Python does have a boundaries for the dates it can
+           represent, so displacing a TimeSpan can cause OverflowError.
 
         '''
         return self << -delta

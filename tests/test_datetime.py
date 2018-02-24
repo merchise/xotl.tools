@@ -207,12 +207,25 @@ def test_timespans_displacement_backandforth(ts1, delta):
 @given(timespans(unbounds='none'),
        strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_dates(ts1, delta):
-    res = ts1 << delta
-    assert (res.start_date - ts1.start_date).days == -delta
-    assert (res.end_date - ts1.end_date).days == -delta
-    res = ts1 >> delta
-    assert (res.start_date - ts1.start_date).days == delta
-    assert (res.end_date - ts1.end_date).days == delta
+    try:
+        res = ts1 << delta
+    except OverflowError:
+        # Ignore if the date it's being displaced to non-supported date,
+        # that's for the client to deal with
+        pass
+    else:
+        assert (res.start_date - ts1.start_date).days == -delta
+        assert (res.end_date - ts1.end_date).days == -delta
+    try:
+        res = ts1 >> delta
+    except OverflowError:
+        # Ignore if the date it's being displaced to non-supported date,
+        # that's for the client to deal with
+        pass
+    else:
+        assert (res.start_date - ts1.start_date).days == delta
+        assert (res.end_date - ts1.end_date).days == delta
+
 
 
 @given(timespans(unbounds='none'),
