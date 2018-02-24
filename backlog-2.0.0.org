@@ -25,4 +25,4 @@ of Python 2 support in the code and documentation.
 
 - [ ] Remove deprecated modules:
 
-  - [ ] Links to ~xoutil.future~.
+  - [X] Links to ~xoutil.future~.

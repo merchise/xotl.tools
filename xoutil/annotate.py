@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (c) Merchise Autrement [~º/~] and Contributors
@@ -7,11 +7,11 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Provides Python 3k forward-compatible (`3107`:pep:) annotations.'''
+'''Provides Python 3k forward-compatible (`3107`:pep:) annotations.
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
+.. deprecated:: 2.0.0  Not needed in Python 3.
+
+'''
 
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
