@@ -5,7 +5,7 @@
 This file only describe tasks, issues, and ideas strictly related to the drop
 of Python 2 support in the code and documentation.
 
-* Tasks. [/]
+* Tasks. [2/3]
 
 - [X] Don't run tests in Python 2.
 
@@ -14,4 +14,8 @@ of Python 2 support in the code and documentation.
 - [ ] Rework module ~xoutil.eight~ to keep the current API but to remove code
   that's Python 2 only.
 
-  - [ ] ~xoutil.eight.meta~.
+  - [X] Remove ~xoutil.eight._meta2~.
+
+  - [X] Deprecate ~xoutil.eight.meta.metaclass~.
+
+  - [ ] Stop using Python 2 metaclass syntax.
