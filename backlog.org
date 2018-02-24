@@ -9,7 +9,10 @@ documentation could be found in the [[file:docs/source/backlog][backlog]] direct
 
 * General Ideas. [/]
 
-- [ ] Implement a new class (which name could be ~AttributeMappe~)
+- [ ] Drop all code for Python 2 only.  Let the xoutil API unchanged in
+  2.0.0, but signal deprecation.
+
+- [ ] Implement a new class (which name could be ~AttributeMapper~)
   complementing ~xoutil.future.collections.OpenDictMixin~ in order to have the
   following two extensions:
 
@@ -36,10 +39,6 @@ documentation could be found in the [[file:docs/source/backlog][backlog]] direct
           def __init__(self, **kwds):
               self.inner = kwds
     #+end_src
-
-- [ ] 'xoutil.reprlib' must be implemented as part of 'xoutil.eight'.
-
-  Python 3 library 'reprlib' is 'repr' in Python 2.
 
 - [ ] Rename "encoding" by "coding" in all =# -*- encoding:= headers.
 
@@ -81,16 +80,6 @@ documentation could be found in the [[file:docs/source/backlog][backlog]] direct
 
 - [ ] Review [[file:xoutil/tools.py][xoutil.tools]] in order to find incoherent definictions with newly
   modules.
-
-- [ ] Review that in 'xoutil.eight' there are several symbols to check Python
-  versions (_pyver, _py2, _py3, _py33, _py34, _pypy).  Deprecate all in favor
-  of 'python_version'
-
-- [ ] Add Python 3 'partialmethod' into 'xoutil.future.functools'.
-
-- [ ] Implement Python 3 'functools.singledispatch' in our
-  'xoutil.future.functools'.  Ask @manu for an equivalent tool he programmed.
-  Use a similar mechanism also in 'xoutil.fp' for pattern matching.
 
 - [ ] Review and fix 'xoutil.decorator' module.  Get ideas from
   [[https://github.com/dbrattli/OSlash/blob/master/oslash/util/extensionmethod.py][extensionmethod]] from OSlash in order to improve it.
