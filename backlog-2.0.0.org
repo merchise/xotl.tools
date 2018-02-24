@@ -22,3 +22,7 @@ of Python 2 support in the code and documentation.
 
   - [ ] Review ~xoutil.eight.mixins~, it has two standing uses of
     ~xoutil.eight.meta.metaclass~.
+
+- [ ] Remove deprecated modules:
+
+  - [ ] Links to ~xoutil.future~.
