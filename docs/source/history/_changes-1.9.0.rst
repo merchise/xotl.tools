@@ -5,3 +5,5 @@
   found in the last release of that branch (1.8.8).  The change in number
   version is just to signal a milestone in the releases.  We will still keep
   1.9 for a while after the first release of xoutil 2.
+
+- Add `xoutil.objects.import_object`:func:.
