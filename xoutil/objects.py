@@ -1594,4 +1594,50 @@ def temp_attributes(obj, attrs, **kwargs):
         yield
 
 
+def import_object(name, package=None,
+                  sep='.', default=None, **kwargs):
+    """Get symbol by qualified name.
+
+    The name should be the full dot-separated path to the class::
+
+        modulename.ClassName
+
+    Example::
+
+        celery.concurrency.processes.TaskPool
+                                    ^- class name
+
+    or using ':' to separate module and symbol::
+
+        celery.concurrency.processes:TaskPool
+
+    Examples::
+
+        >>> import_object('celery.concurrency.processes.TaskPool')
+        <class 'celery.concurrency.processes.TaskPool'>
+
+        # Does not try to look up non-string names.
+        >>> from celery.concurrency.processes import TaskPool
+        >>> import_object(TaskPool) is TaskPool
+        True
+
+    """
+    import importlib
+    from xoutil.eight import string_types
+    imp = importlib.import_module
+    if not isinstance(name, string_types):
+        return name                                 # already a class
+    sep = ':' if ':' in name else sep
+    module_name, _, cls_name = name.rpartition(sep)
+    if not module_name:
+        cls_name, module_name = None, package if package else cls_name
+    try:
+        module = imp(module_name, package=package, **kwargs)
+        return getattr(module, cls_name) if cls_name else module
+    except (ImportError, AttributeError):
+        if default is None:
+            raise
+    return default
+
+
 del contextmanager

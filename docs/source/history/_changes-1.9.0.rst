@@ -1,7 +1,23 @@
-- Marks the end-of-life for xoutil 1.x with Python 2 support.
+- Marks the end-of-life for ``xoutil 1.x`` with Python 2 support.
 
-  With the release of 2.0.0, xoutil ends it support for Python 2.  Releases
-  1.9.x are a *continuation* of the 1.8.x series, and don't break any API
-  found in the last release of that branch (1.8.8).  The change in number
-  version is just to signal a milestone in the releases.  We will still keep
-  1.9 for a while after the first release of xoutil 2.
+  With the release of 2.0.0, xoutil ends it support for Python 2.
+
+  Releases 1.9.x are a *continuation* of the 1.8.x series, and don't break any
+  API found in the last release of that branch (1.8.8).  We change the number
+  version just to signal a milestone in the releases.
+
+  We will still keep releases 1.9 for a while after the first release of
+  xoutil 2.
+
+- Add `xoutil.objects.import_object`:func:.
+
+- Deprecate imports from top-level `xoutil`:mod:.  The following objects
+  should be imported from `xoutil.symbols`:mod:\ :
+
+  .. hlist::
+     :columns: 4
+
+     - `~xoutil.symbols.Unset`:obj:
+     - `~xoutil.symbols.Undefined`:obj:
+     - `~xoutil.symbols.Invalid`:obj:
+     - `~xoutil.symbols.Ignored`:obj:

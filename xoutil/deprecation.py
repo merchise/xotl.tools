@@ -35,6 +35,33 @@ class DeprecationError(Exception):
 # TODO: Use ``warnings.simplefilter('default', DeprecationWarning)``
 
 
+# TODO: Maybe adapt all other functions in this module to use this descriptor.
+# Currently, it's only being used in combination with xoutil.modules.customize
+# to deprecate imports from xoutil top level module.
+class DeprecatedImportDescriptor(object):
+    'A descriptor that issues a deprecation warning when resolving `name`.'
+    def __init__(self, replacement):
+        self.attr = replacement[replacement.rfind('.') + 1:]
+        self.replacement = replacement
+
+    def __get__(self, instance, owner):
+        if instance is not None:
+            import warnings
+            from xoutil.objects import import_object
+            result = import_object(self.replacement)
+            warnings.warn(
+                'Importing {name} from xoutil is deprecated. '
+                'You should import it from {ns}'.format(
+                    name=self.attr,
+                    ns=self.replacement
+                ),
+                UserWarning  # DeprecationWarning is silent in ipython
+            )
+            return result
+        else:
+            return self
+
+
 def _nameof(item):
     '''Version of `xoutil.names.nameof`:func: to avoid importing it here.'''
     singletons = (None, True, False, Ellipsis, NotImplemented)

@@ -595,3 +595,9 @@ def test_save_raises_errors():
     with pytest.raises(AttributeError):
         with save_attributes(obj, 'x'):
             pass
+
+
+def test_import_object():
+    from xoutil.objects import import_object
+    assert import_object('xoutil.objects.import_object') is import_object
+    assert import_object('xoutil.objects:import_object') is import_object
