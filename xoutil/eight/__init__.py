@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (c) Merchise Autrement [~º/~] and Contributors
@@ -21,11 +21,6 @@ This package also fixes some issues from PyPy interpreter.
 .. _six: https://pypi.python.org/pypi/six
 
 '''
-
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import)
-
 from xoutil.versions import python_version
 
 
@@ -34,27 +29,13 @@ try:
 except ImportError:
     from sha import sha    # noqa
 
-try:
-    base_string = basestring
-    string_types = (str, unicode)
-except NameError:
-    base_string = str
-    string_types = (str, )
-
-if python_version == 3:
-    integer_types = int,
-    long_int = int
-    class_types = type,
-    text_type = str
-    unichr = chr
-else:
-    from types import ClassType
-    integer_types = (int, long)
-    long_int = long
-    class_types = (type, ClassType)
-    text_type = unicode
-    unichr = unichr
-    del ClassType
+base_string = str
+string_types = (str, )
+integer_types = int,
+long_int = int
+class_types = type,
+text_type = str
+unichr = chr
 
 binary_type = bytes
 UnicodeType = text_type
@@ -65,12 +46,9 @@ StringTypes = string_types
 ClassTypes = class_types
 
 
-try:
-    buffer
-except NameError:
-    # The `memoryview`:class: API is similar but not exactly the same as that
-    # of `buffer`.
-    buffer = memoryview
+# The `memoryview`:class: API is similar but not exactly the same as that
+# of `buffer`.
+buffer = memoryview
 
 
 # Python versions
@@ -83,13 +61,7 @@ _py34 = python_version >= 3.4
 _pypy = python_version.pypy
 
 
-def typeof(obj):
-    '''Obtain the object's type (compatible with Python 2**3).'''
-    if _py3:
-        return type(obj)
-    else:
-        from types import InstanceType
-        return obj.__class__ if isinstance(obj, InstanceType) else type(obj)
+typeof = type
 
 
 def force_type(obj):
@@ -106,33 +78,12 @@ def type_name(obj):
     return typeof(obj).__name__
 
 
-try:
-    from sys import intern
-except ImportError:
-    from __builtin__ import intern as __intern
+from sys import intern  # noqa
 
-    def intern(string):
-        # Avoid problems in Python 2.x when using unicode
-        if _py2 and isinstance(string, unicode):
-            string = string.encode('utf-8')
-        return __intern(string)
-
-    # Avoid a Sphinx error
-    intern.__doc__ = __intern.__doc__.replace("``", '"').replace("''", '"')
-
-
-if _py3:
-    input = input
-    range = range
-else:
-    range = xrange
-    input = raw_input
-
-if _py3:    # future_builtins definitions
-    ascii = ascii    # noqa
-    hex, oct, filter, map, zip = hex, oct, filter, map, zip
-else:
-    from future_builtins import *    # noqa
+input = input
+range = range
+ascii = ascii    # noqa
+hex, oct, filter, map, zip = hex, oct, filter, map, zip
 
 
 def iterkeys(d):
@@ -150,70 +101,33 @@ def iteritems(d):
     return (d.items if _py3 else d.iteritems)()
 
 
-if _py3:
-    from io import StringIO
-else:
-    from StringIO import StringIO    # noqa
+from io import StringIO  # noqa
+
+import builtins    # noqa
+__builtin__ = builtins
 
 
-try:
-    import __builtin__    # noqa
-    builtins = __builtin__
-except ImportError:
-    import builtins    # noqa
-    __builtin__ = builtins
+callable = getattr(__builtin__, 'callable')    # noqa
+exec_ = getattr(builtins, 'exec')    # noqa
 
 
-try:
-    callable = getattr(__builtin__, 'callable')    # noqa
-except AttributeError:
-    def callable(obj):
-        '''Return whether `obj` is callable (i.e., some kind of function).
+def execfile(filename, globals=None, locals=None):
+    """Read and execute a Python script from a file.
 
-        Note that classes are callable, as are instances of classes with a
-        __call__() method.
+    The globals and locals are dictionaries, defaulting to the current
+    globals and locals.  If only globals is given, locals defaults to it.
 
-        '''
-        return any('__call__' in cls.__dict__ for cls in type(obj).__mro__)
-
-
-try:
-    exec_ = getattr(builtins, 'exec')    # noqa
-except AttributeError:
-    def exec_(_code_, _globs_=None, _locs_=None):
-        """Execute code in a namespace."""
-        import sys
-        if _globs_ is None:
-            frame = sys._getframe(1)
-            _globs_ = frame.f_globals
-            if _locs_ is None:
-                _locs_ = frame.f_locals
-            del frame
-        elif _locs_ is None:
-            _locs_ = _globs_
-        exec("""exec _code_ in _globs_, _locs_""")
-
-
-try:
-    execfile = getattr(__builtin__, 'execfile')  # noqa
-except AttributeError:
-    def execfile(filename, globals=None, locals=None):
-        """Read and execute a Python script from a file.
-
-        The globals and locals are dictionaries, defaulting to the current
-        globals and locals.  If only globals is given, locals defaults to it.
-
-        """
-        import sys
-        if globals is None:
-            frame = sys._getframe(1)
-            globals = frame.f_globals
-            if locals is None:
-                locals = frame.f_locals
-            del frame
-        elif locals is None:
-            locals = globals
-        with open(filename, "r") as f:
-            source = f.read()
-            code = compile(source, filename, 'exec')
-            return exec_(code, globals, locals)
+    """
+    import sys
+    if globals is None:
+        frame = sys._getframe(1)
+        globals = frame.f_globals
+        if locals is None:
+            locals = frame.f_locals
+        del frame
+    elif locals is None:
+        locals = globals
+    with open(filename, "r") as f:
+        source = f.read()
+        code = compile(source, filename, 'exec')
+        return exec_(code, globals, locals)

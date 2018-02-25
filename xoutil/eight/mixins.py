@@ -183,7 +183,8 @@ def mixin(*args, **kwargs):
         #   class base(metaclass=meta, **kw):
         #       pass
         #
-        # But it fails with TypeError: __init_subclass__() takes no keyword arguments
+        # But it fails with TypeError: __init_subclass__() takes no keyword
+        # arguments
         bases = bases + (metaclass(meta, **kw), )
     attrs = dict(kwargs, __doc__=doc)
     if mod:

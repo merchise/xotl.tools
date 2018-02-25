@@ -13,16 +13,16 @@ of Python 2 support in the code and documentation.
 
 - [ ] Resolve flake8 errors:
 
-  - [ ] xoutil/deprecation.py:102:65: F821 undefined name 'basestring'
-  - [ ] xoutil/eight/mixins.py:186:80: E501 line too long (85 > 79 characters)
-  - [ ] xoutil/eight/__init__.py:52:27: F821 undefined name 'long'
-  - [ ] xoutil/eight/__init__.py:53:16: F821 undefined name 'long'
-  - [ ] xoutil/eight/__init__.py:55:17: F821 undefined name 'unicode'
-  - [ ] xoutil/eight/__init__.py:128:13: F821 undefined name 'xrange'
-  - [ ] xoutil/eight/__init__.py:129:13: F821 undefined name 'raw_input'
-  - [ ] xoutil/eight/_throw2.py:14:16: E999 SyntaxError: invalid syntax
-  - [ ] xoutil/eight/urllib/parse.py:81:35: F821 undefined name 'unicode'
-  - [ ] xoutil/eight/urllib/parse.py:81:44: F821 undefined name 'buffer'
+  - [X] xoutil/deprecation.py:102:65: F821 undefined name 'basestring'
+  - [X] xoutil/eight/mixins.py:186:80: E501 line too long (85 > 79 characters)
+  - [X] xoutil/eight/__init__.py:52:27: F821 undefined name 'long'
+  - [X] xoutil/eight/__init__.py:53:16: F821 undefined name 'long'
+  - [X] xoutil/eight/__init__.py:55:17: F821 undefined name 'unicode'
+  - [X] xoutil/eight/__init__.py:128:13: F821 undefined name 'xrange'
+  - [X] xoutil/eight/__init__.py:129:13: F821 undefined name 'raw_input'
+  - [X] xoutil/eight/_throw2.py:14:16: E999 SyntaxError: invalid syntax
+  - [X] xoutil/eight/urllib/parse.py:81:35: F821 undefined name 'unicode'
+  - [X] xoutil/eight/urllib/parse.py:81:44: F821 undefined name 'buffer'
 
 - [ ] Rework module ~xoutil.eight~ to keep the current API but to remove code
   that's Python 2 only.
