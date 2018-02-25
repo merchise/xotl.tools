@@ -97,9 +97,8 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
     '''
 
     def raise_if_deprecated(target, target_version):
-        import sys
         import pkg_resources
-        string_types = (str,) if sys.version_info[0] == 3 else (basestring,)
+        string_types = (str,)
         pkg = _nameof(target)
         pkg, _obj = pkg.rsplit('.', 1)
         dist = None
