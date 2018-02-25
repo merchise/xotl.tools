@@ -16,7 +16,7 @@ lint:
 run all tests (if needed):
   stage: test
   script:
-    - if git show --oneline --name-only $CI_COMMIT_SHA | grep \.py$; then tox -e2.7-unit,3.5-unit,2.7-greenlets; fi
+    - if git show --oneline --name-only $CI_COMMIT_SHA | grep \.py$; then tox -e3.5-unit,3.5-greenlets; fi
   tags:
     - python
     - virtualenv
