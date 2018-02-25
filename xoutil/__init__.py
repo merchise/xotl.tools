@@ -10,8 +10,8 @@
 '''Collection of disparate utilities.
 
 `xoutil` is essentially an extension to the Python's standard library, it does
-not turn into a full framework, but it's very useful to be used from a
-diversity of scenarios where compatibility is an important issue.
+not make up a full framework, but it's very useful to be used from a
+diversity of scenarios.
 
 '''
 
