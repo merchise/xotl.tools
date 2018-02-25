@@ -7,3 +7,14 @@
   1.9 for a while after the first release of xoutil 2.
 
 - Add `xoutil.objects.import_object`:func:.
+
+- Deprecate imports from top-level `xoutil`:mod:.  The following objects
+  should be imported from `xoutil.symbols`:mod:\ :
+
+  .. hlist::
+     :columns: 4
+
+     - `~xoutil.symbols.Unset`:obj:
+     - `~xoutil.symbols.Undefined`:obj:
+     - `~xoutil.symbols.Invalid`:obj:
+     - `~xoutil.symbols.Ignored`:obj:
