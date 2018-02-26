@@ -13,13 +13,10 @@
    ``xoutil.iterators`` is now a deprecated alias.
 
 '''
+from itertools import *  # noqa
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
-
-from itertools import *    # noqa
-import itertools as _stdlib    # noqa
+map = map
+zip = zip
 
 from xoutil.deprecation import deprecate_linked
 deprecate_linked(msg=('"xoutil.iterators" is deprecated. '
@@ -412,8 +409,7 @@ def ungroup(iterator):
             yield x
 
 
-# Signature is `(*iterables, key=None)`.
-def merge(*iterables, **kwargs):
+def merge(*iterables, key=None):
     '''Merge the iterables in order.
 
     Return an iterator that yields all items from `iterables` following the
@@ -428,10 +424,10 @@ def merge(*iterables, **kwargs):
 
     '''
     from xoutil.symbols import Undefined
-    from xoutil.params import ParamManager
     from xoutil.future.collections import Iterable, Iterator
-    pm = ParamManager((), kwargs)
-    key = pm('key', default=lambda x: x)
+
+    if key is None:
+        key = lambda x: x
 
     def _merge(iter1, iter2):
         iter1 = iter(iter1)
@@ -467,16 +463,3 @@ def merge(*iterables, **kwargs):
     else:
         res = _empty()
     return res
-
-
-# Compatible zip and map
-from xoutil.eight import python_version
-
-if python_version == 3:
-    map = map
-    zip = zip
-    from itertools import zip_longest     # noqa
-
-else:
-    from itertools import (imap as map, izip as zip,    # noqa
-                           izip_longest as zip_longest)
