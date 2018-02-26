@@ -89,8 +89,7 @@ from __future__ import (division as _py3_division,
 from types import *    # noqa
 import types as _stdlib    # noqa
 
-from xoutil.deprecation import deprecated, deprecate_linked
-deprecate_linked()
+from xoutil.deprecation import deprecated
 
 from xoutil.eight import python_version    # noqa
 from xoutil.symbols import Unset as _unset
@@ -638,6 +637,3 @@ def no_instances(*args):
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.
     return all(not isinstance(subject, types) for subject in subjects)
-
-
-del deprecated, deprecate_linked

@@ -17,10 +17,6 @@ from pprint import *    # noqa
 from pprint import __all__, pprint    # noqa
 __all__ = list(__all__) + ['ppformat']
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
 
 def ppformat(obj):
     '''Just like `pprint`:func: but always returning a result.

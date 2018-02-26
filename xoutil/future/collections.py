@@ -32,10 +32,6 @@ from collections import (
 import collections as _stdlib    # noqa
 from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
 try:
     from collection import _sys    # noqa
 except ImportError:

@@ -20,10 +20,6 @@ from __future__ import (division as _py3_division,
 from functools import *    # noqa
 from functools import _CacheInfo  # noqa
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
 from xoutil.eight import python_version    # noqa
 from xoutil.eight import callable    # noqa
 

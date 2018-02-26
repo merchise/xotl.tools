@@ -18,10 +18,6 @@ from subprocess import *    # noqa
 from subprocess import __all__, Popen, PIPE   # noqa
 __all__ = list(__all__) + ['call_and_check_output']
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
 
 def call_and_check_output(*popenargs, **kwargs):
     '''Combines `call` and `check_output`. Returns a tuple ``(returncode,

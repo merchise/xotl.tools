@@ -20,11 +20,6 @@ from __future__ import (division as _py3_division,
 
 from inspect import *    # noqa
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
-
 try:
     getfullargspec    # noqa
 except NameError:

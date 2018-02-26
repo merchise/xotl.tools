@@ -22,10 +22,6 @@ from codecs import *    # noqa
 from codecs import __all__    # noqa
 __all__ = list(__all__)
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
 
 def force_encoding(encoding=None):
     '''Validates an encoding value.

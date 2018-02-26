@@ -32,10 +32,6 @@ __all__ = list(__all__) + ['file_load', 'encode_string']
 
 from json import encoder, decoder    # noqa
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
 
 class JSONEncoder(_stdlib.JSONEncoder):
     __doc__ = (_stdlib.JSONEncoder.__doc__ + '''

@@ -13,9 +13,6 @@ from __future__ import (division as _py3_division,
 
 from threading import *    # noqa
 from threading import Event, Thread, RLock, Timer
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
 
 
 def async_call(func, args=None, kwargs=None, callback=None, onerror=None):

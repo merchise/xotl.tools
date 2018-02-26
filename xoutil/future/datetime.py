@@ -31,10 +31,6 @@ from datetime import *    # noqa
 from datetime import timedelta
 import datetime as _stdlib    # noqa
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked()
-del deprecate_linked
-
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
 

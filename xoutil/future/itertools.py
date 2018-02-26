@@ -18,11 +18,6 @@ from itertools import *  # noqa
 map = map
 zip = zip
 
-from xoutil.deprecation import deprecate_linked
-deprecate_linked(msg=('"xoutil.iterators" is deprecated. '
-                      'Use "xoutil.future.itertools".'))
-del deprecate_linked
-
 from xoutil.symbols import Unset
 
 
