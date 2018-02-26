@@ -757,7 +757,7 @@ def iterate_over(source, *keys):
     return res
 
 
-def get_first_of(source, *keys, **kwargs):
+def get_first_of(source, *keys, default=None, pred=None):
     '''Return the value of the first occurrence of any of the specified `keys`
     in `source` that matches `pred` (if given).
 
@@ -772,11 +772,6 @@ def get_first_of(source, *keys, **kwargs):
     .. versionchanged:: 1.5.2  Added the `pred` option.
 
     '''
-    default = kwargs.pop('default', None)
-    pred = kwargs.pop('pred', None)
-    if kwargs:
-        raise TypeError('Invalid keywords %s for get_first_of' %
-                        (kwargs.keys(), ))
     _key, res = next(((k, val) for k, val in iterate_over(source, *keys)
                       if not pred or pred(val)), (Unset, Unset))
     return res if res is not Unset else default
@@ -1212,7 +1207,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
 # Real signature is (*sources, target, *, default=None) where target is a
 # positional argument, and not a keyword.
 # TODO: First look up "target" in keywords and then in positional arguments.
-def smart_copy(*args, **kwargs):
+def smart_copy(*args, defaults=None):
     '''Copies the first apparition of attributes (or keys) from `sources` to
     `target`.
 
@@ -1244,7 +1239,7 @@ def smart_copy(*args, **kwargs):
     In these cases a KeyError is raised if the key is not found in the
     sources.
 
-    If `default` is an iterable and a key is not found in any of the sources,
+    If `defaults` is an iterable and a key is not found in any of the sources,
     None is copied to `target`.
 
     If `defaults` is a callable then it should receive one positional
@@ -1274,10 +1269,6 @@ def smart_copy(*args, **kwargs):
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
     from xoutil.values.simple import logic_iterable_coerce, nil
-    defaults = kwargs.pop('defaults', False)
-    if kwargs:
-        raise TypeError('smart_copy does not accept a "%s" keyword argument'
-                        % kwargs.keys()[0])
     sources, target = args[:-1], args[-1]
     if not sources:
         raise TypeError('smart_copy() requires at least one source')
@@ -1504,7 +1495,7 @@ def dict_merge(*dicts, **others):
 
 
 @contextmanager
-def save_attributes(obj, *attrs, **kwargs):
+def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
     '''A context manager that restores `obj` attributes at exit.
 
     We deal with `obj`\ 's attributes with `smart_getter`:func: and
@@ -1561,8 +1552,6 @@ def save_attributes(obj, *attrs, **kwargs):
     '''
     from xoutil.params import check_count
     check_count(attrs, 1)
-    getter = kwargs.get('getter', smart_getter)
-    setter = kwargs.get('setter', smart_setter)
     get_ = getter(obj)
     set_ = setter(obj)
     props = {attr: get_(attr) for attr in attrs}
@@ -1574,7 +1563,7 @@ def save_attributes(obj, *attrs, **kwargs):
 
 
 @contextmanager
-def temp_attributes(obj, attrs, **kwargs):
+def temp_attributes(obj, attrs, getter=smart_getter, setter=smart_setter):
     '''A context manager that temporarily sets attributes.
 
     `attrs` is a dictionary containing the attributes to set.
@@ -1586,16 +1575,15 @@ def temp_attributes(obj, attrs, **kwargs):
     .. versionadded:: 1.8.5
 
     '''
-    setter = kwargs.get('setter', smart_setter)
     set_ = setter(obj)
-    with save_attributes(obj, *tuple(attrs.keys()), **kwargs):
+    with save_attributes(obj, *tuple(attrs.keys()), getter=getter,
+                         setter=setter):
         for attr, value in attrs.items():
             set_(attr, value)
         yield
 
 
-def import_object(name, package=None,
-                  sep='.', default=None, **kwargs):
+def import_object(name, package=None, sep='.', default=None, **kwargs):
     """Get symbol by qualified name.
 
     The name should be the full dot-separated path to the class::
