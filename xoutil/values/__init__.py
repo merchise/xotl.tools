@@ -469,7 +469,7 @@ def sized_coerce(arg):
 
 
 @coercer.adopt
-class custom(object):
+class custom:
     '''Base class for any custom coercer.
 
     The field `inner` stores an internal data used for the custom coercer;

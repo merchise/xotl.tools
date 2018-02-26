@@ -49,7 +49,7 @@ def test_basic_inline_metaclass():
 def test_atypical_metaclass():
     from xoutil.eight.meta import metaclass
 
-    class API(object):
+    class API:
         def values(self, obj):
             def item(key):
                 if key.startswith('_'):

@@ -18,7 +18,7 @@ from xoutil.keywords import getkwd, setkwd, kwd_getter, kwd_setter, org_kwd
 def test_keywords():
     from xoutil.eight import iteritems
 
-    class Foobar(object):
+    class Foobar:
         pass
 
     proper = lambda v: isinstance(v, type) and issubclass(v, Foobar)

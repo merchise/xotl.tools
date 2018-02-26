@@ -121,7 +121,7 @@ def test_greenlet_contexts():
         calls = 0
         switches = 0
 
-    class GreenletProg(object):
+    class GreenletProg:
         def __init__(self, arg):
             self.arg = arg
 

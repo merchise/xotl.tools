@@ -35,7 +35,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-class Maybe(object):
+class Maybe:
     '''Wrapper for optional values.
 
     The Maybe type encapsulates an optional value.  A value of type

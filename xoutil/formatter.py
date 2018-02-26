@@ -26,12 +26,12 @@ from xoutil.deprecation import deprecate_module
 deprecate_module('xoutil.future.collections.codedict')
 
 
-class DelimiterFactory(object):
+class DelimiterFactory:
     def __new__(cls, owner, key, start, end):
         return key
 
 
-class BaseFactory(object):
+class BaseFactory:
     _unsafe = False
 
     def __init__(self, owner, key, start, end):
@@ -56,7 +56,7 @@ class PyFactory(BaseFactory):
         return text_type(eval(self.key, mapping))
 
 
-class InvalidFactory(object):
+class InvalidFactory:
     _unsafe = True
 
     def __init__(self, owner, key, start, end):

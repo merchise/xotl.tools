@@ -38,7 +38,7 @@ class DeprecationError(Exception):
 # TODO: Maybe adapt all other functions in this module to use this descriptor.
 # Currently, it's only being used in combination with xoutil.modules.customize
 # to deprecate imports from xoutil top level module.
-class DeprecatedImportDescriptor(object):
+class DeprecatedImportDescriptor:
     'A descriptor that issues a deprecation warning when resolving `name`.'
     def __init__(self, replacement):
         self.attr = replacement[replacement.rfind('.') + 1:]

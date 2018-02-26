@@ -19,7 +19,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-class Mixin(object):
+class Mixin:
     '''Base-class to several mix-in kinds.
 
     - Syntax unification for meta-classes between Python 2 and 3.  See
@@ -49,12 +49,16 @@ class Mixin(object):
 
         >>> from xoutil.eight.abc import ABCMeta
         >>> from xoutil.eight.mixins import mixin
-        >>> class Foo(object):
+
+        >>> class Foo:
         ...     pass
+
         >>> class Bar(dict):
         ...     pass
+
         >>> class EggMeta(type):
         ...     pass
+
         >>> Test = mixin(Foo, Bar, meta=(EggMeta, ABCMeta), name='Test')
 
     - Weaver a main-class using several parts.  For example::

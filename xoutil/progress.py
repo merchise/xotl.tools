@@ -21,7 +21,7 @@ __all__ = ['Progress']
 _HELIX = '|/-\\'
 
 
-class Progress(object):
+class Progress:
     '''
     Print a progress percent to the console. Also the elapsed and the
     estimated times.

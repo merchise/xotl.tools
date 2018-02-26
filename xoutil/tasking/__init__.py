@@ -70,7 +70,7 @@ MIN_WAIT_INTERVAL = 20 / 1000  # 20 ms
 DEFAULT_WAIT_INTERVAL = 50 / 1000  # 50 ms
 
 
-class StandardWait(object):
+class StandardWait:
     '''A standard constant wait algorithm.
 
     Instances are callables that comply with the need of the `wait` argument
@@ -91,7 +91,7 @@ class StandardWait(object):
         return self.wait
 
 
-class BackoffWait(object):
+class BackoffWait:
     '''A wait algorithm with an exponential backoff.
 
     Instances are callables that comply with the need of the `wait` argument
@@ -139,7 +139,7 @@ def retry(fn, *args, **kwargs):
                    retry_only=retry_only)(fn, *fnargs, **fnkwargs)
 
 
-class retrier(object):
+class retrier:
     '''An auto-retrying dispatcher.
 
     Return a callable that take another callable (`func`) and its arguments

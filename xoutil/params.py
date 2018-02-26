@@ -306,7 +306,7 @@ def pop_keyword_values(kwargs, *names, **options):
     return res
 
 
-class ParamManager(object):
+class ParamManager:
     '''Function parameters parser.
 
     For example::
@@ -384,7 +384,7 @@ class ParamManager(object):
         return {k: args[k] if isinstance(k, int) else kwds[k] for k in ids}
 
 
-class ParamSchemeRow(object):
+class ParamSchemeRow:
     '''Scheme row for a  `ParamManager`:class: instance call.
 
     This class validates identifiers and options at this level; these
@@ -520,7 +520,7 @@ class ParamSchemeRow(object):
         return res
 
 
-class ParamScheme(object):
+class ParamScheme:
     '''Full scheme for a  `ParamManager`:class: instance call.
 
     This class receives a set of `ParamSchemeRow`:class: instances and

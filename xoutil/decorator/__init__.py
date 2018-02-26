@@ -29,7 +29,7 @@ __all__ = ('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
            'memoized_instancemethod', 'reset_memoized')
 
 
-class AttributeAlias(object):
+class AttributeAlias:
     '''Descriptor to create aliases for object attributes.
 
     This descriptor is mainly to be used internally by `aliases`:func:
@@ -57,7 +57,7 @@ def settle(**kwargs):
     Usage::
 
        >>> @settle(name='Name')
-       ... class Person(object):
+       ... class Person:
        ...    pass
 
        >>> Person.name
@@ -77,7 +77,7 @@ def namer(name, **kwargs):
     Usage::
 
         >>> @namer('Identity', custom=1)
-        ... class I(object):
+        ... class I:
         ...    pass
 
         >>> I.__name__
@@ -175,14 +175,14 @@ def instantiate(target, *args, **kwargs):
     target. The following two code samples show two cases::
 
        >>> @instantiate
-       ... class Foobar(object):
+       ... class Foobar:
        ...    def __init__(self):
        ...        print('Init...')
        Init...
 
 
        >>> @instantiate('test', context={'x': 1})
-       ... class Foobar(object):
+       ... class Foobar:
        ...    def __init__(self, name, context):
        ...        print('Initializing a Foobar instance with name={name!r} '
        ...              'and context={context!r}'.format(**locals()))
@@ -248,7 +248,7 @@ def singleton(target, *args, **kwargs):
     target. The following two code samples show two cases::
 
       >>> @singleton
-      ... class foobar(object):
+      ... class foobar:
       ...    def __init__(self):
       ...        self.doc = 'foobar instance'
 
@@ -256,7 +256,7 @@ def singleton(target, *args, **kwargs):
       'foobar instance'
 
       >>> @singleton('test', context={'x': 1})
-      ... class foobar(object):
+      ... class foobar:
       ...     def __init__(self, name, context):
       ...         self.name = name
       ...         self.context = context
@@ -285,7 +285,7 @@ def singleton(target, *args, **kwargs):
     return res
 
 
-class memoized_property(object):
+class memoized_property:
     '''A read-only property that is only evaluated once.
 
     Deprecated in favor of `xoutil.objects.memoized_property`:class:.
@@ -312,7 +312,7 @@ class memoized_property(object):
         instance.__dict__.pop(self.__name__, None)
 
 
-class memoized_instancemethod(object):
+class memoized_instancemethod:
     """Decorate a method memoize its return value.
 
     Best applied to no-arg methods: memoization is not sensitive to

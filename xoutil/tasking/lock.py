@@ -59,7 +59,7 @@ def context_lock(self):
     '''Allocate a lock based on Xoutil execution contexts.'''
     from xoutil.objects import classproperty
 
-    class ContextLock(object):
+    class ContextLock:
         '''A class representing the lock.
 
         See `xoutil.lock`:mod: module for more information.

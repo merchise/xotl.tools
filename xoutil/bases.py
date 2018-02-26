@@ -116,7 +116,7 @@ def str2int(src, base=_DEFAULT_BASE):
     return sign * res
 
 
-class BaseConvertor(object):
+class BaseConvertor:
     '''Base class that implements conversion algorithms based on a simple
     lookup table and a bit mask.
 

@@ -15,7 +15,7 @@ import pytest
 from xoutil.tasking import retry
 
 
-class FailingMock(object):
+class FailingMock:
     def __init__(self, start=0, threshold=5, sleeper=0):
         self.start = start
         self.threshold = threshold

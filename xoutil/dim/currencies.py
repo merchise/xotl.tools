@@ -104,7 +104,7 @@ class Rate(metaclass=RateType):
     pass
 
 
-class _Currency(object):
+class _Currency:
     instances = {}
     units = {}
 

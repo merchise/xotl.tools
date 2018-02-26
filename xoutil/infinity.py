@@ -58,7 +58,7 @@ InfinityComparable.register(datetime.timedelta)
 
 
 @total_ordering
-class InfinityType(object):
+class InfinityType:
     _positive = None
     _negative = None
 

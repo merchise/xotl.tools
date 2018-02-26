@@ -24,7 +24,7 @@ def _get_test_classes():
         def test_one(self):
             return self.one
 
-    class Two(object):
+    class Two:
         two = 2
 
         def test_two(self):

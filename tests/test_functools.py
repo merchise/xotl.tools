@@ -95,7 +95,7 @@ class TestCompose(unittest.TestCase):
 def test_lwraps():
     from xoutil.future.functools import lwraps
 
-    class foobar(object):
+    class foobar:
         @lwraps('method-one', one=True)
         def one(self):
             return type(self).__name__

@@ -139,7 +139,7 @@ except NameError:
 
 # Check Jython and PyPy peculiarity
 if MemberDescriptorType is GetSetDescriptorType:    # noqa
-    class _foo(object):
+    class _foo:
         __slots__ = 'bar'
     MemberDescriptorType = type(_foo.bar)
     del _foo
@@ -270,7 +270,7 @@ class mro_dict(Mapping):
 
     For example::
 
-      >>> class A(object):
+      >>> class A:
       ...     x = 12
       ...     y = 34
 
@@ -481,7 +481,7 @@ def is_staticmethod(cls, name):
     When a static-method is declared, you can not test that condition using
     the traditional way::
 
-      >>> class Foo(object):
+      >>> class Foo:
       ...     @staticmethod
       ...     def bar():
       ...         pass
@@ -509,7 +509,7 @@ def is_classmethod(cls, name):
     When a class-method is declared, you can not test that condition using the
     traditional way::
 
-      >>> class Foo(object):
+      >>> class Foo:
       ...     @classmethod
       ...     def bar(cls):
       ...         pass
@@ -537,7 +537,7 @@ def is_instancemethod(cls, name):
     To find out if a method is "normal", ``isinstance(obj.method,
     MethodType)`` can't be used::
 
-      >>> class Foobar(object):
+      >>> class Foobar:
       ...     @classmethod
       ...     def cm(cls):
       ...         pass

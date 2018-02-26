@@ -23,7 +23,7 @@ This module allows you to define dimensions (or quantity types):
 
    >>> from xoutil.dim.meta import Dimension, UNIT
    >>> @Dimension.new
-   ... class Length(object):
+   ... class Length:
    ...     metre = UNIT
    ...     kilometre = 1000 * metre
    ...     centimetre = metre/100
@@ -74,7 +74,7 @@ dimension) can be compared, equated, added, or subtracted.
 __ https://en.wikipedia.org/wiki/Dimensional_analysis#Dimensional_homogeneity
 
    >>> @Dimension.new
-   >>> class Time(object):
+   >>> class Time:
    ...     second = UNIT
 
    >>> metre + Time.second  # doctest: +ELLIPSIS
@@ -108,7 +108,7 @@ unit.  This implies that you can *recreate* the same dimension and it will be
 interoperable with the former::
 
    >>> @Dimension.new
-   ... class L(object):
+   ... class L:
    ...    m = UNIT
 
    >>> m = L.m  # Save this
@@ -116,7 +116,7 @@ interoperable with the former::
 
    >>> # Recreate the same dimension.
    >>> @Dimension.new
-   ... class L(object):
+   ... class L:
    ...    m = UNIT
 
    >>> m == L.m
@@ -249,7 +249,7 @@ class Dimension(type):
         Example:
 
            >>> @Dimension.new(unit_alias='man')
-           ... class Workforce(object):
+           ... class Workforce:
            ...    men = UNIT
 
            >>> Workforce.men == Workforce.man == Workforce._unit_
@@ -375,7 +375,7 @@ class Dimension(type):
             )
 
 
-class Signature(object):
+class Signature:
     '''The layout of the kinds that compose a quantity.
 
     The layout is given by a pair non-ordered collections (repetition
@@ -740,7 +740,7 @@ SCALAR = Signature()
 
 
 @Dimension.new
-class Scalar(object):
+class Scalar:
     '''A quantity whose signature is always *empty*.
 
     Most of the time you should not deal with this quantity.  Any normal

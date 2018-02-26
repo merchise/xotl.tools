@@ -90,7 +90,7 @@ def command_name(cls):
 
     Example::
 
-        >>> class SomeCommand(object):
+        >>> class SomeCommand:
         ...     pass
 
         >>> command_name(SomeCommand) == 'some-command'
@@ -99,7 +99,7 @@ def command_name(cls):
     If the command class has an attribute `command_cli_name`, this will be
     used instead::
 
-        >>> class SomeCommand(object):
+        >>> class SomeCommand:
         ...    command_cli_name = 'adduser'
 
         >>> command_name(SomeCommand) == 'adduser'
@@ -107,7 +107,7 @@ def command_name(cls):
 
     It's an error to have a non-string `command_cli_name` attribute::
 
-        >>> class SomeCommand(object):
+        >>> class SomeCommand:
         ...    command_cli_name = None
 
         >>> command_name(SomeCommand)  # doctest: +ELLIPSIS

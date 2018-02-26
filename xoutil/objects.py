@@ -40,7 +40,7 @@ def _false(*args, **kwargs):
     return False
 
 
-class SafeDataItem(object):
+class SafeDataItem:
     '''A data descriptor that is safe.
 
     A *safe descriptor* never uses internal special methods ``__getattr__``
@@ -57,7 +57,7 @@ class SafeDataItem(object):
     1. As a normal descriptor not associated with a constructor method::
 
         >>> from xoutil.objects import SafeDataItem as safe
-        >>> class Foobar(object):
+        >>> class Foobar:
         ...     safe('mapping', dict)
         >>> f = Foobar()
         >>> f.mapping
@@ -65,7 +65,7 @@ class SafeDataItem(object):
 
     2. As a normal descriptor but associated with a constructor method::
 
-        >>> class Foobar(object):
+        >>> class Foobar:
         ...     @safe.property
         ...     def mapping(self):
         ...         return {'this': self}
@@ -76,7 +76,7 @@ class SafeDataItem(object):
     3. As a slot.  In this case generate an internal slot and a safe
        descriptor to access it::
 
-        >>> class Foobar(object):
+        >>> class Foobar:
         ...     __slots__ = safe.slot('mapping', dict)
         >>> f = Foobar()
         >>> f.mapping
@@ -131,7 +131,7 @@ class SafeDataItem(object):
 
         This must appears in a slots declaration::
 
-          class Foobar(object):
+          class Foobar:
               __slots__ = (SafeDataItem.slot('mapping', dict), ...)
 
         This method return the inner slot name, argument passed is used for
@@ -154,7 +154,7 @@ class SafeDataItem(object):
           In this case it returns a safe descriptor::
 
             >>> from xoutil.objects import SafeDataItem as safe
-            >>> class Foobar(object):
+            >>> class Foobar:
             ...     @safe.property
             ...     def mapping(self):
             ...         'To generate a safe `mapping` descriptor.'
@@ -167,7 +167,7 @@ class SafeDataItem(object):
           returns a decorator that receive one single argument (the method)
           and return the safe descriptor::
 
-            >>> class Foobar(object):
+            >>> class Foobar:
             ...     @safe.property(kind='class')
             ...     def mapping(cls):
             ...         'To generate a safe `mapping` descriptor.'
@@ -675,7 +675,7 @@ def validate_attrs(source, target, force_equals=(), force_differents=()):
 
     For instance::
 
-        >>> class Person(object):
+        >>> class Person:
         ...    def __init__(self, **kwargs):
         ...        for which in kwargs:
         ...            setattr(self, which, kwargs[which])
@@ -790,7 +790,7 @@ def pop_first_of(source, *keys, **kwargs):
 
         >>> somedict = dict(bar='bar-dict', eggs='eggs-dict')
 
-        >>> class Foo(object): pass
+        >>> class Foo: pass
         >>> foo = Foo()
         >>> foo.bar = 'bar-obj'
         >>> foo.eggs = 'eggs-obj'
@@ -843,7 +843,7 @@ def popattr(obj, name, default=None):
 
     Examples::
 
-        >>> class Foo(object):
+        >>> class Foo:
         ...   a = 1
         >>> foo = Foo()
         >>> foo.a = 2
@@ -869,7 +869,7 @@ def popattr(obj, name, default=None):
     return res
 
 
-class lazy(object):
+class lazy:
     '''Marks a value as a lazily evaluated value. See `setdefaultattr`:func:.
 
     '''
@@ -917,7 +917,7 @@ class xproperty(property):
 
     Example of its use::
 
-        >>> class Foobar(object):
+        >>> class Foobar:
         ...     _x = 'in the class'
         ...
         ...     def __init__(self):
@@ -956,7 +956,7 @@ class classproperty(property):
 
     Example of its use::
 
-        class Foobar(object):
+        class Foobar:
             @classproperty
             def getx(cls):
                 return cls._x
@@ -965,7 +965,7 @@ class classproperty(property):
     for that case because 'setter', and 'deleter' decorators can't be used for
     obvious reasons.  For example::
 
-        class Foobar(object):
+        class Foobar:
             x = 1
             def __init__(self, x=2):
                 self.x = x
@@ -998,7 +998,7 @@ class staticproperty(property):
 
     Example of its use::
 
-        class Foobar(object):
+        class Foobar:
             @staticproperty
             def getx():
                 return 'this is static'
@@ -1007,7 +1007,7 @@ class staticproperty(property):
     for that case because 'setter', and 'deleter' decorators can't be used for
     obvious reasons.  For example::
 
-        class Foobar(object):
+        class Foobar:
             x = 1
             def __init__(self, x=2):
                 self.x = x
@@ -1047,7 +1047,7 @@ class staticproperty(property):
 # This module is part of SQLAlchemy and is released under the MIT License:
 # http://www.opensource.org/licenses/mit-license.php
 #
-class memoized_property(object):
+class memoized_property:
     """A read-only property that is only evaluated once.
 
     This is extracted from the SQLAlchemy project's codebase, merit and
@@ -1078,7 +1078,7 @@ class memoized_property(object):
 def setdefaultattr(obj, name, value):
     '''Sets the attribute name to value if it is not set::
 
-        >>> class Someclass(object): pass
+        >>> class Someclass: pass
         >>> inst = Someclass()
         >>> setdefaultattr(inst, 'foo', 'bar')
         'bar'
@@ -1357,7 +1357,7 @@ def register_with(abc):
 
         >>> from collections import Mapping
         >>> @register_with(Mapping)
-        ... class Foobar(object):
+        ... class Foobar:
         ...     pass
 
         >>> issubclass(Foobar, Mapping)

@@ -43,7 +43,7 @@ PYPY = hasattr(sys, 'pypy_version_info')
 __all__ = ["local"]
 
 
-class _localbase(object):
+class _localbase:
     __slots__ = '_local__args', '_local__lock', '_local__dicts'
 
     def __new__(cls, *args, **kw):

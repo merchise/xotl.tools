@@ -45,7 +45,7 @@ def nano(v):
 
 
 @Dimension.new()
-class Length(object):
+class Length:
     metre = UNIT
     kilometer = km = kilo(metre)
     centimeter = cm = centi(metre)
@@ -58,7 +58,7 @@ L = Length
 
 
 @Dimension.new
-class Time(object):
+class Time:
     second = UNIT
     millisecond = ms = milli(second)
     nanosecond = ns = nano(second)
@@ -71,7 +71,7 @@ T = Time
 
 
 @Dimension.new(unit_aliases=('kg', ))
-class Mass(object):
+class Mass:
     kilogram = UNIT
     gram = kilogram / 1000
 
@@ -81,7 +81,7 @@ M = Mass
 
 
 @Dimension.new(unit_aliases='A')
-class ElectricCurrent(object):
+class ElectricCurrent:
     ampere = UNIT
     milliampere = milli(ampere)
 
@@ -91,7 +91,7 @@ I = ElectricCurrent
 
 
 @Dimension.new(unit_aliases='K')
-class Temperature(object):
+class Temperature:
     kelvin = UNIT
 
     @classmethod
@@ -110,7 +110,7 @@ O = Temperature   # The actual symbol would be the capital letter Theta: Θ
 
 
 @Dimension.new(unit_alias='mol')
-class Substance(object):
+class Substance:
     mole = UNIT
 
 
@@ -119,7 +119,7 @@ N = Substance
 
 
 @Dimension.new
-class Luminosity(object):
+class Luminosity:
     candela = UNIT
 
 

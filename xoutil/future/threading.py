@@ -59,7 +59,7 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
     return event
 
 
-class _SyncronizedCaller(object):
+class _SyncronizedCaller:
     '''Protected to be used in `sync_call`:func:'''
     def __init__(self, pooling=0.005):
         self.lock = RLock()

@@ -31,12 +31,12 @@ signatures = s.text(alphabet='abcdefghijok', min_size=0, max_size=10)
 
 def test_usage():
     @Dimension.new
-    class L(object):
+    class L:
         metre = UNIT
         kilometre = 1000 * metre
 
     @Dimension.new
-    class T(object):
+    class T:
         second = UNIT
 
     m, km = L.metre, L.kilometre
@@ -77,11 +77,11 @@ def test_usage():
 
 def test_effort():
     @Dimension.new
-    class Workforce(object):
+    class Workforce:
         men = UNIT
 
     @Dimension.new
-    class Time(object):
+    class Time:
         second = UNIT
 
     class Effort(Workforce * Time):
@@ -249,13 +249,13 @@ def test_undistinguishable_definitions():
     from xoutil.dim.base import L
 
     @Dimension.new
-    class Length(object):
+    class Length:
         metre = UNIT
 
     assert L.metre == Length.metre
 
     @Dimension.new
-    class Length(object):
+    class Length:
         km = UNIT
 
     with pytest.raises(TypeError):

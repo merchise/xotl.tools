@@ -455,7 +455,7 @@ else:
 del sys
 
 
-class DateField(object):
+class DateField:
     '''A simple descriptor for dates.
 
     Ensures that assigned values must be parseable dates and parses them.
@@ -492,7 +492,7 @@ class DateField(object):
         instance.__dict__[self.name] = value
 
 
-class TimeSpan(object):
+class TimeSpan:
     '''A *continuous* span of time.
 
     Time spans objects are iterable.  They yield exactly two times: first the
@@ -769,7 +769,7 @@ class TimeSpan(object):
                                      end.isoformat() if end else None)
 
 
-class _EmptyTimeSpan(object):
+class _EmptyTimeSpan:
     __slots__ = []  # no inner structure
 
     def __bool__(self):

@@ -72,7 +72,7 @@ DEF = re.compile('\s*def\s*([_\w][_\w\d]*)\s*\(')
 
 
 # basic functionality
-class FunctionMaker(object):
+class FunctionMaker:
     """
     An object with the ability to create functions with a given signature.
     It has attributes name, doc, module, signature, defaults, dict and

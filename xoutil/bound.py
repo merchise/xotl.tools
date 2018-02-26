@@ -92,7 +92,7 @@ class Bounded(metaclass=BoundedType):
         raise NotImplementedError()
 
 
-class BoundaryCondition(object):
+class BoundaryCondition:
     '''Embodies the boundary protocol.
 
     The `definition` argument must a function that implements a `boundary

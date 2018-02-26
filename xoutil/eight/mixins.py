@@ -40,7 +40,7 @@ several concepts that are different in Python 2 and 3.
     >>> class One(dict):
     ...     pass
 
-    >>> class Two(object):
+    >>> class Two:
     ...     pass
 
     >>> class OneMeta(type):

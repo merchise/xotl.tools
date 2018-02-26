@@ -40,7 +40,7 @@ def test_shadowed_dict_get():
         class OldClass:
             attr = _sentinel
 
-        class Foobar(dict, OldClass, object):
+        class Foobar(dict, OldClass):
             pass
 
         # New implementation

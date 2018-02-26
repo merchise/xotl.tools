@@ -16,7 +16,7 @@ from xoutil.objects import smart_copy
 
 
 def test_smart_copy():
-    class new(object):
+    class new:
         def __init__(self, **kw):
             for k, v in kw.items():
                 setattr(self, k, v)
@@ -77,7 +77,7 @@ def test_smart_copy_with_callable_default():
     smart_copy(c, d, defaults=default)
     assert d == dict(a=1, b='2')
 
-    class inset(object):
+    class inset:
         def __init__(self, items):
             self.items = items
 
@@ -98,7 +98,7 @@ def test_fulldir():
 def test_newstyle_metaclass():
     from xoutil.eight.meta import metaclass
 
-    class Field(object):
+    class Field:
         __slots__ = (str('name'), str('default'))
 
         def __init__(self, default):
@@ -112,7 +112,7 @@ def test_newstyle_metaclass():
     class ModelType(type):
         pass
 
-    class Base(object):
+    class Base:
         def __init__(self, **attrs):
             self.__dict__.update(attrs)
 
@@ -183,7 +183,7 @@ def test_new_style_metaclass_registration():
 def test_lazy():
     from xoutil.objects import lazy, setdefaultattr
 
-    class new(object):
+    class new:
         pass
 
     inst = new()
@@ -195,7 +195,7 @@ def test_lazy():
 
 
 # Easly creates a hierarchy of objects
-class new(object):
+class new:
     def __init__(self, **kwargs):
         attrs = {}
         children = {}
@@ -235,7 +235,7 @@ def test_traversing_bug_ignoring_getter():
     from xoutil.objects import traverse
     sentinel = object()
 
-    class Me(object):
+    class Me:
         def __getattr__(self, attr):
             return self
 
@@ -303,7 +303,7 @@ def test_get_first_of():
     somedict = {"foo": "bar", "spam": "eggs"}
     assert get_first_of(somedict, "eggs") is None
 
-    class Someobject(object):
+    class Someobject:
         pass
 
     inst = Someobject()
@@ -314,7 +314,7 @@ def test_get_first_of():
 
     somedict = {"foo": "bar", "spam": "eggs"}
 
-    class Someobject(object):
+    class Someobject:
         pass
 
     inst = Someobject()
@@ -339,7 +339,7 @@ def test_get_first_of():
 def test_smart_getter():
     from xoutil.objects import smart_getter
 
-    class new(object):
+    class new:
         pass
 
     o = new()
@@ -369,7 +369,7 @@ def test_smart_getter():
 def test_smart_setter():
     from xoutil.objects import smart_setter
 
-    class new(object):
+    class new:
         pass
 
     o = new()
@@ -394,7 +394,7 @@ def test_extract_attrs():
         assert extract_attrs(d, 'y')
     assert extract_attrs(d, 'y', default=None) is None
 
-    class new(object):
+    class new:
         def __init__(self, **kw):
             self.__dict__.update(kw)
 
@@ -459,7 +459,7 @@ def test_copy_class():
 def test_validate_attrs():
     from xoutil.objects import validate_attrs
 
-    class Person(object):
+    class Person:
         def __init__(self, **kwargs):
             for which in kwargs:
                 setattr(self, which, kwargs[which])
@@ -480,7 +480,7 @@ def test_memoized_classproperty():
 
     current = 1
 
-    class Foobar(object):
+    class Foobar:
         @memoized_property
         @classproperty
         def prop(cls):
@@ -501,7 +501,7 @@ def test_properties():
 
     _x = 'static'
 
-    class Foobar(object):
+    class Foobar:
         _x = 'class'
 
         def __init__(self):
@@ -541,7 +541,7 @@ def test_multi_getter_failure():
     from xoutil.objects import multi_getter
     from xoutil.objects import traverse
 
-    class new(object):
+    class new:
         def __init__(self, **k):
             self.__dict__.update(k)
 

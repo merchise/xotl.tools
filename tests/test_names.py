@@ -47,7 +47,7 @@ def test_nameof_methods():
     from xoutil.eight import callable
     from xoutil.names import nameof, simple_name
 
-    class Foobar(object):
+    class Foobar:
         def __init__(self):
             self.attr = 'foobar'
 

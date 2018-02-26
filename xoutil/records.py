@@ -29,7 +29,7 @@ from xoutil.future.functools import lru_cache
 @lru_cache()
 def field_descriptor(field_name):
     '''Returns a read-only descriptor for `field_name`.'''
-    class descriptor(object):
+    class descriptor:
         def __get__(self, instance, owner):
             if instance:
                 return owner.get_field(instance._raw_data,

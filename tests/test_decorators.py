@@ -116,7 +116,7 @@ class Memoizations(unittest.TestCase):
         from xoutil.future.inspect import getattr_static
         from xoutil.objects import memoized_property
 
-        class Foobar(object):
+        class Foobar:
             @memoized_property
             def prop(self):
                 return self

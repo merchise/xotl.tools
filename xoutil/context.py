@@ -150,7 +150,7 @@ class Context(StackedDict, metaclass=MetaContext):
 context = Context
 
 
-class NullContext(object):
+class NullContext:
     '''Singleton context to be used (returned) as default when no one is
     defined.
 

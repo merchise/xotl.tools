@@ -158,7 +158,7 @@ class defaultdict(_stdlib.defaultdict):
             raise KeyError(key)
 
 
-class OpenDictMixin(object):
+class OpenDictMixin:
     '''A mixin for mappings implementation that expose keys as attributes.
 
     For example:
@@ -317,7 +317,7 @@ class OpenDictMixin(object):
         return suffix_kwd(res)
 
 
-class SmartDictMixin(object):
+class SmartDictMixin:
     '''A mixin that extends the `update` method of dictionaries
 
     Standard method allow only one positional argument, this allow several.
@@ -386,7 +386,7 @@ class SmartDict(SmartDictMixin, dict):
         self.update(*args, **kwargs)
 
 
-class opendict(OpenDictMixin, dict, object):
+class opendict(OpenDictMixin, dict):
     '''A dictionary implementation that mirrors its keys as attributes.
 
     For example::
@@ -409,7 +409,7 @@ class opendict(OpenDictMixin, dict, object):
     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
 
-class codedict(OpenDictMixin, dict, object):
+class codedict(OpenDictMixin, dict):
     '''A dictionary implementation that evaluate keys as Python expressions.
 
     This is also a open dict (see `OpenDictMixin`:class: for more info).

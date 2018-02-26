@@ -164,7 +164,7 @@ class boolean(symbol):
       >>> none = boolean('false')
       >>> unset = boolean('unset')
 
-      >>> class X(object):
+      >>> class X:
       ...      attr = None
 
       >>> getattr(X(), 'attr') is not None

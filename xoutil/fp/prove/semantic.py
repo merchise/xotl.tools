@@ -19,7 +19,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-class predicate(object):
+class predicate:
     '''Base class for value proves using logic predicates.
 
     A predicate could combine two operations on values: *validation*, and
