@@ -4,19 +4,19 @@ extension to the Python's standard library.
 
 In `xoutil` you will probably find:
 
-- Compatibility solvers for major versions issues\ [#another-six]_.  See
-  `xoutil.eight`.
-
-  .. note:: Starting with xoutil 2.0, support for Python 2 is no longer
-     supported.  Although many things in the xoutil API remain just to avoid
-     hard code-breaks, they won't work in Python 2 and many things will be
-     deprecated.
-
 - Tools that must be implemented in the Python Standard Library, but there are
   things that escape from the Guido's scope. ;)
 
 - Components that belong naturally to the "Common Systems Layer" \
   [#continuum]_.
+
+- Compatibility solvers for major versions issues\ [#another-six]_.  See
+  `xoutil.eight`.
+
+  .. note:: Starting with xoutil 2.0, support for Python 2 is no longer
+     supported.  Use a version of xoutil 1.9.x to have the latest developments
+     with Python 2 support.
+
 
 .. [#another-six] Yes!, yet another solution for this. ;)
 
