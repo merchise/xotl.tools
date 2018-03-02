@@ -117,7 +117,7 @@ build documentation:
   stage: build
   script:
     - mkdir -p envs
-    - virtualenv envs/$CI_COMMIT_SHA
+    - virtualenv -p `which python3` envs/$CI_COMMIT_SHA
     - source envs/$CI_COMMIT_SHA/bin/activate
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
