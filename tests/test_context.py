@@ -108,8 +108,32 @@ def test_reusing_raises():
             assert False, 'It should have raised a RuntimeError'
         except RuntimeError:
             pass
-        except:
+        except:  # noqa
             assert False, 'It should have raised a RuntimeError'
+
+
+def test_from_dicts():
+    with context.from_dicts('A', dict(a=1), dict(a=2, b=1)) as c:
+        assert c['a'] == 1
+        assert c['b'] == 1
+        with context.from_dicts('A', dict(a=2), dict(b=2)) as c:
+            assert c['b'] == 1
+            assert c['a'] == 2
+        assert c['b'] == 1
+        assert c['a'] == 1
+
+
+def test_from_defaults():
+    with context.from_defaults('A', a=1):
+        with context.from_defaults('A', a=2, b=1) as c:
+            assert c['a'] == 1
+            assert c['b'] == 1
+            with context('A', a=2) as c2:
+                assert c2['a'] == 2
+            # It recovers the value
+            assert c['a'] == 1
+        # and again
+        assert c['a'] == 1
 
 
 @pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')

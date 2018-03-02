@@ -112,6 +112,42 @@ class Context(metaclass(MetaContext), StackedDict):
             # TODO: Redefine all event management
         return self(**data)
 
+    @classmethod
+    def from_dicts(cls, ctx, overrides=None, defaults=None):
+        '''Creates a context introducing both defaults and overrides.
+
+        This combines both the standard constructor and `from_defaults`:meth:.
+
+        If the same key appears in both `values` and `defaults`, ignore the
+        default.
+
+        '''
+        if not overrides:
+            overrides = {}
+        if not defaults:
+            defaults = {}
+        current = cls[ctx]
+        current_attrs = dict(current) if current else {}
+        attrs = dict(defaults, **current_attrs)
+        attrs.update(overrides)
+        return cls(ctx, **attrs)
+
+    @classmethod
+    def from_defaults(cls, ctx, **defaults):
+        '''Creates context `ctx` introducing only new keys given in `defaults`.
+
+        The normal behavior when you enter a new level in the context is to
+        override the values with the new one.
+
+        Example:
+
+           >>> with context.from_defaults('A', a=1):
+           ...    with context.from_defaults('A', a=2, b=1) as c:
+           ...        assert c['a'] == 1
+
+        '''
+        return cls.from_dicts(ctx, defaults=defaults)
+
     def __init__(self, *args, **kwargs):
         '''Must be defined empty for `__new__` parameters compatibility.
 
