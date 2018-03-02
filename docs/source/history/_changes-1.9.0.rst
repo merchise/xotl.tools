@@ -5,6 +5,9 @@
 
 - Add `xoutil.objects.import_object`:func:.
 
+- Add `xoutil.context.Context.from_defaults`:meth: and
+  `xoutil.context.Context.from_dicts`:meth:.
+
 - Deprecate imports from top-level `xoutil`:mod:.  The following objects
   should be imported from `xoutil.symbols`:mod:\ :
 
