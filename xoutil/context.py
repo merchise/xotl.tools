@@ -117,7 +117,7 @@ class Context(StackedDict, metaclass=MetaContext):
 
         This combines both the standard constructor and `from_defaults`:meth:.
 
-        If the same key appears in both `values` and `defaults`, ignore the
+        If the same key appears in both `overrides` and `defaults`, ignore the
         default.
 
         '''
