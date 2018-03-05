@@ -195,7 +195,6 @@ class retrier:
            ...     pass
 
         '''
-        from xoutil.eight.exceptions import throw
         from xoutil.future.time import monotonic as clock, sleep
         from xoutil.future.functools import wraps
         max_time = self.max_time
@@ -219,6 +218,6 @@ class retrier:
                         waited = self.wait(waited)
                         sleep(waited)
                     else:
-                        throw(error)
+                        raise
 
         return inner
