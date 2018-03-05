@@ -181,8 +181,13 @@ class Dimension(type):
     '''
     def __new__(cls, name, bases, attrs):
         wrappedattrs = {}
-        unit = None
-        signature = Signature()
+        Base = next((base for base in bases if isinstance(base, cls)), None)
+        if Base is not None:
+            unit = Base._unitname_
+            signature = Base._signature_
+        else:
+            unit = None
+            signature = Signature()
         for attr, val in attrs.items():
             if isinstance(val, BareReal):
                 if val == UNIT and unit is not None:
@@ -205,16 +210,6 @@ class Dimension(type):
                     signature.top = val.signature.top
                     signature.bottom = val.signature.bottom
                 wrappedattrs[attr] = val
-        if unit is None:
-            unit, base_signature = next(
-                ((base._unitname_, base._signature_)
-                 for base in bases
-                 if isinstance(base, cls)), (None, None))
-            if base_signature:
-                # Breaking signature immutability here too!
-                assert not signature.top and not signature.bottom
-                signature.top = base_signature.top
-                signature.bottom = base_signature.bottom
         if unit is None:
             raise TypeError('dimension without a unit')
         self = super(Dimension, cls).__new__(
