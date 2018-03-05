@@ -260,3 +260,15 @@ def test_undistinguishable_definitions():
 
     with pytest.raises(TypeError):
         assert L.metre != Length.km
+
+
+def test_bug_30():
+    from xoutil.dim.meta import Dimension, UNIT
+
+    @Dimension.new
+    class L(object):
+        m = UNIT
+
+    with pytest.raises(TypeError):
+        class LL(L):
+            mm = UNIT

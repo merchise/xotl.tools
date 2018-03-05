@@ -138,8 +138,8 @@ def retry(fn, args=None, kwargs=None, *, max_tries=None, max_time=None,
 class retrier:
     '''An auto-retrying dispatcher.
 
-    Return a callable that take another callable (`func`) and its arguments
-    and runs it in an auto-retrying loop.
+    A retrier it's a callable that takes another callable (`func`) and its
+    arguments and runs it in an auto-retrying loop.
 
     If `func` raises any exception that is in `retry_only`, and it has being
     tried less than `max_tries` and the time spent executing the function
