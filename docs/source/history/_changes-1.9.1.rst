@@ -2,3 +2,6 @@
   incompatible canonical units.
 
 .. _#30: https://gitlab.lahavane.com/merchise/xoutil/issues/30
+
+- Renamed ``xoutil.tasking.StandardWait`` to
+  `xoutil.tasking.ConstantWait`:class:.

@@ -70,8 +70,8 @@ MIN_WAIT_INTERVAL = 20 / 1000  # 20 ms
 DEFAULT_WAIT_INTERVAL = 50 / 1000  # 50 ms
 
 
-class StandardWait(object):
-    '''A standard constant wait algorithm.
+class ConstantWait(object):
+    '''A constant wait algorithm.
 
     Instances are callables that comply with the need of the `wait` argument
     for `retrier`:class:.  This callable always return the same `wait` value.
@@ -79,6 +79,9 @@ class StandardWait(object):
     We never wait less than `MIN_WAIT_INTERVAL`:data:.
 
     .. versionadded:: 1.8.2
+
+    .. versionchanged:: 1.9.1 Renamed; it was ``StandardWait``.  The old name
+       is kept as a deprecated alias.
 
     '''
     def __init__(self, wait=DEFAULT_WAIT_INTERVAL):
@@ -89,6 +92,9 @@ class StandardWait(object):
 
     def __call__(self, prev=None):
         return self.wait
+
+
+StandardWait = ConstantWait
 
 
 class BackoffWait(object):
@@ -155,7 +161,7 @@ class retrier(object):
     first retry) and return the number of seconds to wait before retrying.
 
     If `wait` is a number, we convert it to a callable with
-    `StandardWait(wait) <StandardWait>`:class:.
+    `ConstantWait(wait) <ConstantWait>`:class:.
 
     .. seealso:: `BackoffWait`:class:
 
