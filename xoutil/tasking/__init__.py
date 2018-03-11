@@ -95,7 +95,7 @@ class BackoffWait(object):
     '''A wait algorithm with an exponential backoff.
 
     Instances are callables that comply with the need of the `wait` argument
-    for `retrier`:class:.  This callable always return the same `wait` value.
+    for `retrier`:class:.
 
     At each call the wait is increased by doubling `backoff` (given in
     milliseconds).
@@ -105,7 +105,7 @@ class BackoffWait(object):
     .. versionadded:: 1.8.2
 
     '''
-    def __init__(self, wait=DEFAULT_WAIT_INTERVAL, backoff=5):
+    def __init__(self, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
         self.wait = max(MIN_WAIT_INTERVAL, wait)
         self.backoff = min(max(0.1, backoff), 1)
 

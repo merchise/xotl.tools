@@ -12,7 +12,7 @@
 
 .. autoclass:: StandardWait(wait=DEFAULT_WAIT_INTERVAL)
 
-.. autoclass:: BackoffWait(wait=DEFAULT_WAIT_INTERVAL)
+.. autoclass:: BackoffWait(wait=DEFAULT_WAIT_INTERVAL, backoff=1)
 
 .. autodata:: MIN_WAIT_INTERVAL
 
