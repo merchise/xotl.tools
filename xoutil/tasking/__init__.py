@@ -20,6 +20,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 import sys
+from xoutil.deprecation import deprecated
 
 
 # TODO: Must be implemented using `xoutil.api` mechanisms for correct driver
@@ -94,7 +95,10 @@ class ConstantWait(object):
         return self.wait
 
 
-StandardWait = ConstantWait
+StandardWait = deprecated(
+    ConstantWait,
+    'StandardWait is deprecated. Use ConstantWait instead'
+)(ConstantWait)
 
 
 class BackoffWait(object):
@@ -232,3 +236,6 @@ class retrier(object):
                         throw(error)
 
         return inner
+
+
+del deprecated
