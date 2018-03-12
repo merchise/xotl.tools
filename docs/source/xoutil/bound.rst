@@ -302,7 +302,7 @@ Let's break this into its parts:
 
 - The ``receive`` function reads the Inbox and yields each message received.
 
-  It is actually an `unbounded function`:term: but don't want to bound its
+  It is actually an `unbounded function`:term: but we don't want to bound its
   execution in isolation.
 
 - The ``send`` unbounded function sends every message we have in the Outbox
