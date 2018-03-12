@@ -187,7 +187,7 @@ class retrier(object):
         self.max_tries = max_tries
         self.max_time = max_time
         if not callable(wait):
-            self.wait = StandardWait(wait)
+            self.wait = ConstantWait(wait)
         else:
             self.wait = wait
         if not retry_only:
