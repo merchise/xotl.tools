@@ -84,15 +84,16 @@ class MetaSymbol(type):
 class symbol(metaclass(MetaSymbol), int):
     '''Instances are custom symbols.
 
-    See `~MetaSymbol.__getitem__`:meth: operator for information on
-    constructor arguments.
+    A "symbol" is an object can be used to identify uniquely a semantic
+    concept by its name; also each is associated with an ordinal value
+    associated.
 
     For example::
 
       >>> ONE2MANY = symbol('ONE2MANY')
       >>> ONE_TO_MANY = symbol('ONE2MANY')
 
-      >>> ONE_TO_MANY ONE2MANY
+      >>> ONE_TO_MANY is ONE2MANY
       True
 
     '''
@@ -152,8 +153,7 @@ class symbol(metaclass(MetaSymbol), int):
 class boolean(symbol):
     '''Instances are custom logical values (`True` or `False`).
 
-    See `~MetaSymbol.__getitem__`:meth: operator for information on
-    constructor arguments.
+    Special symbols allowing only logical (False or True) values.
 
     For example::
 
