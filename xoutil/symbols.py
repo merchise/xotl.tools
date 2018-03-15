@@ -84,9 +84,8 @@ class MetaSymbol(type):
 class symbol(metaclass(MetaSymbol), int):
     '''Instances are custom symbols.
 
-    A "symbol" is an object can be used to identify uniquely a semantic
-    concept by its name; also each is associated with an ordinal value
-    associated.
+    Symbol instances identify uniquely a semantic concept by its name.  Each
+    one has an ordinal value associated.
 
     For example::
 
