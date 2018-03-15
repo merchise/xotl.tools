@@ -189,7 +189,7 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
         memoized = moduleproperty(memoized, base=memoized_property)
 
 
-    .. versionadded: 1.6.1 Added the `base` parameter.
+    .. versionadded:: 1.6.1 Added the `base` parameter.
 
     '''
     import sys
