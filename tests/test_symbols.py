@@ -60,3 +60,19 @@ class BooleanTests(unittest.TestCase):
         value = '%s    # This is a comment' % a
         b = boolean.parse(value)
         self.assertIs(a, b)
+
+
+def test_symbols_is_importable():
+    import sys
+    modules = {
+        mod: sys.modules[mod]
+        for mod in sys.modules
+        if mod.startswith('xoutil')
+    }
+    for mod in modules:
+        sys.modules.pop(mod)
+    try:
+        import xoutil.symbols  # noqa
+    finally:
+        for modname, mod in modules.items():
+            sys.modules[modname] = mod
