@@ -305,8 +305,8 @@ def first_n(iterable, n=1, fill=Unset):
     '''Takes the first `n` items from iterable.
 
     If there are less than `n` items in the iterable and `fill` is
-    `~xoutil.Unset`:class:, a StopIteration exception is raised; otherwise
-    it's used as a filling pattern as explained below.
+    `~xoutil.symbols.Unset`:class:, a StopIteration exception is raised;
+    otherwise it's used as a filling pattern as explained below.
 
     :param iterable: An iterable from which the first `n` items should be
                      collected.

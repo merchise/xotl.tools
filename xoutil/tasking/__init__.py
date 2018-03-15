@@ -20,6 +20,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 import sys
+from xoutil.deprecation import deprecated
 
 
 # TODO: Must be implemented using `xoutil.api` mechanisms for correct driver
@@ -70,8 +71,8 @@ MIN_WAIT_INTERVAL = 20 / 1000  # 20 ms
 DEFAULT_WAIT_INTERVAL = 50 / 1000  # 50 ms
 
 
-class StandardWait:
-    '''A standard constant wait algorithm.
+class ConstantWait:
+    '''A constant wait algorithm.
 
     Instances are callables that comply with the need of the `wait` argument
     for `retrier`:class:.  This callable always return the same `wait` value.
@@ -79,6 +80,12 @@ class StandardWait:
     We never wait less than `MIN_WAIT_INTERVAL`:data:.
 
     .. versionadded:: 1.8.2
+
+    .. versionchanged:: 1.9.1 Renamed; it was ``StandardWait``.  The old name
+       is kept as a deprecated alias.
+
+    .. versionchanged:: 2.0.1 Renamed; it was ``StandardWait``.  The old name
+       is kept as a deprecated alias.
 
     '''
     def __init__(self, wait=DEFAULT_WAIT_INTERVAL):
@@ -91,11 +98,17 @@ class StandardWait:
         return self.wait
 
 
+StandardWait = deprecated(
+    ConstantWait,
+    'StandardWait is deprecated. Use ConstantWait instead'
+)(ConstantWait)
+
+
 class BackoffWait:
     '''A wait algorithm with an exponential backoff.
 
     Instances are callables that comply with the need of the `wait` argument
-    for `retrier`:class:.  This callable always return the same `wait` value.
+    for `retrier`:class:.
 
     At each call the wait is increased by doubling `backoff` (given in
     milliseconds).
@@ -105,7 +118,7 @@ class BackoffWait:
     .. versionadded:: 1.8.2
 
     '''
-    def __init__(self, wait=DEFAULT_WAIT_INTERVAL, backoff=5):
+    def __init__(self, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
         self.wait = max(MIN_WAIT_INTERVAL, wait)
         self.backoff = min(max(0.1, backoff), 1)
 
@@ -138,8 +151,8 @@ def retry(fn, args=None, kwargs=None, *, max_tries=None, max_time=None,
 class retrier:
     '''An auto-retrying dispatcher.
 
-    Return a callable that take another callable (`func`) and its arguments
-    and runs it in an auto-retrying loop.
+    A retrier it's a callable that takes another callable (`func`) and its
+    arguments and runs it in an auto-retrying loop.
 
     If `func` raises any exception that is in `retry_only`, and it has being
     tried less than `max_tries` and the time spent executing the function
@@ -151,7 +164,7 @@ class retrier:
     first retry) and return the number of seconds to wait before retrying.
 
     If `wait` is a number, we convert it to a callable with
-    `StandardWait(wait) <StandardWait>`:class:.
+    `ConstantWait(wait) <ConstantWait>`:class:.
 
     .. seealso:: `BackoffWait`:class:
 
@@ -173,7 +186,7 @@ class retrier:
         self.max_tries = max_tries
         self.max_time = max_time
         if not callable(wait):
-            self.wait = StandardWait(wait)
+            self.wait = ConstantWait(wait)
         else:
             self.wait = wait
         if not retry_only:
@@ -195,7 +208,6 @@ class retrier:
            ...     pass
 
         '''
-        from xoutil.eight.exceptions import throw
         from xoutil.future.time import monotonic as clock, sleep
         from xoutil.future.functools import wraps
         max_time = self.max_time
@@ -219,6 +231,9 @@ class retrier:
                         waited = self.wait(waited)
                         sleep(waited)
                     else:
-                        throw(error)
+                        raise
 
         return inner
+
+
+del deprecated
