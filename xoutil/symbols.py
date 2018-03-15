@@ -114,20 +114,13 @@ class symbol(metaclass(MetaSymbol), int):
         from xoutil.eight import intern as unique, type_name
         name = unique(name)
         if name:
-            valid = {symbol: lambda v: isinstance(v, int),
-                     boolean: lambda v: v is False or v is True}
-            cache = cls._instances
-            res = cache.get(name)
             if value is None:
                 value = hash(name)
+            res = cls._instances.get(name)
             if res is None:    # Create the new instance
-                if cls in valid:
-                    aux = cls
-                else:
-                    aux = next(b for b in cls.mro() if b in valid)
-                if valid[aux](value):
+                if isinstance(value, int):
                     res = super(symbol, cls).__new__(cls, value)
-                    cache[name] = res
+                    cls._instances[name] = res
                 else:
                     msg = ('instancing "{}" with name "{}" and incorrect '
                            'value "{}" of type "{}"')
