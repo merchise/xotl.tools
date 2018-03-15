@@ -30,12 +30,10 @@ TIMEOUT = 2.0
 class MetaSymbol(type):
     '''Meta-class for symbol types.'''
     def __new__(cls, name, bases, ns):
-        from xoutil.tasking.safe import SafeData
         if ns['__module__'] == __name__ or name not in {SYMBOL, BOOLEAN}:
             self = super(MetaSymbol, cls).__new__(cls, name, bases, ns)
             if name == SYMBOL:
-                cache = {str(v): v for v in (False, True)}
-                self._instances = SafeData(cache, timeout=TIMEOUT)
+                self._instances = {str(v): v for v in (False, True)}
             return self
         else:
             raise TypeError('invalid class "{}" declared outside of "{}" '
@@ -58,8 +56,7 @@ class MetaSymbol(type):
     def nameof(self, s):
         '''Get the name of a symbol instance (`s`).'''
         from xoutil.eight import iteritems
-        with self._instances as cache:
-            items = iteritems(cache)
+        items = iteritems(self._instances)
         return next((name for name, value in items if value is s), None)
 
     def parse(self, name):
@@ -71,8 +68,7 @@ class MetaSymbol(type):
         from xoutil.eight import type_name
         if '#' in name:    # Remove comment
             name = name.split('#')[0].strip()
-        with self._instances as cache:
-            res = cache.get(name, None)
+        res = self._instances.get(name, None)
         if res is not None:
             if isinstance(res, self):
                 return res
@@ -88,15 +84,16 @@ class MetaSymbol(type):
 class symbol(metaclass(MetaSymbol), int):
     '''Instances are custom symbols.
 
-    See `~MetaSymbol.__getitem__`:meth: operator for information on
-    constructor arguments.
+    A "symbol" is an object can be used to identify uniquely a semantic
+    concept by its name; also each is associated with an ordinal value
+    associated.
 
     For example::
 
       >>> ONE2MANY = symbol('ONE2MANY')
       >>> ONE_TO_MANY = symbol('ONE2MANY')
 
-      >>> ONE_TO_MANY ONE2MANY
+      >>> ONE_TO_MANY is ONE2MANY
       True
 
     '''
@@ -120,26 +117,26 @@ class symbol(metaclass(MetaSymbol), int):
         if name:
             valid = {symbol: lambda v: isinstance(v, int),
                      boolean: lambda v: v is False or v is True}
-            with cls._instances as cache:
-                res = cache.get(name)
-                if res is None:    # Create the new instance
-                    if value is None:
-                        value = hash(name)
-                    if cls in valid:
-                        aux = cls
-                    else:
-                        aux = next(b for b in cls.mro() if b in valid)
-                    if valid[aux](value):
-                        res = super(symbol, cls).__new__(cls, value)
-                        cache[name] = res
-                    else:
-                        msg = ('instancing "{}" with name "{}" and incorrect '
-                               'value "{}" of type "{}"')
-                        cn, vt = cls.__name__, type_name(value)
-                        raise TypeError(msg.format(cn, name, value, vt))
-                elif res != value:    # Check existing instance
-                    msg = 'value "{}" mismatch for existing instance: "{}"'
-                    raise ValueError(msg.format(value, name))
+            cache = cls._instances
+            res = cache.get(name)
+            if value is None:
+                value = hash(name)
+            if res is None:    # Create the new instance
+                if cls in valid:
+                    aux = cls
+                else:
+                    aux = next(b for b in cls.mro() if b in valid)
+                if valid[aux](value):
+                    res = super(symbol, cls).__new__(cls, value)
+                    cache[name] = res
+                else:
+                    msg = ('instancing "{}" with name "{}" and incorrect '
+                           'value "{}" of type "{}"')
+                    cn, vt = cls.__name__, type_name(value)
+                    raise TypeError(msg.format(cn, name, value, vt))
+            elif res != value:    # Check existing instance
+                msg = 'value "{}" mismatch for existing instance: "{}"'
+                raise ValueError(msg.format(value, name))
             return res
         else:
             raise ValueError('name must be a valid non empty string')
@@ -156,8 +153,7 @@ class symbol(metaclass(MetaSymbol), int):
 class boolean(symbol):
     '''Instances are custom logical values (`True` or `False`).
 
-    See `~MetaSymbol.__getitem__`:meth: operator for information on
-    constructor arguments.
+    Special symbols allowing only logical (False or True) values.
 
     For example::
 
