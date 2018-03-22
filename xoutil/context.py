@@ -168,8 +168,8 @@ class Context(metaclass(MetaContext), StackedDict):
     def __enter__(self):
         if self.count == 0:
             _data.contexts[self.name] = self
-        self.count += 1
-        if self.count == self.level:
+        if self.count + 1 == self.level:
+            self.count += 1
             return self
         else:
             msg = 'Entering the same context level twice! -- c(%s, %d, %d)'
