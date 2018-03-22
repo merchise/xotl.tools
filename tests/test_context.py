@@ -136,6 +136,18 @@ def test_from_defaults():
         assert c['a'] == 1
 
 
+def test_recover_from_runtime_bug_33():
+    try:
+        with context('A') as c:
+            with c:
+                pass
+    except RuntimeError:
+        pass
+
+    with context('A'):
+        pass
+
+
 @pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')
 def test_greenlet_contexts():
     import random

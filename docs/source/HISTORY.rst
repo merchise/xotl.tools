@@ -21,7 +21,7 @@ Unreleased.  Release 2.0.1
 
 .. _rel-1.9.1:
 
-Unreleased.  Release 1.9.1
+2018-03-22.  Release 1.9.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.9.1.rst
