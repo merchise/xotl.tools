@@ -8,6 +8,10 @@
 
 .. _#30: https://gitlab.lahavane.com/merchise/xoutil/issues/30
 
+- Fix bug `#33`_: Reusing a context leaves the context unusable.
+
+.. _#33: https://gitlab.lahavane.com/merchise/xoutil/issues/33
+
 - Renamed ``xoutil.tasking.StandardWait`` to
   `xoutil.tasking.ConstantWait`:class:.  This introduced bug `#31`_, which is
   now fixed.
