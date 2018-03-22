@@ -4,7 +4,7 @@ Changelog
 1.9 series
 ----------
 
-Unreleased.  Release 1.9.1
+2018-03-22.  Release 1.9.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.9.1.rst
