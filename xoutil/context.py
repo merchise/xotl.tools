@@ -23,7 +23,7 @@ __all__ = ('Context', 'context', 'NullContext')
 class LocalData(LocalData):
     '''Thread-local data for contexts.'''
     def __init__(self):
-        super(LocalData, self).__init__()
+        super().__init__()
         self.contexts = {}
 
 
@@ -104,7 +104,7 @@ class Context(StackedDict, metaclass=MetaContext):
     def __new__(cls, name, **data):
         self = cls[name]
         if not self:     # if self is _null_context:
-            self = super(Context, cls).__new__(cls)
+            self = super().__new__(cls)
             super(Context, self).__init__()
             self.name = name
             self.count = 0
@@ -199,7 +199,7 @@ class NullContext:
 
     def __new__(cls):
         if cls.instance is None:
-            cls.instance = super(NullContext, cls).__new__(cls)
+            cls.instance = super().__new__(cls)
         return cls.instance
 
     def __len__(self):

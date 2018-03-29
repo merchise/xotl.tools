@@ -70,8 +70,7 @@ class _record_type(type):
                    if cls.is_reader(attr, func)}
         new_attrs = dict(attrs, **descriptors)
         new_attrs.update(readers)
-        result = super(_record_type, cls).__new__(cls, name, bases,
-                                                  new_attrs)
+        result = super().__new__(cls, name, bases, new_attrs)
         # Make a copy, or else the super-class attribute gets contaminated
         fields = dict(getattr(result, '_rec_fields', {}))
         index = dict(getattr(result, '_rec_index', {}))

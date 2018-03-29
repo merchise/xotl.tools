@@ -442,20 +442,20 @@ class namelist(list):
             from types import GeneratorType as gtype
             if isinstance(args[0], (tuple, list, set, frozenset, gtype)):
                 args = args[0]
-        super(namelist, self).__init__(nameof(arg, depth=2) for arg in args)
+        super().__init__(nameof(arg, depth=2) for arg in args)
 
     def __add__(self, other):
         other = [nameof(item, depth=2) for item in other]
-        return super(namelist, self).__add__(other)
+        return super().__add__(other)
 
     __iadd__ = __add__
 
     def __contains__(self, item):
-        return super(namelist, self).__contains__(nameof(item, inner=True))
+        return super().__contains__(nameof(item, inner=True))
 
     def append(self, value):
         '''l.append(value) -- append a name object to end'''
-        super(namelist, self).append(nameof(value, depth=2))
+        super().append(nameof(value, depth=2))
         return value    # What allow to use its instances as a decorator
 
     __call__ = append
@@ -464,7 +464,7 @@ class namelist(list):
         '''l.extend(items) -- extend list by appending items from the iterable
         '''
         items = (nameof(item, depth=2) for item in items)
-        return super(namelist, self).extend(items)
+        return super().extend(items)
 
     def index(self, value, *args):
         '''l.index(value, [start, [stop]]) -> int -- return first index of name
@@ -472,12 +472,12 @@ class namelist(list):
         Raises ValueError if the name is not present.
 
         '''
-        return super(namelist, self).index(nameof(value, depth=2), *args)
+        return super().index(nameof(value, depth=2), *args)
 
     def insert(self, index, value):
         '''l.insert(index, value) -- insert object before index
         '''
-        return super(namelist, self).insert(index, nameof(value, depth=2))
+        return super().insert(index, nameof(value, depth=2))
 
     def remove(self, value):
         '''l.remove(value) -- remove first occurrence of value
@@ -506,20 +506,20 @@ class strlist(list):
             from types import GeneratorType as gtype
             if isinstance(args[0], (tuple, list, set, frozenset, gtype)):
                 args = args[0]
-        super(strlist, self).__init__(str(arg) for arg in args)
+        super().__init__(str(arg) for arg in args)
 
     def __add__(self, other):
         other = [str(item) for item in other]
-        return super(strlist, self).__add__(other)
+        return super().__add__(other)
 
     __iadd__ = __add__
 
     def __contains__(self, item):
-        return super(strlist, self).__contains__(str(item))
+        return super().__contains__(str(item))
 
     def append(self, value):
         '''l.append(value) -- append a name object to end'''
-        super(strlist, self).append(str(value))
+        super().append(str(value))
         return value    # What allow to use its instances as a decorator
 
     __call__ = append
@@ -528,7 +528,7 @@ class strlist(list):
         '''l.extend(items) -- extend list by appending items from the iterable
         '''
         items = (str(item) for item in items)
-        return super(strlist, self).extend(items)
+        return super().extend(items)
 
     def index(self, value, *args):
         '''l.index(value, [start, [stop]]) -> int -- return first index of name
@@ -536,12 +536,12 @@ class strlist(list):
         Raises ValueError if the name is not present.
 
         '''
-        return super(strlist, self).index(str(value), *args)
+        return super().index(str(value), *args)
 
     def insert(self, index, value):
         '''l.insert(index, value) -- insert object before index
         '''
-        return super(strlist, self).insert(index, str(value))
+        return super().insert(index, str(value))
 
     def remove(self, value):
         '''l.remove(value) -- remove first occurrence of value

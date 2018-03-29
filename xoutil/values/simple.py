@@ -425,7 +425,7 @@ class text(text):
     def __new__(cls, obj='', *args, **kwargs):
         if not (args or kwargs):
             obj = unicode_coerce(obj)
-        return super(text, cls).__new__(cls, obj, *args, **kwargs)
+        return super().__new__(cls, obj, *args, **kwargs)
 
     def join(self, *args):
         '''S.join(variable_number_args or iterable) -> text
@@ -455,4 +455,4 @@ class text(text):
         from collections import Iterable
         if len(args) == 1 and isinstance(args[0], Iterable):
             args = args[0]
-        return super(text, self).join(coercer(obj) for obj in args)
+        return super().join(coercer(obj) for obj in args)

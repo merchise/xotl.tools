@@ -29,7 +29,7 @@ class MetaSymbol(type):
     '''Meta-class for symbol types.'''
     def __new__(cls, name, bases, ns):
         if ns['__module__'] == __name__ or name not in {SYMBOL, BOOLEAN}:
-            self = super(MetaSymbol, cls).__new__(cls, name, bases, ns)
+            self = super().__new__(cls, name, bases, ns)
             if name == SYMBOL:
                 self._instances = {str(v): v for v in (False, True)}
             return self
@@ -42,14 +42,14 @@ class MetaSymbol(type):
         if instance is False or instance is True:
             return True
         else:
-            return super(MetaSymbol, self).__instancecheck__(instance)
+            return super().__instancecheck__(instance)
 
     def __subclasscheck__(self, subclass):
         '''Override for issubclass(subclass, self).'''
         if subclass is bool:
             return True
         else:
-            return super(MetaSymbol, self).__subclasscheck__(subclass)
+            return super().__subclasscheck__(subclass)
 
     def nameof(self, s):
         '''Get the name of a symbol instance (`s`).'''
@@ -117,7 +117,7 @@ class symbol(int, metaclass=MetaSymbol):
             res = cls._instances.get(name)
             if res is None:    # Create the new instance
                 if isinstance(value, int):
-                    res = super(symbol, cls).__new__(cls, value)
+                    res = super().__new__(cls, value)
                     cls._instances[name] = res
                 else:
                     msg = ('instancing "{}" with name "{}" and incorrect '
@@ -184,7 +184,7 @@ class boolean(symbol):
 
         See `~Symbol.__new__`:meth: for information about parameters.
         '''
-        return super(boolean, cls).__new__(cls, name, bool(value))
+        return super().__new__(cls, name, bool(value))
 
 
 # --- Special singleton values ---

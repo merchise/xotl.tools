@@ -211,9 +211,7 @@ class Dimension(type):
                 wrappedattrs[attr] = val
         if unit is None:
             raise TypeError('dimension without a unit')
-        self = super(Dimension, cls).__new__(
-            cls, name, bases, wrappedattrs
-        )
+        self = super().__new__(cls, name, bases, wrappedattrs)
         self._unitname_ = unit
         self._unit_ = getattr(self, unit)
         self._signature_ = signature
@@ -774,7 +772,7 @@ class OperandTypeError(TypeError):
             t2 = val2.signature
         else:
             t2 = type(val2).__name__
-        super(OperandTypeError, self).__init__(
+        super().__init__(
             "unsupported operand type(s) for %s: '%s' and '%s'" %
             (operand, t1, t2)
         )

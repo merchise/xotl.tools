@@ -48,8 +48,7 @@ class MapFactory(BaseFactory):
 
 class PyFactory(BaseFactory):
     def __init__(self, owner, key, start, end):
-        super(PyFactory, self).__init__(owner, compile(key, '', 'eval'),
-                                        start, end)
+        super().__init__(owner, compile(key, '', 'eval'), start, end)
 
     def __call__(self, mapping):
         from xoutil.eight import text_type
@@ -90,7 +89,7 @@ class _TemplateClass(type):
 
     def __init__(cls, name, bases, attrs):
         import re
-        super(_TemplateClass, cls).__init__(name, bases, attrs)
+        super().__init__(name, bases, attrs)
         alters, factories = [], {}
         for kind, pattern, wrapper, factory in cls._alters:
             factories[kind] = factory

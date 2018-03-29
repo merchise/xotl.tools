@@ -123,7 +123,7 @@ class BoundaryCondition:
         if not name:
             from xoutil.names import nameof
             name = nameof(definition, inner=True, full=True)
-        result = super(BoundaryCondition, cls).__new__(cls)
+        result = super().__new__(cls)
         result.name = name  # needs to be set here or it'll be None
         return result
 
@@ -510,7 +510,7 @@ class HighLevelBoundary(BoundaryCondition):
 
     def apply(self, boundaries, kwargs):
         assert boundaries and not kwargs
-        base = super(HighLevelBoundary, self).apply(boundaries, kwargs)
+        base = super().apply(boundaries, kwargs)
 
         class rebounded(base):
             @classmethod

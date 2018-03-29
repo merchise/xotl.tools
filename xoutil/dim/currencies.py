@@ -113,7 +113,7 @@ class _Currency:
         name = name.upper()
         res = cls.instances.get(name, None)
         if res is None:
-            res = super(_Currency, cls).__new__(cls)
+            res = super().__new__(cls)
             res.name = name
             cls.instances[name] = res
             cls.units[name] = Quantity(1, Signature(top=(res, )))

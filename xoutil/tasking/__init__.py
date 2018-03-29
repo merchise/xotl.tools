@@ -50,7 +50,7 @@ class AutoLocal(local):
     '''
     def __init__(self, **attrs):
         import sys
-        super(AutoLocal, self).__init__()
+        super().__init__()
         for attr in attrs:
             setattr(self, attr, attrs[attr])
         if attrs:

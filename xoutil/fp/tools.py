@@ -65,7 +65,7 @@ class MetaCompose(ABCMeta):
     def __instancecheck__(self, instance):
         '''Override for ``isinstance(instance, self)``.'''
         from xoutil.eight import callable
-        res = super(MetaCompose, self).__instancecheck__(instance)
+        res = super().__instancecheck__(instance)
         if not res:
             # TODO: maybe only those with parameters.
             res = callable(instance)
@@ -73,7 +73,7 @@ class MetaCompose(ABCMeta):
 
     def __subclasscheck__(self, subclass):
         '''Override for ``issubclass(subclass, self)``.'''
-        res = super(MetaCompose, self).__subclasscheck__(subclass)
+        res = super().__subclasscheck__(subclass)
         if not res:
             from xoutil.future.types import FuncTypes
             res = subclass in FuncTypes
@@ -130,7 +130,7 @@ class compose(metaclass=MetaCompose):
                     return functions[0]
                 else:
                     from xoutil.symbols import Unset
-                    self = super(compose, cls).__new__(cls)
+                    self = super().__new__(cls)
                     self.inner = functions
                     self.scope = Unset
                     return self

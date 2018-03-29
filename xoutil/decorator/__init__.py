@@ -38,7 +38,7 @@ class AttributeAlias:
     '''
 
     def __init__(self, attr_name):
-        super(AttributeAlias, self).__init__()
+        super().__init__()
         self.attr_name = attr_name
 
     def __get__(self, instance, owner):

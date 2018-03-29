@@ -116,7 +116,7 @@ class ThreeNumbersVersion(tuple):
 
     '''
     def __new__(cls, info):
-        return super(ThreeNumbersVersion, cls).__new__(cls, _check(info))
+        return super().__new__(cls, _check(info))
 
     @property
     def major(self):
@@ -229,7 +229,7 @@ class PackageVersion(ThreeNumbersVersion):
     def __new__(cls, package_name):
         info = cls._find_version(package_name)
         if info:
-            return super(PackageVersion, cls).__new__(cls, info)
+            return super().__new__(cls, info)
         else:
             msg = '{}() could not determine a valid version'
             raise TypeError(msg.format(cls.__name__))
