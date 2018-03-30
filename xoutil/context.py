@@ -16,7 +16,7 @@ from __future__ import (division as _py3_division,
 
 from xoutil.tasking import local as LocalData
 from xoutil.eight.meta import metaclass
-from xoutil.future.collections import StackedDict
+from xoutil.future.collections import StackedDict, Mapping
 
 __all__ = ('Context', 'context', 'NullContext')
 
@@ -187,7 +187,7 @@ class Context(metaclass(MetaContext), StackedDict):
 context = Context
 
 
-class NullContext(object):
+class NullContext(Mapping):
     '''Singleton context to be used (returned) as default when no one is
     defined.
 
