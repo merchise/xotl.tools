@@ -98,7 +98,7 @@ publish in pypi:
     - build binary distribution
   environment:
     name: pypi
-    url: https://pypi.python.org/pypi/$CI_PROJECT_NAME
+    url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
 
 brag about new release in twitter:
   variables:
