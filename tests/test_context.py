@@ -148,6 +148,11 @@ def test_recover_from_runtime_bug_33():
         pass
 
 
+def test_null_context_is_mapping():
+    from xoutil.context import NullContext
+    dict(**NullContext())
+
+
 @pytest.mark.skipif(not GREENLETS, reason='greenlet is not installed')
 def test_greenlet_contexts():
     import random
