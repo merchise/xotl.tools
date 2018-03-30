@@ -537,7 +537,7 @@ def are_instances(*args):
     '''
     from xoutil.params import check_count
     check_count(args, 1, caller='are_instances')
-    subjects, types = args[:-1], args[-1]
+    *subjects, types = args
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.
     return all(isinstance(subject, types) for subject in subjects)
@@ -574,7 +574,7 @@ def no_instances(*args):
     '''
     from xoutil.params import check_count
     check_count(args, 1, caller='no_instances')
-    subjects, types = args[:-1], args[-1]
+    *subjects, types = args
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.
     return all(not isinstance(subject, types) for subject in subjects)

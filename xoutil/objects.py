@@ -1269,7 +1269,7 @@ def smart_copy(*args, defaults=None):
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
     from xoutil.values.simple import logic_iterable_coerce, nil
-    sources, target = args[:-1], args[-1]
+    *sources, target = args
     if not sources:
         raise TypeError('smart_copy() requires at least one source')
     if isinstance(target, (bool, type(None), int, float, base_string)):
