@@ -690,7 +690,7 @@ class TimeSpan:
             return type(self)(start, end)
         else:
             return EmptyTimeSpan
-    __mul__ = __and__
+    __mul__ = __rmul__ = __rand__ = __and__
 
     def __bool__(self):
         return True
