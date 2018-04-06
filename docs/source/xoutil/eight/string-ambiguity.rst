@@ -6,6 +6,9 @@
 |py-string-ambiguity|
 =====================
 
+.. note:: This document is targeted to a version of xoutil that works in both
+          Python 2 and Python 3.
+
 In Python there are three semantic types when handling character strings:
 
 1. .. _text-semantic:
