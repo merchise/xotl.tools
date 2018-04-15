@@ -87,7 +87,7 @@ publish in pypi:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - twine upload dist/*
+    - twine upload --skip-existing dist/*
   tags:
     - twine
   only:
