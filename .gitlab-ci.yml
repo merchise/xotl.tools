@@ -87,7 +87,7 @@ publish in pypi:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - twine upload dist/*
+    - twine upload --skip-existing dist/*
   tags:
     - twine
   only:
@@ -98,7 +98,7 @@ publish in pypi:
     - build binary distribution
   environment:
     name: pypi
-    url: https://pypi.python.org/pypi/$CI_PROJECT_NAME
+    url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
 
 brag about new release in twitter:
   variables:
@@ -136,6 +136,8 @@ build documentation:
     - master
 
 publish in our rtd:
+  variables:
+    GIT_STRATEGY: none
   stage: publish
   script:
     - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 rtd@docs.lahavane.com:.

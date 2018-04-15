@@ -71,7 +71,7 @@ except ValueError:
             return strftime(self, fmt)
 
         def __sub__(self, other):
-            return assure(super(date, self).__sub__(other))
+            return assure(super().__sub__(other))
 
     class datetime(_stdlib.datetime):
         __doc__ = _stdlib.datetime.__doc__
@@ -80,13 +80,13 @@ except ValueError:
             return strftime(self, fmt)
 
         def __sub__(self, other):
-            return assure(super(datetime, self).__sub__(other))
+            return assure(super().__sub__(other))
 
         def combine(self, date, time):
-            return assure(super(datetime, self).combine(date, time))
+            return assure(super().combine(date, time))
 
         def date(self):
-            return assure(super(datetime, self).date())
+            return assure(super().date())
 
         @staticmethod
         def now(tz=None):
@@ -341,7 +341,7 @@ class flextime(timedelta):
         first = None
         if args:
             first, rest = args[0], args[1:]
-        _super = super(flextime, cls).__new__
+        _super = super().__new__
         if first and not rest and not kwargs:
             hour, minutes, seconds = cls.parse_simple_timeformat(first)
             return _super(cls, hours=hour, minutes=minutes, seconds=seconds)
@@ -690,7 +690,7 @@ class TimeSpan:
             return type(self)(start, end)
         else:
             return EmptyTimeSpan
-    __mul__ = __and__
+    __mul__ = __rmul__ = __rand__ = __and__
 
     def __bool__(self):
         return True
@@ -839,7 +839,7 @@ class _EmptyTimeSpan:
     def __new__(cls):
         res = getattr(cls, '_instance', None)
         if res is None:
-            res = cls._instance = super(_EmptyTimeSpan, cls).__new__(cls)
+            res = cls._instance = super().__new__(cls)
         return res
 
     def __reduce__(self):

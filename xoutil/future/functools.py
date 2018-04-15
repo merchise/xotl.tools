@@ -110,7 +110,7 @@ def power(*args):
     from xoutil.params import check_count
     from xoutil.fp.tools import compose
     check_count(args, 2, caller='power')
-    funcs, times = args[:-1], args[-1]
+    *funcs, times = args
     if any(not callable(func) for func in funcs):
         raise TypeError('Arguments of `power`, but last, must be callables')
     if not (isinstance(times, int) and times > 0):

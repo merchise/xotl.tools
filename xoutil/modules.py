@@ -134,8 +134,7 @@ def customize(module, custom_attrs=None, meta=None):
             def __new__(cls, name, bases, attrs):
                 if custom_attrs:
                     attrs.update(custom_attrs)
-                return super(CustomModuleType, cls).__new__(cls, name, bases,
-                                                            attrs)
+                return super().__new__(cls, name, bases, attrs)
 
         class CustomModule(_CustomModuleBase, metaclass=CustomModuleType):
             def __getattr__(self, attr):
@@ -198,13 +197,13 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
     class prop(base):
         if getattr(base, 'setter', False):
             def setter(self, func, _name=None):
-                result = super(prop, self).setter(func)
+                result = super().setter(func)
                 setattr(cls, _name or func.__name__, result)
                 return result
 
         if getattr(base, 'deleter', False):
             def deleter(self, func, _name=None):
-                result = super(prop, self).deleter(func)
+                result = super().deleter(func)
                 setattr(cls, _name or func.__name__, result)
                 return result
 

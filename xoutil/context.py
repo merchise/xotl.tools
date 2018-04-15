@@ -15,7 +15,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from xoutil.tasking import local as LocalData
-from xoutil.future.collections import StackedDict
+from xoutil.future.collections import StackedDict, Mapping
 
 __all__ = ('Context', 'context', 'NullContext')
 
@@ -23,7 +23,7 @@ __all__ = ('Context', 'context', 'NullContext')
 class LocalData(LocalData):
     '''Thread-local data for contexts.'''
     def __init__(self):
-        super(LocalData, self).__init__()
+        super().__init__()
         self.contexts = {}
 
 
@@ -104,7 +104,7 @@ class Context(StackedDict, metaclass=MetaContext):
     def __new__(cls, name, **data):
         self = cls[name]
         if not self:     # if self is _null_context:
-            self = super(Context, cls).__new__(cls)
+            self = super().__new__(cls)
             super(Context, self).__init__()
             self.name = name
             self.count = 0
@@ -167,8 +167,8 @@ class Context(StackedDict, metaclass=MetaContext):
     def __enter__(self):
         if self.count == 0:
             _data.contexts[self.name] = self
-        self.count += 1
-        if self.count == self.level:
+        if self.count + 1 == self.level:
+            self.count += 1
             return self
         else:
             msg = 'Entering the same context level twice! -- c(%s, %d, %d)'
@@ -186,7 +186,7 @@ class Context(StackedDict, metaclass=MetaContext):
 context = Context
 
 
-class NullContext:
+class NullContext(Mapping):
     '''Singleton context to be used (returned) as default when no one is
     defined.
 
@@ -199,7 +199,7 @@ class NullContext:
 
     def __new__(cls):
         if cls.instance is None:
-            cls.instance = super(NullContext, cls).__new__(cls)
+            cls.instance = super().__new__(cls)
         return cls.instance
 
     def __len__(self):

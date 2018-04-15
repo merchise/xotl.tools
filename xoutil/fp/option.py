@@ -85,7 +85,7 @@ class Maybe:
         if arg is default or arg is None and cls is Wrong:
             idx = 2 if arg is None else arg
             if cls._singletons[idx] is None:
-                self = super(Maybe, cls).__new__(cls)
+                self = super().__new__(cls)
                 self.inner = arg
                 cls._singletons[idx] = self
             return cls._singletons[idx]
@@ -94,7 +94,7 @@ class Maybe:
         elif isinstance(arg, cls):
             return arg
         elif not isinstance(arg, Maybe):
-            self = super(Maybe, cls).__new__(cls)
+            self = super().__new__(cls)
             self.inner = arg
             return self
         else:
@@ -199,7 +199,7 @@ class Wrong(Maybe):
     __slots__ = ()
 
     def __new__(cls, *args):
-        self = super(Wrong, cls).__new__(cls, *args)
+        self = super().__new__(cls, *args)
         if isinstance(self.inner, BaseException):
             from xoutil.eight.exceptions import catch
             self.inner = catch(self.inner)

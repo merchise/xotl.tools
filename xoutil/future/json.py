@@ -64,7 +64,7 @@ class JSONEncoder(_stdlib.JSONEncoder):
             return str(obj)
         elif isinstance(obj, Iterable):
             return list(iter(obj))
-        return super(JSONEncoder, self).default(obj)
+        return super().default(obj)
 
 
 try:

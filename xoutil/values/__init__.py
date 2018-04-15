@@ -77,7 +77,7 @@ class logical(boolean):
         name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
         value = cls._valid.get(name, Invalid)
         if value is not Invalid:
-            return super(logical, cls).__new__(cls, name, value)
+            return super().__new__(cls, name, value)
         else:
             msg = 'retrieving invalid logical instance "{}"'
             raise TypeError(msg.format(arg))
@@ -110,7 +110,7 @@ class MetaCoercer(ABCMeta):
     '''
     def __instancecheck__(self, instance):
         return (getattr(instance, '__coercer__', False) or
-                super(MetaCoercer, self).__instancecheck__(instance))
+                super().__instancecheck__(instance))
 
 
 class coercer(metaclass=MetaCoercer):
@@ -569,7 +569,7 @@ class istype(custom):
 
     def __new__(cls, types):
         if types:
-            self = super(istype, cls).__new__(cls)
+            self = super().__new__(cls)
             self.inner = vouch(types_tuple_coerce, types)
             return self
         else:
@@ -600,7 +600,7 @@ class typecast(istype):
     __slots__ = ()
 
     def __call__(self, arg):
-        res = super(typecast, self).__call__(arg)
+        res = super().__call__(arg)
         i = 0
         while not t(res) and i < len(self.inner):
             try:
@@ -629,7 +629,7 @@ class safe(custom):
     __slots__ = ()
 
     def __init__(self, func):
-        super(safe, self).__init__()
+        super().__init__()
         self.inner = vouch(coercer, func)
 
     def __call__(self, arg):
@@ -663,7 +663,7 @@ class compose(custom):
         inner = cls.flatten(coercers, avoid=identity_coerce)
         count = len(inner)
         if count > 1:
-            self = super(compose, cls).__new__(cls)
+            self = super().__new__(cls)
             self.inner = inner
             return self
         elif count == 1:
@@ -707,7 +707,7 @@ class some(custom):
     def __new__(cls, *coercers):
         inner = cls.flatten(coercers, avoid=void_coerce)
         if len(inner) > 1:
-            self = super(some, cls).__new__(cls)
+            self = super().__new__(cls)
             self.inner = inner
             return self
         elif len(inner) == 1:
@@ -758,7 +758,7 @@ class combo(custom):
     __slots__ = ()
 
     def __init__(self, *coercers):
-        super(combo, self).__init__()
+        super().__init__()
         coercers = pargs(coercer)(coercers)
         self.inner = tuple(vouch(coercer, c) for c in coercers)
 
@@ -857,7 +857,7 @@ class pargs(custom):
     __slots__ = ()
 
     def __init__(self, arg_coerce):
-        super(pargs, self).__init__()
+        super().__init__()
         self.inner = vouch(coercer, arg_coerce)
 
     def __call__(self, arg):
@@ -947,7 +947,7 @@ class iterable(custom):
                ``collections.Iterable``.
 
         '''
-        super(iterable, self).__init__()
+        super().__init__()
         member_coerce = vouch(coercer, member_coerce)
         outer_coerce = compose(coercer(outer_coerce), sized_coerce)
         self.inner = (member_coerce, outer_coerce)
@@ -1047,7 +1047,7 @@ class mapping(custom):
         if key_coercer is value_coercer is Unset:
             return coercer(Mapping)
         else:
-            self = super(mapping, cls).__new__(cls)
+            self = super().__new__(cls)
             key_coercer = vouch(coercer, key_coercer or True)
             value_coercer = vouch(coercer, value_coercer or True)
             self.inner = (key_coercer, value_coercer)

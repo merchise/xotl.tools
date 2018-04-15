@@ -938,7 +938,7 @@ class xproperty(property):
     '''
     def __init__(self, fget, doc=None):
         if fget is not None:
-            super(xproperty, self).__init__(fget, doc=doc)
+            super().__init__(fget, doc=doc)
         else:
             raise TypeError('xproperty() the "fget" argument is requiered')
 
@@ -977,15 +977,15 @@ class classproperty(property):
     '''
     def __get__(self, instance, owner):
         obj = type(instance) if instance is not None else owner
-        return super(classproperty, self).__get__(obj, owner)
+        return super().__get__(obj, owner)
 
     def __set__(self, instance, value):
         obj = instance if isinstance(instance, type) else type(instance)
-        super(classproperty, self).__set__(obj, value)
+        super().__set__(obj, value)
 
     def __delete__(self, instance):
         obj = instance if isinstance(instance, type) else type(instance)
-        super(classproperty, self).__delete__(obj)
+        super().__delete__(obj)
 
 
 class staticproperty(property):
@@ -1269,7 +1269,7 @@ def smart_copy(*args, defaults=None):
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
     from xoutil.values.simple import logic_iterable_coerce, nil
-    sources, target = args[:-1], args[-1]
+    *sources, target = args
     if not sources:
         raise TypeError('smart_copy() requires at least one source')
     if isinstance(target, (bool, type(None), int, float, base_string)):

@@ -155,66 +155,7 @@ WrapperDescriptorType = type(type.__call__)    # In PyPy is MethodWrapperType
 ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
 
 
-try:
-    DynamicClassAttribute    # noqa
-except NameError:
-    class DynamicClassAttribute(property):
-        '''Route attribute access on a class to `~object.__getattr__`:meth:.
-
-        This is a descriptor, used to define attributes that act differently
-        when accessed through an instance and through a class.  Instance
-        access remains normal, but access to an attribute through a class will
-        be routed to the class's `~object.__getattr__`:meth: method;
-        this is done by raising `AttributeError`:class:.
-
-        This allows one to have properties active on an instance, and have
-        virtual attributes on the class with the same name (see
-        `~py3:enum.Enum`:class: for an example).
-
-        .. versionadded:: 1.5.5
-
-        .. versionchanged:: 1.8.0 Inherits from `property`
-
-        .. note:: The class `Enum` mentioned has not yet been back-ported.
-
-        .. note:: In Python version>=3.4 this is an alias to
-                  `types.DynamicClassAttribute
-                  <py3:types.DynamicClassAttribute>`:class:.
-
-        '''
-        def __init__(self, fget=None, fset=None, fdel=None, doc=None):
-            super(DynamicClassAttribute, self).__init__(fget, fset, fdel, doc)
-            # support for abstract methods in Python 2
-            isabs = bool(getattr(fget, '__isabstractmethod__', False))
-            self.__isabstractmethod__ = isabs
-
-        def __get__(self, obj, owner=None):
-            if obj is None:
-                if self.__isabstractmethod__:
-                    return self
-                else:
-                    raise AttributeError()
-            else:
-                return super(DynamicClassAttribute, self).__get__(obj, owner)
-
-    __all__.append('DynamicClassAttribute')
-
-try:
-    new_class    # noqa
-except NameError:
-    from xoutil.eight._types import new_class    # noqa
-    __all__.append('new_class')
-
-try:
-    prepare_class    # noqa
-except NameError:
-    from xoutil.eight._types import prepare_class    # noqa
-    __all__.append('prepare_class')
-
-try:
-    from types import _calculate_meta
-except ImportError:
-    from xoutil.eight._types import _calculate_meta    # noqa
+from types import _calculate_meta  # noqa
 
 
 import re
@@ -596,7 +537,7 @@ def are_instances(*args):
     '''
     from xoutil.params import check_count
     check_count(args, 1, caller='are_instances')
-    subjects, types = args[:-1], args[-1]
+    *subjects, types = args
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.
     return all(isinstance(subject, types) for subject in subjects)
@@ -633,7 +574,7 @@ def no_instances(*args):
     '''
     from xoutil.params import check_count
     check_count(args, 1, caller='no_instances')
-    subjects, types = args[:-1], args[-1]
+    *subjects, types = args
     if not subjects:
         isinstance(None, types)   # HACK: always validate `types`.
     return all(not isinstance(subject, types) for subject in subjects)

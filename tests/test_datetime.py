@@ -85,6 +85,7 @@ def test_comparision(ts1, ts2):
     # Single day intersection and equality test
     if ts1.start_date:
         assert ts1 * ts1.start_date == ts1.start_date
+        assert ts1.start_date * ts1 == ts1.start_date
         assert ts1.start_date in ts1
 
 

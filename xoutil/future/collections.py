@@ -76,7 +76,7 @@ class safe_dict_iter(tuple):
     '''
 
     def __new__(cls, mapping):
-        self = super(safe_dict_iter, cls).__new__(cls, mapping)
+        self = super().__new__(cls, mapping)
         self._mapping = mapping
         return self
 
@@ -90,7 +90,7 @@ class safe_dict_iter(tuple):
         return sum(1 for key in self)
 
     def __contains__(self, key):
-        res = super(safe_dict_iter, self).__contains__(key)
+        res = super().__contains__(key)
         return res and key in self.mapping
 
     def __nonzero__(self):
@@ -98,7 +98,7 @@ class safe_dict_iter(tuple):
     __bool__ = __nonzero__
 
     def __iter__(self):
-        for key in super(safe_dict_iter, self).__iter__():
+        for key in super().__iter__():
             if key in self._mapping:
                 yield key
     keys = __iter__
@@ -149,7 +149,7 @@ class defaultdict(_stdlib.defaultdict):
                 return self.default_factory(key, dict(self))
             except TypeError:
                 # This is the error when the arguments are not expected.
-                return super(defaultdict, self).__missing__(key)
+                return super().__missing__(key)
         else:
             raise KeyError(key)
 
@@ -243,14 +243,14 @@ class OpenDictMixin:
         if key:
             self[key] = value
         else:
-            super(OpenDictMixin, self).__setattr__(name, value)
+            super().__setattr__(name, value)
 
     def __delattr__(self, name):
         key = (~self).get(name)
         if key:
             del self[key]
         else:
-            super(OpenDictMixin, self).__delattr__(name)
+            super().__delattr__(name)
 
     def __invert__(self):
         '''Return an inverted mapping between key and attribute names.
@@ -378,7 +378,7 @@ class SmartDict(SmartDictMixin, dict):
     def __init__(*args, **kwargs):
         from xoutil.params import issue_9137
         self, args = issue_9137(args)
-        super(SmartDict, self).__init__()
+        super().__init__()
         self.update(*args, **kwargs)
 
 
@@ -433,7 +433,7 @@ class codedict(OpenDictMixin, dict):
     def __getitem__(self, key):
         from xoutil.eight import string_types
         try:
-            return super(codedict, self).__getitem__(key)
+            return super().__getitem__(key)
         except KeyError:
             if isinstance(key, string_types):
                 return eval(key, dict(self))
@@ -920,7 +920,7 @@ if python_version < 3.3:
             from xoutil.params import issue_9137
             self, args = issue_9137(args)
             self.data = {}
-            super(Counter, self).__init__()
+            super().__init__()
             self.update(*args, **kwds)
 
         def __missing__(self, key):
@@ -1006,7 +1006,7 @@ if python_version < 3.3:
                             self[elem] = count + self_get(elem, 0)
                     else:
                         # fast path when counter is empty
-                        super(Counter, self).update(iterable)
+                        super().update(iterable)
                 else:
                     _count_elements(self, iterable)
             if kwds:
@@ -1071,7 +1071,7 @@ if python_version < 3.3:
             '''Like dict.__delitem__() but does not raise KeyError for missing
             values.'''
             if elem in self:
-                super(Counter, self).__delitem__(elem)
+                super().__delitem__(elem)
 
         def __repr__(self):
             if not self:
@@ -1327,7 +1327,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
                 warnings.warn(msg, stacklevel=2)
             return self.pop_level()
         else:
-            return super(StackedDict, self).pop(*args)
+            return super().pop(*args)
 
     def pop_level(self):
         '''Pops the last pushed level and returns the whole level.
@@ -1507,11 +1507,11 @@ class RankedDict(SmartDictMixin, dict):
                 ranks.append(key)
         else:
             ranks.append(key)
-        super(RankedDict, self).__setitem__(key, value)
+        super().__setitem__(key, value)
 
     def __delitem__(self, key):
         '''rd.__delitem__(y) <==> del rd[y]'''
-        super(RankedDict, self).__delitem__(key)
+        super().__delitem__(key)
         self._ranks.remove(key)
 
     def __iter__(self):
@@ -1524,7 +1524,7 @@ class RankedDict(SmartDictMixin, dict):
 
     def clear(self):
         '''rd.clear() -> None.  Remove all items from rd.'''
-        super(RankedDict, self).clear()
+        super().clear()
         self._ranks = []
 
     def popitem(self, index=None):
@@ -1540,7 +1540,7 @@ class RankedDict(SmartDictMixin, dict):
             if index is None or index is True:
                 index = -1
             key = self._ranks.pop(index)
-            return key, super(RankedDict, self).pop(key)
+            return key, super().pop(key)
         else:
             raise KeyError('popitem(): dictionary is empty')
 
@@ -1551,7 +1551,7 @@ class RankedDict(SmartDictMixin, dict):
                   ``obj.__sizeof__()``?
 
         '''
-        return super(RankedDict, self).__sizeof__() + self._ranks.__sizeof__()
+        return super().__sizeof__() + self._ranks.__sizeof__()
 
     def keys(self):
         '''D.keys() -> an object providing a view on D's keys.'''
@@ -1579,7 +1579,7 @@ class RankedDict(SmartDictMixin, dict):
         while comparison to a regular mapping is order-insensitive.
 
         '''
-        res = super(RankedDict, self).__eq__(other)
+        res = super().__eq__(other)
         if res:
             if isinstance(other, RankedDict):
                 return self._ranks == other._ranks
@@ -1605,7 +1605,7 @@ class RankedDict(SmartDictMixin, dict):
         from xoutil.params import check_count
         count = len(args)
         check_count(count + 1, 1, 2, caller='pop')
-        res = super(RankedDict, self).pop(key, Unset)
+        res = super().pop(key, Unset)
         if res is Unset:
             if count == 1:
                 return args[0]
@@ -1671,7 +1671,7 @@ class OrderedSmartDict(SmartDictMixin, OrderedDict):
         '''
         from xoutil.params import issue_9137
         self, args = issue_9137(args)
-        super(OrderedSmartDict, self).__init__()
+        super().__init__()
         self.update(*args, **kwds)
 
 

@@ -29,7 +29,7 @@ class MetaSymbol(type):
     '''Meta-class for symbol types.'''
     def __new__(cls, name, bases, ns):
         if ns['__module__'] == __name__ or name not in {SYMBOL, BOOLEAN}:
-            self = super(MetaSymbol, cls).__new__(cls, name, bases, ns)
+            self = super().__new__(cls, name, bases, ns)
             if name == SYMBOL:
                 self._instances = {str(v): v for v in (False, True)}
             return self
@@ -42,14 +42,14 @@ class MetaSymbol(type):
         if instance is False or instance is True:
             return True
         else:
-            return super(MetaSymbol, self).__instancecheck__(instance)
+            return super().__instancecheck__(instance)
 
     def __subclasscheck__(self, subclass):
         '''Override for issubclass(subclass, self).'''
         if subclass is bool:
             return True
         else:
-            return super(MetaSymbol, self).__subclasscheck__(subclass)
+            return super().__subclasscheck__(subclass)
 
     def nameof(self, s):
         '''Get the name of a symbol instance (`s`).'''
@@ -82,9 +82,8 @@ class MetaSymbol(type):
 class symbol(int, metaclass=MetaSymbol):
     '''Instances are custom symbols.
 
-    A "symbol" is an object can be used to identify uniquely a semantic
-    concept by its name; also each is associated with an ordinal value
-    associated.
+    Symbol instances identify uniquely a semantic concept by its name.  Each
+    one has an ordinal value associated.
 
     For example::
 
@@ -113,20 +112,13 @@ class symbol(int, metaclass=MetaSymbol):
         from xoutil.eight import intern as unique, type_name
         name = unique(name)
         if name:
-            valid = {symbol: lambda v: isinstance(v, int),
-                     boolean: lambda v: v is False or v is True}
-            cache = cls._instances
-            res = cache.get(name)
             if value is None:
                 value = hash(name)
+            res = cls._instances.get(name)
             if res is None:    # Create the new instance
-                if cls in valid:
-                    aux = cls
-                else:
-                    aux = next(b for b in cls.mro() if b in valid)
-                if valid[aux](value):
-                    res = super(symbol, cls).__new__(cls, value)
-                    cache[name] = res
+                if isinstance(value, int):
+                    res = super().__new__(cls, value)
+                    cls._instances[name] = res
                 else:
                     msg = ('instancing "{}" with name "{}" and incorrect '
                            'value "{}" of type "{}"')
@@ -192,7 +184,7 @@ class boolean(symbol):
 
         See `~Symbol.__new__`:meth: for information about parameters.
         '''
-        return super(boolean, cls).__new__(cls, name, bool(value))
+        return super().__new__(cls, name, bool(value))
 
 
 # --- Special singleton values ---

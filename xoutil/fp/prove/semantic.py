@@ -64,7 +64,7 @@ class predicate:
             else:
                 return MultiCheck(*args)
         else:
-            return super(predicate, cls).__new__(cls)
+            return super().__new__(cls)
 
     def __init__(self, *args):
         pass
@@ -84,7 +84,7 @@ class TypeCheck(predicate):
         if len(args) == 1 and isinstance(args[0], tuple):
             args = args[0]
         if all(isinstance(arg, _types) for arg in args):
-            self = super(TypeCheck, cls).__new__(cls)
+            self = super().__new__(cls)
             self.inner = args
             return self
         else:
@@ -147,10 +147,10 @@ class NoneOrTypeCheck(TypeCheck):
                 i += 1
             return res if res is not None else Wrong(None)
         else:
-            return super(NoneOrTypeCheck, self).__call__(value)
+            return super().__call__(value)
 
     def __str__(self):
-        aux = super(NoneOrTypeCheck, self).__str__()
+        aux = super().__str__()
         return 'none-or-{}'.format(aux)
 
 
@@ -160,7 +160,7 @@ class TypeCast(TypeCheck):
 
     def __call__(self, value):
         from xoutil.fp.option import Just
-        res = super(TypeCast, self).__call__(value)
+        res = super().__call__(value)
         if not res:
             _types = self.inner
             i = 0
@@ -191,7 +191,7 @@ class CheckAndCast(predicate):
         from xoutil.eight import callable, type_name
         check = predicate(check)
         if callable(cast):
-            self = super(CheckAndCast, cls).__new__(cls)
+            self = super().__new__(cls)
             self.inner = (check, SafeCheck(cast))
             return self
         else:
@@ -230,7 +230,7 @@ class FunctionalCheck(predicate):
         if isinstance(check, predicate):
             return check
         elif callable(check):
-            self = super(FunctionalCheck, cls).__new__(cls)
+            self = super().__new__(cls)
             self.inner = check
             return self
         else:
@@ -295,7 +295,7 @@ class MultiCheck(predicate):
 
     def __new__(cls, *args):
         inner = tuple(predicate(arg) for arg in args)
-        self = super(MultiCheck, cls).__new__(cls)
+        self = super().__new__(cls)
         self.inner = inner
         return self
 
