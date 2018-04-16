@@ -601,3 +601,20 @@ def test_import_object():
     from xoutil.objects import import_object
     assert import_object('xoutil.objects.import_object') is import_object
     assert import_object('xoutil.objects:import_object') is import_object
+
+
+def test_delegator():
+    from xoutil.objects import delegator
+
+    class Bar(object):
+        x = object()
+
+    class Foo(delegator('egg', {'x1': 'x', 'x2': 'spam'})):
+        def __init__(self):
+            self.egg = Bar()
+
+    foo = Foo()
+    assert foo.x1 is foo.egg.x
+
+    with pytest.raises(AttributeError):
+        foo.x2

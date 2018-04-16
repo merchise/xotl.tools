@@ -4,7 +4,7 @@ Changelog
 2.0 series
 ----------
 
-Unreleased.  Release 2.0.3
+2018-04-16.  Release 2.0.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.0.3.rst
@@ -33,7 +33,7 @@ Unreleased.  Release 2.0.3
 
 .. _rel-1.9.3:
 
-Unreleased. Release 1.9.3
+2018-04-16. Release 1.9.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.9.3.rst
