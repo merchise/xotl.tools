@@ -1643,7 +1643,7 @@ def delegator(attribute, attrs_map, metaclass=type):
     '''Create a base class that delegates attributes to another object.
 
     The returned base class contains a `delegated attribute descriptor
-    <DelegatedAttribute> `:class: for each key in `attrs_map`.
+    <DelegatedAttribute>`:class: for each key in `attrs_map`.
 
     :param attribute: The attribute of the delegating object that holds the
                       delegated attributes.
