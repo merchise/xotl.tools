@@ -1594,8 +1594,7 @@ def temp_attributes(obj, attrs, **kwargs):
         yield
 
 
-def import_object(name, package=None,
-                  sep='.', default=None, **kwargs):
+def import_object(name, package=None, sep='.', default=None, **kwargs):
     """Get symbol by qualified name.
 
     The name should be the full dot-separated path to the class::
@@ -1638,6 +1637,80 @@ def import_object(name, package=None,
         if default is None:
             raise
     return default
+
+
+def delegator(attribute, attrs_map, metaclass=type):
+    '''Create a base class that delegates attributes to another object.
+
+    The returned base class contains a `delegated attribute descriptor
+    <DelegatedAttribute> `:class: for each key in `attrs_map`.
+
+    :param attribute: The attribute of the delegating object that holds the
+                      delegated attributes.
+
+    :param attrs_map: A map of attributes to delegate.  The keys are the
+                      attribute names the delegating object attributes, and
+                      the values the attribute names of the delegated object.
+
+    Example:
+
+        >>> class Bar(object):
+        ...     x = 'bar'
+
+        >>> class Foo(delegator('egg', {'x1': 'x'})):
+        ...     def __init__(self):
+        ...         self.egg = Bar()
+
+        >>> foo = Foo()
+        >>> foo.x1
+        'bar'
+
+    .. versionadded:: 1.9.3
+
+    '''
+    descriptors = {
+        key: DelegatedAttribute(attribute, attr)
+        for key, attr in attrs_map.items()
+    }
+    return metaclass('delegator', (object, ), descriptors)
+
+
+class DelegatedAttribute(object):
+    '''A delegator data descriptor.
+
+    When accessed the descriptor finds the `delegated_attr` in the instance's
+    value given by attribute `target_name`.
+
+    If the instance has no attribute with name `target_name`, raise an
+    AttributeError.
+
+    If the target object does not have an attribute with name `delegate_attr`
+    and `default` is `~xoutil.symbols.Unset`:data:, raise an AttributeError.
+    If `default` is not Unset, return `default`.
+
+    .. versionadded:: 1.9.3
+
+    '''
+    def __init__(self, target_name, delegated_attr, default=Unset):
+        self.target_name = target_name
+        self.attr = delegated_attr
+        self.default = default
+
+    def __get__(self, instance, owner):
+        if instance is not None:
+            target = getattr(instance, self.target_name)
+            try:
+                return getattr(target, self.attr)
+            except AttributeError:
+                if self.default is not Unset:
+                    return self.default
+                else:
+                    raise
+        else:
+            return self
+
+    def __repr__(self):
+        return "<DelegatedAttr '%s.%s'>" % (self.target_name, self.attr)
 
 
 del contextmanager

@@ -39,3 +39,7 @@
 
    .. versionadded:: 1.8.1 Ported from
       `xoutil.decorator.memoized_property`:class:.
+
+.. autofunction:: delegator
+
+.. autoclass:: DelegatedAttribute
