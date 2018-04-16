@@ -1664,7 +1664,7 @@ def delegator(attribute, attrs_map, metaclass=type):
     return metaclass('delegator', (object, ), descriptors)
 
 
-class DelegatedAttribute(object):
+class DelegatedAttribute:
     '''A delegator data descriptor.
 
     When accessed the descriptor finds the `delegated_attr` in the instance's
