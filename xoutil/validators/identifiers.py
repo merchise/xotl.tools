@@ -17,6 +17,7 @@ from __future__ import (division as _py3_division,
 
 from re import compile as _regex_compile
 from xoutil.eight import string_types
+from xoutil.versions import python_version
 
 
 __all__ = ('is_valid_identifier', 'is_valid_full_identifier',
@@ -25,18 +26,24 @@ __all__ = ('is_valid_identifier', 'is_valid_full_identifier',
 
 
 # TODO: In Py3k "ña" is a valid identifier and this regex won't allow it
-_IDENTIFIER_REGEX = _regex_compile('(?i)^[_a-z][\w]*$')
+_IDENTIFIER_REGEX = _regex_compile('(?i)^\w(?<!\d)[\w]*$')
 
 
 def is_valid_identifier(name):
     '''Returns True if `name` a valid Python identifier.
 
-    .. note:: Only Python 2's version of valid identifier. This means that some
-              Python 3 valid identifiers are not considered valid.  This helps
-              to keep things working the same in Python 2 and 3.
+    If `name` is not a string, return False.
+
+    .. note:: In Python 3 this is uses `str.isidentifier`:func:.
 
     '''
-    return isinstance(name, string_types) and _IDENTIFIER_REGEX.match(name)
+    if isinstance(name, string_types):
+        if python_version >= 3:
+            return name.isidentifier()
+        else:
+            return _IDENTIFIER_REGEX.match(name)
+    else:
+        return False
 
 
 def check_identifier(name):
