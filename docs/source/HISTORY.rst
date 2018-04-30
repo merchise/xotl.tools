@@ -31,6 +31,14 @@ Changelog
 1.9 series
 ----------
 
+.. _rel-1.9.4:
+
+Unreleased. Release 1.9.4
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.9.4.rst
+
+
 .. _rel-1.9.3:
 
 2018-04-16. Release 1.9.3

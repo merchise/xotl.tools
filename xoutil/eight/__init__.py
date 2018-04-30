@@ -88,17 +88,17 @@ hex, oct, filter, map, zip = hex, oct, filter, map, zip
 
 def iterkeys(d):
     '''Return an iterator over the keys of a dictionary.'''
-    return (d.keys if _py3 else d.iterkeys)()
+    return iter((d.keys if _py3 else d.iterkeys)())
 
 
 def itervalues(d):
     '''Return an iterator over the values of a dictionary.'''
-    return (d.values if _py3 else d.itervalues)()
+    return iter((d.values if _py3 else d.itervalues)())
 
 
 def iteritems(d):
     '''Return an iterator over the (key, value) pairs of a dictionary.'''
-    return (d.items if _py3 else d.iteritems)()
+    return iter((d.items if _py3 else d.iteritems)())
 
 
 from io import StringIO  # noqa
