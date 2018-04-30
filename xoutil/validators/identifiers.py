@@ -34,7 +34,7 @@ def is_valid_identifier(name):
 
     If `name` is not a string, return False.
 
-    .. note:: In Python 3 this is uses `str.isidentifier`:func:.
+    .. note:: In Python 3 this is uses `str.isidentifier`:meth:.
 
     '''
     if isinstance(name, string_types):
