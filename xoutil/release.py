@@ -9,6 +9,7 @@
 
 VERSION = '2.0.4'
 
+
 def dev_tag_installed():
     import pkg_resources
     try:
