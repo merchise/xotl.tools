@@ -413,25 +413,27 @@ class opendict(OpenDictMixin, dict, object):
     def from_enum(cls, enumclass):
         '''Creates an opendict from an enumeration class.
 
-        If the class lack the ``__members__`` dictionary, take the
+        If `enumclass` lacks the ``__members__`` dictionary, take the
         ``__dict__`` of the class disregarding the keys that cannot be `public
         identifiers
         <xoutil.validators.identifiers.is_valid_public_identifier>`:func:.
 
         Example:
 
-          >>> from xoutil.future.collections import opendict
-          >>> class Foo(object):
-          ...    x = 1
-          ...    _y = 2
+        .. code-block:: python
 
-          >>> foo = opendict.from_enum(foo)
+           >>> from xoutil.future.collections import opendict
+           >>> class Foo(object):
+           ...    x = 1
+           ...    _y = 2
 
-          >>> type(foo) is opendict
-          True
+           >>> foo = opendict.from_enum(foo)
 
-          >>> dict(foo)
-          {'x': 1}
+           >>> type(foo) is opendict
+           True
+
+           >>> dict(foo)
+           {'x': 1}
 
         '''
         from xoutil.symbols import Unset
