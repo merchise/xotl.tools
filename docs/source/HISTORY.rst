@@ -4,6 +4,12 @@ Changelog
 2.0 series
 ----------
 
+Unreleased.  Release 2.0.4
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.0.4.rst
+
+
 2018-04-16.  Release 2.0.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
