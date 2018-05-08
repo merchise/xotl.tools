@@ -78,8 +78,10 @@ setup(
         'monotonic; python_version<"3.3"',
     ],
     extras_require={
-        'extra': ['python-dateutil', ],
-        'testing': ['hypothesis>=3.34', ],
+        'recommended': [
+            'python-dateutil',
+            'enum34; python_version<"3.4"'
+        ],
     },
     cmdclass={'test': PyTest},
 )
