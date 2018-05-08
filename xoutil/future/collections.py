@@ -409,6 +409,44 @@ class opendict(OpenDictMixin, dict, object):
     '''
     __slots__ = safe.slot(OpenDictMixin.__cache_name__, dict)
 
+    @classmethod
+    def from_enum(cls, enumclass):
+        '''Creates an opendict from an enumeration class.
+
+        If `enumclass` lacks the ``__members__`` dictionary, take the
+        ``__dict__`` of the class disregarding the keys that cannot be `public
+        identifiers
+        <xoutil.validators.identifiers.is_valid_public_identifier>`:func:.
+
+        Example:
+
+        .. code-block:: python
+
+           >>> from xoutil.future.collections import opendict
+           >>> class Foo(object):
+           ...    x = 1
+           ...    _y = 2
+
+           >>> foo = opendict.from_enum(foo)
+
+           >>> type(foo) is opendict
+           True
+
+           >>> dict(foo)
+           {'x': 1}
+
+        '''
+        from xoutil.symbols import Unset
+        from xoutil.validators.identifiers import is_valid_public_identifier
+        members = getattr(enumclass, '__members__', Unset)
+        if members is Unset:
+            members = {
+                k: v
+                for k, v in enumclass.__dict__.items()
+                if is_valid_public_identifier(k)
+            }
+        return cls(members)
+
 
 class codedict(OpenDictMixin, dict, object):
     '''A dictionary implementation that evaluate keys as Python expressions.

@@ -15,6 +15,7 @@ We have backported several Python 3.3 features but not all.
 .. autoclass:: defaultdict
 
 .. autoclass:: opendict
+   :members: from_enum
 
 .. autoclass:: codedict
 
