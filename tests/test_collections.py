@@ -1259,6 +1259,31 @@ def test_abcs():
     from xoutil.future.collections import ValuesView    # noqa
 
 
+def test_opendict():
+    try:
+        from enum import Enum
+    except ImportError:
+        from enum34 import Enum
+
+    from xoutil.future.collections import opendict
+
+    class Foo(object):
+        x = 1
+        _y = 2
+
+    foo = opendict.from_enum(Foo)
+    assert dict(foo) == {'x': 1}
+
+    class Bar(Enum):
+        spam = 'spam'
+
+        def eat(self):
+            return self.spam
+
+    bar = opendict.from_enum(Bar)
+    assert dict(bar) == {'spam': Bar.spam}
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main(verbosity=2)
