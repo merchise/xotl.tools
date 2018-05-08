@@ -75,8 +75,10 @@ setup(
     zip_safe=False,
     python_requires='>=3.4',
     extras_require={
-        'extra': ['python-dateutil', ],
-        'testing': ['hypothesis>=3.34', ],
+        'recommended': [
+            'python-dateutil',
+            'enum34; python_version<"3.4"'
+        ],
     },
     cmdclass={'test': PyTest},
 )
