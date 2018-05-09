@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-VERSION = '2.0.4'
+VERSION = '2.0.4.1'
 
 
 def dev_tag_installed():

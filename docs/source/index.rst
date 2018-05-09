@@ -9,10 +9,10 @@ Welcome to xoutil's documentation!
 
 .. automodule:: xoutil
 
-What's new in |release|
+What's new in |version|
 -----------------------
 
-.. include:: history/_changes-2.0.4.rst
+.. include:: history/_changes-2.0.4.1.rst
 
 
 Contents
