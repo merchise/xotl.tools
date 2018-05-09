@@ -38,9 +38,9 @@ build source distribution:
   stage: build
   script:
     - rm -f dist/*
-    - python setup.py sdist
+    - python3 setup.py sdist
   tags:
-    - python
+    - python3
   artifacts:
     expire_in: 4 hours
     paths:
@@ -52,9 +52,10 @@ build binary distribution:
   stage: build
   script:
     - rm -f dist/*
-    - python setup.py bdist_wheel
+    - python3 setup.py bdist_wheel
   tags:
     - wheel
+    - python3
   artifacts:
     expire_in: 4 hours
     paths:
