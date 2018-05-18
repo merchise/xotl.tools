@@ -197,14 +197,14 @@ class TestExitStack(unittest.TestCase):
         self.assertIsInstance(inner_exc.__context__, ZeroDivisionError)
 
     def test_exit_exception_chaining(self):
+        from xoutil.collections import opendict
         # Ensure exception chaining matches the reference behaviour
         def raise_exc(exc):
             raise exc
 
-        saved_details = None
+        nonlocals = opendict(saved_details=None)
         def suppress_exc(*exc_details):
-            nonlocal saved_details
-            saved_details = exc_details
+            nonlocals.saved_details = exc_details
             return True
 
         try:
@@ -223,7 +223,7 @@ class TestExitStack(unittest.TestCase):
         else:
             self.fail("Expected IndexError, but no exception was raised")
         # Check the inner exceptions
-        inner_exc = saved_details[1]
+        inner_exc = nonlocals.saved_details[1]
         self.assertIsInstance(inner_exc, ValueError)
         self.assertIsInstance(inner_exc.__context__, ZeroDivisionError)
 
