@@ -233,6 +233,7 @@ class compose(metaclass(MetaCompose)):
         res = self.inner[index]
         return compose(*res) if isinstance(res, list) else res
 
+    # TODO: Should we really allow compose be mutable?
     def __setitem__(self, index, value):
         if isinstance(index, slice) and isinstance(type(value), MetaCompose):
             value = value.inner
