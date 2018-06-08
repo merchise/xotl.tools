@@ -9,15 +9,20 @@
 
 '''Solve compatibility issues for exceptions handling.
 
-Python 2 defines a module named `exceptions` but Python 3 doesn't.  We decided
-not to implement something similar, for example, in `xoutil.future`:mod:
-package because all these exception classes are built-ins in both Python major
-versions, so use any of them directly; nevertheless `StandardError`:class: is
-undefined in Python 3, we introduce some adjustments here in base classes
-(`BaseException`:class: and `StandardError`:class: classes).
+Before Python 3, module `exceptions` is defined, but not anymore.  We decided
+not to implement this concept in `xoutil.future`:mod: package because all
+these exception classes are built-ins in both Python major versions, so use
+any of them directly.
 
-The functions `catch`:func: and `throw`:func: unify syntax differences raising
-exceptions.  In Python 2 the syntax for ``raise`` is::
+`StandardError`:class: is undefined in Python 3, we introduce some adjustments
+here in base classes (`BaseException`:class: and `StandardError`:class:
+classes).
+
+This module tries to solve, as much as possible, differences between how the
+`raise``, and ``try ... except`` statements are executed between Python
+versions 2 and 3.
+
+In Python 2 the syntax for ``raise`` is::
 
   "raise" [type ["," value ["," traceback]]]
 
@@ -25,17 +30,15 @@ and in Python 3::
 
   "raise" [error[.with_traceback(traceback)] ["from" cause]]
 
-You can use `catch`:func: as a function to wrap errors going to be raised with
-a homogeneous syntax using a `trace` extra argument::
-
-    >>> divisor = 0
-    >>> try:
-    ...     inverted = 1/divisor
-    ... except Exception:
-    ...     raise catch(ValueError('Invalid divisor.'))
-
 If you want to be completely compatible raising exceptions with trace-backs,
-use the `throw`:func: function instead the ``raise`` statement.
+use the `throw`:func: function instead the ``raise`` statement::
+
+  throw(error, traceback=traceback, [cause=cause])
+
+Also, Python 3 is consistent by always assigning the trace-back information in
+the ``__traceback__`` attribute, and the active error in the execution context
+-if any- to the ``__context__`` attribute.  But in Python 2 it is a nightmare
+to obtain a good solution related with these issues.  See `catch`:func:.
 
 '''
 
