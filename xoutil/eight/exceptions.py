@@ -166,8 +166,8 @@ def throw(error, tb=None):
     elif _py3:
         raise error.with_traceback(tb)
     else:
-        from ._throw2 import raise2
-        raise2(error, tb)
+        from ._errors2 import raise2
+        raise2(error, traceback, cause)
 
 
 def traceof(error):
