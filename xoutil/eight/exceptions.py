@@ -136,23 +136,38 @@ def catch(context=None):
     return context
 
 
-def throw(error, tb=None):
+def throw(error=None, traceback=None, cause=None):
     '''Unify syntax for raising an error with trace-back information.
 
-    Instead of using the Python ``raise`` statement, use ``throw(error, tb)``.
-    If `tb` argument is not given, the trace-back information is looked up in
-    the context.
+    Instead of using the Python ``raise`` statement, use ``throw``::
+
+      "raise" [error[.with_traceback(traceback)] ["from" cause]]
+
+    becomes::
+
+       throw([error, [traceback=traceback, ][cause=cause]])
+
+    If `traceback` argument is not given, it is looked up in the error.
+
 
     '''
-    if tb is None:
-        tb = traceof(error)
-        if tb is None:
-            error = catch(error)
-            tb = error.__traceback__
-    if tb is None:
-        raise error
+    if error is None:
+        if traceback is None and cause is None:
+            import sys
+            _, error, traceback = sys.exc_info()
+        else:
+            raise SyntaxError('invalid syntax')
+    if error is None:
+        raise RuntimeError('No active exception to reraise')
     elif _py3:
-        raise error.with_traceback(tb)
+        if cause is None:
+            if traceback is None:
+                raise error
+            else:
+                raise error.with_traceback(traceback)
+        else:
+            from ._errors3 import raise3
+            raise3(error, traceback, cause)
     else:
         from ._errors2 import raise2
         raise2(error, traceback, cause)
