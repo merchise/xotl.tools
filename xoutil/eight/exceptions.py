@@ -88,64 +88,52 @@ def with_cause(self, cause):
         raise TypeError(msg)
 
 
-def catch(self):
-    '''Check an error to settle trace-back information if found.
+def catch(context=None):
+    '''Catch error context in being raised with a trace-back and/or a cause.
 
-    :param self: The exception to check.
+    :param context: A subclass, or instance, of `BaseException`:class:.  If
+           None, `Exception`:class: is assumed as default.
+
+    Next example of Python 3 doesn't work in Python 2::
+
+      >>> def test():
+      ...     try:
+      ...         try:
+      ...             1/0
+      ...         except Exception as error:
+      ...             raise RuntimeError('xxx') from error
+      ...     except Exception as error:
+      ...         return error
+
+      >>> error = test()
+
+      >>> error.__context__ is error.__cause__
+      True
+
+      >>> isinstance(error.__cause__, ZeroDivisionError)
+      True
+
+    In this case, we can solve most issues by two replacements (``throw`` and
+    ``catch``)::
+
+      >>> def test():
+      ...     try:
+      ...         try:
+      ...             1/0
+      ...         except catch(Exception) as error:
+      ...             throw(RuntimeError('xxx'), cause=error)
+      ...     except catch(Exception) as error:
+      ...         return error
 
     '''
+
     import sys
-    tb = traceof(self)
-    if tb is None:
-        _, cause, tb = sys.exc_info()
-    else:
-        cause = None
-    self = with_traceback(self, tb)
-    if cause is not None:
-        self = with_cause(self, cause)
-    return self
-
-
-def grab(self=None, trace=None):
-    '''Prepare an error being raised with a trace-back and/or a cause.
-
-    :param self: The exception to be raised or None to capture the current
-           trace context for future use.
-
-    :param trace: Could be a trace-back, a cause (exception instance), or both
-           in a tuple (or list) with ``(cause, traceback)``.  If None, use the
-           current system exception info as the trace (see
-           `sys.exc_info`:func: built-in function).
-
-    This function create a syntax for ``raise`` statement, compatible for both
-    major Python versions.
-
-    '''
-    import sys
-    if trace is None:
-        _, cause, traceback = sys.exc_info()
-        if cause is None:
-            cause, traceback = caught.cause, caught.traceback
-            caught.cause, caught.traceback = None, None
-        if cause is None and traceback is None:
-            msg = 'catch() captured invalid exception information.'
-            raise RuntimeError(msg)
-    elif isinstance(trace, (tuple, list)):
-        if isinstance(trace[0], BaseException):
-            cause, traceback = trace
-        else:
-            traceback, cause = trace
-    elif isinstance(trace, BaseException):
-        cause = trace
-        traceback = getattr(cause, '__traceback__', None)
-    else:
-        cause, traceback = None, trace
-    if self is None:
-        caught.cause, caught.traceback = cause, traceback
-    else:
-        self = with_traceback(self, traceback)
-        self = with_cause(self, cause)
-        return self
+    if context is None:
+        context = Exception
+    if not _py3:
+        from ._errors2 import update_context
+        update_context(context)
+    return context
 
 
 def throw(error, tb=None):
