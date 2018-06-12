@@ -7,5 +7,5 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-def raise3(error, traceback, cause):
-    raise error.with_traceback(traceback) from cause
+def raise3(error):
+    raise error from error.__cause__
