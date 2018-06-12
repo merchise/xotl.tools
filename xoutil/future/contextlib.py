@@ -8,9 +8,17 @@
 # CPython 3.6.
 #
 
-'''Backports and enhancements to the contextlib module.
+'''Utilities for `with-statement contexts <343>`:pep:.
 
-Utilities for with-statement contexts.  See `343`:pep:.
+This module re-export all symbols from the standard library, with the
+exception of the function `nested`.
+
+In Python 2.7, this re-export from the package `contextlib2`_.
+
+.. _contextlib2: http://contextlib2.readthedocs.io/en/stable/
+
+
+.. versionadded:: 1.9.5
 
 '''
 
