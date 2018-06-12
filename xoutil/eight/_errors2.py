@@ -28,4 +28,4 @@ def _fix_context(error, **kwds):
 
 
 def raise2(error):
-    raise error, None, error.__traceback__
+    raise error, None, error.__traceback__    # noqa

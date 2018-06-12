@@ -7,5 +7,6 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
+
 def raise3(error):
-    raise error from error.__cause__
+    raise error from error.__cause__    # noqa
