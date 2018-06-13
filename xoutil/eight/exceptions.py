@@ -11,7 +11,8 @@
 
 This module tries to solve, as much as possible, differences between how the
 `raise``, and ``try ... except`` statements are executed between Python
-versions 2 and 3.
+versions 2 and 3.  See `Exception Chaining and Embedded Tracebacks
+<3134>`:pep:.
 
 First issue is that before Python 3, module `exceptions` was defined, but not
 anymore.  We decided not to implement this concept in `xoutil.future`:mod:
@@ -113,11 +114,11 @@ def grab(error, traceback=Unset, cause=Unset):
     error = _force_error(error)
     if traceback is not Unset:
         error = with_traceback(error, traceback)
+    if cause is not Unset:
+        error.__cause__ = _force_error(cause)
     if not _py3 and error is not None:
         from ._errors2 import _fix_context
-        if cause is not Unset:
-            cause = _force_error(cause)
-        _fix_context(error, context=catch(), cause=cause)
+        _fix_context(error, context=catch())
     return error
 
 
