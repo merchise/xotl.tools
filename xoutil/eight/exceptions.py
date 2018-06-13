@@ -196,7 +196,13 @@ def catch(base=Unset):
       ...     except catch(Exception) as error:
       ...         return error
 
-    If base is unset, the catched system error value is returned.
+    If base is unset, the catched system error value is returned, so never use
+    this function as::
+
+      >>> try:
+      ...     1/0
+      ... except catch():
+      ...     pass
 
     '''
     if not _py3:
