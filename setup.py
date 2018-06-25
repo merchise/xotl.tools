@@ -74,6 +74,10 @@ setup(
     include_package_data=True,
     zip_safe=False,
     python_requires='>=3.4',
+    install_requires=[
+        'monotonic; python_version<"3.3"',
+        'contextlib2; python_version<"3.4"',
+    ],
     extras_require={
         'recommended': [
             'python-dateutil',
