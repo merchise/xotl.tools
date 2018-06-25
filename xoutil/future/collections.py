@@ -411,23 +411,24 @@ class opendict(OpenDictMixin, dict):
         If `enumclass` lacks the ``__members__`` dictionary, take the
         ``__dict__`` of the class disregarding the keys that cannot be `public
         identifiers
-        <xoutil.validators.identifiers.is_valid_public_identifier>`:func:.
+        <xoutil.validators.identifiers.is_valid_public_identifier>`:func:.  If
+        `enumclass` has the ``__members__`` attribute this is the same as
+        ``opendict(enumclass.__members__)``.
 
         Example:
 
         .. code-block:: python
 
            >>> from xoutil.future.collections import opendict
+           >>> @opendict.from_enum
            >>> class Foo(object):
            ...    x = 1
            ...    _y = 2
 
-           >>> foo = opendict.from_enum(foo)
-
-           >>> type(foo) is opendict
+           >>> type(Foo) is opendict
            True
 
-           >>> dict(foo)
+           >>> dict(Foo)
            {'x': 1}
 
         '''
