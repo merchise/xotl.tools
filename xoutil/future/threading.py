@@ -42,7 +42,7 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
     if not kwargs:
         kwargs = {}
 
-    def async():
+    def async_():
         try:
             result = func(*args, **kwargs)
             if callback:
@@ -53,7 +53,7 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
         finally:
             event.set()
 
-    thread = Thread(target=async)
+    thread = Thread(target=async_)
     thread.setDaemon(True)  # XXX: Why?
     thread.start()
     return event
