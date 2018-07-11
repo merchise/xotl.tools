@@ -48,6 +48,8 @@ def force(value=str(), encoding=None):
       ...     inner.__name__ = string.force(name)
       ...     return inner
 
+    .. versionchanged:: 1.9.6 Add the 'enconding' parameter.
+
     '''
     from xoutil.future.codecs import safe_decode, safe_encode
     if isinstance(value, str):
@@ -70,6 +72,8 @@ def safe_join(separator, iterable, encoding=None):
       '0-1-2-3-4-5'
 
     Check that the expression ``'-'.join(range(6))`` raises a ``TypeError``.
+
+    .. versionchanged:: 1.9.6 Add the 'enconding' parameter.
 
     '''
     sep = force(separator, encoding)
