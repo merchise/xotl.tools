@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (c) Merchise Autrement [~º/~] and Contributors
@@ -6,10 +6,7 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
+from hypothesis import strategies as s, given, example
 
 
 def test_fp_compose():
@@ -97,3 +94,50 @@ def test_fp_tools():
     c = compose(*((lambda y: lambda x: x + y)(i) for i in range(6)))
     for i in range(7):
         assert c[:i](0) == sum(range(i))
+
+
+@given(s.integers(min_value=0, max_value=20))
+@example(4)
+def test_fp_iter_compose(n):
+    from xoutil.fp.iterators import iter_compose
+
+    def fullrange(n):
+        '[0..n]'
+        return range(n + 1)
+
+    def odds(n):
+        return [x for x in fullrange(n) if x % 2 != 0]
+
+    odd_seqs = iter_compose(odds, fullrange)
+    assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
+    id_ = lambda x: [x]
+    pad = [id_] * n
+    odd_seqs = iter_compose(*pad, odds, *pad, fullrange, *pad)
+    assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
+
+    odd_seqs = iter_compose(fullrange, odds)
+    assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
+    odd_seqs = iter_compose(*pad, fullrange, *pad, odds, *pad)
+    assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
+
+
+def test_fp_iter_compose4():
+    from xoutil.fp.iterators import iter_compose
+
+    def fullrange(n):
+        '[0..n]'
+        return range(n + 1)
+
+    def odds(n):
+        return [x for x in fullrange(n) if x % 2 != 0]
+
+    id_ = lambda x: [x]
+    odd_seqs = iter_compose(odds, fullrange)
+    assert list(odd_seqs(4)) == [1, 1, 1, 3, 1, 3]
+    odd_seqs = iter_compose(id_, odds, id_, id_, fullrange, id_)
+    assert list(odd_seqs(4)) == [1, 1, 1, 3, 1, 3]
+
+    odd_seqs = iter_compose(fullrange, odds)
+    assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
+    odd_seqs = iter_compose(id_, fullrange, id_, id_, odds, id_)
+    assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
