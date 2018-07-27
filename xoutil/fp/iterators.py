@@ -41,7 +41,7 @@ def iter_compose(*fs):
         # g >>. f = \x -> concat (map g (f x))
         return lambda x: (z for y in f(x) for z in g(y))
 
-    if False and len(fs) == 2:
+    if len(fs) == 2:
         # optimize a bit so that we can avoid the 'lambda x: [x]' for common
         # cases.
         return _compose(*fs)
