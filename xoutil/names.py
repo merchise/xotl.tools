@@ -15,7 +15,6 @@ from __future__ import (division as _py3_division,
 
 # FIX: These imports must be local
 from xoutil.symbols import Undefined as _undef
-from xoutil.eight import base_string
 
 
 # TODO: This module must be reviewed and deprecate most of it.
@@ -187,7 +186,7 @@ def module_name(item):
     from xoutil.future.inspect import get_attr_value
     if item is None:
         res = ''
-    elif isinstance(item, base_string):
+    elif isinstance(item, str):
         res = item
     else:
         res = get_attr_value(item, '__module__', None)
@@ -299,7 +298,6 @@ def nameof(*args, **kwargs):
     '''
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
-    from xoutil.eight import range
     from xoutil.future.inspect import safe_name
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
@@ -334,7 +332,7 @@ def nameof(*args, **kwargs):
                     if head:
                         res = '.'.join((head, res))
                 grant(res)
-            elif isinstance(item, (base_string, Number)):
+            elif isinstance(item, (str, Number)):
                 grant(str(item))
             else:
                 grant('@'.join(('%(next)s', hex(id(item)))), typed=True)

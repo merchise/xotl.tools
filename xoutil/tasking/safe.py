@@ -22,7 +22,7 @@ class SafeData:
     __slots__ = ('queue', 'timeout', 'data',)
 
     def __init__(self, data, timeout=None):
-        from xoutil.eight.queue import Queue
+        from queue import Queue
         self.queue = Queue(1)
         self.queue.put(data)
         self.timeout = timeout

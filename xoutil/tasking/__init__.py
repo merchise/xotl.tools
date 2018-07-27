@@ -180,7 +180,6 @@ class retrier:
     '''
     def __init__(self, max_tries=None, max_time=None,
                  wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
-        from xoutil.eight import callable
         if not max_tries and not max_time:
             raise TypeError('One of tries or times must be set')
         self.max_tries = max_tries

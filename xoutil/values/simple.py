@@ -129,8 +129,7 @@ def collection(arg=nil, avoid=(), force=False, base=None, name=None):
 
     @coercer
     def collection_coerce(arg):
-        from xoutil.eight import string_types
-        invalid = string_types + avoid
+        invalid = (str, ) + avoid
         ok = not isinstance(arg, invalid) and isinstance(arg, base)
         return arg if ok else ([arg] if force else nil)
 
@@ -168,13 +167,12 @@ del Mapping, Sequence
 def decode_coerce(arg):
     '''Decode objects implementing the buffer protocol.'''
     import locale
-    from xoutil.eight import text_type, callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     decode = getattr(arg, 'decode', None)
     if callable(decode):
         try:
             res = decode(encoding, 'replace')
-            if not isinstance(res, text_type):
+            if not isinstance(res, str):
                 res = None
         except Exception:
             res = None
@@ -195,7 +193,6 @@ def decode_coerce(arg):
 def encode_coerce(arg):
     '''Encode string objects.'''
     import locale
-    from xoutil.eight import callable
     encoding = locale.getpreferredencoding() or 'UTF-8'
     encode = getattr(arg, 'encode', None)
     if callable(encode):
@@ -235,11 +232,10 @@ def unicode_coerce(arg):
 
     '''
     from array import array
-    from xoutil.eight import text_type
     aux = name_coerce(arg)
     if aux is not nil:
         arg = aux
-    if isinstance(arg, text_type):
+    if isinstance(arg, str):
         return arg
     elif isinstance(arg, bytearray):
         arg = bytes(arg)
@@ -289,7 +285,6 @@ def bytes_coerce(arg):
 
     '''
     from array import array
-    from xoutil.eight import text_type
     aux = name_coerce(arg)
     if aux is not nil:
         arg = aux
@@ -306,9 +301,9 @@ def bytes_coerce(arg):
             try:
                 return bytes(bytearray(arg.tolist()))
             except Exception:
-                arg = text_type(arg)
+                arg = str(arg)
     res = encode_coerce(arg)
-    return encode_coerce(text_type(arg)) if res is nil else res
+    return encode_coerce(str(arg)) if res is nil else res
 
 
 @coercer
@@ -319,11 +314,12 @@ def str_coerce(arg):
 
     .. versionadded:: 1.7.0
 
+    .. deprecated:: 2.0.6
+
     '''
     # TODO: Analyze if promote to global::
     #   str_coerce = unicode_coerce if python_version == 3 else bytes_coerce
-    from xoutil.eight import python_version
-    return (unicode_coerce if python_version == 3 else bytes_coerce)(arg)
+    return unicode_coerce(arg)
 
 
 @coercer
@@ -335,8 +331,7 @@ def ascii_coerce(arg):
 
     '''
     import unicodedata
-    from xoutil.eight import text_type
-    if not isinstance(arg, text_type):
+    if not isinstance(arg, str):
         arg = unicode_coerce(arg)
     res = unicodedata.normalize('NFKD', arg).encode('ascii', 'ignore')
     return str_coerce(res)
@@ -384,9 +379,8 @@ def chars_coerce(arg):
     `unicode_coerce`:meth:.
 
     '''
-    from xoutil.eight import integer_types as ints, unichr
-    if isinstance(arg, ints) and 0 <= arg <= 0x10ffff:
-        return unichr(arg)
+    if isinstance(arg, int) and 0 <= arg <= 0x10ffff:
+        return chr(arg)
     else:
         return unicode_coerce(arg)
 
@@ -394,15 +388,11 @@ def chars_coerce(arg):
 @coercer
 def strict_string_coerce(arg):
     '''Coerce to string only if argument is a valid string type.'''
-    from xoutil.eight import string_types
-    return str_coerce(arg) if isinstance(arg, string_types) else nil
-
-
-from xoutil.eight import text_type as text    # noqa
+    return str_coerce(arg) if isinstance(arg, str) else nil
 
 
 # TODO: Why is this here
-class text(text):
+class text(str):
     '''Return a nice text representation of one object.
 
     text(obj='') -> text

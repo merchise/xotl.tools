@@ -37,7 +37,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 import re
-from xoutil.eight.abc import ABCMeta
+from abc import ABCMeta
+
 from xoutil.future.functools import lwraps
 from xoutil.symbols import boolean, Unset
 from xoutil.fp.prove import vouch
@@ -190,10 +191,9 @@ def coercer_name(arg, join=None):
 
     '''
     # TODO: Maybe this function must be moved to `xoutil.names`
-    from xoutil.eight import string_types
     if isinstance(arg, (tuple, list, set)):
         res = type(arg)(coercer_name(c) for c in arg)
-        if isinstance(join, string_types):
+        if isinstance(join, str):
             join = join.join
         return str(join(res)) if join else res
     else:
@@ -222,8 +222,7 @@ def void_coerce(arg):
 @coercer
 def type_coerce(arg):
     '''Check if `arg` is a valid type.'''
-    from xoutil.eight import class_types
-    return arg if isinstance(arg, class_types) else nil
+    return arg if isinstance(arg, type) else nil
 
 
 @coercer
@@ -255,7 +254,6 @@ def types_tuple_coerce(arg):
 @coercer
 def callable_coerce(arg):
     '''Check if `arg` is a callable object.'''
-    from xoutil.eight import callable
     return arg if callable(arg) else nil
 
 
