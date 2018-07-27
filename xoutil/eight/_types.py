@@ -83,10 +83,10 @@ except ImportError:
         for base in bases:
             base_meta = typeof(base)
             if issubclass(winner, base_meta):
-                continue
+                continue  # noqa
             if issubclass(base_meta, winner):
                 winner = base_meta
-                continue
+                continue  # noqa
             # else:
             raise TypeError("metaclass conflict: the metaclass of a derived "
                             "class must be a (non-strict) subclass of the "
