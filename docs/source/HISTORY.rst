@@ -55,6 +55,8 @@ Unreleased. Release 2.0.6
 1.9 series
 ----------
 
+.. _rel-1.9.6:
+
 Unreleased.  Release 1.9.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
