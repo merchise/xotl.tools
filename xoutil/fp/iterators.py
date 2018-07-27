@@ -20,8 +20,6 @@ def iter_compose(*fs):
        lambda x: (z for y in f(x) for z in g(y))
 
     '''
-    from xoutil.future.itertools import flatten
-
     def _compose(g, f):
         # (>>.) :: Monad m => (b -> m c) -> (a -> m b) -> a -> m c
         # g >>. f = \x -> f x >>= g
