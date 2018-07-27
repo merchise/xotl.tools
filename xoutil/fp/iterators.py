@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 #!/usr/bin/env python3
-=======
-#!/usr/bin/env python
->>>>>>> releases-2.0.x
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (c) Merchise Autrement [~º/~] and Contributors
