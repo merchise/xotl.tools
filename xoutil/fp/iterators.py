@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/usr/bin/env python3
+=======
+#!/usr/bin/env python
+>>>>>>> releases-2.0.x
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (c) Merchise Autrement [~º/~] and Contributors
@@ -7,6 +11,9 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 '''Functional tools for functions that returns iterators (generators, etc.)
+
+.. warning:: This module is experimental.  It may be removed completely, moved
+   or otherwise changed.
 
 '''
 from functools import reduce
@@ -18,6 +25,11 @@ def iter_compose(*fs):
     For two functions, ``iter_compose(g, f)`` is roughly equivalent to::
 
        lambda x: (z for y in f(x) for z in g(y))
+
+    In general this is, ``reduce(_compose, fs, lambda x: [x])``; where
+    ``_compose`` is the lambda for two arguments.
+
+    .. versionadded:: 1.9.6
 
     '''
     def _compose(g, f):

@@ -29,7 +29,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_import)
 
 
-def force(value=str()):
+def force(value=str(), encoding=None):
     '''Convert any value to standard `str` type in a safe way.
 
     This function is useful in some scenarios that require `str` type (for
@@ -48,17 +48,19 @@ def force(value=str()):
       ...     inner.__name__ = string.force(name)
       ...     return inner
 
+    .. versionchanged:: 1.9.6 Add the 'enconding' parameter.
+
     '''
     from xoutil.future.codecs import safe_decode, safe_encode
     if isinstance(value, str):
         return value
     elif str is bytes:      # Python 2
-        return safe_encode(value)
+        return safe_encode(value, encoding=encoding)
     else:
-        return safe_decode(value)
+        return safe_decode(value, encoding=encoding)
 
 
-def safe_join(separator, iterable):
+def safe_join(separator, iterable, encoding=None):
     '''Similar to `join` method in string objects.
 
     The semantics is equivalent to ``separator.join(iterable)`` but forcing
@@ -71,8 +73,11 @@ def safe_join(separator, iterable):
 
     Check that the expression ``'-'.join(range(6))`` raises a ``TypeError``.
 
+    .. versionchanged:: 1.9.6 Add the 'enconding' parameter.
+
     '''
-    return force(separator).join(force(item) for item in iterable)
+    sep = force(separator, encoding)
+    return sep.join(force(item, encoding) for item in iterable)
 
 
 def force_ascii(value, encoding=None):
