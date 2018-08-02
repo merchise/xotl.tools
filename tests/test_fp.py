@@ -102,8 +102,8 @@ def test_fp_tools():
 
 @given(s.integers(min_value=0, max_value=20))
 @example(4)
-def test_fp_iter_compose(n):
-    from xoutil.fp.iterators import iter_compose
+def test_fp_kleisli_compose(n):
+    from xoutil.fp.iterators import kleisli_compose
 
     def fullrange(n):
         '[0..n]'
@@ -112,23 +112,23 @@ def test_fp_iter_compose(n):
     def odds(n):
         return [x for x in fullrange(n) if x % 2 != 0]
 
-    odd_seqs = iter_compose(odds, fullrange)
+    odd_seqs = kleisli_compose(odds, fullrange)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
     id_ = lambda x: [x]
     pad = [id_] * n
     args = pad + [odds, ] + pad + [fullrange, ] + pad
-    odd_seqs = iter_compose(*args)
+    odd_seqs = kleisli_compose(*args)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
 
-    odd_seqs = iter_compose(fullrange, odds)
+    odd_seqs = kleisli_compose(fullrange, odds)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
     args = pad + [fullrange, ] + pad + [odds, ] + pad
-    odd_seqs = iter_compose(*args)
+    odd_seqs = kleisli_compose(*args)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
 
 
-def test_fp_iter_compose4():
-    from xoutil.fp.iterators import iter_compose
+def test_fp_kleisli_compose4():
+    from xoutil.fp.iterators import kleisli_compose
 
     def fullrange(n):
         '[0..n]'
@@ -138,12 +138,12 @@ def test_fp_iter_compose4():
         return [x for x in fullrange(n) if x % 2 != 0]
 
     id_ = lambda x: [x]
-    odd_seqs = iter_compose(odds, fullrange)
+    odd_seqs = kleisli_compose(odds, fullrange)
     assert list(odd_seqs(4)) == [1, 1, 1, 3, 1, 3]
-    odd_seqs = iter_compose(id_, odds, id_, id_, fullrange, id_)
+    odd_seqs = kleisli_compose(id_, odds, id_, id_, fullrange, id_)
     assert list(odd_seqs(4)) == [1, 1, 1, 3, 1, 3]
 
-    odd_seqs = iter_compose(fullrange, odds)
+    odd_seqs = kleisli_compose(fullrange, odds)
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
-    odd_seqs = iter_compose(id_, fullrange, id_, id_, odds, id_)
+    odd_seqs = kleisli_compose(id_, fullrange, id_, id_, odds, id_)
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
