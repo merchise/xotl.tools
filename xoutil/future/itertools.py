@@ -356,9 +356,15 @@ def first_n(iterable, n=1, fill=Unset):
         seq = chain(iterable, fill)
     else:
         seq = iter(iterable)
-    while n > 0:
-        yield next(seq)
-        n -= 1
+    try:
+        while n > 0:
+            yield next(seq)
+            n -= 1
+    except StopIteration:
+        # Python 3.7+ (PEP 479) does not bubbles the StopIteration, but
+        # converts it to RuntimeError.  Using `return` restores the <3.7
+        # behavior.
+        return
 
 
 def ungroup(iterator):
