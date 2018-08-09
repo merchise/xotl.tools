@@ -15,7 +15,7 @@ lint:
 run all tests (if needed):
   stage: test
   script:
-    - if git show --oneline --name-only $CI_COMMIT_SHA | egrep '\.py|\gitlab-ci.yml'$; then tox -e{2.7,3.5,3.6,3.7}-unit,{2.7,3.6,3.7}-greenlets; fi
+    - if git show --oneline --name-only $CI_COMMIT_SHA | egrep '(\.py|\.gitlab-ci.yml|tox.ini)$'; then tox -e{2.7,3.5,3.6,3.7}-unit,{2.7,3.6,3.7}-greenlets; fi
   tags:
     - python
     - virtualenv
