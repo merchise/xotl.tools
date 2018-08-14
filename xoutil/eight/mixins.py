@@ -94,13 +94,15 @@ _MIXIN_STRIP = compile('(?i)(^mixin_{0,2}|_{0,2}mixin$)')
 del compile
 
 
-def helper_class(meta, name=None):
+def helper_class(meta, name=None, meta_doc=False):
     '''Create a helper class based in the meta-class concept.
 
     :param meta: The meta-class type to base returned helper-class on it.
 
     :param name: The name (``__name__``) to assign to the returned class; if
            None is given, a nice name is calculated.
+
+    :param meta_doc: Append `meta` documentation.
 
     For example::
 
@@ -117,17 +119,20 @@ def helper_class(meta, name=None):
       >>> class MyError(Exception, metaclass(ABCMeta)):
       ...     pass
 
+    .. versionadded:: 1.9.7 Add parameter 'meta_doc'.
+
     '''
     from xoutil.eight.meta import metaclass
     res = metaclass(meta)
-    doc = ('Helper class.\n\nProvide a standard way to create classes with '
-           'the meta-class `{meta}` using inheritance.\n\nFor example::\n\n'
-           '  class My{name}({name}):\n      pass')
-    if name and meta.__doc__:
-        doc += ('\n\n`{meta}` is: ' + meta.__doc__)
+    doc = ('Helper class that provides a standard way to create {article} '
+           '{name} using inheritance.')
     name = name or _META_STRIP.sub('', meta.__name__)
     res.__name__ = name
-    res.__doc__ = (doc.strip() + '\n\n').format(name=name, meta=meta.__doc__)
+    article = 'an' if name[0] in "aeiouAEIOU" else 'a'
+    doc = doc.format(name=name, article=article)
+    if meta_doc and meta.__doc__:
+        doc = '\n'.join((doc, meta.__doc__))
+    res.__doc__ = doc
     if meta.__module__:
         res.__module__ = meta.__module__
     return res
