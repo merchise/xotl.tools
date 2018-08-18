@@ -37,11 +37,12 @@ from __future__ import (division as _py3_division,
 
 from abc import ABCMeta, abstractmethod, abstractproperty    # noqa
 
-from xoutil.eight.mixins import helper_class
-
-ABC = helper_class(ABCMeta)
-
-del helper_class
+try:
+    from abc import ABC    # noqa
+except ImportError:
+    from xoutil.eight.mixins import helper_class
+    ABC = helper_class(ABCMeta)
+    del helper_class
 
 
 # TODO: Develop tests in order to demonstrate next method runs properly in all
@@ -52,14 +53,14 @@ if ABCMeta('A', (object,), {}).register(int) is not int:
 
     def register(cls, subclass):
         '''
-
         Returns the subclass, to allow usage as a class decorator.  This
         improvement was introduced in Python 3.3.
 
         '''
         ABCMeta.__old_register__(cls, subclass)
         return subclass
-    register.__doc__ = ABCMeta.__old_register__.__doc__ + register.__doc__
+    register.__doc__ = '\n'.join((ABCMeta.__old_register__.__doc__.strip(),
+                                  register.__doc__))
     ABCMeta.register = register
     del register
 

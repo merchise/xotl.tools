@@ -12,8 +12,14 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 
+
 from xoutil.eight.abc import ABCMeta, ABC
 from xoutil.eight.mixins import mixin, Mixin
+
+try:
+    from abc import ABC as _ABC
+except ImportError:
+    _ABC = False
 
 
 def _get_test_classes():
@@ -61,7 +67,8 @@ def test_mixins():
     # Bases canonization and generated name
     Test = mixin(object, One, dict, Two, ABC)
     assert Test.__name__ == 'OneMixin'
-    assert Test.__bases__ == (One, Two, Mixin)
+    aux = (One, Two, ABC, Mixin) if _ABC else (One, Two, Mixin)
+    assert Test.__bases__ == aux
     assert isinstance(Test, ABCMeta)
     assert Test.register(int) is int
     assert isinstance(1, Test)
