@@ -649,7 +649,8 @@ class TimeSpan(object):
             other = type(self).from_date(other)
         if not isinstance(other, TimeSpan):
             other = type(self)(other)
-        return hash(self) == hash(other)
+        return (self.start_date == other.start_date and
+                self.end_date == other.end_date)
 
     def __hash__(self):
         return hash((self.start_date, self.end_date))
