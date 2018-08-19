@@ -13,11 +13,11 @@ from __future__ import (division as _py3_division,
 
 import pytest
 
-from xoutil.future.datetime import date
+from xoutil.future.datetime import date, datetime
 from xoutil.future.datetime import daterange
 from xoutil.future.datetime import TimeSpan, EmptyTimeSpan
 
-from xoutil.testing.datetime import timespans
+from xoutil.testing.datetime import timespans, datetimespans
 
 import hypothesis
 from hypothesis import strategies, given
@@ -25,6 +25,7 @@ from hypothesis import strategies, given
 
 dates = strategies.dates
 maybe_date = dates() | strategies.none()
+maybe_datetimes = strategies.datetimes() | strategies.none()
 
 
 def test_daterange_stop_only():
@@ -109,6 +110,14 @@ def test_outside_date(ts):
     assert outsider not in ts
 
 
+@given(datetimespans(unbounds='future'))
+def test_outside_datetime(dts):
+    from datetime import timedelta
+    assert dts.start_date
+    outsider = dts.start_date - timedelta(1)
+    assert outsider not in dts
+
+
 @given(timespans())
 def test_empty_timespan(ts):
     assert ts >= EmptyTimeSpan <= ts, 'Empty is a subset of any TS'
@@ -124,6 +133,23 @@ def test_empty_timespan(ts):
 
     assert EmptyTimeSpan & ts == EmptyTimeSpan * ts == EmptyTimeSpan
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
+
+
+@given(datetimespans())
+def test_empty_datetimespan(dts):
+    assert dts >= EmptyTimeSpan <= dts, 'Empty is a subset of any TS'
+
+    assert EmptyTimeSpan <= EmptyTimeSpan >= EmptyTimeSpan, \
+        'Empty is a subset of itself'
+
+    assert not EmptyTimeSpan, 'Empty is considered False'
+
+    assert not (dts <= EmptyTimeSpan), 'Empty is not a superset of any TS'
+
+    type(EmptyTimeSpan)() is EmptyTimeSpan
+
+    assert EmptyTimeSpan & dts == EmptyTimeSpan * dts == EmptyTimeSpan
+    assert EmptyTimeSpan | dts == EmptyTimeSpan + dts == dts
 
 
 @given(timespans(unbounds='none'), timespans())
@@ -228,7 +254,6 @@ def test_timespans_displacement_dates(ts1, delta):
         assert (res.end_date - ts1.end_date).days == delta
 
 
-
 @given(timespans(unbounds='none'),
        strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_keeps_the_len(ts1, delta):
@@ -259,3 +284,35 @@ def test_timespan_with_datetimes(d1, d2):
     assert isinstance(ts.start_date, d)
     assert not isinstance(ts.end_date, dt)
     assert isinstance(ts.end_date, d)
+
+
+@given(datetimespans())
+def test_datetimespans_ts_fields(dts):
+    if dts.start_datetime is None:
+        assert dts.start_date is None
+    else:
+        assert dts.start_date == dts.start_datetime.date()
+    if dts.end_datetime is None:
+        assert dts.end_date is None
+    else:
+        assert dts.end_date == dts.end_datetime.date()
+
+
+@given(maybe_date, datetimespans())
+def test_setting_start_date(d, dts):
+    dts.start_date = d
+    if d is not None:
+        assert dts.start_datetime.date() == d
+        assert dts.start_datetime == datetime(d.year, d.month, d.day)
+    else:
+        assert dts.start_datetime is None
+
+
+@given(maybe_date, datetimespans())
+def test_setting_end_date(d, dts):
+    dts.end_date = d
+    if d is not None:
+        assert dts.end_datetime.date() == d
+        assert dts.end_datetime == datetime(d.year, d.month, d.day, 23, 59, 59)
+    else:
+        assert dts.end_datetime is None
