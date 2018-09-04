@@ -1024,7 +1024,6 @@ class TestPascalSet(unittest.TestCase):
 
     def test_consistency(self):
         from random import randint
-        from xoutil.eight import range
         from xoutil.future.collections import PascalSet
         count = 5
         for test in range(count):
@@ -1054,7 +1053,6 @@ class TestPascalSet(unittest.TestCase):
             self.assertGreaterEqual(s1, ss1 - ss2)
 
     def test_syntax_sugar(self):
-        from xoutil.eight import range
         from xoutil.future.collections import PascalSet
         s1 = PascalSet[1:4, 9, 15:18]
         s2 = PascalSet[3:18]
@@ -1063,7 +1061,6 @@ class TestPascalSet(unittest.TestCase):
         self.assertEqual(list(PascalSet[3:18]), list(range(3, 18)))
 
     def test_operators(self):
-        from xoutil.eight import range
         from xoutil.future.collections import PascalSet
         g = lambda s: (i for i in s)
         s1 = PascalSet[1:4, 9, 15:18]
@@ -1124,7 +1121,6 @@ class TestBitPascalSet(unittest.TestCase):
 
     def test_consistency(self):
         from random import randint
-        from xoutil.eight import range
         from xoutil.future.collections import BitPascalSet
         count = 5
         for test in range(count):
@@ -1154,7 +1150,6 @@ class TestBitPascalSet(unittest.TestCase):
             self.assertGreaterEqual(s1, ss1 - ss2)
 
     def test_syntax_sugar(self):
-        from xoutil.eight import range
         from xoutil.future.collections import BitPascalSet
         s1 = BitPascalSet[1:4, 9, 15:18]
         s2 = BitPascalSet[3:18]
@@ -1163,7 +1158,6 @@ class TestBitPascalSet(unittest.TestCase):
         self.assertEqual(list(BitPascalSet[3:18]), list(range(3, 18)))
 
     def test_operators(self):
-        from xoutil.eight import range
         from xoutil.future.collections import BitPascalSet
         g = lambda s: (i for i in s)
         s1 = BitPascalSet[1:4, 9, 15:18]

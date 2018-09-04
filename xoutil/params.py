@@ -375,7 +375,6 @@ class ParamManager:
 
     def remainder(self):
         '''Return not consumed values in a mapping.'''
-        from xoutil.eight import range
         passed = set(range(len(self.args))) | set(self.kwds)
         ids = passed - self.consumed
         args, kwds = self.args, self.kwds

@@ -43,7 +43,6 @@ def flatten(sequence, is_scalar=None, depth=None):
 
     For example::
 
-        >>> from xoutil.eight import range
         >>> range_ = lambda *a: list(range(*a))
         >>> tuple(flatten((1, range_(2, 5), range(5, 10))))
         (1, 2, 3, 4, 5, 6, 7, 8, 9)

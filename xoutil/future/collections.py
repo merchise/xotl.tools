@@ -1750,8 +1750,6 @@ class PascalSet(metaclass=MetaSet):
         self.update(*others)
 
     def __str__(self):
-        from xoutil.eight import range
-
         def aux(s, e):
             if s == e:
                 return str(s)
@@ -1979,7 +1977,6 @@ class PascalSet(metaclass=MetaSet):
 
     def update(self, *others):
         '''Update a set with the union of itself and others.'''
-        from xoutil.eight import range
         for other in others:
             if isinstance(other, PascalSet):
                 l = other._items
@@ -2322,7 +2319,6 @@ class PascalSet(metaclass=MetaSet):
     @classmethod
     def _prime_numbers_until(cls, limit):
         '''This is totally a funny test method.'''
-        from xoutil.eight import range
         res = cls[2:limit]
         for i in range(2, limit // 2 + 1):
             if i in res:
@@ -2580,7 +2576,6 @@ class BitPascalSet(metaclass=MetaSet):
 
     def update(self, *others):
         '''Update a bit-set with the union of itself and others.'''
-        from xoutil.eight import range
         for other in others:
             if isinstance(other, BitPascalSet):
                 sm = self._items
@@ -2824,7 +2819,6 @@ class BitPascalSet(metaclass=MetaSet):
     @classmethod
     def _prime_numbers_until(cls, limit):
         '''This is totally a funny test method.'''
-        from xoutil.eight import range
         res = cls[2:limit]
         for i in range(2, limit // 2 + 1):
             if i in res:
