@@ -13,7 +13,7 @@ from __future__ import (division as _py3_division,
 
 
 def test_shadowed_dict_get():
-    from xoutil.eight import python_version
+    from xoutil.versions import python_version
     if python_version == 2:
         from xoutil.future.inspect import (_shadowed_dict, _static_getmro,
                                            _objclass, _sentinel)

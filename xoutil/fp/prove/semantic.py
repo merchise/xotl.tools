@@ -42,7 +42,6 @@ class predicate:
     __slots__ = ('inner',)
 
     def __new__(cls, *args):
-        from xoutil.eight import class_types
         if cls is predicate:    # Parse the right sub-type
             count = len(args)
             if count == 0:
@@ -52,7 +51,7 @@ class predicate:
                 arg = args[0]
                 if isinstance(arg, cls):
                     return arg
-                elif isinstance(arg, class_types + (tuple,)):
+                elif isinstance(arg, (tuple, type)):
                     return TypeCheck(arg)
                 elif isinstance(arg, list):
                     return CheckAndCast(*arg)
@@ -79,17 +78,16 @@ class TypeCheck(predicate):
     __slots__ = ()
 
     def __new__(cls, *args):
-        from xoutil.eight import class_types as _types
         from xoutil.params import check_count
         check_count(len(args) + 1, 2, caller=cls.__name__)
         if len(args) == 1 and isinstance(args[0], tuple):
             args = args[0]
-        if all(isinstance(arg, _types) for arg in args):
+        if all(isinstance(arg, type) for arg in args):
             self = super().__new__(cls)
             self.inner = args
             return self
         else:
-            wrong = (arg for arg in args if not isinstance(arg, _types))
+            wrong = (arg for arg in args if not isinstance(arg, type))
             wnames = ', or '.join(type(w).__name__ for w in wrong)
             msg = '`TypeCheck` allows only valid types, not: ({})'
             raise TypeError(msg.format(wnames))

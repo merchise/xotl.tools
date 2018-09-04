@@ -14,7 +14,6 @@ from __future__ import (division as _py3_division,
 
 def test_force_string():
     from xoutil.eight import string
-    # from xoutil.eight import python_version
     aux = lambda x: 2*x + 1
     name = 'λ x: 2*x + 1'
     aux.__name__ = string.force(name)

@@ -20,8 +20,6 @@ from __future__ import (division as _py3_division,
 from functools import *    # noqa
 from functools import _CacheInfo  # noqa
 
-from xoutil.eight import python_version    # noqa
-
 import xoutil.fp.tools as fp
 from xoutil.deprecation import deprecated
 

@@ -25,8 +25,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_import)
 
-from xoutil.eight import python_version    # noqa
-
 
 #: Value for `max_width` parameter in functions that shorten strings, must not
 #: be less than this value.
@@ -40,7 +38,7 @@ ELLIPSIS_ASCII = '...'
 ELLIPSIS_UNICODE = '…'
 
 #: Value used as a fill when a string representation overflows.
-ELLIPSIS = ELLIPSIS_UNICODE if python_version == 3 else ELLIPSIS_ASCII
+ELLIPSIS = ELLIPSIS_UNICODE
 
 #: Operator name allowing objects to define theirs own method for string
 #: shortening.
@@ -117,7 +115,7 @@ def _crop(obj, max_width=None, canonical=False):
     if (res.startswith('<') and res.endswith('>')) or len(res) > max_width:
         try:
             res = obj.__name__
-            if res == _LAMBDA_NAME and not canonical and python_version == 3:
+            if res == _LAMBDA_NAME and not canonical:
                 # Just a gift
                 res = res.replace(_LAMBDA_NAME, 'λ')
         except AttributeError:

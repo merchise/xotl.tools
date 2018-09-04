@@ -149,13 +149,12 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             raise DeprecationError(msg)
 
     def decorator(target):
-        from xoutil.eight import class_types
         target_name = new_name if new_name else target.__name__
         if deprecated_module:
             funcname = deprecated_module + '.' + target_name
         else:
             funcname = target_name
-        if isinstance(replacement, class_types + (types.FunctionType, )):
+        if isinstance(replacement, (type, types.FunctionType)):
             repl_name = replacement.__module__ + '.' + replacement.__name__
         else:
             repl_name = replacement
@@ -163,7 +162,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             in_version = ' in version ' + removed_in_version
         else:
             in_version = ''
-        if isinstance(target, class_types):
+        if isinstance(target, type):
             def new(*args, **kwargs):
                 if check_version and removed_in_version:
                     raise_if_deprecated(target, removed_in_version)
@@ -252,7 +251,7 @@ def import_deprecated(module, *names, **aliases):
     should not be used to do otherwise.
 
     '''
-    from xoutil.future.types import class_types, func_types
+    from xoutil.future.types import  func_types
     from xoutil.modules import force_module
     src = force_module(module)
     dst = force_module(2)
@@ -271,7 +270,7 @@ def import_deprecated(module, *names, **aliases):
             msg = 'import_deprecated(): invalid repeated argument "{}"'
             raise ValueError(msg.format(name))
     unset = object()
-    test_classes = class_types + func_types
+    test_classes = func_types + (type, )
     for alias in aliases:
         name = aliases[alias]
         target = getattr(src, name, unset)
@@ -363,7 +362,6 @@ def inject_deprecated(funcnames, source, target=None):
     .. deprecated:: 1.8.0  Use `import_deprecated`:func:.
 
     '''
-    from xoutil.eight import class_types
     if not target:
         import sys
         frame = sys._getframe(1)
@@ -380,7 +378,7 @@ def inject_deprecated(funcnames, source, target=None):
         unset = object()
         target = getattr(source, targetname, unset)
         if target is not unset:
-            testclasses = (types.FunctionType, types.LambdaType) + class_types
+            testclasses = (types.FunctionType, types.LambdaType, type)
             if isinstance(target, testclasses):
                 replacement = source.__name__ + '.' + targetname
                 module_name = target_locals.get('__name__', None)

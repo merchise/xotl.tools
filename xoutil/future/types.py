@@ -53,8 +53,7 @@ we don't include here:
 
 - `DictType` (or `DictionaryType`): use `dict`
 
-- `ClassType`: Python 2 old-style classes, don't exists in Python 3, see
-  `xoutil.eigth.ClassTypes`.
+- `ClassType`: use `type`.
 
 - `InstanceType`: type of instances of Python 2 old-style classes, don't
   exists in Python 3, see `xoutil.eigth.typeof`.
@@ -87,7 +86,6 @@ import types as _stdlib    # noqa
 
 from xoutil.deprecation import deprecated
 
-from xoutil.eight import python_version    # noqa
 from xoutil.symbols import Unset as _unset
 from collections import Mapping
 
@@ -142,7 +140,7 @@ if MemberDescriptorType is GetSetDescriptorType:    # noqa
 FuncTypes = tuple({FunctionType, MethodType, LambdaType,    # noqa
                    BuiltinFunctionType, BuiltinMethodType})    # noqa
 
-from xoutil.eight import class_types    # noqa
+class_types = (type, )
 func_types = FuncTypes    # Just an alias
 
 # These types are defined in `inspect` module for Python >= 3.3

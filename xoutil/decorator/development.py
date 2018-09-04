@@ -31,7 +31,6 @@ def unstable(target, msg=None):
     '''
     import warnings
     from xoutil.names import nameof
-    from xoutil.eight import class_types
     if msg is None:
         msg = ('The {0} `{1}` is declared unstable. '
                'It may change in the future or be removed.')
@@ -41,14 +40,13 @@ def unstable(target, msg=None):
         from xoutil.symbols import Ignored as Interface
     if isinstance(target, type(Interface)):
         objtype = 'interface'
-    elif isinstance(target, class_types):
+    elif isinstance(target, type):
         objtype = 'class'
     else:
         objtype = 'function or method'
     message = msg.format(objtype,
                          nameof(target, inner=True, full=True))
-    if isinstance(target, class_types) or issubclass(type(target),
-                                                     type(Interface)):
+    if isinstance(target, type) or issubclass(type(target), type(Interface)):
         class meta(type(target)):
             pass
 

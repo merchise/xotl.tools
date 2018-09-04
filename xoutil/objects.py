@@ -609,18 +609,17 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
-    from xoutil.eight import typeof, class_types
+    from xoutil.eight import typeof
     from xoutil.future.inspect import get_attr_value, _static_getmro
 
     def getdir(o):
         return set(get_attr_value(o, '__dict__', {}))
 
-    if isinstance(obj, class_types):
+    if isinstance(obj, type):
         res = set.union(getdir(cls) for cls in _static_getmro(obj))
     else:
         res = getdir(obj)
-    cls = typeof(obj)
-    return res if cls in class_types else res | set(dir(cls))
+    return res if isinstance(obj, type) else res | set(dir(type(obj)))
 
 
 def xdir(obj, getter=None, filter=None, _depth=0):

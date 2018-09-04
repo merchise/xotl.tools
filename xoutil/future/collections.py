@@ -38,7 +38,7 @@ except ImportError:
     import sys as _sys
 
 from xoutil.deprecation import deprecated    # noqa
-from xoutil.eight import python_version    # noqa
+from xoutil.versions import python_version
 from xoutil.symbols import Unset    # noqa
 from xoutil.objects import SafeDataItem as safe    # noqa
 from xoutil.reprlib import recursive_repr    # noqa

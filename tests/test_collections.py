@@ -95,7 +95,7 @@ def test_stacked_dict():
 
 
 # Backported from Python 3.3.0 standard library
-from xoutil.eight import python_version
+from xoutil.versions import python_version
 from xoutil.future.collections import ChainMap, Counter
 from xoutil.future.collections import OrderedDict, RankedDict
 from xoutil.future.collections import Mapping, MutableMapping
@@ -106,7 +106,6 @@ from random import randrange
 
 def _items(d):
     'For some reason in new PyPy 5.0.1 for Py 2.7.10, set order is not nice.'
-    from xoutil.eight import python_version
     res = d.items()
     if python_version.pypy and isinstance(res, list):
         res.sort()

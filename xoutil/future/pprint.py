@@ -26,11 +26,7 @@ def ppformat(obj):
 
     '''
     import io
-    from xoutil.eight import python_version
-    if python_version == 3:
-        stream = io.StringIO()
-    else:
-        stream = io.BytesIO()
+    stream = io.StringIO()
     pprint(obj, stream=stream)
     stream.seek(0)
     res = stream.read()

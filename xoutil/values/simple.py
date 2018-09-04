@@ -316,8 +316,6 @@ def str_coerce(arg):
     .. deprecated:: 2.0.6
 
     '''
-    # TODO: Analyze if promote to global::
-    #   str_coerce = unicode_coerce if python_version == 3 else bytes_coerce
     return unicode_coerce(arg)
 
 

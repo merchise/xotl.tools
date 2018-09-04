@@ -409,7 +409,7 @@ def test_extract_attrs():
 
 def test_copy_class():
     from xoutil.symbols import Unset
-    from xoutil.eight import python_version
+    from xoutil.versions import python_version
     from xoutil.eight.meta import metaclass
     from xoutil.objects import copy_class
 

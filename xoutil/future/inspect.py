@@ -266,11 +266,10 @@ def safe_name(obj, affirm=False):
       '(int, float)'
 
     '''
-    from xoutil.eight import class_types
     from types import FunctionType, MethodType
     from types import BuiltinFunctionType, BuiltinMethodType
-    named_types = class_types + (FunctionType, MethodType,
-                                 BuiltinFunctionType, BuiltinMethodType)
+    named_types = (FunctionType, MethodType, BuiltinFunctionType,
+                   BuiltinMethodType, type)
     if isinstance(obj, (staticmethod, classmethod)):
         fn = get_attr_value(obj, '__func__', None)
         if fn:

@@ -14,7 +14,6 @@ from __future__ import (division as _py3_division,
 import pytest
 
 from xoutil.annotate import annotate
-from xoutil.eight import class_types
 
 
 def test_keywords():
@@ -89,10 +88,10 @@ def test_locals_vars():
 
 @pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
 def test_globals():
-    @annotate('(a: class_types)')
+    @annotate('(a:type)')
     def dummy():
         pass
-    assert dummy.__annotations__['a'] == class_types
+    assert dummy.__annotations__['a'] == type
 
 
 @pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))

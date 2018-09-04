@@ -268,13 +268,8 @@ def singleton(target, *args, **kwargs):
       False
 
     '''
-    try:
-        from types import ClassType
-        class_types = (type, ClassType)
-    except ImportError:
-        class_types = (type,)
     res = target(*args, **kwargs)
-    if isinstance(target, class_types):
+    if isinstance(target, type):
         try:
             def __init__(*args, **kwds):
                 msg = "'{}' is a singleton, it can be instantiated only once"
