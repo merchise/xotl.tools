@@ -272,7 +272,6 @@ class SafeDataItem:
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
-        from xoutil.eight import callable
         from xoutil.validators import (is_valid_identifier, predicate)
         self.attr_name = Unset
         self.init = Unset
@@ -487,7 +486,6 @@ def get_method_function(cls, method_name):
     method and this a python function.
 
     '''
-    from xoutil.eight import callable
     if not isinstance(cls, type):
         cls = cls.__class__
     mro = cls.mro()
@@ -553,7 +551,6 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
                        characters, also are ignored.
 
     '''
-    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if _len(cls.__doc__) < min_length:
         ignore = ignore or ()
@@ -588,7 +585,6 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
                        characters, also are ignored.
 
     '''
-    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     method = get_method_function(cls, method_name)
     if method and _len(method.__doc__) < min_length:
@@ -874,7 +870,6 @@ class lazy:
         self.kwargs = kwargs
 
     def __call__(self):
-        from xoutil.eight import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -1165,7 +1160,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     .. versionadded:: 1.7.1 The `new_name` argument.
 
     '''
-    from xoutil.eight import iteritems, callable
+    from xoutil.eight import iteritems
     from xoutil.eight._types import new_class
     from xoutil.future.types import MemberDescriptorType
     from xoutil.eight import string
@@ -1264,7 +1259,7 @@ def smart_copy(*args, defaults=None):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
-    from xoutil.eight import base_string, callable
+    from xoutil.eight import base_string
     from xoutil.future.collections import MutableMapping, Mapping
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier

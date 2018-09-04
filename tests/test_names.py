@@ -44,7 +44,6 @@ def test_nameof():
 
 
 def test_nameof_methods():
-    from xoutil.eight import callable
     from xoutil.names import nameof, simple_name
 
     class Foobar:

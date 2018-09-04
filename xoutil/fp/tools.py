@@ -64,7 +64,6 @@ class MetaCompose(ABCMeta):
     '''Meta-class for function composition.'''
     def __instancecheck__(self, instance):
         '''Override for ``isinstance(instance, self)``.'''
-        from xoutil.eight import callable
         res = super().__instancecheck__(instance)
         if not res:
             # TODO: maybe only those with parameters.
@@ -124,7 +123,6 @@ class compose(metaclass=MetaCompose):
         if count == 0:
             return identity
         else:
-            from xoutil.eight import callable
             if all(callable(f) for f in functions):
                 if count == 1:
                     return functions[0]

@@ -84,7 +84,7 @@ def crop(obj, max_width=None, canonical=False):
 
     '''
     from functools import partial
-    from xoutil.eight import callable, string_types
+    from xoutil.eight import string_types
     max_width = _check_max_width(max_width, caller='crop')
     if isinstance(obj, string_types):
         res = obj    # TODO: reduce

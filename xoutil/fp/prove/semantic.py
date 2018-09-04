@@ -42,7 +42,7 @@ class predicate:
     __slots__ = ('inner',)
 
     def __new__(cls, *args):
-        from xoutil.eight import class_types, callable
+        from xoutil.eight import class_types
         if cls is predicate:    # Parse the right sub-type
             count = len(args)
             if count == 0:
@@ -188,7 +188,6 @@ class CheckAndCast(predicate):
     __slots__ = ()
 
     def __new__(cls, check, cast):
-        from xoutil.eight import callable
         check = predicate(check)
         if callable(cast):
             self = super().__new__(cls)
@@ -226,7 +225,6 @@ class FunctionalCheck(predicate):
     __slots__ = ()
 
     def __new__(cls, check):
-        from xoutil.eight import callable
         # TODO: Change next, don't use isinstance
         if isinstance(check, predicate):
             return check
