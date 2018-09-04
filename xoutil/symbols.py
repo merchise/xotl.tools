@@ -107,7 +107,7 @@ class symbol(int, metaclass=MetaSymbol):
                name hash.
 
         '''
-        from xoutil.eight import intern as unique
+        from sys import intern as unique
         name = unique(name)
         if name:
             if value is None:
