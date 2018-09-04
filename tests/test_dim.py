@@ -216,8 +216,7 @@ def test_any_magnitude(m):
 def test_any_magnitude_noinf(m):
     from xoutil.dim.base import L
     from math import ceil, floor
-    from six import integer_types
-    Int = integer_types[-1]
+    Int = int
     q = m * L.metre
     for f in (Int, float, abs, round, ceil, floor):
         assert f(q) == f(m)

@@ -271,10 +271,9 @@ def float_coerce(arg):
     Other types are checked (string, int, complex).
 
     '''
-    from xoutil.eight import integer_types
     if isinstance(arg, float):
         return arg
-    elif isinstance(arg, integer_types):
+    elif isinstance(arg, int):
         return float(arg)
     elif isinstance(arg, (str, bytes)):
         try:
@@ -294,8 +293,7 @@ def int_coerce(arg):
     Other types are checked (string, float, complex).
 
     '''
-    from xoutil.eight import integer_types
-    if isinstance(arg, integer_types):
+    if isinstance(arg, int):
         return arg
     else:
         arg = float_coerce(arg)
@@ -313,8 +311,7 @@ def number_coerce(arg):
     Types that are checked (string, int, float, complex).
 
     '''
-    from xoutil.eight import integer_types
-    if isinstance(arg, integer_types):
+    if isinstance(arg, int):
         return arg
     else:
         f = float_coerce(arg)

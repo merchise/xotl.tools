@@ -28,8 +28,7 @@ we don't include here:
 
 - `IntType`: use `int`
 
-- `LongType`: use `long` in Python 2 and `int` in Python 3; better see
-  `xoutil.eight.integer_types` definition.
+- `LongType`: use `int`.
 
 - `FloatType`: use `float`
 

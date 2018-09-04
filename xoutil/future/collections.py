@@ -1794,8 +1794,7 @@ class PascalSet(metaclass=MetaSet):
 
     def __contains__(self, other):
         '''True if set has an element ``other``, else False.'''
-        from xoutil.eight import integer_types
-        return isinstance(other, integer_types) and self._search(other)[0]
+        return isinstance(other, int) and self._search(other)[0]
 
     def __hash__(self):
         '''Compute the hash value of a set.'''
@@ -1955,8 +1954,7 @@ class PascalSet(metaclass=MetaSet):
         If other is an integer, return 1 if present, 0 if not.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             return 1 if other in self else 0
         else:
             return sum((i in self for i in other), 0)
@@ -1981,7 +1979,7 @@ class PascalSet(metaclass=MetaSet):
 
     def update(self, *others):
         '''Update a set with the union of itself and others.'''
-        from xoutil.eight import integer_types, range
+        from xoutil.eight import range
         for other in others:
             if isinstance(other, PascalSet):
                 l = other._items
@@ -1993,7 +1991,7 @@ class PascalSet(metaclass=MetaSet):
                         i += 2
                 else:
                     self._items = l[:]
-            elif isinstance(other, integer_types):
+            elif isinstance(other, int):
                 self._insert(other)
             elif isinstance(other, Iterable):
                 for i in other:
@@ -2025,14 +2023,13 @@ class PascalSet(metaclass=MetaSet):
 
     def intersection_update(self, *others):
         '''Update a set with the intersection of itself and another.'''
-        from xoutil.eight import integer_types as ints
         l = self._items
         oi, count = 0, len(others)
         while l and oi < count:
             other = others[oi]
             if not isinstance(other, PascalSet):
                 # safe mode for intersection
-                other = PascalSet(i for i in other if isinstance(i, ints))
+                other = PascalSet(i for i in other if isinstance(i, int))
             o = other._items
             if o:
                 sl, el = l[0], l[-1]
@@ -2072,9 +2069,8 @@ class PascalSet(metaclass=MetaSet):
                     self._remove(l[i], l[i + 1])
                     i += 2
             else:
-                from xoutil.eight import integer_types
                 for i in other:
-                    if isinstance(i, integer_types):
+                    if isinstance(i, int):
                         self._remove(i)
 
     def symmetric_difference(self, other):
@@ -2232,8 +2228,7 @@ class PascalSet(metaclass=MetaSet):
         Return a duple :``(if found or not, index)``.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             l = self._items
             start, end = 0, len(l)
             res, pivot = False, 2 * (end // 4)
@@ -2560,8 +2555,7 @@ class BitPascalSet(metaclass=MetaSet):
         If other is an integer, return 1 if present, 0 if not.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             return 1 if other in self else 0
         else:
             return sum((i in self for i in other), 0)
@@ -2586,7 +2580,7 @@ class BitPascalSet(metaclass=MetaSet):
 
     def update(self, *others):
         '''Update a bit-set with the union of itself and others.'''
-        from xoutil.eight import integer_types, range
+        from xoutil.eight import range
         for other in others:
             if isinstance(other, BitPascalSet):
                 sm = self._items
@@ -2596,7 +2590,7 @@ class BitPascalSet(metaclass=MetaSet):
                         sm[k] |= v
                     else:
                         sm[k] = v
-            elif isinstance(other, integer_types):
+            elif isinstance(other, int):
                 self._insert(other)
             elif isinstance(other, Iterable):
                 for i in other:
@@ -2622,14 +2616,13 @@ class BitPascalSet(metaclass=MetaSet):
 
     def intersection_update(self, *others):
         '''Update a bit-set with the intersection of itself and another.'''
-        from xoutil.eight import integer_types as ints
         sm = self._items
         oi, count = 0, len(others)
         while sm and oi < count:
             other = others[oi]
             if not isinstance(other, BitPascalSet):
                 # safe mode for intersection
-                other = PascalSet(i for i in other if isinstance(i, ints))
+                other = PascalSet(i for i in other if isinstance(i, int))
             om = other._items
             for k, v in safe_dict_iter(sm).items():
                 v &= om.get(k, 0)
@@ -2663,9 +2656,8 @@ class BitPascalSet(metaclass=MetaSet):
                         else:
                             del sm[k]
             else:
-                from xoutil.eight import integer_types
                 for i in other:
-                    if isinstance(i, integer_types):
+                    if isinstance(i, int):
                         self._remove(i)
 
     def symmetric_difference(self, other):
@@ -2787,8 +2779,7 @@ class BitPascalSet(metaclass=MetaSet):
         Return a duple :``(seed, bits to shift left)``.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             sm = self._items
             bl = self._bit_length
             k, ref = divmod(other, bl)
