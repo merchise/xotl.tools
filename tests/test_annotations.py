@@ -54,15 +54,13 @@ def test_invalid_nonsense_signature():
 
 
 def test_mixed_annotations():
-    from xoutil.eight import text_type
-
-    @annotate('(a: str, b:text_type) -> bool', a=text_type,
+    @annotate('(a: str, b:str) -> bool', a=str,
               return_annotation=True)
     def dummy():
         pass
 
-    assert dummy.__annotations__.get('a') is text_type
-    assert dummy.__annotations__.get('b') is text_type
+    assert dummy.__annotations__.get('a') is str
+    assert dummy.__annotations__.get('b') is str
     assert dummy.__annotations__.get('return') is True
 
 

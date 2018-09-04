@@ -19,7 +19,6 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_imports)
 
-from xoutil.eight import string_types as _str_base
 from xoutil.deprecation import deprecate_module
 
 
@@ -42,8 +41,7 @@ class BaseFactory:
 
 class MapFactory(BaseFactory):
     def __call__(self, mapping):
-        from xoutil.eight import text_type
-        return text_type(mapping[self.key])
+        return str(mapping[self.key])
 
 
 class PyFactory(BaseFactory):
@@ -51,8 +49,7 @@ class PyFactory(BaseFactory):
         super().__init__(owner, compile(key, '', 'eval'), start, end)
 
     def __call__(self, mapping):
-        from xoutil.eight import text_type
-        return text_type(eval(self.key, mapping))
+        return str(eval(self.key, mapping))
 
 
 class InvalidFactory:
@@ -157,7 +154,7 @@ class Template(metaclass=_TemplateClass):
         kwargs.update(mapping)    # Don't modify mapping if given
         res = self.template.__class__()
         for item in self.items:
-            if isinstance(item, _str_base):
+            if isinstance(item, str):
                 res += item
             else:
                 res += item(kwargs)
@@ -175,7 +172,7 @@ class Template(metaclass=_TemplateClass):
         kwargs.update(mapping)    # Don't modify mapping if given
         res = self.template.__class__()
         for item in self.items:
-            if isinstance(item, _str_base):
+            if isinstance(item, str):
                 res += item
             else:
                 if item._unsafe:
@@ -188,8 +185,8 @@ class Template(metaclass=_TemplateClass):
         return res
 
     def _append(self, item):
-        if (isinstance(item, _str_base) and
-                self.items and isinstance(self.items[-1], _str_base)):
+        if (isinstance(item, str) and
+                self.items and isinstance(self.items[-1], str)):
             self.items[-1] += item
         else:
             self.items.append(item)

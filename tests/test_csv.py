@@ -13,7 +13,6 @@ from __future__ import (division as _py3_division,
 
 
 def test_csv():
-    from xoutil.eight import text_type
     from xoutil.future.csv import parse, DefaultDialect
 
     data = ['A,B,C,D',
@@ -44,7 +43,7 @@ def test_csv():
                 count_float += 1
                 sum_float += cell
             else:
-                assert isinstance(cell, text_type)
+                assert isinstance(cell, str)
                 count_text += 1
 
     assert count_int == 2

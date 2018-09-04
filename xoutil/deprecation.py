@@ -125,7 +125,6 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
 
     def raise_if_deprecated(target, target_version):
         import pkg_resources
-        string_types = (str,)
         pkg = _nameof(target)
         pkg, _obj = pkg.rsplit('.', 1)
         dist = None
@@ -139,7 +138,7 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
                 else:
                     pkg, _obj = None, None    # noqa
         assert dist
-        if isinstance(target_version, string_types):
+        if isinstance(target_version, str):
             target_version = pkg_resources.parse_version(target_version)
         if dist.parsed_version >= target_version:
             msg = ('A deprecated feature %r was scheduled to be '

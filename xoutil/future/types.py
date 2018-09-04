@@ -39,12 +39,9 @@ we don't include here:
 
 - `StringType`: use str
 
-- `UnicodeType`: use `unicode` in Python 2 and `str` in Python 3; there are
-  two aliases for that: `xoutil.eigth.UnicodeType` and
-  `xoutil.eigth.text_type`.
+- `UnicodeType`: use `str`.
 
-- `StringTypes`: use `xoutil.eigth.StringTypes`or
-  `xoutil.eigth.string_types`.
+- `StringTypes`:  ``(str, )``.
 
 - `BufferType`: use `buffer` in Python 2 and `memoryview` in Python 3; there
   is an alias for this convention in `xoutil.eigth.buffer`.  The
@@ -407,8 +404,7 @@ def is_scalar(maybe):
 
     '''
     from collections import Iterable
-    from xoutil.eight import string_types
-    return isinstance(maybe, string_types) or not isinstance(maybe, Iterable)
+    return isinstance(maybe, str) or not isinstance(maybe, Iterable)
 
 
 def is_staticmethod(cls, name):

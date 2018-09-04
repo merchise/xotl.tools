@@ -35,8 +35,7 @@ _ARG_SEP = _regex_compile(r'(?im)^\*{0,2}(?P<argname>[_\w\d]+)\s*:')
 
 
 def _split_signature(signature):
-    from xoutil.eight import string_types as strs
-    signature = (signature.strip() if isinstance(signature, strs) else '')
+    signature = (signature.strip() if isinstance(signature, str) else '')
     if signature:
         matches = _SIGNATURE.match(signature)
         return matches.group('args'), matches.group('return')

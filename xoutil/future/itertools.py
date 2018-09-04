@@ -73,8 +73,7 @@ def flatten(sequence, is_scalar=None, depth=None):
         def is_scalar(maybe):
             '''Returns if `maybe` is not not an iterable or a string.'''
             from collections import Iterable
-            from xoutil.eight import string_types as strs
-            return isinstance(maybe, strs) or not isinstance(maybe, Iterable)
+            return isinstance(maybe, str) or not isinstance(maybe, Iterable)
     for item in sequence:
         if is_scalar(item):
             yield item

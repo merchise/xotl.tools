@@ -26,7 +26,7 @@ def ppformat(obj):
 
     '''
     import io
-    from xoutil.eight import python_version, text_type
+    from xoutil.eight import python_version
     if python_version == 3:
         stream = io.StringIO()
     else:
@@ -34,7 +34,7 @@ def ppformat(obj):
     pprint(obj, stream=stream)
     stream.seek(0)
     res = stream.read()
-    if isinstance(res, text_type):
+    if isinstance(res, str):
         return res
     else:
         from xoutil.future.codecs import safe_decode

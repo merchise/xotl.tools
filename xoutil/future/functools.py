@@ -178,7 +178,6 @@ def lwraps(*args, **kwargs):
     '''
     from types import FunctionType, MethodType
     from xoutil.symbols import Unset
-    from xoutil.eight import string_types
     from xoutil.eight import string
     from xoutil.params import check_count
 
@@ -188,7 +187,7 @@ def lwraps(*args, **kwargs):
 
     def settle_str(name, value):
         if value is not Unset:
-            if isinstance(value, string_types):
+            if isinstance(value, str):
                 if name not in source:
                     source[name] = value
                 else:
@@ -211,7 +210,7 @@ def lwraps(*args, **kwargs):
     i = 0
     while i < count:
         arg = args[i]
-        if isinstance(arg, string_types):
+        if isinstance(arg, str):
             settle_str(name_key, arg)
         elif isinstance(arg, decorables):
             if target is Unset:

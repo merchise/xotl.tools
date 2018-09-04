@@ -16,7 +16,6 @@ import unittest
 
 class TestCLisp(unittest.TestCase):
     def test_basic_coercers(self):
-        from xoutil.eight import string_types
         from xoutil.values import (identity_coerce, void_coerce, coercer,
                                    vouch, t, int_coerce,
                                    float_coerce, create_int_range_coerce,
@@ -30,7 +29,7 @@ class TestCLisp(unittest.TestCase):
         mcu = mapping(uint_coerce, float_coerce)
         ic = iterable(int_coerce)
         age_coerce = create_int_range_coerce(0, 100)
-        text_coerce = coercer(string_types)
+        text_coerce = coercer((str, ))
         isnumber = istype((int, float, complex))
         numbercast = typecast((int, float, complex))
         # TODO: don't use isinstance
@@ -61,11 +60,10 @@ class TestCLisp(unittest.TestCase):
         self.assertIs(numbercast.scope, float)
 
     def test_compound_coercers(self):
-        from xoutil.eight import string_types
         from xoutil.values import (coercer, compose, some, combo, iterable,
                                    typecast, int_coerce, float_coerce, nil)
-        isstr = coercer(string_types)
-        strcast = typecast(string_types)
+        isstr = coercer((str, ))
+        strcast = typecast((str, ))
         toint = compose(isstr, int_coerce)
         isint = some(isstr, int_coerce)
         hyphenjoin = coercer(lambda arg: '-'.join(arg))

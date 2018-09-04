@@ -266,7 +266,7 @@ def safe_name(obj, affirm=False):
       '(int, float)'
 
     '''
-    from xoutil.eight import class_types, string_types
+    from xoutil.eight import class_types
     from types import FunctionType, MethodType
     from types import BuiltinFunctionType, BuiltinMethodType
     named_types = class_types + (FunctionType, MethodType,
@@ -297,7 +297,7 @@ def safe_name(obj, affirm=False):
         res = getattr_static(obj, '__name__', None)
         if res and isdatadescriptor(res):    # noqa
             res = res.__get__(obj, type(obj))
-    if isinstance(res, string_types):
+    if isinstance(res, str):
         return res
     elif affirm:
         if isinstance(obj, (tuple, list, set)):

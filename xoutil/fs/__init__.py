@@ -117,8 +117,7 @@ def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
 
     '''
     if regex:
-        from xoutil.eight import string_types
-        if isinstance(regex, string_types):
+        if isinstance(regex, str):
             regex = _rcompile(regex)
     else:
         regex = _REGEX_DEFAULT_ALLFILES
@@ -202,20 +201,20 @@ def regex_rename(top, pattern, repl, maxdepth=None):
 
     :param top: The top directory to start walking.
 
-    :param pattern: A regular expression pattern. Files whose fullname
-                    (including the path) match the expression will be renamed.
+    :param pattern: A regular expression pattern.  Files whose fullname
+           (including the path) match the expression will be renamed.
 
     :param repl: String to use as replacement. You may use backreferences as
-                 documented in python's ``re.sub`` function.
+           documented in python's ``re.sub`` function.
 
-    :param maxdepth: Only walk files up to this level. If None, walk all files.
+    :param maxdepth: Only walk files up to this level.  If None, walk all
+           files.
 
        .. versionadded:: 1.2.1
 
     '''
     from re import subn as _re_subn
-    from xoutil.eight import string_types
-    if isinstance(pattern, string_types):
+    if isinstance(pattern, str):
         pattern = _rcompile(pattern)
     depth = 0
     for path, _dirs, files in os.walk(top):
@@ -237,8 +236,7 @@ filter_false = lambda path, stat_info: False
 
 def get_regex_filter(regex):
     '''Return a filter for "walk" based on a regular expression.'''
-    from xoutil.eight import string_types
-    if isinstance(regex, string_types):
+    if isinstance(regex, str):
         regex = _rcompile(regex)
 
     def _filter(path, stat_info):
@@ -498,7 +496,6 @@ def concatfiles(*files):
 
     '''
     import shutil
-    from xoutil.eight import string_types
     from xoutil.values.simple import force_iterable_coerce
     from xoutil.params import check_count
     check_count(files, 2, caller='concatfiles')
@@ -506,13 +503,13 @@ def concatfiles(*files):
         files, target = force_iterable_coerce(files[0]), files[1]
     else:
         files, target = files[:-1], files[-1]
-    if isinstance(target, string_types):
+    if isinstance(target, str):
         target, opened = open(target, 'wb'), True
     else:
         opened = False
     try:
         for f in files:
-            if isinstance(f, string_types):
+            if isinstance(f, str):
                 fh = open(f, 'rb')
                 closefh = True
             else:

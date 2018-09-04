@@ -236,9 +236,8 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
     .. versionadded:: 1.8.0
 
     '''
-    from xoutil.eight import string_types
     from xoutil.objects import pop_first_of
-    if isinstance(names, string_types):
+    if isinstance(names, str):
         names = (names,)
     return pop_first_of(kwargs, *names, default=default)
 
@@ -417,7 +416,6 @@ class ParamSchemeRow:
 
     def __init__(self, *ids, **options):
         from collections import Counter
-        from xoutil.eight import string_types as strs
         from xoutil.fp.option import none
         iskey = lambda s: isinstance(s, str) and s.isidentifier()
         # TODO: Change this ``from xoutil.values import coercer``
@@ -429,8 +427,7 @@ class ParamSchemeRow:
             raise TypeError(msg.format(type(self).__name__, ', '.join(parts)))
         else:
             def ok(k):
-                return (isinstance(k, strs) and iskey(k) or
-                        isinstance(k, int))
+                return iskey(k) or isinstance(k, int)
 
             bad = [k for k in ids if not ok(k)]
             if bad:
@@ -507,11 +504,10 @@ class ParamSchemeRow:
 
         '''
         # TODO: calculate the key value in the constructor
-        from xoutil.eight import string_types as strs
         from xoutil.fp.option import none
         res = self._key
         if res is none:
-            res = next((k for k in self.ids if isinstance(k, strs)), None)
+            res = next((k for k in self.ids if isinstance(k, str)), None)
             if res is None:
                 res = self.ids[0]
             self._key = res
@@ -530,13 +526,12 @@ class ParamScheme:
     __slots__ = ('rows', 'cache')
 
     def __init__(self, *rows):
-        from xoutil.eight import string_types as strs
         from xoutil.params import check_count
         check_count(len(rows) + 1, 2, caller=type(self).__name__)
         used = set()
         for idx, row in enumerate(rows):
             if isinstance(row, ParamSchemeRow):
-                this = {k for k in row.ids if isinstance(k, strs)}
+                this = {k for k in row.ids if isinstance(k, str)}
                 aux = used & this
                 if not aux:
                     used |= this
@@ -561,8 +556,7 @@ class ParamScheme:
 
     def __getitem__(self, idx):
         '''Obtain the scheme-row by a given index.'''
-        from xoutil.eight import string_types
-        if isinstance(idx, string_types):
+        if isinstance(idx, str):
             cache = self._getcache()
             return cache[idx]
         else:

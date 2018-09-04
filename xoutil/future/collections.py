@@ -470,11 +470,10 @@ class codedict(OpenDictMixin, dict):
 
     '''
     def __getitem__(self, key):
-        from xoutil.eight import string_types
         try:
             return super().__getitem__(key)
         except KeyError:
-            if isinstance(key, string_types):
+            if isinstance(key, str):
                 return eval(key, dict(self))
             else:
                 raise

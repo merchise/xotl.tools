@@ -84,13 +84,12 @@ def crop(obj, max_width=None, canonical=False):
 
     '''
     from functools import partial
-    from xoutil.eight import string_types
     max_width = _check_max_width(max_width, caller='crop')
-    if isinstance(obj, string_types):
+    if isinstance(obj, str):
         res = obj    # TODO: reduce
     else:
         oper = getattr(obj, OPERATOR_NAME, partial(_crop, obj))
-        if isinstance(oper, string_types):
+        if isinstance(oper, str):
             # XXX: Allowing to define expecting operator as a static resulting
             # string
             res = oper

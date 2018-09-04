@@ -122,13 +122,12 @@ def args_repr(args, **options):
       'int, float, str, ...'
 
     '''
-    from xoutil.eight import typeof, string_types
     count = options.get('count', 3)
     cast = options.get('cast', lambda arg: typeof(arg).__name__)
     item_format = options.get('item_format', '{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')
-    if isinstance(joiner, string_types):
+    if isinstance(joiner, str):
         joiner = str(joiner).join
     parts = []
     i = 0
@@ -177,13 +176,13 @@ def kwargs_repr(kwargs, **options):
       'x:int, y:float, z:str, ...'
 
     '''
-    from xoutil.eight import typeof, string_types
+    from xoutil.eight import typeof
     count = options.get('count', 3)
     cast = options.get('cast', lambda arg: typeof(arg).__name__)
     item_format = options.get('item_format', '{}:{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')
-    if isinstance(joiner, string_types):
+    if isinstance(joiner, str):
         joiner = str(joiner).join
     parts = []
     keys = list(kwargs)
@@ -212,9 +211,8 @@ def both_args_repr(args, kwargs, **options):
       'int, float, str, x:int, y:float, z:str'
 
     '''
-    from xoutil.eight import string_types
     joiner = options.get('joiner', ', ')
-    if isinstance(joiner, string_types):
+    if isinstance(joiner, str):
         joiner = str(joiner).join
     items = (args, args_repr), (kwargs, kwargs_repr)
     parts = [res for res in (fn(aux, **options) for aux, fn in items) if res]

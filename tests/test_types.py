@@ -25,8 +25,7 @@ def test_iscollection():
 
     def is_collection(arg):
         from collections import Iterable, Mapping
-        from xoutil.eight import StringTypes
-        avoid = StringTypes + (Mapping,)
+        avoid = (Mapping, str)
         return isinstance(arg, Iterable) and not isinstance(arg, avoid)
 
     assert is_collection('all strings are iterable') is False

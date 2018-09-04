@@ -1121,8 +1121,7 @@ def adapt_exception(value, **kwargs):
     if isi(value, ebc) or issc(value, ebc):
         return value
     elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
-        from xoutil.eight import string_types as strs
-        map = lambda x: x.format(**kwargs) if isinstance(x, strs) else x
+        map = lambda x: x.format(**kwargs) if isinstance(x, str) else x
         ecls = value[0]
         return ecls(*(map(x) for x in value[1:]))
     else:
@@ -1258,7 +1257,6 @@ def smart_copy(*args, defaults=None):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
-    from xoutil.eight import base_string
     from xoutil.future.collections import MutableMapping, Mapping
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
@@ -1266,7 +1264,7 @@ def smart_copy(*args, defaults=None):
     *sources, target = args
     if not sources:
         raise TypeError('smart_copy() requires at least one source')
-    if isinstance(target, (bool, type(None), int, float, base_string)):
+    if isinstance(target, (bool, type(None), int, float, str)):
         raise TypeError('target should be a mutable object, not '
                         '{}'.format(type(target).__name__))
     if isinstance(target, MutableMapping):
@@ -1295,7 +1293,7 @@ def smart_copy(*args, defaults=None):
             get = smart_getter(source)
             items = source if isinstance(source, Mapping) else dir(source)
             for key in items:
-                private = isinstance(key, base_string) and key.startswith('_')
+                private = isinstance(key, str) and key.startswith('_')
                 if (defaults is False or defaults is None) and private:
                     copy = False
                 elif callable(defaults):
@@ -1604,9 +1602,8 @@ def import_object(name, package=None, sep='.', default=None, **kwargs):
 
     """
     import importlib
-    from xoutil.eight import string_types
     imp = importlib.import_module
-    if not isinstance(name, string_types):
+    if not isinstance(name, str):
         return name                                 # already a class
     sep = ':' if ':' in name else sep
     module_name, _, cls_name = name.rpartition(sep)

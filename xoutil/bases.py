@@ -30,12 +30,12 @@ def _check_base(base):
     Return a tuple (base, table) if valid or raise an exception.
 
     '''
-    from xoutil.eight import integer_types, string_types
+    from xoutil.eight import integer_types
     if isinstance(base, integer_types):
         table = _DEFAULT_TABLE
         if not (1 < base <= _MAX_BASE):
             raise ValueError('`base` must be between 2 and %s' % _MAX_BASE)
-    elif isinstance(base, string_types):
+    elif isinstance(base, str):
         table = base
         base = len(table)
     else:

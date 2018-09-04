@@ -271,12 +271,12 @@ def float_coerce(arg):
     Other types are checked (string, int, complex).
 
     '''
-    from xoutil.eight import integer_types, string_types
+    from xoutil.eight import integer_types
     if isinstance(arg, float):
         return arg
     elif isinstance(arg, integer_types):
         return float(arg)
-    elif isinstance(arg, string_types):
+    elif isinstance(arg, (str, bytes)):
         try:
             return float(arg)
         except ValueError:
@@ -358,6 +358,7 @@ def create_int_range_coerce(min, max):
 _IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][\w]*$')
 
 
+# XXX: 'eight' pending.
 @coercer
 def identifier_coerce(arg):
     '''Check if `arg` is a valid Python identifier.
@@ -369,8 +370,7 @@ def identifier_coerce(arg):
     '''
     # TODO: Consider use ``is_python2_identifier(arg) or nil`` in module
     # `xoutil.eight.string`.
-    from xoutil.eight import string_types
-    ok = isinstance(arg, string_types) and _IDENTIFIER_REGEX.match(arg)
+    ok = isinstance(arg, str) and _IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil
 
 
@@ -384,8 +384,7 @@ def full_identifier_coerce(arg):
     See `identifier_coerce`:func: for what "validity" means.
 
     '''
-    from xoutil.eight import string_types
-    ok = isinstance(arg, string_types) and _FULL_IDENTIFIER_REGEX.match(arg)
+    ok = isinstance(arg, str) and _FULL_IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil
 
 
@@ -397,8 +396,7 @@ def names_coerce(arg):
     resulting tuple.
 
     '''
-    from xoutil.eight import string_types
-    arg = (arg,) if isinstance(arg, string_types) else tuple(arg)
+    arg = (arg,) if isinstance(arg, str) else tuple(arg)
     return iterable(identifier_coerce)(arg)
 
 

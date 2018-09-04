@@ -249,11 +249,10 @@ def unicode_coerce(arg):
                 arg = bytes(bytearray(arg.tolist()))
             except Exception:
                 arg = str(arg)
-                if str is text_type:
-                    return arg
+            return arg
 
     res = decode_coerce(arg)
-    return text_type(arg) if res is nil else res
+    return str(arg) if res is nil else res
 
 
 @coercer
