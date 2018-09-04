@@ -33,10 +33,8 @@ def test_basic_params():
         return sample_scheme(args, kwargs, strict=False)
 
     def foobar(**kwargs):
-        from xoutil.eight import iteritems
         res = sample_scheme.defaults
-        for key, value in iteritems(kwargs):
-            res[key] = value
+        res.update(kwargs)
         return res
 
     one, two = get_values(4, 80), foobar(indent=4, width=80)

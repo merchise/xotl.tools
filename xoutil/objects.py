@@ -1160,7 +1160,6 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     .. versionadded:: 1.7.1 The `new_name` argument.
 
     '''
-    from xoutil.eight import iteritems
     from xoutil.eight._types import new_class
     from xoutil.future.types import MemberDescriptorType
     from xoutil.eight import string
@@ -1181,7 +1180,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     valid_names = ('__class__', '__mro__', '__name__', '__weakref__',
                    '__dict__')
     attrs = {name: value
-             for name, value in iteritems(cls.__dict__)
+             for name, value in cls.__dict__.items()
              if name not in valid_names
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
@@ -1458,7 +1457,6 @@ def dict_merge(*dicts, **others):
 
     '''
     from collections import Mapping, Sequence, Set, Container
-    from xoutil.eight import iteritems
     if others:
         dicts = dicts + (others, )
     dicts = list(dicts)
@@ -1466,7 +1464,7 @@ def dict_merge(*dicts, **others):
     collections = (Set, Sequence)
     while dicts:
         current = dicts.pop(0)
-        for key, val in iteritems(current):
+        for key, val in current.items():
             if isinstance(val, Mapping):
                 val = {key: val[key] for key in val}
             value = result.setdefault(key, val)

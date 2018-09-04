@@ -53,8 +53,7 @@ class MetaSymbol(type):
 
     def nameof(self, s):
         '''Get the name of a symbol instance (`s`).'''
-        from xoutil.eight import iteritems
-        items = iteritems(self._instances)
+        items = self._instances.items()
         return next((name for name, value in items if value is s), None)
 
     def parse(self, name):

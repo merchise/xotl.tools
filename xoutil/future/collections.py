@@ -2714,11 +2714,10 @@ class BitPascalSet(metaclass=MetaSet):
         Raises KeyError if the set is empty.
 
         '''
-        from xoutil.eight import iteritems
         sm = self._items
         if sm:
             bl = self._bit_length
-            k, v = next(iteritems(sm))
+            k, v = next(sm.items())
             assert v
             base = k * bl
             i = 0
@@ -2749,11 +2748,10 @@ class BitPascalSet(metaclass=MetaSet):
 
     def isdisjoint(self, other):
         '''Return True if two bit-sets have a null intersection.'''
-        from xoutil.eight import iteritems
         if isinstance(other, BitPascalSet):
             sm, om = self._items, other._items
             if sm and om:
-                return all(sm.get(k, 0) & v == 0 for k, v in iteritems(om))
+                return all(sm.get(k, 0) & v == 0 for k, v in om.items())
             else:
                 return True
         else:
@@ -2761,11 +2759,10 @@ class BitPascalSet(metaclass=MetaSet):
 
     def issubset(self, other):
         '''Report whether another set contains this bit-set.'''
-        from xoutil.eight import iteritems
         if isinstance(other, BitPascalSet):
             sm, om = self._items, other._items
             if sm:
-                return all(om.get(k, 0) & v == v for k, v in iteritems(sm))
+                return all(om.get(k, 0) & v == v for k, v in sm.items())
             else:
                 return True
         elif isinstance(other, Container):
@@ -2776,11 +2773,10 @@ class BitPascalSet(metaclass=MetaSet):
 
     def issuperset(self, other):
         '''Report whether this bit set contains another set.'''
-        from xoutil.eight import iteritems
         if isinstance(other, BitPascalSet):
             sm, om = self._items, other._items
             if om:
-                return all(sm.get(k, 0) & v == v for k, v in iteritems(om))
+                return all(sm.get(k, 0) & v == v for k, v in om.items())
             else:
                 return True
         else:

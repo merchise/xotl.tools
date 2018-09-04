@@ -178,7 +178,7 @@ def lwraps(*args, **kwargs):
     '''
     from types import FunctionType, MethodType
     from xoutil.symbols import Unset
-    from xoutil.eight import string_types, iteritems
+    from xoutil.eight import string_types
     from xoutil.eight import string
     from xoutil.params import check_count
 
@@ -251,8 +251,8 @@ def lwraps(*args, **kwargs):
                 d = source.pop('__dict__', Unset)
                 if d:
                     target.__dict__.update(d)
-            for key, value in iteritems(source):
-                setattr(target, key, value)
+            for key in source:
+                setattr(target, key, source[key])
             return res
         else:
             msg = 'only functions are decorated, not {}'

@@ -152,7 +152,7 @@ def crop_iterator(obj, max_width=None, canonical=False):
             UNDEF = object()
             sep = ', '
             if cls is Mapping:
-                from xoutil.eight import iteritems
+                iteritems = lambda d: iter(d.items())
 
                 def itemrepr(item):
                     key, value = item

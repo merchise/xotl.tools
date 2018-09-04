@@ -417,12 +417,12 @@ class ParamSchemeRow:
 
     def __init__(self, *ids, **options):
         from collections import Counter
-        from xoutil.eight import iteritems, string_types as strs
+        from xoutil.eight import string_types as strs
         from xoutil.eight.string import safe_isidentifier as iskey
         from xoutil.fp.option import none
         # TODO: Change this ``from xoutil.values import coercer``
         from xoutil.fp.prove.semantic import predicate as coercer
-        aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
+        aux = {k: c for k, c in Counter(ids).items() if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
             msg = '{}() repeated identifiers: {}'
@@ -456,9 +456,8 @@ class ParamSchemeRow:
         self._key = key
 
     def __str__(self):
-        from xoutil.eight import iteritems
         parts = [repr(k) for k in self.ids]
-        for key, value in iteritems(self.options):
+        for key, value in self.options.items():
             parts.append('{}={!r}'.format(key, value))
         aux = ', '.join(parts)
         return 'ParamSchemeRow({})'.format(aux)
@@ -600,13 +599,11 @@ class ParamScheme:
 
     def keys(self):
         '''Partial compatibility with mappings.'''
-        from xoutil.eight import iterkeys
-        return iterkeys(self._getcache())
+        return self._getcache().keys()
 
     def items(self):
         '''Partial compatibility with mappings.'''
-        from xoutil.eight import iteritems
-        return iteritems(self._getcache())
+        return self._getcache().items()
 
     @property
     def defaults(self):
