@@ -96,8 +96,6 @@ def test_fulldir():
 
 
 def test_newstyle_metaclass():
-    from xoutil.eight.meta import metaclass
-
     class Field:
         __slots__ = (str('name'), str('default'))
 
@@ -116,20 +114,20 @@ def test_newstyle_metaclass():
         def __init__(self, **attrs):
             self.__dict__.update(attrs)
 
-    class Model(metaclass(ModelType)):
+    class Model(metaclass=ModelType):
         f1 = Field(1009)
         f2 = 0
 
         def __init__(self, **attrs):
             self.__dict__.update(attrs)
 
-    class Model2(Base, metaclass(ModelType)):
+    class Model2(Base, metaclass=ModelType):
         pass
 
     class SubMeta(ModelType):
         pass
 
-    class Submodel(Model, metaclass(SubMeta)):
+    class Submodel(Model, metaclass=SubMeta):
         pass
 
     inst = Model(name='Instance')
@@ -145,8 +143,6 @@ def test_newstyle_metaclass():
 
 
 def test_new_style_metaclass_registration():
-    import sys
-    from xoutil.eight.meta import metaclass
 
     class BaseMeta(type):
         classes = []
@@ -156,25 +152,22 @@ def test_new_style_metaclass_registration():
             cls.classes.append(res)   # <-- side effect
             return res
 
-    class Base(metaclass(BaseMeta)):
+    class Base(metaclass=BaseMeta):
         pass
 
     class SubType(BaseMeta):
         pass
 
-    class Egg(metaclass(SubType), Base):   # <-- metaclass first
+    class Egg(Base, metaclass=SubType):
         pass
 
-    assert Egg.__base__ is Base   # <-- but the base is Base
+    assert Egg.__base__ is Base
     assert len(BaseMeta.classes) == 2
 
-    class Spam(Base, metaclass(SubType)):
+    class Spam(Base, metaclass=SubType):
         'Like "Egg" but it will be registered twice in Python 2.x.'
 
-    if sys.version_info < (3, 2):
-        assert len(BaseMeta.classes) == 4  # Called twice in Python 2
-    else:
-        assert len(BaseMeta.classes) == 3  # Properly called once in Python 3
+    assert len(BaseMeta.classes) == 3  # Properly called once in Python 3
 
       # Nevertheless the bases are ok.
     assert Spam.__bases__ == (Base, )
@@ -410,7 +403,6 @@ def test_extract_attrs():
 def test_copy_class():
     from xoutil.symbols import Unset
     from xoutil.versions import python_version
-    from xoutil.eight.meta import metaclass
     from xoutil.objects import copy_class
 
     u = str if python_version == 3 else unicode
@@ -418,7 +410,7 @@ def test_copy_class():
     class MetaFoo(type):
         pass
 
-    class Foo(metaclass(MetaFoo)):
+    class Foo(metaclass=MetaFoo):
         a = 1
         b = 2
         c = 3
