@@ -13,7 +13,7 @@ from __future__ import (division as _py3_division,
 
 
 import pytest
-from xoutil.eight.abc import ABC
+from abc import ABC
 from xoutil.versions import python_version
 
 skip_ver = python_version == 3 or python_version.pypy
