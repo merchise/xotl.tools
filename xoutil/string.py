@@ -26,7 +26,6 @@ from xoutil.deprecation import import_deprecated    # noqa
 
 _MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
 
-import_deprecated('xoutil.eight', 'input')
 import_deprecated('xoutil.future.codecs', *_MIGRATED_TO_CODECS)
 import_deprecated('xoutil.eight.string', 'safe_join', force_str='force')
 
