@@ -158,11 +158,10 @@ except NameError:
            instead of instance members in some cases.  See the
            documentation for details.
         '''
-        from xoutil.eight import typeof
         instance_result = _sentinel
         if not _is_type(obj):
             from xoutil.future.types import MemberDescriptorType as mdt
-            klass = typeof(obj)
+            klass = type(obj)
             dict_attr = _shadowed_dict(klass)
             if dict_attr is _sentinel or type(dict_attr) is mdt:
                 instance_result = _check_instance(obj, attr)

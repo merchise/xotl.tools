@@ -114,7 +114,6 @@ def _items(d):
 
 class TestChainMap(unittest.TestCase):
     def test_basics(self):
-        from xoutil.eight import typeof
         c = ChainMap()
         c['a'] = 1
         c['b'] = 2
@@ -151,14 +150,14 @@ class TestChainMap(unittest.TestCase):
         if python_version < 3:
             # check repr
             self.assertIn(repr(d), [
-                typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                typeof(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
             ])
         else:
             # check repr
             self.assertIn(repr(d), [
-                typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                typeof(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
             ])
 
         # check shallow copies

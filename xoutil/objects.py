@@ -609,7 +609,6 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
-    from xoutil.eight import typeof
     from xoutil.future.inspect import get_attr_value, _static_getmro
 
     def getdir(o):

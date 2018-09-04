@@ -66,8 +66,7 @@ def nameof(obj):
             if res == repr(obj) and re.match(identifier_regex, res):
                 return res
             else:
-                from xoutil.eight import typeof
-                return typeof(obj).__name__
+                return type(obj).__name__
 
 
 # TODO: Move all functions in this module to a new place
@@ -123,7 +122,7 @@ def args_repr(args, **options):
 
     '''
     count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: typeof(arg).__name__)
+    cast = options.get('cast', lambda arg: type(arg).__name__)
     item_format = options.get('item_format', '{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')
@@ -176,9 +175,8 @@ def kwargs_repr(kwargs, **options):
       'x:int, y:float, z:str, ...'
 
     '''
-    from xoutil.eight import typeof
     count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: typeof(arg).__name__)
+    cast = options.get('cast', lambda arg: type(arg).__name__)
     item_format = options.get('item_format', '{}:{}')
     tail_format = options.get('tail_format', '...')
     joiner = options.get('joiner', ', ')

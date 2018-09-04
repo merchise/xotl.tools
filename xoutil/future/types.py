@@ -56,7 +56,7 @@ we don't include here:
 - `ClassType`: use `type`.
 
 - `InstanceType`: type of instances of Python 2 old-style classes, don't
-  exists in Python 3, see `xoutil.eigth.typeof`.
+  exists in Python 3.
 
 - `UnboundMethodType`: use `~types.MethodType` alias
 
@@ -182,9 +182,9 @@ def _get_mro_attr(target, name, *default):
 
     '''
     from xoutil.future.inspect import _static_getmro
-    from xoutil.eight import force_type
     from xoutil.params import check_default, Undefined
-    target = force_type(target)
+    # force type
+    target = target if isinstance(target, type) else type(target)
     target_mro = _static_getmro(target)
     cls = next((c for c in target_mro if name in c.__dict__), _unset)
     if cls is not _unset:
@@ -230,8 +230,7 @@ class mro_dict(Mapping):
 
     def __init__(self, target):
         from xoutil.future.inspect import _static_getmro
-        from xoutil.eight import force_type as type_coerce
-        type_ = type_coerce(target)
+        type_ = target if isinstance(target, type) else type(target)
         target_mro = _static_getmro(type_)
         self._probes = tuple(c.__dict__ for c in target_mro)
         self._keys = set()
@@ -281,8 +280,8 @@ def mro_get_full_mapping(cls, name):
 
     '''
     from xoutil.future.inspect import _static_getmro
-    from xoutil.eight import force_type as type_coerce
-    mro = _static_getmro(type_coerce(cls))
+    cls = cls if isinstance(cls, type) else type(cls)    # force type
+    mro = _static_getmro(cls)
     return {t: t.__dict__[name] for t in mro if name in t.__dict__}
 
 

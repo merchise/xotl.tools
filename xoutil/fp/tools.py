@@ -314,6 +314,5 @@ class full_args(tuple):
         elif arg is None:
             return pos_args()
         else:
-            from xoutil.eight import typeof
             msg = 'Expecting None, a tuple, a list, or a dict; {} found'
-            raise TypeError(msg.format(typeof(arg).__name__))
+            raise TypeError(msg.format(type(arg).__name__))
