@@ -419,7 +419,6 @@ class ParamSchemeRow:
         from collections import Counter
         from xoutil.eight import iteritems, string_types as strs
         from xoutil.eight.string import safe_isidentifier as iskey
-        from xoutil.eight import type_name
         from xoutil.fp.option import none
         # TODO: Change this ``from xoutil.values import coercer``
         from xoutil.fp.prove.semantic import predicate as coercer
@@ -427,7 +426,7 @@ class ParamSchemeRow:
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
             msg = '{}() repeated identifiers: {}'
-            raise TypeError(msg.format(type_name(self), ', '.join(parts)))
+            raise TypeError(msg.format(type(self).__name__, ', '.join(parts)))
         else:
             def ok(k):
                 return (isinstance(k, strs) and iskey(k) or
@@ -437,12 +436,12 @@ class ParamSchemeRow:
             if bad:
                 msg = ('{}() identifiers with wrong type (only int and str '
                        'allowed): {}')
-                raise TypeError(msg.format(type_name(self), bad))
+                raise TypeError(msg.format(type(self).__name__, bad))
         key = options.pop('key', none)
         if not (key is none or iskey(key)):
             msg = ('"key" option must be an identifier, "{}" of type "{}" '
                    'given')
-            raise TypeError(msg.format(key), type_name(key))
+            raise TypeError(msg.format(key, type(key).__name__))
         if 'default' in options:
             aux = {'default': options.pop('default')}
         else:
@@ -451,7 +450,7 @@ class ParamSchemeRow:
             aux['coerce'] = coercer(options.pop('coerce'))
         if options:
             msg = '{}(): received invalid keyword parameters: {}'
-            raise TypeError(msg.format(type_name(self), set(options)))
+            raise TypeError(msg.format(type(self).__name__, set(options)))
         self.ids = ids
         self.options = aux
         self._key = key
@@ -532,9 +531,9 @@ class ParamScheme:
     __slots__ = ('rows', 'cache')
 
     def __init__(self, *rows):
-        from xoutil.eight import string_types as strs, type_name
+        from xoutil.eight import string_types as strs
         from xoutil.params import check_count
-        check_count(len(rows) + 1, 2, caller=type_name(self))
+        check_count(len(rows) + 1, 2, caller=type(self).__name__)
         used = set()
         for idx, row in enumerate(rows):
             if isinstance(row, ParamSchemeRow):
@@ -544,19 +543,18 @@ class ParamScheme:
                     used |= this
                 else:
                     msg = ('{}() repeated keyword identifiers "{}" in '
-                           'row {}').format(type_name(self), aux, idx)
+                           'row {}').format(type(self).__name__, aux, idx)
                     raise ValueError(msg)
         self.rows = rows
         self.cache = None
 
     def __str__(self):
-        from xoutil.eight import type_name
+        # XXX: Use:: ',\n\i'.join(map(str, self))
         aux = ',\n\i'.join(str(row) for row in self)
-        return '{}({})'.format(type_name(self), aux)
+        return '{}({})'.format(type(self).__name__, aux)
 
     def __repr__(self):
-        from xoutil.eight import type_name
-        return '{}({} rows)'.format(type_name(self), len(self))
+        return '{}({} rows)'.format(type(self).__name__, len(self))
 
     def __len__(self):
         '''The defined scheme-rows number.'''
@@ -583,8 +581,6 @@ class ParamScheme:
         value is missing.
 
         '''
-        from xoutil.eight import type_name
-
         def ok(v):
             from xoutil.fp.option import Wrong
             return not isinstance(v, Wrong)
@@ -597,7 +593,7 @@ class ParamScheme:
             if rem:
                 msg = ('after a full `{}` process, there are still remainder '
                        'parameters: {}')
-                raise TypeError(msg.format(type_name(self), set(rem)))
+                raise TypeError(msg.format(type(self).__name__, set(rem)))
         else:
             res.update(rem)
         return res

@@ -82,7 +82,6 @@ def _check(info, head=False):
         else:
             res = None
         if res is None:
-            # TODO: from xoutil.eight import type_name
             msg = 'version info check got an invalid value of type "{}"'
             raise TypeError(msg.format(type(info).__name__))
     count = _crucial_parts(res)

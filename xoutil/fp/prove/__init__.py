@@ -87,7 +87,6 @@ def vouch(function, *args, **kwds):
     '''
     from xoutil.symbols import boolean, Invalid
     from xoutil.clipping import small
-    from xoutil.eight import type_name
     from xoutil.eight.exceptions import throw
     from xoutil.fp.option import Just, Wrong
     from xoutil.params import single
@@ -107,7 +106,7 @@ def vouch(function, *args, **kwds):
         else:
             msg = '{}() validates as a wrong value'.format(small(function))
             if inner is not None or not isinstance(inner, boolean):
-                v, t = small(inner), type_name(inner)
+                v, t = small(inner), type(inner).__name__
                 msg += ' {} of type "{}"'.format(v, t)
             raise TypeError(msg)
     elif isinstance(res, Just):

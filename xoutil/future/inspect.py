@@ -71,9 +71,8 @@ except ImportError:
             except ImportError:
                 # Python 3.1 lacks both _static_getmro and ClassType
                 pass
-            from xoutil.eight import type_name
             msg = "doesn't apply to '{}' object"
-            raise TypeError(msg.format(type_name(klass)))
+            raise TypeError(msg.format(type(klass).__name__))
 
 
 try:
@@ -233,9 +232,8 @@ def get_attr_value(obj, name, *default):
     elif default is not Undefined:
         return default
     else:
-        from xoutil.eight import type_name
         msg = "'%s' object has no attribute '%s'"
-        raise AttributeError(msg % (type_name(obj), name))
+        raise AttributeError(msg % (type(obj).__name__, name))
 
 
 def safe_name(obj, affirm=False):

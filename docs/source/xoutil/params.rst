@@ -29,7 +29,6 @@ positional, could be the first or the last one.
 Some tests::
 
   >>> def test(*args, **kwargs):
-  ...     from xoutil.eight import type_name
   ...     return sample_scheme(args, kwargs)
 
   >>> test(4, 80)

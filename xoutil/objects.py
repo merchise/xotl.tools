@@ -232,9 +232,9 @@ class SafeDataItem:
                 self.__set__(obj, res)
                 return res
             else:
-                from xoutil.eight import type_name
-                msg = "'%s' object has no attribute '%s'"
-                raise AttributeError(msg % (type_name(obj), self.attr_name))
+                msg = "'{}' object has no attribute '{}'"
+                type_name = type(obj).__name__
+                raise AttributeError(msg.format(type_name, self.attr_name))
         else:
             return self
 
@@ -1264,7 +1264,7 @@ def smart_copy(*args, defaults=None):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
-    from xoutil.eight import base_string, type_name, callable
+    from xoutil.eight import base_string, callable
     from xoutil.future.collections import MutableMapping, Mapping
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
@@ -1274,7 +1274,7 @@ def smart_copy(*args, defaults=None):
         raise TypeError('smart_copy() requires at least one source')
     if isinstance(target, (bool, type(None), int, float, base_string)):
         raise TypeError('target should be a mutable object, not '
-                        '{}'.format(type_name(target)))
+                        '{}'.format(type(target).__name__))
     if isinstance(target, MutableMapping):
         def setter(key, val):
             target[key] = val

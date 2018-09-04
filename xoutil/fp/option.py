@@ -140,7 +140,6 @@ class Maybe:
             []
 
         '''
-        from xoutil.eight import type_name
         if cls is not Maybe:
             test = cls is Just
             dual = Wrong if test else Just
@@ -150,7 +149,8 @@ class Maybe:
                 return cls(value)
             else:
                 msg = '''a "{}" value can't be coerced to "{}"'''
-                raise TypeError(msg.format(type_name(value), cls.__name__))
+                vname = type(value).__name__
+                raise TypeError(msg.format(vname, cls.__name__))
         else:
             raise TypeError('''don't call at Maybe base level''')
 

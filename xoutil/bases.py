@@ -39,10 +39,9 @@ def _check_base(base):
         table = base
         base = len(table)
     else:
-        from xoutil.eight import type_name
         msg = ('`base` must be an integer (base) or a string (table) with '
                'length greater or equal to 2; %s "%s" given')
-        raise TypeError(msg % (type_name(base), base))
+        raise TypeError(msg % (type(base).__name__, base))
     return base, table
 
 

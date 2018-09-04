@@ -84,7 +84,7 @@ def crop(obj, max_width=None, canonical=False):
 
     '''
     from functools import partial
-    from xoutil.eight import callable, type_name, string_types
+    from xoutil.eight import callable, string_types
     max_width = _check_max_width(max_width, caller='crop')
     if isinstance(obj, string_types):
         res = obj    # TODO: reduce
@@ -107,14 +107,13 @@ def crop(obj, max_width=None, canonical=False):
                 res = NotImplemented
         else:
             msg = "crop() invalid '{}' type: {}"
-            raise TypeError(msg.format(OPERATOR_NAME, type_name(oper)))
+            raise TypeError(msg.format(OPERATOR_NAME, type(oper).__name__))
     return res
 
 
 def _crop(obj, max_width=None, canonical=False):
     '''Internal crop tool.'''
     from collections import Set, Mapping
-    from xoutil.eight import type_name
     res = repr(obj) if canonical else str(obj)
     if (res.startswith('<') and res.endswith('>')) or len(res) > max_width:
         try:
@@ -126,7 +125,7 @@ def _crop(obj, max_width=None, canonical=False):
             if isinstance(obj, (tuple, list, Set, Mapping)):
                 res = crop_iterator(obj, max_width, canonical)
             else:
-                res = '{}({})'.format(type_name(obj), ELLIPSIS)
+                res = '{}({})'.format(type(obj).__name__, ELLIPSIS)
     return res
 
 
@@ -141,14 +140,13 @@ def crop_iterator(obj, max_width=None, canonical=False):
 
     '''
     from collections import Set, Mapping
-    from xoutil.eight import type_name
     max_width = _check_max_width(max_width, caller='crop_iterator')
     classes = (tuple, list, Mapping, Set)
     cls = next((c for c in classes if isinstance(obj, c)), None)
     if cls:
         res = ''
         if cls is Set and not obj:
-            borders = ('{}('.format(type_name(obj)), ')')
+            borders = ('{}('.format(type(obj).__name__), ')')
         else:
             borders = ('()', '[]', '{}', '{}')[classes.index(cls)]
             UNDEF = object()
@@ -180,7 +178,7 @@ def crop_iterator(obj, max_width=None, canonical=False):
         return '{}{}{}'.format(borders[0], res, borders[1])
     else:
         raise TypeError('crop_iterator() expects tuple, list, set, or '
-                        'mapping; got {}'.format(type_name(obj)))
+                        'mapping; got {}'.format(type(obj).__name__))
 
 
 # aliases

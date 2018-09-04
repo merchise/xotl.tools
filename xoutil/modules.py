@@ -31,7 +31,6 @@ def force_module(ref=None):
 
     '''
     from importlib import import_module
-    from xoutil.eight import type_name
     if isinstance(ref, ModuleType):
         return ref
     else:
@@ -53,7 +52,7 @@ def force_module(ref=None):
                     ref = ref.encode()  # Python 2.x
                 except Exception:  # TODO: @med which exceptions expected?
                     msg = "invalid type '{}' for module name '{}'"
-                    raise TypeError(msg.format(type_name(ref), ref))
+                    raise TypeError(msg.format(type(ref).__name__, ref))
         return import_module(ref)
 
 

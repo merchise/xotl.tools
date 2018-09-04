@@ -42,7 +42,7 @@ class predicate:
     __slots__ = ('inner',)
 
     def __new__(cls, *args):
-        from xoutil.eight import class_types, callable, type_name
+        from xoutil.eight import class_types, callable
         if cls is predicate:    # Parse the right sub-type
             count = len(args)
             if count == 0:
@@ -60,7 +60,8 @@ class predicate:
                     return LogicalCheck(arg)
                 else:
                     msg = "{}() can't parse a definition of type: {}"
-                    raise TypeError(msg.format(cls.__name__, type_name(arg)))
+                    aname = type(arg).__name__
+                    raise TypeError(msg.format(cls.__name__, aname))
             else:
                 return MultiCheck(*args)
         else:
@@ -78,7 +79,7 @@ class TypeCheck(predicate):
     __slots__ = ()
 
     def __new__(cls, *args):
-        from xoutil.eight import class_types as _types, type_name
+        from xoutil.eight import class_types as _types
         from xoutil.params import check_count
         check_count(len(args) + 1, 2, caller=cls.__name__)
         if len(args) == 1 and isinstance(args[0], tuple):
@@ -89,7 +90,7 @@ class TypeCheck(predicate):
             return self
         else:
             wrong = (arg for arg in args if not isinstance(arg, _types))
-            wnames = ', or '.join(type_name(w) for w in wrong)
+            wnames = ', or '.join(type(w).__name__ for w in wrong)
             msg = '`TypeCheck` allows only valid types, not: ({})'
             raise TypeError(msg.format(wnames))
 
@@ -104,11 +105,10 @@ class TypeCheck(predicate):
     def __crop__(self, max_width=None, canonical=False):
         '''Calculate both string versions (small and normal).'''
         from xoutil.symbols import Undefined
-        from xoutil.eight import type_name
         from xoutil.clipping import ELLIPSIS, DEFAULT_MAX_WIDTH
         if max_width is None:
             max_width = DEFAULT_MAX_WIDTH    # a big number for this
-        start, end = '{}('.format(type_name(self)), ')'
+        start, end = '{}('.format(type(self).__name__), ')'
         borders_len = len(start) + len(end)
         sep = ', '
         res = ''
@@ -188,7 +188,7 @@ class CheckAndCast(predicate):
     __slots__ = ()
 
     def __new__(cls, check, cast):
-        from xoutil.eight import callable, type_name
+        from xoutil.eight import callable
         check = predicate(check)
         if callable(cast):
             self = super().__new__(cls)
@@ -196,7 +196,8 @@ class CheckAndCast(predicate):
             return self
         else:
             msg = '{}() expects a callable for cast, "{}" given'
-            raise TypeError(msg.format(type_name(self), type_name(cast)))
+            sname = type(self).__name__
+            raise TypeError(msg.format(sname, type(cast).__name__))
 
     def __call__(self, value):
         from xoutil.fp.option import Wrong
@@ -225,7 +226,7 @@ class FunctionalCheck(predicate):
     __slots__ = ()
 
     def __new__(cls, check):
-        from xoutil.eight import callable, type_name
+        from xoutil.eight import callable
         # TODO: Change next, don't use isinstance
         if isinstance(check, predicate):
             return check
@@ -235,13 +236,12 @@ class FunctionalCheck(predicate):
             return self
         else:
             msg = 'a functional check expects a callable but "{}" is given'
-            raise TypeError(msg.format(type_name(check)))
+            raise TypeError(msg.format(type(check).__name__))
 
     def __str__(self):
-        from xoutil.eight import type_name
         from xoutil.clipping import crop
         suffix = 'check'
-        kind = type_name(self).lower()
+        kind = type(self).__name__.lower()
         if kind.endswith(suffix):
             kind = kind[:-len(suffix)]
         inner = crop(self.inner)
