@@ -418,8 +418,8 @@ class ParamSchemeRow:
     def __init__(self, *ids, **options):
         from collections import Counter
         from xoutil.eight import string_types as strs
-        from xoutil.eight.string import safe_isidentifier as iskey
         from xoutil.fp.option import none
+        iskey = lambda s: isinstance(s, str) and s.isidentifier()
         # TODO: Change this ``from xoutil.values import coercer``
         from xoutil.fp.prove.semantic import predicate as coercer
         aux = {k: c for k, c in Counter(ids).items() if c > 1}
