@@ -157,7 +157,6 @@ def enfold(checker):
             inner.__doc__ = func.__doc__
         except Exception:
             from xoutil.clipping import small
-            from xoutil.eight import string
-            inner.__name__ = string.force(small(func))
+            inner.__name__ = str(small(func))
         return inner
     return wrapper

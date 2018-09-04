@@ -176,7 +176,6 @@ def lwraps(*args, **kwargs):
     '''
     from types import FunctionType, MethodType
     from xoutil.symbols import Unset
-    from xoutil.eight import string
     from xoutil.params import check_count
 
     def repeated(name):
@@ -243,7 +242,7 @@ def lwraps(*args, **kwargs):
                 if name in source:
                     value = source.pop(name)
                     if name in safes:
-                        value = string.force(value)
+                        value = str(value)
                     setattr(target, str(name), value)
                 d = source.pop('__dict__', Unset)
                 if d:

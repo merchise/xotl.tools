@@ -85,6 +85,6 @@ def parse(data, *dialect, **options):
       Stallman, Richard
 
     '''
-    from xoutil.eight import string, text
-    rows = reader((string.force(line) for line in data), *dialect, **options)
-    return [[text.force(cell) for cell in row] for row in rows]
+    string_force = text_force = str    # They were different in Python 2.
+    rows = reader((string_force(line) for line in data), *dialect, **options)
+    return [[text_force(cell) for cell in row] for row in rows]

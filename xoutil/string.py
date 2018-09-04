@@ -283,18 +283,17 @@ def slugify(value, *args, **kwds):
 
 def error2str(error):
     '''Convert an error to string.'''
-    from xoutil.eight import string
     if isinstance(error, str):
-        return string.force(error)
+        return error
     elif isinstance(error, BaseException):
         tname = type(error).__name__
-        res = string.force(error)
+        res = str(error)
         if tname in res:
             return res
         else:
-            return str(': ').join(tname, res) if res else tname
-    elif issubclass(error, BaseException):
-        return type(error).__name__
+            return ': '.join((tname, res)) if res else tname
+    elif isinstance(error, type) and issubclass(error, BaseException):
+        return error.__name__
     else:
         prefix = str('unknown error: ')
         cls = error if isinstance(error, type) else type(error)   # force type
@@ -302,7 +301,7 @@ def error2str(error):
         if cls is error:
             res = tname
         else:
-            res = string.force(error)
+            res = str(error)
             if tname not in res:
                 res = str('{}({})').format(tname, res) if res else tname
         return prefix + res
