@@ -461,7 +461,7 @@ def sized_coerce(arg):
         return nil
 
 
-@coercer.adopt
+@coercer.register
 class custom:
     '''Base class for any custom coercer.
 

@@ -35,7 +35,7 @@ def test_abc_base():
         assert True, 'Executed, but OK.'
 
     assert x == 1
-    assert MyError.adopt(KeyError) == KeyError
+    assert MyError.register(KeyError) == KeyError
 
     try:
         x = d['x']
@@ -54,7 +54,7 @@ def test_abc_register():
     class MyError(Exception, ABC):
         pass
 
-    @MyError.adopt
+    @MyError.register
     class MyNewError(Exception):
         pass
 
