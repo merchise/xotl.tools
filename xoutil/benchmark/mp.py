@@ -3,11 +3,6 @@
 # Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Manuel Vazquez
 
-# TODO:  Take this out of xoutil.
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 from multiprocessing import Pool, cpu_count
 from itertools import count, islice, repeat
 

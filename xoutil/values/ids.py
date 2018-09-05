@@ -24,10 +24,6 @@ This module also contains:
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_import)
-
 from uuid import (UUID, uuid1, uuid3, uuid4, uuid5, getnode,    # noqa
                   NAMESPACE_DNS, NAMESPACE_URL, NAMESPACE_OID, NAMESPACE_X500)
 

@@ -23,10 +23,6 @@ Commands can be registered by:
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 from abc import abstractmethod, ABC
 from xoutil.objects import staticproperty
 from xoutil.cli.tools import command_name, program_name

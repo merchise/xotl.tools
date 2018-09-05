@@ -16,10 +16,6 @@ Value (CSV)`:abbr: files, and implements the interface described by PEP
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_import)
-
 
 from csv import *    # noqa
 import csv as _stdlib    # noqa

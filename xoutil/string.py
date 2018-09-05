@@ -15,10 +15,6 @@ See `py-string-ambiguity`:any: for more information.
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_import)
-
 
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.deprecation import import_deprecated    # noqa

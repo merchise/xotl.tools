@@ -20,10 +20,6 @@ case that library is not installed in your system.
 
 # TODO: consider use IoC to extend python json module
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
-
 from json import *    # noqa
 import json as _stdlib    # noqa
 

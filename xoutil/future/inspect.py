@@ -14,10 +14,6 @@ document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _absolute_import)
-
 from inspect import *    # noqa
 
 try:

@@ -27,10 +27,6 @@ There are some basic helper functions:
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 
 def predicative(function, *args, **kwds):
     '''Call a function in a safety wrapper returning a false value if fail.

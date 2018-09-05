@@ -22,11 +22,6 @@ Not all values are comparable with `Infinity`:obj: by default.  The ABC
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
-
 import abc
 import datetime
 from numbers import Number

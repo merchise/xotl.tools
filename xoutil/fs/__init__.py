@@ -16,10 +16,6 @@ path-handling functions that have no side-effects look at
 '''
 
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 import sys
 import os
 from re import compile as _rcompile

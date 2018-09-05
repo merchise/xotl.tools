@@ -9,10 +9,6 @@
 
 '''Text wrapping and filling.'''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 from textwrap import *    # noqa
 import textwrap as _stdlib
 from textwrap import __all__    # noqa
