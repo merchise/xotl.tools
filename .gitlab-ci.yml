@@ -4,7 +4,6 @@ stages:
   - check
   - build
   - publish
-  - tweet
 
 lint:
   stage: test
@@ -101,18 +100,6 @@ publish in pypi:
     name: pypi
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
 
-brag about new release in twitter:
-  variables:
-    GIT_STRATEGY: none
-  stage: tweet
-  script:
-    - twitter set "New version $CI_COMMIT_REF_NAME of xoutil -- https://pypi.python.org/pypi/xoutil"
-  tags:
-    - twitter
-  only:
-    - tags
-  dependencies:
-    - publish in pypi
 
 build documentation:
   stage: build
