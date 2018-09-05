@@ -28,9 +28,12 @@ import datetime as _stdlib    # noqa
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
 
+from enum import IntEnum
+from xoutil.deprecation import deprecated    # noqa
 
-#: Simple constants for .weekday() method
-class WEEKDAY:
+
+class WEEKDAY(IntEnum):
+    '''Simple constants for 'weekday' method.'''
     MONDAY = 0
     TUESDAY = 1
     WEDNESDAY = 2
@@ -40,7 +43,8 @@ class WEEKDAY:
     SUNDAY = 6
 
 
-class ISOWEEKDAY:
+class ISOWEEKDAY(IntEnum):
+    '''Simple constants for 'weekday' method.'''
     MONDAY = 1
     TUESDAY = 2
     WEDNESDAY = 3
@@ -50,80 +54,17 @@ class ISOWEEKDAY:
     SUNDAY = 7
 
 
-try:
-    date(1800, 1, 1).strftime("%Y")    # noqa
-except ValueError:
-    # This happens in Pytnon 2.7, I was considering to replace `strftime`
-    # function from `time` module, that is used for all `strftime` methods;
-    # but (WTF), Python double checks the year (in each method and then again
-    # in `time.strftime` function).
+@deprecated("plain objects")
+def assure(obj):
+    '''Make sure that a `date` or `datetime` instance is a safe version.
 
-    class date(_stdlib.date):
-        __doc__ = _stdlib.date.__doc__
+    This is only a type checker alternative to standard library.
 
-        def strftime(self, fmt):
-            return strftime(self, fmt)
-
-        def __sub__(self, other):
-            return assure(super().__sub__(other))
-
-    class datetime(_stdlib.datetime):
-        __doc__ = _stdlib.datetime.__doc__
-
-        def strftime(self, fmt):
-            return strftime(self, fmt)
-
-        def __sub__(self, other):
-            return assure(super().__sub__(other))
-
-        def combine(self, date, time):
-            return assure(super().combine(date, time))
-
-        def date(self):
-            return assure(super().date())
-
-        @staticmethod
-        def now(tz=None):
-            return assure(super(datetime, datetime).now(tz=tz))
-
-    def assure(obj):
-        '''Make sure that a `date` or `datetime` instance is a safe version.
-
-        With safe it's meant that will use the adapted subclass on this module
-        or the standard if these weren't generated.
-
-        Classes that could be assured are: `date`, `datetime`, `time` and
-        `timedelta`.
-
-        '''
-        t = type(obj)
-        name = t.__name__
-        if name == date.__name__:
-            return obj if t is date else date(*obj.timetuple()[:3])
-        elif name == datetime.__name__:
-            if t is datetime:
-                return obj
-            else:
-                args = obj.timetuple()[:6] + (obj.microsecond, obj.tzinfo)
-                return datetime(*args)
-        elif isinstance(obj, (_stdlib.time, timedelta)):
-            return obj
-        else:
-            raise TypeError('Not valid type for datetime assuring: %s' % name)
-else:
-    def assure(obj):
-        '''Make sure that a `date` or `datetime` instance is a safe version.
-
-        This is only a type checker alternative to standard library.
-
-        '''
-        if isinstance(obj, (date, datetime, _stdlib.time, timedelta)):
-            return obj
-        else:
-            raise TypeError('Not valid type for datetime assuring: %s' % obj)
-
-
-from xoutil.deprecation import deprecated    # noqa
+    '''
+    if isinstance(obj, (date, datetime, _stdlib.time, timedelta)):
+        return obj
+    else:
+        raise TypeError('Not valid type for datetime assuring: %s' % obj)
 
 
 @deprecated(assure)
@@ -812,206 +753,9 @@ class _EmptyTimeSpan:
 EmptyTimeSpan = _EmptyTimeSpan()
 
 
-# A context to switch on/off returning a subtype of date from DateFields.
-# Used within TimeSpan to allow comparison with Infinity.
+#: A context to switch on/off returning a subtype of date from DateFields.
+#: Used within `TimeSpan` to allow comparison with `Infinity`.
 NEEDS_FLEX_DATE = object()
 
 
-try:
-    timezone  # noqa
-except NameError:
-    # Copied from Python 3.5.2
-    # TODO: Document this in xoutil
-
-    class timezone(_stdlib.tzinfo):
-        '''Fixed offset from UTC implementation of tzinfo.'''
-
-        __slots__ = '_offset', '_name'
-
-        # Sentinel value to disallow None
-        _Omitted = object()
-
-        def __new__(cls, offset, name=_Omitted):
-            if not isinstance(offset, timedelta):
-                raise TypeError("offset must be a timedelta")
-            if name is cls._Omitted:
-                if not offset:
-                    return cls.utc
-                name = None
-            elif not isinstance(name, str):
-                raise TypeError("name must be a string")
-            if not cls._minoffset <= offset <= cls._maxoffset:
-                raise ValueError("offset must be a timedelta "
-                                 "strictly between -timedelta(hours=24) and "
-                                 "timedelta(hours=24).")
-            if (offset.microseconds != 0 or offset.seconds % 60 != 0):
-                raise ValueError("offset must be a timedelta "
-                                 "representing a whole number of minutes")
-            return cls._create(offset, name)
-
-        @classmethod
-        def _create(cls, offset, name=None):
-            self = _stdlib.tzinfo.__new__(cls)
-            self._offset = offset
-            self._name = name
-            return self
-
-        def __getinitargs__(self):
-            """pickle support"""
-            if self._name is None:
-                return (self._offset,)
-            return (self._offset, self._name)
-
-        def __eq__(self, other):
-            if type(other) != timezone:
-                return False
-            return self._offset == other._offset
-
-        def __hash__(self):
-            return hash(self._offset)
-
-        def __repr__(self):
-            """Convert to formal string, for repr().
-
-            >>> tz = timezone.utc
-            >>> repr(tz)
-            'datetime.timezone.utc'
-            >>> tz = timezone(timedelta(hours=-5), 'EST')
-            >>> repr(tz)
-            "datetime.timezone(datetime.timedelta(-1, 68400), 'EST')"
-            """
-            if self is self.utc:
-                return 'datetime.timezone.utc'
-            try:
-                qn = self.__class__.__qualname__    # not valid in Python 2
-            except AttributeError:
-                qn = self.__class__.__name__
-            if self._name is None:
-                return "%s.%s(%r)" % (self.__class__.__module__, qn,
-                                      self._offset)
-            else:
-                return "%s.%s(%r, %r)" % (self.__class__.__module__, qn,
-                                          self._offset, self._name)
-
-        def __str__(self):
-            return self.tzname(None)
-
-        def utcoffset(self, dt):
-            if isinstance(dt, datetime) or dt is None:
-                return self._offset
-            raise TypeError("utcoffset() argument must be a datetime instance"
-                            " or None")
-
-        def tzname(self, dt):
-            if isinstance(dt, datetime) or dt is None:
-                if self._name is None:
-                    return self._name_from_offset(self._offset)
-                return self._name
-            raise TypeError("tzname() argument must be a datetime instance"
-                            " or None")
-
-        def dst(self, dt):
-            if isinstance(dt, datetime) or dt is None:
-                return None
-            raise TypeError("dst() argument must be a datetime instance"
-                            " or None")
-
-        def fromutc(self, dt):
-            if isinstance(dt, datetime):
-                if dt.tzinfo is not self:
-                    raise ValueError("fromutc: dt.tzinfo "
-                                     "is not self")
-                return dt + self._offset
-            raise TypeError("fromutc() argument must be a datetime instance"
-                            " or None")
-
-        _maxoffset = timedelta(hours=23, minutes=59)
-        _minoffset = -_maxoffset
-
-        @staticmethod
-        def _name_from_offset(delta):
-            if delta < timedelta(0):
-                sign = '-'
-                delta = -delta
-            else:
-                sign = '+'
-            hours, rest = divmod(delta, timedelta(hours=1))
-            minutes = rest // timedelta(minutes=1)
-            return 'UTC{}{:02d}:{:02d}'.format(sign, hours, minutes)
-
-    timezone.utc = timezone._create(timedelta(0))
-    timezone.min = timezone._create(timezone._minoffset)
-    timezone.max = timezone._create(timezone._maxoffset)
-    # _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
-
-
-# TODO: this function was intended for a local 'strftime' that it's already
-# implemented in 'xoutil.future.datetime'.
-# XXX: 'eight' pending.
-if 'eight' in __name__:
-    def _wrap_strftime(object, format, timetuple):
-        '''Correctly substitute for %z and %Z escapes in strftime formats.'''
-        # from datetime import timedelta
-        import time as _time
-        # Don't call utcoffset() or tzname() unless actually needed.
-        freplace = None    # the string to use for %f
-        zreplace = None    # the string to use for %z
-        Zreplace = None    # the string to use for %Z
-
-        # Scan format for %z and %Z escapes, replacing as needed.
-        newformat = []
-        push = newformat.append
-        i, n = 0, len(format)
-        while i < n:
-            ch = format[i]
-            i += 1
-            if ch == '%':
-                if i < n:
-                    ch = format[i]
-                    i += 1
-                    if ch == 'f':
-                        if freplace is None:
-                            freplace = '%06d' % getattr(object,
-                                                        'microsecond', 0)
-                        newformat.append(freplace)
-                    elif ch == 'z':
-                        if zreplace is None:
-                            zreplace = ""
-                            if hasattr(object, "utcoffset"):
-                                offset = object.utcoffset()
-                                if offset is not None:
-                                    sign = '+'
-                                    if offset.days < 0:
-                                        offset = -offset
-                                        sign = '-'
-                                    h, m = divmod(offset, timedelta(hours=1))
-                                    # not a whole minute
-                                    assert not m % timedelta(minutes=1)
-                                    m //= timedelta(minutes=1)
-                                    zreplace = '%c%02d%02d' % (sign, h, m)
-                        assert '%' not in zreplace
-                        newformat.append(zreplace)
-                    elif ch == 'Z':
-                        if Zreplace is None:
-                            Zreplace = ""
-                            if hasattr(object, "tzname"):
-                                s = object.tzname()
-                                if s is not None:
-                                    # strftime is going to have at this:
-                                    # escape %
-                                    Zreplace = s.replace('%', '%%')
-                        newformat.append(Zreplace)
-                    else:
-                        push('%')
-                        push(ch)
-                else:
-                    push('%')
-            else:
-                push(ch)
-        newformat = "".join(newformat)
-        print(newformat, timetuple)
-        return _time.strftime(newformat, timetuple)
-
-    # def strftime(self, fmt):    # Method for class date
-    #     "Format using strftime()."
-    #     return _wrap_strftime(self, fmt, self.timetuple())
+del IntEnum
