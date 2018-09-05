@@ -176,12 +176,10 @@ def deprecated(replacement, msg=DEFAULT_MSG, deprecated_module=None,
             # done so because this module *must* not depends on any other,
             # otherwise an import cycle might be formed when deprecating a
             # class in xoutil.objects.
-            import sys
             from xoutil.future.types import MemberDescriptorType
             meta = type(target)
-            _py3 = sys.version_info[0] == 3
             td = target.__dict__
-            iteritems = td.items if _py3 else td.iteritems
+            iteritems = td.items
             attrs = {name: value
                      for name, value in iteritems()
                      if name not in ('__class__', '__mro__',

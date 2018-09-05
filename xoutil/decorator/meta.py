@@ -55,11 +55,7 @@ import inspect
 from functools import wraps, partial
 from types import FunctionType as function
 
-if sys.version_info[0] == 3:
-    from inspect import getfullargspec as _getfullargspec
-else:
-    from inspect import getargspec as _getfullargspec
-
+from inspect import getfullargspec as _getfullargspec
 
 __all__ = ('FunctionMaker', 'flat_decorator', 'decorator')
 

@@ -21,8 +21,6 @@ You may use this module as a drop-in replacement of the standard library
 
 '''
 
-import sys
-
 from datetime import *    # noqa
 from datetime import timedelta
 import datetime as _stdlib    # noqa
@@ -402,49 +400,7 @@ def daterange(*args):
     return _generator()
 
 
-if sys.version_info < (3, 0):
-    class infinity_extended_date(date):
-        'A date that compares to Infinity'
-        def operator(name, T=True):
-            def result(self, other):
-                from xoutil.infinity import Infinity
-                if other is Infinity:
-                    return T
-                elif other is -Infinity:
-                    return not T
-                else:
-                    return getattr(date, name)(self, other)
-            return result
-
-        # It seems that @total_ordering is worthless because date implements
-        # this operators
-        __le__ = operator('__le__')
-        __ge__ = operator('__ge__', T=False)
-        __lt__ = operator('__lt__')
-        __gt__ = operator('__gt__', T=False)
-        del operator
-
-        def __eq__(self, other):
-            from xoutil.infinity import Infinity
-            # I have to put this because when doing ``timespan != date``
-            # Python 2 may chose to call date's __ne__ instead of
-            # TimeSpan.__ne__.  I assume the same applies to __eq__.
-            if isinstance(other, _EmptyTimeSpan):
-                return False
-            if isinstance(other, TimeSpan):
-                return TimeSpan.from_date(self) == other
-            elif other is Infinity or other is -Infinity:
-                return False
-            else:
-                return date.__eq__(self, other)
-
-        def __ne__(self, other):
-            return not (self == other)
-else:
-    infinity_extended_date = date
-
-
-del sys
+infinity_extended_date = date
 
 
 class DateField:

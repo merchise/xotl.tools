@@ -22,14 +22,4 @@ def test_comparable_with_numbers(x):
 
 @given(s.dates() | s.datetimes())
 def test_comparable_with_dates(x):
-    if sys.version_info < (3, 0):
-        # In Python 2.7, x < Infinity fails because `date` implements that
-        # __lt__ itself and Python 2 does not reverse the operation when it
-        # fails.
-        assert -Infinity < x
-        assert Infinity > x
-
-        with pytest.raises(TypeError):
-            x < Infinity
-    else:
-        assert -Infinity < x < Infinity
+    assert -Infinity < x < Infinity

@@ -169,10 +169,7 @@ class Command(ABC):
                 for cmd in sub_commands:
                     Command._settle_cache(target, cmd, recursed=recursed)
             else:   # Only branch commands are OK to execute
-                if sys.version_info < (3, 0):
-                    from types import MethodType as ValidMethodType
-                else:
-                    from types import FunctionType as ValidMethodType
+                from types import FunctionType as ValidMethodType
                 assert isinstance(source.run, ValidMethodType), \
                     'Invalid type %r for source %r' % (
                         type(source.run).__name__,

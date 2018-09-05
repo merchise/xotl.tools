@@ -9,15 +9,9 @@
 
 import sys
 import unittest
-import pytest
 
 from random import shuffle
 from xoutil.future.collections import defaultdict
-
-try:
-    from xoutil.release import VERSION_INFO
-except ImportError:
-    VERSION_INFO = (1, 6, 10)  # Latest version without VERSION_INFO
 
 
 class TestCollections(unittest.TestCase):
@@ -36,8 +30,6 @@ class TestCollections(unittest.TestCase):
             d['abc']
 
 
-@pytest.mark.skipif(VERSION_INFO < (1, 7, 1),
-                    reason='.pop() has old semantics')
 def test_stacked_dict_with_newpop():
     '''Test that stacked.pop has the same semantics has dict.pop.'''
     from xoutil.future.collections import StackedDict
@@ -92,7 +84,6 @@ def test_stacked_dict():
 
 
 # Backported from Python 3.3.0 standard library
-from xoutil.versions import python_version
 from xoutil.future.collections import ChainMap, Counter
 from xoutil.future.collections import OrderedDict, RankedDict
 from xoutil.future.collections import Mapping, MutableMapping
@@ -103,6 +94,7 @@ from random import randrange
 
 def _items(d):
     'For some reason in new PyPy 5.0.1 for Py 2.7.10, set order is not nice.'
+    from xoutil.versions import python_version
     res = d.items()
     if python_version.pypy and isinstance(res, list):
         res.sort()
@@ -144,18 +136,11 @@ class TestChainMap(unittest.TestCase):
         # check get
         for k, v in dict(a=1, b=2, c=30, z=100).items():
             self.assertEqual(d.get(k, 100), v)
-        if python_version < 3:
-            # check repr
-            self.assertIn(repr(d), [
-                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
-            ])
-        else:
-            # check repr
-            self.assertIn(repr(d), [
-                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
-            ])
+        # check repr
+        self.assertIn(repr(d), [
+            type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+            type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+        ])
 
         # check shallow copies
         for e in d.copy(), copy.copy(d):
@@ -664,26 +649,15 @@ class TestOrderedDict(unittest.TestCase):
         # do not save instance dictionary if not needed
         pairs = [('c', 1), ('b', 2), ('a', 3), ('d', 4), ('e', 5), ('f', 6)]
         od = OrderedDict(pairs)
-        if sys.version_info >= (3, 4):
-            self.assertIsNone(od.__reduce__()[2])
-        else:
-            self.assertEqual(len(od.__reduce__()), 2)
+        self.assertIsNone(od.__reduce__()[2])
         od.x = 10
-        if sys.version_info >= (3, 4):
-            self.assertIsNotNone(od.__reduce__()[2])
-        else:
-            self.assertEqual(len(od.__reduce__()), 3)
+        self.assertIsNotNone(od.__reduce__()[2])
 
     def test_repr(self):
         od = OrderedDict([('c', 1), ('b', 2), ('a', 3)])
-        if python_version < 3:
-            self.assertEqual(
-                repr(od),
-                "OrderedDict([('c', 1), ('b', 2), ('a', 3)])")
-        else:
-            self.assertEqual(
-                repr(od),
-                "OrderedDict([('c', 1), ('b', 2), ('a', 3)])")
+        self.assertEqual(
+            repr(od),
+            "OrderedDict([('c', 1), ('b', 2), ('a', 3)])")
         self.assertEqual(eval(repr(od)), od)
         self.assertEqual(repr(OrderedDict()), "OrderedDict()")
 
@@ -691,14 +665,9 @@ class TestOrderedDict(unittest.TestCase):
         # See issue #9826
         od = OrderedDict.fromkeys('abc')
         od['x'] = od
-        if python_version < 3:
-            self.assertEqual(repr(od),
-                             ("OrderedDict([('a', None), ('b', None), "
-                              "('c', None), ('x', ...)])"))
-        else:
-            self.assertEqual(repr(od),
-                             ("OrderedDict([('a', None), ('b', None), "
-                              "('c', None), ('x', ...)])"))
+        self.assertEqual(repr(od),
+                         ("OrderedDict([('a', None), ('b', None), "
+                          "('c', None), ('x', ...)])"))
 
     def test_setdefault(self):
         pairs = [('c', 1), ('b', 2), ('a', 3), ('d', 4), ('e', 5), ('f', 6)]
@@ -942,14 +911,9 @@ class TestRankedDict(unittest.TestCase):
 
     def test_repr(self):
         od = RankedDict([('c', 1), ('b', 2), ('a', 3)])
-        if python_version < 3:
-            self.assertEqual(
-                repr(od),
-                "RankedDict([('c', 1), ('b', 2), ('a', 3)])")
-        else:
-            self.assertEqual(
-                repr(od),
-                "RankedDict([('c', 1), ('b', 2), ('a', 3)])")
+        self.assertEqual(
+            repr(od),
+            "RankedDict([('c', 1), ('b', 2), ('a', 3)])")
         self.assertEqual(eval(repr(od)), od)
         self.assertEqual(repr(RankedDict()), "RankedDict()")
 
@@ -957,14 +921,9 @@ class TestRankedDict(unittest.TestCase):
         # See issue #9826
         od = RankedDict.fromkeys('abc')
         od['x'] = od
-        if python_version < 3:
-            self.assertEqual(repr(od),
-                             ("RankedDict([('a', None), ('b', None), "
-                              "('c', None), ('x', ...)])"))
-        else:
-            self.assertEqual(repr(od),
-                             ("RankedDict([('a', None), ('b', None), "
-                              "('c', None), ('x', ...)])"))
+        self.assertEqual(repr(od),
+                         ("RankedDict([('a', None), ('b', None), "
+                          "('c', None), ('x', ...)])"))
 
     def test_setdefault(self):
         pairs = [('c', 1), ('b', 2), ('a', 3), ('d', 4), ('e', 5), ('f', 6)]

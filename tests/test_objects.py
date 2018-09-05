@@ -398,10 +398,9 @@ def test_extract_attrs():
 
 def test_copy_class():
     from xoutil.symbols import Unset
-    from xoutil.versions import python_version
     from xoutil.objects import copy_class
 
-    u = str if python_version == 3 else unicode
+    u = str
 
     class MetaFoo(type):
         pass
