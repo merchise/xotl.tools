@@ -35,8 +35,7 @@ _ARG_SEP = _regex_compile(r'(?im)^\*{0,2}(?P<argname>[_\w\d]+)\s*:')
 
 
 def _split_signature(signature):
-    from xoutil.eight import string_types as strs
-    signature = (signature.strip() if isinstance(signature, strs) else '')
+    signature = (signature.strip() if isinstance(signature, str) else '')
     if signature:
         matches = _SIGNATURE.match(signature)
         return matches.group('args'), matches.group('return')
@@ -106,20 +105,16 @@ def _parse_signature(signature):
         def __getitem__(self, key):
             from xoutil.symbols import Unset
             from xoutil.future.itertools import dict_update_new
-            from xoutil.eight import python_version
             d = self.d
             res = d.get(key, Unset)
             f = self.f
             if res is Unset and f:
                 f_globals = self.f_globals
-                if python_version == 3:
-                    # FIXME: This modifies f_globals! Use f_builtins of the
-                    # frame.
-
-                    # In Py3k (at least Python 3.2) builtins are not directly
-                    # in f_globals but inside a __builtins__ key.
-                    builtins = f_globals.get('__builtins__', {})
-                    dict_update_new(f_globals, builtins)
+                # FIXME: This modifies f_globals! Use f_builtins of the frame.
+                # In Py3k (at least Python 3.2) builtins are not directly
+                # in f_globals but inside a __builtins__ key.
+                builtins = f_globals.get('__builtins__', {})
+                dict_update_new(f_globals, builtins)
                 while f and res is Unset:
                     dict_update_new(d, f.f_locals)
                     res = d.get(key, Unset)

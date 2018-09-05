@@ -14,7 +14,6 @@ positional, could be the first or the last one.
 
 
   >>> import sys
-  >>> from xoutil.eight import string_types
   >>> from xoutil.values import file_coerce as is_file
   >>> from xoutil.values import positive_int_coerce as positive_int
   >>> from xoutil.params import ParamScheme as scheme, ParamSchemeRow as row
@@ -23,13 +22,12 @@ positional, could be the first or the last one.
   ...     row('stream', 0, -1, 'output', default=sys.stdout, coerce=is_file),
   ...     row('indent', 0, 1, default=1, coerce=positive_int),
   ...     row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
-  ...     row('newline', default='\n', coerce=string_types))
+  ...     row('newline', default='\n', coerce=(str, )))
 
 
 Some tests::
 
   >>> def test(*args, **kwargs):
-  ...     from xoutil.eight import type_name
   ...     return sample_scheme(args, kwargs)
 
   >>> test(4, 80)
@@ -70,7 +68,7 @@ actual arguments of a function to create it::
   ...     from xoutil.params import ParamManager
   ...     getarg = ParamManager(args, kwds)
   ...     replacement = getarg('replacement', 0, default='-',
-  ...                          coercers=string_types)
+  ...                          coercers=(str, ))
   ...     invalid_chars = getarg('invalid_chars', 'invalid', 'invalids', 0,
   ...                            default='', coercers=_ascii)
   ...     valid_chars = getarg('valid_chars', 'valid', 'valids', 0,

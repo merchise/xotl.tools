@@ -64,10 +64,9 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
 
     '''
     import re
-    from xoutil.eight import unichr, text_type
     from xoutil.string import slugify
     from xoutil.future.codecs import safe_decode
-    if not isinstance(s, text_type):
+    if not isinstance(s, str):
         s = safe_decode(s)
     if entities:
         try:
@@ -77,16 +76,16 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):
             # ``html.entities`` in Python 3
             from html.entities import name2codepoint
         s = re.sub(str('&(%s);') % str('|').join(name2codepoint),
-                   lambda m: unichr(name2codepoint[m.group(1)]), s)
+                   lambda m: chr(name2codepoint[m.group(1)]), s)
     if decimal:
         try:
-            s = re.sub(r'&#(\d+);', lambda m: unichr(int(m.group(1))), s)
+            s = re.sub(r'&#(\d+);', lambda m: chr(int(m.group(1))), s)
         except Exception:  # TODO: @med which exceptions are expected?
             pass
     if hexadecimal:
         try:
             s = re.sub(r'&#x([\da-fA-F]+);',
-                       lambda m: unichr(int(m.group(1), 16)), s)
+                       lambda m: chr(int(m.group(1), 16)), s)
         except Exception:  # TODO: @med which exceptions are expected?
             pass
     return slugify(s, '-')

@@ -37,7 +37,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 import re
-from xoutil.eight.abc import ABCMeta
+from abc import ABCMeta
+
 from xoutil.future.functools import lwraps
 from xoutil.symbols import boolean, Unset
 from xoutil.fp.prove import vouch
@@ -190,10 +191,9 @@ def coercer_name(arg, join=None):
 
     '''
     # TODO: Maybe this function must be moved to `xoutil.names`
-    from xoutil.eight import string_types
     if isinstance(arg, (tuple, list, set)):
         res = type(arg)(coercer_name(c) for c in arg)
-        if isinstance(join, string_types):
+        if isinstance(join, str):
             join = join.join
         return str(join(res)) if join else res
     else:
@@ -222,8 +222,7 @@ def void_coerce(arg):
 @coercer
 def type_coerce(arg):
     '''Check if `arg` is a valid type.'''
-    from xoutil.eight import class_types
-    return arg if isinstance(arg, class_types) else nil
+    return arg if isinstance(arg, type) else nil
 
 
 @coercer
@@ -255,15 +254,16 @@ def types_tuple_coerce(arg):
 @coercer
 def callable_coerce(arg):
     '''Check if `arg` is a callable object.'''
-    from xoutil.eight import callable
     return arg if callable(arg) else nil
 
 
 @coercer
 def file_coerce(arg):
     '''Check if `arg` is a file-like object.'''
-    from xoutil.eight.io import is_file_like
-    return arg if is_file_like(arg) else nil
+    from io import IOBase
+    METHODS = ('close', 'write', 'read')
+    ok = isinstance(arg, IOBase) or all(hasattr(arg, a) for a in METHODS)
+    return arg if ok else nil
 
 
 @coercer
@@ -273,12 +273,11 @@ def float_coerce(arg):
     Other types are checked (string, int, complex).
 
     '''
-    from xoutil.eight import integer_types, string_types
     if isinstance(arg, float):
         return arg
-    elif isinstance(arg, integer_types):
+    elif isinstance(arg, int):
         return float(arg)
-    elif isinstance(arg, string_types):
+    elif isinstance(arg, (str, bytes)):
         try:
             return float(arg)
         except ValueError:
@@ -296,8 +295,7 @@ def int_coerce(arg):
     Other types are checked (string, float, complex).
 
     '''
-    from xoutil.eight import integer_types
-    if isinstance(arg, integer_types):
+    if isinstance(arg, int):
         return arg
     else:
         arg = float_coerce(arg)
@@ -315,8 +313,7 @@ def number_coerce(arg):
     Types that are checked (string, int, float, complex).
 
     '''
-    from xoutil.eight import integer_types
-    if isinstance(arg, integer_types):
+    if isinstance(arg, int):
         return arg
     else:
         f = float_coerce(arg)
@@ -360,6 +357,7 @@ def create_int_range_coerce(min, max):
 _IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][\w]*$')
 
 
+# XXX: 'eight' pending.
 @coercer
 def identifier_coerce(arg):
     '''Check if `arg` is a valid Python identifier.
@@ -369,10 +367,7 @@ def identifier_coerce(arg):
               helps to keep things working the same in Python 2 and 3.
 
     '''
-    # TODO: Consider use ``is_python2_identifier(arg) or nil`` in module
-    # `xoutil.eight.string`.
-    from xoutil.eight import string_types
-    ok = isinstance(arg, string_types) and _IDENTIFIER_REGEX.match(arg)
+    ok = isinstance(arg, str) and _IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil
 
 
@@ -386,8 +381,7 @@ def full_identifier_coerce(arg):
     See `identifier_coerce`:func: for what "validity" means.
 
     '''
-    from xoutil.eight import string_types
-    ok = isinstance(arg, string_types) and _FULL_IDENTIFIER_REGEX.match(arg)
+    ok = isinstance(arg, str) and _FULL_IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil
 
 
@@ -399,8 +393,7 @@ def names_coerce(arg):
     resulting tuple.
 
     '''
-    from xoutil.eight import string_types
-    arg = (arg,) if isinstance(arg, string_types) else tuple(arg)
+    arg = (arg,) if isinstance(arg, str) else tuple(arg)
     return iterable(identifier_coerce)(arg)
 
 
@@ -468,7 +461,7 @@ def sized_coerce(arg):
         return nil
 
 
-@coercer.adopt
+@coercer.register
 class custom:
     '''Base class for any custom coercer.
 

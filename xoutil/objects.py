@@ -16,7 +16,6 @@ from __future__ import (division as _py3_division,
 from contextlib import contextmanager
 
 from xoutil.symbols import Unset
-from xoutil.deprecation import deprecated
 
 
 __docstring_format__ = 'rst'
@@ -232,9 +231,9 @@ class SafeDataItem:
                 self.__set__(obj, res)
                 return res
             else:
-                from xoutil.eight import type_name
-                msg = "'%s' object has no attribute '%s'"
-                raise AttributeError(msg % (type_name(obj), self.attr_name))
+                msg = "'{}' object has no attribute '{}'"
+                type_name = type(obj).__name__
+                raise AttributeError(msg.format(type_name, self.attr_name))
         else:
             return self
 
@@ -272,7 +271,6 @@ class SafeDataItem:
 
     def __parse_arguments(self, *args, **kwargs):
         '''Assign parsed arguments to the just created instance.'''
-        from xoutil.eight import callable
         from xoutil.validators import (is_valid_identifier, predicate)
         self.attr_name = Unset
         self.init = Unset
@@ -487,7 +485,6 @@ def get_method_function(cls, method_name):
     method and this a python function.
 
     '''
-    from xoutil.eight import callable
     if not isinstance(cls, type):
         cls = cls.__class__
     mro = cls.mro()
@@ -553,7 +550,6 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1,
                        characters, also are ignored.
 
     '''
-    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     if _len(cls.__doc__) < min_length:
         ignore = ignore or ()
@@ -588,7 +584,6 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
                        characters, also are ignored.
 
     '''
-    from xoutil.eight import callable
     assert isinstance(cls, type), _INVALID_CLASS_TYPE_MSG
     method = get_method_function(cls, method_name)
     if method and _len(method.__doc__) < min_length:
@@ -613,18 +608,16 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10,
 
 def fulldir(obj):
     '''Return a set with all attribute names defined in `obj`'''
-    from xoutil.eight import typeof, class_types
     from xoutil.future.inspect import get_attr_value, _static_getmro
 
     def getdir(o):
         return set(get_attr_value(o, '__dict__', {}))
 
-    if isinstance(obj, class_types):
+    if isinstance(obj, type):
         res = set.union(getdir(cls) for cls in _static_getmro(obj))
     else:
         res = getdir(obj)
-    cls = typeof(obj)
-    return res if cls in class_types else res | set(dir(cls))
+    return res if isinstance(obj, type) else res | set(dir(type(obj)))
 
 
 def xdir(obj, getter=None, filter=None, _depth=0):
@@ -874,7 +867,6 @@ class lazy:
         self.kwargs = kwargs
 
     def __call__(self):
-        from xoutil.eight import callable
         res = self.value
         if callable(res):
             return res(*self.args, **self.kwargs)
@@ -1126,8 +1118,7 @@ def adapt_exception(value, **kwargs):
     if isi(value, ebc) or issc(value, ebc):
         return value
     elif isi(value, (tuple, list)) and len(value) > 0 and issc(value[0], ebc):
-        from xoutil.eight import string_types as strs
-        map = lambda x: x.format(**kwargs) if isinstance(x, strs) else x
+        map = lambda x: x.format(**kwargs) if isinstance(x, str) else x
         ecls = value[0]
         return ecls(*(map(x) for x in value[1:]))
     else:
@@ -1165,10 +1156,8 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     .. versionadded:: 1.7.1 The `new_name` argument.
 
     '''
-    from xoutil.eight import iteritems, callable
-    from xoutil.eight._types import new_class
+    from types import new_class
     from xoutil.future.types import MemberDescriptorType
-    from xoutil.eight import string
 
     def _get_ignored(what):
         if callable(what):
@@ -1186,7 +1175,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     valid_names = ('__class__', '__mro__', '__name__', '__weakref__',
                    '__dict__')
     attrs = {name: value
-             for name, value in iteritems(cls.__dict__)
+             for name, value in cls.__dict__.items()
              if name not in valid_names
              # Must remove member descriptors, otherwise the old's class
              # descriptor will override those that must be created here.
@@ -1196,10 +1185,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
         attrs.update(new_attrs)
     def exec_body(ns):  # noqa: E306 new-line before def
         ns.update(attrs)
-    if new_name:
-        name = string.force(new_name)
-    else:
-        name = cls.__name__
+    name = new_name if new_name else cls.__name__
     result = new_class(name, cls.__bases__, {'metaclass': meta}, exec_body)
     return result
 
@@ -1264,7 +1250,6 @@ def smart_copy(*args, defaults=None):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     '''
-    from xoutil.eight import base_string, type_name, callable
     from xoutil.future.collections import MutableMapping, Mapping
     from xoutil.symbols import Undefined
     from xoutil.validators.identifiers import is_valid_identifier
@@ -1272,9 +1257,9 @@ def smart_copy(*args, defaults=None):
     *sources, target = args
     if not sources:
         raise TypeError('smart_copy() requires at least one source')
-    if isinstance(target, (bool, type(None), int, float, base_string)):
+    if isinstance(target, (bool, type(None), int, float, str)):
         raise TypeError('target should be a mutable object, not '
-                        '{}'.format(type_name(target)))
+                        '{}'.format(type(target).__name__))
     if isinstance(target, MutableMapping):
         def setter(key, val):
             target[key] = val
@@ -1301,7 +1286,7 @@ def smart_copy(*args, defaults=None):
             get = smart_getter(source)
             items = source if isinstance(source, Mapping) else dir(source)
             for key in items:
-                private = isinstance(key, base_string) and key.startswith('_')
+                private = isinstance(key, str) and key.startswith('_')
                 if (defaults is False or defaults is None) and private:
                     copy = False
                 elif callable(defaults):
@@ -1338,27 +1323,6 @@ def extract_attrs(obj, *names, **kwargs):
         raise TypeError('Invalid keyword arguments for `extract_attrs`')
     getter = get_traverser(*names, default=default)
     return getter(obj)
-
-
-@deprecated('xoutil.eight.abc.ABCMeta.register')
-def register_with(abc):
-    '''Register a virtual `subclass` of an ABC.
-
-    For example::
-
-        >>> from collections import Mapping
-        >>> @register_with(Mapping)
-        ... class Foobar:
-        ...     pass
-
-        >>> issubclass(Foobar, Mapping)
-        True
-
-    '''
-    def inner(subclass):
-        abc.register(subclass)
-        return subclass
-    return inner
 
 
 def traverse(obj, path, default=Unset, sep='.', getter=None):
@@ -1463,7 +1427,6 @@ def dict_merge(*dicts, **others):
 
     '''
     from collections import Mapping, Sequence, Set, Container
-    from xoutil.eight import iteritems
     if others:
         dicts = dicts + (others, )
     dicts = list(dicts)
@@ -1471,7 +1434,7 @@ def dict_merge(*dicts, **others):
     collections = (Set, Sequence)
     while dicts:
         current = dicts.pop(0)
-        for key, val in iteritems(current):
+        for key, val in current.items():
             if isinstance(val, Mapping):
                 val = {key: val[key] for key in val}
             value = result.setdefault(key, val)
@@ -1611,9 +1574,8 @@ def import_object(name, package=None, sep='.', default=None, **kwargs):
 
     """
     import importlib
-    from xoutil.eight import string_types
     imp = importlib.import_module
-    if not isinstance(name, string_types):
+    if not isinstance(name, str):
         return name                                 # already a class
     sep = ':' if ':' in name else sep
     module_name, _, cls_name = name.rpartition(sep)
@@ -1643,7 +1605,7 @@ def delegator(attribute, attrs_map, metaclass=type):
 
     Example:
 
-        >>> class Bar(object):
+        >>> class Bar:
         ...     x = 'bar'
 
         >>> class Foo(delegator('egg', {'x1': 'x'})):

@@ -27,7 +27,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.eight.abc import abstractmethod, ABC
+from abc import abstractmethod, ABC
 from xoutil.objects import staticproperty
 from xoutil.cli.tools import command_name, program_name
 
@@ -56,7 +56,6 @@ class Command(ABC):
             True
 
         '''
-        from xoutil.eight import string_types
         from xoutil.cli.tools import hyphen_name
         unset = object()
         names = ('command_cli_name', '__command_name__')
@@ -66,7 +65,7 @@ class Command(ABC):
             res = getattr(cls, names[i], unset)
             if res is unset:
                 i += 1
-            elif not isinstance(res, string_types):
+            elif not isinstance(res, str):
                 msg = "Attribute '{}' must be a string.".format(name)
                 raise TypeError(msg)
         if res is unset:
@@ -139,8 +138,7 @@ class Command(ABC):
         '''
         if cls is Command:
             if cmd is not None:
-                from xoutil.eight import string_types as text
-                name = cmd if isinstance(cmd, text) else command_name(cmd)
+                name = cmd if isinstance(cmd, str) else command_name(cmd)
             else:
                 # TODO: consider reset to None
                 raise ValueError('missing command specification!')

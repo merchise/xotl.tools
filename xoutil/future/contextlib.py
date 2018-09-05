@@ -13,14 +13,6 @@
 This module re-export all symbols from the standard library, with the
 exception of the function `nested`.
 
-In Python 2.7, this re-export from the package `contextlib2`_.
-
-This module does not guarantee full compatibility with `Exception Chaining and
-Embedded Tracebacks <xoutil.eight.exceptions>`:mod: and `Context Managers
-<343>`:pep: back-ported in Python 2 by `contextlib2`_.
-
-.. _contextlib2: http://contextlib2.readthedocs.io/en/stable/
-
 .. versionadded:: 1.9.5
 
 '''

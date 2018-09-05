@@ -11,7 +11,7 @@
 
 '''
 
-from xoutil.eight.abc import ABCMeta
+from abc import ABCMeta
 
 
 def identity(arg):
@@ -64,7 +64,6 @@ class MetaCompose(ABCMeta):
     '''Meta-class for function composition.'''
     def __instancecheck__(self, instance):
         '''Override for ``isinstance(instance, self)``.'''
-        from xoutil.eight import callable
         res = super().__instancecheck__(instance)
         if not res:
             # TODO: maybe only those with parameters.
@@ -124,7 +123,6 @@ class compose(metaclass=MetaCompose):
         if count == 0:
             return identity
         else:
-            from xoutil.eight import callable
             if all(callable(f) for f in functions):
                 if count == 1:
                     return functions[0]
@@ -316,6 +314,5 @@ class full_args(tuple):
         elif arg is None:
             return pos_args()
         else:
-            from xoutil.eight import typeof
             msg = 'Expecting None, a tuple, a list, or a dict; {} found'
-            raise TypeError(msg.format(typeof(arg).__name__))
+            raise TypeError(msg.format(type(arg).__name__))

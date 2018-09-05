@@ -9,16 +9,9 @@
 
 '''Some additions for `string` standard module.
 
-In this module `str` and `unicode` types are not used because Python 2 and
-Python 3 treats strings differently (see `py-string-ambiguity`:any: for more
-information).  The types `bytes` and `text_type` will be used instead with the
-following conventions:
-
-- In Python 2 `str` is synonym of `bytes` and both (`unicode` and 'str') are
-  both string types inheriting form `basestring`.
-
-- In Python 3 `str` is always unicode but `unicode` and `basestring` types
-  doesn't exists.  `bytes` type can be used as an array of one byte each item.
+In Python 3 `str` is always unicode but `unicode` and `basestring` types
+doesn't exists.  `bytes` type can be used as an array of one byte each item.
+See `py-string-ambiguity`:any: for more information.
 
 '''
 
@@ -33,11 +26,7 @@ from xoutil.deprecation import import_deprecated    # noqa
 
 _MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
 
-import_deprecated('xoutil.eight', 'input')
 import_deprecated('xoutil.future.codecs', *_MIGRATED_TO_CODECS)
-import_deprecated('xoutil.eight.string', 'safe_join', force_str='force')
-
-safe_str = force_str    # noqa
 
 
 @deprecated
@@ -46,8 +35,7 @@ def safe_strip(value):
     return `value` unchanged.
 
     '''
-    from xoutil.eight import string_types
-    return value.strip() if isinstance(value, string_types) else value
+    return value.strip() if isinstance(value, str) else value
 
 
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
@@ -57,7 +45,6 @@ def cut_prefix(value, prefix):
     unchanged.
 
     '''
-    from xoutil.eight import text_type as str, binary_type as bytes
     from xoutil.future.codecs import safe_encode, safe_decode
     if isinstance(value, str) and isinstance(prefix, bytes):
         prefix = safe_decode(prefix)
@@ -89,7 +76,6 @@ def cut_suffix(value, suffix):
     unchanged.
 
     '''
-    from xoutil.eight import text_type as str, binary_type as bytes
     from xoutil.future.codecs import safe_decode, safe_encode
     if isinstance(value, str) and isinstance(suffix, bytes):
         suffix = safe_decode(suffix)
@@ -120,6 +106,30 @@ def cut_suffixes(value, *suffixes):
     for suffix in suffixes:
         result = cut_suffix(result, suffix)
     return result
+
+
+def force_ascii(value, encoding=None):
+    '''Return the string normal form for the `value`
+
+    Convert all non-ascii to valid characters using unicode 'NFKC'
+    normalization.
+
+    :param encoding: If `value` is not unicode, it is decoded before ASCII
+           normalization using this encoding.  If not provided use the return
+           of `~xoutil.future.codecs.force_encoding`:func:.
+
+    .. versionchanged:: 1.8.7 Add parameter 'encoding'.
+
+    .. versionchanged:: 2.1.0 Moved to `xoutil.string`:mod:.
+
+    '''
+    import unicodedata
+    from xoutil.future.codecs import safe_decode
+    ASCII, IGNORE = 'ascii', 'ignore'
+    if not isinstance(value, str):
+        value = safe_decode(value, encoding=encoding)
+    res = unicodedata.normalize('NFKD', value).encode(ASCII, IGNORE)
+    return str(res, ASCII, IGNORE)
 
 
 def slugify(value, *args, **kwds):
@@ -166,7 +176,7 @@ def slugify(value, *args, **kwds):
            only default valid characters.  Non-ASCII characters are ignored.
 
     :param encoding: If `value` is not a text (unicode), it is decoded before
-           `ASCII normalization <xoutil.eight.string.force_ascii>`:func:.
+           `ASCII normalization <force_ascii>`:func:.
 
     Examples::
 
@@ -219,14 +229,12 @@ def slugify(value, *args, **kwds):
 
     '''
     import re
-    from xoutil.eight import string_types
-    from xoutil.eight.string import force_ascii
     from xoutil.params import ParamManager
 
     from xoutil.values import compose, istype
     from xoutil.values.simple import not_false, ascii_coerce
 
-    _str = compose(not_false(''), istype(string_types))
+    _str = compose(not_false(''), istype(str))
     _ascii = compose(_str, ascii_coerce)
     _set = compose(_ascii, lambda v: ''.join(set(v)))
 
@@ -238,7 +246,7 @@ def slugify(value, *args, **kwds):
         return re.escape(''.join(set(_normalize(v))))
 
     getarg = ParamManager(args, kwds)
-    replacement = getarg('replacement', 0, default='-', coercers=string_types)
+    replacement = getarg('replacement', 0, default='-', coercers=(str,))
     invalid_chars = getarg('invalid_chars', 'invalid', 'invalids', 0,
                            default='', coercers=_ascii)
     valid_chars = getarg('valid_chars', 'valid', 'valids', 0, default='',
@@ -249,7 +257,7 @@ def slugify(value, *args, **kwds):
     if replacement in (None, False):
         # for backward compatibility
         replacement = ''
-    elif isinstance(replacement, string_types):
+    elif isinstance(replacement, str):
         replacement = _normalize(replacement)
     else:
         raise TypeError('slugify() replacement "{}" must be a string or None,'
@@ -260,7 +268,7 @@ def slugify(value, *args, **kwds):
     elif invalid_chars in {None, False}:
         invalid_chars = ''
     else:
-        if not isinstance(invalid_chars, string_types):
+        if not isinstance(invalid_chars, str):
             invalid_chars = ''.join(invalid_chars)
         invalid_chars = _set(invalid_chars)
     if invalid_chars:
@@ -273,7 +281,7 @@ def slugify(value, *args, **kwds):
     if valid_chars is None:
         valid_chars = ''
     else:
-        if not isinstance(valid_chars, string_types):
+        if not isinstance(valid_chars, str):
             valid_chars = ''.join(valid_chars)
         valid_chars = _set(valid_chars)
         valid_chars = _set(re.sub(r'[0-9a-z]+', '', valid_chars))
@@ -295,28 +303,25 @@ def slugify(value, *args, **kwds):
 
 def error2str(error):
     '''Convert an error to string.'''
-    from xoutil.eight import string_types
-    from xoutil.eight import force_type, type_name
-    from xoutil.eight import string
-    if isinstance(error, string_types):
-        return string.force(error)
+    if isinstance(error, str):
+        return error
     elif isinstance(error, BaseException):
-        tname = type_name(error)
-        res = string.force(error)
+        tname = type(error).__name__
+        res = str(error)
         if tname in res:
             return res
         else:
-            return str(': ').join(tname, res) if res else tname
-    elif issubclass(error, BaseException):
-        return type_name(error)
+            return ': '.join((tname, res)) if res else tname
+    elif isinstance(error, type) and issubclass(error, BaseException):
+        return error.__name__
     else:
         prefix = str('unknown error: ')
-        cls = force_type(error)
+        cls = error if isinstance(error, type) else type(error)   # force type
         tname = cls.__name__
         if cls is error:
             res = tname
         else:
-            res = string.force(error)
+            res = str(error)
             if tname not in res:
                 res = str('{}({})').format(tname, res) if res else tname
         return prefix + res

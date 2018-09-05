@@ -14,7 +14,6 @@ from __future__ import (division as _py3_division,
 import pytest
 
 from xoutil.annotate import annotate
-from xoutil.eight import class_types
 
 
 def test_keywords():
@@ -54,15 +53,13 @@ def test_invalid_nonsense_signature():
 
 
 def test_mixed_annotations():
-    from xoutil.eight import text_type
-
-    @annotate('(a: str, b:text_type) -> bool', a=text_type,
+    @annotate('(a: str, b:str) -> bool', a=str,
               return_annotation=True)
     def dummy():
         pass
 
-    assert dummy.__annotations__.get('a') is text_type
-    assert dummy.__annotations__.get('b') is text_type
+    assert dummy.__annotations__.get('a') is str
+    assert dummy.__annotations__.get('b') is str
     assert dummy.__annotations__.get('return') is True
 
 
@@ -91,10 +88,10 @@ def test_locals_vars():
 
 @pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
 def test_globals():
-    @annotate('(a: class_types)')
+    @annotate('(a:type)')
     def dummy():
         pass
-    assert dummy.__annotations__['a'] == class_types
+    assert dummy.__annotations__['a'] == type
 
 
 @pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))

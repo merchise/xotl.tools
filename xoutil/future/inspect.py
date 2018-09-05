@@ -36,8 +36,6 @@ except NameError:
             spec.args, spec.varargs, spec.keywords, spec.defaults,
             None, None, None)
 
-# Some private imports migrated from 'xoutil.eight.inspect' -->
-
 try:
     from inspect import _sentinel
 except ImportError:
@@ -71,9 +69,8 @@ except ImportError:
             except ImportError:
                 # Python 3.1 lacks both _static_getmro and ClassType
                 pass
-            from xoutil.eight import type_name
             msg = "doesn't apply to '{}' object"
-            raise TypeError(msg.format(type_name(klass)))
+            raise TypeError(msg.format(type(klass).__name__))
 
 
 try:
@@ -159,11 +156,10 @@ except NameError:
            instead of instance members in some cases.  See the
            documentation for details.
         '''
-        from xoutil.eight import typeof
         instance_result = _sentinel
         if not _is_type(obj):
             from xoutil.future.types import MemberDescriptorType as mdt
-            klass = typeof(obj)
+            klass = type(obj)
             dict_attr = _shadowed_dict(klass)
             if dict_attr is _sentinel or type(dict_attr) is mdt:
                 instance_result = _check_instance(obj, attr)
@@ -195,8 +191,6 @@ except NameError:
             return default
         else:
             raise AttributeError(attr)
-
-# <-- end of section migrated from 'xoutil.eight.inspect'
 
 
 def get_attr_value(obj, name, *default):
@@ -233,9 +227,8 @@ def get_attr_value(obj, name, *default):
     elif default is not Undefined:
         return default
     else:
-        from xoutil.eight import type_name
         msg = "'%s' object has no attribute '%s'"
-        raise AttributeError(msg % (type_name(obj), name))
+        raise AttributeError(msg % (type(obj).__name__, name))
 
 
 def safe_name(obj, affirm=False):
@@ -268,11 +261,10 @@ def safe_name(obj, affirm=False):
       '(int, float)'
 
     '''
-    from xoutil.eight import class_types, string_types
     from types import FunctionType, MethodType
     from types import BuiltinFunctionType, BuiltinMethodType
-    named_types = class_types + (FunctionType, MethodType,
-                                 BuiltinFunctionType, BuiltinMethodType)
+    named_types = (FunctionType, MethodType, BuiltinFunctionType,
+                   BuiltinMethodType, type)
     if isinstance(obj, (staticmethod, classmethod)):
         fn = get_attr_value(obj, '__func__', None)
         if fn:
@@ -299,7 +291,7 @@ def safe_name(obj, affirm=False):
         res = getattr_static(obj, '__name__', None)
         if res and isdatadescriptor(res):    # noqa
             res = res.__get__(obj, type(obj))
-    if isinstance(res, string_types):
+    if isinstance(res, str):
         return res
     elif affirm:
         if isinstance(obj, (tuple, list, set)):

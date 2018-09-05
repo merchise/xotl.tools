@@ -13,8 +13,8 @@ from __future__ import (division as _py3_division,
 
 
 import pytest
-from xoutil.eight.abc import ABC
-from xoutil.eight import python_version
+from abc import ABC
+from xoutil.versions import python_version
 
 skip_ver = python_version == 3 or python_version.pypy
 
@@ -35,7 +35,7 @@ def test_abc_base():
         assert True, 'Executed, but OK.'
 
     assert x == 1
-    assert MyError.adopt(KeyError) == KeyError
+    assert MyError.register(KeyError) == KeyError
 
     try:
         x = d['x']
@@ -54,7 +54,7 @@ def test_abc_register():
     class MyError(Exception, ABC):
         pass
 
-    @MyError.adopt
+    @MyError.register
     class MyNewError(Exception):
         pass
 

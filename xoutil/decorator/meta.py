@@ -176,11 +176,7 @@ class FunctionMaker:
         added,
         if any.
         """
-        try:
-            string_types = (str, unicode)
-        except NameError:
-            string_types = (str,)
-        if isinstance(obj, string_types):  # "name(signature)"
+        if isinstance(obj, str):  # "name(signature)"
             obj = str(obj)
             name, rest = obj.strip().split(str('('), 1)
             signature = rest[:-1]   # strip a right parens

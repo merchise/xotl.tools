@@ -77,10 +77,9 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
 
 
     '''
-    from xoutil.eight import integer_types
     # TODO: Shouldn't we use the TypeError and ValueError?
-    assert isinstance(low, integer_types) and low >= 0
-    assert isinstance(high, integer_types) and high >= low
+    assert isinstance(low, int) and low >= 0
+    assert isinstance(high, int) and high >= low
     if isinstance(args, int):
         count = args
         if count < 0:
@@ -236,9 +235,8 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
     .. versionadded:: 1.8.0
 
     '''
-    from xoutil.eight import string_types
     from xoutil.objects import pop_first_of
-    if isinstance(names, string_types):
+    if isinstance(names, str):
         names = (names,)
     return pop_first_of(kwargs, *names, default=default)
 
@@ -368,8 +366,7 @@ class ParamManager:
             if 'default' in options:
                 return options['default']
             elif isinstance(res.inner, BaseException):
-                from xoutil.eight.exceptions import throw
-                throw(res.inner)
+                raise res.inner
             else:
                 raise TypeError('value for "{}" is not found'.format(ids))
         else:
@@ -377,7 +374,6 @@ class ParamManager:
 
     def remainder(self):
         '''Return not consumed values in a mapping.'''
-        from xoutil.eight import range
         passed = set(range(len(self.args))) | set(self.kwds)
         ids = passed - self.consumed
         args, kwds = self.args, self.kwds
@@ -417,32 +413,29 @@ class ParamSchemeRow:
 
     def __init__(self, *ids, **options):
         from collections import Counter
-        from xoutil.eight import iteritems, string_types as strs
-        from xoutil.eight.string import safe_isidentifier as iskey
-        from xoutil.eight import type_name
         from xoutil.fp.option import none
+        iskey = lambda s: isinstance(s, str) and s.isidentifier()
         # TODO: Change this ``from xoutil.values import coercer``
         from xoutil.fp.prove.semantic import predicate as coercer
-        aux = {k: c for k, c in iteritems(Counter(ids)) if c > 1}
+        aux = {k: c for k, c in Counter(ids).items() if c > 1}
         if aux:
             parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
             msg = '{}() repeated identifiers: {}'
-            raise TypeError(msg.format(type_name(self), ', '.join(parts)))
+            raise TypeError(msg.format(type(self).__name__, ', '.join(parts)))
         else:
             def ok(k):
-                return (isinstance(k, strs) and iskey(k) or
-                        isinstance(k, int))
+                return iskey(k) or isinstance(k, int)
 
             bad = [k for k in ids if not ok(k)]
             if bad:
                 msg = ('{}() identifiers with wrong type (only int and str '
                        'allowed): {}')
-                raise TypeError(msg.format(type_name(self), bad))
+                raise TypeError(msg.format(type(self).__name__, bad))
         key = options.pop('key', none)
         if not (key is none or iskey(key)):
             msg = ('"key" option must be an identifier, "{}" of type "{}" '
                    'given')
-            raise TypeError(msg.format(key), type_name(key))
+            raise TypeError(msg.format(key, type(key).__name__))
         if 'default' in options:
             aux = {'default': options.pop('default')}
         else:
@@ -451,15 +444,14 @@ class ParamSchemeRow:
             aux['coerce'] = coercer(options.pop('coerce'))
         if options:
             msg = '{}(): received invalid keyword parameters: {}'
-            raise TypeError(msg.format(type_name(self), set(options)))
+            raise TypeError(msg.format(type(self).__name__, set(options)))
         self.ids = ids
         self.options = aux
         self._key = key
 
     def __str__(self):
-        from xoutil.eight import iteritems
         parts = [repr(k) for k in self.ids]
-        for key, value in iteritems(self.options):
+        for key, value in self.options.items():
             parts.append('{}={!r}'.format(key, value))
         aux = ', '.join(parts)
         return 'ParamSchemeRow({})'.format(aux)
@@ -509,11 +501,10 @@ class ParamSchemeRow:
 
         '''
         # TODO: calculate the key value in the constructor
-        from xoutil.eight import string_types as strs
         from xoutil.fp.option import none
         res = self._key
         if res is none:
-            res = next((k for k in self.ids if isinstance(k, strs)), None)
+            res = next((k for k in self.ids if isinstance(k, str)), None)
             if res is None:
                 res = self.ids[0]
             self._key = res
@@ -532,31 +523,29 @@ class ParamScheme:
     __slots__ = ('rows', 'cache')
 
     def __init__(self, *rows):
-        from xoutil.eight import string_types as strs, type_name
         from xoutil.params import check_count
-        check_count(len(rows) + 1, 2, caller=type_name(self))
+        check_count(len(rows) + 1, 2, caller=type(self).__name__)
         used = set()
         for idx, row in enumerate(rows):
             if isinstance(row, ParamSchemeRow):
-                this = {k for k in row.ids if isinstance(k, strs)}
+                this = {k for k in row.ids if isinstance(k, str)}
                 aux = used & this
                 if not aux:
                     used |= this
                 else:
                     msg = ('{}() repeated keyword identifiers "{}" in '
-                           'row {}').format(type_name(self), aux, idx)
+                           'row {}').format(type(self).__name__, aux, idx)
                     raise ValueError(msg)
         self.rows = rows
         self.cache = None
 
     def __str__(self):
-        from xoutil.eight import type_name
+        # XXX: Use:: ',\n\i'.join(map(str, self))
         aux = ',\n\i'.join(str(row) for row in self)
-        return '{}({})'.format(type_name(self), aux)
+        return '{}({})'.format(type(self).__name__, aux)
 
     def __repr__(self):
-        from xoutil.eight import type_name
-        return '{}({} rows)'.format(type_name(self), len(self))
+        return '{}({} rows)'.format(type(self).__name__, len(self))
 
     def __len__(self):
         '''The defined scheme-rows number.'''
@@ -564,8 +553,7 @@ class ParamScheme:
 
     def __getitem__(self, idx):
         '''Obtain the scheme-row by a given index.'''
-        from xoutil.eight import string_types
-        if isinstance(idx, string_types):
+        if isinstance(idx, str):
             cache = self._getcache()
             return cache[idx]
         else:
@@ -583,8 +571,6 @@ class ParamScheme:
         value is missing.
 
         '''
-        from xoutil.eight import type_name
-
         def ok(v):
             from xoutil.fp.option import Wrong
             return not isinstance(v, Wrong)
@@ -597,20 +583,18 @@ class ParamScheme:
             if rem:
                 msg = ('after a full `{}` process, there are still remainder '
                        'parameters: {}')
-                raise TypeError(msg.format(type_name(self), set(rem)))
+                raise TypeError(msg.format(type(self).__name__, set(rem)))
         else:
             res.update(rem)
         return res
 
     def keys(self):
         '''Partial compatibility with mappings.'''
-        from xoutil.eight import iterkeys
-        return iterkeys(self._getcache())
+        return self._getcache().keys()
 
     def items(self):
         '''Partial compatibility with mappings.'''
-        from xoutil.eight import iteritems
-        return iteritems(self._getcache())
+        return self._getcache().items()
 
     @property
     def defaults(self):

@@ -20,9 +20,6 @@ from __future__ import (division as _py3_division,
 from functools import *    # noqa
 from functools import _CacheInfo  # noqa
 
-from xoutil.eight import python_version    # noqa
-from xoutil.eight import callable    # noqa
-
 import xoutil.fp.tools as fp
 from xoutil.deprecation import deprecated
 
@@ -179,8 +176,6 @@ def lwraps(*args, **kwargs):
     '''
     from types import FunctionType, MethodType
     from xoutil.symbols import Unset
-    from xoutil.eight import string_types, iteritems
-    from xoutil.eight import string
     from xoutil.params import check_count
 
     def repeated(name):
@@ -189,15 +184,14 @@ def lwraps(*args, **kwargs):
 
     def settle_str(name, value):
         if value is not Unset:
-            if isinstance(value, string_types):
+            if isinstance(value, str):
                 if name not in source:
                     source[name] = value
                 else:
                     repeated(name)
             else:
-                from xoutil.eight import type_name
                 msg = 'lwraps expecting string for "{}", {} found'
-                raise TypeError(msg.format(name, type_name(value)))
+                raise TypeError(msg.format(name, type(value).__name__))
 
     methods = (staticmethod, classmethod, MethodType)
     decorables = methods + (FunctionType, )
@@ -213,7 +207,7 @@ def lwraps(*args, **kwargs):
     i = 0
     while i < count:
         arg = args[i]
-        if isinstance(arg, string_types):
+        if isinstance(arg, str):
             settle_str(name_key, arg)
         elif isinstance(arg, decorables):
             if target is Unset:
@@ -248,18 +242,17 @@ def lwraps(*args, **kwargs):
                 if name in source:
                     value = source.pop(name)
                     if name in safes:
-                        value = string.force(value)
+                        value = str(value)
                     setattr(target, str(name), value)
                 d = source.pop('__dict__', Unset)
                 if d:
                     target.__dict__.update(d)
-            for key, value in iteritems(source):
-                setattr(target, key, value)
+            for key in source:
+                setattr(target, key, source[key])
             return res
         else:
-            from xoutil.eight import type_name
             msg = 'only functions are decorated, not {}'
-            raise TypeError(msg.format(type_name(target)))
+            raise TypeError(msg.format(type(target).__name__))
 
     return wrapper(target) if target else wrapper
 

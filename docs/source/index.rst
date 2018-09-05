@@ -24,7 +24,6 @@ Contents
 
    xoutil/toplevel
    xoutil/*
-   xoutil/eight/*
    HISTORY
    CONTRIBUTING
    CONTRIBUTORS

@@ -111,13 +111,15 @@ def test_fp_iter_compose(n):
     odd_seqs = iter_compose(odds, fullrange)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
     id_ = lambda x: [x]
-    pad = [id_] * n
-    odd_seqs = iter_compose(*pad, odds, *pad, fullrange, *pad)
+    pad = (id_, ) * n
+    args = pad + (odds, ) + pad + (fullrange, ) + pad
+    odd_seqs = iter_compose(*args)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
 
     odd_seqs = iter_compose(fullrange, odds)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
-    odd_seqs = iter_compose(*pad, fullrange, *pad, odds, *pad)
+    args = pad + (fullrange, ) + pad + (odds, ) + pad
+    odd_seqs = iter_compose(*args)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
 
 

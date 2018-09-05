@@ -14,8 +14,6 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_imports)
 
 import inspect
-
-from xoutil.eight import python_version
 from xoutil.deprecation import deprecated
 
 
@@ -60,20 +58,6 @@ def getargvalues(frame):
     if kwds:
         res.update(values[kwds])
     return res
-
-
-if python_version < 3:
-    getargvalues.__doc__ += """
-    In Python 2.7, packed arguments also works::
-
-        >>> def nested((x, y), radius):
-        ...    import sys
-        ...    return getargvalues(sys._getframe())
-
-        >>> nested((1, 2), 12)['y']
-        2
-
-    """
 
 
 def __error_info(tb, *args, **kwargs):

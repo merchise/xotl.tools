@@ -12,19 +12,19 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_imports)
 
 import sys
-from xoutil.eight import string_types
 from xoutil.values import file_coerce, positive_int_coerce as positive_int
 
 # old params
 from xoutil.params import ParamSchemeRow as row, ParamScheme as scheme
 
+
 sample_scheme = scheme(
     row('stream', 0, -1, 'output', default=sys.stdout, coerce=file_coerce),
     row('indent', 0, 1, default=1, coerce=positive_int),
     row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
-    row('newline', default='\n', coerce=string_types))
+    row('newline', default='\n', coerce=(str, )))
 
-del file_coerce, positive_int, string_types
+del file_coerce, positive_int
 
 
 def test_basic_params():
@@ -33,10 +33,8 @@ def test_basic_params():
         return sample_scheme(args, kwargs, strict=False)
 
     def foobar(**kwargs):
-        from xoutil.eight import iteritems
         res = sample_scheme.defaults
-        for key, value in iteritems(kwargs):
-            res[key] = value
+        res.update(kwargs)
         return res
 
     one, two = get_values(4, 80), foobar(indent=4, width=80)

@@ -38,7 +38,7 @@ except ImportError:
     import sys as _sys
 
 from xoutil.deprecation import deprecated    # noqa
-from xoutil.eight import python_version    # noqa
+from xoutil.versions import python_version
 from xoutil.symbols import Unset    # noqa
 from xoutil.objects import SafeDataItem as safe    # noqa
 from xoutil.reprlib import recursive_repr    # noqa
@@ -421,7 +421,7 @@ class opendict(OpenDictMixin, dict):
 
            >>> from xoutil.future.collections import opendict
            >>> @opendict.from_enum
-           >>> class Foo(object):
+           >>> class Foo:
            ...    x = 1
            ...    _y = 2
 
@@ -470,11 +470,10 @@ class codedict(OpenDictMixin, dict):
 
     '''
     def __getitem__(self, key):
-        from xoutil.eight import string_types
         try:
             return super().__getitem__(key)
         except KeyError:
-            if isinstance(key, string_types):
+            if isinstance(key, str):
                 return eval(key, dict(self))
             else:
                 raise
@@ -1751,8 +1750,6 @@ class PascalSet(metaclass=MetaSet):
         self.update(*others)
 
     def __str__(self):
-        from xoutil.eight import range
-
         def aux(s, e):
             if s == e:
                 return str(s)
@@ -1795,8 +1792,7 @@ class PascalSet(metaclass=MetaSet):
 
     def __contains__(self, other):
         '''True if set has an element ``other``, else False.'''
-        from xoutil.eight import integer_types
-        return isinstance(other, integer_types) and self._search(other)[0]
+        return isinstance(other, int) and self._search(other)[0]
 
     def __hash__(self):
         '''Compute the hash value of a set.'''
@@ -1807,9 +1803,8 @@ class PascalSet(metaclass=MetaSet):
             # Python 3 automatically generate a TypeError when no mechanism is
             # found by returning `NotImplemented` special value.  In Python 2
             # this patch method must be generated
-            from xoutil.eight import type_name
-            sname = type_name(self)
-            oname = type_name(other)
+            sname = type(self).__name__
+            oname = type(other).__name__
             msg = 'unorderable types: "%s" and "%s"!'
             raise TypeError(msg % (sname, oname))
 
@@ -1957,8 +1952,7 @@ class PascalSet(metaclass=MetaSet):
         If other is an integer, return 1 if present, 0 if not.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             return 1 if other in self else 0
         else:
             return sum((i in self for i in other), 0)
@@ -1983,7 +1977,6 @@ class PascalSet(metaclass=MetaSet):
 
     def update(self, *others):
         '''Update a set with the union of itself and others.'''
-        from xoutil.eight import integer_types, range
         for other in others:
             if isinstance(other, PascalSet):
                 l = other._items
@@ -1995,7 +1988,7 @@ class PascalSet(metaclass=MetaSet):
                         i += 2
                 else:
                     self._items = l[:]
-            elif isinstance(other, integer_types):
+            elif isinstance(other, int):
                 self._insert(other)
             elif isinstance(other, Iterable):
                 for i in other:
@@ -2027,14 +2020,13 @@ class PascalSet(metaclass=MetaSet):
 
     def intersection_update(self, *others):
         '''Update a set with the intersection of itself and another.'''
-        from xoutil.eight import integer_types as ints
         l = self._items
         oi, count = 0, len(others)
         while l and oi < count:
             other = others[oi]
             if not isinstance(other, PascalSet):
                 # safe mode for intersection
-                other = PascalSet(i for i in other if isinstance(i, ints))
+                other = PascalSet(i for i in other if isinstance(i, int))
             o = other._items
             if o:
                 sl, el = l[0], l[-1]
@@ -2074,9 +2066,8 @@ class PascalSet(metaclass=MetaSet):
                     self._remove(l[i], l[i + 1])
                     i += 2
             else:
-                from xoutil.eight import integer_types
                 for i in other:
-                    if isinstance(i, integer_types):
+                    if isinstance(i, int):
                         self._remove(i)
 
     def symmetric_difference(self, other):
@@ -2234,8 +2225,7 @@ class PascalSet(metaclass=MetaSet):
         Return a duple :``(if found or not, index)``.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             l = self._items
             start, end = 0, len(l)
             res, pivot = False, 2 * (end // 4)
@@ -2320,9 +2310,8 @@ class PascalSet(metaclass=MetaSet):
                 del l[sidx:eidx]
 
     def _invalid_value(self, value):
-        from xoutil.eight import type_name
-        cls_name = type_name(self)
-        vname = type_name(value)
+        cls_name = type(self).__name__
+        vname = type(value).__name__
         msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
                'must be an integer!')
         return TypeError(msg % (value, vname, cls_name))
@@ -2330,7 +2319,6 @@ class PascalSet(metaclass=MetaSet):
     @classmethod
     def _prime_numbers_until(cls, limit):
         '''This is totally a funny test method.'''
-        from xoutil.eight import range
         res = cls[2:limit]
         for i in range(2, limit // 2 + 1):
             if i in res:
@@ -2423,11 +2411,10 @@ class BitPascalSet(metaclass=MetaSet):
             # Python 3 automatically generate a TypeError when no mechanism is
             # found by returning `NotImplemented` special value.  In Python 2
             # this patch method must be generated
-            from xoutil.eight import type_name
-            sname = type_name(self)
-            oname = type_name(other)
-            msg = 'unorderable types: "%s" and "%s"!'
-            raise TypeError(msg % (sname, oname))
+            sname = type(self).__name__
+            oname = type(other).__name__
+            msg = 'unorderable types: "{}" and "{}"!'
+            raise TypeError(msg.format(sname, oname))
 
     def __eq__(self, other):
         '''Python 2 and 3 have several differences in operator definitions.
@@ -2564,8 +2551,7 @@ class BitPascalSet(metaclass=MetaSet):
         If other is an integer, return 1 if present, 0 if not.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             return 1 if other in self else 0
         else:
             return sum((i in self for i in other), 0)
@@ -2590,7 +2576,6 @@ class BitPascalSet(metaclass=MetaSet):
 
     def update(self, *others):
         '''Update a bit-set with the union of itself and others.'''
-        from xoutil.eight import integer_types, range
         for other in others:
             if isinstance(other, BitPascalSet):
                 sm = self._items
@@ -2600,7 +2585,7 @@ class BitPascalSet(metaclass=MetaSet):
                         sm[k] |= v
                     else:
                         sm[k] = v
-            elif isinstance(other, integer_types):
+            elif isinstance(other, int):
                 self._insert(other)
             elif isinstance(other, Iterable):
                 for i in other:
@@ -2626,14 +2611,13 @@ class BitPascalSet(metaclass=MetaSet):
 
     def intersection_update(self, *others):
         '''Update a bit-set with the intersection of itself and another.'''
-        from xoutil.eight import integer_types as ints
         sm = self._items
         oi, count = 0, len(others)
         while sm and oi < count:
             other = others[oi]
             if not isinstance(other, BitPascalSet):
                 # safe mode for intersection
-                other = PascalSet(i for i in other if isinstance(i, ints))
+                other = PascalSet(i for i in other if isinstance(i, int))
             om = other._items
             for k, v in safe_dict_iter(sm).items():
                 v &= om.get(k, 0)
@@ -2667,9 +2651,8 @@ class BitPascalSet(metaclass=MetaSet):
                         else:
                             del sm[k]
             else:
-                from xoutil.eight import integer_types
                 for i in other:
-                    if isinstance(i, integer_types):
+                    if isinstance(i, int):
                         self._remove(i)
 
     def symmetric_difference(self, other):
@@ -2717,11 +2700,10 @@ class BitPascalSet(metaclass=MetaSet):
         Raises KeyError if the set is empty.
 
         '''
-        from xoutil.eight import iteritems
         sm = self._items
         if sm:
             bl = self._bit_length
-            k, v = next(iteritems(sm))
+            k, v = next(sm.items())
             assert v
             base = k * bl
             i = 0
@@ -2752,11 +2734,10 @@ class BitPascalSet(metaclass=MetaSet):
 
     def isdisjoint(self, other):
         '''Return True if two bit-sets have a null intersection.'''
-        from xoutil.eight import iteritems
         if isinstance(other, BitPascalSet):
             sm, om = self._items, other._items
             if sm and om:
-                return all(sm.get(k, 0) & v == 0 for k, v in iteritems(om))
+                return all(sm.get(k, 0) & v == 0 for k, v in om.items())
             else:
                 return True
         else:
@@ -2764,11 +2745,10 @@ class BitPascalSet(metaclass=MetaSet):
 
     def issubset(self, other):
         '''Report whether another set contains this bit-set.'''
-        from xoutil.eight import iteritems
         if isinstance(other, BitPascalSet):
             sm, om = self._items, other._items
             if sm:
-                return all(om.get(k, 0) & v == v for k, v in iteritems(sm))
+                return all(om.get(k, 0) & v == v for k, v in sm.items())
             else:
                 return True
         elif isinstance(other, Container):
@@ -2779,11 +2759,10 @@ class BitPascalSet(metaclass=MetaSet):
 
     def issuperset(self, other):
         '''Report whether this bit set contains another set.'''
-        from xoutil.eight import iteritems
         if isinstance(other, BitPascalSet):
             sm, om = self._items, other._items
             if om:
-                return all(sm.get(k, 0) & v == v for k, v in iteritems(om))
+                return all(sm.get(k, 0) & v == v for k, v in om.items())
             else:
                 return True
         else:
@@ -2795,8 +2774,7 @@ class BitPascalSet(metaclass=MetaSet):
         Return a duple :``(seed, bits to shift left)``.
 
         '''
-        from xoutil.eight import integer_types
-        if isinstance(other, integer_types):
+        if isinstance(other, int):
             sm = self._items
             bl = self._bit_length
             k, ref = divmod(other, bl)
@@ -2832,9 +2810,8 @@ class BitPascalSet(metaclass=MetaSet):
             raise KeyError('"%s" is not a member!' % other)
 
     def _invalid_value(self, value):
-        from xoutil.eight import type_name
-        cls_name = type_name(self)
-        vname = type_name(value)
+        cls_name = type(self).__name__
+        vname = type(value).__name__
         msg = ('Unsupported type for  value "%s" of type "%s" for a "%s", '
                'must be an integer!')
         return TypeError(msg % (value, vname, cls_name))
@@ -2842,7 +2819,6 @@ class BitPascalSet(metaclass=MetaSet):
     @classmethod
     def _prime_numbers_until(cls, limit):
         '''This is totally a funny test method.'''
-        from xoutil.eight import range
         res = cls[2:limit]
         for i in range(2, limit // 2 + 1):
             if i in res:
@@ -2886,9 +2862,8 @@ def smart_iter_items(*args, **kwds):
                 if pair(item):
                     yield item
                 else:
-                    from xoutil.eight import type_name
                     msg = "'{}' object '{}' is not a pair"
-                    raise TypeError(msg.format(type_name(item), item))
+                    raise TypeError(msg.format(type(item).__name__, item))
     for key in kwds:
         yield key, kwds[key]
 

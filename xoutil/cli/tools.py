@@ -41,7 +41,7 @@ def hyphen_name(name, join_numbers=True):
 
     '''
     import re
-    from xoutil.eight.string import force_ascii
+    from xoutil.string import force_ascii
     name = force_ascii(name)
     regex = re.compile('[^A-Za-z0-9]+')
     name = regex.sub('-', name)
@@ -116,7 +116,6 @@ def command_name(cls):
         TypeError: Attribute 'command_cli_name' must be a string.
 
     '''
-    from xoutil.eight import string_types
     unset = object()
     names = ('command_cli_name', '__command_name__')
     i, res = 0, unset
@@ -125,7 +124,7 @@ def command_name(cls):
         res = getattr(cls, names[i], unset)
         if res is unset:
             i += 1
-        elif not isinstance(res, string_types):
+        elif not isinstance(res, str):
             raise TypeError("Attribute '{}' must be a string.".format(name))
     if res is unset:
         res = hyphen_name(cls.__name__)

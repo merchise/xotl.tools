@@ -16,8 +16,6 @@ from xoutil.keywords import getkwd, setkwd, kwd_getter, kwd_setter, org_kwd
 
 
 def test_keywords():
-    from xoutil.eight import iteritems
-
     class Foobar:
         pass
 
@@ -26,7 +24,7 @@ def test_keywords():
     names = {'if', 'and', 'or', 'abc', 'xyz'}
     for name in names:
         setkwd(obj, name, type(name.title(), (Foobar,), {}))
-    for name, value in iteritems(vars(obj)):
+    for name, value in vars(obj).items():
         if proper(value):
             assert org_kwd(name).title() == value.__name__
     kwd_setter(obj)('else', 123)
@@ -34,5 +32,5 @@ def test_keywords():
     assert obj.and_ is getkwd(obj, 'and')
     assert obj.xyz is getkwd(obj, 'xyz')
     assert obj.else_ is getkwd(obj, 'else')
-    keys = {org_kwd(n) for n, v in iteritems(vars(obj)) if proper(v)}
+    keys = {org_kwd(n) for n, v in vars(obj).items() if proper(v)}
     assert keys == names

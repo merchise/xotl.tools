@@ -140,7 +140,6 @@ class Maybe:
             []
 
         '''
-        from xoutil.eight import type_name
         if cls is not Maybe:
             test = cls is Just
             dual = Wrong if test else Just
@@ -150,7 +149,8 @@ class Maybe:
                 return cls(value)
             else:
                 msg = '''a "{}" value can't be coerced to "{}"'''
-                raise TypeError(msg.format(type_name(value), cls.__name__))
+                vname = type(value).__name__
+                raise TypeError(msg.format(vname, cls.__name__))
         else:
             raise TypeError('''don't call at Maybe base level''')
 
@@ -188,22 +188,8 @@ class Just(Maybe):
 
 
 class Wrong(Maybe):
-    '''A wrapper for invalid results.
-
-    When encapsulation errors, the current trace-back is properly encapsulated
-    using `xoutil.eight.exceptions`:mod: module features.
-
-    # TODO: Use `naught` or `Left` instead.
-
-    '''
+    '''A wrapper for invalid results.'''
     __slots__ = ()
-
-    def __new__(cls, *args):
-        self = super().__new__(cls, *args)
-        if isinstance(self.inner, BaseException):
-            from xoutil.eight.exceptions import catch
-            self.inner = catch(self.inner)
-        return self
 
 
 def take(value):

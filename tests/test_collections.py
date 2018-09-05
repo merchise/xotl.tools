@@ -95,7 +95,7 @@ def test_stacked_dict():
 
 
 # Backported from Python 3.3.0 standard library
-from xoutil.eight import python_version
+from xoutil.versions import python_version
 from xoutil.future.collections import ChainMap, Counter
 from xoutil.future.collections import OrderedDict, RankedDict
 from xoutil.future.collections import Mapping, MutableMapping
@@ -106,7 +106,6 @@ from random import randrange
 
 def _items(d):
     'For some reason in new PyPy 5.0.1 for Py 2.7.10, set order is not nice.'
-    from xoutil.eight import python_version
     res = d.items()
     if python_version.pypy and isinstance(res, list):
         res.sort()
@@ -115,7 +114,6 @@ def _items(d):
 
 class TestChainMap(unittest.TestCase):
     def test_basics(self):
-        from xoutil.eight import typeof
         c = ChainMap()
         c['a'] = 1
         c['b'] = 2
@@ -152,14 +150,14 @@ class TestChainMap(unittest.TestCase):
         if python_version < 3:
             # check repr
             self.assertIn(repr(d), [
-                typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                typeof(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
             ])
         else:
             # check repr
             self.assertIn(repr(d), [
-                typeof(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
-                typeof(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
+                type(d).__name__ + "({'c': 30}, {'a': 1, 'b': 2})",
+                type(d).__name__ + "({'c': 30}, {'b': 2, 'a': 1})"
             ])
 
         # check shallow copies
@@ -1026,7 +1024,6 @@ class TestPascalSet(unittest.TestCase):
 
     def test_consistency(self):
         from random import randint
-        from xoutil.eight import range
         from xoutil.future.collections import PascalSet
         count = 5
         for test in range(count):
@@ -1056,7 +1053,6 @@ class TestPascalSet(unittest.TestCase):
             self.assertGreaterEqual(s1, ss1 - ss2)
 
     def test_syntax_sugar(self):
-        from xoutil.eight import range
         from xoutil.future.collections import PascalSet
         s1 = PascalSet[1:4, 9, 15:18]
         s2 = PascalSet[3:18]
@@ -1065,7 +1061,6 @@ class TestPascalSet(unittest.TestCase):
         self.assertEqual(list(PascalSet[3:18]), list(range(3, 18)))
 
     def test_operators(self):
-        from xoutil.eight import range
         from xoutil.future.collections import PascalSet
         g = lambda s: (i for i in s)
         s1 = PascalSet[1:4, 9, 15:18]
@@ -1126,7 +1121,6 @@ class TestBitPascalSet(unittest.TestCase):
 
     def test_consistency(self):
         from random import randint
-        from xoutil.eight import range
         from xoutil.future.collections import BitPascalSet
         count = 5
         for test in range(count):
@@ -1156,7 +1150,6 @@ class TestBitPascalSet(unittest.TestCase):
             self.assertGreaterEqual(s1, ss1 - ss2)
 
     def test_syntax_sugar(self):
-        from xoutil.eight import range
         from xoutil.future.collections import BitPascalSet
         s1 = BitPascalSet[1:4, 9, 15:18]
         s2 = BitPascalSet[3:18]
@@ -1165,7 +1158,6 @@ class TestBitPascalSet(unittest.TestCase):
         self.assertEqual(list(BitPascalSet[3:18]), list(range(3, 18)))
 
     def test_operators(self):
-        from xoutil.eight import range
         from xoutil.future.collections import BitPascalSet
         g = lambda s: (i for i in s)
         s1 = BitPascalSet[1:4, 9, 15:18]
@@ -1267,7 +1259,7 @@ def test_opendict():
 
     from xoutil.future.collections import opendict
 
-    class Foo(object):
+    class Foo:
         x = 1
         _y = 2
 

@@ -12,7 +12,6 @@ Regular expressions and validation functions for several identifiers.
 '''
 
 from re import compile as _regex_compile
-from xoutil.eight import string_types
 
 
 __all__ = ('is_valid_identifier', 'is_valid_full_identifier',
@@ -71,4 +70,4 @@ _SLUG_REGEX = _regex_compile('(?i)^[\w]+([-][\w]+)*$')
 
 
 def is_valid_slug(slug):
-    return isinstance(slug, string_types) and _SLUG_REGEX.match(slug)
+    return isinstance(slug, str) and _SLUG_REGEX.match(slug)

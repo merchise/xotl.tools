@@ -31,7 +31,6 @@ def force_module(ref=None):
 
     '''
     from importlib import import_module
-    from xoutil.eight import type_name
     if isinstance(ref, ModuleType):
         return ref
     else:
@@ -53,7 +52,7 @@ def force_module(ref=None):
                     ref = ref.encode()  # Python 2.x
                 except Exception:  # TODO: @med which exceptions expected?
                     msg = "invalid type '{}' for module name '{}'"
-                    raise TypeError(msg.format(type_name(ref), ref))
+                    raise TypeError(msg.format(type(ref).__name__, ref))
         return import_module(ref)
 
 
@@ -232,8 +231,7 @@ def get_module_path(module):
     '''
     from importlib import import_module
     from xoutil.fs.path import normalize_path
-    from xoutil.eight import string_types as strs
-    mod = import_module(module) if isinstance(module, strs) else module
+    mod = import_module(module) if isinstance(module, str) else module
     # The __path__ only exists for packages and does not include the
     # __init__.py
     path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__

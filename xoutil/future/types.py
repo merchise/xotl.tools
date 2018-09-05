@@ -28,8 +28,7 @@ we don't include here:
 
 - `IntType`: use `int`
 
-- `LongType`: use `long` in Python 2 and `int` in Python 3; better see
-  `xoutil.eight.integer_types` definition.
+- `LongType`: use `int`.
 
 - `FloatType`: use `float`
 
@@ -39,12 +38,9 @@ we don't include here:
 
 - `StringType`: use str
 
-- `UnicodeType`: use `unicode` in Python 2 and `str` in Python 3; there are
-  two aliases for that: `xoutil.eigth.UnicodeType` and
-  `xoutil.eigth.text_type`.
+- `UnicodeType`: use `str`.
 
-- `StringTypes`: use `xoutil.eigth.StringTypes`or
-  `xoutil.eigth.string_types`.
+- `StringTypes`:  ``(str, )``.
 
 - `BufferType`: use `buffer` in Python 2 and `memoryview` in Python 3; there
   is an alias for this convention in `xoutil.eigth.buffer`.  The
@@ -57,11 +53,10 @@ we don't include here:
 
 - `DictType` (or `DictionaryType`): use `dict`
 
-- `ClassType`: Python 2 old-style classes, don't exists in Python 3, see
-  `xoutil.eigth.ClassTypes`.
+- `ClassType`: use `type`.
 
 - `InstanceType`: type of instances of Python 2 old-style classes, don't
-  exists in Python 3, see `xoutil.eigth.typeof`.
+  exists in Python 3.
 
 - `UnboundMethodType`: use `~types.MethodType` alias
 
@@ -91,7 +86,6 @@ import types as _stdlib    # noqa
 
 from xoutil.deprecation import deprecated
 
-from xoutil.eight import python_version    # noqa
 from xoutil.symbols import Unset as _unset
 from collections import Mapping
 
@@ -122,14 +116,6 @@ except NameError:
     __all__.append('DictProxyType')
 
 try:
-    MappingProxyType    # noqa
-except NameError:
-    from xoutil.eight._types import MappingProxyType
-    if MappingProxyType is not DictProxyType:
-        MappingProxyType.register(DictProxyType)
-    __all__.append('MappingProxyType')
-
-try:
     NotImplementedType    # noqa
 except NameError:
     NotImplementedType = type(NotImplemented)
@@ -146,7 +132,7 @@ if MemberDescriptorType is GetSetDescriptorType:    # noqa
 FuncTypes = tuple({FunctionType, MethodType, LambdaType,    # noqa
                    BuiltinFunctionType, BuiltinMethodType})    # noqa
 
-from xoutil.eight import class_types    # noqa
+class_types = (type, )
 func_types = FuncTypes    # Just an alias
 
 # These types are defined in `inspect` module for Python >= 3.3
@@ -188,9 +174,9 @@ def _get_mro_attr(target, name, *default):
 
     '''
     from xoutil.future.inspect import _static_getmro
-    from xoutil.eight import force_type
     from xoutil.params import check_default, Undefined
-    target = force_type(target)
+    # force type
+    target = target if isinstance(target, type) else type(target)
     target_mro = _static_getmro(target)
     cls = next((c for c in target_mro if name in c.__dict__), _unset)
     if cls is not _unset:
@@ -236,8 +222,7 @@ class mro_dict(Mapping):
 
     def __init__(self, target):
         from xoutil.future.inspect import _static_getmro
-        from xoutil.eight import force_type as type_coerce
-        type_ = type_coerce(target)
+        type_ = target if isinstance(target, type) else type(target)
         target_mro = _static_getmro(type_)
         self._probes = tuple(c.__dict__ for c in target_mro)
         self._keys = set()
@@ -287,8 +272,8 @@ def mro_get_full_mapping(cls, name):
 
     '''
     from xoutil.future.inspect import _static_getmro
-    from xoutil.eight import force_type as type_coerce
-    mro = _static_getmro(type_coerce(cls))
+    cls = cls if isinstance(cls, type) else type(cls)    # force type
+    mro = _static_getmro(cls)
     return {t: t.__dict__[name] for t in mro if name in t.__dict__}
 
 
@@ -305,7 +290,6 @@ def is_iterable(maybe):
         >>> is_iterable(1)
         False
 
-        >>> from xoutil.eight import range
         >>> is_iterable(range(1))
         True
 
@@ -349,7 +333,6 @@ def is_collection(maybe):
         >>> is_collection(1)
         False
 
-        >>> from xoutil.eight import range
         >>> is_collection(range(1))
         True
 
@@ -407,8 +390,7 @@ def is_scalar(maybe):
 
     '''
     from collections import Iterable
-    from xoutil.eight import string_types
-    return isinstance(maybe, string_types) or not isinstance(maybe, Iterable)
+    return isinstance(maybe, str) or not isinstance(maybe, Iterable)
 
 
 def is_staticmethod(cls, name):
