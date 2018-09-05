@@ -188,22 +188,8 @@ class Just(Maybe):
 
 
 class Wrong(Maybe):
-    '''A wrapper for invalid results.
-
-    When encapsulation errors, the current trace-back is properly encapsulated
-    using `xoutil.eight.exceptions`:mod: module features.
-
-    # TODO: Use `naught` or `Left` instead.
-
-    '''
+    '''A wrapper for invalid results.'''
     __slots__ = ()
-
-    def __new__(cls, *args):
-        self = super().__new__(cls, *args)
-        if isinstance(self.inner, BaseException):
-            from xoutil.eight.exceptions import catch
-            self.inner = catch(self.inner)
-        return self
 
 
 def take(value):

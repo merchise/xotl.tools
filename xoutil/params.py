@@ -366,8 +366,7 @@ class ParamManager:
             if 'default' in options:
                 return options['default']
             elif isinstance(res.inner, BaseException):
-                from xoutil.eight.exceptions import throw
-                throw(res.inner)
+                raise res.inner
             else:
                 raise TypeError('value for "{}" is not found'.format(ids))
         else:
