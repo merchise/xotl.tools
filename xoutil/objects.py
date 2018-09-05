@@ -734,7 +734,6 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from xoutil.future.itertools import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val
