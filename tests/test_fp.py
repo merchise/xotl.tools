@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (c) Merchise Autrement [~º/~] and Contributors
@@ -6,10 +6,6 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 from hypothesis import strategies as s, given, example
 
 
@@ -115,14 +111,14 @@ def test_fp_iter_compose(n):
     odd_seqs = iter_compose(odds, fullrange)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
     id_ = lambda x: [x]
-    pad = [id_] * n
-    args = pad + [odds, ] + pad + [fullrange, ] + pad
+    pad = (id_, ) * n
+    args = pad + (odds, ) + pad + (fullrange, ) + pad
     odd_seqs = iter_compose(*args)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
 
     odd_seqs = iter_compose(fullrange, odds)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
-    args = pad + [fullrange, ] + pad + [odds, ] + pad
+    args = pad + (fullrange, ) + pad + (odds, ) + pad
     odd_seqs = iter_compose(*args)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
 
