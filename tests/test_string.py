@@ -42,7 +42,7 @@ valid_replacements = text().filter(lambda x: '\\' not in x)
 def test_slugify_hypothesis(s, invalid_chars, replacement):
     # TODO: (s='0:0', invalid_chars='z', replacement='ź')
     from xoutil.string import slugify
-    from xoutil.eight.string import force_ascii
+    from xoutil.string import force_ascii
 
     assert ' ' not in slugify(s), 'Slugs do not contain spaces'
 

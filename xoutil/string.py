@@ -111,6 +111,30 @@ def cut_suffixes(value, *suffixes):
     return result
 
 
+def force_ascii(value, encoding=None):
+    '''Return the string normal form for the `value`
+
+    Convert all non-ascii to valid characters using unicode 'NFKC'
+    normalization.
+
+    :param encoding: If `value` is not unicode, it is decoded before ASCII
+           normalization using this encoding.  If not provided use the return
+           of `~xoutil.future.codecs.force_encoding`:func:.
+
+    .. versionchanged:: 1.8.7 Add parameter 'encoding'.
+
+    .. versionchanged:: 2.1.0 Moved to `xoutil.string`:mod:.
+
+    '''
+    import unicodedata
+    from xoutil.future.codecs import safe_decode
+    ASCII, IGNORE = 'ascii', 'ignore'
+    if not isinstance(value, str):
+        value = safe_decode(value, encoding=encoding)
+    res = unicodedata.normalize('NFKD', value).encode(ASCII, IGNORE)
+    return str(res, ASCII, IGNORE)
+
+
 def slugify(value, *args, **kwds):
     '''Return the normal-form of a given string value that is valid for slugs.
 
@@ -155,7 +179,7 @@ def slugify(value, *args, **kwds):
            only default valid characters.  Non-ASCII characters are ignored.
 
     :param encoding: If `value` is not a text (unicode), it is decoded before
-           `ASCII normalization <xoutil.eight.string.force_ascii>`:func:.
+           `ASCII normalization <force_ascii>`:func:.
 
     Examples::
 
@@ -208,7 +232,6 @@ def slugify(value, *args, **kwds):
 
     '''
     import re
-    from xoutil.eight.string import force_ascii
     from xoutil.params import ParamManager
 
     from xoutil.values import compose, istype

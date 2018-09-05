@@ -41,7 +41,7 @@ def hyphen_name(name, join_numbers=True):
 
     '''
     import re
-    from xoutil.eight.string import force_ascii
+    from xoutil.string import force_ascii
     name = force_ascii(name)
     regex = re.compile('[^A-Za-z0-9]+')
     name = regex.sub('-', name)
