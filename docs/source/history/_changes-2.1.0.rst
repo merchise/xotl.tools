@@ -1,1 +1,1 @@
-Nothing yet.
+- Remove package ``xoutil.eight``.
