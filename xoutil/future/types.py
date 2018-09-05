@@ -116,14 +116,6 @@ except NameError:
     __all__.append('DictProxyType')
 
 try:
-    MappingProxyType    # noqa
-except NameError:
-    from xoutil.eight._types import MappingProxyType
-    if MappingProxyType is not DictProxyType:
-        MappingProxyType.register(DictProxyType)
-    __all__.append('MappingProxyType')
-
-try:
     NotImplementedType    # noqa
 except NameError:
     NotImplementedType = type(NotImplemented)
