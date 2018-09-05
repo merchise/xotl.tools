@@ -13,22 +13,28 @@
 
 '''
 from functools import reduce
+from xoutil.deprecation import deprecated
 
 
-def iter_compose(*fs):
-    '''Compose functions that take an item and return an iterator.
+def kleisli_compose(*fs):
+    '''The Kleisli composition operator.
 
-    For two functions, ``iter_compose(g, f)`` is roughly equivalent to::
+    For two functions, ``kleisli_compose(g, f)`` returns::
 
        lambda x: (z for y in f(x) for z in g(y))
 
     In general this is, ``reduce(_compose, fs, lambda x: [x])``; where
     ``_compose`` is the lambda for two arguments.
 
+    .. note:: Despite name (Kleisli), Python does not have a true Monad_
+       type-class.  So this function works with functions taking a single
+       argument and returning an iterator -- it also works with iterables.
+
     .. versionadded:: 1.9.6
+    .. versionchanged:: 1.9.7 Name changed to ``kleisli_compose``.
 
     '''
-    def _compose(g, f):
+    def _kleisli_compose(g, f):
         # (>>.) :: Monad m => (b -> m c) -> (a -> m b) -> a -> m c
         # g >>. f = \x -> f x >>= g
         #
@@ -40,6 +46,9 @@ def iter_compose(*fs):
     if len(fs) == 2:
         # optimize a bit so that we can avoid the 'lambda x: [x]' for common
         # cases.
-        return _compose(*fs)
+        return _kleisli_compose(*fs)
     else:
-        return reduce(_compose, fs, lambda x: [x])
+        return reduce(_kleisli_compose, fs, lambda x: iter([x]))
+
+
+iter_compose = deprecated(kleisli_compose)(kleisli_compose)
