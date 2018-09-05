@@ -7,11 +7,10 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extensions to Python's ``collections`` module.
+'''Extensions to Python's `collections` module.
 
-You may use it as drop-in replacement of ``collections``. Although we don't
-document all items here. Refer to `collections <collections>`:mod:
-documentation.
+You may use it as drop-in replacement of `collections`.  Although we don't
+document all items here.  Refer to `collections`:mod: documentation.
 
 '''
 
@@ -40,12 +39,8 @@ except ImportError:
 
 
 import collections as _stdlib    # noqa
-from collections import (_itemgetter, _heapq, _chain, _repeat, _starmap)
-
-try:
-    from collection import _sys    # noqa
-except ImportError:
-    import sys as _sys
+from collections import (_itemgetter, _heapq, _chain, _repeat,    # noqa
+                         _starmap, _count_elements)
 
 from xoutil.deprecation import deprecated    # noqa
 from xoutil.symbols import Unset    # noqa
@@ -485,16 +480,6 @@ class codedict(OpenDictMixin, dict):
         return arg.format(_=self, **self)
 
     __rlshift__ = __rshift__
-
-
-try:
-    from collections import _count_elements
-except ImportError:
-    def _count_elements(mapping, iterable):
-        'Tally elements from the iterable.'
-        mapping_get = mapping.get
-        for elem in iterable:
-            mapping[elem] = mapping_get(elem, 0) + 1
 
 
 class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
