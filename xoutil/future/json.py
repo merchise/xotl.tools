@@ -31,7 +31,8 @@ from json import encoder, decoder    # noqa
 
 class JSONEncoder(_stdlib.JSONEncoder):
     __doc__ = (_stdlib.JSONEncoder.__doc__ + '''
-    Xoutil extends this class by supporting the following data-types:
+    Xoutil extends this class by supporting the following data-types (see
+    `default`:meth: method):
 
     - `datetime`, `date` and `time` values, which are translated to strings
       using ISO format.
@@ -49,11 +50,10 @@ class JSONEncoder(_stdlib.JSONEncoder):
         from datetime import datetime, date, time
         from decimal import Decimal
         from collections import Iterable
-        from xoutil.future.datetime import assure
         if isinstance(obj, datetime):
-            return assure(obj).strftime(self.DT_FORMAT)
+            return obj.strftime(self.DT_FORMAT)
         elif isinstance(obj, date):
-            return assure(obj).strftime(self.DATE_FORMAT)
+            return obj.strftime(self.DATE_FORMAT)
         elif isinstance(obj, time):
             return obj.strftime(self.TIME_FORMAT)
         elif isinstance(obj, Decimal):
@@ -64,9 +64,10 @@ class JSONEncoder(_stdlib.JSONEncoder):
 
 
 try:
+    # New in version 3.5 of standard module.
     JSONDecodeError    # noqa
 except NameError:
-    # Python 2 implementation raises 'ValueError'
+    # Previous implementations raise 'ValueError'
     JSONDecodeError = ValueError
 
 
