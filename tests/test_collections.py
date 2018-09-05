@@ -1259,7 +1259,7 @@ def test_opendict():
 
     from xoutil.future.collections import opendict
 
-    class Foo(object):
+    class Foo:
         x = 1
         _y = 2
 

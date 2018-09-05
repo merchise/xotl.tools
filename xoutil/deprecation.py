@@ -251,7 +251,7 @@ def import_deprecated(module, *names, **aliases):
     should not be used to do otherwise.
 
     '''
-    from xoutil.future.types import  func_types
+    from xoutil.future.types import func_types
     from xoutil.modules import force_module
     src = force_module(module)
     dst = force_module(2)

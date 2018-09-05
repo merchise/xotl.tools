@@ -16,7 +16,6 @@ from __future__ import (division as _py3_division,
 from contextlib import contextmanager
 
 from xoutil.symbols import Unset
-from xoutil.deprecation import deprecated
 
 
 __docstring_format__ = 'rst'
@@ -1157,7 +1156,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
     .. versionadded:: 1.7.1 The `new_name` argument.
 
     '''
-    from xoutil.eight._types import new_class
+    from types import new_class
     from xoutil.future.types import MemberDescriptorType
 
     def _get_ignored(what):
@@ -1186,10 +1185,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
         attrs.update(new_attrs)
     def exec_body(ns):  # noqa: E306 new-line before def
         ns.update(attrs)
-    if new_name:
-        name = str(new_name)
-    else:
-        name = cls.__name__
+    name = new_name if new_name else cls.__name__
     result = new_class(name, cls.__bases__, {'metaclass': meta}, exec_body)
     return result
 
@@ -1327,27 +1323,6 @@ def extract_attrs(obj, *names, **kwargs):
         raise TypeError('Invalid keyword arguments for `extract_attrs`')
     getter = get_traverser(*names, default=default)
     return getter(obj)
-
-
-@deprecated('xoutil.eight.abc.ABCMeta.register')
-def register_with(abc):
-    '''Register a virtual `subclass` of an ABC.
-
-    For example::
-
-        >>> from collections import Mapping
-        >>> @register_with(Mapping)
-        ... class Foobar:
-        ...     pass
-
-        >>> issubclass(Foobar, Mapping)
-        True
-
-    '''
-    def inner(subclass):
-        abc.register(subclass)
-        return subclass
-    return inner
 
 
 def traverse(obj, path, default=Unset, sep='.', getter=None):
@@ -1630,7 +1605,7 @@ def delegator(attribute, attrs_map, metaclass=type):
 
     Example:
 
-        >>> class Bar(object):
+        >>> class Bar:
         ...     x = 'bar'
 
         >>> class Foo(delegator('egg', {'x1': 'x'})):

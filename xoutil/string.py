@@ -27,9 +27,6 @@ from xoutil.deprecation import import_deprecated    # noqa
 _MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
 
 import_deprecated('xoutil.future.codecs', *_MIGRATED_TO_CODECS)
-import_deprecated('xoutil.eight.string', 'safe_join', force_str='force')
-
-safe_str = force_str    # noqa
 
 
 @deprecated
@@ -237,7 +234,7 @@ def slugify(value, *args, **kwds):
     from xoutil.values import compose, istype
     from xoutil.values.simple import not_false, ascii_coerce
 
-    _str = compose(not_false(''), istype((str,)))
+    _str = compose(not_false(''), istype(str))
     _ascii = compose(_str, ascii_coerce)
     _set = compose(_ascii, lambda v: ''.join(set(v)))
 

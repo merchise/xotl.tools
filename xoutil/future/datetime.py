@@ -994,6 +994,7 @@ except NameError:
 
 # TODO: this function was intended for a local 'strftime' that it's already
 # implemented in 'xoutil.future.datetime'.
+# XXX: 'eight' pending.
 if 'eight' in __name__:
     def _wrap_strftime(object, format, timetuple):
         '''Correctly substitute for %z and %Z escapes in strftime formats.'''

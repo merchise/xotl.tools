@@ -265,7 +265,7 @@ def test_bug_30():
     from xoutil.dim.meta import Dimension, UNIT
 
     @Dimension.new
-    class L(object):
+    class L:
         m = UNIT
 
     with pytest.raises(TypeError):

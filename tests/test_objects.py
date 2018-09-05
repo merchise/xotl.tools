@@ -598,7 +598,7 @@ def test_import_object():
 def test_delegator():
     from xoutil.objects import delegator
 
-    class Bar(object):
+    class Bar:
         x = object()
 
     class Foo(delegator('egg', {'x1': 'x', 'x2': 'spam'})):

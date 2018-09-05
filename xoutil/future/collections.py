@@ -421,7 +421,7 @@ class opendict(OpenDictMixin, dict):
 
            >>> from xoutil.future.collections import opendict
            >>> @opendict.from_enum
-           >>> class Foo(object):
+           >>> class Foo:
            ...    x = 1
            ...    _y = 2
 

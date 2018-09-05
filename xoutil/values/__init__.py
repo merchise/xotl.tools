@@ -260,8 +260,10 @@ def callable_coerce(arg):
 @coercer
 def file_coerce(arg):
     '''Check if `arg` is a file-like object.'''
-    from xoutil.eight.io import is_file_like
-    return arg if is_file_like(arg) else nil
+    from io import IOBase
+    METHODS = ('close', 'write', 'read')
+    ok = isinstance(arg, IOBase) or all(hasattr(arg, a) for a in METHODS)
+    return arg if ok else nil
 
 
 @coercer
@@ -365,8 +367,6 @@ def identifier_coerce(arg):
               helps to keep things working the same in Python 2 and 3.
 
     '''
-    # TODO: Consider use ``is_python2_identifier(arg) or nil`` in module
-    # `xoutil.eight.string`.
     ok = isinstance(arg, str) and _IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil
 

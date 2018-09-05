@@ -9,8 +9,7 @@
 
 '''Simple tools minimizing dependencies on other modules.
 
-The only used modules are Python's standard library `re`:mod:, and
-`xoutil.eight`:mod:.
+The only used module is Python's standard `re`:mod: module.
 
 '''
 

@@ -11,7 +11,7 @@
 
 '''
 
-from xoutil.eight.abc import ABCMeta
+from abc import ABCMeta
 
 
 def identity(arg):

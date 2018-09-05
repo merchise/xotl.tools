@@ -24,14 +24,15 @@ class TestCLisp(unittest.TestCase):
         d = {'1': 2, 3.0: '4', 5.0+0j: 7.3+0j, 1: '2'}
         s = {1, '2', 3.0, '1'}
         l = [1, '2', 3.0, '1', 'x10']
+        number_types = (int, float, complex)
         mc = mapping(int_coerce, float_coerce)
         uint_coerce = create_unique_member_coerce(int_coerce, d)
         mcu = mapping(uint_coerce, float_coerce)
         ic = iterable(int_coerce)
         age_coerce = create_int_range_coerce(0, 100)
-        text_coerce = coercer((str, ))
-        isnumber = istype((int, float, complex))
-        numbercast = typecast((int, float, complex))
+        text_coerce = coercer(str)
+        isnumber = istype(number_types)
+        numbercast = typecast(number_types)
         # TODO: don't use isinstance
         self.assertEqual(all(isinstance(c, coercer)
                              for c in (mc, mcu, uint_coerce, ic,
@@ -62,8 +63,8 @@ class TestCLisp(unittest.TestCase):
     def test_compound_coercers(self):
         from xoutil.values import (coercer, compose, some, combo, iterable,
                                    typecast, int_coerce, float_coerce, nil)
-        isstr = coercer((str, ))
-        strcast = typecast((str, ))
+        isstr = coercer(str)
+        strcast = typecast(str)
         toint = compose(isstr, int_coerce)
         isint = some(isstr, int_coerce)
         hyphenjoin = coercer(lambda arg: '-'.join(arg))

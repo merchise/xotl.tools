@@ -36,8 +36,6 @@ except NameError:
             spec.args, spec.varargs, spec.keywords, spec.defaults,
             None, None, None)
 
-# Some private imports migrated from 'xoutil.eight.inspect' -->
-
 try:
     from inspect import _sentinel
 except ImportError:
@@ -193,8 +191,6 @@ except NameError:
             return default
         else:
             raise AttributeError(attr)
-
-# <-- end of section migrated from 'xoutil.eight.inspect'
 
 
 def get_attr_value(obj, name, *default):
