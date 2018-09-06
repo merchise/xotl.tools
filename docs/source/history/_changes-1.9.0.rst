@@ -12,7 +12,7 @@
   should be imported from `xoutil.symbols`:mod:\ :
 
   .. hlist::
-     :columns: 4
+     :columns: 3
 
      - `~xoutil.symbols.Unset`:obj:
      - `~xoutil.symbols.Undefined`:obj:

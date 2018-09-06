@@ -4,7 +4,7 @@
 - Several modules are migrated to `xoutil.future`:mod:\ :
 
   .. hlist::
-     :columns: 4
+     :columns: 3
 
      - `~xoutil.future.types`:mod:.
      - `~xoutil.future.collections`:mod:.

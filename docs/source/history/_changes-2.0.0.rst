@@ -5,7 +5,7 @@
   `xoutil.future`:mod:\ :
 
   .. hlist::
-     :columns: 4
+     :columns: 3
 
      - ``xoutil.collection``
      - ``xoutil.datetime``
@@ -23,10 +23,10 @@
   and 3, or that backported features from Python 3 to Python 2:
 
   .. hlist::
-     :columns: 4
+     :columns: 3
 
-  - ``xoutil.annotate``
-  - ``xoutil.eight``
-  - ``xoutil.eight.urllib``
+     - ``xoutil.annotate``
+     - ``xoutil.eight``
+     - ``xoutil.eight.urllib``
 
 - Remove deprecated module ``xoutil.html``.
