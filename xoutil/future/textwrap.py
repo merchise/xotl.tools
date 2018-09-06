@@ -44,30 +44,3 @@ def dedent(text, skip_firstline=False):
     else:
         result = _stdlib.dedent(text)
     return result
-
-
-try:
-    indent    # noqa
-except NameError:
-    # The following is Copyright (c) of the Python Software Foundation.
-    def indent(text, prefix, predicate=None):
-        """Adds 'prefix' to the beginning of selected lines in 'text'.
-
-        If 'predicate' is provided, 'prefix' will only be added to the lines
-        where 'predicate(line)' is True. If 'predicate' is not provided, it
-        will default to adding 'prefix' to all non-empty lines that do not
-        consist solely of whitespace characters.
-
-        .. note:: Backported from Python 3.3.  In Python 3.3 this is an alias.
-
-        """
-        if predicate is None:
-            def predicate(line):
-                return line.strip()
-
-        def prefixed_lines():
-            for line in text.splitlines(True):
-                yield (prefix + line if predicate(line) else line)
-        return ''.join(prefixed_lines())
-
-    __all__.append('indent')
