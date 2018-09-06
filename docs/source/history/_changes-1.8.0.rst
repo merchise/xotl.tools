@@ -31,8 +31,8 @@
 - Add function `xoutil.deprecation.deprecate_module`:func: to deprecate full
   modules when imported.
 
-- The module `xoutil.string`:mod: suffered a major reorganization.  See
-  details in `String Ambiguity in Python <py-string-ambiguity>`:ref:.
+- The module `xoutil.string`:mod: suffered a major reorganization due to
+  ambiguity use of Strings in Python.
 
 - Create ``__crop__`` protocol for small string representations, see
   `xoutil.clipping.crop`:func: for more information.

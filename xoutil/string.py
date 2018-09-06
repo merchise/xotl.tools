@@ -11,7 +11,6 @@
 
 In Python 3 `str` is always unicode but `unicode` and `basestring` types
 doesn't exists.  `bytes` type can be used as an array of one byte each item.
-See `py-string-ambiguity`:any: for more information.
 
 '''
 
