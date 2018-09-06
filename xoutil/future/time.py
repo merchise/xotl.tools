@@ -7,9 +7,20 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-from time import *  # noqa
+'''Extensions to Python's `time` module.
 
-try:
-    monotonic  # noqa
-except NameError:
-    from monotonic import monotonic  # noqa
+You may use it as drop-in replacement of `time`.  Although we don't
+document all items here.  Refer to `time`:mod: documentation.
+
+.. note:: This module is deprecated since `monotonic` is included in
+Python 3.3.
+
+'''
+
+from time import *  # noqa
+from time import monotonic
+import time as _stdlib    # noqa
+
+from xoutil.deprecation import deprecate_module
+deprecate_module(replacement=monotonic.__module__)
+del deprecate_module

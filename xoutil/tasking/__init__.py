@@ -203,7 +203,7 @@ class retrier:
            ...     pass
 
         '''
-        from xoutil.future.time import monotonic as clock, sleep
+        from time import monotonic as clock, sleep
         from xoutil.future.functools import wraps
         max_time = self.max_time
         max_tries = self.max_tries
