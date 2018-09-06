@@ -16,64 +16,9 @@ This modules mirrors all the functions (and, in general, objects) from the
 standard library module `types`:mod:; but it also includes several new types
 and type-related functions.
 
-This module unifies old ``xoutil.types`` and ``xoutil.eigth.types`` modules,
-which are deprecated now.
-
-There are some symbols included in Python 2.x series, but not in Python 3 that
-we don't include here:
-
-- `TypeType`: use `type` instead
-
-- `ObjectType`: use `object`
-
-- `IntType`: use `int`
-
-- `LongType`: use `int`.
-
-- `FloatType`: use `float`
-
-- `BooleanType`: use `bool`
-
-- `ComplexType`: use `complex`
-
-- `StringType`: use str
-
-- `UnicodeType`: use `str`.
-
-- `StringTypes`:  ``(str, )``.
-
-- `BufferType`: use `buffer` in Python 2 and `memoryview` in Python 3; there
-  is an alias for this convention in `xoutil.eigth.buffer`.  The
-  `memoryview`:class: API is similar but not exactly the same as that of
-  `buffer`.
-
-- `TupleType`: use `tuple`
-
-- `ListType`: use `list`
-
-- `DictType` (or `DictionaryType`): use `dict`
-
-- `ClassType`: use `type`.
-
-- `InstanceType`: type of instances of Python 2 old-style classes, don't
-  exists in Python 3.
-
-- `UnboundMethodType`: use `~types.MethodType` alias
-
-- `FileType`: use `file`
-
-- `XRangeType` (or `xrange`): in Python 3 `range` always returns a generator
-  object; use `xoutil.eigth.range`:class: for compatibility; wraps it with
-  list (``list(range(...))``) to obtain old `range` style
-
-- `SliceType`: use `slice`
-
-- In Jython and PyPy, `MemberDescriptorType` is identical to
-  `GetSetDescriptorType`; to mantain compatibility in some `xoutil` code, they
-  are differentiated in this module.
-
-- `CoroutineType` and `coroutine`: use new Python 3 `async` statement; not
-  implementable in Python 2.
+In Jython and PyPy, `MemberDescriptorType` is identical to
+`GetSetDescriptorType`; to mantain compatibility in some `xoutil` code, they
+are differentiated in this module.
 
 '''
 
@@ -100,23 +45,11 @@ except NameError:
     __all__.append('NoneType')
 
 try:
+    # It is maintained in this module for perhaps using it in `mypy`.
     EllipsisType    # noqa
 except NameError:
     EllipsisType = type(Ellipsis)
     __all__.append('EllipsisType')
-
-try:
-    DictProxyType    # noqa
-except NameError:
-    DictProxyType = type(type.__dict__)
-    __all__.append('DictProxyType')
-
-try:
-    NotImplementedType    # noqa
-except NameError:
-    NotImplementedType = type(NotImplemented)
-    __all__.append('NotImplementedType')
-
 
 # Check Jython and PyPy peculiarity
 if MemberDescriptorType is GetSetDescriptorType:    # noqa
@@ -128,14 +61,7 @@ if MemberDescriptorType is GetSetDescriptorType:    # noqa
 FuncTypes = tuple({FunctionType, MethodType, LambdaType,    # noqa
                    BuiltinFunctionType, BuiltinMethodType})    # noqa
 
-class_types = (type, )
 func_types = FuncTypes    # Just an alias
-
-# These types are defined in `inspect` module for Python >= 3.3
-MethodWrapperType = type(all.__call__)
-WrapperDescriptorType = type(type.__call__)    # In PyPy is MethodWrapperType
-ClassMethodWrapperType = type(dict.__dict__['fromkeys'])
-
 
 from types import _calculate_meta  # noqa
 
