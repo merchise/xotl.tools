@@ -59,7 +59,7 @@
   - Add function `~xoutil.params.single`:func: -- Return true only when a
     unique argument is given.
 
-  - Add function `~xoutil.params.keywords_only`:func: -- Decorator to make a
+  - Add function ``xoutil.params.keywords_only`` -- Decorator to make a
     function to accepts its keywords arguments as keywords-only.
 
   - Add function `~xoutil.params.pop_keyword_arg`:func: -- Tool to get a value
