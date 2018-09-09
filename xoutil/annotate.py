@@ -157,7 +157,7 @@ def _parse_signature(signature):
 
 
 @deprecated(None,
-            msg='{funcname} is going to be removed in {removed_in_version}',
+            msg='{funcname} is going to be removed in 2.1.0',
             removed_in_version='2.1.0')
 @decorator
 def annotate(func, signature=None, **keyword_annotations):
