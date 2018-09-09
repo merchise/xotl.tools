@@ -23,6 +23,10 @@ dates = strategies.dates
 maybe_date = dates() | strategies.none()
 
 
+def test_imports():
+    from xoutil.future.datetime import timezone  # noqa
+
+
 def test_daterange_stop_only():
     result = list(daterange(date(1978, 10, 21)))
     assert result[0] == date(1978, 10, 1)
