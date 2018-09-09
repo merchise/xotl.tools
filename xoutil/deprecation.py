@@ -310,7 +310,7 @@ def deprecate_linked(check=None, msg=None):
         warnings.warn(msg, stacklevel=2)
 
 
-def deprecate_module(replacement):
+def deprecate_module(replacement, msg=None):
     '''Deprecate an entire module.
 
     This function must be called in the global context of the deprecated
@@ -332,9 +332,11 @@ def deprecate_module(replacement):
     finally:
         # As recommended in Python's documentation to avoid memory leaks
         del frame
-    msg = ('"{}" module is now deprecated and it will be removed; use "{}" '
-           'instead.').format(name, replacement)
-    warnings.warn(msg, stacklevel=2)
+    if msg is None:
+        msg = ('"{}" module is now deprecated and it will be removed; '
+               'use "{}" instead.').format(name, replacement)
+    if msg:
+        warnings.warn(msg, stacklevel=2)
 
 
 @deprecated(import_deprecated)
