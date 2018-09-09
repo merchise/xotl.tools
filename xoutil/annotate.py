@@ -16,10 +16,18 @@
 from re import compile as _regex_compile
 from ast import parse as _ast_parse
 
+from xoutil.deprecation import deprecate_module, deprecated
+
 from xoutil.future.functools import partial
 _ast_parse = partial(_ast_parse, filename="<annotations>", mode="eval")
 
 from xoutil.decorator.meta import decorator
+
+deprecate_module(
+    'Python 3',
+    msg=('xoutil.annotate is deprecated because is no longer needed '
+         'in Python 3.  It will be removed in xoutil 2.1.0')
+)
 
 __all__ = ['annotate']
 
@@ -148,6 +156,9 @@ def _parse_signature(signature):
         yield 'return', eval(return_annotation, globals(), l())
 
 
+@deprecated(None,
+            msg='{funcname} is going to be removed in {removed_in_version}',
+            removed_in_version='2.1.0')
 @decorator
 def annotate(func, signature=None, **keyword_annotations):
     '''Annotates a function with a Python 3k forward-compatible
@@ -208,6 +219,8 @@ def annotate(func, signature=None, **keyword_annotations):
 
           >>> somewhat.__annotations__.get('a')     # doctest: +ELLIPSIS
           <class '...ISomething'>
+
+    .. deprecated:: 2.0.0
 
     '''
     from xoutil.objects import pop_first_of
