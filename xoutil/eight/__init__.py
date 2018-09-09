@@ -21,6 +21,8 @@ This package also fixes some issues from PyPy interpreter.
 .. _six: https://pypi.python.org/pypi/six
 
 '''
+import warnings
+warnings.warn('xoutil.eight is deprecated and will be removed in xoutil 2.1.0')
 from xoutil.versions import python_version
 
 
