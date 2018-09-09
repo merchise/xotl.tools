@@ -34,6 +34,8 @@ def kleisli_compose(*fs):
        type-class.  So this function works with functions taking a single
        argument and returning an iterator -- it also works with iterables.
 
+    .. _Monad: https://en.wikipedia.org/wiki/Monad_(functional_programming)
+
     .. versionadded:: 1.9.6
     .. versionchanged:: 1.9.7 Name changed to ``kleisli_compose``.
 
