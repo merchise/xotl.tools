@@ -32,10 +32,6 @@ Also contains sub-modules to obtain, convert and check values of common types.
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 import re
 from abc import ABCMeta
 

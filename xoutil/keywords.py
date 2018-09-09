@@ -15,10 +15,6 @@ suffix when a reserved keyword is used as name.
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 
 def suffix_kwd(name):
     '''Add an underscore suffix if name if a Python keyword.'''

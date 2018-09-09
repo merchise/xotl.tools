@@ -23,10 +23,6 @@ means several possibilities.
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_import)
-
 
 #: The maximum number of positional arguments allowed when calling a function.
 MAX_ARG_COUNT = 1024 * 1024    # just any large number
@@ -162,65 +158,6 @@ def single(args, kwds):
     else:
         res = Wrong((args, kwds))
     return res
-
-
-def keywords_only(func):
-    '''Make a function to accepts its keywords arguments as keywords-only.
-
-    In Python 3 parlance this would make::
-
-       func(a, b=None)
-
-    become::
-
-       func(a, *, b=None).
-
-    In Python 3 this decorator does nothing.  If `func` does not have any
-    keyword arguments, return `func`.
-
-    There's a pathological case when you define::
-
-       func(a, b=None, *args)
-
-    In such a case if you call ``func(1, 2, b=3)`` we can't actually call
-    the original function with ``a=1``, ``args=(2, )`` and ``b=3``.  This
-    case also raises a TypeError.
-
-    .. versionadded:: 1.8.0
-
-    '''
-    import sys
-    from functools import wraps
-    from xoutil.future.inspect import getfullargspec
-    if sys.version_info >= (3, 0):
-        return func
-
-    spec = getfullargspec(func)
-    if not spec.defaults:
-        return func
-
-    l = len(spec.args) - len(spec.defaults)
-    kargs = spec.args[l:]
-    if len(kargs) > 1:
-        display_kargs = ', '.join("'%s'" % arg for arg in spec.args[l:-1])
-        display_kargs += " and '%s'" % spec.args[-1]
-    else:
-        display_kargs = "'%s'" % spec.args[l]
-
-    InvalidSignature = TypeError(
-        'Arguments %s must be passed as keyword' % (display_kargs, )
-    )
-
-    @wraps(func)
-    def inner(*args, **kwargs):
-        if len(args) > l:
-            # The case of ``def f(a, b=X, *args)`` because if we call
-            # ``f(1, 2, b=3)`` we cannot properly call the original
-            # function with a=1, args=(2, ) and b=3.
-            raise InvalidSignature
-        return func(*args, **kwargs)
-
-    return inner
 
 
 def pop_keyword_arg(kwargs, names, default=Undefined):

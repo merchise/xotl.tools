@@ -14,10 +14,6 @@ All values only could be `True` or `False` but are intended in places where
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
-
 
 SYMBOL = 'symbol'
 BOOLEAN = 'boolean'

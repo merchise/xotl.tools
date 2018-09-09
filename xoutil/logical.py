@@ -9,10 +9,6 @@
 
 '''This entire module is deprecated, use `xoutil.symbols` instead.'''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_import)
-
 from xoutil.deprecation import deprecate_module
 deprecate_module(replacement='xoutil.symbols')
 del deprecate_module

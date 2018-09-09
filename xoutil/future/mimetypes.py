@@ -16,10 +16,6 @@ This module reexport all functions the *current* version of Python.
 '''
 
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 import mimetypes as _stdlib
 from mimetypes import *  # noqa
 

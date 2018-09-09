@@ -7,10 +7,6 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
-
 import pytest
 from xoutil.objects import smart_copy
 
@@ -402,10 +398,9 @@ def test_extract_attrs():
 
 def test_copy_class():
     from xoutil.symbols import Unset
-    from xoutil.versions import python_version
     from xoutil.objects import copy_class
 
-    u = str if python_version == 3 else unicode
+    u = str
 
     class MetaFoo(type):
         pass

@@ -13,12 +13,13 @@
    ``xoutil.iterators`` is now a deprecated alias.
 
 '''
-from itertools import *  # noqa
 
+from itertools import *  # noqa
+from xoutil.symbols import Unset
+
+# TODO: deprecate both
 map = map
 zip = zip
-
-from xoutil.symbols import Unset
 
 
 def first_non_null(iterable, default=None):

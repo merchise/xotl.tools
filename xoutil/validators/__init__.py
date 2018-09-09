@@ -13,10 +13,6 @@ functions for several identifiers.
 '''
 
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
-
 # TODO: Check next import, it looks like one of the modules must be deprecated
 from xoutil.validators.identifiers import (is_valid_identifier,   # noqa
                                            check_identifier,

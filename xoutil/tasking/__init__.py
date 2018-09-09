@@ -15,10 +15,6 @@
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 import sys
 from xoutil.deprecation import deprecated
 
@@ -207,7 +203,7 @@ class retrier:
            ...     pass
 
         '''
-        from xoutil.future.time import monotonic as clock, sleep
+        from time import monotonic as clock, sleep
         from xoutil.future.functools import wraps
         max_time = self.max_time
         max_tries = self.max_tries
