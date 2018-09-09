@@ -17,6 +17,7 @@ from xoutil.annotate import annotate
 from xoutil.eight import class_types
 
 
+@pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
 def test_keywords():
     @annotate(a=1, b={1: 4}, args=list, return_annotation=tuple)
     def dummy():
@@ -28,6 +29,7 @@ def test_keywords():
     assert dummy.__annotations__.get('return', None) == tuple
 
 
+@pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
 def test_signature():
     @annotate('(a: 1, b: {1: 4}, *args: list, **kwargs: dict) -> tuple')
     def dummy():
@@ -41,6 +43,7 @@ def test_signature():
     assert dummy.__annotations__.get('return', None) == tuple
 
 
+@pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
 def test_invalid_nonsense_signature():
     with pytest.raises(SyntaxError):
         @annotate('(a, b) -> list')
@@ -53,6 +56,7 @@ def test_invalid_nonsense_signature():
         return 'Who cares about non-annotated args?'
 
 
+@pytest.mark.skipif(str("sys.version.find('PyPy') != -1"))
 def test_mixed_annotations():
     from xoutil.eight import text_type
 
