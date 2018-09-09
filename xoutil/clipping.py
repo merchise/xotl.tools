@@ -21,10 +21,6 @@ default values, see `crop`:func: function for details.
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_import)
-
 
 #: Value for `max_width` parameter in functions that shorten strings, must not
 #: be less than this value.

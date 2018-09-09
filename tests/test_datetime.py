@@ -7,10 +7,6 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
-
 import pytest
 
 from xoutil.future.datetime import date
@@ -25,6 +21,10 @@ from hypothesis import strategies, given
 
 dates = strategies.dates
 maybe_date = dates() | strategies.none()
+
+
+def test_imports():
+    from xoutil.future.datetime import timezone  # noqa
 
 
 def test_daterange_stop_only():

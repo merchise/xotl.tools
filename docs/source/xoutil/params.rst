@@ -90,8 +90,6 @@ Module Members
 
 .. autofunction:: single
 
-.. autofunction:: keywords_only
-
 .. autofunction:: pop_keyword_arg
 
 .. autofunction:: pop_keyword_values

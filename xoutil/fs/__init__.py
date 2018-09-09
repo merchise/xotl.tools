@@ -16,10 +16,6 @@ path-handling functions that have no side-effects look at
 '''
 
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 import sys
 import os
 from re import compile as _rcompile
@@ -403,42 +399,7 @@ def walk_up(start, sentinel):
     return current if found else None
 
 
-if sys.version_info < (3, 4, 1):
-    def makedirs(name, mode=0o777, exist_ok=False):
-        """makedirs(path [, mode=0o777][, exist_ok=False])
-
-        Super-mkdir; create a leaf directory and all intermediate ones.
-        Works like mkdir, except that any intermediate path segment (not
-        just the rightmost) will be created if it does not exist. If the
-        target directory with the same mode as we specified already exists,
-        raises an OSError if exist_ok is False, otherwise no exception is
-        raised.  This is recursive.
-
-        """
-        from errno import EEXIST
-        from xoutil.future.codecs import safe_encode
-        head, tail = os.path.split(name)
-        if not tail:
-            head, tail = os.path.split(head)
-        if head and tail and not os.path.exists(head):
-            try:
-                makedirs(head, mode, exist_ok)
-            except OSError as e:
-                # be happy if someone already created the path
-                if e.errno != EEXIST:
-                    raise
-            cdir = os.path.curdir
-            if isinstance(tail, bytes):
-                cdir = safe_encode(os.path.curdir, 'ASCII')
-            if tail == cdir:      # xxx/newdir/. exists if xxx/newdir exists
-                return
-        try:
-            os.mkdir(name, mode)
-        except OSError as e:
-            if not exist_ok or e.errno != EEXIST or not os.path.isdir(name):
-                raise
-else:
-    from os import makedirs
+from os import makedirs
 
 
 def ensure_filename(filename, yields=False):

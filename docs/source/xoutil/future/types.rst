@@ -20,8 +20,6 @@ version and not in other.
 
    .. versionadded:: 1.5.5
 
-.. autoclass:: DictProxyType
-
 .. class:: MappingProxyType
 
    .. versionadded:: 1.5.5

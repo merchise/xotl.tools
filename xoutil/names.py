@@ -9,10 +9,6 @@
 
 '''A protocol to obtain or manage object names.'''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 # FIX: These imports must be local
 from xoutil.symbols import Undefined as _undef
 

@@ -4,7 +4,7 @@
 - Several modules are migrated to `xoutil.future`:mod:\ :
 
   .. hlist::
-     :columns: 4
+     :columns: 3
 
      - `~xoutil.future.types`:mod:.
      - `~xoutil.future.collections`:mod:.
@@ -31,8 +31,8 @@
 - Add function `xoutil.deprecation.deprecate_module`:func: to deprecate full
   modules when imported.
 
-- The module `xoutil.string`:mod: suffered a major reorganization.  See
-  details in `String Ambiguity in Python <py-string-ambiguity>`:ref:.
+- The module `xoutil.string`:mod: suffered a major reorganization due to
+  ambiguity use of Strings in Python.
 
 - Create ``__crop__`` protocol for small string representations, see
   `xoutil.clipping.crop`:func: for more information.
@@ -59,7 +59,7 @@
   - Add function `~xoutil.params.single`:func: -- Return true only when a
     unique argument is given.
 
-  - Add function `~xoutil.params.keywords_only`:func: -- Decorator to make a
+  - Add function ``xoutil.params.keywords_only`` -- Decorator to make a
     function to accepts its keywords arguments as keywords-only.
 
   - Add function `~xoutil.params.pop_keyword_arg`:func: -- Tool to get a value

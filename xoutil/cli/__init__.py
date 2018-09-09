@@ -23,10 +23,6 @@ Commands can be registered by:
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 from abc import abstractmethod, ABC
 from xoutil.objects import staticproperty
 from xoutil.cli.tools import command_name, program_name
@@ -154,7 +150,6 @@ class Command(ABC):
     def _settle_cache(target, source, recursed=None):
         '''`target` is a mapping to store result commands'''
         # TODO: Convert check based in argument "recursed" in a decorator
-        import sys
         from xoutil.names import nameof
         if recursed is None:
             recursed = set()
@@ -173,10 +168,7 @@ class Command(ABC):
                 for cmd in sub_commands:
                     Command._settle_cache(target, cmd, recursed=recursed)
             else:   # Only branch commands are OK to execute
-                if sys.version_info < (3, 0):
-                    from types import MethodType as ValidMethodType
-                else:
-                    from types import FunctionType as ValidMethodType
+                from types import FunctionType as ValidMethodType
                 assert isinstance(source.run, ValidMethodType), \
                     'Invalid type %r for source %r' % (
                         type(source.run).__name__,

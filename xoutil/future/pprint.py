@@ -9,10 +9,6 @@
 
 '''Enhanced data pretty printer.'''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
-
 from pprint import *    # noqa
 from pprint import __all__, pprint    # noqa
 __all__ = list(__all__) + ['ppformat']

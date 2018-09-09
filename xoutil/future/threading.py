@@ -7,11 +7,16 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_imports)
+'''Extensions to Python's `threading` module.
+
+You may use it as drop-in replacement of ``threading``. Although we don't
+document all items here.  Refer to `threading`:mod: documentation.
+
+'''
 
 from threading import *    # noqa
+import threading as _stdlib    # noqa
+
 from threading import Event, Thread, RLock, Timer
 
 

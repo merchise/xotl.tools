@@ -9,10 +9,6 @@
 
 '''Several utilities for objects in general.'''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 from contextlib import contextmanager
 
 from xoutil.symbols import Unset
@@ -738,7 +734,6 @@ def iterate_over(source, *keys):
                 yield key, val
 
     def when_collection(source):
-        from xoutil.future.itertools import map
         for generator in map(inner, source):
             for key, val in generator:
                 yield key, val

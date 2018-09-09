@@ -5,10 +5,6 @@
 # Copyright (c) 2001-2012 Python Software Foundation.  All rights reserved.
 #
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 import unittest
 from xoutil.future.textwrap import wrap, fill, dedent, indent
 

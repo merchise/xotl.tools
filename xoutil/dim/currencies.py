@@ -65,10 +65,6 @@ If you convert your euros to dollars::
 
 '''
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
 
 class ValueType(type):
     def __instancecheck__(self, which):
