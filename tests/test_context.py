@@ -158,32 +158,35 @@ def test_greenlet_contexts():
     import random
     from xoutil.symbols import Unset
 
-    class nonlocals:
-        calls = 0
-        switches = 0
+    calls = 0
+    switches = 0
 
     class GreenletProg:
         def __init__(self, arg):
             self.arg = arg
 
         def __call__(self):
-            nonlocals.calls += 1
-            nonlocals.switches += 1
+            nonlocal calls
+            nonlocal switches
+            calls += 1
+            switches += 1
             assert 'GREEN CONTEXT' not in context
             with context('GREEN CONTEXT') as ctx:
                 assert ctx.get('greenvar', Unset) is Unset
                 ctx['greenvar'] = self.arg
                 root.switch()
-                nonlocals.switches += 1
+                switches += 1
                 assert ctx['greenvar'] == self.arg
                 # list() makes KeyViews pass in Python 3+
                 assert list(ctx.keys()) == ['greenvar']
 
     def loop(n):
+        nonlocal calls
+        nonlocal switches
         greenlets = [greenlet.greenlet(run=GreenletProg(i))
                      for i in range(n)]
-        nonlocals.calls = 0
-        nonlocals.switches = 0
+        calls = 0
+        switches = 0
         while greenlets:
             pos = random.randrange(0, len(greenlets))
             gl = greenlets[pos]
@@ -192,15 +195,17 @@ def test_greenlet_contexts():
             # list, otherwise let it be for another round.
             if gl.dead:
                 del greenlets[pos]
-        assert nonlocals.calls == n, "There should be N calls to greenlets."
-        assert nonlocals.switches == 2*n, "There should be 2*N switches."
+        assert calls == n, "There should be N calls to greenlets."
+        assert switches == 2*n, "There should be 2*N switches."
 
     def loop_determ(n):
+        nonlocal calls
+        nonlocal switches
         greenlets = [greenlet.greenlet(run=GreenletProg(i))
                      for i in range(n)]
         pos = 0
-        nonlocals.calls = 0
-        nonlocals.switches = 0
+        calls = 0
+        switches = 0
         while greenlets:
             gl = greenlets[pos]
             gl.switch()
@@ -211,8 +216,8 @@ def test_greenlet_contexts():
             # In this case we ensure there will be several concurrent
             # greenlets
             pos = ((pos + 1) % len(greenlets)) if greenlets else 0
-        assert nonlocals.calls == n, "There should be N calls to greenlets."
-        assert nonlocals.switches == 2*n, "There should be 2*N switches."
+        assert calls == n, "There should be N calls to greenlets."
+        assert switches == 2*n, "There should be 2*N switches."
 
     root = greenlet.greenlet(run=loop)
     root.switch(10)
