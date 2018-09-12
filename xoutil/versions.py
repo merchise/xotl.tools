@@ -174,7 +174,7 @@ class python_version(ThreeNumbersVersion):
     '''
     def __new__(cls):
         import sys
-        self = ThreeNumbersVersion.__new__(cls, sys.version_info)
+        self = super().__new__(cls, sys.version_info)
         self.pypy = sys.version.find('PyPy') >= 0
         return self
 
