@@ -110,7 +110,8 @@ def test_outside_date(ts):
     assert outsider not in ts
 
 
-@given(datetimespans(unbounds='future'))
+@given(datetimespans(dates=strategies.datetimes(min_value=datetime(1, 1, 2)),
+                     unbounds='future'))
 def test_outside_datetime(dts):
     from datetime import timedelta
     assert dts.start_date
@@ -334,8 +335,8 @@ def test_setting_end_date(d, dts):
         assert dts.end_datetime is None
 
 
-# Hypothesis can generate timedeltas too big to sum with dates.
-@given(strategies.datetimes(),
+@given(strategies.datetimes(min_value=datetime(1970, 1, 1),
+                            max_value=datetime(5000, 12, 31)),
        strategies.timedeltas(min_value=timedelta(1), max_value=timedelta(200)))
 def test_timespan_diff(start_date, days):
     big = TimeSpan(start_date, start_date + 3 * days)
@@ -389,7 +390,8 @@ def test_timespan_diff(start_date, days):
     assert x is EmptyTimeSpan and y is EmptyTimeSpan
 
 
-@given(strategies.datetimes(),
+@given(strategies.datetimes(min_value=datetime(1970, 1, 1),
+                            max_value=datetime(5000, 12, 31)),
        strategies.timedeltas(min_value=timedelta(1), max_value=timedelta(200)))
 def test_datetimespan_diff(start_date, days):
     big = DateTimeSpan(start_date, start_date + 3 * days)
