@@ -18,89 +18,43 @@ from __future__ import (division as _py3_division,
 
 from xoutil.decorator import singleton
 
-try:
-    _str_types = (str, unicode)
-except NameError:
-    _str_types = (str,)
 
+def _check(info):
+    '''Validate a version info.
 
-def _safe_int(arg):
-    try:
-        if isinstance(arg, _str_types):
-            return int(arg)
-        else:
-            return arg
-    except ValueError:
-        return arg
+    :param info: could be a string, an integer, float, or any integer
+           collection (only first three valid integers are used).
 
-
-def _crucial_parts(info):
-    '''Count the important parts (heading integers) of a version info'''
-    i, ok = 0, True
-    while i < len(info) and ok:
-        v = info[i]
-        if isinstance(v, int):
-            i += 1
-        else:
-            ok = False
-    return i
-
-
-def _check(info, head=False):
-    '''Check a version info.
-
-    `info` could be a string or any iterable.  if `hard`, the 3 required
-    integer components must be supplied at the beginning.
-
-    If `head` is true, return only the crucial parts.
+    :returns: a valid tuple or an error if invalid.
 
     '''
-    import re
-    from collections import Mapping, Set
-    MAX_IDX = 3
+    from itertools import takewhile
+    from collections import Iterable
+    from distutils.version import LooseVersion
     if isinstance(info, int):
-        res = (info, )
+        aux = (info,)
     elif isinstance(info, float):
-        res = tuple(int(i) for i in str(info).split('.'))
-    elif isinstance(info, _str_types):
-        try:
-            res = (int(info), )
-        except ValueError:
-            regex = re.compile('^(\d+)(?:[.](\d+))?(?:[.](\d+))?')
-            m = regex.match(info)
-            if m:
-                res = tuple(int(g) for g in m.groups() if g is not None)
-            else:
-                raise TypeError('version info check got an invalid string')
+        aux = LooseVersion(str(info)).version
+    elif isinstance(info, str):
+        aux = LooseVersion(str(info)).version
+    elif isinstance(info, Iterable):
+        aux = info
     else:
-        # a valid iterable
-        if not isinstance(info, (Mapping, Set)):
-            try:
-                res = tuple(_safe_int(c) for c in info)
-            except TypeError:
-                res = None
-        else:
-            res = None
-        if res is None:
-            # TODO: from xoutil.eight import type_name
-            msg = 'version info check got an invalid value of type "{}"'
-            raise TypeError(msg.format(type(info).__name__))
-    count = _crucial_parts(res)
-    if 1 <= count <= MAX_IDX:
-        return res[:count] if head else res
+        aux = ()
+    res = tuple(takewhile(lambda i: isinstance(i, int), aux))
+    if 0 < len(res) <= 3:
+        while res[-1] == 0 and len(res) > 1:
+            res = res[:-1]
+        return res
     else:
-        msg = ('a version info need at least one and at most {} heading '
-               'integer components; got "{}"')
-        raise TypeError(msg.format(MAX_IDX, count))
+        raise ValueError("invalid version number '{}'".format(info))
 
 
 class ThreeNumbersVersion(tuple):
     '''A more structured version info for packages.
 
-    This class can't be instanced, each sub-class must be treated as
-    singleton.  Must be a tuple with three first components as integers
-    'major', 'minor', and 'micro'.  Any custom implementation could have extra
-    components.
+    This class is mainly intended to be sub-classed as a singleton resulting
+    in a tuple with three integer components as 'major', 'minor', and 'micro'.
 
     Instances of this class can be compared with a variety of value types:
 
@@ -110,13 +64,15 @@ class ThreeNumbersVersion(tuple):
 
     - A string is converted to a version tuple before compare it.
 
-    But comparison only is relevant for heading integers.
+    Comparison only is relevant for heading integers.
 
     .. versionadded:: 1.8.0
 
     '''
     def __new__(cls, info):
-        return super().__new__(cls, _check(info))
+        arg = _check(info)
+        arg += tuple(0 for i in range(3 - len(arg)))
+        return super().__new__(cls, arg)
 
     @property
     def major(self):
@@ -133,22 +89,34 @@ class ThreeNumbersVersion(tuple):
     def to_float(self):
         return float('{}.{}'.format(*self[:2]))
 
+    __float__ = to_float
+    __trunc__ = major
+
     def __eq__(self, other):
-        aux = _check(other, head=True)
-        this = self[:len(aux)]
-        return this == aux
+        try:
+            aux = _check(other)
+            this = self[:len(aux)]
+            return this == aux
+        except Exception:
+            return False
 
     def __lt__(self, other):
-        aux = _check(other, head=True)
-        count = _crucial_parts(self)
-        this = self[:count]
-        return this < aux
+        try:
+            aux = _check(other)
+            count = len(self)
+            this = self[:count]
+            return this < aux
+        except Exception:
+            return NotImplemented
 
     def __gt__(self, other):
-        aux = _check(other, head=True)
-        count = _crucial_parts(self)
-        this = self[:count]
-        return this > aux
+        try:
+            aux = _check(other)
+            count = len(self)
+            this = self[:count]
+            return this > aux
+        except Exception:
+            return NotImplemented
 
     def __ne__(self, other):
         return not (self == other)
