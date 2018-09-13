@@ -75,6 +75,8 @@ We added the following features.
 
    .. automethod:: __len__
 
+   .. automethod:: diff
+
 
 .. object:: EmptyTimeSpan
 
