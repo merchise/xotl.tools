@@ -211,24 +211,36 @@ def test_duplication_of_timespans(ts1):
 
 @given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_reversed(ts1, delta):
-    assert (ts1 << delta) == (ts1 >> -delta)
+    try:
+        assert (ts1 << delta) == (ts1 >> -delta)
+    except OverflowError:
+        pass
 
 
 @given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_keeps_unbounds(ts1, delta):
-    assert ts1.unbound == (ts1 << delta).unbound
-    assert ts1.future_unbound == (ts1 << delta).future_unbound
-    assert ts1.past_unbound == (ts1 << delta).past_unbound
+    try:
+        assert ts1.unbound == (ts1 << delta).unbound
+        assert ts1.future_unbound == (ts1 << delta).future_unbound
+        assert ts1.past_unbound == (ts1 << delta).past_unbound
+    except OverflowError:
+        pass
 
 
 @given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_doubled(ts1, delta):
-    assert ((ts1 << delta) << delta) == (ts1 << (2 * delta))
+    try:
+        assert ((ts1 << delta) << delta) == (ts1 << (2 * delta))
+    except OverflowError:
+        pass
 
 
 @given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_backandforth(ts1, delta):
-    assert ts1 == ((ts1 << delta) >> delta) == (ts1 << 0) == (ts1 >> 0)
+    try:
+        assert ts1 == ((ts1 << delta) >> delta) == (ts1 << 0) == (ts1 >> 0)
+    except OverflowError:
+        pass
 
 
 @given(timespans(unbounds='none'),
@@ -257,8 +269,12 @@ def test_timespans_displacement_dates(ts1, delta):
 @given(timespans(unbounds='none'),
        strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_keeps_the_len(ts1, delta):
-    res = ts1 << delta
-    assert len(ts1) == len(res)
+    try:
+        res = ts1 << delta
+    except OverflowError:
+        pass
+    else:
+        assert len(ts1) == len(res)
 
 
 @given(timespans())
