@@ -1106,7 +1106,6 @@ class DateTimeSpan(TimeSpan):
         self.start_datetime = start_datetime
         self.end_datetime = end_datetime
 
-
     @classmethod
     def from_datetime(self, dt):
         '''Return a new date time span that covers a single `datetime`.
@@ -1359,16 +1358,20 @@ class DateTimeSpan(TimeSpan):
             return EmptyTimeSpan, EmptyTimeSpan
         else:
             assert self > other
-            second = timedelta(seconds=1)
+            sec = timedelta(seconds=1)
             if self.start_datetime == other.start_datetime:
                 return (EmptyTimeSpan,
-                        TimeSpan(other.end_datetime + second, self.end_datetime))
+                        DateTimeSpan(other.end_datetime + sec,
+                                     self.end_datetime))
             elif self.end_datetime == other.end_datetime:
-                return (TimeSpan(self.start_datetime, other.start_datetime - second),
+                return (DateTimeSpan(self.start_datetime,
+                                     other.start_datetime - sec),
                         EmptyTimeSpan)
             else:
-                return (TimeSpan(self.start_datetime, other.start_datetime - second),
-                        TimeSpan(other.end_datetime + second, self.end_datetime))
+                return (DateTimeSpan(self.start_datetime,
+                                     other.start_datetime - sec),
+                        DateTimeSpan(other.end_datetime + sec,
+                                     self.end_datetime))
 
     def __repr__(self):
         start, end = self
