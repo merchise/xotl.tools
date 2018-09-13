@@ -712,12 +712,7 @@ class TimeSpan(object):
                 return True
 
     def __contains__(self, other):
-        '''Test if we completely cover `other` time span.
-
-        A time span completely cover another one if every day contained by
-        `other` is also contained by `self`.
-
-        Another way to define it is that ``self & other == other``.
+        '''Test date `other` is in the time span.
 
         '''
         from datetime import date
