@@ -890,6 +890,53 @@ class TimeSpan(object):
         from functools import reduce
         return reduce(operator.mul, others, self)
 
+    def diff(self, other):
+        # type: (TimeSpan) -> Tuple[TimeSpan, TimeSpan]
+        '''Return the two time spans which (combined) contain all the dates in
+        `self` which are not in `other`.
+
+        Notice this method returns a tuple of exactly two items.
+
+        If `other` and `self` don't overlap, return ``(self, EmptyTimeSpan)``.
+
+        If ``self <= other`` is True, return the tuple with the empty time
+        span in both positions.
+
+        Otherwise `self` will have some dates which are not in `other`; there
+        are possible three cases:
+
+        a) other starts before or at self's start date; return the empty time
+           span and the time span containing the dates after `other.end_date`
+           up to `self.end_date`
+
+        b) other ends at or after self's end date; return the dates from
+           `self.start_date` up to the date before `other.start_date` and the
+           empty time span.
+
+        c) `other` is fully contained in `self`; return two non-empty time
+           spans as in the previous cases.
+
+        .. versionadded:: 1.9.7
+
+        '''
+        if not self & other:
+            return self, EmptyTimeSpan
+        other = self & other
+        if self == other:
+            return EmptyTimeSpan, EmptyTimeSpan
+        else:
+            assert self > other
+            day = timedelta(days=1)
+            if self.start_date == other.start_date:
+                return (EmptyTimeSpan,
+                        TimeSpan(other.end_date + day, self.end_date))
+            elif self.end_date == other.end_date:
+                return (TimeSpan(self.start_date, other.start_date - day),
+                        EmptyTimeSpan)
+            else:
+                return (TimeSpan(self.start_date, other.start_date - day),
+                        TimeSpan(other.end_date + day, self.end_date))
+
     def __repr__(self):
         start, end = self
         return 'TimeSpan(%r, %r)' % (start.isoformat() if start else None,
@@ -915,10 +962,13 @@ class _EmptyTimeSpan(object):
             # not warrant to call our __new__.
             return self is which
         else:
-            raise TypeError
+            return NotImplemented
 
     def __ne__(self, which):
-        return not (self == which)
+        if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
+            return not (self == which)
+        else:
+            return NotImplemented
 
     # The empty set is a subset of any other set.  dates are regarded as the
     # set that contains that
@@ -927,7 +977,7 @@ class _EmptyTimeSpan(object):
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             return True
         else:
-            raise TypeError
+            return NotImplemented
 
     # The empty set is only a superset of itself.
     __ge__ = covers = __eq__
@@ -942,7 +992,7 @@ class _EmptyTimeSpan(object):
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             return True
         else:
-            raise TypeError
+            return NotImplemented
 
     # `empty | x == empty + x == x`
     def __add__(self, which):

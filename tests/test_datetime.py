@@ -13,7 +13,7 @@ from __future__ import (division as _py3_division,
 
 import pytest
 
-from xoutil.future.datetime import date, datetime
+from xoutil.future.datetime import date, datetime, timedelta
 from xoutil.future.datetime import daterange
 from xoutil.future.datetime import TimeSpan, EmptyTimeSpan
 
@@ -316,3 +316,64 @@ def test_setting_end_date(d, dts):
         assert dts.end_datetime == datetime(d.year, d.month, d.day, 23, 59, 59)
     else:
         assert dts.end_datetime is None
+
+# Hypothesis can generate timedeltas too big to sum with dates.
+@given(strategies.datetimes(),
+       strategies.timedeltas(min_value=timedelta(1), max_value=timedelta(200)))
+def test_timespan_diff(start_date, days):
+    big = TimeSpan(start_date, start_date + 3 * days)
+    x, y = big.diff(big)
+    assert x is EmptyTimeSpan and y is EmptyTimeSpan
+
+    x, y = big.diff(EmptyTimeSpan)
+    assert x == big and y is EmptyTimeSpan
+
+    outsider = big >> 4 * days
+    assert not big & outsider
+    x, y = big.diff(outsider)
+    assert x == big and y is EmptyTimeSpan
+    x, y = outsider.diff(big)
+    assert x == outsider and y is EmptyTimeSpan
+
+    atstart = TimeSpan(start_date, start_date + days)
+    assert atstart < big
+    x, y = big.diff(atstart)
+    assert x is EmptyTimeSpan
+    assert y
+    assert add_timespans(atstart, y) == big
+
+    beforestart = TimeSpan(start_date - days, start_date + days)
+    x, y = big.diff(beforestart)
+    assert x is EmptyTimeSpan
+    assert y
+    assert add_timespans(beforestart & big, y) == big
+
+    atend = TimeSpan(start_date + 2 * days, start_date + 3 * days)
+    assert atend < big
+    x, y = big.diff(atend)
+    assert y is EmptyTimeSpan
+    assert x
+    assert add_timespans(x, atend) == big
+
+    afterend = TimeSpan(start_date + 2 * days, start_date + 4 * days)
+    x, y = big.diff(afterend)
+    assert y is EmptyTimeSpan
+    assert x
+    assert add_timespans(x, big & afterend) == big
+
+    middle = TimeSpan(start_date + days, start_date + 2 * days)
+    assert middle < big
+    x, y = big.diff(middle)
+    assert x and y
+    assert add_timespans(add_timespans(x, middle), y) == big
+
+    bigger = TimeSpan(start_date - days, start_date + 4 * days)
+    x, y = big.diff(bigger)
+    assert x is EmptyTimeSpan and y is EmptyTimeSpan
+
+
+def add_timespans(x, y):
+    if x.end_date == y.start_date - timedelta(1):
+        return TimeSpan(x.start_date, y.end_date)
+    else:
+        raise ValueError
