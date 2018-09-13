@@ -569,7 +569,7 @@ class DateTimeField(object):
 
     If `prefer_last_minute` is False when converting from date, the time
     component will be '00:00:00', if True, the time component will be
-    '23:59:29'.
+    '23:59:59'.
 
     .. versionadded:: 1.9.7
 
@@ -782,8 +782,7 @@ class TimeSpan(object):
     def __and__(self, other):
         '''Get the time span that is the intersection with another time span.
 
-        If two time spans don't overlap, return the `empty time span
-        <EmptyTimeSpan>`:obj:.
+        If two time spans don't overlap, return `EmptyTimeSpan`:data:.
 
         If `other` is not a TimeSpan we try to create one.  If `other` is a
         date, we create the TimeSpan that starts and end that very day. Other
@@ -1123,8 +1122,8 @@ class DateTimeSpan(TimeSpan):
         # type: (TimeSpan) -> DateTimeSpan
         '''Return a new date time span from a timespan.
 
-        Notice the 'end_datetime' will be at '23:59:59' of the end day in the
-        timespan.
+        Notice the start datetime will be set at '00:00:00' and the end
+        datetime at '23:59:59'.
 
         '''
         return self(start_datetime=ts.start_date,
@@ -1168,12 +1167,10 @@ class DateTimeSpan(TimeSpan):
                 return True
 
     def __contains__(self, other):
-        '''Test if we completely cover `other` time span.
+        '''Test if datetime `other` is in the datetime span.
 
-        A time span completely cover another one if every day contained by
-        `other` is also contained by `self`.
-
-        Another way to define it is that ``self & other == other``.
+        If `other` is a `~datetime.date`:class:, we convert it to a naive
+        datetime at midnight (00:00:00).
 
         '''
         from datetime import date, datetime
@@ -1247,13 +1244,13 @@ class DateTimeSpan(TimeSpan):
     def __and__(self, other):
         '''Get the date time span that is the intersection with another time span.
 
-        If two time spans don't overlap, return the `empty date time span
-        <EmptyTimeSpan>`:obj:.
+        If two time spans don't overlap, return the object
+        `EmptyTimeSpan`:any:.
 
         If `other` is not a DateTimeSpan we try to create one.  If `other` is
-        a date/datetime, we create the DateTimeSpan that starts and end that
-        very day.  If `other` is TimeSpan we use `from_timespan`.  Other types
-        are passed unchanged to the constructor.
+        a date/datetime, we create use `from_datetime`:meth:.  If `other` is
+        TimeSpan we use `from_timespan`:meth:.  Other types are passed
+        unchanged to the constructor.
 
         '''
         import datetime

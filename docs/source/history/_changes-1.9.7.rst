@@ -8,3 +8,5 @@
   deprecated alias.
 
 - Add `xoutil.future.datetime.TimeSpan.diff`:meth:
+
+- Add `xoutil.future.datetime.DateTimeSpan`:class:.
