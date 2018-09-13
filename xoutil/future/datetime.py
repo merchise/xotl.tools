@@ -1062,14 +1062,6 @@ class SynchronizedField(object):
                 self.setting_descriptor.__set__(instance, value)
 
 
-class ReadonlyField(object):
-    def __init__(self, descriptor):
-        self.descriptor = descriptor
-
-    def __get__(self, instance, owner):
-        return self.descriptor.__get__(instance, owner)
-
-
 class DateTimeSpan(TimeSpan):
     '''A *continuous* span of time (with datetime at each boundary).
 
@@ -1093,6 +1085,9 @@ class DateTimeSpan(TimeSpan):
     also update `end_datetime` with the same date at 23:59:59 without tzinfo.
 
     .. versionadded:: 1.9.7
+
+    .. warning:: DateTimeSpan is provided on a provision basis.  Future
+       releases can change its API or remove it completely.
 
     '''
     start_datetime = SynchronizedField(
