@@ -1125,8 +1125,11 @@ class DateTimeSpan(TimeSpan):
         datetime at '23:59:59'.
 
         '''
-        return self(start_datetime=ts.start_date,
-                    end_datetime=ts.end_date)
+        if isinstance(ts, DateTimeSpan):
+            return ts
+        else:
+            return self(start_datetime=ts.start_date,
+                        end_datetime=ts.end_date)
 
     @property
     def past_unbound(self):
@@ -1227,7 +1230,8 @@ class DateTimeSpan(TimeSpan):
         import datetime
         if isinstance(other, datetime.date):
             other = type(self).from_datetime(other)
-        elif isinstance(other, TimeSpan):
+        elif isinstance(other, TimeSpan) and \
+             not isinstance(other, DateTimeSpan):   # noqa
             other = self.from_timespan(other)
         elif not isinstance(other, DateTimeSpan):
             other = type(self)(other)
