@@ -1338,6 +1338,51 @@ class DateTimeSpan(TimeSpan):
         from functools import reduce
         return reduce(operator.mul, others, self)
 
+    def diff(self, other):
+        # type: (DateTimeSpan) -> Tuple[DateTimeSpan, DateTimeSpan]
+        '''Return the two datetime spans which (combined) contain all the
+        seconds in `self` which are not in `other`.
+
+        Notice this method returns a tuple of exactly two items.
+
+        If `other` and `self` don't overlap, return ``(self, EmptyTimeSpan)``.
+
+        If ``self <= other`` is True, return the tuple with the empty time
+        span in both positions.
+
+        Otherwise `self` will have some datetimes which are not in `other`;
+        there are possible three cases:
+
+        a) other starts before or at self's start datetime; return the empty
+           time span and the datetime span from the second after
+           `other.end_datetime` up to `self.end_datetime`
+
+        b) other ends at or after self's end date; return the datetime span
+           from `self.start_datetime` up to the second before
+           `other.start_datetime` and the empty time span.
+
+        c) `other` is fully contained in `self`; return two non-empty datetime
+           spans as in the previous cases.
+
+        '''
+        if not self & other:
+            return self, EmptyTimeSpan
+        other = self & other
+        if self == other:
+            return EmptyTimeSpan, EmptyTimeSpan
+        else:
+            assert self > other
+            second = timedelta(seconds=1)
+            if self.start_datetime == other.start_datetime:
+                return (EmptyTimeSpan,
+                        TimeSpan(other.end_datetime + second, self.end_datetime))
+            elif self.end_datetime == other.end_datetime:
+                return (TimeSpan(self.start_datetime, other.start_datetime - second),
+                        EmptyTimeSpan)
+            else:
+                return (TimeSpan(self.start_datetime, other.start_datetime - second),
+                        TimeSpan(other.end_datetime + second, self.end_datetime))
+
     def __repr__(self):
         start, end = self
         return 'DateTimeSpan(%r, %r)' % (
