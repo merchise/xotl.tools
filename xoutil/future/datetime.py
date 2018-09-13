@@ -774,7 +774,7 @@ class TimeSpan(object):
                 self.end_date == other.end_date)
 
     def __hash__(self):
-        return hash((self.start_date, self.end_date))
+        return hash((TimeSpan, self.start_date, self.end_date))
 
     def __ne__(self, other):
         return not (self == other)
@@ -1108,6 +1108,7 @@ class DateTimeSpan(TimeSpan):
 
     @classmethod
     def from_datetime(self, dt):
+        # type: (datetime) -> DateTimeSpan
         '''Return a new date time span that covers a single `datetime`.
 
         If `dt` is actually a date, the start_datetime will be at '00:00:00'
@@ -1169,6 +1170,7 @@ class DateTimeSpan(TimeSpan):
                 return True
 
     def __contains__(self, other):
+        # type: (date) -> bool
         '''Test if datetime `other` is in the datetime span.
 
         If `other` is a `~datetime.date`:class:, we convert it to a naive
@@ -1191,10 +1193,12 @@ class DateTimeSpan(TimeSpan):
             return False
 
     def overlaps(self, other):
+        # type: (TimeSpan) -> DateTimeSpan
         '''Test if the time spans overlaps.'''
         return bool(self & other)
 
     def isdisjoint(self, other):
+        # type: (TimeSpan) -> bool
         return not self.overlaps(other)
 
     def __le__(self, other):
@@ -1239,12 +1243,13 @@ class DateTimeSpan(TimeSpan):
                 self.end_datetime == other.end_datetime)
 
     def __hash__(self):
-        return hash((self.start_date, self.end_date))
+        return hash((DateTimeSpan, self.start_datetime, self.end_datetime))
 
     def __ne__(self, other):
         return not (self == other)
 
     def __and__(self, other):
+        # type: (TimeSpan) -> DateTimeSpan
         '''Get the date time span that is the intersection with another time span.
 
         If two time spans don't overlap, return the object

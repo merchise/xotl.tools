@@ -74,7 +74,6 @@ def timespans(draw, dates=None, unbounds='any', always_valid=True):
     return TimeSpan(start_date=start1, end_date=end1)
 
 
-
 @strategies.composite
 def datetimespans(draw, dates=None, unbounds='any', always_valid=True):
     '''A strategy that generates `xoutil.future.datetime.DateTimeSpan`:class:.
