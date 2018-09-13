@@ -71,7 +71,7 @@ def _key_for_value(source, value, strict=True):
             item = mapping[key]
             if item is value:
                 found = key, mapping
-            elif item == value:
+            elif value == item:
                 if strict:
                     equal = key, mapping
                 else:
