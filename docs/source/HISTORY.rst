@@ -21,7 +21,7 @@ Changelog
    This end-of-life notice puts an end to this issue.
 
 
-Unreleased.  Release 2.0.7
+2018-09-14.  Release 2.0.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.0.7.rst
