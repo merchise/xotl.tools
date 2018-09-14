@@ -476,8 +476,13 @@ if sys.version_info < (3, 0):
             else:
                 return date.__eq__(self, other)
 
-        def __ne__(self, other):
-            return not (self == other)
+        if sys.version_info < (3, 0):
+            def __ne__(self, other):
+                res = self == other
+                if res is not NotImplemented:
+                    return not res
+                else:
+                    return res
 
     class infinity_extended_datetime(datetime):
         'A datetime that compares to Infinity'
@@ -514,14 +519,17 @@ if sys.version_info < (3, 0):
             else:
                 return datetime.__eq__(self, other)
 
-        def __ne__(self, other):
-            return not (self == other)
+        if sys.version_info < (3, 0):
+            def __ne__(self, other):
+                res = self == other
+                if res is not NotImplemented:
+                    return not res
+                else:
+                    return res
+
 else:
     infinity_extended_date = date
     infinity_extended_datetime = datetime
-
-
-del sys
 
 
 class DateField(object):
@@ -775,15 +783,20 @@ class TimeSpan(object):
         if isinstance(other, datetime.date):
             other = type(self).from_date(other)
         if not isinstance(other, TimeSpan):
-            other = type(self)(other)
+            return NotImplemented
         return (self.start_date == other.start_date and
                 self.end_date == other.end_date)
 
     def __hash__(self):
         return hash((TimeSpan, self.start_date, self.end_date))
 
-    def __ne__(self, other):
-        return not (self == other)
+    if sys.version_info < (3, 0):
+        def __ne__(self, other):
+            res = self == other
+            if res is not NotImplemented:
+                return not res
+            else:
+                return res
 
     def __and__(self, other):
         '''Get the time span that is the intersection with another time span.
@@ -964,11 +977,12 @@ class _EmptyTimeSpan(object):
         else:
             return NotImplemented
 
-    def __ne__(self, which):
-        if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
-            return not (self == which)
+    def __ne__(self, other):
+        res = self == other
+        if res is not NotImplemented:
+            return not res
         else:
-            return NotImplemented
+            return res
 
     # The empty set is a subset of any other set.  dates are regarded as the
     # set that contains that
@@ -1248,15 +1262,21 @@ class DateTimeSpan(TimeSpan):
              not isinstance(other, DateTimeSpan):   # noqa
             other = self.from_timespan(other)
         elif not isinstance(other, DateTimeSpan):
-            other = type(self)(other)
+            return NotImplemented
         return (self.start_datetime == other.start_datetime and
                 self.end_datetime == other.end_datetime)
 
     def __hash__(self):
         return hash((DateTimeSpan, self.start_datetime, self.end_datetime))
 
-    def __ne__(self, other):
-        return not (self == other)
+    if sys.version_info < (3, 0):
+        def __ne__(self, other):
+            # type: (TimeSpan) -> bool
+            res = self == other
+            if res is not NotImplemented:
+                return not res
+            else:
+                return res
 
     def __and__(self, other):
         # type: (TimeSpan) -> DateTimeSpan
@@ -1531,6 +1551,9 @@ except NameError:
     timezone.min = timezone._create(timezone._minoffset)
     timezone.max = timezone._create(timezone._maxoffset)
     # _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+
+del sys
 
 
 # TODO: this function was intended for a local 'strftime' that it's already
