@@ -1068,10 +1068,10 @@ class SynchronizedField(object):
 class DateTimeSpan(TimeSpan):
     '''A *continuous* span of time (with datetime at each boundary).
 
-    This is a minor generalization of `TimeSpan`:class:, and
-    `DateTimeSpan`:class: is a subclass.
+    `DateTimeSpan`:class: is a minor extension of `TimeSpan`:class:, and is a
+    subclass.
 
-    DateTime spans objects are iterable.  They yield exactly two datetimes:
+    DateTimeSpan objects are iterable.  They yield exactly two datetimes:
     first the start date, and then the end date::
 
        >>> ts = DateTimeSpan('2017-08-01 11:00', '2017-09-01 23:00')
@@ -1081,15 +1081,16 @@ class DateTimeSpan(TimeSpan):
     The API of DateTimeSpan is just the natural transformation of the API of
     `TimeSpan`:class:.
 
-    DateTimeSpan is a subclass of TimeSpan.  It has the `start_date` and
-    `end_date` attributes.  By changing `start_date`, you also change
-    `start_datetime` witht the same date at 00:00 without tzinfo.  By setting
-    `start_datetime` you also update `start_date`.  By setting `end_date` you
-    also update `end_datetime` with the same date at 23:59:59 without tzinfo.
+    The `start_date` and `end_date` attributes are interlocked with the
+    `start_datetime` and `end_datetime`.  By changing `start_date`, you also
+    change `start_datetime` with the same date at 00:00 without tzinfo.  By
+    setting `start_datetime` you also update `start_date`.  By setting
+    `end_date` you also update `end_datetime` with the same date at 23:59:59
+    without tzinfo.
 
     .. versionadded:: 1.9.7
 
-    .. warning:: DateTimeSpan is provided on a provision basis.  Future
+    .. warning:: DateTimeSpan is provided on a provisional basis.  Future
        releases can change its API or remove it completely.
 
     '''
