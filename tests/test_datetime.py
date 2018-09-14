@@ -376,55 +376,58 @@ def test_timespan_diff(start_date, delta):
 
 @given(strategies.datetimes(min_value=datetime(1970, 1, 1),
                             max_value=datetime(5000, 12, 31)),
-       strategies.timedeltas(min_value=timedelta(1), max_value=timedelta(200)))
-def test_datetimespan_diff(start_date, days):
-    big = DateTimeSpan(start_date, start_date + 3 * days)
+       strategies.integers(min_value=1, max_value=10000))
+def test_datetimespan_diff(start_date, delta):
+    secs = timedelta(seconds=delta)
+    big = DateTimeSpan(start_date, start_date + 3 * secs)
+    assert big.start_datetime == start_date
+    assert big.end_datetime == start_date + 3 * secs
     x, y = big.diff(big)
     assert x is EmptyTimeSpan and y is EmptyTimeSpan
 
     x, y = big.diff(EmptyTimeSpan)
     assert x == big and y is EmptyTimeSpan
 
-    outsider = big >> 4 * days
+    outsider = big >> 4 * secs
     assert not big & outsider
     x, y = big.diff(outsider)
     assert x == big and y is EmptyTimeSpan
     x, y = outsider.diff(big)
     assert x == outsider and y is EmptyTimeSpan
 
-    atstart = DateTimeSpan(start_date, start_date + days)
+    atstart = DateTimeSpan(start_date, start_date + secs)
     assert atstart < big
     x, y = big.diff(atstart)
     assert x is EmptyTimeSpan
     assert y
     assert add_dtspans(atstart, y) == big
 
-    beforestart = DateTimeSpan(start_date - days, start_date + days)
+    beforestart = DateTimeSpan(start_date - secs, start_date + secs)
     x, y = big.diff(beforestart)
     assert x is EmptyTimeSpan
     assert y
     assert add_dtspans(beforestart & big, y) == big
 
-    atend = DateTimeSpan(start_date + 2 * days, start_date + 3 * days)
+    atend = DateTimeSpan(start_date + 2 * secs, start_date + 3 * secs)
     assert atend < big
     x, y = big.diff(atend)
     assert y is EmptyTimeSpan
     assert x
     assert add_dtspans(x, atend) == big
 
-    afterend = DateTimeSpan(start_date + 2 * days, start_date + 4 * days)
+    afterend = DateTimeSpan(start_date + 2 * secs, start_date + 4 * secs)
     x, y = big.diff(afterend)
     assert y is EmptyTimeSpan
     assert x
     assert add_dtspans(x, big & afterend) == big
 
-    middle = DateTimeSpan(start_date + days, start_date + 2 * days)
+    middle = DateTimeSpan(start_date + secs, start_date + 2 * secs)
     assert middle < big
     x, y = big.diff(middle)
     assert x and y
     assert add_dtspans(add_dtspans(x, middle), y) == big
 
-    bigger = DateTimeSpan(start_date - days, start_date + 4 * days)
+    bigger = DateTimeSpan(start_date - secs, start_date + 4 * secs)
     x, y = big.diff(bigger)
     assert x is EmptyTimeSpan and y is EmptyTimeSpan
 
