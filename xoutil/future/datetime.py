@@ -204,6 +204,36 @@ def parse_date(value=None):
         return date.today()
 
 
+def parse_datetime(value=None):
+    '''Parse a datime in format 'YYYY-MM-DD HH:MM[:SS][.MS]'.
+
+    The hour-minute component is mandatory.
+
+    '''
+    if value:
+        d, t = value.split()
+        y, m, d = d.split('-')
+        if '.' in t:
+            moment, ms = t.split('.')
+        else:
+            moment, ms = t, '0'
+        timing = moment.split(':')
+        if len(timing) == 2:
+            h, mn = timing
+            s = 0
+        elif len(timing) == 3:
+            h, mn, s = timing
+        else:
+            raise ValueError('Invalid time string %r' % t)
+        return datetime(
+            int(y), int(m), int(d),
+            int(h), int(mn), int(s),
+            int(ms)
+        )
+    else:
+        return datetime.now()
+
+
 def get_month_first(ref=None):
     '''Given a reference date, returns the first date of the same month. If
     `ref` is not given, then uses current date as the reference.
@@ -341,9 +371,6 @@ def daterange(*args):
     return _generator()
 
 
-infinity_extended_date = date
-
-
 class DateField:
     '''A simple descriptor for dates.
 
@@ -359,7 +386,7 @@ class DateField:
         if instance is not None:
             res = instance.__dict__[self.name]
             if res and NEEDS_FLEX_DATE in context:
-                return infinity_extended_date(res.year, res.month, res.day)
+                return date(res.year, res.month, res.day)
             else:
                 return res
         else:
@@ -378,6 +405,69 @@ class DateField:
             value = value.date()
         elif not isinstance(value, date):
             value = parse_date(value)
+        instance.__dict__[self.name] = value
+
+
+class DateTimeField(object):
+    '''A simple descriptor for datetimes.
+
+    Ensures that assigned values must be parseable date or datetime and parses
+    them.
+
+    If `prefer_last_minute` is False when converting from date, the time
+    component will be '00:00:00', if True, the time component will be
+    '23:59:59'.
+
+    .. versionadded:: 1.9.7
+
+    '''
+    def __init__(self, name, nullable=False, prefer_last_minute=False):
+        self.name = name
+        self.nullable = nullable
+        self.prefer_last_minute = prefer_last_minute
+
+    def __get__(self, instance, owner):
+        from xoutil.context import context
+        if instance is not None:
+            res = instance.__dict__[self.name]
+            if res and NEEDS_FLEX_DATE in context:
+                return datetime(
+                    res.year, res.month, res.day,
+                    res.hour, res.minute, res.second,
+                    res.microsecond,
+                    res.tzinfo
+                )
+            else:
+                return res
+        else:
+            return self
+
+    def __set__(self, instance, value):
+        import datetime as stdlib
+        if value in (None, False):
+            # We regard False as None, so that working with Odoo is easier:
+            # missing values in Odoo, often come as False instead of None.
+            if not self.nullable:
+                raise ValueError('Setting None to a required field')
+            else:
+                value = None
+        elif isinstance(value, stdlib.datetime):
+            # needed because datetime is subclass of date, and the next
+            # condition would match.
+            pass
+        elif isinstance(value, stdlib.date):
+            if not self.prefer_last_minute:
+                value = stdlib.datetime(value.year, value.month, value.day)
+            else:
+                value = stdlib.datetime(value.year, value.month, value.day,
+                                        23, 59, 59)
+        else:
+            try:
+                value = parse_datetime(value)
+            except ValueError:
+                value = parse_date(value)
+                self.__set__(instance, value)  # lazy me
+                return
         instance.__dict__[self.name] = value
 
 
@@ -405,6 +495,9 @@ class TimeSpan:
     Two time spans are equal if their start_date and end_date are equal.  When
     comparing a time span with a date, the date is coerced to a time span
     (`from_date`:meth:).
+
+    .. note:: Comparing time spans with date time spans `coerces the time span
+              <DateTimeSpan.from_timespan>`:meth: before comparing.
 
     A time span with its `start` set to None is unbound to the past.  A time
     span with its `end` set to None is unbound to the future.  A time span
@@ -434,21 +527,25 @@ class TimeSpan:
 
     @classmethod
     def from_date(self, date):
+        # type: (date) -> TimeSpan
         '''Return a new time span that covers a single `date`.'''
         return self(start_date=date, end_date=date)
 
     @property
     def past_unbound(self):
+        # type: () -> bool
         'True if the time span is not bound into the past.'
         return self.start_date is None
 
     @property
     def future_unbound(self):
+        # type: () -> bool
         'True if the time span is not bound into the future.'
         return self.end_date is None
 
     @property
     def unbound(self):
+        # type: () -> bool
         '''True if the time span is `unbound into the past <past_unbound>`:attr: or
         `unbount into the future <future_unbound>`:attr: or both.
 
@@ -457,11 +554,13 @@ class TimeSpan:
 
     @property
     def bound(self):
+        # type: () -> bool
         'True if the time span is not `unbound <unbound>`:attr:.'
         return not self.unbound
 
     @property
     def valid(self):
+        # type: () -> bool
         '''A bound time span is valid if it starts before it ends.
 
         Unbound time spans are always valid.
@@ -475,14 +574,10 @@ class TimeSpan:
                 return True
 
     def __contains__(self, other):
-        '''Test if we completely cover `other` time span.
-
-        A time span completely cover another one if every day contained by
-        `other` is also contained by `self`.
-
-        Another way to define it is that ``self & other == other``.
+        '''Test date `other` is in the time span.
 
         '''
+        # type: (date) -> bool
         from datetime import date
         if isinstance(other, date):
             if self.start_date and self.end_date:
@@ -497,27 +592,33 @@ class TimeSpan:
             return False
 
     def overlaps(self, other):
+        # type: (TimeSpan) -> bool
         '''Test if the time spans overlaps.'''
         return bool(self & other)
 
     def isdisjoint(self, other):
+        # type: (TimeSpan) -> bool
         return not self.overlaps(other)
 
     def __le__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a superset.'
         return (self & other) == self
 
     issubset = __le__
 
     def __lt__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a proper superset.'
         return self != other and self <= other
 
     def __gt__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a proper subset.'
         return self != other and self >= other
 
     def __ge__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a subset.'
         # Notice that ge is not the opposite of lt.
         return (self & other) == other
@@ -525,37 +626,43 @@ class TimeSpan:
     issuperset = covers = __ge__
 
     def __iter__(self):
+        # type: () -> Iterator[date, date]
         yield self.start_date
         yield self.end_date
 
     def __getitem__(self, index):
+        # type: (int) -> date
         this = tuple(self)
         return this[index]
 
     def __eq__(self, other):
+        # type: (TimeSpan) -> bool
         import datetime
         if isinstance(other, datetime.date):
             other = type(self).from_date(other)
+        elif isinstance(other, DateTimeSpan):
+            return other == self
         if not isinstance(other, TimeSpan):
-            other = type(self)(other)
+            return NotImplemented
         return (self.start_date == other.start_date and
                 self.end_date == other.end_date)
 
     def __hash__(self):
-        return hash((self.start_date, self.end_date))
-
-    def __ne__(self, other):
-        return not (self == other)
+        return hash((TimeSpan, self.start_date, self.end_date))
 
     def __and__(self, other):
+        # type: (TimeSpan) -> TimeSpan
         '''Get the time span that is the intersection with another time span.
 
-        If two time spans don't overlap, return the `empty time span
-        <EmptyTimeSpan>`:obj:.
+        If two time spans don't overlap, return `EmptyTimeSpan`:data:.
 
         If `other` is not a TimeSpan we try to create one.  If `other` is a
         date, we create the TimeSpan that starts and end that very day. Other
         types are passed unchanged to the constructor.
+
+        When `other` is a `DateTimeSpan`:class:, convert `self` to a `date
+        time span <DateTimeSpan.from_timespan>`:meth: before doing the
+        intersection.
 
         '''
         import datetime
@@ -565,6 +672,8 @@ class TimeSpan:
             return other
         elif isinstance(other, datetime.date):
             other = TimeSpan.from_date(other)
+        elif isinstance(other, DateTimeSpan):
+            return other & self
         elif not isinstance(other, TimeSpan):
             raise TypeError("Invalid type '%s'" % type(other).__name__)
         with context(NEEDS_FLEX_DATE):
@@ -653,6 +762,53 @@ class TimeSpan:
         from functools import reduce
         return reduce(operator.mul, others, self)
 
+    def diff(self, other):
+        # type: (TimeSpan) -> Tuple[TimeSpan, TimeSpan]
+        '''Return the two time spans which (combined) contain all the dates in
+        `self` which are not in `other`.
+
+        Notice this method returns a tuple of exactly two items.
+
+        If `other` and `self` don't overlap, return ``(self, EmptyTimeSpan)``.
+
+        If ``self <= other`` is True, return the tuple with the empty time
+        span in both positions.
+
+        Otherwise `self` will have some dates which are not in `other`; there
+        are possible three cases:
+
+        a) other starts before or at self's start date; return the empty time
+           span and the time span containing the dates after `other.end_date`
+           up to `self.end_date`
+
+        b) other ends at or after self's end date; return the dates from
+           `self.start_date` up to the date before `other.start_date` and the
+           empty time span.
+
+        c) `other` is fully contained in `self`; return two non-empty time
+           spans as in the previous cases.
+
+        .. versionadded:: 1.9.7
+
+        '''
+        if not self & other:
+            return self, EmptyTimeSpan
+        other = self & other
+        if self == other:
+            return EmptyTimeSpan, EmptyTimeSpan
+        else:
+            assert self > other
+            day = timedelta(days=1)
+            if self.start_date == other.start_date:
+                return (EmptyTimeSpan,
+                        TimeSpan(other.end_date + day, self.end_date))
+            elif self.end_date == other.end_date:
+                return (TimeSpan(self.start_date, other.start_date - day),
+                        EmptyTimeSpan)
+            else:
+                return (TimeSpan(self.start_date, other.start_date - day),
+                        TimeSpan(other.end_date + day, self.end_date))
+
     def __repr__(self):
         start, end = self
         return 'TimeSpan(%r, %r)' % (start.isoformat() if start else None,
@@ -678,10 +834,14 @@ class _EmptyTimeSpan:
             # not warrant to call our __new__.
             return self is which
         else:
-            raise TypeError
+            return NotImplemented
 
-    def __ne__(self, which):
-        return not (self == which)
+    def __ne__(self, other):
+        res = self == other
+        if res is not NotImplemented:
+            return not res
+        else:
+            return res
 
     # The empty set is a subset of any other set.  dates are regarded as the
     # set that contains that
@@ -690,7 +850,7 @@ class _EmptyTimeSpan:
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             return True
         else:
-            raise TypeError
+            return NotImplemented
 
     # The empty set is only a superset of itself.
     __ge__ = covers = __eq__
@@ -705,7 +865,7 @@ class _EmptyTimeSpan:
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             return True
         else:
-            raise TypeError
+            return NotImplemented
 
     # `empty | x == empty + x == x`
     def __add__(self, which):
@@ -751,6 +911,381 @@ class _EmptyTimeSpan:
 
 
 EmptyTimeSpan = _EmptyTimeSpan()
+
+
+# TODO: Move this to xoutil.objects or somewhere else
+class SynchronizedField(object):
+    '''A synchronized descriptor.
+
+    Whenever the `source` gets updated, update the second.
+
+    '''
+    def __init__(self, descriptor, setting_descriptor, set_throu_get=True):
+        self.descriptor = descriptor
+        self.setting_descriptor = setting_descriptor
+        self.set_throu_get = set_throu_get
+
+    def __get__(self, instance, owner):
+        return self.descriptor.__get__(instance, owner)
+
+    def __set__(self, instance, value):
+        from xoutil.context import context
+        self.descriptor.__set__(instance, value)
+        if (SynchronizedField, self.setting_descriptor) not in context:
+            with context((SynchronizedField, self.setting_descriptor)):
+                if self.set_throu_get:
+                    value = self.__get__(instance, type(instance))
+                self.setting_descriptor.__set__(instance, value)
+
+
+class DateTimeSpan(TimeSpan):
+    '''A *continuous* span of time (with datetime at each boundary).
+
+    `DateTimeSpan`:class: is a minor extension of `TimeSpan`:class:, and is a
+    subclass.
+
+    DateTimeSpan objects are iterable.  They yield exactly two datetimes:
+    first the start date, and then the end date::
+
+       >>> ts = DateTimeSpan('2017-08-01 11:00', '2017-09-01 23:00')
+       >>> tuple(ts)
+       (datetime(2017, 8, 1, 11, 0), date(2017, 9, 1, 23, 0))
+
+    The API of DateTimeSpan is just the natural transformation of the API of
+    `TimeSpan`:class:.
+
+    The `start_date` and `end_date` attributes are interlocked with the
+    `start_datetime` and `end_datetime`.  By changing `start_date`, you also
+    change `start_datetime` with the same date at 00:00 without tzinfo.  By
+    setting `start_datetime` you also update `start_date`.  By setting
+    `end_date` you also update `end_datetime` with the same date at 23:59:59
+    without tzinfo.
+
+    .. versionadded:: 1.9.7
+
+    .. warning:: DateTimeSpan is provided on a provisional basis.  Future
+       releases can change its API or remove it completely.
+
+    '''
+    start_datetime = SynchronizedField(
+        DateTimeField('start_datetime', nullable=True),
+        TimeSpan.start_date,
+    )
+    end_datetime = SynchronizedField(
+        DateTimeField('end_datetime', nullable=True, prefer_last_minute=True),
+        TimeSpan.end_date,
+    )
+    start_date = SynchronizedField(
+        TimeSpan.start_date,
+        start_datetime.descriptor,
+    )
+    end_date = SynchronizedField(
+        TimeSpan.end_date,
+        end_datetime.descriptor,
+    )
+
+    def __init__(self, start_datetime=None, end_datetime=None):
+        # Don't call super because our fields are synchronized.
+        self.start_datetime = start_datetime
+        self.end_datetime = end_datetime
+
+    @classmethod
+    def from_datetime(self, dt):
+        # type: (datetime) -> DateTimeSpan
+        '''Return a new date time span that covers a single `datetime`.
+
+        If `dt` is actually a date, the start_datetime will be at '00:00:00'
+        and the end_datetime will be at '23:59:59'.
+
+        '''
+        return self(start_datetime=dt, end_datetime=dt)
+
+    @classmethod
+    def from_timespan(self, ts):
+        # type: (TimeSpan) -> DateTimeSpan
+        '''Return a new date time span from a timespan.
+
+        Notice the start datetime will be set at '00:00:00' and the end
+        datetime at '23:59:59'.
+
+        If `ts` is already a DateTimeSpan, return it unchanged.
+
+        '''
+        if isinstance(ts, DateTimeSpan):
+            return ts
+        else:
+            return self(start_datetime=ts.start_date,
+                        end_datetime=ts.end_date)
+
+    @property
+    def past_unbound(self):
+        # type: () -> bool
+        'True if the time span is not bound into the past.'
+        return self.start_datetime is None
+
+    @property
+    def future_unbound(self):
+        # type: () -> bool
+        'True if the time span is not bound into the future.'
+        return self.end_datetime is None
+
+    @property
+    def unbound(self):
+        # type: () -> bool
+        '''True if the time span is `unbound into the past <past_unbound>`:attr: or
+        `unbount into the future <future_unbound>`:attr: or both.
+
+        '''
+        return self.future_unbound or self.past_unbound
+
+    @property
+    def bound(self):
+        # type: () -> bool
+        'True if the time span is not `unbound <unbound>`:attr:.'
+        return not self.unbound
+
+    @property
+    def valid(self):
+        # type: () -> bool
+        '''A bound time span is valid if it starts before it ends.
+
+        Unbound time spans are always valid.
+
+        '''
+        from xoutil.context import context
+        with context(NEEDS_FLEX_DATE):
+            if self.bound:
+                return self.start_datetime <= self.end_datetime
+            else:
+                return True
+
+    def __contains__(self, other):
+        # type: (date) -> bool
+        '''Test if datetime `other` is in the datetime span.
+
+        If `other` is a `~datetime.date`:class:, we convert it to a naive
+        datetime at midnight (00:00:00).
+
+        '''
+        from datetime import date, datetime
+        if isinstance(other, date):
+            if not isinstance(other, datetime):
+                other = datetime(other.year, other.month, other.day)
+            if self.start_datetime and self.end_datetime:
+                return self.start_datetime <= other <= self.end_datetime
+            elif self.start_datetime:
+                return self.start_datetime <= other
+            elif self.end_datetime:
+                return other <= self.end_datetime
+            else:
+                return True
+        else:
+            return False
+
+    def overlaps(self, other):
+        # type: (TimeSpan) -> DateTimeSpan
+        '''Test if the time spans overlaps.'''
+        return bool(self & other)
+
+    def isdisjoint(self, other):
+        # type: (TimeSpan) -> bool
+        return not self.overlaps(other)
+
+    def __le__(self, other):
+        # type: (TimeSpan) -> bool
+        'True if `other` is a superset.'
+        return (self & other) == self
+
+    issubset = __le__
+
+    def __lt__(self, other):
+        # type: (TimeSpan) -> bool
+        'True if `other` is a proper superset.'
+        return self != other and self <= other
+
+    def __gt__(self, other):
+        # type: (TimeSpan) -> bool
+        'True if `other` is a proper subset.'
+        return self != other and self >= other
+
+    def __ge__(self, other):
+        # type: (TimeSpan) -> bool
+        'True if `other` is a subset.'
+        # Notice that ge is not the opposite of lt.
+        return (self & other) == other
+
+    issuperset = covers = __ge__
+
+    def __iter__(self):
+        # type: () -> Iterator[datetime]
+        yield self.start_datetime
+        yield self.end_datetime
+
+    def __getitem__(self, index):
+        # type: (int) -> datetime
+        this = tuple(self)
+        return this[index]
+
+    def __eq__(self, other):
+        # type: (TimeSpan) -> bool
+        import datetime
+        if isinstance(other, datetime.date):
+            other = type(self).from_datetime(other)
+        elif isinstance(other, TimeSpan) and \
+             not isinstance(other, DateTimeSpan):   # noqa
+            other = self.from_timespan(other)
+        elif not isinstance(other, DateTimeSpan):
+            return NotImplemented
+        return (self.start_datetime == other.start_datetime and
+                self.end_datetime == other.end_datetime)
+
+    def __hash__(self):
+        return hash((DateTimeSpan, self.start_datetime, self.end_datetime))
+
+    def __and__(self, other):
+        # type: (TimeSpan) -> DateTimeSpan
+        '''Get the date time span that is the intersection with another time span.
+
+        If two time spans don't overlap, return the object
+        `EmptyTimeSpan`:any:.
+
+        If `other` is not a DateTimeSpan we try to create one.  If `other` is
+        a date/datetime, we create use `from_datetime`:meth:.  If `other` is
+        TimeSpan we use `from_timespan`:meth:.  Other types are passed
+        unchanged to the constructor.
+
+        '''
+        import datetime
+        from xoutil.infinity import Infinity
+        from xoutil.context import context
+        if isinstance(other, _EmptyTimeSpan):
+            return other
+        elif isinstance(other, datetime.date):
+            other = DateTimeSpan.from_datetime(other)
+        elif isinstance(other, TimeSpan):
+            other = DateTimeSpan.from_timespan(other)
+        elif not isinstance(other, TimeSpan):
+            raise TypeError("Invalid type '%s'" % type(other).__name__)
+        with context(NEEDS_FLEX_DATE):
+            start = max(
+                self.start_datetime or -Infinity,
+                other.start_datetime or -Infinity
+            )
+            end = min(
+                self.end_datetime or Infinity,
+                other.end_datetime or Infinity
+            )
+        if start <= end:
+            if start is -Infinity:
+                start = None
+            if end is Infinity:
+                end = None
+            return type(self)(start, end)
+        else:
+            return EmptyTimeSpan
+    __mul__ = __rmul__ = __rand__ = __and__
+
+    def __bool__(self):
+        # type: () -> bool
+        return True
+
+    __nonzero__ = __bool__
+
+    def __lshift__(self, delta):
+        # type: (Union[int, timedelta]) -> DateTimeSpan
+        '''Return the date time span displaced to the past in `delta`.
+
+        :param delta: The number of days to displace.  It can be either an
+                      integer or a `datetime.timedelta`:class:.  The integer
+                      will be converted to ``timedelta(days=delta)``.
+
+        .. warning:: Python does have a boundaries for the dates it can
+           represent, so displacing can cause OverflowError.
+
+        '''
+        import numbers
+        if isinstance(delta, numbers.Integral):
+            delta = timedelta(days=delta)
+        start = self.start_datetime - delta if self.start_datetime else None
+        end = self.end_datetime - delta if self.end_datetime else None
+        return type(self)(start, end)
+
+    def __rshift__(self, delta):
+        # type: (Union[int, timedelta]) -> DateTimeSpan
+        '''Return the date time span displaced to the future in `delta`.
+
+        :param delta: The number of days to displace.  It can be either an
+                      integer or a `datetime.timedelta`:class:.  The integer
+                      will be converted to ``timedelta(days=delta)``.
+
+        .. warning:: Python does have a boundaries for the dates it can
+           represent, so displacing can cause OverflowError.
+
+        '''
+        return self << -delta
+
+    def intersection(self, *others):
+        # type: (TimeSpan) -> DateTimeSpan
+        'Return ``self [& other1 & ...]``.'
+        import operator
+        from functools import reduce
+        return reduce(operator.mul, others, self)
+
+    def diff(self, other):
+        # type: (TimeSpan) -> Tuple[DateTimeSpan, DateTimeSpan]
+        '''Return the two datetime spans which (combined) contain all the
+        seconds in `self` which are not in `other`.
+
+        Notice this method returns a tuple of exactly two items.
+
+        If `other` and `self` don't overlap, return ``(self, EmptyTimeSpan)``.
+
+        If ``self <= other`` is True, return the tuple with the empty time
+        span in both positions.
+
+        Otherwise `self` will have some datetimes which are not in `other`;
+        there are possible three cases:
+
+        a) other starts before or at self's start datetime; return the empty
+           time span and the datetime span from the second after
+           `other.end_datetime` up to `self.end_datetime`
+
+        b) other ends at or after self's end date; return the datetime span
+           from `self.start_datetime` up to the second before
+           `other.start_datetime` and the empty time span.
+
+        c) `other` is fully contained in `self`; return two non-empty datetime
+           spans as in the previous cases.
+
+        '''
+        if not self & other:
+            return self, EmptyTimeSpan
+        other = self & other
+        if self == other:
+            return EmptyTimeSpan, EmptyTimeSpan
+        else:
+            assert self > other
+            sec = timedelta(seconds=1)
+            if self.start_datetime == other.start_datetime:
+                return (EmptyTimeSpan,
+                        DateTimeSpan(other.end_datetime + sec,
+                                     self.end_datetime))
+            elif self.end_datetime == other.end_datetime:
+                return (DateTimeSpan(self.start_datetime,
+                                     other.start_datetime - sec),
+                        EmptyTimeSpan)
+            else:
+                return (DateTimeSpan(self.start_datetime,
+                                     other.start_datetime - sec),
+                        DateTimeSpan(other.end_datetime + sec,
+                                     self.end_datetime))
+
+    def __repr__(self):
+        start, end = self
+        return 'DateTimeSpan(%r, %r)' % (
+            start.isoformat().replace('T', ' ') if start else None,
+            end.isoformat().replace('T', ' ') if end else None
+        )
 
 
 #: A context to switch on/off returning a subtype of date from DateFields.

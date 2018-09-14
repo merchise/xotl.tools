@@ -9,14 +9,13 @@
 
 '''A context manager for execution context flags.'''
 
-
-from xoutil.tasking import local as LocalData
+from xoutil.tasking import local
 from xoutil.future.collections import StackedDict, Mapping
 
 __all__ = ('Context', 'context', 'NullContext')
 
 
-class LocalData(LocalData):
+class LocalData(local):
     '''Thread-local data for contexts.'''
     def __init__(self):
         super().__init__()
