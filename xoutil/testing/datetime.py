@@ -105,6 +105,8 @@ def datetimespans(draw, dates=None, unbounds='any', always_valid=True):
 
     .. _hypothesis: https://hypothesis.readthedocs.io/
 
+    .. versionadded:: 1.9.7
+
     '''
     from xoutil.future.datetime import DateTimeSpan
     if dates is None:

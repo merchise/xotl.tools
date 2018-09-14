@@ -657,6 +657,9 @@ class TimeSpan(object):
     comparing a time span with a date, the date is coerced to a time span
     (`from_date`:meth:).
 
+    .. note:: Comparing time spans with date time spans `coerces the time span
+              <DateTimeSpan.from_timespan>`:meth: before comparing.
+
     A time span with its `start` set to None is unbound to the past.  A time
     span with its `end` set to None is unbound to the future.  A time span
     that is both unbound to the past and the future contains all possible
@@ -685,21 +688,25 @@ class TimeSpan(object):
 
     @classmethod
     def from_date(self, date):
+        # type: (date) -> TimeSpan
         '''Return a new time span that covers a single `date`.'''
         return self(start_date=date, end_date=date)
 
     @property
     def past_unbound(self):
+        # type: () -> bool
         'True if the time span is not bound into the past.'
         return self.start_date is None
 
     @property
     def future_unbound(self):
+        # type: () -> bool
         'True if the time span is not bound into the future.'
         return self.end_date is None
 
     @property
     def unbound(self):
+        # type: () -> bool
         '''True if the time span is `unbound into the past <past_unbound>`:attr: or
         `unbount into the future <future_unbound>`:attr: or both.
 
@@ -708,11 +715,13 @@ class TimeSpan(object):
 
     @property
     def bound(self):
+        # type: () -> bool
         'True if the time span is not `unbound <unbound>`:attr:.'
         return not self.unbound
 
     @property
     def valid(self):
+        # type: () -> bool
         '''A bound time span is valid if it starts before it ends.
 
         Unbound time spans are always valid.
@@ -729,6 +738,7 @@ class TimeSpan(object):
         '''Test date `other` is in the time span.
 
         '''
+        # type: (date) -> bool
         from datetime import date
         if isinstance(other, date):
             if self.start_date and self.end_date:
@@ -743,27 +753,33 @@ class TimeSpan(object):
             return False
 
     def overlaps(self, other):
+        # type: (TimeSpan) -> bool
         '''Test if the time spans overlaps.'''
         return bool(self & other)
 
     def isdisjoint(self, other):
+        # type: (TimeSpan) -> bool
         return not self.overlaps(other)
 
     def __le__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a superset.'
         return (self & other) == self
 
     issubset = __le__
 
     def __lt__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a proper superset.'
         return self != other and self <= other
 
     def __gt__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a proper subset.'
         return self != other and self >= other
 
     def __ge__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a subset.'
         # Notice that ge is not the opposite of lt.
         return (self & other) == other
@@ -771,17 +787,22 @@ class TimeSpan(object):
     issuperset = covers = __ge__
 
     def __iter__(self):
+        # type: () -> Iterator[date, date]
         yield self.start_date
         yield self.end_date
 
     def __getitem__(self, index):
+        # type: (int) -> date
         this = tuple(self)
         return this[index]
 
     def __eq__(self, other):
+        # type: (TimeSpan) -> bool
         import datetime
         if isinstance(other, datetime.date):
             other = type(self).from_date(other)
+        elif isinstance(other, DateTimeSpan):
+            return other == self
         if not isinstance(other, TimeSpan):
             return NotImplemented
         return (self.start_date == other.start_date and
@@ -792,6 +813,7 @@ class TimeSpan(object):
 
     if sys.version_info < (3, 0):
         def __ne__(self, other):
+            # type: (TimeSpan) -> bool
             res = self == other
             if res is not NotImplemented:
                 return not res
@@ -799,6 +821,7 @@ class TimeSpan(object):
                 return res
 
     def __and__(self, other):
+        # type: (TimeSpan) -> TimeSpan
         '''Get the time span that is the intersection with another time span.
 
         If two time spans don't overlap, return `EmptyTimeSpan`:data:.
@@ -806,6 +829,10 @@ class TimeSpan(object):
         If `other` is not a TimeSpan we try to create one.  If `other` is a
         date, we create the TimeSpan that starts and end that very day. Other
         types are passed unchanged to the constructor.
+
+        When `other` is a `DateTimeSpan`:class:, convert `self` to a `date
+        time span <DateTimeSpan.from_timespan>`:meth: before doing the
+        intersection.
 
         '''
         import datetime
@@ -815,6 +842,8 @@ class TimeSpan(object):
             return other
         elif isinstance(other, datetime.date):
             other = TimeSpan.from_date(other)
+        elif isinstance(other, DateTimeSpan):
+            return other & self
         elif not isinstance(other, TimeSpan):
             raise TypeError("Invalid type '%s'" % type(other).__name__)
         with context(NEEDS_FLEX_DATE):
@@ -1149,6 +1178,8 @@ class DateTimeSpan(TimeSpan):
         Notice the start datetime will be set at '00:00:00' and the end
         datetime at '23:59:59'.
 
+        If `ts` is already a DateTimeSpan, return it unchanged.
+
         '''
         if isinstance(ts, DateTimeSpan):
             return ts
@@ -1158,16 +1189,19 @@ class DateTimeSpan(TimeSpan):
 
     @property
     def past_unbound(self):
+        # type: () -> bool
         'True if the time span is not bound into the past.'
         return self.start_datetime is None
 
     @property
     def future_unbound(self):
+        # type: () -> bool
         'True if the time span is not bound into the future.'
         return self.end_datetime is None
 
     @property
     def unbound(self):
+        # type: () -> bool
         '''True if the time span is `unbound into the past <past_unbound>`:attr: or
         `unbount into the future <future_unbound>`:attr: or both.
 
@@ -1176,11 +1210,13 @@ class DateTimeSpan(TimeSpan):
 
     @property
     def bound(self):
+        # type: () -> bool
         'True if the time span is not `unbound <unbound>`:attr:.'
         return not self.unbound
 
     @property
     def valid(self):
+        # type: () -> bool
         '''A bound time span is valid if it starts before it ends.
 
         Unbound time spans are always valid.
@@ -1226,20 +1262,24 @@ class DateTimeSpan(TimeSpan):
         return not self.overlaps(other)
 
     def __le__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a superset.'
         return (self & other) == self
 
     issubset = __le__
 
     def __lt__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a proper superset.'
         return self != other and self <= other
 
     def __gt__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a proper subset.'
         return self != other and self >= other
 
     def __ge__(self, other):
+        # type: (TimeSpan) -> bool
         'True if `other` is a subset.'
         # Notice that ge is not the opposite of lt.
         return (self & other) == other
@@ -1247,14 +1287,17 @@ class DateTimeSpan(TimeSpan):
     issuperset = covers = __ge__
 
     def __iter__(self):
+        # type: () -> Iterator[datetime]
         yield self.start_datetime
         yield self.end_datetime
 
     def __getitem__(self, index):
+        # type: (int) -> datetime
         this = tuple(self)
         return this[index]
 
     def __eq__(self, other):
+        # type: (TimeSpan) -> bool
         import datetime
         if isinstance(other, datetime.date):
             other = type(self).from_datetime(other)
@@ -1322,11 +1365,13 @@ class DateTimeSpan(TimeSpan):
     __mul__ = __rmul__ = __rand__ = __and__
 
     def __bool__(self):
+        # type: () -> bool
         return True
 
     __nonzero__ = __bool__
 
     def __lshift__(self, delta):
+        # type: (Union[int, timedelta]) -> DateTimeSpan
         '''Return the date time span displaced to the past in `delta`.
 
         :param delta: The number of days to displace.  It can be either an
@@ -1345,6 +1390,7 @@ class DateTimeSpan(TimeSpan):
         return type(self)(start, end)
 
     def __rshift__(self, delta):
+        # type: (Union[int, timedelta]) -> DateTimeSpan
         '''Return the date time span displaced to the future in `delta`.
 
         :param delta: The number of days to displace.  It can be either an
@@ -1358,13 +1404,14 @@ class DateTimeSpan(TimeSpan):
         return self << -delta
 
     def intersection(self, *others):
+        # type: (TimeSpan) -> DateTimeSpan
         'Return ``self [& other1 & ...]``.'
         import operator
         from functools import reduce
         return reduce(operator.mul, others, self)
 
     def diff(self, other):
-        # type: (DateTimeSpan) -> Tuple[DateTimeSpan, DateTimeSpan]
+        # type: (TimeSpan) -> Tuple[DateTimeSpan, DateTimeSpan]
         '''Return the two datetime spans which (combined) contain all the
         seconds in `self` which are not in `other`.
 

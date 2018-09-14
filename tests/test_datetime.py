@@ -90,6 +90,21 @@ def test_comparision(ts1, ts2):
         assert ts1.start_date in ts1
 
 
+@given(timespans(), datetimespans())
+def test_interaction_timespan_with_datetimespans(ts, dts):
+    assert isinstance(dts & ts, (DateTimeSpan, type(EmptyTimeSpan)))
+    assert isinstance(ts & dts, (DateTimeSpan, type(EmptyTimeSpan)))
+
+    assert DateTimeSpan.from_timespan(ts) == ts
+    assert ts == DateTimeSpan.from_timespan(ts)
+
+    ts = TimeSpan('2018-01-01', '2018-01-01')
+    dts = DateTimeSpan('2018-01-01 00:00:01', '2018-01-01 00:00:02')
+
+    assert ts != dts
+    assert dts != ts
+
+
 @given(timespans(), timespans(), dates())
 def test_general_cmp_properties(ts1, ts2, date):
     assert bool(ts1 <= ts2) == bool(ts2 >= ts1)
