@@ -119,7 +119,7 @@ def test_outside_datetime(dts):
     assert outsider not in dts
 
 
-@given(timespans())
+@given(timespans() | datetimespans())
 def test_empty_timespan(ts):
     assert ts >= EmptyTimeSpan <= ts, 'Empty is a subset of any TS'
 
@@ -134,23 +134,6 @@ def test_empty_timespan(ts):
 
     assert EmptyTimeSpan & ts == EmptyTimeSpan * ts == EmptyTimeSpan
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
-
-
-@given(datetimespans())
-def test_empty_datetimespan(dts):
-    assert dts >= EmptyTimeSpan <= dts, 'Empty is a subset of any TS'
-
-    assert EmptyTimeSpan <= EmptyTimeSpan >= EmptyTimeSpan, \
-        'Empty is a subset of itself'
-
-    assert not EmptyTimeSpan, 'Empty is considered False'
-
-    assert not (dts <= EmptyTimeSpan), 'Empty is not a superset of any TS'
-
-    type(EmptyTimeSpan)() is EmptyTimeSpan
-
-    assert EmptyTimeSpan & dts == EmptyTimeSpan * dts == EmptyTimeSpan
-    assert EmptyTimeSpan | dts == EmptyTimeSpan + dts == dts
 
 
 @given(timespans(unbounds='none'), timespans())
@@ -267,7 +250,7 @@ def test_timespans_displacement_dates(ts1, delta):
         assert (res.end_date - ts1.end_date).days == delta
 
 
-@given(timespans(unbounds='none'),
+@given(timespans(unbounds='none') | datetimespans(unbounds='none'),
        strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_keeps_the_len(ts1, delta):
     try:
@@ -278,7 +261,7 @@ def test_timespans_displacement_keeps_the_len(ts1, delta):
         assert len(ts1) == len(res)
 
 
-@given(timespans())
+@given(timespans() | datetimespans())
 def test_timespans_are_pickable(ts):
     import pickle
     for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
