@@ -62,6 +62,8 @@ We added the following features.
    .. automethod:: isdisjoint
    .. automethod:: overlaps
 
+   .. automethod:: __contains__
+
    .. automethod:: __and__
    .. method:: __mul__
 
@@ -78,7 +80,53 @@ We added the following features.
    .. automethod:: diff
 
 
-.. object:: EmptyTimeSpan
+.. autoclass:: DateTimeSpan
+
+   .. automethod:: from_datetime
+   .. automethod:: from_timespan
+
+   .. autoattribute:: past_unbound
+   .. autoattribute:: future_unbound
+   .. autoattribute:: unbound
+   .. autoattribute:: bound
+   .. autoattribute:: valid
+
+   .. automethod:: __le__
+   .. method:: issubset
+
+      An alias for `__le__`:meth:.
+
+   .. automethod:: __ge__
+   .. method:: issuperset
+
+      An alias for `__ge__`:meth:.
+
+   .. method:: covers
+
+      An alias for `__ge__`:meth:.
+
+   .. automethod:: isdisjoint
+   .. automethod:: overlaps
+
+   .. automethod:: __contains__
+
+   .. automethod:: __and__
+   .. method:: __mul__
+
+      An alias for `__and__`:meth:.
+
+   .. automethod:: intersection
+
+   .. automethod:: __lshift__
+
+   .. automethod:: __rshift__
+
+   .. automethod:: __len__
+
+   .. automethod:: diff
+
+
+.. data:: EmptyTimeSpan
 
    The empty time span.  It's not an instance of `TimeSpan`:class: but engage
    set-like operations: union, intersection, etc.
