@@ -85,7 +85,7 @@ Unreleased.  Release 2.0.7
 
 .. _rel-1.9.7:
 
-Unreleased.  Release 1.9.7
+2018-09-14.  Release 1.9.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.9.7.rst
