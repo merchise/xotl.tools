@@ -596,7 +596,7 @@ class DateTimeField(object):
             return self
 
     def __set__(self, instance, value):
-        from datetime import datetime as dt, date
+        import datetime as stdlib
         if value in (None, False):
             # We regard False as None, so that working with Odoo is easier:
             # missing values in Odoo, often come as False instead of None.
@@ -604,15 +604,16 @@ class DateTimeField(object):
                 raise ValueError('Setting None to a required field')
             else:
                 value = None
-        elif isinstance(value, datetime):
+        elif isinstance(value, stdlib.datetime):
             # needed because datetime is subclass of date, and the next
             # condition would match.
             pass
-        elif isinstance(value, date):
+        elif isinstance(value, stdlib.date):
             if not self.prefer_last_minute:
-                value = dt(value.year, value.month, value.day)
+                value = stdlib.datetime(value.year, value.month, value.day)
             else:
-                value = dt(value.year, value.month, value.day, 23, 59, 59)
+                value = stdlib.datetime(value.year, value.month, value.day,
+                                        23, 59, 59)
         else:
             try:
                 value = parse_datetime(value)
