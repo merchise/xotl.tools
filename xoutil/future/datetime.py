@@ -385,10 +385,7 @@ class DateField:
         from xoutil.context import context
         if instance is not None:
             res = instance.__dict__[self.name]
-            if res and NEEDS_FLEX_DATE in context:
-                return date(res.year, res.month, res.day)
-            else:
-                return res
+            return res
         else:
             return self
 
@@ -427,18 +424,9 @@ class DateTimeField(object):
         self.prefer_last_minute = prefer_last_minute
 
     def __get__(self, instance, owner):
-        from xoutil.context import context
         if instance is not None:
             res = instance.__dict__[self.name]
-            if res and NEEDS_FLEX_DATE in context:
-                return datetime(
-                    res.year, res.month, res.day,
-                    res.hour, res.minute, res.second,
-                    res.microsecond,
-                    res.tzinfo
-                )
-            else:
-                return res
+            return res
         else:
             return self
 
@@ -566,12 +554,10 @@ class TimeSpan:
         Unbound time spans are always valid.
 
         '''
-        from xoutil.context import context
-        with context(NEEDS_FLEX_DATE):
-            if self.bound:
-                return self.start_date <= self.end_date
-            else:
-                return True
+        if self.bound:
+            return self.start_date <= self.end_date
+        else:
+            return True
 
     def __contains__(self, other):
         '''Test date `other` is in the time span.
@@ -667,7 +653,6 @@ class TimeSpan:
         '''
         import datetime
         from xoutil.infinity import Infinity
-        from xoutil.context import context
         if isinstance(other, _EmptyTimeSpan):
             return other
         elif isinstance(other, datetime.date):
@@ -676,15 +661,14 @@ class TimeSpan:
             return other & self
         elif not isinstance(other, TimeSpan):
             raise TypeError("Invalid type '%s'" % type(other).__name__)
-        with context(NEEDS_FLEX_DATE):
-            start = max(
-                self.start_date or -Infinity,
-                other.start_date or -Infinity
-            )
-            end = min(
-                self.end_date or Infinity,
-                other.end_date or Infinity
-            )
+        start = max(
+            self.start_date or -Infinity,
+            other.start_date or -Infinity
+        )
+        end = min(
+            self.end_date or Infinity,
+            other.end_date or Infinity
+        )
         if start <= end:
             if start is -Infinity:
                 start = None
@@ -1052,12 +1036,10 @@ class DateTimeSpan(TimeSpan):
         Unbound time spans are always valid.
 
         '''
-        from xoutil.context import context
-        with context(NEEDS_FLEX_DATE):
-            if self.bound:
-                return self.start_datetime <= self.end_datetime
-            else:
-                return True
+        if self.bound:
+            return self.start_datetime <= self.end_datetime
+        else:
+            return True
 
     def __contains__(self, other):
         # type: (date) -> bool
@@ -1157,7 +1139,6 @@ class DateTimeSpan(TimeSpan):
         '''
         import datetime
         from xoutil.infinity import Infinity
-        from xoutil.context import context
         if isinstance(other, _EmptyTimeSpan):
             return other
         elif isinstance(other, datetime.date):
@@ -1166,15 +1147,14 @@ class DateTimeSpan(TimeSpan):
             other = DateTimeSpan.from_timespan(other)
         elif not isinstance(other, TimeSpan):
             raise TypeError("Invalid type '%s'" % type(other).__name__)
-        with context(NEEDS_FLEX_DATE):
-            start = max(
-                self.start_datetime or -Infinity,
-                other.start_datetime or -Infinity
-            )
-            end = min(
-                self.end_datetime or Infinity,
-                other.end_datetime or Infinity
-            )
+        start = max(
+            self.start_datetime or -Infinity,
+            other.start_datetime or -Infinity
+        )
+        end = min(
+            self.end_datetime or Infinity,
+            other.end_datetime or Infinity
+        )
         if start <= end:
             if start is -Infinity:
                 start = None
@@ -1286,11 +1266,6 @@ class DateTimeSpan(TimeSpan):
             start.isoformat().replace('T', ' ') if start else None,
             end.isoformat().replace('T', ' ') if end else None
         )
-
-
-#: A context to switch on/off returning a subtype of date from DateFields.
-#: Used within `TimeSpan` to allow comparison with `Infinity`.
-NEEDS_FLEX_DATE = object()
 
 
 del IntEnum
