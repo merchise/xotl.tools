@@ -436,82 +436,6 @@ def daterange(*args):
     return _generator()
 
 
-if sys.version_info < (3, 0):
-    class infinity_extended_date(date):
-        'A date that compares to Infinity'
-        def operator(name, T=True):
-            def result(self, other):
-                from xoutil.infinity import Infinity
-                if other is Infinity:
-                    return T
-                elif other is -Infinity:
-                    return not T
-                else:
-                    return getattr(date, name)(self, other)
-            return result
-
-        # It seems that @total_ordering is worthless because date implements
-        # this operators
-        __le__ = operator('__le__')
-        __ge__ = operator('__ge__', T=False)
-        __lt__ = operator('__lt__')
-        __gt__ = operator('__gt__', T=False)
-        del operator
-
-        def __eq__(self, other):
-            from xoutil.infinity import Infinity
-            # I have to put this because when doing ``timespan != date``
-            # Python 2 may chose to call date's __ne__ instead of
-            # TimeSpan.__ne__.  I assume the same applies to __eq__.
-            if isinstance(other, _EmptyTimeSpan):
-                return False
-            if isinstance(other, TimeSpan):
-                return TimeSpan.from_date(self) == other
-            elif other is Infinity or other is -Infinity:
-                return False
-            else:
-                return date.__eq__(self, other)
-
-    class infinity_extended_datetime(datetime):
-        'A datetime that compares to Infinity'
-        def operator(name, T=True):
-            def result(self, other):
-                from xoutil.infinity import Infinity
-                if other is Infinity:
-                    return T
-                elif other is -Infinity:
-                    return not T
-                else:
-                    return getattr(datetime, name)(self, other)
-            return result
-
-        # It seems that @total_ordering is worthless because date implements
-        # this operators
-        __le__ = operator('__le__')
-        __ge__ = operator('__ge__', T=False)
-        __lt__ = operator('__lt__')
-        __gt__ = operator('__gt__', T=False)
-        del operator
-
-        def __eq__(self, other):
-            from xoutil.infinity import Infinity
-            # I have to put this because when doing ``timespan != date``
-            # Python 2 may chose to call date's __ne__ instead of
-            # TimeSpan.__ne__.  I assume the same applies to __eq__.
-            if isinstance(other, _EmptyTimeSpan):
-                return False
-            if isinstance(other, DateTimeSpan):
-                return DateTimeSpan.from_datetime(self) == other
-            elif other is Infinity or other is -Infinity:
-                return False
-            else:
-                return datetime.__eq__(self, other)
-
-else:
-    infinity_extended_date = date
-    infinity_extended_datetime = datetime
-
-
 class DateField:
     '''A simple descriptor for dates.
 
@@ -526,10 +450,7 @@ class DateField:
         from xoutil.context import context
         if instance is not None:
             res = instance.__dict__[self.name]
-            if res and NEEDS_FLEX_DATE in context:
-                return infinity_extended_date(res.year, res.month, res.day)
-            else:
-                return res
+            return res
         else:
             return self
 
@@ -568,18 +489,9 @@ class DateTimeField(object):
         self.prefer_last_minute = prefer_last_minute
 
     def __get__(self, instance, owner):
-        from xoutil.context import context
         if instance is not None:
             res = instance.__dict__[self.name]
-            if res and NEEDS_FLEX_DATE in context:
-                return infinity_extended_datetime(
-                    res.year, res.month, res.day,
-                    res.hour, res.minute, res.second,
-                    res.microsecond,
-                    res.tzinfo
-                )
-            else:
-                return res
+            return res
         else:
             return self
 
@@ -707,12 +619,10 @@ class TimeSpan:
         Unbound time spans are always valid.
 
         '''
-        from xoutil.context import context
-        with context(NEEDS_FLEX_DATE):
-            if self.bound:
-                return self.start_date <= self.end_date
-            else:
-                return True
+        if self.bound:
+            return self.start_date <= self.end_date
+        else:
+            return True
 
     def __contains__(self, other):
         '''Test date `other` is in the time span.
@@ -808,7 +718,6 @@ class TimeSpan:
         '''
         import datetime
         from xoutil.infinity import Infinity
-        from xoutil.context import context
         if isinstance(other, _EmptyTimeSpan):
             return other
         elif isinstance(other, datetime.date):
@@ -817,15 +726,14 @@ class TimeSpan:
             return other & self
         elif not isinstance(other, TimeSpan):
             raise TypeError("Invalid type '%s'" % type(other).__name__)
-        with context(NEEDS_FLEX_DATE):
-            start = max(
-                self.start_date or -Infinity,
-                other.start_date or -Infinity
-            )
-            end = min(
-                self.end_date or Infinity,
-                other.end_date or Infinity
-            )
+        start = max(
+            self.start_date or -Infinity,
+            other.start_date or -Infinity
+        )
+        end = min(
+            self.end_date or Infinity,
+            other.end_date or Infinity
+        )
         if start <= end:
             if start is -Infinity:
                 start = None
@@ -1193,12 +1101,10 @@ class DateTimeSpan(TimeSpan):
         Unbound time spans are always valid.
 
         '''
-        from xoutil.context import context
-        with context(NEEDS_FLEX_DATE):
-            if self.bound:
-                return self.start_datetime <= self.end_datetime
-            else:
-                return True
+        if self.bound:
+            return self.start_datetime <= self.end_datetime
+        else:
+            return True
 
     def __contains__(self, other):
         # type: (date) -> bool
@@ -1298,7 +1204,6 @@ class DateTimeSpan(TimeSpan):
         '''
         import datetime
         from xoutil.infinity import Infinity
-        from xoutil.context import context
         if isinstance(other, _EmptyTimeSpan):
             return other
         elif isinstance(other, datetime.date):
@@ -1307,15 +1212,14 @@ class DateTimeSpan(TimeSpan):
             other = DateTimeSpan.from_timespan(other)
         elif not isinstance(other, TimeSpan):
             raise TypeError("Invalid type '%s'" % type(other).__name__)
-        with context(NEEDS_FLEX_DATE):
-            start = max(
-                self.start_datetime or -Infinity,
-                other.start_datetime or -Infinity
-            )
-            end = min(
-                self.end_datetime or Infinity,
-                other.end_datetime or Infinity
-            )
+        start = max(
+            self.start_datetime or -Infinity,
+            other.start_datetime or -Infinity
+        )
+        end = min(
+            self.end_datetime or Infinity,
+            other.end_datetime or Infinity
+        )
         if start <= end:
             if start is -Infinity:
                 start = None
@@ -1427,11 +1331,6 @@ class DateTimeSpan(TimeSpan):
             start.isoformat().replace('T', ' ') if start else None,
             end.isoformat().replace('T', ' ') if end else None
         )
-
-
-# A context to switch on/off returning a subtype of date from DateFields.
-# Used within TimeSpan to allow comparison with Infinity.
-NEEDS_FLEX_DATE = object()
 
 
 try:
