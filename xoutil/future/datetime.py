@@ -614,7 +614,12 @@ class DateTimeField(object):
             else:
                 value = dt(value.year, value.month, value.day, 23, 59, 59)
         else:
-            value = parse_datetime(value)
+            try:
+                value = parse_datetime(value)
+            except ValueError:
+                value = parse_date(value)
+                self.__set__(instance, value)  # lazy me
+                return
         instance.__dict__[self.name] = value
 
 
@@ -1041,9 +1046,10 @@ class SynchronizedField(object):
     Whenever the `source` gets updated, update the second.
 
     '''
-    def __init__(self, descriptor, setting_descriptor):
+    def __init__(self, descriptor, setting_descriptor, set_throu_get=True):
         self.descriptor = descriptor
         self.setting_descriptor = setting_descriptor
+        self.set_throu_get = set_throu_get
 
     def __get__(self, instance, owner):
         return self.descriptor.__get__(instance, owner)
@@ -1053,6 +1059,8 @@ class SynchronizedField(object):
         self.descriptor.__set__(instance, value)
         if (SynchronizedField, self.setting_descriptor) not in context:
             with context((SynchronizedField, self.setting_descriptor)):
+                if self.set_throu_get:
+                    value = self.__get__(instance, type(instance))
                 self.setting_descriptor.__set__(instance, value)
 
 

@@ -445,6 +445,12 @@ def test_datetimespan_diff(start_date, days):
     assert x is EmptyTimeSpan and y is EmptyTimeSpan
 
 
+@given(datetimespans())
+def test_datetimespan_repr(ts):
+    assert eval(repr(ts)) == ts
+    assert DateTimeSpan('2018-01-01') == DateTimeSpan(datetime(2018, 1, 1))
+
+
 def add_timespans(x, y):
     if x.end_date == y.start_date - timedelta(1):
         return TimeSpan(x.start_date, y.end_date)
