@@ -4,6 +4,12 @@ Changelog
 1.9 series
 ----------
 
+.. note:: End-of-life for xoutil 1.9
+
+   xoutil 1.9.7 will be the last release of xoutil that adds functionality.
+   Future releases will be strictly bug-fix only.
+
+
 Unreleased.  Release 1.9.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
