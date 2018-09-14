@@ -4,6 +4,23 @@ Changelog
 2.0 series
 ----------
 
+.. note:: End-of-life for xoutil 2.0
+
+   xoutil 2.0.7 will be the last release in the xoutil 2.0.x series that adds
+   new functionality.  Any future release in this series will be bug-fix only.
+
+   Since the pair-wise releases of 1.9.x and 2.0.x some new functionality has
+   been added to some version of 1.9.x that is not present in some releases of
+   the 2.0.x series.
+
+   This created some dose of unease for users wanting a new feature in 1.9.3
+   in a package where Python 2/3 was not a true concern; they were forced to
+   require 'xoutil>=1.9.3,!=2.0.0,!=2.0.1,!=2.0.2' to avoid the package
+   manager to select a version without the needed feature.
+
+   This end-of-life notice puts an end to this issue.
+
+
 Unreleased.  Release 2.0.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
