@@ -61,6 +61,11 @@ Unreleased.  Release 2.0.7
 1.9 series
 ----------
 
+.. note:: End-of-life for xoutil 1.9
+
+   xoutil 1.9.7 will be the last release of xoutil that adds functionality.
+   Future releases will be strictly bug-fix only.
+
 .. _rel-1.9.7:
 
 Unreleased.  Release 1.9.7

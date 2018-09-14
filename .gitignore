@@ -11,6 +11,8 @@
 .hypothesis/
 build/
 dist/
+__pycache__/
+.mypy_cache/
 
 # Python Coverage files generate by nose
 .coverage

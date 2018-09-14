@@ -12,6 +12,19 @@ lint:
   tags:
     - merchise-lint3
 
+
+check with mypy:
+  stage: test
+  script:
+    - tox -e3.6-staticcheck
+  tags:
+    - python
+    - virtualenv
+    - tox
+  only:
+    - branches
+  allow_failure: true
+
 run all tests (if needed):
   stage: test
   script:

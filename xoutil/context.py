@@ -14,13 +14,13 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoutil.tasking import local as LocalData
+from xoutil.tasking import local
 from xoutil.future.collections import StackedDict, Mapping
 
 __all__ = ('Context', 'context', 'NullContext')
 
 
-class LocalData(LocalData):
+class LocalData(local):
     '''Thread-local data for contexts.'''
     def __init__(self):
         super().__init__()
