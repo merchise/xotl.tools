@@ -320,8 +320,9 @@ def test_setting_end_date(d, dts):
 
 @given(strategies.datetimes(min_value=datetime(1970, 1, 1),
                             max_value=datetime(5000, 12, 31)),
-       strategies.timedeltas(min_value=timedelta(1), max_value=timedelta(200)))
-def test_timespan_diff(start_date, days):
+       strategies.integers(min_value=1, max_value=200))
+def test_timespan_diff(start_date, delta):
+    days = timedelta(days=delta)
     big = TimeSpan(start_date, start_date + 3 * days)
     x, y = big.diff(big)
     assert x is EmptyTimeSpan and y is EmptyTimeSpan
