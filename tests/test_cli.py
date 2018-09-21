@@ -21,8 +21,16 @@ def test_regression_Command_repr():
         def run(self):
             pass
 
+    class Hidden(object):
+        def run(self):
+            pass
+
+    Command.register(Hidden)
+
     cmd = MyCommand()
     assert repr(cmd) != ''
+    assert Command.registry.get('my-command')
+    assert Command.registry.get('hidden')
 
 
 def test_can_actually_run_the_help():
