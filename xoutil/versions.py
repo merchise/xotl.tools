@@ -28,30 +28,32 @@ def _check(info):
     :returns: a valid tuple or an error if invalid.
 
     '''
-    from itertools import takewhile
     from collections import Iterable
-    from distutils.version import LooseVersion
-    if isinstance(info, int):
-        aux = (info,)
-    elif isinstance(info, float):
-        aux = LooseVersion(str(info)).version
-    elif isinstance(info, str):
-        aux = LooseVersion(str(info)).version
-    elif isinstance(info, Iterable):
+    from distutils.version import LooseVersion, StrictVersion
+    MAX_COUNT = 3
+    if isinstance(info, (int, float)):
+        aux = str(info)
+    elif isinstance(info, Iterable) and not isinstance(info, str):
+        aux = '.'.join(map(str, info))
+    else:
         aux = info
+    if isinstance(aux, str):
+        try:
+            essay = StrictVersion(aux)
+        except (TypeError, ValueError):    # Being as safe as possible.
+            essay = LooseVersion(aux)
+        res = essay.version[:MAX_COUNT]
+        if any(res):
+            return tuple(res)
+        else:
+            raise ValueError("invalid version value '{}'".format(info))
     else:
-        aux = ()
-    res = tuple(takewhile(lambda i: isinstance(i, int), aux))
-    if 0 < len(res) <= 3:
-        while res[-1] == 0 and len(res) > 1:
-            res = res[:-1]
-        return res
-    else:
-        raise ValueError("invalid version number '{}'".format(info))
+        msg = "Invalid type '{}' for version '{}'"
+        raise TypeError(msg.format(type(info).__name__, info))
 
 
 class ThreeNumbersVersion(tuple):
-    '''A more structured version info for packages.
+    '''Structured version info considering valid first 3 members
 
     This class is mainly intended to be sub-classed as a singleton resulting
     in a tuple with three integer components as 'major', 'minor', and 'micro'.
@@ -64,15 +66,19 @@ class ThreeNumbersVersion(tuple):
 
     - A string is converted to a version tuple before compare it.
 
-    Comparison only is relevant for heading integers.
+    - Any collection with a prefix of at least three logical integers (that is
+      ``[1.3, '2a']`` is the same as ``'1.3.2a'`` and ``(1, 3, 2)``).
+
+    Equality comparison is relevant only for heading values: ``3.1 == 3``.
 
     .. versionadded:: 1.8.0
 
     '''
     def __new__(cls, info):
-        arg = _check(info)
-        arg += tuple(0 for i in range(3 - len(arg)))
-        return super().__new__(cls, arg)
+        MAX_COUNT = 3
+        head = _check(info)
+        tail = (0,) * (MAX_COUNT - len(head))
+        return super().__new__(cls, head + tail)
 
     @property
     def major(self):
@@ -97,25 +103,19 @@ class ThreeNumbersVersion(tuple):
             aux = _check(other)
             this = self[:len(aux)]
             return this == aux
-        except Exception:
+        except (TypeError, ValueError):
             return False
 
     def __lt__(self, other):
         try:
-            aux = _check(other)
-            count = len(self)
-            this = self[:count]
-            return this < aux
-        except Exception:
+            return tuple(self) < _check(other)
+        except (TypeError, ValueError):
             return NotImplemented
 
     def __gt__(self, other):
         try:
-            aux = _check(other)
-            count = len(self)
-            this = self[:count]
-            return this > aux
-        except Exception:
+            return tuple(self) > _check(other)
+        except (TypeError, ValueError):
             return NotImplemented
 
     def __ne__(self, other):
@@ -171,17 +171,14 @@ def _get_mod_version(mod):
         if version is not None:
             try:
                 res = _check(version)
-            except TypeError:
+            except (TypeError, ValueError):
                 pass
         i += 1
     if not res:
-        try:
-            import os
-            path = os.path.dirname(os.__file__)
-            if mod.__file__.startswith(path):
-                res = python_version
-        except Exception:  # TODO: @med which exceptions?
-            pass
+        import os
+        path = os.path.dirname(os.__file__)
+        if mod.__file__.startswith(path):
+            res = python_version
     return res
 
 
@@ -200,23 +197,23 @@ class PackageVersion(ThreeNumbersVersion):
             return super().__new__(cls, info)
         else:
             msg = '{}() could not determine a valid version'
-            raise TypeError(msg.format(cls.__name__))
+            raise ValueError(msg.format(cls.__name__))
 
     @staticmethod
     def _find_version(package_name):
+        from pkg_resources import get_distribution, ResolutionError
         if package_name in ('__builtin__', 'builtins'):
             return python_version
         else:
             res = None
             while not res and package_name:
                 try:
-                    import pkg_resources
-                    dist = pkg_resources.get_distribution(package_name)
+                    dist = get_distribution(package_name)
                     try:
                         res = dist.parsed_version.base_version
                     except AttributeError:
                         res = dist.version
-                except Exception:  # TODO: @med which exceptions?
+                except ResolutionError:
                     from importlib import import_module
                     try:
                         mod = import_module('.'.join(
