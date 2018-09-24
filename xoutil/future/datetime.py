@@ -447,7 +447,6 @@ class DateField:
         self.nullable = nullable
 
     def __get__(self, instance, owner):
-        from xoutil.context import context
         if instance is not None:
             res = instance.__dict__[self.name]
             return res
