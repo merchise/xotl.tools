@@ -18,6 +18,7 @@ check with mypy:
   cache:
     key: mypy-${CI_COMMIT_REF_SLUG}
     paths:
+      - .tox/3.6-staticcheck/
       - .mypy_cache/
   script:
     - tox -e3.6-staticcheck
