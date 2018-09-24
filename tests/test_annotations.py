@@ -38,7 +38,6 @@ def test_signature():
     assert dummy.__annotations__.get('a', None) == 1
     assert dummy.__annotations__.get('b', None) == {1: 4}
     assert dummy.__annotations__.get('args', None) == list
-    assert dummy.__annotations__.get('return', None) == tuple
     assert dummy.__annotations__.get('kwargs', None) == dict
     assert dummy.__annotations__.get('return', None) == tuple
 

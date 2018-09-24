@@ -71,7 +71,7 @@ def _key_for_value(source, value, strict=True):
             item = mapping[key]
             if item is value:
                 found = key, mapping
-            elif item == value:
+            elif value == item:
                 if strict:
                     equal = key, mapping
                 else:
@@ -304,26 +304,27 @@ def nameof(*args, **kwargs):
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
 
-    class vars:
-        '`nonlocal` simulation'
-        params = kwargs
-        idx = 0
+    params = kwargs
+    idx = 0
 
     def grant(name=None, **again):
+        nonlocal params
+        nonlocal idx
         if name:
-            names[vars.idx].append(name)
-            assert len(names[vars.idx]) < 5
+            names[idx].append(name)
+            assert len(names[idx]) < 5
         if again:
-            vars.params = dict(kwargs, **again)
+            params = dict(kwargs, **again)
         else:
-            vars.params = kwargs
-            vars.idx += 1
+            params = kwargs
+            idx += 1
 
     def param(name, default=False):
-        return vars.params.get(name, default)
+        nonlocal params
+        return params.get(name, default)
 
-    while vars.idx < arg_count:
-        item = args[vars.idx]
+    while idx < arg_count:
+        item = args[idx]
         if param('typed') and not safe_name(item):
             item = type(item)
         if param('inner'):

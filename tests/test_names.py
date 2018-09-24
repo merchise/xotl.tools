@@ -7,11 +7,11 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-from __future__ import (division as _py3_division,
-                        print_function as _py3_print,
-                        absolute_import as _py3_abs_import)
-
+import pytest
+from xoutil.versions import python_version
 from xoutil.future.collections import OrderedSmartDict
+
+PYPY = python_version.pypy
 
 
 def test_nameof():
@@ -44,7 +44,6 @@ def test_nameof():
 
 
 def test_nameof_methods():
-    from xoutil.eight import callable
     from xoutil.names import nameof, simple_name
 
     class Foobar:
@@ -75,6 +74,7 @@ def test_nameof_methods():
     assert names == ['first', 'second', 'third']
 
 
+@pytest.mark.skipif(PYPY, reason="'OrderedDict' is in '_pypy_collections'")
 def test_fullnameof():
     from xoutil.names import nameof, simple_name
     _name = 'collections.OrderedDict'
@@ -89,6 +89,7 @@ def test_fullnameof():
     assert simple_name(sd) == 'collections.OrderedDict'
 
 
+@pytest.mark.skipif(PYPY, reason="'OrderedDict' is in '_pypy_collections'")
 def test_fullnameof_no_rename():
     from xoutil.names import nameof
     from collections import OrderedDict
