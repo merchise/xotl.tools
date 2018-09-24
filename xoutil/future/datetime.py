@@ -735,10 +735,8 @@ class TimeSpan(object):
                 return True
 
     def __contains__(self, other):
-        '''Test date `other` is in the time span.
-
-        '''
         # type: (date) -> bool
+        '''Test date `other` is in the time span.'''
         from datetime import date
         if isinstance(other, date):
             if self.start_date and self.end_date:
