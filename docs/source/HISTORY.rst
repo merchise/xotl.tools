@@ -10,6 +10,12 @@ Changelog
    Future releases will be strictly bug-fix only.
 
 
+2018-09-24.  Release 1.9.8
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.9.8.rst
+
+
 2018-09-14.  Release 1.9.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
