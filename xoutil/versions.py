@@ -18,89 +18,45 @@ from __future__ import (division as _py3_division,
 
 from xoutil.decorator import singleton
 
-try:
-    _str_types = (str, unicode)
-except NameError:
-    _str_types = (str,)
 
+def _check(info):
+    '''Validate a version info.
 
-def _safe_int(arg):
-    try:
-        if isinstance(arg, _str_types):
-            return int(arg)
-        else:
-            return arg
-    except ValueError:
-        return arg
+    :param info: could be a string, an integer, float, or any integer
+           collection (only first three valid integers are used).
 
-
-def _crucial_parts(info):
-    '''Count the important parts (heading integers) of a version info'''
-    i, ok = 0, True
-    while i < len(info) and ok:
-        v = info[i]
-        if isinstance(v, int):
-            i += 1
-        else:
-            ok = False
-    return i
-
-
-def _check(info, head=False):
-    '''Check a version info.
-
-    `info` could be a string or any iterable.  if `hard`, the 3 required
-    integer components must be supplied at the beginning.
-
-    If `head` is true, return only the crucial parts.
+    :returns: a valid tuple or an error if invalid.
 
     '''
-    import re
-    from collections import Mapping, Set
-    MAX_IDX = 3
-    if isinstance(info, int):
-        res = (info, )
-    elif isinstance(info, float):
-        res = tuple(int(i) for i in str(info).split('.'))
-    elif isinstance(info, _str_types):
+    from collections import Iterable
+    from distutils.version import LooseVersion, StrictVersion
+    MAX_COUNT = 3
+    if isinstance(info, (int, float)):
+        aux = str(info)
+    elif isinstance(info, Iterable) and not isinstance(info, str):
+        aux = '.'.join(map(str, info))
+    else:
+        aux = info
+    if isinstance(aux, str):
         try:
-            res = (int(info), )
-        except ValueError:
-            regex = re.compile('^(\d+)(?:[.](\d+))?(?:[.](\d+))?')
-            m = regex.match(info)
-            if m:
-                res = tuple(int(g) for g in m.groups() if g is not None)
-            else:
-                raise TypeError('version info check got an invalid string')
-    else:
-        # a valid iterable
-        if not isinstance(info, (Mapping, Set)):
-            try:
-                res = tuple(_safe_int(c) for c in info)
-            except TypeError:
-                res = None
+            essay = StrictVersion(aux)
+        except (TypeError, ValueError):    # Being as safe as possible.
+            essay = LooseVersion(aux)
+        res = essay.version[:MAX_COUNT]
+        if any(res):
+            return tuple(res)
         else:
-            res = None
-        if res is None:
-            # TODO: from xoutil.eight import type_name
-            msg = 'version info check got an invalid value of type "{}"'
-            raise TypeError(msg.format(type(info).__name__))
-    count = _crucial_parts(res)
-    if 1 <= count <= MAX_IDX:
-        return res[:count] if head else res
+            raise ValueError("invalid version value '{}'".format(info))
     else:
-        msg = ('a version info need at least one and at most {} heading '
-               'integer components; got "{}"')
-        raise TypeError(msg.format(MAX_IDX, count))
+        msg = "Invalid type '{}' for version '{}'"
+        raise TypeError(msg.format(type(info).__name__, info))
 
 
 class ThreeNumbersVersion(tuple):
-    '''A more structured version info for packages.
+    '''Structured version info considering valid first 3 members
 
-    This class can't be instanced, each sub-class must be treated as
-    singleton.  Must be a tuple with three first components as integers
-    'major', 'minor', and 'micro'.  Any custom implementation could have extra
-    components.
+    This class is mainly intended to be sub-classed as a singleton resulting
+    in a tuple with three integer components as 'major', 'minor', and 'micro'.
 
     Instances of this class can be compared with a variety of value types:
 
@@ -110,13 +66,19 @@ class ThreeNumbersVersion(tuple):
 
     - A string is converted to a version tuple before compare it.
 
-    But comparison only is relevant for heading integers.
+    - Any collection with a prefix of at least three logical integers (that is
+      ``[1.3, '2a']`` is the same as ``'1.3.2a'`` and ``(1, 3, 2)``).
+
+    Equality comparison is relevant only for heading values: ``3.1 == 3``.
 
     .. versionadded:: 1.8.0
 
     '''
     def __new__(cls, info):
-        return super().__new__(cls, _check(info))
+        MAX_COUNT = 3
+        head = _check(info)
+        tail = (0,) * (MAX_COUNT - len(head))
+        return super().__new__(cls, head + tail)
 
     @property
     def major(self):
@@ -133,22 +95,28 @@ class ThreeNumbersVersion(tuple):
     def to_float(self):
         return float('{}.{}'.format(*self[:2]))
 
+    __float__ = to_float
+    __trunc__ = major
+
     def __eq__(self, other):
-        aux = _check(other, head=True)
-        this = self[:len(aux)]
-        return this == aux
+        try:
+            aux = _check(other)
+            this = self[:len(aux)]
+            return this == aux
+        except (TypeError, ValueError):
+            return False
 
     def __lt__(self, other):
-        aux = _check(other, head=True)
-        count = _crucial_parts(self)
-        this = self[:count]
-        return this < aux
+        try:
+            return tuple(self) < _check(other)
+        except (TypeError, ValueError):
+            return NotImplemented
 
     def __gt__(self, other):
-        aux = _check(other, head=True)
-        count = _crucial_parts(self)
-        this = self[:count]
-        return this > aux
+        try:
+            return tuple(self) > _check(other)
+        except (TypeError, ValueError):
+            return NotImplemented
 
     def __ne__(self, other):
         return not (self == other)
@@ -174,7 +142,7 @@ class python_version(ThreeNumbersVersion):
     '''
     def __new__(cls):
         import sys
-        self = ThreeNumbersVersion.__new__(cls, sys.version_info)
+        self = super().__new__(cls, sys.version_info)
         self.pypy = sys.version.find('PyPy') >= 0
         return self
 
@@ -203,17 +171,14 @@ def _get_mod_version(mod):
         if version is not None:
             try:
                 res = _check(version)
-            except TypeError:
+            except (TypeError, ValueError):
                 pass
         i += 1
     if not res:
-        try:
-            import os
-            path = os.path.dirname(os.__file__)
-            if mod.__file__.startswith(path):
-                res = python_version
-        except Exception:  # TODO: @med which exceptions?
-            pass
+        import os
+        path = os.path.dirname(os.__file__)
+        if mod.__file__.startswith(path):
+            res = python_version
     return res
 
 
@@ -232,23 +197,23 @@ class PackageVersion(ThreeNumbersVersion):
             return super().__new__(cls, info)
         else:
             msg = '{}() could not determine a valid version'
-            raise TypeError(msg.format(cls.__name__))
+            raise ValueError(msg.format(cls.__name__))
 
     @staticmethod
     def _find_version(package_name):
+        from pkg_resources import get_distribution, ResolutionError
         if package_name in ('__builtin__', 'builtins'):
             return python_version
         else:
             res = None
             while not res and package_name:
                 try:
-                    import pkg_resources
-                    dist = pkg_resources.get_distribution(package_name)
+                    dist = get_distribution(package_name)
                     try:
                         res = dist.parsed_version.base_version
                     except AttributeError:
                         res = dist.version
-                except Exception:  # TODO: @med which exceptions?
+                except ResolutionError:
                     from importlib import import_module
                     try:
                         mod = import_module('.'.join(
