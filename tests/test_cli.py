@@ -29,8 +29,9 @@ def test_regression_Command_repr():
 
     cmd = MyCommand()
     assert repr(cmd) != ''
-    assert Command.registry.get('my-command')
-    assert Command.registry.get('hidden')
+    registry = Command.registry
+    assert registry.get('my-command')
+    assert registry.get('hidden')
 
 
 def test_can_actually_run_the_help():
