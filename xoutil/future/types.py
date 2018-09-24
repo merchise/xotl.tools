@@ -39,9 +39,13 @@ except ImportError:
     __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
 
 try:
-    NoneType    # noqa
-except NameError:
-    NoneType = type(None)
+    NoneType = _stdlib.NoneType    # noqa
+except AttributeError:
+    try:
+        # In PyPy3 'NoneType' is a built-in
+        from builtins import NoneType    # noqa
+    except ImportError:
+        NoneType = type(None)
     __all__.append('NoneType')
 
 try:
