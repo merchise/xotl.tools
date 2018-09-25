@@ -25,7 +25,7 @@ class LocalData(local):
 _data = LocalData()
 
 
-class MetaContext(type(StackedDict)):
+class MetaContext(type(StackedDict)):  # type: ignore
     def __len__(self):
         return len(_data.contexts)
 
