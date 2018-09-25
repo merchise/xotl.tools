@@ -225,10 +225,3 @@ class NullContext(Mapping):
 
 
 _null_context = NullContext()
-
-
-from collections import Mapping
-
-Mapping.register(NullContext)
-
-del Mapping
