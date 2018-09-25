@@ -16,7 +16,7 @@
 '''
 
 import sys
-from xoutil.deprecation import deprecated
+from xoutil.deprecation import deprecated_alias
 
 
 # TODO: Must be implemented using `xoutil.api` mechanisms for correct driver
@@ -94,10 +94,10 @@ class ConstantWait:
         return self.wait
 
 
-StandardWait = deprecated(
+StandardWait = deprecated_alias(
     ConstantWait,
-    'StandardWait is deprecated. Use ConstantWait instead'
-)(ConstantWait)
+    msg='StandardWait is deprecated. Use ConstantWait instead'
+)
 
 
 class BackoffWait:
@@ -231,4 +231,4 @@ class retrier:
         return inner
 
 
-del deprecated
+del deprecated_alias
