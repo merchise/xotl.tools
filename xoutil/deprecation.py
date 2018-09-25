@@ -387,3 +387,16 @@ def inject_deprecated(funcnames, source, target=None):
             warnings.warn('{targetname} was expected to be in {source}'.
                           format(targetname=targetname,
                                  source=source.__name__), stacklevel=2)
+
+
+def deprecated_alias(f, **kwargs):
+    '''Declare a deprecated alias.
+
+    This is roughly the same as ``deprecated(f)(f)``; which is makes it
+    convenient to give a better name to an already released function `f`,
+    while keeping the old name as a deprecated alias.
+
+    .. versionadded:: 2.1.0
+
+    '''
+    return deprecated(f, **kwargs)(f)
