@@ -133,9 +133,200 @@ this to work.
 import functools
 import numbers
 
+from xoutil.objects import classproperty
+
 
 #: The unit for any kind of quantity.
 UNIT = 1
+
+
+@functools.total_ordering
+class Quantity(numbers.Real):
+    '''A concrete number of `quantity` (expressed in) `units`.
+
+    .. seealso:: https://en.wikipedia.org/wiki/Concrete_number
+
+    :param quantity: A real number.
+    :param units: A `signature <Signature>`:class: for the units the
+                  denominate the given quantity.
+
+    You can construct instances by operating with the attributes of a
+    dimension.  For instance, this is 5 kilometres:
+
+       >>> from xoutil.dim.base import L
+       >>> 5 * L.km
+       5000::{<Length.metre>}/{}
+
+    A concrete number is of the type of its dimension:
+
+       >>> isinstance(5 * L.km, L)
+       True
+
+    '''
+    __slots__ = ('magnitude', 'signature')
+
+    def __init__(self, quantity, units):
+        if not isinstance(quantity, BareReal):
+            raise TypeError('Quantities must be real numbers')
+        self.magnitude = quantity
+        self.signature = units
+
+    def __str__(self):
+        return '{}::{}'.format(self.magnitude, self.signature)
+    __repr__ = __str__
+
+    def __neg__(self):
+        return type(self)(-self.magnitude, self.signature)
+
+    def __pos__(self):
+        return type(self)(self.magnitude, self.signature)
+
+    def __add__(self, other):
+        if isinstance(other, Quantity) and self.signature == other.signature:
+            return type(self)(self.magnitude + other.magnitude, self.signature)
+        else:
+            # What is the meaning of "10km + 1"?
+            raise OperandTypeError('+', self, other)
+    __radd__ = __add__
+
+    def __sub__(self, other):
+        if isinstance(other, Quantity) and self.signature == other.signature:
+            return type(self)(self.magnitude - other.magnitude, self.signature)
+        else:
+            # What is the meaning of "10km - 1"?
+            raise OperandTypeError('-', self, other)
+
+    def __mul__(self, other):
+        if isinstance(other, BareReal):
+            other = type(self)(other, Signature())
+        if isinstance(other, Quantity):
+            return downgrade_to_scalar(
+                type(self)(self.magnitude * other.magnitude,
+                           self.signature * other.signature)
+            )
+        else:
+            raise OperandTypeError('*', self, other)
+    __rmul__ = __mul__
+
+    def __pow__(self, exp):
+        if isinstance(exp, numbers.Integral) and exp != 0:
+            if exp < 0:
+                return 1 / (self**(-exp))
+            else:
+                return type(self)(self.magnitude**exp, self.signature**exp)
+        else:
+            raise OperandTypeError('**', self, exp)
+
+    def __div__(self, other):
+        if isinstance(other, BareReal):
+            other = type(self)(other, Signature())
+        if isinstance(other, Quantity):
+            return downgrade_to_scalar(
+                type(self)(self.magnitude / other.magnitude,
+                           self.signature / other.signature)
+            )
+        else:
+            raise OperandTypeError('/', self, other)
+    __truediv__ = __div__
+
+    def __floordiv__(self, other):
+        if isinstance(other, BareReal):
+            other = type(self)(other, Signature())
+        if isinstance(other, Quantity):
+            return downgrade_to_scalar(
+                type(self)(self.magnitude // other.magnitude,
+                           self.signature / other.signature)
+            )
+        else:
+            raise OperandTypeError('//', self, other)
+
+    def __rdiv__(self, other):
+        if isinstance(other, BareReal):
+            other = type(self)(other, Signature())
+            return downgrade_to_scalar(
+                type(self)(other.magnitude / self.magnitude,
+                           other.signature / self.signature)
+            )
+        else:
+            raise OperandTypeError('/', other, self)
+    __rtruediv__ = __rdiv__
+
+    def __rfloordiv__(self, other):
+        if isinstance(other, BareReal):
+            other = type(self)(other, Signature())
+            return downgrade_to_scalar(
+                type(self)(other.magnitude // self.magnitude,
+                           other.signature / self.signature)
+            )
+        else:
+            raise OperandTypeError('//', other, self)
+
+    def __eq__(self, other):
+        if isinstance(other, BareReal) and self.signature == SCALAR:
+            return self.magnitude == other
+        elif isinstance(other, Quantity) and self.signature == other.signature:
+            return self.magnitude == other.magnitude
+        else:
+            raise TypeError(
+                'incomparable quantities: %r and %r' % (self, other)
+            )
+
+    def __lt__(self, other):
+        if isinstance(other, Quantity) and self.signature == other.signature:
+            return self.magnitude < other.magnitude
+        else:
+            raise TypeError(
+                'incomparable quantities: %r and %r' % (self, other)
+            )
+
+    # The following make Quantity more compatible with numbers.Real.  In all
+    # cases, taking a Quantity for a float takes the magnitude expressed in
+    # the canonical unit.
+
+    def __le__(self, other):
+        if isinstance(other, Quantity) and self.signature == other.signature:
+            return self.magnitude <= other.magnitude
+        else:
+            raise TypeError(
+                'incomparable quantities: %r and %r' % (self, other)
+            )
+
+    def __float__(self):
+        return float(self.magnitude)
+
+    def __trunc__(self):
+        return self.magnitude.__trunc__()
+
+    def __abs__(self):
+        return abs(self.magnitude)
+
+    def __round__(self):
+        return round(self.magnitude)
+
+    def __ceil__(self):
+        import math
+        return math.ceil(self.magnitude)
+
+    def __floor__(self):
+        import math
+        return math.floor(self.magnitude)
+
+    def __mod__(self, other):
+        if isinstance(other, BareReal):
+            return type(self)(self.magnitude % other, self.signature)
+        else:
+            raise OperandTypeError('%', self, other)
+
+    def __rmod__(self, other):
+        # This is a rare operation.  Imagine: 5 % 2m to be 1/m....  But if I
+        # can do 5/2m and that is 2.5/m, then % should be allowed.
+        if isinstance(other, BareReal):
+            return type(self)(other % self.magnitude, 1 / self.signature)
+        else:
+            raise OperandTypeError('%', self, other)
+
+    def __rpow__(self, other):
+        raise OperandTypeError('**', other, self)
 
 
 class Dimension(type):
@@ -173,7 +364,25 @@ class Dimension(type):
       >>> Length._unit_ == Length.metre == Quantity(1, Length._signature_)
       True
 
+    You may subclass `Dimension`:class: and customize the attribute
+    ``Quantity``.  The value of the attribute **should** be a subclass of
+    `~xoutil.dim.meta.Quantity`:class: or a callable that returns instances of
+    Quantity.  You may provide it by fully-qualified name as supported by
+    `~xoutil.objects.import_object`:func:.
+
+    .. versionchanged:: 2.1.0 Added class-attribute Quantity.
+
     '''
+
+    #: Customizable Quantity factory.  It must be a callable that takes a
+    #: number and a signature, and returns a Quantity-like object.
+    Quantity = Quantity
+
+    @classproperty
+    def _Quantity(self):
+        from xoutil.objects import import_object
+        return import_object(self.Quantity)
+
     def __new__(cls, name, bases, attrs):
         wrappedattrs = {}
         Base = next((base for base in bases if isinstance(base, cls)), None)
@@ -193,7 +402,7 @@ class Dimension(type):
                     signature.top = ('<{}.{}>'.format(name, unit), )
                     # WARNING: In order to make a single looping structure we
                     # intentionally break the signature immutability
-                wrappedattrs[attr] = Quantity(val, signature)
+                wrappedattrs[attr] = cls._Quantity(val, signature)
             else:
                 if unit is None and isinstance(val, Quantity):
                     # This is the case when I need to create the quantity from
@@ -235,6 +444,12 @@ class Dimension(type):
         :keyword unit_aliases: A sequence with the name of other aliases for
                                the canonical unit.
 
+        :keyword Quantity: A replacement for the default Quantity of the
+                 dimension.  It defaults to None; which then looks for the
+                 Quantity attribute the class definition.  This allows to
+                 provide a custom Quantity without having to subclass
+                 Dimension.
+
         Example:
 
            >>> @Dimension.new(unit_alias='man')
@@ -269,19 +484,31 @@ class Dimension(type):
         This does not mean that ``Effort._unit_ == Effort.men_hour``.  The
         canonical unit would be ``Effort.men_second``.
 
+        .. versionchanged:: 2.1.0 Added keyword parameter Quantity.
+
         '''
+        from xoutil.objects import copy_class
         from xoutil.decorator.meta import decorator
 
         @decorator
-        def _new(source, unit_alias=None, unit_aliases=None):
-            from xoutil.objects import copy_class
-            res = copy_class(source, meta=cls)
+        def _new(source, unit_alias=None, unit_aliases=None, Quantity=None):
+            if Quantity is not None:
+                class meta(cls):
+                    pass
+                # Putting this inside the class fail, because 'Quantity =
+                # Quantity' cannot be disambiguated with local and non-local
+                # name.
+                meta.Quantity = Quantity
+            else:
+                meta = cls
+            res = copy_class(source, meta=meta)
             if unit_alias:
                 setattr(res, unit_alias, res._unit_)
             if unit_aliases:
                 for alias in unit_aliases:
                     setattr(res, alias, res._unit_)
             return res
+
         if source and kwargs or len(source) > 1:
             raise TypeError('Invalid signature')
         return _new(*source, **kwargs)
@@ -297,10 +524,10 @@ class Dimension(type):
             name = TIMES(self.__name__, other.__name__)
             if self == other:
                 unit = SQUARED(self._unitname_)
-                quant = Quantity(UNIT, self._signature_**2)
+                quant = self._Quantity(UNIT, self._signature_**2)
             else:
                 unit = TIMES(self._unitname_, other._unitname_)
-                quant = Quantity(
+                quant = self._Quantity(
                     UNIT, self._signature_ * other._signature_
                 )
             klass = type(self)
@@ -322,7 +549,7 @@ class Dimension(type):
                 assert exp > 0
                 name = POWER(self.__name__, exp)
                 unit = POWER(self._unitname_, exp)
-                quant = Quantity(UNIT, self._signature_**exp)
+                quant = self._Quantity(UNIT, self._signature_**exp)
                 klass = type(self)
                 return klass(name, (object, ), {unit: quant})
         else:
@@ -335,7 +562,10 @@ class Dimension(type):
             else:
                 name = PER(self.__name__, other.__name__)
                 unit = PER(self._unitname_, other._unitname_)
-                quant = Quantity(UNIT, self._signature_ / other._signature_)
+                quant = self._Quantity(
+                    UNIT,
+                    self._signature_ / other._signature_
+                )
                 klass = type(self)
                 return klass(name, (object, ), {unit: quant})
         else:
@@ -347,7 +577,7 @@ class Dimension(type):
         if numerator == 1:
             name = PER('unit', self.__name__)
             unit = PER('unit', self._unitname_)
-            quant = Quantity(UNIT, 1 / self._signature_)
+            quant = self._Quantity(UNIT, 1 / self._signature_)
             klass = type(self)
             return klass(name, (object, ), {unit: quant})
         else:
@@ -534,195 +764,6 @@ class _BareRealType(type):
 
 class BareReal(metaclass=_BareRealType):
     '''Any real that is not a Quantity instance.'''
-
-
-@functools.total_ordering
-class Quantity(numbers.Real):
-    '''A concrete number of `quantity` (expressed in) `units`.
-
-    .. seealso:: https://en.wikipedia.org/wiki/Concrete_number
-
-    :param quantity: A real number.
-    :param units: A `signature <Signature>`:class: for the units the
-                  denominate the given quantity.
-
-    You can construct instances by operating with the attributes of a
-    dimension.  For instance, this is 5 kilometres:
-
-       >>> from xoutil.dim.base import L
-       >>> 5 * L.km
-       5000::{<Length.metre>}/{}
-
-    A concrete number is of the type of its dimension:
-
-       >>> isinstance(5 * L.km, L)
-       True
-
-    '''
-    __slots__ = ('magnitude', 'signature')
-
-    def __init__(self, quantity, units):
-        if not isinstance(quantity, BareReal):
-            raise TypeError('Quantities must be real numbers')
-        self.magnitude = quantity
-        self.signature = units
-
-    def __str__(self):
-        return '{}::{}'.format(self.magnitude, self.signature)
-    __repr__ = __str__
-
-    def __neg__(self):
-        return Quantity(-self.magnitude, self.signature)
-
-    def __pos__(self):
-        return Quantity(self.magnitude, self.signature)
-
-    def __add__(self, other):
-        if isinstance(other, Quantity) and self.signature == other.signature:
-            return Quantity(self.magnitude + other.magnitude, self.signature)
-        else:
-            # What is the meaning of "10km + 1"?
-            raise OperandTypeError('+', self, other)
-    __radd__ = __add__
-
-    def __sub__(self, other):
-        if isinstance(other, Quantity) and self.signature == other.signature:
-            return Quantity(self.magnitude - other.magnitude, self.signature)
-        else:
-            # What is the meaning of "10km - 1"?
-            raise OperandTypeError('-', self, other)
-
-    def __mul__(self, other):
-        if isinstance(other, BareReal):
-            other = Quantity(other, Signature())
-        if isinstance(other, Quantity):
-            return downgrade_to_scalar(
-                Quantity(self.magnitude * other.magnitude,
-                         self.signature * other.signature)
-            )
-        else:
-            raise OperandTypeError('*', self, other)
-    __rmul__ = __mul__
-
-    def __pow__(self, exp):
-        if isinstance(exp, numbers.Integral) and exp != 0:
-            if exp < 0:
-                return 1 / (self**(-exp))
-            else:
-                return Quantity(self.magnitude**exp, self.signature**exp)
-        else:
-            raise OperandTypeError('**', self, exp)
-
-    def __div__(self, other):
-        if isinstance(other, BareReal):
-            other = Quantity(other, Signature())
-        if isinstance(other, Quantity):
-            return downgrade_to_scalar(
-                Quantity(self.magnitude / other.magnitude,
-                         self.signature / other.signature)
-            )
-        else:
-            raise OperandTypeError('/', self, other)
-    __truediv__ = __div__
-
-    def __floordiv__(self, other):
-        if isinstance(other, BareReal):
-            other = Quantity(other, Signature())
-        if isinstance(other, Quantity):
-            return downgrade_to_scalar(
-                Quantity(self.magnitude // other.magnitude,
-                         self.signature / other.signature)
-            )
-        else:
-            raise OperandTypeError('//', self, other)
-
-    def __rdiv__(self, other):
-        if isinstance(other, BareReal):
-            other = Quantity(other, Signature())
-            return downgrade_to_scalar(
-                Quantity(other.magnitude / self.magnitude,
-                         other.signature / self.signature)
-            )
-        else:
-            raise OperandTypeError('/', other, self)
-    __rtruediv__ = __rdiv__
-
-    def __rfloordiv__(self, other):
-        if isinstance(other, BareReal):
-            other = Quantity(other, Signature())
-            return downgrade_to_scalar(
-                Quantity(other.magnitude // self.magnitude,
-                         other.signature / self.signature)
-            )
-        else:
-            raise OperandTypeError('//', other, self)
-
-    def __eq__(self, other):
-        if isinstance(other, BareReal) and self.signature == SCALAR:
-            return self.magnitude == other
-        elif isinstance(other, Quantity) and self.signature == other.signature:
-            return self.magnitude == other.magnitude
-        else:
-            raise TypeError(
-                'incomparable quantities: %r and %r' % (self, other)
-            )
-
-    def __lt__(self, other):
-        if isinstance(other, Quantity) and self.signature == other.signature:
-            return self.magnitude < other.magnitude
-        else:
-            raise TypeError(
-                'incomparable quantities: %r and %r' % (self, other)
-            )
-
-    # The following make Quantity more compatible with numbers.Real.  In all
-    # cases, taking a Quantity for a float takes the magnitude expressed in
-    # the canonical unit.
-
-    def __le__(self, other):
-        if isinstance(other, Quantity) and self.signature == other.signature:
-            return self.magnitude <= other.magnitude
-        else:
-            raise TypeError(
-                'incomparable quantities: %r and %r' % (self, other)
-            )
-
-    def __float__(self):
-        return float(self.magnitude)
-
-    def __trunc__(self):
-        return self.magnitude.__trunc__()
-
-    def __abs__(self):
-        return abs(self.magnitude)
-
-    def __round__(self):
-        return round(self.magnitude)
-
-    def __ceil__(self):
-        import math
-        return math.ceil(self.magnitude)
-
-    def __floor__(self):
-        import math
-        return math.floor(self.magnitude)
-
-    def __mod__(self, other):
-        if isinstance(other, BareReal):
-            return Quantity(self.magnitude % other, self.signature)
-        else:
-            raise OperandTypeError('%', self, other)
-
-    def __rmod__(self, other):
-        # This is a rare operation.  Imagine: 5 % 2m to be 1/m....  But if I
-        # can do 5/2m and that is 2.5/m, then % should be allowed.
-        if isinstance(other, BareReal):
-            return Quantity(other % self.magnitude, 1 / self.signature)
-        else:
-            raise OperandTypeError('%', self, other)
-
-    def __rpow__(self, other):
-        raise OperandTypeError('**', other, self)
 
 
 SCALAR = Signature()
