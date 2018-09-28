@@ -267,3 +267,23 @@ def test_bug_30():
     with pytest.raises(TypeError):
         class LL(L):
             mm = UNIT
+
+
+def test_custom_quantity():
+    class NewQuantity(Quantity):
+        pass
+
+    class NewDim(Dimension):
+        Quantity = NewQuantity
+
+    @NewDim.new
+    class Length:
+        m = UNIT
+        km = 1000 * m
+
+    m = Length.m
+    Area = Length ** 2
+
+    assert isinstance(m, NewQuantity)
+    assert isinstance(1000 * m, NewQuantity)
+    assert isinstance(Area._unit_, NewQuantity)
