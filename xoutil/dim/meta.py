@@ -428,7 +428,7 @@ class Dimension(type):
 
         This is a wrapped decorator.  The actual possible signatures are:
 
-           - ``new(unit_alias=None, unit_aliases=None)(source)``
+           - ``new(unit_alias=None, unit_aliases=None, Quantity=None)(source)``
 
            - ``new(source)``
 
