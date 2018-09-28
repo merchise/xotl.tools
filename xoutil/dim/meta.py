@@ -444,6 +444,12 @@ class Dimension(type):
         :keyword unit_aliases: A sequence with the name of other aliases for
                                the canonical unit.
 
+        :keyword Quantity: A replacement for the default Quantity of the
+                 dimension.  It defaults to None; which then looks for the
+                 Quantity attribute the class definition.  This allows to
+                 provide a custom Quantity without having to subclass
+                 Dimension.
+
         Example:
 
            >>> @Dimension.new(unit_alias='man')
@@ -478,19 +484,31 @@ class Dimension(type):
         This does not mean that ``Effort._unit_ == Effort.men_hour``.  The
         canonical unit would be ``Effort.men_second``.
 
+        .. versionchanged:: 2.1.0 Added keyword parameter Quantity.
+
         '''
+        from xoutil.objects import copy_class
         from xoutil.decorator.meta import decorator
 
         @decorator
-        def _new(source, unit_alias=None, unit_aliases=None):
-            from xoutil.objects import copy_class
-            res = copy_class(source, meta=cls)
+        def _new(source, unit_alias=None, unit_aliases=None, Quantity=None):
+            if Quantity is not None:
+                class meta(cls):
+                    pass
+                # Putting this inside the class fail, because 'Quantity =
+                # Quantity' cannot be disambiguated with local and non-local
+                # name.
+                meta.Quantity = Quantity
+            else:
+                meta = cls
+            res = copy_class(source, meta=meta)
             if unit_alias:
                 setattr(res, unit_alias, res._unit_)
             if unit_aliases:
                 for alias in unit_aliases:
                     setattr(res, alias, res._unit_)
             return res
+
         if source and kwargs or len(source) > 1:
             raise TypeError('Invalid signature')
         return _new(*source, **kwargs)

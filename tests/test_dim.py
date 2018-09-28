@@ -279,7 +279,6 @@ def test_custom_quantity():
     @NewDim.new
     class Length:
         m = UNIT
-        km = 1000 * m
 
     m = Length.m
     Area = Length ** 2
@@ -287,3 +286,21 @@ def test_custom_quantity():
     assert isinstance(m, NewQuantity)
     assert isinstance(1000 * m, NewQuantity)
     assert isinstance(Area._unit_, NewQuantity)
+
+    @Dimension.new(Quantity=NewQuantity)
+    class Time:
+        s = UNIT
+
+    Freq = 1 / Time
+    assert isinstance(Time.s, NewQuantity)
+    assert isinstance(Freq._unit_, NewQuantity)
+
+    @NewDim.new(Quantity=Quantity)
+    class Time:
+        s = UNIT
+
+    Freq = 1 / Time
+    assert not isinstance(Time.s, NewQuantity)
+    assert isinstance(Time.s, Quantity)
+    assert not isinstance(Freq._unit_, NewQuantity)
+    assert isinstance(Freq._unit_, Quantity)
