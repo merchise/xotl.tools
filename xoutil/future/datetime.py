@@ -1036,7 +1036,11 @@ class DateTimeSpan(TimeSpan):
         '''
         if isinstance(other, date):
             if not isinstance(other, datetime):
-                other = datetime(other.year, other.month, other.day)  # type: ignore
+                other = datetime(  # type: ignore
+                    other.year,
+                    other.month,
+                    other.day
+                )
             if self.start_datetime and self.end_datetime:
                 return self.start_datetime <= other <= self.end_datetime
             elif self.start_datetime:
