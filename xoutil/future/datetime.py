@@ -79,7 +79,7 @@ def new_date(d):
 def new_datetime(d):
     '''Generate a safe datetime given a legacy date or datetime object.'''
     args = [d.year, d.month, d.day]
-    if isinstance(d, datetime.__base__):    # legacy datetime
+    if isinstance(d, datetime):
         args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
     return datetime(*args)
 
@@ -878,8 +878,8 @@ class _EmptyTimeSpan:
         return self
 
 
-# I solemnly swear that EmptyTimeSpan is of type TimeSpan.
-EmptyTimeSpan = _EmptyTimeSpan()  # type: TimeSpan  # type: ignore
+# I solemnly swear that EmptyTimeSpan is of type DateTimeSpan.
+EmptyTimeSpan = _EmptyTimeSpan()
 
 
 # TODO: Move this to xoutil.objects or somewhere else
