@@ -411,6 +411,8 @@ def ungroup(iterator):
 
 if sys.version_info < (3, 5):
     class _safeitem:
+        __slots__ = ['item', 'key']
+
         def __init__(self, item, key=None):
             self.item = item
             self.key = key or (lambda x: x)
