@@ -147,3 +147,24 @@ def test_merge_by_key(l1, l2):
     with pytest.raises(StopIteration):
         last = next(iter_)  # noqa: There cannot be more items in the merge
     assert result == expected
+
+
+@given(s.lists(s.integers(), max_size=30),
+       s.lists(s.integers(), max_size=30))
+def test_merge_by_key_incomparable(l1, l2):
+    class item:
+        def __init__(self, x):
+            self.item = x
+
+    from xoutil.future.itertools import merge
+    l1 = [item(i) for i in sorted(l1)]
+    l2 = [item(i) for i in sorted(l2)]
+    # Accumulate and catch if yielding more than necessary
+    iter_ = merge(l1, l2, key=lambda x: x.item)
+    expected = sorted(l1 + l2, key=lambda x: x.item)
+    result = []
+    for _ in range(len(expected)):
+        result.append(next(iter_))
+    with pytest.raises(StopIteration):
+        last = next(iter_)  # noqa: There cannot be more items in the merge
+    assert result == expected
