@@ -879,7 +879,7 @@ class _EmptyTimeSpan:
 
 
 # I solemnly swear that EmptyTimeSpan is of type TimeSpan.
-EmptyTimeSpan: TimeSpan = _EmptyTimeSpan()  # type: ignore
+EmptyTimeSpan = _EmptyTimeSpan()  # type: TimeSpan  # type: ignore
 
 
 # TODO: Move this to xoutil.objects or somewhere else
