@@ -456,7 +456,4 @@ if sys.version_info < (3, 5):
 else:
     from heapq import merge  # noqa
 
-# I don't know yet which xoutil version will no longer support Python 3.4
-merge = deprecated_alias(merge)
-
 del sys

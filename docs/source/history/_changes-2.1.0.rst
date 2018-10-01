@@ -6,3 +6,9 @@
 
 - Allow to customize Quantity in `xoutil.dim.meta.Dimension`:class: and, by
   argument, in `~xoutil.dim.meta.Dimension.new`:meth:.
+
+- Deprecate ``xoutil.future.itertools.zip()``, and
+  ``xoutil.future.itertools.map()``.
+
+- Re-implement `xoutil.future.itertools.merge`:func: in terms of
+  `heapq.merge`:func:.
