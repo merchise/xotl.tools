@@ -13,7 +13,7 @@
    ``xoutil.iterators`` is now a deprecated alias.
 
 '''
-
+import sys
 from itertools import *  # noqa
 from xoutil.symbols import Unset
 
@@ -409,57 +409,32 @@ def ungroup(iterator):
             yield x
 
 
-def merge(*iterables, key=None):
-    '''Merge the iterables in order.
+if sys.version_info < (3, 5):
+    def merge(*iterables, key=None):
+        '''Merge the iterables in order.
 
-    Return an iterator that yields all items from `iterables` following the
-    order given by `key`.  If `key` is not given we compare the items.
+        Return an iterator that yields all items from `iterables` following the
+        order given by `key`.  If `key` is not given we compare the items.
 
-    If the `iterables` yield their items in order (w.r.t `key`), the result is
-    also ordered (like a merge sort).
+        If the `iterables` yield their items in order (w.r.t `key`), the result is
+        also ordered (like a merge sort).
 
-    ``merge()`` returns the *empty* iterator.
+        ``merge()`` returns the *empty* iterator.
 
-    .. versionadded:: 1.8.4
+        .. versionadded:: 1.8.4
 
-    '''
-    from xoutil.symbols import Undefined
-    from xoutil.future.collections import Iterable, Iterator
+        .. versionchanged:: 2.1.0 Based on `heapq.merge`:func:.  In Python
+           3.5+, this is just an alias of it.
 
-    if key is None:
-        key = lambda x: x
+        '''
+        from heapq import merge
+        if key is None:
+            key = lambda x: x
+        params = (((key(x), x) for x in iter_) for iter_ in iterables)
+        for _, item in merge(*params):
+            yield item
+else:
+    from heapq import merge  # noqa
 
-    def _merge(iter1, iter2):
-        iter1 = iter(iter1)
-        iter2 = iter(iter2)
-        item1 = next(iter1, Undefined)
-        item2 = next(iter2, Undefined)
-        while item1 is not Undefined and item2 is not Undefined:
-            if key(item1) <= key(item2):
-                yield item1
-                item1 = next(iter1, Undefined)
-            else:
-                yield item2
-                item2 = next(iter2, Undefined)
-        # One of the iterators (or both) has been exhausted, consume the
-        # other.
-        while item1 is not Undefined:
-            yield item1
-            item1 = next(iter1, Undefined)
-        while item2 is not Undefined:
-            yield item2
-            item2 = next(iter2, Undefined)
 
-    def _empty():
-        return
-        yield
-
-    if not all(isinstance(iter_, (Iterable, Iterator)) for iter_ in iterables):
-        raise TypeError('Positional argument must be iterables or iterators')
-    if iterables:
-        res = iterables[0]
-        for iter_ in iterables[1:]:
-            res = _merge(res, iter_)
-    else:
-        res = _empty()
-    return res
+del sys
