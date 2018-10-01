@@ -433,11 +433,11 @@ if sys.version_info < (3, 5):
     def merge(*iterables, key=None):
         '''Merge the iterables in order.
 
-        Return an iterator that yields all items from `iterables` following the
-        order given by `key`.  If `key` is not given we compare the items.
+        Return an iterator that yields all items from `iterables` following
+        the order given by `key`.  If `key` is not given we compare the items.
 
-        If the `iterables` yield their items in order (w.r.t `key`), the result is
-        also ordered (like a merge sort).
+        If the `iterables` yield their items in order (w.r.t `key`), the
+        result is also ordered (like a merge sort).
 
         ``merge()`` returns the *empty* iterator.
 
