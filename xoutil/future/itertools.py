@@ -410,6 +410,26 @@ def ungroup(iterator):
 
 
 if sys.version_info < (3, 5):
+    class _safeitem:
+        def __init__(self, item, key=None):
+            self.item = item
+            self.key = key or (lambda x: x)
+
+        def __le__(self, other):
+            return self.key(self.item) <= self.key(other.item)
+
+        def __lt__(self, other):
+            return self.key(self.item) < self.key(other.item)
+
+        def __ge__(self, other):
+            return self.key(self.item) >= self.key(other.item)
+
+        def __gt__(self, other):
+            return self.key(self.item) > self.key(other.item)
+
+        def __eq__(self, other):
+            return self.key(self.item) == self.key(other.item)
+
     def merge(*iterables, key=None):
         '''Merge the iterables in order.
 
@@ -430,9 +450,9 @@ if sys.version_info < (3, 5):
         from heapq import merge
         if key is None:
             key = lambda x: x
-        params = (((key(x), x) for x in iter_) for iter_ in iterables)
-        for _, item in merge(*params):
-            yield item
+        params = ((_safeitem(x, key) for x in iter_) for iter_ in iterables)
+        for x in merge(*params):
+            yield x.item
 else:
     from heapq import merge  # noqa
 
