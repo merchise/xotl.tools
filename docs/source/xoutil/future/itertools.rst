@@ -5,7 +5,25 @@
    :members: dict_update_new, first_n, first_non_null,
 	         slides, continuously_slides, ungroup
 
-.. autofunction:: merge(*iterables, key=None)
+.. function:: merge(*iterables, key=None)
+
+   Merge the iterables in order.
+
+   Return an iterator that yields all items from `iterables` following the
+   order given by `key`.  If `key` is not given we compare the items.
+
+   If the `iterables` yield their items in increasing order (w.r.t `key`), the
+   result is also ordered (like a merge sort).
+
+   ``merge()`` returns the *empty* iterator.
+
+   .. versionadded:: 1.8.4
+
+   .. versionchanged:: 2.1.0 Based on `heapq.merge`:func:.  In Python
+      3.5+, this is just an alias of it.
+
+   .. deprecated:: 2.1.0 Use `heapq.merge`:func: directly.  This function will
+                   be removed when we support for Python 3.4.
 
 .. autofunction:: delete_duplicates(seq[, key=lambda x: x])
 
