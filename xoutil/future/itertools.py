@@ -447,7 +447,7 @@ if sys.version_info < (3, 5):
            3.5+, this is just an alias of it.
 
         '''
-        from heapq import merge
+        from heapq import merge  # noqa
         if key is None:
             key = lambda x: x
         params = ((_safeitem(x, key) for x in iter_) for iter_ in iterables)
