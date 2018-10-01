@@ -38,8 +38,9 @@
    continues until the shortest iterable in the argument sequence is exhausted
    and then it raises StopIteration.
 
-   This method is actually the standard ``itertools.izip()`` when in Python
-   2.7, and the builtin ``zip`` when in Python 3.
+   .. deprecated:: 2.1.0 Use the builtin `zip`:func:.  This function will be
+                   removed in xoutil 3.
+
 
 .. function:: xoutil.iterators.map(func, *iterables)
 
@@ -47,8 +48,8 @@
    iterables. It stops when the shortest iterable is exhausted instead of
    filling in None for shorter iterables.
 
-   This method is actually the stardard ``itertools.imap`` when in Python 2.7,
-   and the builtin ``map`` when in Python 3.
+   .. deprecated:: 2.1.0 Use the builtin `map`:func:.  This function will be
+                   removed in xoutil 3.
 
 .. function:: xoutil.iterators.zip_longest(*iterables, fillvalue=None)
 

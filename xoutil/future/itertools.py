@@ -16,10 +16,10 @@
 import sys
 from itertools import *  # noqa
 from xoutil.symbols import Unset
+from xoutil.deprecation import deprecated_alias
 
-# TODO: deprecate both
-map = map
-zip = zip
+map = deprecated_alias(map, removed_in_version='3.0', check_version=True)
+zip = deprecated_alias(zip, removed_in_version='3.0', check_version=True)
 
 
 def first_non_null(iterable, default=None):
