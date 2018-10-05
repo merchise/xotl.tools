@@ -12,3 +12,5 @@
 
 - Re-implement `xoutil.future.itertools.merge`:func: in terms of
   `heapq.merge`:func:.
+
+- Add `xoutil.tasking.get_backoff_wait`:func:

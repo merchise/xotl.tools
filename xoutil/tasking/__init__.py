@@ -124,6 +124,19 @@ class BackoffWait:
         return res
 
 
+def get_backoff_wait(n, *, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
+    '''Compute the total backoff wait time after `n` tries.
+
+    .. seealso:: `BackoffWait`:class:.
+
+    '''
+    res = 0
+    fn = BackoffWait(wait=wait, backoff=backoff)
+    for _ in range(n):
+        res = fn(prev=res)
+    return res
+
+
 def retry(fn, args=None, kwargs=None, *, max_tries=None, max_time=None,
           wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
     '''Run `fn` with args and kwargs in an auto-retrying loop.
