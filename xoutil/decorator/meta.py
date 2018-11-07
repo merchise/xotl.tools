@@ -196,12 +196,15 @@ class FunctionMaker(object):
 
 
 def flat_decorator(caller, func=None):
-    """
-    Creates a signature keeping decorator.
+    """Creates a signature keeping decorator.
 
     ``decorator(caller)`` converts a caller function into a decorator.
 
     ``decorator(caller, func)`` decorates a function using a caller.
+
+    .. deprecated:: 1.9.9 Use the `decorator
+                    <https://pypi.org/project/decorator/>`__ package.
+
     """
     if func is not None:    # returns a decorated function
         if sys.version_info[0] == 3:
