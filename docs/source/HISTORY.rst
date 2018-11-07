@@ -21,6 +21,12 @@ Changelog
    This end-of-life notice puts an end to this issue.
 
 
+2018-11-07.  Release 2.0.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.0.9.rst
+
+
 2018-09-24.  Release 2.0.8
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -88,6 +94,13 @@ Changelog
 
    xoutil 1.9.7 will be the last release of xoutil that adds functionality.
    Future releases will be strictly bug-fix only.
+
+.. _rel-1.9.9:
+
+2018-11-07.  Release 1.9.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.9.9.rst
 
 .. _rel-1.9.8:
 
