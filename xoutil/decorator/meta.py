@@ -204,7 +204,10 @@ def flat_decorator(caller, func=None):
     ``decorator(caller, func)`` decorates a function using a caller.
     """
     if func is not None:    # returns a decorated function
-        evaldict = func.func_globals.copy()
+        if sys.version_info[0] == 3:
+            evaldict = func.__globals__.copy()
+        else:
+            evaldict = func.func_globals.copy()
         evaldict['_call_'] = caller
         evaldict['_func_'] = func
         return FunctionMaker.create(
@@ -221,7 +224,10 @@ def flat_decorator(caller, func=None):
         except IndexError:
             deco_sign = '%s()' % caller.__name__
             deco_body = 'return _call_'
-        evaldict = caller.func_globals.copy()
+        if sys.version_info[0] == 3:
+            evaldict = caller.__globals__.copy()
+        else:
+            evaldict = caller.func_globals.copy()
         evaldict['_call_'] = caller
         evaldict['flat_decorator'] = evaldict['decorator'] = flat_decorator
         return FunctionMaker.create(
