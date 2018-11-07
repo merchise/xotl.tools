@@ -9,6 +9,11 @@ Changelog
    xoutil 1.9.7 will be the last release of xoutil that adds functionality.
    Future releases will be strictly bug-fix only.
 
+Unreleased.  Release 1.9.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.9.9.rst
+
 
 2018-09-24.  Release 1.9.8
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
