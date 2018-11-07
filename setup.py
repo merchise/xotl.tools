@@ -77,6 +77,7 @@ setup(
     install_requires=[
         'monotonic; python_version<"3.3"',
         'contextlib2; python_version<"3.4"',
+        'typing; python_version<"3.5"',
     ],
     extras_require={
         'recommended': [

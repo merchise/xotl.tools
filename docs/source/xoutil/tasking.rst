@@ -21,3 +21,5 @@
 .. class:: StandardWait
 
    A deprecated alias for `ConstantAlias`:class:.
+
+.. autofunction:: get_backoff_wait

@@ -12,6 +12,24 @@ lint:
   tags:
     - merchise-lint3
 
+
+check with mypy:
+  stage: test
+  cache:
+    key: mypy-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .tox/3.6-staticcheck/
+      - .mypy_cache/
+  script:
+    - tox -e3.6-staticcheck
+  tags:
+    - python
+    - virtualenv
+    - tox
+  only:
+    - branches
+  allow_failure: true
+
 run all tests (if needed):
   stage: test
   script:
@@ -103,6 +121,10 @@ publish in pypi:
 
 build documentation:
   stage: build
+  cache:
+    key: docs-${CI_COMMIT_REF_SLUG}
+    paths:
+      - builds/doctrees
   script:
     - mkdir -p envs
     - virtualenv -p `which python3` envs/$CI_COMMIT_SHA

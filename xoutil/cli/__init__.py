@@ -23,20 +23,34 @@ Commands can be registered by:
 
 '''
 
-from abc import abstractmethod, ABC
+from abc import abstractmethod, ABCMeta, ABC
 from xoutil.objects import staticproperty
 from xoutil.cli.tools import command_name, program_name
 
 
-class Command(ABC):
-    '''Base for all commands.
+class CommandMeta(ABCMeta):
+    '''Meta-class for all commands.'''
 
-    '''
-    __settings__ = {
-        # 'default_command' : None
-    }
+    def __new__(meta, name, bases, namespace):
+        cls = super(CommandMeta, meta).__new__(meta, name, bases, namespace)
+        cls.__subcommands_registry__ = set()
+        return cls
 
-    @classmethod
+    def register(cls, subclass):
+        '''Register a virtual subclass of a Command.
+
+        Returns the sub-command, to allow usage as a class decorator.
+
+        .. note:: Python 3.7 hides internal registry (``_abc_registry``), so
+                  a sub-commands registry is implemented.
+
+        '''
+        cls.__subcommands_registry__.add(subclass)
+        res = super(CommandMeta, cls).register(subclass)
+        if res is None:
+            res = subclass
+        return res
+
     def cli_name(cls):
         '''Calculate the command name.
 
@@ -68,51 +82,23 @@ class Command(ABC):
             res = hyphen_name(cls.__name__)
         return res
 
-    def __str__(self):
-        return command_name(type(self))
-
-    def __repr__(self):
-        return '<command: %s>' % command_name(type(self))
-
-    @staticproperty
-    def registry():
-        '''Obtain all registered commands.'''
-        name = '__registry__'
-        res = getattr(Command, name, {})
-        if not res:
-            Command._settle_cache(res, Command)
-            assert res.pop(command_name(Command), None) is None
-            Command._check_help(res)
-            setattr(Command, name, res)
-        return res
-
-    @abstractmethod
-    def run(self, args=None):
-        '''Must return a valid value for "sys.exit"'''
-        raise NotImplementedError
-
-    @classmethod
     def get_setting(cls, name, *default):
-        unset = object()
         aux = len(default)
-        if aux == 0:
-            default = unset
-        elif aux == 1:
-            default = default[0]
+        if aux < 2:
+            unset = object()
+            default = default[0] if aux == 1 else unset
+            res = cls.__settings__.get(name, default)
+            if res is not unset:
+                return res
+            else:
+                raise KeyError(name)
         else:
             msg = 'get_setting() takes at most 3 arguments ({} given)'
             raise TypeError(msg.format(aux + 2))
-        res = cls.__settings__.get(name, default)
-        if res is not unset:
-            return res
-        else:
-            raise KeyError(name)
 
-    @classmethod
     def set_setting(cls, name, value):
         cls.__settings__[name] = value    # TODO: Check type
 
-    @classmethod
     def set_default_command(cls, cmd=None):
         '''Default command is called when no one is specified.
 
@@ -143,13 +129,41 @@ class Command(ABC):
                 name = command_name(cls)
             else:
                 raise ValueError('redundant command specification', cls, cmd)
-
         Command.set_setting('default_command', name)
 
+
+class Command(ABC, metaclass=CommandMeta):
+    '''Base for all commands.'''
+
+    __settings__ = {
+        # 'default_command' : None
+    }
+    __registry_cache__ = {}
+
+    def __str__(self):
+        return command_name(type(self))
+
+    def __repr__(self):
+        return '<command: %s>' % command_name(type(self))
+
+    @staticproperty
+    def registry():
+        '''Obtain all registered commands.'''
+        res = Command.__registry_cache__
+        if not res:
+            Command._settle_cache(Command)
+            assert res.pop(command_name(Command), None) is None
+            Command._check_help()
+        return res
+
+    @abstractmethod
+    def run(self, args=None):
+        '''Must return a valid value for "sys.exit"'''
+        raise NotImplementedError
+
     @staticmethod
-    def _settle_cache(target, source, recursed=None):
-        '''`target` is a mapping to store result commands'''
-        # TODO: Convert check based in argument "recursed" in a decorator
+    def _settle_cache(source, recursed=None):
+        '''Initialize '__registry_cache__'.'''
         from xoutil.names import nameof
         if recursed is None:
             recursed = set()
@@ -157,7 +171,8 @@ class Command(ABC):
         if name not in recursed:
             recursed.add(name)
             sub_commands = type.__subclasses__(source)
-            sub_commands.extend(getattr(source, '_abc_registry', ()))
+            virtuals = getattr(source, '__subcommands_registry__', ())
+            sub_commands.extend(virtuals)
             cmds = getattr(source, '__commands__', None)
             if cmds:
                 from collections import Iterable
@@ -166,7 +181,7 @@ class Command(ABC):
                 sub_commands.extend(cmds)
             if sub_commands:
                 for cmd in sub_commands:
-                    Command._settle_cache(target, cmd, recursed=recursed)
+                    Command._settle_cache(cmd, recursed=recursed)
             else:   # Only branch commands are OK to execute
                 from types import FunctionType as ValidMethodType
                 assert isinstance(source.run, ValidMethodType), \
@@ -174,17 +189,17 @@ class Command(ABC):
                         type(source.run).__name__,
                         source
                     )  # noqa
-                target[command_name(source)] = source
+                Command.__registry_cache__[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)
 
     @staticmethod
-    def _check_help(target):
+    def _check_help():
         '''Check that correct help command is present.'''
         name = HELP_NAME
-        hlp = target[name]
+        hlp = Command.__registry_cache__[name]
         if hlp is not Help and not getattr(hlp, '__overwrite__', False):
-            target[name] = Help
+            Command.__registry_cache__[name] = Help
 
 
 class Help(Command):
@@ -202,7 +217,7 @@ class Help(Command):
 
     This command could not be overwritten unless using the class attribute:
 
-       __override__ = True
+       __overwrite__ = True
 
     '''
 
@@ -259,5 +274,5 @@ HELP_NAME = command_name(Help)
 
 # TODO: Create "xoutil.config" here
 
-del abstractmethod, ABC
+del abstractmethod, ABCMeta
 del staticproperty

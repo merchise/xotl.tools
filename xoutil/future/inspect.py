@@ -135,13 +135,6 @@ def safe_name(obj, affirm=False):
         return None
 
 
-from xoutil.deprecation import deprecated    # noqa
-
-type_name = deprecated(safe_name, removed_in_version='1.8.1')(safe_name)
-
-del deprecated
-
-
 def _static_issubclass(C, B):
     '''like ``issubclass(C, B) -> bool`` but without using ABCs.
 

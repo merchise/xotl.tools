@@ -16,7 +16,7 @@
 '''
 
 import sys
-from xoutil.deprecation import deprecated
+from xoutil.deprecation import deprecated_alias
 
 
 # TODO: Must be implemented using `xoutil.api` mechanisms for correct driver
@@ -94,10 +94,10 @@ class ConstantWait:
         return self.wait
 
 
-StandardWait = deprecated(
+StandardWait = deprecated_alias(
     ConstantWait,
-    'StandardWait is deprecated. Use ConstantWait instead'
-)(ConstantWait)
+    msg='StandardWait is deprecated. Use ConstantWait instead'
+)
 
 
 class BackoffWait:
@@ -122,6 +122,19 @@ class BackoffWait:
         res = self.wait + (self.backoff / 1000)
         self.backoff = self.backoff * 2
         return res
+
+
+def get_backoff_wait(n, *, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
+    '''Compute the total backoff wait time after `n` tries.
+
+    .. seealso:: `BackoffWait`:class:.
+
+    '''
+    res = 0
+    fn = BackoffWait(wait=wait, backoff=backoff)
+    for _ in range(n):
+        res = fn(prev=res)
+    return res
 
 
 def retry(fn, args=None, kwargs=None, *, max_tries=None, max_time=None,
@@ -231,4 +244,4 @@ class retrier:
         return inner
 
 
-del deprecated
+del deprecated_alias

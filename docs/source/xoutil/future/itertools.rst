@@ -5,7 +5,25 @@
    :members: dict_update_new, first_n, first_non_null,
 	         slides, continuously_slides, ungroup
 
-.. autofunction:: merge(*iterables, key=None)
+.. function:: merge(*iterables, key=None)
+
+   Merge the iterables in order.
+
+   Return an iterator that yields all items from `iterables` following the
+   order given by `key`.  If `key` is not given we compare the items.
+
+   If the `iterables` yield their items in increasing order (w.r.t `key`), the
+   result is also ordered (like a merge sort).
+
+   ``merge()`` returns the *empty* iterator.
+
+   .. versionadded:: 1.8.4
+
+   .. versionchanged:: 2.1.0 Based on `heapq.merge`:func:.  In Python
+      3.5+, this is just an alias of it.
+
+   .. deprecated:: 2.1.0 Use `heapq.merge`:func: directly.  This function will
+                   be removed when we support for Python 3.4.
 
 .. autofunction:: delete_duplicates(seq[, key=lambda x: x])
 
@@ -20,8 +38,9 @@
    continues until the shortest iterable in the argument sequence is exhausted
    and then it raises StopIteration.
 
-   This method is actually the standard ``itertools.izip()`` when in Python
-   2.7, and the builtin ``zip`` when in Python 3.
+   .. deprecated:: 2.1.0 Use the builtin `zip`:func:.  This function will be
+                   removed in xoutil 3.
+
 
 .. function:: xoutil.iterators.map(func, *iterables)
 
@@ -29,8 +48,8 @@
    iterables. It stops when the shortest iterable is exhausted instead of
    filling in None for shorter iterables.
 
-   This method is actually the stardard ``itertools.imap`` when in Python 2.7,
-   and the builtin ``map`` when in Python 3.
+   .. deprecated:: 2.1.0 Use the builtin `map`:func:.  This function will be
+                   removed in xoutil 3.
 
 .. function:: xoutil.iterators.zip_longest(*iterables, fillvalue=None)
 

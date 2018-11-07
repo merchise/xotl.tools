@@ -88,7 +88,7 @@ def test_dict_update_new(d1, d2):
     assert all(d1[key] == d2[key] for key in d2 if key not in d)
 
 
-@given(s.lists(s.integers(), max_size=30, average_size=10))
+@given(s.lists(s.integers(), max_size=30))
 def test_delete_duplicates(l):
     from xoutil.future.itertools import delete_duplicates
     from xoutil.future.collections import Counter
@@ -98,7 +98,7 @@ def test_delete_duplicates(l):
     assert all(Counter(res)[item] == 1 for item in l)
 
 
-@given(s.lists(s.integers(), max_size=30, average_size=10))
+@given(s.lists(s.integers(), max_size=30))
 def test_delete_duplicates_with_key(l):
     from xoutil.future.itertools import delete_duplicates
     res = delete_duplicates(l, key=lambda x: x % 3)
@@ -113,9 +113,9 @@ def test_iter_delete_duplicates():
         ['A', 'B', 'A']
 
 
-@given(s.lists(s.integers(), max_size=30, average_size=10),
-       s.lists(s.integers(), max_size=30, average_size=10),
-       s.lists(s.integers(), max_size=30, average_size=10))
+@given(s.lists(s.integers(), max_size=30),
+       s.lists(s.integers(), max_size=30),
+       s.lists(s.integers(), max_size=30))
 def test_merge(l1, l2, l3):
     from xoutil.future.itertools import merge
     l1 = sorted(l1)
@@ -124,6 +124,44 @@ def test_merge(l1, l2, l3):
     # Accumulate and catch if yielding more than necessary
     iter_ = merge(l1, l2, l3)
     expected = sorted(l1 + l2 + l3)
+    result = []
+    for _ in range(len(expected)):
+        result.append(next(iter_))
+    with pytest.raises(StopIteration):
+        last = next(iter_)  # noqa: There cannot be more items in the merge
+    assert result == expected
+
+
+@given(s.lists(s.integers(), max_size=30),
+       s.lists(s.integers(), max_size=30))
+def test_merge_by_key(l1, l2):
+    from xoutil.future.itertools import merge
+    l1 = [('l1-dummy', i) for i in sorted(l1)]
+    l2 = [('l2-dummy', i) for i in sorted(l2)]
+    # Accumulate and catch if yielding more than necessary
+    iter_ = merge(l1, l2, key=lambda x: x[1])
+    expected = sorted(l1 + l2, key=lambda x: x[1])
+    result = []
+    for _ in range(len(expected)):
+        result.append(next(iter_))
+    with pytest.raises(StopIteration):
+        last = next(iter_)  # noqa: There cannot be more items in the merge
+    assert result == expected
+
+
+@given(s.lists(s.integers(), max_size=30),
+       s.lists(s.integers(), max_size=30))
+def test_merge_by_key_incomparable(l1, l2):
+    class item:
+        def __init__(self, x):
+            self.item = x
+
+    from xoutil.future.itertools import merge
+    l1 = [item(i) for i in sorted(l1)]
+    l2 = [item(i) for i in sorted(l2)]
+    # Accumulate and catch if yielding more than necessary
+    iter_ = merge(l1, l2, key=lambda x: x.item)
+    expected = sorted(l1 + l2, key=lambda x: x.item)
     result = []
     for _ in range(len(expected)):
         result.append(next(iter_))

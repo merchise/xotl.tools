@@ -9,14 +9,13 @@
 
 '''A context manager for execution context flags.'''
 
-
-from xoutil.tasking import local as LocalData
+from xoutil.tasking import local
 from xoutil.future.collections import StackedDict, Mapping
 
 __all__ = ('Context', 'context', 'NullContext')
 
 
-class LocalData(LocalData):
+class LocalData(local):
     '''Thread-local data for contexts.'''
     def __init__(self):
         super().__init__()
@@ -26,7 +25,7 @@ class LocalData(LocalData):
 _data = LocalData()
 
 
-class MetaContext(type(StackedDict)):
+class MetaContext(type(StackedDict)):  # type: ignore
     def __len__(self):
         return len(_data.contexts)
 
@@ -226,10 +225,3 @@ class NullContext(Mapping):
 
 
 _null_context = NullContext()
-
-
-from collections import Mapping
-
-Mapping.register(NullContext)
-
-del Mapping

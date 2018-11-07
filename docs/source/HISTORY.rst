@@ -13,7 +13,36 @@ Unreleased. Release 2.1.0
 2.0 series
 ----------
 
-Unreleased.  Release 2.0.7
+.. note:: End-of-life for xoutil 2.0
+
+   xoutil 2.0.7 will be the last release in the xoutil 2.0.x series that adds
+   new functionality.  Any future release in this series will be bug-fix only.
+
+   Since the pair-wise releases of 1.9.x and 2.0.x some new functionality has
+   been added to some version of 1.9.x that is not present in some releases of
+   the 2.0.x series.
+
+   This created some dose of unease for users wanting a new feature in 1.9.3
+   in a package where Python 2/3 was not a true concern; they were forced to
+   require 'xoutil>=1.9.3,!=2.0.0,!=2.0.1,!=2.0.2' to avoid the package
+   manager to select a version without the needed feature.
+
+   This end-of-life notice puts an end to this issue.
+
+
+2018-11-07.  Release 2.0.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.0.9.rst
+
+
+2018-09-24.  Release 2.0.8
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.0.8.rst
+
+
+2018-09-14.  Release 2.0.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.0.7.rst
@@ -70,9 +99,28 @@ Unreleased.  Release 2.0.7
 1.9 series
 ----------
 
+.. note:: End-of-life for xoutil 1.9
+
+   xoutil 1.9.7 will be the last release of xoutil that adds functionality.
+   Future releases will be strictly bug-fix only.
+
+.. _rel-1.9.9:
+
+2018-11-07.  Release 1.9.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.9.9.rst
+
+.. _rel-1.9.8:
+
+2018-09-24.  Release 1.9.8
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-1.9.8.rst
+
 .. _rel-1.9.7:
 
-Unreleased.  Release 1.9.7
+2018-09-14.  Release 1.9.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-1.9.7.rst

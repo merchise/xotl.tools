@@ -7,7 +7,11 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
+import pytest
+from xoutil.versions import python_version
 from xoutil.future.collections import OrderedSmartDict
+
+PYPY = python_version.pypy
 
 
 def test_nameof():
@@ -70,6 +74,7 @@ def test_nameof_methods():
     assert names == ['first', 'second', 'third']
 
 
+@pytest.mark.skipif(PYPY, reason="'OrderedDict' is in '_pypy_collections'")
 def test_fullnameof():
     from xoutil.names import nameof, simple_name
     _name = 'collections.OrderedDict'
@@ -84,6 +89,7 @@ def test_fullnameof():
     assert simple_name(sd) == 'collections.OrderedDict'
 
 
+@pytest.mark.skipif(PYPY, reason="'OrderedDict' is in '_pypy_collections'")
 def test_fullnameof_no_rename():
     from xoutil.names import nameof
     from collections import OrderedDict

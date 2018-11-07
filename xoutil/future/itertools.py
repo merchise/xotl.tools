@@ -13,13 +13,13 @@
    ``xoutil.iterators`` is now a deprecated alias.
 
 '''
-
+import sys
 from itertools import *  # noqa
 from xoutil.symbols import Unset
+from xoutil.deprecation import deprecated_alias
 
-# TODO: deprecate both
-map = map
-zip = zip
+map = deprecated_alias(map, removed_in_version='3.0', check_version=True)
+zip = deprecated_alias(zip, removed_in_version='3.0', check_version=True)
 
 
 def first_non_null(iterable, default=None):
@@ -409,57 +409,53 @@ def ungroup(iterator):
             yield x
 
 
-def merge(*iterables, key=None):
-    '''Merge the iterables in order.
+if sys.version_info < (3, 5):
+    class _safeitem:
+        __slots__ = ['item', 'key']
 
-    Return an iterator that yields all items from `iterables` following the
-    order given by `key`.  If `key` is not given we compare the items.
+        def __init__(self, item, key=None):
+            self.item = item
+            self.key = key or (lambda x: x)
 
-    If the `iterables` yield their items in order (w.r.t `key`), the result is
-    also ordered (like a merge sort).
+        def __le__(self, other):
+            return self.key(self.item) <= self.key(other.item)
 
-    ``merge()`` returns the *empty* iterator.
+        def __lt__(self, other):
+            return self.key(self.item) < self.key(other.item)
 
-    .. versionadded:: 1.8.4
+        def __ge__(self, other):
+            return self.key(self.item) >= self.key(other.item)
 
-    '''
-    from xoutil.symbols import Undefined
-    from xoutil.future.collections import Iterable, Iterator
+        def __gt__(self, other):
+            return self.key(self.item) > self.key(other.item)
 
-    if key is None:
-        key = lambda x: x
+        def __eq__(self, other):
+            return self.key(self.item) == self.key(other.item)
 
-    def _merge(iter1, iter2):
-        iter1 = iter(iter1)
-        iter2 = iter(iter2)
-        item1 = next(iter1, Undefined)
-        item2 = next(iter2, Undefined)
-        while item1 is not Undefined and item2 is not Undefined:
-            if key(item1) <= key(item2):
-                yield item1
-                item1 = next(iter1, Undefined)
-            else:
-                yield item2
-                item2 = next(iter2, Undefined)
-        # One of the iterators (or both) has been exhausted, consume the
-        # other.
-        while item1 is not Undefined:
-            yield item1
-            item1 = next(iter1, Undefined)
-        while item2 is not Undefined:
-            yield item2
-            item2 = next(iter2, Undefined)
+    def merge(*iterables, key=None):
+        '''Merge the iterables in order.
 
-    def _empty():
-        return
-        yield
+        Return an iterator that yields all items from `iterables` following
+        the order given by `key`.  If `key` is not given we compare the items.
 
-    if not all(isinstance(iter_, (Iterable, Iterator)) for iter_ in iterables):
-        raise TypeError('Positional argument must be iterables or iterators')
-    if iterables:
-        res = iterables[0]
-        for iter_ in iterables[1:]:
-            res = _merge(res, iter_)
-    else:
-        res = _empty()
-    return res
+        If the `iterables` yield their items in order (w.r.t `key`), the
+        result is also ordered (like a merge sort).
+
+        ``merge()`` returns the *empty* iterator.
+
+        .. versionadded:: 1.8.4
+
+        .. versionchanged:: 2.1.0 Based on `heapq.merge`:func:.  In Python
+           3.5+, this is just an alias of it.
+
+        '''
+        from heapq import merge  # noqa
+        if key is None:
+            key = lambda x: x
+        params = ((_safeitem(x, key) for x in iter_) for iter_ in iterables)
+        for x in merge(*params):
+            yield x.item
+else:
+    from heapq import merge  # noqa
+
+del sys

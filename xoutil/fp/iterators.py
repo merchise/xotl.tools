@@ -13,7 +13,7 @@
 
 '''
 from functools import reduce
-from xoutil.deprecation import deprecated
+from xoutil.deprecation import deprecated_alias
 
 
 def kleisli_compose(*fs):
@@ -53,4 +53,7 @@ def kleisli_compose(*fs):
         return reduce(_kleisli_compose, fs, lambda x: iter([x]))
 
 
-iter_compose = deprecated(kleisli_compose)(kleisli_compose)
+iter_compose = deprecated_alias(kleisli_compose)
+
+
+del deprecated_alias

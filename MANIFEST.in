@@ -1,10 +1,11 @@
 include *.txt
 include *.py
+include *.pyi
 include *.ini
 include *.rst
 
 recursive-include docs *.rst *.txt Makefile *.py
-recursive-include xoutil *.py *.txt *.rst
+recursive-include xoutil *.py *.txt *.rst *.pyi
 
 prune .tox
 prune docs/build
