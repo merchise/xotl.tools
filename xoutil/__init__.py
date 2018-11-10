@@ -6,23 +6,37 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
-'''Collection of disparate utilities.
-
-`xoutil` is essentially an extension to the Python's standard library, it does
-not make up a full framework, but it's very useful to be used from a
-diversity of scenarios.
-
-'''
 import sys
-from .modules import customize
-from .deprecation import DeprecatedImportDescriptor
+import importlib
+from importlib.abc import MetaPathFinder
 
-customize(sys.modules[__name__], custom_attrs=dict(
-    Unset=DeprecatedImportDescriptor('xoutil.symbols.Unset'),
-    Undefined=DeprecatedImportDescriptor('xoutil.symbols.Undefined'),
-    Ignored=DeprecatedImportDescriptor('xoutil.symbols.Ignored'),
-    Invalid=DeprecatedImportDescriptor('xoutil.symbols.Invalid'),
-))
+XOUTIL_NAMESPACE = 'xoutil.'
+XOTL_TOOLS_NS = 'xotl.tools.'
 
-del customize, sys, DeprecatedImportDescriptor
+
+class Hook(MetaPathFinder):
+    def find_module(self, full_name, path=None):
+        name = self._from_xoutil_to_xotl(full_name)
+        if name:
+            return self
+
+    def _from_xoutil_to_xotl(self, full_name):
+        if full_name.startswith(XOUTIL_NAMESPACE):
+            path = full_name[len(XOUTIL_NAMESPACE):]
+            return XOTL_TOOLS_NS + path
+        else:
+            return None
+
+    def load_module(self, full_name):
+        result = sys.modules.get(full_name, None)
+        if result:
+            return result
+        modname = self._from_xoutil_to_xotl(full_name)
+        if modname:
+            result = sys.modules[full_name] = importlib.import_module(modname)
+            return result
+        else:
+            raise ImportError(modname)
+
+
+sys.meta_path.append(Hook())
