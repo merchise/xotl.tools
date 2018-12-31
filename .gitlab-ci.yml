@@ -56,6 +56,7 @@ build source distribution:
   script:
     - rm -f dist/*
     - python3 setup.py sdist
+    - PROJECT_NAME=xoutil python3 setup.py sdist
   tags:
     - python3
   artifacts:
@@ -70,6 +71,7 @@ build binary distribution:
   script:
     - rm -f dist/*
     - python3 setup.py bdist_wheel
+    - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
   tags:
     - wheel
     - python3
@@ -85,8 +87,10 @@ publish_locally:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/$CI_PROJECT_NAME"
-    - scp dist/* manu@gestion.lahavane.com:Repos/$CI_PROJECT_NAME/
+    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xoutil"
+    - scp dist/xoutil* manu@gestion.lahavane.com:Repos/xoutil/
+    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xotl.tools"
+    - scp dist/xotl* manu@gestion.lahavane.com:Repos/xotl.tools/
   tags:
     - repo.lahavane.com
   only:
