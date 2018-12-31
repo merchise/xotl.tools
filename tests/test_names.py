@@ -85,7 +85,7 @@ def test_fullnameof():
     assert nameof(sd, full=True) == 'test_fullnameof.sd'
     assert nameof(sd, typed=True, full=True) == 'test_fullnameof.sorted_dict'
     assert nameof(sd, inner=True, typed=True, full=True) == _name
-    assert simple_name(simple_name) == 'xoutil.names.simple_name'
+    assert simple_name(simple_name) == 'xotl.tools.names.simple_name'
     assert simple_name(sd) == 'collections.OrderedDict'
 
 
