@@ -142,7 +142,7 @@ def predicate(*checkers, **kwargs):
       False
 
     '''
-    from xolt.tools.symbols import boolean
+    from xotl.tools.symbols import boolean
     from xotl.tools.collections import Set, Mapping
 
     def inner(obj):
