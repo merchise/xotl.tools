@@ -24,8 +24,14 @@ maybe_date = dates() | strategies.none()
 maybe_datetimes = strategies.datetimes() | strategies.none()
 
 
-def test_imports():
-    from xoutil.future.datetime import timezone  # noqa
+def test_datetime_imports():
+    from xoutil.future.datetime import TimeSpan
+    from xotl.tools.future.datetime import TimeSpan as TS
+    assert TS is TimeSpan
+
+    from xoutil.future.datetime import timezone
+    from xotl.tools.future.datetime import timezone as tz
+    assert tz is timezone
 
 
 def test_daterange_stop_only():
