@@ -9,10 +9,10 @@
 
 import pytest
 
-from xotl.tools.future.datetime import date, datetime, timedelta
-from xotl.tools.future.datetime import daterange
-from xotl.tools.future.datetime import TimeSpan, EmptyTimeSpan, DateTimeSpan
-from xotl.tools.testing.datetime import timespans, datetimespans
+from xoutil.future.datetime import date, datetime, timedelta
+from xoutil.future.datetime import daterange
+from xoutil.future.datetime import TimeSpan, EmptyTimeSpan, DateTimeSpan
+from xoutil.testing.datetime import timespans, datetimespans
 
 import hypothesis
 from hypothesis import strategies, given
