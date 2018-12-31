@@ -6,6 +6,14 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
+'''Backwards incompatible imports.
+
+Since ``xoutil 2.1``, we're transitioning to another name: ``xotl.tools``.
+This makes ``xoutil`` part of our family of projects under the ``xotl``
+namespace.
+
+'''
+
 import sys
 import importlib
 from importlib.abc import MetaPathFinder
