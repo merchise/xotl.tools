@@ -13,8 +13,6 @@ We added the following features.
 
 .. autofunction:: get_attr_value
 
-.. autofunction:: type_name
-
 We have backported several Python 3.3 features but maybe not all (some
 protected structures are not presented in this documentation).
 

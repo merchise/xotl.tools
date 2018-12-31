@@ -11,10 +11,6 @@ and Python 3.3.
 
 We added the following features.
 
-.. autoclass:: ctuple
-
-.. autofunction:: compose(*funcs, math=True)
-
 .. autofunction:: power(*funcs, times)
 
 .. autoclass:: lwraps(f, n, *, name=None, doc=None, wrapped=None)
