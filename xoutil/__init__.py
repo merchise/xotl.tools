@@ -32,8 +32,13 @@ class Hook(MetaPathFinder):
         if result:
             return result
         modname = self._from_xoutil_to_xotl(full_name)
+        result = None
         if modname:
-            result = sys.modules[full_name] = importlib.import_module(modname)
+            result = sys.modules.get(modname, None)
+        if not result and modname:
+            result = importlib.import_module(modname)
+        if result:
+            sys.modules[modname] = sys.modules[full_name] = result
             return result
         else:
             raise ImportError(modname)
