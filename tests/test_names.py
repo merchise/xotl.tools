@@ -85,7 +85,7 @@ def test_fullnameof():
     assert nameof(sd, full=True) == 'test_fullnameof.sd'
     assert nameof(sd, typed=True, full=True) == 'test_fullnameof.sorted_dict'
     assert nameof(sd, inner=True, typed=True, full=True) == _name
-    assert simple_name(simple_name) == 'xoutil.names.simple_name'
+    assert simple_name(simple_name) == 'xotl.tools.names.simple_name'
     assert simple_name(sd) == 'collections.OrderedDict'
 
 
@@ -108,6 +108,6 @@ def test_module_level_name():
 def test_module_level_name_isolated():
     from xoutil.names import nameof, simple_name
     full_name_1 = 'test_names.OrderedSmartDict'
-    full_name_2 = 'xoutil.future.collections.OrderedSmartDict'
+    full_name_2 = 'xotl.tools.future.collections.OrderedSmartDict'
     assert nameof(OrderedSmartDict, full=True) == full_name_1
     assert simple_name(OrderedSmartDict) == full_name_2

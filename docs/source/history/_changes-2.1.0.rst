@@ -1,16 +1,25 @@
+- Repackage ``xoutil`` under `xotl.tools`:mod:.  You can still import from the
+  `xoutil namespace<xoutil>`:mod:.
+
+- Remove deprecated module ``xoutil.logger``.
+
 - Remove package ``xoutil.eight``.
 
-- Remove deprecated function ``xoutil.future.inspect.type_name``.
+- Remove deprecated functions and classes ``xoutil.future.inspect.type_name``,
+  ``xoutil.future.functools.ctuple``, and ``xoutil.future.functools.compose``.
 
-- Add `xoutil.deprecation.deprecated_alias`:func:.
+- Remove deprecated top-level imports: ``xoutil.Unset``, ``xoutil.Undefined``,
+  ``xoutil.Ignored`` and ``xoutil.Invalid``.
 
-- Allow to customize Quantity in `xoutil.dim.meta.Dimension`:class: and, by
-  argument, in `~xoutil.dim.meta.Dimension.new`:meth:.
+- Add `xotl.tools.deprecation.deprecated_alias`:func:.
+
+- Allow to customize Quantity in `xotl.tools.dim.meta.Dimension`:class: and,
+  by argument, in `~xotl.tools.dim.meta.Dimension.new`:meth:.
 
 - Deprecate ``xoutil.future.itertools.zip()``, and
   ``xoutil.future.itertools.map()``.
 
-- Re-implement `xoutil.future.itertools.merge`:func: in terms of
+- Re-implement `xotl.tools.future.itertools.merge`:func: in terms of
   `heapq.merge`:func:.
 
-- Add `xoutil.tasking.get_backoff_wait`:func:
+- Add `xotl.tools.tasking.get_backoff_wait`:func:

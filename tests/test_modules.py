@@ -81,31 +81,31 @@ class TestModuleDecorators(unittest.TestCase):
 
 
 def test_get_module_path_by_module_object():
-    import xoutil
-    import xoutil.future.itertools
+    import xotl.tools
+    import xotl.tools.future.itertools
     from os.path import join
-    from xoutil.modules import get_module_path
-    top = xoutil.__path__[0]
+    from xotl.tools.modules import get_module_path
+    top = xotl.tools.__path__[0]
     expected = top
-    assert get_module_path(xoutil) == expected
+    assert get_module_path(xotl.tools) == expected
 
     expected = (join(top, 'future', 'itertools.py'),
                 join(top, 'future', 'itertools.pyc'),
                 join(top, 'future', 'itertools.pyo'))
-    assert get_module_path(xoutil.future.itertools) in expected
+    assert get_module_path(xotl.tools.future.itertools) in expected
 
 
 def test_get_module_path_by_module_string_abs():
-    import xoutil
+    import xotl.tools
     from os.path import join
-    from xoutil.modules import get_module_path
-    top = xoutil.__path__[0]
+    from xotl.tools.modules import get_module_path
+    top = xotl.tools.__path__[0]
     expected = top
-    assert get_module_path('xoutil') == expected
+    assert get_module_path('xotl.tools') == expected
     expected = (join(top, 'future', 'itertools.py'),
                 join(top, 'future', 'itertools.pyc'),
                 join(top, 'future', 'itertools.pyo'))
-    assert get_module_path('xoutil.future.itertools') in expected
+    assert get_module_path('xotl.tools.future.itertools') in expected
 
 
 def test_get_module_path_by_module_string_rel():
