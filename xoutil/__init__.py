@@ -46,6 +46,11 @@ class Hook(MetaPathFinder):
         if not result and modname:
             result = importlib.import_module(modname)
         if result:
+            import warnings
+            warnings.warn(
+                ('Importing from xoutil ({}) is deprecated; '
+                 'import from xotl.tools ({})').format(full_name, modname)
+            )
             sys.modules[modname] = sys.modules[full_name] = result
             return result
         else:
