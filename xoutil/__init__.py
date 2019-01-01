@@ -6,11 +6,39 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-'''Backwards incompatible imports.
+'''Transition to a new namespace
+-----------------------------
 
-Since ``xoutil 2.1``, we're transitioning to another name: ``xotl.tools``.
-This makes ``xoutil`` part of our family of projects under the ``xotl``
-namespace.
+Since version 2.1, we're transitioning to another name: ``xotl.tools``.  This
+is to align ``xoutil`` as a fundamental part of our family of projects under
+the ``xotl`` namespace.  *Xotl* is a Nahuatl word which may stand for
+'foundation'.  ``xoutil`` is part of the foundation of many of our projects.
+
+Backwards compatible imports
+----------------------------
+
+Since 2.1, every module importable from ``xoutil`` is actually under the
+namespace ``xotl.tools``; so importing, for instance, from
+``xoutil.future.datetime`` should be updated to `xotl.future.datetime`:mod:.
+
+Importing from ``xoutil`` will still be possible in all versions before 3.0.
+You won't have to change all your imports right away.
+
+
+Distribution of ``xoutil``
+--------------------------
+
+Will continue to distribute both `xotl.tools <xotl-tools-dist_>`__ and `xoutil
+<xoutil-dist_>`__ (with the same codebase) for the entire 2.1.x series.  From
+version 2.2.0+ will distruibute only ``xotl.tools``, but keep the backwards
+import up to 3.0.
+
+.. warning:: Don't depend on both ``xoutil`` and ``xotl.tools``.  We use the
+   same codebase for both distributions; which means you'll get the same code,
+   but if you install different versions you may get a crippled system.
+
+.. _xotl-tools-dist: https://pypi.org/project/xotl.tools
+.. _xoutil-dist: https://pypi.org/project/xoutil
 
 '''
 
