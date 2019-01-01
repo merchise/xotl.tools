@@ -7,6 +7,9 @@
 - Remove deprecated functions and classes ``xoutil.future.inspect.type_name``,
   ``xoutil.future.functools.ctuple``, and ``xoutil.future.functools.compose``.
 
+- Remove deprecated top-level imports: ``xoutil.Unset``, ``xoutil.Undefined``,
+  ``xoutil.Ignored`` and ``xoutil.Invalid``.
+
 - Add `xotl.tools.deprecation.deprecated_alias`:func:.
 
 - Allow to customize Quantity in `xotl.tools.dim.meta.Dimension`:class: and,

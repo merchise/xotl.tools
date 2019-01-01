@@ -22,7 +22,6 @@ Contents
    :maxdepth: 1
    :glob:
 
-   xotl.tools/toplevel
    xotl.tools/*
    xoutil
    HISTORY
