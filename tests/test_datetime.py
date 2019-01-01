@@ -28,9 +28,9 @@ def test_datetime_imports():
     from xotl.tools.future import datetime as dt
     assert datetime is dt
 
-    from xoutil.future.datetime import TimeSpan   # noqa
-    from xotl.tools.future.datetime import TimeSpan as TS  # noqa
-    assert TS is not TimeSpan
+    from xoutil.future.datetime import TimeSpan
+    from xotl.tools.future.datetime import TimeSpan as TS
+    assert TS is TimeSpan
 
 
 def test_daterange_stop_only():

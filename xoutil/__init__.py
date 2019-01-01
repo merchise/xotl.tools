@@ -52,4 +52,13 @@ class Hook(MetaPathFinder):
             raise ImportError(modname)
 
 
-sys.meta_path.append(Hook())
+# I have to put this meta path before Python's standard, because otherwise
+# importing like this:
+#
+#     from xoutil.future.datetime import TimeSpan
+#
+# First imports 'xoutil.future' with our Hook, but afterwards,
+# 'xoutil.future.datetime' is found by _frozen_importlib_external.PathFinder
+# instead of our own Hook which maintains 100% backwards compatibility of
+# imports.
+sys.meta_path.insert(0, Hook())
