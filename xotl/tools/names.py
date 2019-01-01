@@ -293,6 +293,9 @@ def nameof(*args, **kwargs):
 
     See `the examples in the documentation <name-of-narrative>`:ref:.
 
+    .. warning:: The names of objects imported from 'xoutil' are still in the
+       namespace 'xotl.tools'.
+
     '''
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
