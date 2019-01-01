@@ -37,8 +37,7 @@
 .. autoclass:: memoized_property
    :members: reset
 
-   .. versionadded:: 1.8.1 Ported from
-      `xotl.tools.decorator.memoized_property`:class:.
+   .. versionadded:: 1.8.1 Ported from ``xoutil.decorator.memoized_property``.
 
 .. autofunction:: delegator
 

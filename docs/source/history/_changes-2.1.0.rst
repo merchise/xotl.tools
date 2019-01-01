@@ -5,6 +5,9 @@
 
 - Remove package ``xoutil.eight``.
 
+- Remove deprecated ``xoutil.decorator.memoized_property``, use
+  `xotl.tools.objects.memoized_property`:class:.
+
 - Remove deprecated functions and classes ``xoutil.future.inspect.type_name``,
   ``xoutil.future.functools.ctuple``, and ``xoutil.future.functools.compose``.
 

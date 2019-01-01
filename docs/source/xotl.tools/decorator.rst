@@ -34,12 +34,6 @@ Top-level decorators
 
 .. autoclass:: memoized_instancemethod
 
-.. class:: memoized_property
-
-   Deprecated alias of `xotl.tools.objects.memoized_property`:class:.
-
-   .. versionchanged:: 1.8.1 Deprecated in favor of
-                       `xotl.tools.objects.memoized_property`:class:.
 
 
 
