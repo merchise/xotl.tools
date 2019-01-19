@@ -18,9 +18,13 @@ except NameError:
 
 
 # Import the version from the release module
-project_name = 'xoutil'
+project_name = os.environ.get('PROJECT_NAME', 'xotl.tools')
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-release = os.path.join(_current_dir, project_name, 'release.py')
+release = os.path.join(
+    _current_dir,
+    project_name.replace('.', os.sep),
+    'release.py'
+)
 execfile(release)
 version = VERSION  # noqa
 

@@ -30,16 +30,39 @@ check with mypy:
     - branches
   allow_failure: true
 
-run all tests (if needed):
+.run_tests: &run_tests
   stage: test
   script:
-    - if git show --oneline --name-only $CI_COMMIT_SHA | egrep '(\.py|\.gitlab-ci.yml|tox.ini)$'; then tox -e{3.4,3.5,3.6,3.7}-unit,{3.4,3.5,3.6,3.7}-greenlets; fi
+    - if git show --oneline --name-only $CI_COMMIT_SHA | egrep '(\.py|\.gitlab-ci.yml|tox.ini)$'; then tox -re$PYTHON-unit,$PYTHON-greenlets; fi
   tags:
     - python
     - virtualenv
     - tox
   only:
     - branches
+
+
+run all Python 3.4 tests:
+  <<: *run_tests
+  variables:
+    PYTHON: "3.4"
+
+
+run all Python 3.5 tests:
+  <<: *run_tests
+  variables:
+    PYTHON: "3.5"
+
+run all Python 3.6 tests:
+  <<: *run_tests
+  variables:
+    PYTHON: "3.6"
+
+run all Python 3.7 tests:
+  <<: *run_tests
+  variables:
+    PYTHON: "3.7"
+
 
 check signature of tag:
   stage: check
@@ -56,6 +79,7 @@ build source distribution:
   script:
     - rm -f dist/*
     - python3 setup.py sdist
+    - PROJECT_NAME=xoutil python3 setup.py sdist
   tags:
     - python3
   artifacts:
@@ -70,6 +94,7 @@ build binary distribution:
   script:
     - rm -f dist/*
     - python3 setup.py bdist_wheel
+    - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
   tags:
     - wheel
     - python3
@@ -85,8 +110,10 @@ publish_locally:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/$CI_PROJECT_NAME"
-    - scp dist/* manu@gestion.lahavane.com:Repos/$CI_PROJECT_NAME/
+    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xoutil"
+    - scp dist/xoutil* manu@gestion.lahavane.com:Repos/xoutil/
+    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xotl.tools"
+    - scp dist/xotl* manu@gestion.lahavane.com:Repos/xotl.tools/
   tags:
     - repo.lahavane.com
   only:

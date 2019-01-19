@@ -12,7 +12,6 @@ import pytest
 from xoutil.future.datetime import date, datetime, timedelta
 from xoutil.future.datetime import daterange
 from xoutil.future.datetime import TimeSpan, EmptyTimeSpan, DateTimeSpan
-
 from xoutil.testing.datetime import timespans, datetimespans
 
 import hypothesis
@@ -24,8 +23,14 @@ maybe_date = dates() | strategies.none()
 maybe_datetimes = strategies.datetimes() | strategies.none()
 
 
-def test_imports():
-    from xoutil.future.datetime import timezone  # noqa
+def test_datetime_imports():
+    from xoutil.future import datetime
+    from xotl.tools.future import datetime as dt
+    assert datetime is dt
+
+    from xoutil.future.datetime import TimeSpan
+    from xotl.tools.future.datetime import TimeSpan as TS
+    assert TS is TimeSpan
 
 
 def test_daterange_stop_only():

@@ -4,10 +4,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to xoutil's documentation!
-==================================
+Welcome to xotl.tools's documentation!
+======================================
 
-.. automodule:: xoutil
+.. automodule:: xotl.tools
 
 What's new in |release|
 -----------------------
@@ -22,8 +22,8 @@ Contents
    :maxdepth: 1
    :glob:
 
-   xoutil/toplevel
-   xoutil/*
+   xotl.tools/*
+   xoutil
    HISTORY
    CONTRIBUTING
    CONTRIBUTORS
