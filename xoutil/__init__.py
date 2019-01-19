@@ -19,7 +19,8 @@ Backwards compatible imports
 
 Since 2.1, every module importable from ``xoutil`` is actually under the
 namespace ``xotl.tools``; so importing, for instance, from
-``xoutil.future.datetime`` should be updated to `xotl.future.datetime`:mod:.
+``xoutil.future.datetime`` should be updated to
+`xotl.tools.future.datetime`:mod:.
 
 Importing from ``xoutil`` will still be possible in all versions before 3.0.
 You won't have to change all your imports right away.
