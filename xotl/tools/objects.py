@@ -893,6 +893,67 @@ def get_branch_subclasses(cls):
     return list(iter_branch_subclasses(cls, include_this=False))
 
 
+def iter_final_subclasses(cls, *, include_this=True):
+    '''Iterate over the final sub-classes of `cls`.
+
+    Final classes are those which has no sub-classes.  If `cls` is final, the
+    iterator yields only `cls` unless `include_this` is False.
+
+    '''
+    from collections import deque
+    nodes = deque([cls])
+    while nodes:
+        node = nodes.pop()
+        children = node.__subclasses__()
+        if children:
+            nodes.extend(children)
+        else:
+            if node is not cls or include_this:
+                yield node
+
+
+def get_final_subclasses(cls, *, include_this=True):
+    '''List final sub-classes of `cls`.
+
+    See `iter_final_subclasses`:func:.
+
+    '''
+    return list(iter_final_subclasses(cls, include_this=include_this))
+
+
+def DynamicClassEnumeration(superclass):
+    '''A dynamic class enumeration.
+
+    Return a enumeration-like class (i.e has ``__members__`` and each
+    attribute) that enumerates the **final** subclasses of a given superclass
+    (not including `superclass`).
+
+    '''
+    class enumtype(type):
+        @property
+        def __members__(self):
+            return {
+                c.__name__: c
+                for c in iter_final_subclasses(superclass,
+                                               include_this=False)
+            }
+
+        def __getattr__(self, attr):
+            result = self.__members__.get(attr, None)
+            if result is None:
+                raise AttributeError(attr)
+            else:
+                return result
+
+        def __dir__(self):
+            return list(self.__members__.keys()) + ['__members__']
+
+    class enumeration(metaclass=enumtype):
+        pass
+
+    return enumeration
+
+
 # TODO: Check `xotl.tools.future.types.DynamicClassAttribute`:class: for more
 # information and to compare with this one.
 class xproperty(property):
