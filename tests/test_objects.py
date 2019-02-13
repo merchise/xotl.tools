@@ -629,15 +629,17 @@ def test_final_subclasses():
     assert set(get_final_subclasses(Final, include_this=False)) == set([])
 
 
-def test_DynamicClassEnumeration():
-    from xoutil.objects import DynamicClassEnumeration
+def test_FinalSubclassEnumeration():
+    from xoutil.objects import FinalSubclassEnumeration
 
     class Base:
         pass
 
-    enum = DynamicClassEnumeration(Base)
+    enum = FinalSubclassEnumeration(Base)
+    enum2 = FinalSubclassEnumeration(Base, dynamic=False)
 
     assert not enum.__members__
+    assert not enum2.__members__
 
     class Subclass(Base):
         pass
@@ -646,3 +648,7 @@ def test_DynamicClassEnumeration():
         pass
 
     assert enum.Final is Final
+    assert not enum2.__members__
+
+    enum2.invalidate_cache()
+    assert enum2.Final is Final
