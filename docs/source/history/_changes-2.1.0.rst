@@ -26,3 +26,7 @@
   `heapq.merge`:func:.
 
 - Add `xotl.tools.tasking.get_backoff_wait`:func:
+
+- Add `xotl.tools.objects.iter_final_subclasses`:func:,
+  `xotl.tools.objects.get_final_subclasses`:func: and
+  ``xotl.tools.objects.DynamicClassEnumeration`:func:`

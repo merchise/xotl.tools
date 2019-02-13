@@ -899,6 +899,8 @@ def iter_final_subclasses(cls, *, include_this=True):
     Final classes are those which has no sub-classes.  If `cls` is final, the
     iterator yields only `cls` unless `include_this` is False.
 
+    .. versionadded:: 2.1.0
+
     '''
     from collections import deque
     nodes = deque([cls])
@@ -917,6 +919,8 @@ def get_final_subclasses(cls, *, include_this=True):
 
     See `iter_final_subclasses`:func:.
 
+    .. versionadded:: 2.1.0
+
     '''
     return list(iter_final_subclasses(cls, include_this=include_this))
 
@@ -927,6 +931,8 @@ def DynamicClassEnumeration(superclass):
     Return a enumeration-like class (i.e has ``__members__`` and each
     attribute) that enumerates the **final** subclasses of a given superclass
     (not including `superclass`).
+
+    .. versionadded:: 2.1.0
 
     '''
     class enumtype(type):
