@@ -43,3 +43,5 @@
 - Remove deprecated module ``xotl.tool.logical``.
 
 - Remove deprecated module ``xotl.tools.formatter``.
+
+- Remove deprecated function ``xotl.tools.tools.get_default``.

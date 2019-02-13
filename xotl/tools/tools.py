@@ -66,19 +66,6 @@ def nameof(obj):
 
 # TODO: Move all functions in this module to a new place
 
-@deprecated(check_default)
-def get_default(args, default=None):
-    '''Get a default value passed as last positional argument.
-
-    See `xotl.tools.params.check_default`:func: for a more accurate function
-    that replace this.
-
-    .. deprecated:: 1.8.0
-
-    '''
-    return check_default(default)(*args)
-
-
 def args_repr(args, **options):
     '''Format positional arguments to use in exception handling.
 
