@@ -37,3 +37,5 @@
 
 - Deprecate ``xotl.tools.web.slugify``; use `xotl.tools.strings.slugify`:func:
   instead.
+
+- Remove deprecated module ``xotl.tools.uuid``.
