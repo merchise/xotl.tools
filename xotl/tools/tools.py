@@ -13,9 +13,6 @@ The only used module is Python's standard `re`:mod: module.
 
 '''
 
-from xotl.tools.deprecation import deprecated
-from xotl.tools.params import check_default
-
 
 # TODO: review this
 def nameof(obj):
@@ -23,7 +20,7 @@ def nameof(obj):
 
     First try normally named object (those having a ``'__name__'`` attribute);
     then some special classes instances that wraps the name internally are
-    checked; then it tests for some objects that are singletons\ [#sing]_;
+    checked; then it tests for some objects that are singletons [#sing]_;
     finally -as a default tentative- return the type name.
 
     For example::

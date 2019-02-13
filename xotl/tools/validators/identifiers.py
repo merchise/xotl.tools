@@ -66,7 +66,7 @@ def is_valid_public_identifier(name):
     return is_valid_identifier(name) and not name.startswith('_')
 
 
-_SLUG_REGEX = _regex_compile('(?i)^[\w]+([-][\w]+)*$')
+_SLUG_REGEX = _regex_compile(r'(?i)^[\w]+([-][\w]+)*$')
 
 
 def is_valid_slug(slug):

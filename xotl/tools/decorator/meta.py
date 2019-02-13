@@ -60,7 +60,7 @@ from inspect import getfullargspec as _getfullargspec
 __all__ = ('FunctionMaker', 'flat_decorator', 'decorator')
 
 
-DEF = re.compile('\s*def\s*([_\w][_\w\d]*)\s*\(')
+DEF = re.compile(r'\s*def\s*([_\w][_\w\d]*)\s*\(')
 
 
 # basic functionality
@@ -146,11 +146,8 @@ class FunctionMaker:
             src += '\n'   # this is needed in old versions of Python
         try:
             code = compile(src, '<string>', 'single')
-            # print >> sys.stderr, 'Compiling %s' % src
             eval(code, evaldict, evaldict)
         except Exception:
-            print >> sys.stderr, 'Error in generated code:'
-            print >> sys.stderr, src
             raise
         func = evaldict[name]
         if addsource:

@@ -14,7 +14,7 @@ python feature, are similar to a combination of object mold/check:
 
 - *Mold* - Fit values to expected conventions.
 
-- *Check* - These functions must return `nil`\ [#pyni]_ special value to
+- *Check* - These functions must return `nil` [#pyni]_ special value to
   specify that expected fit is not possible.
 
 .. [#pyni] We don't use Python classic `NotImplemented` special value in order
@@ -350,7 +350,7 @@ def create_int_range_coerce(min, max):
 # Identifiers and strings
 
 # TODO: In Py3k "ña" is a valid identifier and this regex won't allow it
-_IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][\w]*$')
+_IDENTIFIER_REGEX = re.compile(r'(?i)^[_a-z][\w]*$')
 
 
 # XXX: 'eight' pending.
@@ -367,7 +367,7 @@ def identifier_coerce(arg):
     return str(arg) if ok else nil
 
 
-_FULL_IDENTIFIER_REGEX = re.compile('(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
+_FULL_IDENTIFIER_REGEX = re.compile(r'(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
 
 
 @coercer
