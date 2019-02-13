@@ -605,3 +605,44 @@ def test_delegator():
 
     with pytest.raises(AttributeError):
         foo.x2
+
+
+def test_final_subclasses():
+    from xoutil.objects import get_final_subclasses
+
+    class Base:
+        pass
+
+    class Subclass(Base):
+        pass
+
+    class Final(Subclass):
+        pass
+
+    class SubSub(Subclass):
+        pass
+
+    class Final2(SubSub):
+        pass
+
+    assert set(get_final_subclasses(Base)) == {Final, Final2}
+    assert set(get_final_subclasses(Final, include_this=False)) == set([])
+
+
+def test_DynamicClassEnumeration():
+    from xoutil.objects import DynamicClassEnumeration
+
+    class Base:
+        pass
+
+    enum = DynamicClassEnumeration(Base)
+
+    assert not enum.__members__
+
+    class Subclass(Base):
+        pass
+
+    class Final(Subclass):
+        pass
+
+    assert enum.Final is Final
