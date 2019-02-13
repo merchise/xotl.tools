@@ -29,7 +29,7 @@ reader = _stdlib.reader
 
 
 def parse(data, *dialect, **options):
-    '''Parse `data` into a sheet.
+    r'''Parse `data` into a sheet.
 
     This function has the exact parameters protocol as `~csv.reader`:func:\ ::
 

@@ -13,7 +13,7 @@ __all__ = ['slugify']
 
 
 # TODO: Why not deprecate this and use standard `xotl.tools.string.slugify`.
-def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cover
+def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cover  # noqa
     '''Convert a string to a slug representation.
 
     Normalizes string, converts to lower-case, removes non-alpha characters,

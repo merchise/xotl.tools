@@ -20,7 +20,7 @@ def nameof(obj):
 
     First try normally named object (those having a ``'__name__'`` attribute);
     then some special classes instances that wraps the name internally are
-    checked; then it tests for some objects that are singletons\ [#sing]_;
+    checked; then it tests for some objects that are singletons [#sing]_;
     finally -as a default tentative- return the type name.
 
     For example::

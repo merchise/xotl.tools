@@ -142,7 +142,7 @@ def single(args, kwds):
     '''Return a true value only when a unique argument is given.
 
     When needed, the most suitable result will be wrapped using the
-    `~xotl.tools.fp.option.Maybe`:class:\ .
+    `~xotl.tools.fp.option.Maybe`:class:.
 
     .. versionadded:: 1.8.0
 
@@ -478,7 +478,7 @@ class ParamScheme:
 
     def __str__(self):
         # XXX: Use:: ',\n\i'.join(map(str, self))
-        aux = ',\n\i'.join(str(row) for row in self)
+        aux = ',\n\t'.join(str(row) for row in self)
         return '{}({})'.format(type(self).__name__, aux)
 
     def __repr__(self):

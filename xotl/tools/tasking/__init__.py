@@ -230,7 +230,7 @@ class retrier:
             while not done:
                 try:
                     return fn(*args, **kwargs)
-                except self.retry_only as error:
+                except self.retry_only:
                     t += 1
                     reached_max_tries = max_tries and t >= max_tries
                     max_time_elapsed = max_time and clock() - start >= max_time
