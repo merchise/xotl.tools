@@ -32,3 +32,5 @@
   ``xotl.tools.objects.FinalSubclassEnumeration`:func:`
 
 - Deprecate module ``xotl.tools.progress``.
+
+- Deprecate module ``xotl.tools.values.ids``.
