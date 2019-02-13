@@ -39,3 +39,5 @@
   instead.
 
 - Remove deprecated module ``xotl.tools.uuid``.
+
+- Remove deprecated module ``xotl.tool.logical``.
