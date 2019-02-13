@@ -7,7 +7,11 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Tool to show a progress percent in the terminal.'''
+'''Tool to show a progress percent in the terminal.
+
+.. deprecated:: 2.1.0
+
+'''
 
 
 __all__ = ['Progress']
