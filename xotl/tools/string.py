@@ -222,6 +222,9 @@ def slugify(value, *args, **kwds):
 
     .. versionchanged:: 1.8.7 Add parameter 'encoding'.
 
+    .. versionchanged:: 2.1.0 Remove deprecated parameters `invalids` and
+       `valids`.
+
     '''
     import re
     from xotl.tools.params import ParamManager
@@ -242,9 +245,9 @@ def slugify(value, *args, **kwds):
 
     getarg = ParamManager(args, kwds)
     replacement = getarg('replacement', 0, default='-', coercers=(str,))
-    invalid_chars = getarg('invalid_chars', 'invalid', 'invalids', 0,
+    invalid_chars = getarg('invalid_chars', 'invalid', 0,
                            default='', coercers=_ascii)
-    valid_chars = getarg('valid_chars', 'valid', 'valids', 0, default='',
+    valid_chars = getarg('valid_chars', 'valid', 0, default='',
                          coercers=_ascii)
     encoding = getarg('encoding', default=None)
     replacement = args[0] if args else kwds.pop('replacement', '-')
