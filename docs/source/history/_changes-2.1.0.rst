@@ -34,3 +34,6 @@
 - Deprecate module ``xotl.tools.progress``.
 
 - Deprecate module ``xotl.tools.values.ids``.
+
+- Deprecate ``xotl.tools.web.slugify``; use `xotl.tools.strings.slugify`:func:
+  instead.
