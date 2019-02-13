@@ -41,3 +41,5 @@
 - Remove deprecated module ``xotl.tools.uuid``.
 
 - Remove deprecated module ``xotl.tool.logical``.
+
+- Remove deprecated module ``xotl.tools.formatter``.
