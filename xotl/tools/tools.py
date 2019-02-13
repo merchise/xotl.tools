@@ -13,9 +13,6 @@ The only used module is Python's standard `re`:mod: module.
 
 '''
 
-from xotl.tools.deprecation import deprecated
-from xotl.tools.params import check_default
-
 
 # TODO: review this
 def nameof(obj):
