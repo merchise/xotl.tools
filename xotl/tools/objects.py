@@ -925,12 +925,18 @@ def get_final_subclasses(cls, *, include_this=True):
     return list(iter_final_subclasses(cls, include_this=include_this))
 
 
-def DynamicClassEnumeration(superclass):
-    '''A dynamic class enumeration.
+def FinalSubclassEnumeration(superclass, *, dynamic=True):
+    '''A final sub-class enumeration.
 
     Return a enumeration-like class (i.e has ``__members__`` and each
     attribute) that enumerates the **final** subclasses of a given superclass
     (not including `superclass`).
+
+    If `dynamic` is True, don't cache the subclasses; i.e if a new subclass is
+    created after the enumeration, the __members__ dictionary will change.
+
+    The resulting enumeration class has a method ``invalidate_cache()`` which
+    allows non-dynamic classes to update its underlying cache.
 
     .. versionadded:: 2.1.0
 
@@ -938,11 +944,17 @@ def DynamicClassEnumeration(superclass):
     class enumtype(type):
         @property
         def __members__(self):
-            return {
-                c.__name__: c
-                for c in iter_final_subclasses(superclass,
-                                               include_this=False)
-            }
+            if self._cached_members is None or self._dynamic:
+                result = {
+                    c.__name__: c
+                    for c in iter_final_subclasses(superclass,
+                                                   include_this=False)
+                }
+                if not self._dynamic:
+                    self._cached_members = dict(result)
+            else:
+                result = dict(self._cached_members)
+            return result
 
         def __getattr__(self, attr):
             result = self.__members__.get(attr, None)
@@ -954,8 +966,12 @@ def DynamicClassEnumeration(superclass):
         def __dir__(self):
             return list(self.__members__.keys()) + ['__members__']
 
+        def invalidate_cache(self):
+            self._cached_members = None
+
     class enumeration(metaclass=enumtype):
-        pass
+        _dynamic = dynamic
+        _cached_members = None
 
     return enumeration
 
