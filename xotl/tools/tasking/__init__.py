@@ -129,6 +129,8 @@ def get_backoff_wait(n, *, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
 
     .. seealso:: `BackoffWait`:class:.
 
+    .. versionadded:: 2.1.0
+
     '''
     res = 0
     fn = BackoffWait(wait=wait, backoff=backoff)
