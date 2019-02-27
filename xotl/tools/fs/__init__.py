@@ -62,14 +62,12 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
 
     :param followlinks: The same meaning that in `os.walk`.
 
-                        .. versionadded:: 1.2.1
-
     :param maxdepth: Only files above this level will be yielded. If None, no
                      limit is placed.
 
-                     .. versionadded:: 1.2.1
-
     .. warning:: It's an error to pass more than pattern argument.
+
+    .. versionchanged:: 1.2.1 Added parameters `followlinks` and `maxdepth`.
 
     '''
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
@@ -103,13 +101,16 @@ def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
     Iterate filenames recursively.
 
     :param top: The top directory for recurse into.
+
     :param regex: Regular expression with group definitions to match.
+
     :param wrong: A key to store full name of not matching files.
+
     :param followlinks: The same meaning that in `os.walk`.
 
-                        .. versionadded:: 1.2.1
-
     .. versionadded:: 1.2.0
+
+    .. versionchanged:: 1.2.1 Added parameter `followlinks`.
 
     '''
     if regex:
