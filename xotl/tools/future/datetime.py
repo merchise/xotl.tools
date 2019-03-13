@@ -787,6 +787,8 @@ class TimeSpan:
         return 'TimeSpan(%r, %r)' % (start.isoformat() if start else None,
                                      end.isoformat() if end else None)
 
+    __str__ = __repr__
+
 
 class _EmptyTimeSpan:
     __slots__ = []  # no inner structure
@@ -857,6 +859,8 @@ class _EmptyTimeSpan:
 
     def __repr__(self):
         return 'EmptyTimeSpan'
+
+    __str__ = __repr__
 
     def __new__(cls):
         res = getattr(cls, '_instance', None)
@@ -1249,6 +1253,8 @@ class DateTimeSpan(TimeSpan):
             start.isoformat().replace('T', ' ') if start else None,
             end.isoformat().replace('T', ' ') if end else None
         )
+
+    __str__ = __repr__
 
 
 del IntEnum
