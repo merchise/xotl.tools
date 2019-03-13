@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Facilities to work with `concrete numbers`_.
+r'''Facilities to work with `concrete numbers`_.
 
    A concrete number is a number associated with the things being counted, in
    contrast to an abstract number which is a number as a single entity.

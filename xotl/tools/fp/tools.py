@@ -80,7 +80,7 @@ class MetaCompose(ABCMeta):
 
 
 class compose(metaclass=MetaCompose):
-    '''Composition of several functions.
+    r'''Composition of several functions.
 
     Functions are composed right to left.  A composition of zero functions
     gives back the `identity`:func: function.

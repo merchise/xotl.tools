@@ -702,10 +702,10 @@ class RankedDict(SmartDictMixin, dict):
         acts like a fast version of ``self[key] = self.pop(key)``.
 
         .. note:: This method is kept for compatibility with
-                  `OrderedDict`:class:\ .  Last example using
-                  ``self.pop(key)`` works well in both, in OD and this class,
-                  but here in `RankedDict`:class: it's semantically equivalent
-                  to ``self[key] = self[key]``.
+                  `OrderedDict`:class:.  Last example using ``self.pop(key)``
+                  works well in both, in OD and this class, but here in
+                  `RankedDict`:class: it's semantically equivalent to
+                  ``self[key] = self[key]``.
 
         '''
         try:
