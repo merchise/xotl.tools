@@ -117,13 +117,19 @@ publish_locally:
 
 
 publish in pypi:
+  image: python:3.6
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
+    - pip install twine
+    - echo "[distutils]" > ~/.pypirc
+    - echo "index-servers = " >> ~/.pypirc
+    - echo "    pypi" >> ~/.pypirc
+    - echo "[pypi]" >> ~/.pypirc
+    - echo "username = $PYPI_USERNAME" >> ~/.pypirc
+    - echo "password = $PYPI_PASSWORD" >> ~/.pypirc
     - twine upload --skip-existing dist/*
-  tags:
-    - twine
   only:
     - tags
   dependencies:
@@ -179,3 +185,4 @@ publish in our rtd:
     - tags
     - /^releases-/
     - master
+    - merge_requests
