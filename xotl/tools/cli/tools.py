@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Utilities for command-line interface (CLI) applications.
+r'''Utilities for command-line interface (CLI) applications.
 
 - `program_name`:func:\ : calculate the program name from "sys.argv[0]".
 

@@ -6,14 +6,16 @@ stages:
   - publish
 
 lint:
-  stage: test
+  image: python:3.6
   script:
+    - pip install merchise.lint==0.11
     - merchise_lint3
-  tags:
-    - merchise-lint3
-
+  stage: test
+  only:
+    - merge_requests
 
 check with mypy:
+  image: python:3.6
   stage: test
   cache:
     key: mypy-${CI_COMMIT_REF_SLUG}
@@ -21,89 +23,77 @@ check with mypy:
       - .tox/3.6-staticcheck/
       - .mypy_cache/
   script:
+    - pip install tox
     - tox -e3.6-staticcheck
-  tags:
-    - python
-    - virtualenv
-    - tox
   only:
-    - branches
+    - merge_requests
   allow_failure: true
 
 .run_tests: &run_tests
   stage: test
   script:
-    - if git show --oneline --name-only $CI_COMMIT_SHA | egrep '(\.py|\.gitlab-ci.yml|tox.ini)$'; then tox -re$PYTHON-unit,$PYTHON-greenlets; fi
-  tags:
-    - python
-    - virtualenv
-    - tox
+    - pip install tox
+    - tox -esystem-unit,$PYTHON-greenlets
   only:
-    - branches
+    - merge_requests
 
 
 run all Python 3.4 tests:
   <<: *run_tests
+  image: python:3.4
   variables:
     PYTHON: "3.4"
 
 
 run all Python 3.5 tests:
   <<: *run_tests
+  image: python:3.5
   variables:
     PYTHON: "3.5"
 
 run all Python 3.6 tests:
   <<: *run_tests
+  image: python:3.6
   variables:
     PYTHON: "3.6"
 
 run all Python 3.7 tests:
   <<: *run_tests
+  image: python:3.7
   variables:
     PYTHON: "3.7"
 
 
-check signature of tag:
-  stage: check
-  script:
-    - git verify-tag $CI_COMMIT_REF_NAME
-  tags:
-    - git
-    - gpg
-  only:
-    - tags
-
 build source distribution:
+  image: python:3.6
   stage: build
   script:
     - rm -f dist/*
     - python3 setup.py sdist
     - PROJECT_NAME=xoutil python3 setup.py sdist
-  tags:
-    - python3
   artifacts:
     expire_in: 4 hours
     paths:
       - dist/
   only:
     - tags
+    - master
 
 build binary distribution:
+  image: python:3.6
   stage: build
   script:
+    - pip install wheel
     - rm -f dist/*
     - python3 setup.py bdist_wheel
     - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
-  tags:
-    - wheel
-    - python3
   artifacts:
     expire_in: 4 hours
     paths:
       - dist/
   only:
     - tags
+    - master
 
 publish_locally:
   variables:
@@ -119,7 +109,6 @@ publish_locally:
   only:
     - tags
   dependencies:
-    - check signature of tag
     - build source distribution
     - build binary distribution
   environment:
@@ -138,7 +127,6 @@ publish in pypi:
   only:
     - tags
   dependencies:
-    - check signature of tag
     - build source distribution
     - build binary distribution
   environment:
@@ -147,15 +135,13 @@ publish in pypi:
 
 
 build documentation:
+  image: python:3.6
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
     paths:
       - builds/doctrees
   script:
-    - mkdir -p envs
-    - virtualenv -p `which python3` envs/$CI_COMMIT_SHA
-    - source envs/$CI_COMMIT_SHA/bin/activate
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
@@ -165,12 +151,11 @@ build documentation:
     paths:
       - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
     expire_in: 4 days
-  tags:
-    - virtualenv
   only:
     - tags
     - /^releases-/
     - master
+    - merge_requests
 
 publish in our rtd:
   variables:

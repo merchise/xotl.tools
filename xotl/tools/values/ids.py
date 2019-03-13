@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Utilities to obtain identifiers that are unique at different contexts.
+r'''Utilities to obtain identifiers that are unique at different contexts.
 
 Contexts could be global, host local or application local.  All standard
 `uuid`:mod: tools are included in this one: `UUID`:class:, `uuid1`:func:,

@@ -90,7 +90,7 @@ nil, t = logical('nil'), logical('t')
 
 
 class MetaCoercer(ABCMeta):
-    '''Meta-class for `coercer`:class:.
+    r'''Meta-class for `coercer`:class:.
 
     This meta-class allows that several objects are considered valid instances
     of `coercer`:class:\ :
@@ -783,7 +783,7 @@ class combo(custom):
 
 
 class pargs(custom):
-    '''Create a inner coercer that check variable argument passing.
+    r'''Create a inner coercer that check variable argument passing.
 
     Created coercer closure must always receives an argument that is an valid
     iterable with all members coerced properly with the argument of this outer

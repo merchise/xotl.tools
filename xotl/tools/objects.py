@@ -1539,7 +1539,7 @@ def dict_merge(*dicts, **others):
 
 @contextmanager
 def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
-    '''A context manager that restores `obj` attributes at exit.
+    r'''A context manager that restores `obj` attributes at exit.
 
     We deal with `obj`\ 's attributes with `smart_getter`:func: and
     `smart_setter`:func:.  You can override passing keyword `getter` and
