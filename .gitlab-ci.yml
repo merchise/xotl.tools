@@ -5,86 +5,91 @@ stages:
   - build
   - publish
 
-lint:
-  image: python:3.6
+check code smells:
+  image: python:3.6-alpine
   script:
     - pip install merchise.lint==0.11
     - merchise_lint3
-  stage: test
+  stage: pre-check
+  allow_failure: true
   only:
+    - master
     - merge_requests
 
-check with mypy:
-  image: python:3.6
+.run_tox_tests: &run_tox_tests
+  image: python:$PYTHON-alpine
   stage: test
+  script:
+    - pip install tox
+    - tox -e system-unit,$PYTHON-greenlets
+
+
+.run_tox_staticcheck: &run_tox_staticcheck
+  image: python:3.6-alpine
+  stage: pre-check
   cache:
     key: mypy-${CI_COMMIT_REF_SLUG}
     paths:
       - .tox/3.6-staticcheck/
       - .mypy_cache/
   script:
+    - apk add g++
     - pip install tox
-    - tox -e3.6-staticcheck
-  only:
-    - merge_requests
-  allow_failure: true
-
-.run_tests: &run_tests
-  stage: test
-  script:
-    - pip install tox
-    - tox -esystem-unit,$PYTHON-greenlets
-  only:
-    - merge_requests
-
+    - tox -e 3.6-staticcheck
 
 run all Python 3.4 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
   image: python:3.4
   variables:
     PYTHON: "3.4"
 
 
 run all Python 3.5 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
   image: python:3.5
   variables:
     PYTHON: "3.5"
 
 run all Python 3.6 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
   image: python:3.6
   variables:
     PYTHON: "3.6"
 
 run all Python 3.7 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
   image: python:3.7
   variables:
     PYTHON: "3.7"
 
 
+run static checks:
+  <<: *run_tox_staticcheck
+  only:
+    - master
+    - merge_requests
+  allow_failure: true
+
+
 build source distribution:
-  image: python:3.6
+  image: python:3.6-alpine
   stage: build
   script:
     - rm -f dist/*
-    - python3 setup.py sdist
+    - python setup.py sdist
     - PROJECT_NAME=xoutil python3 setup.py sdist
   artifacts:
-    expire_in: 4 hours
     paths:
       - dist/
   only:
     - tags
-    - master
+
 
 build binary distribution:
-  image: python:3.6
+  image: python:3.6-alpine
   stage: build
   script:
     - pip install wheel
-    - rm -f dist/*
     - python3 setup.py bdist_wheel
     - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
   artifacts:
@@ -93,7 +98,17 @@ build binary distribution:
       - dist/
   only:
     - tags
-    - master
+
+check signature of tag:
+  image: alpine
+  stage: check
+  script:
+    - apk add git gnupg
+    - gpg --recv-key $GNUPG_KEY
+    - git verify-tag $CI_COMMIT_REF_NAME
+  only:
+    - tags
+
 
 publish_locally:
   variables:
@@ -110,30 +125,25 @@ publish_locally:
   only:
     - tags
   dependencies:
+    - check signature of tag
     - build source distribution
     - build binary distribution
   environment:
     name: repo.lahavane.com
     url: http://repo.lahavane.com/pypi/$CI_PROJECT_NAME
 
-
 publish in pypi:
-  image: python:3.6
+  image: python:3.6-alpine
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
     - pip install twine
-    - echo "[distutils]" > ~/.pypirc
-    - echo "index-servers = " >> ~/.pypirc
-    - echo "    pypi" >> ~/.pypirc
-    - echo "[pypi]" >> ~/.pypirc
-    - echo "username = $PYPI_USERNAME" >> ~/.pypirc
-    - echo "password = $PYPI_PASSWORD" >> ~/.pypirc
-    - twine upload --skip-existing dist/*
+    - twine upload --skip-existing -u "$PYPI_USERNAME" -p "$PYPI_PASSWORD" dist/*
   only:
     - tags
   dependencies:
+    - check signature of tag
     - build source distribution
     - build binary distribution
   environment:
