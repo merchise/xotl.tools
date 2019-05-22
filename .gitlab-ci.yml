@@ -41,7 +41,7 @@ check code smells:
 
 run all Python 3.4 tests:
   <<: *run_tox_tests
-  image: python:3.4
+  image: python:3.4-alpine
   variables:
     PYTHON: "3.4"
   only:
@@ -52,7 +52,7 @@ run all Python 3.4 tests:
 
 run all Python 3.5 tests:
   <<: *run_tox_tests
-  image: python:3.5
+  image: python:3.5-alpine
   variables:
     PYTHON: "3.5"
   only:
@@ -62,7 +62,7 @@ run all Python 3.5 tests:
 
 run all Python 3.6 tests:
   <<: *run_tox_tests
-  image: python:3.6
+  image: python:3.6-alpine
   variables:
     PYTHON: "3.6"
   only:
@@ -72,7 +72,7 @@ run all Python 3.6 tests:
 
 run all Python 3.7 tests:
   <<: *run_tox_tests
-  image: python:3.7
+  image: python:3.7-alpine
   variables:
     PYTHON: "3.7"
   only:
@@ -171,7 +171,7 @@ publish in pypi:
 
 
 build documentation:
-  image: python:3.6
+  image: python:3.6-alpine
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
