@@ -117,7 +117,7 @@ def test_get_module_path_by_module_string_rel():
 
 def test_object_stability():
     from . import testbed
-    from testbed import selfish
+    from .testbed import selfish
     a, b = testbed.selfish()
     c, d = selfish()
     e, f = testbed.selfish()
