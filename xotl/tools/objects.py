@@ -1430,7 +1430,7 @@ def traverse(obj, path, default=Unset, sep='.', getter=None):
     return _traverser(obj)
 
 
-def get_traverser(*paths, default=Unset):
+def get_traverser(*paths, default=Unset, sep='.', getter=None):
     '''Combines the power of `traverse`:func: with the expectations from both
     `operator.itemgetter`:func: and `operator.attrgetter`:func:.
 
@@ -1447,7 +1447,7 @@ def get_traverser(*paths, default=Unset):
     from xotl.tools.params import check_count
     check_count(paths, 1, caller='get_traverser')
 
-    def _traverser(path, default=Unset, sep='.', getter=None):
+    def _traverser(path, default=default, sep=sep, getter=getter):
         if not getter:
             getter = lambda o, a, default=None: smart_getter(o)(a, default)
 
