@@ -34,3 +34,6 @@ __pycache__/
 eproject.cfg
 
 .coverage*
+
+monkeytype.sqlite3*
+annotations.json

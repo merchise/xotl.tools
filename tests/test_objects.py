@@ -6,17 +6,34 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 import pytest
-from xoutil.objects import smart_copy
+
+from xotl.tools.objects import (
+    fulldir,
+    smart_copy,
+    lazy,
+    setdefaultattr,
+    traverse,
+    get_traverser,
+    dict_merge,
+    get_first_of,
+    smart_getter,
+    smart_setter,
+    extract_attrs,
+    copy_class,
+    validate_attrs,
+    memoized_property,
+    classproperty,
+    xproperty,
+    staticproperty,
+    multi_getter,
+    save_attributes,
+)
+from xotl.tools.symbols import Unset
+from xotl.tools.future.types import SimpleNamespace as new
 
 
 def test_smart_copy():
-    class new:
-        def __init__(self, **kw):
-            for k, v in kw.items():
-                setattr(self, k, v)
-
     source = new(a=1, b=2, c=4, _d=5)
     target = {}
     smart_copy(source, target, defaults=False)
@@ -29,16 +46,21 @@ def test_smart_copy():
 
     target = {}
     smart_copy(source, target, defaults=True)
-    assert target['_d'] == 5
+    assert target["_d"] == 5
 
 
 def test_smart_copy_with_defaults():
-    defaults = {'host': 'localhost', 'port': 5432, 'user': 'openerp',
-                'password': (KeyError, '{key}')}
-    kwargs = {'password': 'keep-out!'}
+    defaults = {
+        "host": "localhost",
+        "port": 5432,
+        "user": "openerp",
+        "password": (KeyError, "{key}"),
+    }
+    kwargs = {"password": "keep-out!"}
     args = smart_copy(kwargs, {}, defaults=defaults)
-    assert args == dict(host='localhost', port=5432, user='openerp',
-                        password='keep-out!')
+    assert args == dict(
+        host="localhost", port=5432, user="openerp", password="keep-out!"
+    )
 
     # if missing a required key
     with pytest.raises(KeyError):
@@ -60,18 +82,18 @@ def test_smart_copy_from_dict_to_dict():
 def test_smart_copy_with_plain_defaults():
     c = dict(a=1, b=2, c=3)
     d = {}
-    smart_copy(c, d, defaults=('a', 'x'))
+    smart_copy(c, d, defaults=("a", "x"))
     assert d == dict(a=1, x=None)
 
 
 def test_smart_copy_with_callable_default():
     def default(attr, source=None):
-        return attr in ('a', 'b')
+        return attr in ("a", "b")
 
-    c = dict(a=1, b='2', c='3x')
+    c = dict(a=1, b="2", c="3x")
     d = {}
     smart_copy(c, d, defaults=default)
-    assert d == dict(a=1, b='2')
+    assert d == dict(a=1, b="2")
 
     class inset:
         def __init__(self, items):
@@ -80,20 +102,19 @@ def test_smart_copy_with_callable_default():
         def __call__(self, attr, source=None):
             return attr in self.items
 
-    c = dict(a=1, b='2', c='3x')
+    c = dict(a=1, b="2", c="3x")
     d = {}
-    smart_copy(c, d, defaults=inset('ab'))
-    assert d == dict(a=1, b='2')
+    smart_copy(c, d, defaults=inset("ab"))
+    assert d == dict(a=1, b="2")
 
 
 def test_fulldir():
-    from xoutil.objects import fulldir
-    assert {'__getitem__', 'get', 'items', 'keys'} < fulldir({})
+    assert {"__getitem__", "get", "items", "keys"} < fulldir({})
 
 
 def test_newstyle_metaclass():
     class Field:
-        __slots__ = (str('name'), str('default'))
+        __slots__ = (str("name"), str("default"))
 
         def __init__(self, default):
             self.default = default
@@ -126,9 +147,9 @@ def test_newstyle_metaclass():
     class Submodel(Model, metaclass=SubMeta):
         pass
 
-    inst = Model(name='Instance')
+    inst = Model(name="Instance")
     assert inst.f1 == 1009
-    assert inst.name == 'Instance'
+    assert inst.name == "Instance"
     assert isinstance(Model.f1, Field)
     assert type(Model) is ModelType
     assert type(Submodel) is SubMeta
@@ -139,13 +160,12 @@ def test_newstyle_metaclass():
 
 
 def test_new_style_metaclass_registration():
-
     class BaseMeta(type):
         classes = []
 
         def __new__(cls, name, bases, attrs):
             res = super(BaseMeta, cls).__new__(cls, name, bases, attrs)
-            cls.classes.append(res)   # <-- side effect
+            cls.classes.append(res)  # <-- side effect
             return res
 
     class Base(metaclass=BaseMeta):
@@ -165,32 +185,30 @@ def test_new_style_metaclass_registration():
 
     assert len(BaseMeta.classes) == 3  # Properly called once in Python 3
 
-      # Nevertheless the bases are ok.
-    assert Spam.__bases__ == (Base, )
+    # Nevertheless the bases are ok.
+    assert Spam.__bases__ == (Base,)
 
 
 def test_lazy():
-    from xoutil.objects import lazy, setdefaultattr
-
     class new:
         pass
 
     inst = new()
     setter = lambda a: -a
-    setdefaultattr(inst, 'c', lazy(setter, 10))
+    setdefaultattr(inst, "c", lazy(setter, 10))
     assert inst.c == -10
-    setdefaultattr(inst, 'c', lazy(setter, 20))
+    setdefaultattr(inst, "c", lazy(setter, 20))
     assert inst.c == -10
 
 
 # Easly creates a hierarchy of objects
-class new:
+class New:
     def __init__(self, **kwargs):
         attrs = {}
         children = {}
         for attr, value in kwargs.items():
-            if '.' in attr:
-                name, childattr = attr.split('.', 1)
+            if "." in attr:
+                name, childattr = attr.split(".", 1)
                 child = children.setdefault(name, {})
                 child[childattr] = value
             else:
@@ -198,30 +216,29 @@ class new:
         self.__dict__.update(attrs)
         assert set(attrs.keys()) & set(children.keys()) == set()
         for child, vals in children.items():
-            setattr(self, child, new(**vals))
+            setattr(self, child, New(**vals))
 
 
 def test_traversing():
-    from xoutil.objects import traverse, get_traverser
-    obj = new(**{'a': 1, 'b.c.d': {'x': 2}, 'b.c.x': 3})
-    assert traverse(obj, 'a') == 1
-    assert traverse(obj, 'b.c.d.x') == 2
-    assert traverse(obj, 'b.c.x') == 3
+    obj = New(**{"a": 1, "b.c.d": {"x": 2}, "b.c.x": 3})
+    assert traverse(obj, "a") == 1
+    assert traverse(obj, "b.c.d.x") == 2
+    assert traverse(obj, "b.c.x") == 3
     with pytest.raises(AttributeError):
-        traverse(obj, 'a.v')
+        traverse(obj, "a.v")
     with pytest.raises(AttributeError):
-        traverse(obj, 'a.b.c.d.y')
+        traverse(obj, "a.b.c.d.y")
 
-    traverser = get_traverser('a', 'b.c.d.x', 'b.c.d.y')
+    traverser = get_traverser("a", "b.c.d.x", "b.c.d.y")
     with pytest.raises(AttributeError):
         traverser(obj)
-    obj.b.c.d['y'] = None
+    obj.b.c.d["y"] = None
     assert traverser(obj) == (1, 2, None)
 
 
 def test_traversing_bug_ignoring_getter():
     import mock
-    from xoutil.objects import traverse
+
     sentinel = object()
 
     class Me:
@@ -231,27 +248,27 @@ def test_traversing_bug_ignoring_getter():
     return_sentinel = mock.Mock(return_value=sentinel)
 
     me = Me()
-    assert traverse(me, 'x.y', getter=return_sentinel) is sentinel
+    assert traverse(me, "x.y", getter=return_sentinel) is sentinel
     assert return_sentinel.called
 
 
 def test_dict_merge_base_cases():
-    from xoutil.objects import dict_merge
-    base = {'a': 'a', 'd': {'attr1': 2}}
+    base = {"a": "a", "d": {"attr1": 2}}
     assert dict_merge() == {}
     assert dict_merge(base) == base
     assert dict_merge(**base) == base
 
 
 def test_dict_merge_simple_cases():
-    from xoutil.objects import dict_merge
-    first = {'a': {'attr1': 1}, 'b': {'attr1': 1}, 'c': 194, 'shared': 1}
-    second = {'a': {'attr2': 2}, 'b': {'attr2': 2}, 'd': 195, 'shared': 2}
-    expected = {'a': {'attr1': 1, 'attr2': 2},
-                'b': {'attr1': 1, 'attr2': 2},
-                'c': 194,
-                'd': 195,
-                'shared': 2}
+    first = {"a": {"attr1": 1}, "b": {"attr1": 1}, "c": 194, "shared": 1}
+    second = {"a": {"attr2": 2}, "b": {"attr2": 2}, "d": 195, "shared": 2}
+    expected = {
+        "a": {"attr1": 1, "attr2": 2},
+        "b": {"attr1": 1, "attr2": 2},
+        "c": 194,
+        "d": 195,
+        "shared": 2,
+    }
     assert dict_merge(first, second) == expected
     assert dict_merge(first, **second) == expected
     assert dict_merge(second, first) == dict(expected, shared=1)
@@ -259,23 +276,23 @@ def test_dict_merge_simple_cases():
 
 
 def test_dict_merge_compatible_cases():
-    from xoutil.objects import dict_merge
-    first = {192: ['attr1', 1], 193: {'attr1', 1}}
-    second = {192: ('attr2', 2), 193: ['attr2', 2]}
-    assert dict_merge(first, second) == {192: ['attr1', 1, 'attr2', 2],
-                                         193: {'attr1', 1, 'attr2', 2}}
+    first = {192: ["attr1", 1], 193: {"attr1", 1}}
+    second = {192: ("attr2", 2), 193: ["attr2", 2]}
+    assert dict_merge(first, second) == {
+        192: ["attr1", 1, "attr2", 2],
+        193: {"attr1", 1, "attr2", 2},
+    }
     result = dict_merge(second, first)
-    assert result[192] == ('attr2', 2, 'attr1', 1)
+    assert result[192] == ("attr2", 2, "attr1", 1)
     key_193 = result[193]
-    assert key_193[:2] == ['attr2', 2]
+    assert key_193[:2] == ["attr2", 2]
     # Since order of set's members is not defined we can't test order, we can
     # only know that they'll be in the last two positions.
-    assert key_193.index('attr1') in (2, 3)
+    assert key_193.index("attr1") in (2, 3)
     assert key_193.index(1) in (2, 3)
 
 
 def test_dict_merge_errors():
-    from xoutil.objects import dict_merge
     first = {192: 192}
     second = {192: [192]}
     with pytest.raises(TypeError):
@@ -285,9 +302,8 @@ def test_dict_merge_errors():
 
 
 def test_get_first_of():
-    from xoutil.objects import get_first_of
     somedict = {"foo": "bar", "spam": "eggs"}
-    assert get_first_of(somedict, "no", "foo", "spam") == 'bar'
+    assert get_first_of(somedict, "no", "foo", "spam") == "bar"
 
     somedict = {"foo": "bar", "spam": "eggs"}
     assert get_first_of(somedict, "eggs") is None
@@ -296,10 +312,10 @@ def test_get_first_of():
         pass
 
     inst = Someobject()
-    inst.foo = 'bar'
-    inst.eggs = 'spam'
-    assert get_first_of(inst, 'no', 'eggs', 'foo') == 'spam'
-    assert get_first_of(inst, 'invalid') is None
+    inst.foo = "bar"
+    inst.eggs = "spam"
+    assert get_first_of(inst, "no", "eggs", "foo") == "spam"
+    assert get_first_of(inst, "invalid") is None
 
     somedict = {"foo": "bar", "spam": "eggs"}
 
@@ -307,18 +323,18 @@ def test_get_first_of():
         pass
 
     inst = Someobject()
-    inst.foo = 'bar2'
-    inst.eggs = 'spam'
-    assert get_first_of((somedict, inst), 'eggs') == 'spam'
-    assert get_first_of((somedict, inst), 'foo') == 'bar'
-    assert get_first_of((inst, somedict), 'foo') == 'bar2'
-    assert get_first_of((inst, somedict), 'foobar') is None
+    inst.foo = "bar2"
+    inst.eggs = "spam"
+    assert get_first_of((somedict, inst), "eggs") == "spam"
+    assert get_first_of((somedict, inst), "foo") == "bar"
+    assert get_first_of((inst, somedict), "foo") == "bar2"
+    assert get_first_of((inst, somedict), "foobar") is None
 
     none = object()
-    assert get_first_of((inst, somedict), 'foobar', default=none) is none
-    _eggs = get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 3)
-    assert _eggs == 'eggs'
-    _none = get_first_of(somedict, 'foo', 'spam', pred=lambda v: len(v) > 4)
+    assert get_first_of((inst, somedict), "foobar", default=none) is none
+    _eggs = get_first_of(somedict, "foo", "spam", pred=lambda v: len(v) > 3)
+    assert _eggs == "eggs"
+    _none = get_first_of(somedict, "foo", "spam", pred=lambda v: len(v) > 4)
     assert _none is None
 
     with pytest.raises(TypeError):
@@ -326,80 +342,69 @@ def test_get_first_of():
 
 
 def test_smart_getter():
-    from xoutil.objects import smart_getter
-
-    class new:
-        pass
-
     o = new()
     o.attr1 = 1
     o.attr2 = 1
     getter = smart_getter(o)
-    assert getter('attr1') == getter('attr2') == 1
-    assert getter('attr3') is None
+    assert getter("attr1") == getter("attr2") == 1
+    assert getter("attr3") is None
 
     getter = smart_getter(o, strict=True)
-    assert getter('attr1') == getter('attr2') == 1
+    assert getter("attr1") == getter("attr2") == 1
     with pytest.raises(AttributeError):
-        assert getter('attr3') is None
+        assert getter("attr3") is None
 
-    d = {'key1': 1, 'key2': 1}
+    d = {"key1": 1, "key2": 1}
     getter = smart_getter(d)
-    assert getter('key1') == getter('key2') == 1
-    assert getter('key3') is None
+    assert getter("key1") == getter("key2") == 1
+    assert getter("key3") is None
 
     getter = smart_getter(d, strict=True)
-    assert getter('key1') == getter('key2') == 1
+    assert getter("key1") == getter("key2") == 1
     with pytest.raises(KeyError):
-        assert getter('key3') is None
-    assert getter('key3', None) is None
+        assert getter("key3") is None
+    assert getter("key3", None) is None
 
 
 def test_smart_setter():
-    from xoutil.objects import smart_setter
-
     class new:
         pass
 
     o = new()
     setter = smart_setter(o)
-    setter('attr1', 1)
-    setter('attr2', 1)
+    setter("attr1", 1)
+    setter("attr2", 1)
     assert o.attr1 == o.attr2 == 1
 
-    d = {'key1': 1, 'key2': 1}
+    d = {"key1": 1, "key2": 1}
     setter = smart_setter(d)
-    setter('key1', 10)
-    assert d['key1'] == 10
+    setter("key1", 10)
+    assert d["key1"] == 10
 
 
 def test_extract_attrs():
-    from xoutil.objects import extract_attrs
     d = dict(a=(1,), b=2, c=3, x=4)
-    assert extract_attrs(d, 'a') == (1,)
-    assert extract_attrs(d, 'a', 'b', 'c', 'x') == ((1,), 2, 3, 4)
+    assert extract_attrs(d, "a") == (1,)
+    assert extract_attrs(d, "a", "b", "c", "x") == ((1,), 2, 3, 4)
 
     with pytest.raises(AttributeError):
-        assert extract_attrs(d, 'y')
-    assert extract_attrs(d, 'y', default=None) is None
+        assert extract_attrs(d, "y")
+    assert extract_attrs(d, "y", default=None) is None
 
     class new:
         def __init__(self, **kw):
             self.__dict__.update(kw)
 
     d = new(a=(1,), b=2, c=3, x=4)
-    assert extract_attrs(d, 'a') == (1,)
-    assert extract_attrs(d, 'a', 'b', 'c', 'x') == ((1,), 2, 3, 4)
+    assert extract_attrs(d, "a") == (1,)
+    assert extract_attrs(d, "a", "b", "c", "x") == ((1,), 2, 3, 4)
 
     with pytest.raises(AttributeError):
-        assert extract_attrs(d, 'y')
-    assert extract_attrs(d, 'y', default=None) is None
+        assert extract_attrs(d, "y")
+    assert extract_attrs(d, "y", default=None) is None
 
 
 def test_copy_class():
-    from xoutil.symbols import Unset
-    from xoutil.objects import copy_class
-
     u = str
 
     class MetaFoo(type):
@@ -414,57 +419,55 @@ def test_copy_class():
     class Baz(Foo):
         e = 5
 
-    index = {k: getattr(Foo, k) for k in 'abcd'}
+    index = {k: getattr(Foo, k) for k in "abcd"}
     Bar = copy_class(Foo)
     assert Bar.a == Foo.a and Bar.b and Bar.c and Bar.d
 
-    Egg = copy_class(Foo, ignores=['b', 'c'])
-    assert getattr(Egg, 'b', Unset) is Unset
+    Egg = copy_class(Foo, ignores=["b", "c"])
+    assert getattr(Egg, "b", Unset) is Unset
 
     Egg = copy_class(Foo, ignores=[lambda k: index.get(k) and index.get(k) > 2])
     assert Egg.a == Foo.a
-    assert getattr(Egg, 'c', Unset) is Unset
+    assert getattr(Egg, "c", Unset) is Unset
 
-    Named = copy_class(Foo, new_name='Named')
-    assert Named.__name__ == 'Named'
+    Named = copy_class(Foo, new_name="Named")
+    assert Named.__name__ == "Named"
 
-    Named = copy_class(Foo, new_name=u('Named'))
-    assert Named.__name__ == 'Named'
+    Named = copy_class(Foo, new_name=u("Named"))
+    assert Named.__name__ == "Named"
 
     import fnmatch
-    pattern = lambda attr: fnmatch.fnmatch(attr, 'a*')
+
+    pattern = lambda attr: fnmatch.fnmatch(attr, "a*")
     Egg = copy_class(Foo, ignores=[pattern])
-    assert getattr(Egg, 'a', Unset) is Unset
+    assert getattr(Egg, "a", Unset) is Unset
 
     import re
-    _pattern = re.compile('^a')
+
+    _pattern = re.compile("^a")
     pattern = lambda attr: _pattern.match(attr)
     Egg = copy_class(Foo, ignores=[pattern])
-    assert getattr(Egg, 'a', Unset) is Unset
+    assert getattr(Egg, "a", Unset) is Unset
 
 
 def test_validate_attrs():
-    from xoutil.objects import validate_attrs
-
     class Person:
         def __init__(self, **kwargs):
             for which in kwargs:
                 setattr(self, which, kwargs[which])
 
-    source = Person(name='Manuel', age=33, sex='male')
-    target = {'name': 'Manuel', 'age': 4, 'sex': 'male'}
+    source = Person(name="Manuel", age=33, sex="male")
+    target = {"name": "Manuel", "age": 4, "sex": "male"}
 
-    assert validate_attrs(source, target, force_equals=('sex',),
-                          force_differents=('age',))
+    assert validate_attrs(
+        source, target, force_equals=("sex",), force_differents=("age",)
+    )
 
-    assert not validate_attrs(source, target, force_equals=('age',))
+    assert not validate_attrs(source, target, force_equals=("age",))
 
 
 @pytest.mark.xfail()
 def test_memoized_classproperty():
-    from xoutil.objects import memoized_property
-    from xoutil.objects import classproperty
-
     current = 1
 
     class Foobar:
@@ -484,15 +487,13 @@ def test_memoized_classproperty():
 
 
 def test_properties():
-    from xoutil.objects import xproperty, classproperty, staticproperty
-
-    _x = 'static'
+    _x = "static"
 
     class Foobar:
-        _x = 'class'
+        _x = "class"
 
         def __init__(self):
-            self._x = 'instance'
+            self._x = "instance"
 
         @xproperty
         def x(self):
@@ -508,25 +509,23 @@ def test_properties():
 
     f = Foobar()
 
-    assert Foobar.x == 'class'
-    assert f.x == 'instance'
+    assert Foobar.x == "class"
+    assert f.x == "instance"
 
-    assert Foobar.cprop == 'class'
-    assert f.cprop == 'class'
+    assert Foobar.cprop == "class"
+    assert f.cprop == "class"
 
-    assert Foobar.sprop == 'static'
-    assert f.sprop == 'static'
+    assert Foobar.sprop == "static"
+    assert f.sprop == "static"
 
 
 def test_multi_getter_failure():
-    '''`multi_getter` is not the same as `traverse`.
+    """`multi_getter` is not the same as `traverse`.
 
     When a collection of identifiers is given, it get the first valid value
     (see the documentation).
 
-    '''
-    from xoutil.objects import multi_getter
-    from xoutil.objects import traverse
+    """
 
     class new:
         def __init__(self, **k):
@@ -534,15 +533,13 @@ def test_multi_getter_failure():
 
     top = new(d=dict(a=1, b=2), a=10, b=20)
 
-    assert traverse(top, 'd.a') == 1
-    assert next(multi_getter(top, ('d', 'a'))) == {'a': 1, 'b': 2}
+    assert traverse(top, "d.a") == 1
+    assert next(multi_getter(top, ("d", "a"))) == {"a": 1, "b": 2}
 
 
 def test_save_attributes():
-    from xoutil.future.types import SimpleNamespace as new
-    from xoutil.objects import save_attributes
     obj = new(a=1, b=2)
-    with save_attributes(obj, 'a'):
+    with save_attributes(obj, "a"):
         obj.a = 2
         obj.b = 3
         assert obj.a == 2
@@ -554,6 +551,7 @@ def test_save_attributes():
 def test_temp_attributes():
     from xoutil.future.types import SimpleNamespace as new
     from xoutil.objects import temp_attributes
+
     obj = new(a=1, b=2)
     with temp_attributes(obj, dict(a=2)):
         assert obj.a == 2
@@ -567,27 +565,29 @@ def test_temp_attributes():
 def test_save_raises_errors():
     from xoutil.future.types import SimpleNamespace as new
     from xoutil.objects import save_attributes
+
     getter = lambda o: lambda a: getattr(o, a)
     obj = new(a=1, b=2)
     with pytest.raises(AttributeError):
-        with save_attributes(obj, 'c', getter=getter):
+        with save_attributes(obj, "c", getter=getter):
             pass
 
-    with save_attributes(obj, 'x'):
+    with save_attributes(obj, "x"):
         pass
 
     assert obj.x is None
 
     obj = object()
     with pytest.raises(AttributeError):
-        with save_attributes(obj, 'x'):
+        with save_attributes(obj, "x"):
             pass
 
 
 def test_import_object():
     from xoutil.objects import import_object
-    assert import_object('xoutil.objects.import_object') is import_object
-    assert import_object('xoutil.objects:import_object') is import_object
+
+    assert import_object("xoutil.objects.import_object") is import_object
+    assert import_object("xoutil.objects:import_object") is import_object
 
 
 def test_delegator():
@@ -596,7 +596,7 @@ def test_delegator():
     class Bar:
         x = object()
 
-    class Foo(delegator('egg', {'x1': 'x', 'x2': 'spam'})):
+    class Foo(delegator("egg", {"x1": "x", "x2": "spam"})):
         def __init__(self):
             self.egg = Bar()
 
