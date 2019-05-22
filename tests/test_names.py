@@ -6,7 +6,6 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 import pytest
 from xoutil.versions import python_version
 from xoutil.future.collections import OrderedSmartDict
@@ -107,7 +106,7 @@ def test_module_level_name():
 
 def test_module_level_name_isolated():
     from xoutil.names import nameof, simple_name
-    full_name_1 = 'test_names.OrderedSmartDict'
+    full_name_1 = 'tests.test_names.OrderedSmartDict'
     full_name_2 = 'xotl.tools.future.collections.OrderedSmartDict'
     assert nameof(OrderedSmartDict, full=True) == full_name_1
     assert simple_name(OrderedSmartDict) == full_name_2
