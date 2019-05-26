@@ -95,7 +95,7 @@ build source distribution:
   image: python:3.6-alpine
   stage: build
   script:
-    - rm -f dist/*
+    - apk add git
     - python setup.py sdist
     - PROJECT_NAME=xoutil python3 setup.py sdist
   artifacts:
@@ -109,6 +109,7 @@ build binary distribution:
   image: python:3.6-alpine
   stage: build
   script:
+    - apk add git
     - pip install wheel
     - python3 setup.py bdist_wheel
     - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
