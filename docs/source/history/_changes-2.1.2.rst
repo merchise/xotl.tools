@@ -1,1 +1,1 @@
-- Correct `xotl.tools.infinity.Infinity`:class: so that it's hashable.
+- Correct `xotl.tools.infinity.Infinity`:obj: so that it's hashable.

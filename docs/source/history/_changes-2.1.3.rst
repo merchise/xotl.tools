@@ -1,1 +1,1 @@
-- Make `~xotl.tools.infinity.Infinity`:data: pickable.
+- Make `xotl.tools.infinity.Infinity`:obj: pickable.
