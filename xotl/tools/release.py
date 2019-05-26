@@ -6,9 +6,15 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-from ._version import get_version
+try:
+    from ._version import get_version
 
-VERSION = get_version()
+    VERSION = get_version()
+
+except ImportError:
+    from ._version import get_versions
+
+    VERSION = get_versions()["version"]
 
 
 def dev_tag_installed():
