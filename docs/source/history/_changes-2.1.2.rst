@@ -1,0 +1,1 @@
+- Correct `xotl.tools.infinity.Infinity`:class: so that it's hashable.
