@@ -180,7 +180,7 @@ build documentation:
     paths:
       - builds/doctrees
   script:
-    - apk add make g++
+    - apk add make g++ git
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
