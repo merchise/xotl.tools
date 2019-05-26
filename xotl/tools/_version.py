@@ -41,7 +41,7 @@ def get_config():
     cfg = VersioneerConfig()
     cfg.VCS = "git"
     cfg.style = "pep440"
-    cfg.tag_prefix = "None"
+    cfg.tag_prefix = ""
     cfg.parentdir_prefix = "None"
     cfg.versionfile_source = "xotl/tools/_version.py"
     cfg.verbose = False
