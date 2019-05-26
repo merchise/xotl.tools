@@ -57,6 +57,9 @@ class InfinityType:
     _positive = None
     _negative = None
 
+    def __getnewargs__(self):
+        return (self.sign,)
+
     def __new__(cls, sign):
         if sign < 0:
             res = cls._negative

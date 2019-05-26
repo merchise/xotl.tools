@@ -6,12 +6,8 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
-import sys
-import pytest
-
+import pickle
 from hypothesis import given, strategies as s
-
 from xoutil.infinity import Infinity, InfinityType
 
 
@@ -33,3 +29,12 @@ def test_infinity_hashable():
 def test_singleton():
     assert Infinity is InfinityType(+1)
     assert -Infinity is InfinityType(-1)
+
+
+@given(
+    s.sampled_from([Infinity, -Infinity]),
+    s.sampled_from([pickle.HIGHEST_PROTOCOL, pickle.DEFAULT_PROTOCOL]),
+)
+def test_pickable(inf, proto):
+    serialized = pickle.dumps(inf, proto)
+    assert inf is pickle.loads(serialized)
