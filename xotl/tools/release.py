@@ -17,20 +17,7 @@ except ImportError:
     VERSION = get_versions()["version"]
 
 
-def dev_tag_installed():
-    import pkg_resources
-
-    try:
-        dist = pkg_resources.get_distribution("xotl.tools")
-        full_version = dist.version
-        # FIX: Below line is not working anymore
-        base = dist.parsed_version.base_version
-        return full_version[len(base) :]
-    except Exception:
-        return None
-
-
-RELEASE_TAG = dev_tag_installed() or ""
+RELEASE_TAG = ""
 
 
 def safe_int(x):
