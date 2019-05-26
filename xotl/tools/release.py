@@ -6,8 +6,9 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
+from ._version import get_version
 
-VERSION = "2.1.2"
+VERSION = get_version()
 
 
 def dev_tag_installed():
