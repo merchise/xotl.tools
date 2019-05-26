@@ -179,6 +179,7 @@ build documentation:
     paths:
       - builds/doctrees
   script:
+    - apk add g++
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
