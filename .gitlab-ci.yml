@@ -181,7 +181,7 @@ build documentation:
       - builds/doctrees
   script:
     - apk add make g++ git
-    - pip install sphinx sphinx-rtd-theme
+    - pip install sphinx sphinx-rtd-theme hypothesis
     - pip install -e .
     - make -C docs/ html
     - cd docs/build/html
