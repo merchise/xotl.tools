@@ -1,1 +1,1 @@
-Nothing yet.
+- Make `~xotl.tools.infinity.Infinity`:data: pickable.
