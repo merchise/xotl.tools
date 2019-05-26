@@ -22,6 +22,7 @@ check code smells:
   image: python:$PYTHON-alpine
   stage: test
   script:
+    - apk add g++
     - pip install tox
     - tox -e system-unit,$PYTHON-greenlets
 
