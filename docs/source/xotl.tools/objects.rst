@@ -34,7 +34,7 @@
 
 .. autofunction:: get_final_subclasses
 
-.. autofunction:: DynamicClassEnumeration
+.. autofunction:: FinalClassEnumeration
 
 .. autofunction:: save_attributes(obj, *attributes, getter=None, setter=None)
 
