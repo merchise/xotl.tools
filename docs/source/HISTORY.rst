@@ -4,7 +4,7 @@ Changelog
 2.1 series
 ----------
 
-Unreleased. Release 2.1.2
+2019-05-26. Release 2.1.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.1.2.rst
