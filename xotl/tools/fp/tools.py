@@ -19,6 +19,15 @@ def identity(arg):
     return arg
 
 
+def constant(value):
+    "Return a function that always return a constant `value`."
+
+    def result(*args, **kwargs):
+        return value
+
+    return result
+
+
 def fst(pair, strict=True):
     """Return the first element of `pair`.
 

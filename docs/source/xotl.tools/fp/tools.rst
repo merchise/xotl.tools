@@ -47,6 +47,8 @@
 
 .. autofunction:: snd
 
+.. autofunction:: constant
+
 .. autoclass:: pos_args
 
 .. autoclass:: kw_args
