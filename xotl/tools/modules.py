@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Modules utilities.'''
+"""Modules utilities."""
 
 from types import ModuleType
 
@@ -15,7 +15,7 @@ from types import ModuleType
 
 
 def force_module(ref=None):
-    '''Load a module from a string or return module if already created.
+    """Load a module from a string or return module if already created.
 
     If `ref` is not specified (or integer) calling module is assumed looking
     in the stack.
@@ -25,8 +25,9 @@ def force_module(ref=None):
        Function used to inspect the stack is not guaranteed to exist in all
        implementations of Python.
 
-    '''
+    """
     from importlib import import_module
+
     if isinstance(ref, ModuleType):
         return ref
     else:
@@ -34,9 +35,10 @@ def force_module(ref=None):
             ref = 1
         if isinstance(ref, int):
             import sys
+
             frame = sys._getframe(ref)
             try:
-                ref = frame.f_globals['__name__']
+                ref = frame.f_globals["__name__"]
             finally:
                 # As recommended to avoid memory leaks
                 del frame
@@ -54,7 +56,7 @@ def force_module(ref=None):
 
 # TODO: Deprecate this method in favor of ``from <module> import *``
 def copy_members(source=None, target=None):
-    '''Copy module members from `source` to `target`.
+    """Copy module members from `source` to `target`.
 
     It's common in `xotl.tools` package to extend Python modules with the same
     name, for example `xotl.tools.datetime` has all public members of Python's
@@ -77,16 +79,16 @@ def copy_members(source=None, target=None):
        Function used to inspect the stack is not guaranteed to exist in all
        implementations of Python.
 
-    '''
+    """
     target = force_module(target or 2)
     if source is None:
-        source = target.__name__.rsplit('.')[-1]
+        source = target.__name__.rsplit(".")[-1]
         if source == target.__name__:
             msg = '"source" and "target" modules must be different.'
             raise ValueError(msg)
     source = force_module(source)
     for attr in dir(source):
-        if not attr.startswith('__'):
+        if not attr.startswith("__"):
             setattr(target, attr, getattr(source, attr))
     return source
 
@@ -96,7 +98,7 @@ class _CustomModuleBase(ModuleType):
 
 
 def customize(module, custom_attrs=None, meta=None):
-    '''Replaces a `module` by a custom one.
+    """Replaces a `module` by a custom one.
 
     Injects all kwargs into the newly created module's class. This allows to
     have module into which we may have properties or other type of
@@ -120,9 +122,10 @@ def customize(module, custom_attrs=None, meta=None):
               was created (i.e `customize`:func: is idempotent), and the
               third item will be the class of the module (the first item).
 
-    '''
+    """
     if not isinstance(module, _CustomModuleBase):
         import sys
+
         meta_base = meta if meta else type
 
         class CustomModuleType(meta_base):
@@ -149,14 +152,15 @@ def customize(module, custom_attrs=None, meta=None):
 
 
 def modulemethod(func):
-    '''Decorator that defines a module-level method.
+    """Decorator that defines a module-level method.
 
     Simply a module-level method, will always receive a first argument `self`
     with the module object.
 
-    '''
+    """
     import sys
     from functools import wraps
+
     self, _created, cls = customize(sys.modules[func.__module__])
 
     @wraps(func)
@@ -168,7 +172,7 @@ def modulemethod(func):
 
 
 def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
-    '''Decorator that creates a module-level property.
+    """Decorator that creates a module-level property.
 
     The module of the `getter` is replaced by a custom implementation of the
     module, and the property is injected to the custom module's class.
@@ -184,19 +188,22 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
 
     .. versionadded:: 1.6.1 Added the `base` parameter.
 
-    '''
+    """
     import sys
+
     module = sys.modules[getter.__module__]
     module, _created, cls = customize(module)
 
     class prop(base):
-        if getattr(base, 'setter', False):
+        if getattr(base, "setter", False):
+
             def setter(self, func, _name=None):
                 result = super().setter(func)
                 setattr(cls, _name or func.__name__, result)
                 return result
 
-        if getattr(base, 'deleter', False):
+        if getattr(base, "deleter", False):
+
             def deleter(self, func, _name=None):
                 result = super().deleter(func)
                 setattr(cls, _name or func.__name__, result)
@@ -213,7 +220,7 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
 
 
 def get_module_path(module):
-    '''Gets the absolute path of a `module`.
+    """Gets the absolute path of a `module`.
 
     :param module: Either module object or a (dotted) string for the module.
 
@@ -224,11 +231,12 @@ def get_module_path(module):
 
     If `module` is a string and it's not absolute, raises a TypeError.
 
-    '''
+    """
     from importlib import import_module
     from xotl.tools.fs.path import normalize_path
+
     mod = import_module(module) if isinstance(module, str) else module
     # The __path__ only exists for packages and does not include the
     # __init__.py
-    path = mod.__path__[0] if hasattr(mod, '__path__') else mod.__file__
+    path = mod.__path__[0] if hasattr(mod, "__path__") else mod.__file__
     return normalize_path(path)

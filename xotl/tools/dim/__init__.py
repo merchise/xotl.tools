@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Facilities to work with `concrete numbers`_.
+"""Facilities to work with `concrete numbers`_.
 
 The name `dim`:mod: is a short of dimension.  We borrow it from the topic
 "dimensional analysis", even though the scope of this module is less
@@ -31,4 +31,4 @@ This module is divided in two major parts:
 .. _International System of Quantities: \
    https://en.wikipedia.org/wiki/International_System_of_Quantities
 
-'''
+"""

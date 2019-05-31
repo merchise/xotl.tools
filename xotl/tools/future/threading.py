@@ -7,21 +7,21 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extensions to Python's `threading` module.
+"""Extensions to Python's `threading` module.
 
 You may use it as drop-in replacement of ``threading``. Although we don't
 document all items here.  Refer to `threading`:mod: documentation.
 
-'''
+"""
 
-from threading import *    # noqa
-import threading as _stdlib    # noqa
+from threading import *  # noqa
+import threading as _stdlib  # noqa
 
 from threading import Event, Thread, RLock, Timer
 
 
 def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
-    '''Executes a function asynchronously.
+    """Executes a function asynchronously.
 
     The function receives the given positional and keyword arguments
 
@@ -36,7 +36,7 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
 
     :rtype: `Event`:class:
 
-    '''
+    """
     event = Event()
     event.clear()
     if not args:
@@ -62,7 +62,8 @@ def async_call(func, args=None, kwargs=None, callback=None, onerror=None):
 
 
 class _SyncronizedCaller:
-    '''Protected to be used in `sync_call`:func:'''
+    """Protected to be used in `sync_call`:func:"""
+
     def __init__(self, pooling=0.005):
         self.lock = RLock()
         self._not_bailed = True
@@ -80,11 +81,13 @@ class _SyncronizedCaller:
             events.append(event)
             threads.append(thread)
         if timeout:
+
             def set_all_events():
                 with self.lock:
                     self._not_bailed = False
                 for e in events:
                     e.set()
+
             timer = Timer(timeout, set_all_events)
             timer.start()
         while events:
@@ -100,7 +103,7 @@ class _SyncronizedCaller:
 
 
 def sync_call(funcs, callback, timeout=None):
-    '''Calls several functions, each one in it's own thread.
+    """Calls several functions, each one in it's own thread.
 
     Waits for all to end.
 
@@ -116,10 +119,11 @@ def sync_call(funcs, callback, timeout=None):
 
     :param funcs: A sequences of callables that receive no arguments.
 
-    '''
+    """
     sync_caller = _SyncronizedCaller()
     sync_caller(funcs, callback, timeout)
 
 
-from threading import __all__    # noqa
-__all__ = list(__all__) + ['async_call', 'sync_call']
+from threading import __all__  # noqa
+
+__all__ = list(__all__) + ["async_call", "sync_call"]

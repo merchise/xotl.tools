@@ -7,31 +7,38 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extensions to Python's ``inspect`` module.
+"""Extensions to Python's ``inspect`` module.
 
 You may use it as drop-in replacement of ``inspect``.  Although we don't
 document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
 
-'''
+"""
 
-from inspect import *    # noqa
-from inspect import (_sentinel, _static_getmro, _check_instance,    # noqa
-                     _check_class, _is_type, _shadowed_dict)
+from inspect import *  # noqa
+from inspect import (
+    _sentinel,
+    _static_getmro,
+    _check_instance,  # noqa
+    _check_class,
+    _is_type,
+    _shadowed_dict,
+)
 
 
 def get_attr_value(obj, name, *default):
-    '''Get a named attribute from an object in a safe way.
+    """Get a named attribute from an object in a safe way.
 
     Similar to `getattr` but without triggering dynamic look-up via the
     descriptor protocol, `__getattr__` or `__getattribute__` by using
     `getattr_static`:func:.
 
-    '''
+    """
     from xotl.tools.params import check_default, Undefined
+
     default = check_default()(*default)
     is_type = isinstance(obj, type)
     res = getattr_static(obj, name, Undefined)
-    if isdatadescriptor(res):    # noqa
+    if isdatadescriptor(res):  # noqa
         try:
             owner = type if is_type else type(obj)
             res = res.__get__(obj, owner)
@@ -40,7 +47,7 @@ def get_attr_value(obj, name, *default):
     if res is Undefined and not is_type:
         cls = type(obj)
         res = getattr_static(cls, name, Undefined)
-        if isdatadescriptor(res):    # noqa
+        if isdatadescriptor(res):  # noqa
             try:
                 res = res.__get__(obj, cls)
             except Exception:  # TODO: @med Which?
@@ -58,7 +65,7 @@ def get_attr_value(obj, name, *default):
 
 
 def safe_name(obj, affirm=False):
-    '''Return the internal name for a type or a callable.
+    """Return the internal name for a type or a callable.
 
     This function is safe.  If :param obj: is not an instance of a proper type
     then returns the following depending on :param affirm:
@@ -86,21 +93,27 @@ def safe_name(obj, affirm=False):
       >>> safe_name((0, 1.1), affirm=True)
       '(int, float)'
 
-    '''
+    """
     from types import FunctionType, MethodType
     from types import BuiltinFunctionType, BuiltinMethodType
-    named_types = (FunctionType, MethodType, BuiltinFunctionType,
-                   BuiltinMethodType, type)
+
+    named_types = (
+        FunctionType,
+        MethodType,
+        BuiltinFunctionType,
+        BuiltinMethodType,
+        type,
+    )
     if isinstance(obj, (staticmethod, classmethod)):
-        fn = get_attr_value(obj, '__func__', None)
+        fn = get_attr_value(obj, "__func__", None)
         if fn:
             obj = fn
     if isinstance(obj, named_types):
         # TODO: Why not use directly `get_attr_value``
         try:
-            res = getattr_static(obj, '__name__', None)
+            res = getattr_static(obj, "__name__", None)
             if res:
-                if isdatadescriptor(res):    # noqa
+                if isdatadescriptor(res):  # noqa
                     res = res.__get__(obj, type)
         except Exception:
             res = None
@@ -114,21 +127,21 @@ def safe_name(obj, affirm=False):
     if res is None:
         # TODO: Why not use directly `get_attr_value``
         # FIX: Improve and standardize the combination of next code
-        res = getattr_static(obj, '__name__', None)
-        if res and isdatadescriptor(res):    # noqa
+        res = getattr_static(obj, "__name__", None)
+        if res and isdatadescriptor(res):  # noqa
             res = res.__get__(obj, type(obj))
     if isinstance(res, str):
         return res
     elif affirm:
         if isinstance(obj, (tuple, list, set)):
             if isinstance(obj, tuple):
-                head, tail = '()'
+                head, tail = "()"
             elif isinstance(obj, list):
-                head, tail = '[]'
+                head, tail = "[]"
             else:
-                head, tail = '{}'
-            items = ', '.join(safe_name(t, affirm) for t in obj)
-            return str('%s%s%s' % (head, items, tail))
+                head, tail = "{}"
+            items = ", ".join(safe_name(t, affirm) for t in obj)
+            return str("%s%s%s" % (head, items, tail))
         else:
             return safe_name(type(obj))
     else:
@@ -136,7 +149,7 @@ def safe_name(obj, affirm=False):
 
 
 def _static_issubclass(C, B):
-    '''like ``issubclass(C, B) -> bool`` but without using ABCs.
+    """like ``issubclass(C, B) -> bool`` but without using ABCs.
 
     Return whether class C is a strict subclass (i.e., a derived class) of
     class B.
@@ -149,7 +162,7 @@ def _static_issubclass(C, B):
     must be a class or tuple of classes" if `B` any tuple member) is not
     instance of `type`.
 
-    '''
+    """
     mro = _static_getmro(C)
     if isinstance(B, tuple):
         return any(b in mro for b in B)

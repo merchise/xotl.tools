@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Synchronization lock tools.
+"""Synchronization lock tools.
 
 A lock object is a synchronization primitive.  Locks are used as Python
 Context Managers with only one method (`enter`) and one property (`locked`).
@@ -44,35 +44,38 @@ more information.
 If other lock mechanisms are going to be implementing, for example using
 threading, this is the place.
 
-'''
+"""
 
 from xotl.tools.modules import moduleproperty
 
 
 @moduleproperty
 def context_lock(self):
-    '''Allocate a lock based on xoutil execution contexts.'''
+    """Allocate a lock based on xoutil execution contexts."""
     from xotl.tools.objects import classproperty
 
     class ContextLock:
-        '''A class representing the lock.
+        """A class representing the lock.
 
         See `xotl.tools.lock`:mod: module for more information.
 
-        '''
+        """
+
         def __new__(cls, *args, **kwargs):
             msg = '"{}" could not be instanced.'.format(cls.__name__)
             raise RuntimeError(msg)
 
         @classmethod
         def enter(cls, **kwargs):
-            '''Enter the context.'''
+            """Enter the context."""
             from xotl.tools.context import context
+
             return context(cls, **kwargs)
 
         @classproperty
         def locked(cls):
             from xotl.tools.context import context
+
             return context[cls]
 
     return ContextLock

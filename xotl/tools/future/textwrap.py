@@ -7,16 +7,17 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Text wrapping and filling.'''
+"""Text wrapping and filling."""
 
-from textwrap import *    # noqa
+from textwrap import *  # noqa
 import textwrap as _stdlib
-from textwrap import __all__    # noqa
+from textwrap import __all__  # noqa
+
 __all__ = list(__all__)
 
 
 def dedent(text, skip_firstline=False):
-    r'''Remove any common leading whitespace from every line in text.
+    r"""Remove any common leading whitespace from every line in text.
 
     This can be used to make triple-quoted strings line up with the left edge
     of the display, while still presenting them in the source code in indented
@@ -31,16 +32,16 @@ def dedent(text, skip_firstline=False):
 
     .. warning:: The `skip_firstline` argument is missing in standard library.
 
-    '''
+    """
     if skip_firstline:
-        parts = text.split('\n', 1)
+        parts = text.split("\n", 1)
         if len(parts) > 1:
             subject, body = parts
         else:
-            subject, body = parts[0], ''
+            subject, body = parts[0], ""
         result = _stdlib.dedent(subject)
         if body:
-            result += '\n' + _stdlib.dedent(body)
+            result += "\n" + _stdlib.dedent(body)
     else:
         result = _stdlib.dedent(text)
     return result

@@ -7,14 +7,16 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Utils for Web applications.'''
+"""Utils for Web applications."""
 
-__all__ = ['slugify']
+__all__ = ["slugify"]
 
 
 # TODO: Why not deprecate this and use standard `xotl.tools.string.slugify`.
-def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cover  # noqa
-    '''Convert a string to a slug representation.
+def slugify(
+    s, entities=True, decimal=True, hexadecimal=True
+):  # pragma: no cover  # noqa
+    """Convert a string to a slug representation.
 
     Normalizes string, converts to lower-case, removes non-alpha characters,
     and converts spaces to hyphens.
@@ -60,10 +62,11 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cov
 
     .. deprecated:: 2.1.0 Use `xotl.tools.strings.slugify`:func:.
 
-    '''
+    """
     import re
     from xotl.tools.string import slugify
     from xotl.tools.future.codecs import safe_decode
+
     if not isinstance(s, str):
         s = safe_decode(s)
     if entities:
@@ -73,17 +76,19 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cov
             # Py3k: The ``htmlentitydefs`` module has been renamed to
             # ``html.entities`` in Python 3
             from html.entities import name2codepoint
-        s = re.sub(str('&(%s);') % str('|').join(name2codepoint),
-                   lambda m: chr(name2codepoint[m.group(1)]), s)
+        s = re.sub(
+            str("&(%s);") % str("|").join(name2codepoint),
+            lambda m: chr(name2codepoint[m.group(1)]),
+            s,
+        )
     if decimal:
         try:
-            s = re.sub(r'&#(\d+);', lambda m: chr(int(m.group(1))), s)
+            s = re.sub(r"&#(\d+);", lambda m: chr(int(m.group(1))), s)
         except Exception:  # TODO: @med which exceptions are expected?
             pass
     if hexadecimal:
         try:
-            s = re.sub(r'&#x([\da-fA-F]+);',
-                       lambda m: chr(int(m.group(1), 16)), s)
+            s = re.sub(r"&#x([\da-fA-F]+);", lambda m: chr(int(m.group(1), 16)), s)
         except Exception:  # TODO: @med which exceptions are expected?
             pass
-    return slugify(s, '-')
+    return slugify(s, "-")

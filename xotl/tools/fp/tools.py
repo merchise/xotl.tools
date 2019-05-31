@@ -7,20 +7,20 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Tools for working with functions in a more "pure" way.
+"""Tools for working with functions in a more "pure" way.
 
-'''
+"""
 
 from abc import ABCMeta
 
 
 def identity(arg):
-    '''Returns its argument unaltered.'''
+    """Returns its argument unaltered."""
     return arg
 
 
 def fst(pair, strict=True):
-    '''Return the first element of `pair`.
+    """Return the first element of `pair`.
 
     If `strict` is True, `pair` needs to unpack to exactly two values.  If
     `strict` is False this is the same as ``pair[0]``.
@@ -31,7 +31,7 @@ def fst(pair, strict=True):
 
     .. versionadded:: 1.8.5
 
-    '''
+    """
     if strict:
         res, _ = pair
         return res
@@ -40,7 +40,7 @@ def fst(pair, strict=True):
 
 
 def snd(pair, strict=True):
-    '''Return the second element of `pair`.
+    """Return the second element of `pair`.
 
     If `strict` is True, `pair` needs to unpack to exactly two values.  If
     `strict` is False this is the same as ``pair[1]``.
@@ -51,7 +51,7 @@ def snd(pair, strict=True):
 
     .. versionadded:: 1.8.5
 
-    '''
+    """
     if strict:
         _, res = pair
         return res
@@ -61,9 +61,10 @@ def snd(pair, strict=True):
 
 class MetaCompose(ABCMeta):
 
-    '''Meta-class for function composition.'''
+    """Meta-class for function composition."""
+
     def __instancecheck__(self, instance):
-        '''Override for ``isinstance(instance, self)``.'''
+        """Override for ``isinstance(instance, self)``."""
         res = super().__instancecheck__(instance)
         if not res:
             # TODO: maybe only those with parameters.
@@ -71,16 +72,17 @@ class MetaCompose(ABCMeta):
         return res
 
     def __subclasscheck__(self, subclass):
-        '''Override for ``issubclass(subclass, self)``.'''
+        """Override for ``issubclass(subclass, self)``."""
         res = super().__subclasscheck__(subclass)
         if not res:
             from xotl.tools.future.types import FuncTypes
+
             res = subclass in FuncTypes
         return res
 
 
 class compose(metaclass=MetaCompose):
-    r'''Composition of several functions.
+    r"""Composition of several functions.
 
     Functions are composed right to left.  A composition of zero functions
     gives back the `identity`:func: function.
@@ -114,7 +116,7 @@ class compose(metaclass=MetaCompose):
     directly, but to use them when composing functions that return tuples and
     expect tuples.
 
-    '''
+    """
     # TODO: __slots__ = ('inner', 'scope')
 
     def __new__(cls, *functions):
@@ -128,12 +130,13 @@ class compose(metaclass=MetaCompose):
                     return functions[0]
                 else:
                     from xotl.tools.symbols import Unset
+
                     self = super().__new__(cls)
                     self.inner = functions
                     self.scope = Unset
                     return self
             else:
-                raise TypeError('at least one argument is not callable')
+                raise TypeError("at least one argument is not callable")
 
     def __call__(self, *args, **kwds):
         funcs = self.inner
@@ -163,45 +166,48 @@ class compose(metaclass=MetaCompose):
             return identity(*args, **kwds)
 
     def __repr__(self):
-        '''Get composed function representation'''
+        """Get composed function representation"""
         from xotl.tools.tools import nameof
+
         if self.inner:
+
             def getname(fn):
-                return nameof(fn).replace((lambda: None).__name__, 'λ')
-            return ' . '.join(getname(fn) for fn in self.inner)
+                return nameof(fn).replace((lambda: None).__name__, "λ")
+
+            return " . ".join(getname(fn) for fn in self.inner)
         else:
             return nameof(identity)
 
     def __str__(self):
-        '''Get composed function string'''
+        """Get composed function string"""
         count = len(self.inner)
         if count == 0:
             return identity.__doc__
         else:
             res = self.inner[0].__doc__ if count == 1 else None
             if not res:
-                res = 'Composed function: <{!r}>'.format(self)
+                res = "Composed function: <{!r}>".format(self)
             return res
 
     def _get_name(self):
-        res = self.__dict__.get('__name__')
+        res = self.__dict__.get("__name__")
         if res is None:
             res = repr(self)
         return res
 
     def _set_name(self, value):
-        self.__dict__['__name__'] = value
+        self.__dict__["__name__"] = value
 
     __name__ = property(_get_name, _set_name)
 
     def _get_doc(self):
-        res = self.__dict__.get('__doc__')
+        res = self.__dict__.get("__doc__")
         if res is None:
             res = str(self)
         return res
 
     def _set_doc(self, value):
-        self.__dict__['__doc__'] = value
+        self.__dict__["__doc__"] = value
 
     __doc__ = property(_get_doc, _set_doc)
 
@@ -237,15 +243,15 @@ class compose(metaclass=MetaCompose):
 
 
 class pos_args(tuple):
-    '''Mark variable number positional arguments (see `full_args`:class:).'''
+    """Mark variable number positional arguments (see `full_args`:class:)."""
 
 
 class kw_args(dict):
-    '''Mark variable number keyword arguments (see `full_args`:class:).'''
+    """Mark variable number keyword arguments (see `full_args`:class:)."""
 
 
 class full_args(tuple):
-    '''Mark variable number arguments for composition.
+    """Mark variable number arguments for composition.
 
     Pair containing positional and keyword ``(args, kwds)`` arguments.
 
@@ -269,10 +275,11 @@ class full_args(tuple):
       >>> compose(join_args, list, range)(2)
       '[0, 1]'
 
-    '''
+    """
+
     @staticmethod
     def parse(arg):
-        '''Parse possible alternatives.
+        """Parse possible alternatives.
 
         If ``arg`` is:
 
@@ -299,10 +306,12 @@ class full_args(tuple):
           >>> compose(join_args, join_args)()
           'None'
 
-        '''
+        """
         if isinstance(arg, tuple):
+
             def check(pos, kw):
                 return isinstance(pos, tuple) and isinstance(kw, dict)
+
             if len(arg) == 2 and check(*arg):
                 return full_args(arg)
             else:
@@ -314,5 +323,5 @@ class full_args(tuple):
         elif arg is None:
             return pos_args()
         else:
-            msg = 'Expecting None, a tuple, a list, or a dict; {} found'
+            msg = "Expecting None, a tuple, a list, or a dict; {} found"
             raise TypeError(msg.format(type(arg).__name__))

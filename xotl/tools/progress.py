@@ -7,21 +7,21 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Tool to show a progress percent in the terminal.
+"""Tool to show a progress percent in the terminal.
 
 .. deprecated:: 2.1.0
 
-'''
+"""
 
 
-__all__ = ['Progress']
+__all__ = ["Progress"]
 
 
-_HELIX = '|/-\\'
+_HELIX = "|/-\\"
 
 
 class Progress:
-    '''
+    """
     Print a progress percent to the console. Also the elapsed and the
     estimated times.
 
@@ -31,11 +31,11 @@ class Progress:
         progress = Progress(10)
         for i in range(10):
             progress()
-    '''
+    """
 
-    def __init__(self, max_value=100, delta=1, first_message=None,
-                 display_width=None):
+    def __init__(self, max_value=100, delta=1, first_message=None, display_width=None):
         from xotl.tools.future.datetime import datetime
+
         self.max_value = max_value
         self.delta = delta
         self.percent = self.value = 0
@@ -43,7 +43,7 @@ class Progress:
         self.first_message = first_message
         self.display_width = display_width
 
-    def __call__(self, progress=None, message='...'):
+    def __call__(self, progress=None, message="..."):
         if self.first_message is not None:
             print(self.first_message)
             self.first_message = None
@@ -55,24 +55,29 @@ class Progress:
         if self.percent != percent:
             import sys
             from xotl.tools.future.datetime import strfdelta
+
             self.percent = percent
             helix = _HELIX[percent % len(_HELIX)]
             elapsed = self.start_time.now() - self.start_time
             _cls = type(elapsed)
             total = _cls(seconds=elapsed.total_seconds() * 100 / self.percent)
             _fmt = '\r{helix} {percent}% - "{elapsed}" of about "{total}"'
-            progress_line = _fmt.format(helix=helix, percent=percent,
-                                        elapsed=strfdelta(elapsed),
-                                        total=strfdelta(total))
+            progress_line = _fmt.format(
+                helix=helix,
+                percent=percent,
+                elapsed=strfdelta(elapsed),
+                total=strfdelta(total),
+            )
             max_width = self.display_width or self._get_terminal_width()
-            _fmt = ('{message: >%d}' % (max_width - len(progress_line) - 1))
+            _fmt = "{message: >%d}" % (max_width - len(progress_line) - 1)
             progress_line += _fmt.format(message=message)
-            print(progress_line, end=('' if percent != 100 else '\n\r'))
+            print(progress_line, end=("" if percent != 100 else "\n\r"))
             sys.stdout.flush()
 
     def _get_terminal_width(self, default=120):
         import os
+
         try:
-            return int(os.environ.get('COLUMNS', default))
+            return int(os.environ.get("COLUMNS", default))
         except ValueError:
             return default
