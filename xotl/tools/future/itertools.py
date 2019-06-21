@@ -207,7 +207,7 @@ def delete_duplicates(seq, key=lambda x: x):
 
 
 def iter_delete_duplicates(iter, key=lambda x: x):
-    """Yields non-repeating items from `iter`.
+    """Yields non-repeating (and consecutive) items from `iter`.
 
     `key` has the same meaning as in `delete_duplicates`:func:.
 
@@ -228,6 +228,30 @@ def iter_delete_duplicates(iter, key=lambda x: x):
         if k != last:
             yield x
         last = k
+
+
+def iter_without_duplicates(it, key=lambda x: x):
+    """Yields non-repeating items from `iter`.
+
+    `key` has the same meaning as in `delete_duplicates`:func:.
+
+    The difference between this function and `iter_delete_duplicates`:func: is
+    that we ensure the same item (as per `key`) is produced only once; while
+    `iter_delete_duplicates`:func: only remove consecutive repeating items.
+
+    Example:
+
+      >>> list(iter_without_duplicates('AAAaBBBA', key=lambda x: x.lower()))
+      ['A', 'B']
+
+
+    """
+    done = set()
+    for what in it:
+        k = key(what)
+        if k not in done:
+            yield what
+            done.add(k)
 
 
 def slides(iterable, width=2, fill=None):
