@@ -7,49 +7,50 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Some additions for `string` standard module.
+"""Some additions for `string` standard module.
 
 In Python 3 `str` is always unicode but `unicode` and `basestring` types
 doesn't exists.  `bytes` type can be used as an array of one byte each item.
 
-'''
+"""
 
 
-from xotl.tools.deprecation import deprecated    # noqa
-from xotl.tools.deprecation import import_deprecated    # noqa
+from xotl.tools.deprecation import deprecated  # noqa
+from xotl.tools.deprecation import import_deprecated  # noqa
 
 
-_MIGRATED_TO_CODECS = ('force_encoding', 'safe_decode', 'safe_encode')
+_MIGRATED_TO_CODECS = ("force_encoding", "safe_decode", "safe_encode")
 
-import_deprecated('xotl.tools.future.codecs', *_MIGRATED_TO_CODECS)
+import_deprecated("xotl.tools.future.codecs", *_MIGRATED_TO_CODECS)
 
 
 @deprecated
 def safe_strip(value):
-    '''Removes the leading and tailing space-chars from `value` if string, else
+    """Removes the leading and tailing space-chars from `value` if string, else
     return `value` unchanged.
 
-    '''
+    """
     return value.strip() if isinstance(value, str) else value
 
 
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
 # some module dedicated to "string trimming".
 def cut_prefix(value, prefix):
-    '''Removes the leading `prefix` if exists, else return `value`
+    """Removes the leading `prefix` if exists, else return `value`
     unchanged.
 
-    '''
+    """
     from xotl.tools.future.codecs import safe_encode, safe_decode
+
     if isinstance(value, str) and isinstance(prefix, bytes):
         prefix = safe_decode(prefix)
     elif isinstance(value, bytes) and isinstance(prefix, str):
         prefix = safe_encode(prefix)
-    return value[len(prefix):] if value.startswith(prefix) else value
+    return value[len(prefix) :] if value.startswith(prefix) else value
 
 
 def cut_any_prefix(value, *prefixes):
-    '''Apply `cut_prefix`:func: for the first matching prefix.'''
+    """Apply `cut_prefix`:func: for the first matching prefix."""
     result = prev = value
     i, top = 0, len(prefixes)
     while i < top and result == prev:
@@ -59,7 +60,7 @@ def cut_any_prefix(value, *prefixes):
 
 
 def cut_prefixes(value, *prefixes):
-    '''Apply `cut_prefix`:func: for all provided prefixes in order.'''
+    """Apply `cut_prefix`:func: for all provided prefixes in order."""
     result = value
     for prefix in prefixes:
         result = cut_prefix(result, prefix)
@@ -67,11 +68,12 @@ def cut_prefixes(value, *prefixes):
 
 
 def cut_suffix(value, suffix):
-    '''Removes the tailing `suffix` if exists, else return `value`
+    """Removes the tailing `suffix` if exists, else return `value`
     unchanged.
 
-    '''
+    """
     from xotl.tools.future.codecs import safe_decode, safe_encode
+
     if isinstance(value, str) and isinstance(suffix, bytes):
         suffix = safe_decode(suffix)
     elif isinstance(value, bytes) and isinstance(suffix, str):
@@ -80,13 +82,13 @@ def cut_suffix(value, suffix):
     # always value[:0], which is always '', we have to explictly test for
     # len(suffix)
     if len(suffix) > 0 and value.endswith(suffix):
-        return value[:-len(suffix)]
+        return value[: -len(suffix)]
     else:
         return value
 
 
 def cut_any_suffix(value, *suffixes):
-    '''Apply `cut_suffix`:func: for the first matching suffix.'''
+    """Apply `cut_suffix`:func: for the first matching suffix."""
     result = prev = value
     i, top = 0, len(suffixes)
     while i < top and result == prev:
@@ -96,7 +98,7 @@ def cut_any_suffix(value, *suffixes):
 
 
 def cut_suffixes(value, *suffixes):
-    '''Apply `cut_suffix`:func: for all provided suffixes in order.'''
+    """Apply `cut_suffix`:func: for all provided suffixes in order."""
     result = value
     for suffix in suffixes:
         result = cut_suffix(result, suffix)
@@ -104,7 +106,7 @@ def cut_suffixes(value, *suffixes):
 
 
 def force_ascii(value, encoding=None):
-    '''Return the string normal form for the `value`
+    """Return the string normal form for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
     normalization.
@@ -117,18 +119,19 @@ def force_ascii(value, encoding=None):
 
     .. versionchanged:: 2.1.0 Moved to `xotl.tools.string`:mod:.
 
-    '''
+    """
     import unicodedata
     from xotl.tools.future.codecs import safe_decode
-    ASCII, IGNORE = 'ascii', 'ignore'
+
+    ASCII, IGNORE = "ascii", "ignore"
     if not isinstance(value, str):
         value = safe_decode(value, encoding=encoding)
-    res = unicodedata.normalize('NFKD', value).encode(ASCII, IGNORE)
+    res = unicodedata.normalize("NFKD", value).encode(ASCII, IGNORE)
     return str(res, ASCII, IGNORE)
 
 
 def slugify(value, *args, **kwds):
-    '''Return the normal-form of a given string value that is valid for slugs.
+    """Return the normal-form of a given string value that is valid for slugs.
 
     Convert all non-ascii to valid characters, whenever possible, using
     unicode 'NFKC' normalization and lower-case the result.  Replace unwanted
@@ -225,82 +228,84 @@ def slugify(value, *args, **kwds):
     .. versionchanged:: 2.1.0 Remove deprecated parameters `invalids` and
        `valids`.
 
-    '''
+    """
     import re
     from xotl.tools.params import ParamManager
 
     from xotl.tools.values import compose, istype
     from xotl.tools.values.simple import not_false, ascii_coerce
 
-    _str = compose(not_false(''), istype(str))
+    _str = compose(not_false(""), istype(str))
     _ascii = compose(_str, ascii_coerce)
-    _set = compose(_ascii, lambda v: ''.join(set(v)))
+    _set = compose(_ascii, lambda v: "".join(set(v)))
 
     # local functions
     def _normalize(v):
         return force_ascii(v, encoding=encoding).lower()
 
     def _set(v):
-        return re.escape(''.join(set(_normalize(v))))
+        return re.escape("".join(set(_normalize(v))))
 
     getarg = ParamManager(args, kwds)
-    replacement = getarg('replacement', 0, default='-', coercers=(str,))
-    invalid_chars = getarg('invalid_chars', 'invalid', 0,
-                           default='', coercers=_ascii)
-    valid_chars = getarg('valid_chars', 'valid', 0, default='',
-                         coercers=_ascii)
-    encoding = getarg('encoding', default=None)
-    replacement = args[0] if args else kwds.pop('replacement', '-')
+    replacement = getarg("replacement", 0, default="-", coercers=(str,))
+    invalid_chars = getarg("invalid_chars", "invalid", 0, default="", coercers=_ascii)
+    valid_chars = getarg("valid_chars", "valid", 0, default="", coercers=_ascii)
+    encoding = getarg("encoding", default=None)
+    replacement = args[0] if args else kwds.pop("replacement", "-")
     # TODO: check unnecessary arguments, raising errors
     if replacement in (None, False):
         # for backward compatibility
-        replacement = ''
+        replacement = ""
     elif isinstance(replacement, str):
         replacement = _normalize(replacement)
     else:
-        raise TypeError('slugify() replacement "{}" must be a string or None,'
-                        ' not "{}".'.format(replacement, type(replacement)))
+        raise TypeError(
+            'slugify() replacement "{}" must be a string or None,'
+            ' not "{}".'.format(replacement, type(replacement))
+        )
     if invalid_chars is True:
         # Backward compatibility with former `invalid_underscore` argument
-        invalid_chars = '_'
+        invalid_chars = "_"
     elif invalid_chars in {None, False}:
-        invalid_chars = ''
+        invalid_chars = ""
     else:
         if not isinstance(invalid_chars, str):
-            invalid_chars = ''.join(invalid_chars)
+            invalid_chars = "".join(invalid_chars)
         invalid_chars = _set(invalid_chars)
     if invalid_chars:
-        invalid_regex = re.compile(r'[{}]+'.format(invalid_chars))
+        invalid_regex = re.compile(r"[{}]+".format(invalid_chars))
         if invalid_regex.search(replacement):
-            raise ValueError('slugify() replacement "{}" must not contain '
-                             'any invalid character.'.format(replacement))
+            raise ValueError(
+                'slugify() replacement "{}" must not contain '
+                "any invalid character.".format(replacement)
+            )
     else:
         invalid_regex = None
     if valid_chars is None:
-        valid_chars = ''
+        valid_chars = ""
     else:
         if not isinstance(valid_chars, str):
-            valid_chars = ''.join(valid_chars)
+            valid_chars = "".join(valid_chars)
         valid_chars = _set(valid_chars)
-        valid_chars = _set(re.sub(r'[0-9a-z]+', '', valid_chars))
-    valid_chars = re.compile(r'[^_0-9a-z{}]+'.format(valid_chars))
+        valid_chars = _set(re.sub(r"[0-9a-z]+", "", valid_chars))
+    valid_chars = re.compile(r"[^_0-9a-z{}]+".format(valid_chars))
     # calculate result
-    repl = '\t' if replacement else ''
+    repl = "\t" if replacement else ""
     res = valid_chars.sub(repl, _normalize(value))
     if invalid_regex:
         res = invalid_regex.sub(repl, res)
     if repl:
         # convert two or more replacements in only one instance
-        r = r'{}'.format(re.escape(repl))
-        res = re.sub(r'({r}){{2,}}'.format(r=r), repl, res)
+        r = r"{}".format(re.escape(repl))
+        res = re.sub(r"({r}){{2,}}".format(r=r), repl, res)
         # remove start and end more replacement instances
-        res = re.sub(r'(^{r}+|{r}+$)'.format(r=r), '', res)
-        res = re.sub(r'[\t]', replacement, res)
+        res = re.sub(r"(^{r}+|{r}+$)".format(r=r), "", res)
+        res = re.sub(r"[\t]", replacement, res)
     return res
 
 
 def error2str(error):
-    '''Convert an error to string.'''
+    """Convert an error to string."""
     if isinstance(error, str):
         return error
     elif isinstance(error, BaseException):
@@ -309,30 +314,30 @@ def error2str(error):
         if tname in res:
             return res
         else:
-            return ': '.join((tname, res)) if res else tname
+            return ": ".join((tname, res)) if res else tname
     elif isinstance(error, type) and issubclass(error, BaseException):
         return error.__name__
     else:
-        prefix = str('unknown error: ')
-        cls = error if isinstance(error, type) else type(error)   # force type
+        prefix = str("unknown error: ")
+        cls = error if isinstance(error, type) else type(error)  # force type
         tname = cls.__name__
         if cls is error:
             res = tname
         else:
             res = str(error)
             if tname not in res:
-                res = str('{}({})').format(tname, res) if res else tname
+                res = str("{}({})").format(tname, res) if res else tname
         return prefix + res
 
 
 def make_a10z(string):
-    '''Utility to find out that "internationalization" is "i18n".
+    """Utility to find out that "internationalization" is "i18n".
 
     Examples::
 
        >>> print(make_a10z('parametrization'))
        p13n
-    '''
+    """
     return string[0] + str(len(string[1:-1])) + string[-1]
 
 

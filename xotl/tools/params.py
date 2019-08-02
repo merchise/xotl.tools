@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Tools for managing function arguments.
+"""Tools for managing function arguments.
 
 Process function arguments could be messy when a flexible schema is needed.
 With this module you can outline parameters schema using a smart way of
@@ -21,17 +21,17 @@ means several possibilities.
 
 .. versionadded:: 1.8.0
 
-'''
+"""
 
 
 #: The maximum number of positional arguments allowed when calling a function.
-MAX_ARG_COUNT = 1024 * 1024    # just any large number
+MAX_ARG_COUNT = 1024 * 1024  # just any large number
 
 from xotl.tools.symbols import Undefined  # used implicitly for absent default
 
 
 def issue_9137(args):
-    '''Parse arguments for methods, fixing `issue 9137`__ (self ambiguity).
+    """Parse arguments for methods, fixing `issue 9137`__ (self ambiguity).
 
     There are methods that expect 'self' as valid keyword argument, this is
     not possible if this name is used explicitly::
@@ -50,14 +50,14 @@ def issue_9137(args):
 
     __ https://bugs.python.org/issue9137
 
-    '''
-    self = args[0]    # Issue 9137
+    """
+    self = args[0]  # Issue 9137
     args = args[1:]
     return self, args
 
 
 def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
-    '''Check the positional arguments actual count against constrains.
+    """Check the positional arguments actual count against constrains.
 
     :param args: The args to check count, normally is a tuple, but an integer
            is directly accepted.
@@ -72,7 +72,7 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
     .. versionadded:: 1.8.0
 
 
-    '''
+    """
     # TODO: Shouldn't we use the TypeError and ValueError?
     assert isinstance(low, int) and low >= 0
     assert isinstance(high, int) and high >= low
@@ -85,36 +85,36 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
         count = len(args)
     if count < low:
         error = True
-        adv = 'exactly' if low == high else 'at least'
+        adv = "exactly" if low == high else "at least"
         if low == 1:
-            aux = '{} one argument'.format(adv)
+            aux = "{} one argument".format(adv)
         else:
-            aux = '{} {} arguments'.format(adv, low)
+            aux = "{} {} arguments".format(adv, low)
     elif count > high:
         error = True
         if low == high:
             if low == 0:
-                aux = 'no arguments'
+                aux = "no arguments"
             elif low == 1:
-                aux = 'exactly one argument'
+                aux = "exactly one argument"
             else:
-                aux = 'exactly {} arguments'.format(low)
+                aux = "exactly {} arguments".format(low)
         elif high == 1:
-            aux = 'at most one argument'
+            aux = "at most one argument"
         else:
-            aux = 'at most {} arguments'.format(high)
+            aux = "at most {} arguments".format(high)
     else:
         error = False
     if error:
         if caller:
-            name = '{}()'.format(caller)
+            name = "{}()".format(caller)
         else:
-            name = 'called function or method'
-        raise TypeError('{} takes {} ({} given)'.format(name, aux, count))
+            name = "called function or method"
+        raise TypeError("{} takes {} ({} given)".format(name, aux, count))
 
 
 def check_default(absent=Undefined):
-    '''Get a default value passed as a last excess positional argument.
+    """Get a default value passed as a last excess positional argument.
 
     :param absent: The value to be used by default if no one is given.
            Defaults to `~xotl.tools.symbols.Undefined`:obj:.
@@ -132,22 +132,25 @@ def check_default(absent=Undefined):
 
     .. versionadded:: 1.8.0
 
-    '''
+    """
+
     def default(res=absent):
         return res
+
     return default
 
 
 def single(args, kwds):
-    '''Return a true value only when a unique argument is given.
+    """Return a true value only when a unique argument is given.
 
     When needed, the most suitable result will be wrapped using the
     `~xotl.tools.fp.option.Maybe`:class:.
 
     .. versionadded:: 1.8.0
 
-    '''
+    """
     from xotl.tools.fp.option import Just, Wrong, take
+
     if len(args) == 1 and not kwds:
         res = take(args[0])
         if not res:
@@ -161,7 +164,7 @@ def single(args, kwds):
 
 
 def pop_keyword_arg(kwargs, names, default=Undefined):
-    '''Return the value of a keyword argument.
+    """Return the value of a keyword argument.
 
     :param kwargs: The mapping with passed keyword arguments.
 
@@ -171,15 +174,16 @@ def pop_keyword_arg(kwargs, names, default=Undefined):
 
     .. versionadded:: 1.8.0
 
-    '''
+    """
     from xotl.tools.objects import pop_first_of
+
     if isinstance(names, str):
         names = (names,)
     return pop_first_of(kwargs, *names, default=default)
 
 
 def pop_keyword_values(kwargs, *names, **options):
-    '''Return a list with all keyword argument values.
+    """Return a list with all keyword argument values.
 
     :param kwargs: The mapping with passed keyword arguments.
 
@@ -226,23 +230,23 @@ def pop_keyword_values(kwargs, *names, **options):
 
     .. versionadded:: 1.8.3
 
-    '''
-    default = options.get('default', Undefined)
-    defaults = options.get('defaults', {})
+    """
+    default = options.get("default", Undefined)
+    defaults = options.get("defaults", {})
     res = []
     for item in names:
         val = pop_keyword_arg(kwargs, item, default=Undefined)
         if val is Undefined:
             val = pop_keyword_arg(defaults, item, default=default)
         res.append(val)
-    if kwargs and not options.get('ignore_error', False):
+    if kwargs and not options.get("ignore_error", False):
         msg = 'calling function got unexpected keyword arguments "{}"'
         raise TypeError(msg.format(tuple(kwargs)))
     return res
 
 
 class ParamManager:
-    '''Function parameters parser.
+    """Function parameters parser.
 
     For example::
 
@@ -262,19 +266,21 @@ class ParamManager:
 
     .. versionadded:: 1.8.0
 
-    '''
+    """
 
     def __init__(self, args, kwds):
-        '''Created with actual parameters of a client function.'''
+        """Created with actual parameters of a client function."""
         self.args = args
         self.kwds = kwds
-        self.consumed = set()    # consumed identifiers
+        self.consumed = set()  # consumed identifiers
 
     def __call__(self, *ids, **options):
-        '''Get a parameter value.'''
+        """Get a parameter value."""
         from xotl.tools.fp.option import Just, Wrong, none
+
         # TODO: Change this ``from xotl.tools.values import coercer``
         from xotl.tools.fp.prove.semantic import predicate as coercer
+
         args, kwds = self.args, self.kwds
         i, res = 0, none
         while isinstance(res, Wrong) and i < len(ids):
@@ -288,8 +294,8 @@ class ParamManager:
                     pass
             elif key in kwds:
                 res = kwds[key]
-            if not isinstance(res, Wrong) and 'coerce' in options:
-                aux = coercer(options['coerce'])(res)
+            if not isinstance(res, Wrong) and "coerce" in options:
+                aux = coercer(options["coerce"])(res)
                 res = aux.inner if isinstance(aux, Just) else aux
             if not isinstance(res, Wrong):
                 self.consumed.add(key)
@@ -300,8 +306,8 @@ class ParamManager:
             else:
                 i += 1
         if isinstance(res, Wrong):
-            if 'default' in options:
-                return options['default']
+            if "default" in options:
+                return options["default"]
             elif isinstance(res.inner, BaseException):
                 raise res.inner
             else:
@@ -310,7 +316,7 @@ class ParamManager:
             return res.inner if isinstance(res, Just) else res
 
     def remainder(self):
-        '''Return not consumed values in a mapping.'''
+        """Return not consumed values in a mapping."""
         passed = set(range(len(self.args))) | set(self.kwds)
         ids = passed - self.consumed
         args, kwds = self.args, self.kwds
@@ -318,7 +324,7 @@ class ParamManager:
 
 
 class ParamSchemeRow:
-    '''Scheme row for a  `ParamManager`:class: instance call.
+    """Scheme row for a  `ParamManager`:class: instance call.
 
     This class validates identifiers and options at this level; these
     checks are not done in a call to get a parameter value.
@@ -345,42 +351,46 @@ class ParamSchemeRow:
 
     .. versionadded:: 1.8.0
 
-    '''
-    __slots__ = ('ids', 'options', '_key')
+    """
+
+    __slots__ = ("ids", "options", "_key")
 
     def __init__(self, *ids, **options):
         from collections import Counter
         from xotl.tools.fp.option import none
+
         iskey = lambda s: isinstance(s, str) and s.isidentifier()
         # TODO: Change this ``from xotl.tools.values import coercer``
         from xotl.tools.fp.prove.semantic import predicate as coercer
+
         aux = {k: c for k, c in Counter(ids).items() if c > 1}
         if aux:
-            parts = ['{!r} ({})'.format(k, aux[k]) for k in aux]
-            msg = '{}() repeated identifiers: {}'
-            raise TypeError(msg.format(type(self).__name__, ', '.join(parts)))
+            parts = ["{!r} ({})".format(k, aux[k]) for k in aux]
+            msg = "{}() repeated identifiers: {}"
+            raise TypeError(msg.format(type(self).__name__, ", ".join(parts)))
         else:
+
             def ok(k):
                 return iskey(k) or isinstance(k, int)
 
             bad = [k for k in ids if not ok(k)]
             if bad:
-                msg = ('{}() identifiers with wrong type (only int and str '
-                       'allowed): {}')
+                msg = (
+                    "{}() identifiers with wrong type (only int and str " "allowed): {}"
+                )
                 raise TypeError(msg.format(type(self).__name__, bad))
-        key = options.pop('key', none)
+        key = options.pop("key", none)
         if not (key is none or iskey(key)):
-            msg = ('"key" option must be an identifier, "{}" of type "{}" '
-                   'given')
+            msg = '"key" option must be an identifier, "{}" of type "{}" ' "given"
             raise TypeError(msg.format(key, type(key).__name__))
-        if 'default' in options:
-            aux = {'default': options.pop('default')}
+        if "default" in options:
+            aux = {"default": options.pop("default")}
         else:
             aux = {}
-        if 'coerce' in options:
-            aux['coerce'] = coercer(options.pop('coerce'))
+        if "coerce" in options:
+            aux["coerce"] = coercer(options.pop("coerce"))
         if options:
-            msg = '{}(): received invalid keyword parameters: {}'
+            msg = "{}(): received invalid keyword parameters: {}"
             raise TypeError(msg.format(type(self).__name__, set(options)))
         self.ids = ids
         self.options = aux
@@ -389,13 +399,14 @@ class ParamSchemeRow:
     def __str__(self):
         parts = [repr(k) for k in self.ids]
         for key, value in self.options.items():
-            parts.append('{}={!r}'.format(key, value))
-        aux = ', '.join(parts)
-        return 'ParamSchemeRow({})'.format(aux)
+            parts.append("{}={!r}".format(key, value))
+        aux = ", ".join(parts)
+        return "ParamSchemeRow({})".format(aux)
+
     __repr__ = __str__
 
     def __call__(self, *args, **kwds):
-        '''Execute a scheme-row using as argument a `ParamManager` instance.
+        """Execute a scheme-row using as argument a `ParamManager` instance.
 
         The concept of `ParamManager`:class: instance argument is a little
         tricky: when a variable number of arguments is used, if only one
@@ -404,7 +415,7 @@ class ParamSchemeRow:
         `dict`, these are considered the constructor arguments of the new
         instance; otherwise all arguments are used to build the new instance.
 
-        '''
+        """
         count = len(args)
         if count == 1 and not kwds and isinstance(args[0], ParamManager):
             manager = args[0]
@@ -418,17 +429,18 @@ class ParamSchemeRow:
 
     @property
     def default(self):
-        '''Returned value if parameter value is absent.
+        """Returned value if parameter value is absent.
 
         If not defined, special value ``none`` is returned.
 
-        '''
+        """
         from xotl.tools.fp.option import none
-        return self.options.get('default', none)
+
+        return self.options.get("default", none)
 
     @property
     def key(self):
-        '''The primary key for this scheme-row definition.
+        """The primary key for this scheme-row definition.
 
         This concept is a little tricky (the first string identifier if some
         is given, if not then the first integer).  This definition is useful,
@@ -436,9 +448,10 @@ class ParamSchemeRow:
         process is completed (see `ParamManager.remainder`:meth: for more
         information).
 
-        '''
+        """
         # TODO: calculate the key value in the constructor
         from xotl.tools.fp.option import none
+
         res = self._key
         if res is none:
             res = next((k for k in self.ids if isinstance(k, str)), None)
@@ -449,18 +462,20 @@ class ParamSchemeRow:
 
 
 class ParamScheme:
-    '''Full scheme for a  `ParamManager`:class: instance call.
+    """Full scheme for a  `ParamManager`:class: instance call.
 
     This class receives a set of `ParamSchemeRow`:class: instances and
     validate them as a whole.
 
     .. versionadded:: 1.8.0
 
-    '''
-    __slots__ = ('rows', 'cache')
+    """
+
+    __slots__ = ("rows", "cache")
 
     def __init__(self, *rows):
         from xotl.tools.params import check_count
+
         check_count(len(rows) + 1, 2, caller=type(self).__name__)
         used = set()
         for idx, row in enumerate(rows):
@@ -470,26 +485,27 @@ class ParamScheme:
                 if not aux:
                     used |= this
                 else:
-                    msg = ('{}() repeated keyword identifiers "{}" in '
-                           'row {}').format(type(self).__name__, aux, idx)
+                    msg = (
+                        '{}() repeated keyword identifiers "{}" in ' "row {}"
+                    ).format(type(self).__name__, aux, idx)
                     raise ValueError(msg)
         self.rows = rows
         self.cache = None
 
     def __str__(self):
         # XXX: Use:: ',\n\i'.join(map(str, self))
-        aux = ',\n\t'.join(str(row) for row in self)
-        return '{}({})'.format(type(self).__name__, aux)
+        aux = ",\n\t".join(str(row) for row in self)
+        return "{}({})".format(type(self).__name__, aux)
 
     def __repr__(self):
-        return '{}({} rows)'.format(type(self).__name__, len(self))
+        return "{}({} rows)".format(type(self).__name__, len(self))
 
     def __len__(self):
-        '''The defined scheme-rows number.'''
+        """The defined scheme-rows number."""
         return len(self.rows)
 
     def __getitem__(self, idx):
-        '''Obtain the scheme-row by a given index.'''
+        """Obtain the scheme-row by a given index."""
         if isinstance(idx, str):
             cache = self._getcache()
             return cache[idx]
@@ -497,19 +513,21 @@ class ParamScheme:
             return self.rows[idx]
 
     def __iter__(self):
-        '''Iterate over all defined scheme-rows.'''
+        """Iterate over all defined scheme-rows."""
         return iter(self.rows)
 
     def __call__(self, args, kwds, strict=True):
-        '''Get a mapping with all resulting values.
+        """Get a mapping with all resulting values.
 
         If special value 'none' is used as 'default' option in a scheme-row,
         corresponding value isn't returned in the mapping if the parameter
         value is missing.
 
-        '''
+        """
+
         def ok(v):
             from xotl.tools.fp.option import Wrong
+
             return not isinstance(v, Wrong)
 
         pm = ParamManager(args, kwds)
@@ -518,26 +536,30 @@ class ParamScheme:
         rem = pm.remainder()
         if strict:
             if rem:
-                msg = ('after a full `{}` process, there are still remainder '
-                       'parameters: {}')
+                msg = (
+                    "after a full `{}` process, there are still remainder "
+                    "parameters: {}"
+                )
                 raise TypeError(msg.format(type(self).__name__, set(rem)))
         else:
             res.update(rem)
         return res
 
     def keys(self):
-        '''Partial compatibility with mappings.'''
+        """Partial compatibility with mappings."""
         return self._getcache().keys()
 
     def items(self):
-        '''Partial compatibility with mappings.'''
+        """Partial compatibility with mappings."""
         return self._getcache().items()
 
     @property
     def defaults(self):
-        '''Return a mapping with all valid default values.'''
+        """Return a mapping with all valid default values."""
+
         def ok(v):
             from xotl.tools.fp.option import Wrong
+
             return not isinstance(v, Wrong)
 
         aux = ((row.key, row.default) for row in self)

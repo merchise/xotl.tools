@@ -7,26 +7,36 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extensions to os.path
+"""Extensions to os.path
 
 Functions inside this module must not have side-effects on the
 file-system. This module re-exports (without change) several functions from the
 `os.path`:mod: standard module.
 
-'''
+"""
 
 import sys
-from os.path import (abspath, expanduser, dirname, sep, normpath,
-                     join as _orig_join)
+from os.path import abspath, expanduser, dirname, sep, normpath, join as _orig_join
 
 from xotl.tools.future.functools import power as pow_
 
-__all__ = ('abspath', 'expanduser', 'dirname', 'sep', 'normpath', 'rtrim',
-           'fix_encoding', 'join', 'normalize_path',
-           'shorten_module_filename', 'shorten_user')
+__all__ = (
+    "abspath",
+    "expanduser",
+    "dirname",
+    "sep",
+    "normpath",
+    "rtrim",
+    "fix_encoding",
+    "join",
+    "normalize_path",
+    "shorten_module_filename",
+    "shorten_user",
+)
 
 
 # TODO: import all in "from os.path import *"
+
 
 def rtrim(path, n=1):
     """Trims the last `n` components of the pathname `path`.
@@ -52,14 +62,15 @@ def rtrim(path, n=1):
 
 
 def fix_encoding(name, encoding=None):
-    '''Fix encoding of a file system resource name.
+    """Fix encoding of a file system resource name.
 
     `encoding` is ignored if `name` is already a `str`.
 
-    '''
+    """
     if not isinstance(name, str):
         if not encoding:
             from xotl.tools.future.codecs import force_encoding
+
             encoding = force_encoding(sys.getfilesystemencoding())
         fixer = name.decode if isinstance(name, bytes) else name.encode
         return fixer(encoding)
@@ -68,14 +79,14 @@ def fix_encoding(name, encoding=None):
 
 
 def join(base, *extras):
-    '''Join two or more pathname components, inserting '/' as needed.
+    """Join two or more pathname components, inserting '/' as needed.
 
     If any component is an absolute path, all previous path components
     will be discarded.
 
     Normalize path (after join parts), eliminating double slashes, etc.
 
-    '''
+    """
     try:
         path = _orig_join(base, *extras)
     except Exception:  # TODO: @med which exceptions expected?
@@ -86,13 +97,13 @@ def join(base, *extras):
 
 
 def normalize_path(base, *extras):
-    '''Normalize path by:
+    """Normalize path by:
 
     - expanding '~' and '~user' constructions.
     - eliminating double slashes
     - converting to absolute.
 
-    '''
+    """
     # FIXME: [med] Redundant "path" in name "xotl.tools.fs.path.normalize_path"
     try:
         path = _orig_join(base, *extras)
@@ -102,31 +113,31 @@ def normalize_path(base, *extras):
 
 
 def shorten_module_filename(filename):
-    '''A filename, normally a module o package name, is shortened looking his
+    """A filename, normally a module o package name, is shortened looking his
     head in all python path.
 
-    '''
+    """
     path = sys.path[:]
     path.sort(lambda x, y: len(y) - len(x))
     for item in path:
         if item and filename.startswith(item):
-            filename = filename[len(item):]
+            filename = filename[len(item) :]
             if filename.startswith(sep):
-                filename = filename[len(sep):]
-    for item in ('__init__.py', '__init__.pyc'):
+                filename = filename[len(sep) :]
+    for item in ("__init__.py", "__init__.pyc"):
         if filename.endswith(item):
-            filename = filename[:-len(item)]
+            filename = filename[: -len(item)]
             if filename.endswith(sep):
-                filename = filename[:-len(sep)]
+                filename = filename[: -len(sep)]
     return shorten_user(filename)
 
 
 def shorten_user(filename):
-    '''A filename is shortened looking for the (expantion) $HOME in his head
+    """A filename is shortened looking for the (expantion) $HOME in his head
     and replacing it by '~'.
 
-    '''
-    home = expanduser('~')
+    """
+    home = expanduser("~")
     if filename.startswith(home):
-        filename = _orig_join('~', filename[len(home):])
+        filename = _orig_join("~", filename[len(home) :])
     return filename

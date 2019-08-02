@@ -3,7 +3,10 @@
 # flake8:  noqa
 import os
 import sys
+import versioneer
+
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 
 
 def execfile(filename):
@@ -19,16 +22,7 @@ def execfile(filename):
 # Import the version from the release module
 project_name = os.environ.get("PROJECT_NAME", "xotl.tools")
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-release = os.path.join(_current_dir, project_name.replace(".", os.sep), "release.py")
-execfile(release)
-version = VERSION  # noqa
-
-if RELEASE_TAG != "":  # noqa
-    dev_classifier = "Development Status :: 4 - Beta"
-else:
-    dev_classifier = "Development Status :: 5 - Production/Stable"
-
-from setuptools.command.test import test as TestCommand
+dev_classifier = "Development Status :: 5 - Production/Stable"
 
 
 class PyTest(TestCommand):
@@ -44,9 +38,13 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
+_cmdclass = {"test": PyTest}
+_cmdclass.update(versioneer.get_cmdclass())
+
+
 setup(
     name=project_name,
-    version=version,
+    version=versioneer.get_version(),
     description=("Collection of usefull algorithms and other very " "disparate stuff"),
     long_description=open(os.path.join(_current_dir, "README.rst")).read(),
     classifiers=[
@@ -82,5 +80,5 @@ setup(
         'typing; python_version<"3.5"',
     ],
     extras_require={"recommended": ["python-dateutil", 'enum34; python_version<"3.4"']},
-    cmdclass={"test": PyTest},
+    cmdclass=_cmdclass,
 )

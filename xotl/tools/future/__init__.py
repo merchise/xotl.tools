@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extend standard modules including "future" features in current versions.
+"""Extend standard modules including "future" features in current versions.
 
 Version 3 introduce several concepts in standard modules.  Sometimes these
 features are implemented in the evolution of 2.7.x versions.  By using
@@ -18,4 +18,4 @@ exists in Python 2.
 
 .. versionadded:: 1.7.2
 
-'''
+"""

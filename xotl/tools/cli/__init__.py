@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Tools for Command-Line Interface (CLI) applications.
+"""Tools for Command-Line Interface (CLI) applications.
 
 CLI is a mean of interaction with a computer program where the user (or
 client) issues commands to the program in the form of successive lines of text
@@ -21,7 +21,7 @@ Commands can be registered by:
 
 .. versionadded:: 1.4.1
 
-'''
+"""
 
 from abc import abstractmethod, ABCMeta, ABC
 from xotl.tools.objects import staticproperty
@@ -29,7 +29,7 @@ from xotl.tools.cli.tools import command_name, program_name
 
 
 class CommandMeta(ABCMeta):
-    '''Meta-class for all commands.'''
+    """Meta-class for all commands."""
 
     def __new__(meta, name, bases, namespace):
         cls = super(CommandMeta, meta).__new__(meta, name, bases, namespace)
@@ -37,14 +37,14 @@ class CommandMeta(ABCMeta):
         return cls
 
     def register(cls, subclass):
-        '''Register a virtual subclass of a Command.
+        """Register a virtual subclass of a Command.
 
         Returns the sub-command, to allow usage as a class decorator.
 
         .. note:: Python 3.7 hides internal registry (``_abc_registry``), so
                   a sub-commands registry is implemented.
 
-        '''
+        """
         cls.__subcommands_registry__.add(subclass)
         res = super(CommandMeta, cls).register(subclass)
         if res is None:
@@ -52,7 +52,7 @@ class CommandMeta(ABCMeta):
         return res
 
     def cli_name(cls):
-        '''Calculate the command name.
+        """Calculate the command name.
 
         Standard method uses `~xotl.tools.cli.tools.hyphen_name`.  Redefine it
         to obtain a different behaviour.
@@ -65,10 +65,11 @@ class CommandMeta(ABCMeta):
             >>> MyCommand.cli_name() == 'my-command'
             True
 
-        '''
+        """
         from xotl.tools.cli.tools import hyphen_name
+
         unset = object()
-        names = ('command_cli_name', '__command_name__')
+        names = ("command_cli_name", "__command_name__")
         i, res = 0, unset
         while i < len(names) and res is unset:
             name = names[i]
@@ -93,14 +94,14 @@ class CommandMeta(ABCMeta):
             else:
                 raise KeyError(name)
         else:
-            msg = 'get_setting() takes at most 3 arguments ({} given)'
+            msg = "get_setting() takes at most 3 arguments ({} given)"
             raise TypeError(msg.format(aux + 2))
 
     def set_setting(cls, name, value):
-        cls.__settings__[name] = value    # TODO: Check type
+        cls.__settings__[name] = value  # TODO: Check type
 
     def set_default_command(cls, cmd=None):
-        '''Default command is called when no one is specified.
+        """Default command is called when no one is specified.
 
         A command is detected when its name appears as the first command-line
         argument.
@@ -117,23 +118,23 @@ class CommandMeta(ABCMeta):
             >>> Server.set_default_command()           # doctest: +SKIP
             >>> Command.set_default_command(Server)    # doctest: +SKIP
 
-        '''
+        """
         if cls is Command:
             if cmd is not None:
                 name = cmd if isinstance(cmd, str) else command_name(cmd)
             else:
                 # TODO: consider reset to None
-                raise ValueError('missing command specification!')
+                raise ValueError("missing command specification!")
         else:
             if cmd is None:
                 name = command_name(cls)
             else:
-                raise ValueError('redundant command specification', cls, cmd)
-        Command.set_setting('default_command', name)
+                raise ValueError("redundant command specification", cls, cmd)
+        Command.set_setting("default_command", name)
 
 
 class Command(ABC, metaclass=CommandMeta):
-    '''Base for all commands.'''
+    """Base for all commands."""
 
     __settings__ = {
         # 'default_command' : None
@@ -144,11 +145,11 @@ class Command(ABC, metaclass=CommandMeta):
         return command_name(type(self))
 
     def __repr__(self):
-        return '<command: %s>' % command_name(type(self))
+        return "<command: %s>" % command_name(type(self))
 
     @staticproperty
     def registry():
-        '''Obtain all registered commands.'''
+        """Obtain all registered commands."""
         res = Command.__registry_cache__
         if not res:
             Command._settle_cache(Command)
@@ -163,47 +164,49 @@ class Command(ABC, metaclass=CommandMeta):
 
     @staticmethod
     def _settle_cache(source, recursed=None):
-        '''Initialize '__registry_cache__'.'''
+        """Initialize '__registry_cache__'."""
         from xotl.tools.names import nameof
+
         if recursed is None:
             recursed = set()
         name = nameof(source, inner=True, full=True)
         if name not in recursed:
             recursed.add(name)
             sub_commands = type.__subclasses__(source)
-            virtuals = getattr(source, '__subcommands_registry__', ())
+            virtuals = getattr(source, "__subcommands_registry__", ())
             sub_commands.extend(virtuals)
-            cmds = getattr(source, '__commands__', None)
+            cmds = getattr(source, "__commands__", None)
             if cmds:
                 from collections import Iterable
+
                 if not isinstance(cmds, Iterable):
                     cmds = cmds()
                 sub_commands.extend(cmds)
             if sub_commands:
                 for cmd in sub_commands:
                     Command._settle_cache(cmd, recursed=recursed)
-            else:   # Only branch commands are OK to execute
+            else:  # Only branch commands are OK to execute
                 from types import FunctionType as ValidMethodType
-                assert isinstance(source.run, ValidMethodType), \
-                    'Invalid type %r for source %r' % (
-                        type(source.run).__name__,
-                        source
-                    )  # noqa
+
+                assert isinstance(source.run, ValidMethodType), (
+                    "Invalid type %r for source %r"
+                    % (type(source.run).__name__, source)
+                )  # noqa
                 Command.__registry_cache__[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)
 
     @staticmethod
     def _check_help():
-        '''Check that correct help command is present.'''
+        """Check that correct help command is present."""
         name = HELP_NAME
         hlp = Command.__registry_cache__[name]
-        if hlp is not Help and not getattr(hlp, '__overwrite__', False):
+        if hlp is not Help and not getattr(hlp, "__overwrite__", False):
             Command.__registry_cache__[name] = Help
 
 
 class Help(Command):
-    '''Show all commands.
+    """Show all commands.
 
     Define the class attribute `__order__` to sort commands in special command
     "help".
@@ -219,21 +222,22 @@ class Help(Command):
 
        __overwrite__ = True
 
-    '''
+    """
 
     __order__ = -9999
 
     @classmethod
     def get_arg_parser(cls):
-        '''This is an example on how to build local argument parser.
+        """This is an example on how to build local argument parser.
 
         Use class method "get
 
-        '''
+        """
         # TODO: Use 'add_subparsers' in this logic (see 'backlog.org').
-        res = getattr(cls, '_arg_parser')
+        res = getattr(cls, "_arg_parser")
         if not res:
             from argparse import ArgumentParser
+
             res = ArgumentParser()
             cls._arg_parser = res
         return res
@@ -241,7 +245,7 @@ class Help(Command):
     def run(self, args=[]):
         print('The most commonly used "%s" commands are:' % program_name())
         cmds = Command.registry
-        ordered = [(getattr(cmds[cmd], '__order__', 0), cmd) for cmd in cmds]
+        ordered = [(getattr(cmds[cmd], "__order__", 0), cmd) for cmd in cmds]
         ordered.sort()
         max_len = len(max(ordered, key=lambda x: len(x[1]))[1])
         for _, cmd in ordered:
@@ -251,6 +255,7 @@ class Help(Command):
                 doc = self._strip_doc(cmd_class.run.__doc__)
             if not doc:
                 import sys
+
                 mod_name = cmd_class.__module__
                 module = sys.modules.get(mod_name, None)
                 if module:
@@ -258,16 +263,16 @@ class Help(Command):
                     doc = '"%s"' % (doc if doc else mod_name)
                 else:
                     doc = '"%s"' % mod_name
-            head = ' ' * 3 + cmd + ' ' * (2 + max_len - len(cmd))
+            head = " " * 3 + cmd + " " * (2 + max_len - len(cmd))
             print(head, doc)
 
     @staticmethod
     def _strip_doc(doc):
         if doc:
-            doc = str('%s' % doc).strip()
-            return str(doc.split('\n')[0].strip('''"' \t\n\r'''))
+            doc = str("%s" % doc).strip()
+            return str(doc.split("\n")[0].strip(""""' \t\n\r"""))
         else:
-            return ''
+            return ""
 
 
 HELP_NAME = command_name(Help)

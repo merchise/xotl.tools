@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Validity proofs for data values.
+"""Validity proofs for data values.
 
 There are some basic helper functions:
 
@@ -25,11 +25,11 @@ There are some basic helper functions:
 
 .. versionadded:: 1.8.0
 
-'''
+"""
 
 
 def predicative(function, *args, **kwds):
-    '''Call a function in a safety wrapper returning a false value if fail.
+    """Call a function in a safety wrapper returning a false value if fail.
 
     This converts any function into a predicate.  A predicate can be thought
     as an operator or function that returns a value that is either true or
@@ -46,10 +46,11 @@ def predicative(function, *args, **kwds):
     second, when an exception is raised; in both cases the predicate will
     return an instance of `~xotl.tools.fp.option.Maybe`:class:.
 
-    '''
+    """
     from xotl.tools.symbols import boolean
     from xotl.tools.fp.option import Maybe, Just, Wrong
     from xotl.tools.params import single
+
     # I don't understand anymore why a single argument must be a special case,
     # maybe because the composition problem.
     is_single = single(*args, **kwds)
@@ -74,17 +75,18 @@ def predicative(function, *args, **kwds):
 
 
 def vouch(function, *args, **kwds):
-    '''Call a function in a safety wrapper raising an exception if it fails.
+    """Call a function in a safety wrapper raising an exception if it fails.
 
     When the wrapped function fails, an exception must be raised.  A predicate
     fails when it returns a false value.  To avoid treat false values of some
     types as fails, use `Just`:class: to return that values wrapped.
 
-    '''
+    """
     from xotl.tools.symbols import boolean, Invalid
     from xotl.tools.clipping import small
     from xotl.tools.fp.option import Just, Wrong
     from xotl.tools.params import single
+
     res = function(*args, **kwds)
     if isinstance(res, boolean):
         if res:
@@ -92,14 +94,14 @@ def vouch(function, *args, **kwds):
             if aux is not Invalid:
                 res = aux
         else:
-            msg = '{}() validates as false'.format(small(function))
+            msg = "{}() validates as false".format(small(function))
             raise TypeError(msg)
     elif isinstance(res, Wrong):
         inner = res.inner
         if isinstance(inner, BaseException):
             raise inner
         else:
-            msg = '{}() validates as a wrong value'.format(small(function))
+            msg = "{}() validates as a wrong value".format(small(function))
             if inner is not None or not isinstance(inner, boolean):
                 v, t = small(inner), type(inner).__name__
                 msg += ' {} of type "{}"'.format(v, t)
@@ -110,7 +112,7 @@ def vouch(function, *args, **kwds):
 
 
 def enfold(checker):
-    '''Create a decorator to execute a function inner a safety wrapper.
+    """Create a decorator to execute a function inner a safety wrapper.
 
     :param checker: Could be any function to enfold, but it's intended mainly
            for `predicative`:func:  or `vouch`:func: functions.
@@ -142,7 +144,8 @@ def enfold(checker):
         >>> test(15)
         5
 
-    '''
+    """
+
     def wrapper(func):
         def inner(*args, **kwds):
             return checker(func, *args, **kwds)
@@ -152,6 +155,8 @@ def enfold(checker):
             inner.__doc__ = func.__doc__
         except Exception:
             from xotl.tools.clipping import small
+
             inner.__name__ = str(small(func))
         return inner
+
     return wrapper

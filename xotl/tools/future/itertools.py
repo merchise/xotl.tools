@@ -7,23 +7,23 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Several util functions for iterators.
+"""Several util functions for iterators.
 
 .. versionchanged:: 1.8.4 Renamed to `xotl.tools.future.iterator`:mod:.  The
    ``xotl.tools.iterators`` is now a deprecated alias.
 
-'''
+"""
 import sys
 from itertools import *  # noqa
 from xotl.tools.symbols import Unset
 from xotl.tools.deprecation import deprecated_alias
 
-map = deprecated_alias(map, removed_in_version='3.0', check_version=True)
-zip = deprecated_alias(zip, removed_in_version='3.0', check_version=True)
+map = deprecated_alias(map, removed_in_version="3.0", check_version=True)
+zip = deprecated_alias(zip, removed_in_version="3.0", check_version=True)
 
 
 def first_non_null(iterable, default=None):
-    '''Returns the first value from iterable which is non-null.
+    """Returns the first value from iterable which is non-null.
 
     This is roughly the same as::
 
@@ -31,12 +31,12 @@ def first_non_null(iterable, default=None):
 
     .. versionadded:: 1.4.0
 
-    '''
+    """
     return next((x for x in iter(iterable) if x), default)
 
 
 def flatten(sequence, is_scalar=None, depth=None):
-    '''Flatten-out a sequence.
+    """Flatten-out a sequence.
 
     It takes care of everything deemed a collection (i.e, not a scalar
     according to the callable passed in `is_scalar` argument; if ``None``,
@@ -68,12 +68,15 @@ def flatten(sequence, is_scalar=None, depth=None):
        binary buffer, so ``flatten([b'abc', [1, 2, 3]])`` will deliver
        different results.
 
-    '''
+    """
     if is_scalar is None:
+
         def is_scalar(maybe):
-            '''Returns if `maybe` is not not an iterable or a string.'''
+            """Returns if `maybe` is not not an iterable or a string."""
             from collections import Iterable
+
             return isinstance(maybe, str) or not isinstance(maybe, Iterable)
+
     for item in sequence:
         if is_scalar(item):
             yield item
@@ -87,7 +90,7 @@ def flatten(sequence, is_scalar=None, depth=None):
 
 
 def pop_first(source, keys, default=None):
-    '''Pop first value from `source` from given `keys`.
+    """Pop first value from `source` from given `keys`.
 
     :param source: Any compatible mapping.
 
@@ -105,12 +108,12 @@ def pop_first(source, keys, default=None):
       >>> pop_first(d, ('a', 'y', 'x'), '---')
       '---'
 
-    '''
+    """
     return next((source.pop(key) for key in keys if key in source), default)
 
 
 def multi_pop(source, *keys):
-    '''Pop values from `source` of all given `keys`.
+    """Pop values from `source` of all given `keys`.
 
     :param source: Any compatible mapping.
 
@@ -130,12 +133,12 @@ def multi_pop(source, *keys):
       >>> next(multi_pop(d, 'a', 'y', 'x'), '---')
       '---'
 
-    '''
+    """
     return (source.pop(key) for key in keys if key in source)
 
 
 def multi_get(source, *keys):
-    '''Get values from `source` of all given `keys`.
+    """Get values from `source` of all given `keys`.
 
     :param source: Any compatible mapping.
 
@@ -155,16 +158,16 @@ def multi_get(source, *keys):
       >>> next(multi_get(d, 'a', 'b'), '---')
       '---'
 
-    '''
+    """
     return (source.get(key) for key in keys if key in source)
 
 
 def dict_update_new(target, source, fail=False):
-    '''Update values in `source` that are new (not present) in `target`.
+    """Update values in `source` that are new (not present) in `target`.
 
     If `fail` is True and a value is already set, an error is raised.
 
-    '''
+    """
     for key in source:
         if key not in target:
             target[key] = source[key]
@@ -173,7 +176,7 @@ def dict_update_new(target, source, fail=False):
 
 
 def delete_duplicates(seq, key=lambda x: x):
-    '''Remove all duplicate elements from `seq`.
+    """Remove all duplicate elements from `seq`.
 
     Two items ``x`` and ``y`` are considered equal (duplicates) if
     ``key(x) == key(y)``.  By default `key` is the identity function.
@@ -191,7 +194,7 @@ def delete_duplicates(seq, key=lambda x: x):
        documentation: `seq` should also implement the ``__add__`` method and
        that its ``__getitem__`` method should deal with slices.
 
-    '''
+    """
     i, done = 0, set()
     while i < len(seq):
         k = key(seq[i])
@@ -199,12 +202,12 @@ def delete_duplicates(seq, key=lambda x: x):
             done.add(k)
             i += 1
         else:
-            seq = seq[:i] + seq[i + 1:]
+            seq = seq[:i] + seq[i + 1 :]
     return seq
 
 
 def iter_delete_duplicates(iter, key=lambda x: x):
-    '''Yields non-repeating items from `iter`.
+    """Yields non-repeating (and consecutive) items from `iter`.
 
     `key` has the same meaning as in `delete_duplicates`:func:.
 
@@ -218,7 +221,7 @@ def iter_delete_duplicates(iter, key=lambda x: x):
 
     .. versionadded:: 1.7.4
 
-    '''
+    """
     last = object()  # a value we're sure `iter` won't produce
     for x in iter:
         k = key(x)
@@ -227,8 +230,32 @@ def iter_delete_duplicates(iter, key=lambda x: x):
         last = k
 
 
+def iter_without_duplicates(it, key=lambda x: x):
+    """Yields non-repeating items from `iter`.
+
+    `key` has the same meaning as in `delete_duplicates`:func:.
+
+    The difference between this function and `iter_delete_duplicates`:func: is
+    that we ensure the same item (as per `key`) is produced only once; while
+    `iter_delete_duplicates`:func: only remove consecutive repeating items.
+
+    Example:
+
+      >>> list(iter_without_duplicates('AAAaBBBA', key=lambda x: x.lower()))
+      ['A', 'B']
+
+
+    """
+    done = set()
+    for what in it:
+        k = key(what)
+        if k not in done:
+            yield what
+            done.add(k)
+
+
 def slides(iterable, width=2, fill=None):
-    '''Creates a sliding window of a given `width` over an iterable::
+    """Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
         [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
@@ -245,9 +272,10 @@ def slides(iterable, width=2, fill=None):
     .. versionchanged:: 1.4.2 The `fill` argument now defaults to None,
                         instead of Unset.
 
-    '''
+    """
     from itertools import cycle, repeat
     from collections import Iterable
+
     pos = 0
     res = []
     iterator = iter(iterable)
@@ -273,7 +301,7 @@ def slides(iterable, width=2, fill=None):
 
 
 def continuously_slides(iterable, width=2, fill=None):
-    '''Similar to `slides`:func: but moves one item at the time (i.e
+    """Similar to `slides`:func: but moves one item at the time (i.e
     continuously).
 
     `fill` is only used to fill the fist chunk if the `iterable` has less
@@ -285,7 +313,7 @@ def continuously_slides(iterable, width=2, fill=None):
         >>> list(str('').join(chunk) for chunk in slider)
         ['mau', 'aup', 'upa', 'pas', 'ass', 'ssa', 'san', 'ant']
 
-    '''
+    """
     i = iter(iterable)
     res = []
     while len(res) < width:
@@ -301,7 +329,7 @@ def continuously_slides(iterable, width=2, fill=None):
 
 
 def first_n(iterable, n=1, fill=Unset):
-    '''Takes the first `n` items from iterable.
+    """Takes the first `n` items from iterable.
 
     If there are less than `n` items in the iterable and `fill` is
     `~xotl.tools.symbols.Unset`:class:, a StopIteration exception is raised;
@@ -336,10 +364,11 @@ def first_n(iterable, n=1, fill=Unset):
                         consistent with `iterable` argument that allow an
                         string as a valid iterable and `is_collection` not.
 
-    '''
+    """
     if fill is not Unset:
         from collections import Iterable
         from itertools import cycle, repeat, chain
+
         if isinstance(fill, Iterable):
             fill = cycle(fill)
         else:
@@ -359,7 +388,7 @@ def first_n(iterable, n=1, fill=Unset):
 
 
 def ungroup(iterator):
-    '''Reverses the operation of `itertools.groupby`:func: (or similar).
+    """Reverses the operation of `itertools.groupby`:func: (or similar).
 
     The `iterator` should produce pairs of ``(_, xs)``; where ``xs`` is
     another iterator (or iterable).
@@ -403,15 +432,16 @@ def ungroup(iterator):
 
     .. versionadded:: 1.7.3
 
-    '''
+    """
     for _, xs in iterator:
         for x in xs:
             yield x
 
 
 if sys.version_info < (3, 5):
+
     class _safeitem:
-        __slots__ = ['item', 'key']
+        __slots__ = ["item", "key"]
 
         def __init__(self, item, key=None):
             self.item = item
@@ -433,7 +463,7 @@ if sys.version_info < (3, 5):
             return self.key(self.item) == self.key(other.item)
 
     def merge(*iterables, key=None):
-        '''Merge the iterables in order.
+        """Merge the iterables in order.
 
         Return an iterator that yields all items from `iterables` following
         the order given by `key`.  If `key` is not given we compare the items.
@@ -448,13 +478,16 @@ if sys.version_info < (3, 5):
         .. versionchanged:: 2.1.0 Based on `heapq.merge`:func:.  In Python
            3.5+, this is just an alias of it.
 
-        '''
+        """
         from heapq import merge  # noqa
+
         if key is None:
             key = lambda x: x
         params = ((_safeitem(x, key) for x in iter_) for iter_ in iterables)
         for x in merge(*params):
             yield x.item
+
+
 else:
     from heapq import merge  # noqa
 

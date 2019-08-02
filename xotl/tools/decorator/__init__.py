@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Some useful decorators.'''
+"""Some useful decorators."""
 
 # TODO: reconsider all this module
 
@@ -20,18 +20,26 @@ from types import FunctionType as function
 from xotl.tools.decorator.meta import decorator
 
 
-__all__ = ('decorator', 'AttributeAlias', 'settle', 'namer', 'aliases',
-           'assignment_operator', 'instantiate',
-           'memoized_instancemethod', 'reset_memoized')
+__all__ = (
+    "decorator",
+    "AttributeAlias",
+    "settle",
+    "namer",
+    "aliases",
+    "assignment_operator",
+    "instantiate",
+    "memoized_instancemethod",
+    "reset_memoized",
+)
 
 
 class AttributeAlias:
-    '''Descriptor to create aliases for object attributes.
+    """Descriptor to create aliases for object attributes.
 
     This descriptor is mainly to be used internally by `aliases`:func:
     decorator.
 
-    '''
+    """
 
     def __init__(self, attr_name):
         super().__init__()
@@ -48,7 +56,7 @@ class AttributeAlias:
 
 
 def settle(**kwargs):
-    '''Returns a decorator to settle attributes to the decorated target.
+    """Returns a decorator to settle attributes to the decorated target.
 
     Usage::
 
@@ -59,16 +67,18 @@ def settle(**kwargs):
        >>> Person.name
        'Name'
 
-    '''
+    """
+
     def inner(target):
         for attr in kwargs:
             setattr(target, attr, kwargs[attr])
         return target
+
     return inner
 
 
 def namer(name, **kwargs):
-    '''Like `settle`:func:, but '__name__' is a required positional argument.
+    """Like `settle`:func:, but '__name__' is a required positional argument.
 
     Usage::
 
@@ -82,12 +92,12 @@ def namer(name, **kwargs):
         >>> I.custom
         1
 
-    '''
+    """
     return settle(__name__=name, **kwargs)
 
 
 def aliases(*names, **kwargs):
-    '''In a class, create an `AttributeAlias`:class: descriptor for each
+    """In a class, create an `AttributeAlias`:class: descriptor for each
     definition as keyword argument (alias=existing_attribute).
 
     If "names" are given, then the definition context is looked and are
@@ -97,10 +107,10 @@ def aliases(*names, **kwargs):
         ... def foobar(*args):
         ...     'This function is added to its module with two new names.'
 
-    '''
+    """
     # FIX: This is not working in methods.
     def inner(target):
-        '''Direct closure decorator that settle several attribute aliases.'''
+        """Direct closure decorator that settle several attribute aliases."""
         if kwargs:
             assert isinstance(target, type), '"target" must be a class.'
         if names:
@@ -112,12 +122,13 @@ def aliases(*names, **kwargs):
                 field = kwargs[alias]
                 setattr(target, alias, AttributeAlias(field))
         return target
+
     return inner
 
 
 @decorator
 def assignment_operator(func, maybe_inline=False):
-    '''Makes a function that receives a name, and other args to get its first
+    """Makes a function that receives a name, and other args to get its first
     argument (the name) from an assignment operation, meaning that it if its
     used in a single assignment statement the name will be taken from the left
     part of the ``=`` operator.
@@ -127,7 +138,7 @@ def assignment_operator(func, maybe_inline=False):
                  Use only you don't care about portability, but use sparingly
                  (in case you change your mind about portability).
 
-    '''
+    """
     import inspect
     import ast
 
@@ -159,12 +170,13 @@ def assignment_operator(func, maybe_inline=False):
                 return func(*args)
         finally:
             del filename, line, funcname, src_lines, idx
+
     return inner
 
 
 @decorator
 def instantiate(target, *args, **kwargs):
-    '''Some singleton classes must be instantiated as part of its declaration
+    """Some singleton classes must be instantiated as part of its declaration
     because they represents singleton objects.
 
     Every argument, positional or keyword, is passed as such when invoking the
@@ -189,14 +201,14 @@ def instantiate(target, *args, **kwargs):
         >>> Foobar  # doctest: +ELLIPSIS
         <class '...Foobar'>
 
-    '''
+    """
     target(*args, **kwargs)
     return target
 
 
 @decorator
 def constant_bagger(func, *args, **kwds):
-    '''Create a "bag" with constant values.
+    """Create a "bag" with constant values.
 
     Decorated object must be a callable, but the result will be a class
     containing the constant values.
@@ -228,9 +240,10 @@ def constant_bagger(func, *args, **kwds):
       >>> MYBAG.Z
       3
 
-    '''
+    """
     from xotl.tools.objects import mass_setattr
-    wraps = ((a, getattr(func, a, None)) for a in ('__doc__', '__module__'))
+
+    wraps = ((a, getattr(func, a, None)) for a in ("__doc__", "__module__"))
     attrs = {a: v for (a, v) in wraps if v}
     attrs.update(__new__=mass_setattr, **func(*args, **kwds))
     return type(func.__name__, (object,), attrs)
@@ -238,7 +251,7 @@ def constant_bagger(func, *args, **kwds):
 
 @decorator
 def singleton(target, *args, **kwargs):
-    '''Instantiate a class and assign the instance to the declared symbol.
+    """Instantiate a class and assign the instance to the declared symbol.
 
     Every argument, positional or keyword, is passed as such when invoking the
     target. The following two code samples show two cases::
@@ -263,13 +276,15 @@ def singleton(target, *args, **kwargs):
       >>> isinstance(foobar, type)
       False
 
-    '''
+    """
     res = target(*args, **kwargs)
     if isinstance(target, type):
         try:
+
             def __init__(*args, **kwds):
                 msg = "'{}' is a singleton, it can be instantiated only once"
                 raise TypeError(msg.format(target.__name__))
+
             target.__init__ = __init__
         except Exception:
             pass
@@ -292,10 +307,11 @@ class memoized_instancemethod:
       http://www.opensource.org/licenses/mit-license.php
 
     """
+
     def __init__(self, fget, doc=None):
         from warnings import warn
-        msg = ('"memoized_instancemethod" is now deprecated and it will be '
-               'removed.')
+
+        msg = '"memoized_instancemethod" is now deprecated and it will be ' "removed."
         warn(msg, stacklevel=2)
         self.fget = fget
         self.__doc__ = doc or fget.__doc__
@@ -320,12 +336,16 @@ class memoized_instancemethod:
 
 def reset_memoized(instance, name):
     from warnings import warn
-    msg = ('"reset_memoized" is now deprecated and it will be '
-           'removed. Use "memoized_property.reset".')
+
+    msg = (
+        '"reset_memoized" is now deprecated and it will be '
+        'removed. Use "memoized_property.reset".'
+    )
     warn(msg, stacklevel=2)
     instance.__dict__.pop(name, None)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
+
     doctest.testmod(verbose=True)

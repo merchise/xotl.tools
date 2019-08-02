@@ -7,16 +7,16 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Simple tools minimizing dependencies on other modules.
+"""Simple tools minimizing dependencies on other modules.
 
 The only used module is Python's standard `re`:mod: module.
 
-'''
+"""
 
 
 # TODO: review this
 def nameof(obj):
-    '''Give the name of an object.
+    """Give the name of an object.
 
     First try normally named object (those having a ``'__name__'`` attribute);
     then some special classes instances that wraps the name internally are
@@ -45,16 +45,17 @@ def nameof(obj):
                its representation strings (``str(obj)`` and ``repr(obj)``)
                match and it is a valid identifier.
 
-    '''
+    """
     try:
         return obj.__name__
     except AttributeError:
         if isinstance(obj, (staticmethod, classmethod)):
             return obj.__func__.__name__
-        else:    # try for singleton
+        else:  # try for singleton
             import re
+
             res = str(obj)
-            identifier_regex = '(?i)^[_a-z][_a-z0-9]*$'    # TODO: Py3?
+            identifier_regex = "(?i)^[_a-z][_a-z0-9]*$"  # TODO: Py3?
             if res == repr(obj) and re.match(identifier_regex, res):
                 return res
             else:
@@ -63,8 +64,9 @@ def nameof(obj):
 
 # TODO: Move all functions in this module to a new place
 
+
 def args_repr(args, **options):
-    '''Format positional arguments to use in exception handling.
+    """Format positional arguments to use in exception handling.
 
     :params args: tuple as obtained in arguments when declared in a function
            as ``*args``.
@@ -99,12 +101,12 @@ def args_repr(args, **options):
       >>> args_repr((1, 2.0, "3", {}))
       'int, float, str, ...'
 
-    '''
-    count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: type(arg).__name__)
-    item_format = options.get('item_format', '{}')
-    tail_format = options.get('tail_format', '...')
-    joiner = options.get('joiner', ', ')
+    """
+    count = options.get("count", 3)
+    cast = options.get("cast", lambda arg: type(arg).__name__)
+    item_format = options.get("item_format", "{}")
+    tail_format = options.get("tail_format", "...")
+    joiner = options.get("joiner", ", ")
     if isinstance(joiner, str):
         joiner = str(joiner).join
     parts = []
@@ -119,7 +121,7 @@ def args_repr(args, **options):
 
 
 def kwargs_repr(kwargs, **options):
-    '''Format positional arguments to use in exception handling.
+    """Format positional arguments to use in exception handling.
 
     :params kwargs: dict as obtained in arguments when declared as
            ``**kwargs``.
@@ -153,12 +155,12 @@ def kwargs_repr(kwargs, **options):
       >>> kwargs_repr({'x': 1, 'y': 2.0, 'z': '3', 'zz': {}})
       'x:int, y:float, z:str, ...'
 
-    '''
-    count = options.get('count', 3)
-    cast = options.get('cast', lambda arg: type(arg).__name__)
-    item_format = options.get('item_format', '{}:{}')
-    tail_format = options.get('tail_format', '...')
-    joiner = options.get('joiner', ', ')
+    """
+    count = options.get("count", 3)
+    cast = options.get("cast", lambda arg: type(arg).__name__)
+    item_format = options.get("item_format", "{}:{}")
+    tail_format = options.get("tail_format", "...")
+    joiner = options.get("joiner", ", ")
     if isinstance(joiner, str):
         joiner = str(joiner).join
     parts = []
@@ -177,7 +179,7 @@ def kwargs_repr(kwargs, **options):
 
 
 def both_args_repr(args, kwargs, **options):
-    '''Combine both argument kind representations.
+    """Combine both argument kind representations.
 
     Both kinds are: positional (see `args_repr`:func:) and keyword (see
     `kwargs_repr`:func:).
@@ -187,8 +189,8 @@ def both_args_repr(args, kwargs, **options):
       >>> both_args_repr((1, 2.0, "3"), {'x': 1, 'y': 2.0, 'z': '3'})
       'int, float, str, x:int, y:float, z:str'
 
-    '''
-    joiner = options.get('joiner', ', ')
+    """
+    joiner = options.get("joiner", ", ")
     if isinstance(joiner, str):
         joiner = str(joiner).join
     items = (args, args_repr), (kwargs, kwargs_repr)

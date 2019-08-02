@@ -7,20 +7,22 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''General security tools.
+"""General security tools.
 
 Adds the ability to generate new passwords using a source pass-phrase and a
 secury strong level.
 
-'''
+"""
 
 
-__all__ = ('PASS_PHRASE_LEVEL_BASIC',
-           'PASS_PHRASE_LEVEL_MAPPED',
-           'PASS_PHRASE_LEVEL_MAPPED_MIXED',
-           'PASS_PHRASE_LEVEL_MAPPED_DATED',
-           'PASS_PHRASE_LEVEL_STRICT',
-           'generate_password')
+__all__ = (
+    "PASS_PHRASE_LEVEL_BASIC",
+    "PASS_PHRASE_LEVEL_MAPPED",
+    "PASS_PHRASE_LEVEL_MAPPED_MIXED",
+    "PASS_PHRASE_LEVEL_MAPPED_DATED",
+    "PASS_PHRASE_LEVEL_STRICT",
+    "generate_password",
+)
 
 
 #: The most basic level (less ) for the password generation.
@@ -45,15 +47,15 @@ DEFAULT_PASS_PHRASE_LEVEL = PASS_PHRASE_LEVEL_MAPPED_DATED
 #: A mapping from names to standards levels.  You may use these strings as
 #: arguments for `level` in `generate_password`:func:.
 PASS_LEVEL_NAME_MAPPING = {
-    'basic': PASS_PHRASE_LEVEL_BASIC,
-    'mapped': PASS_PHRASE_LEVEL_MAPPED,
-    'mixed': PASS_PHRASE_LEVEL_MAPPED_MIXED,
-    'dated': PASS_PHRASE_LEVEL_MAPPED_DATED,
-    'random': PASS_PHRASE_LEVEL_STRICT
+    "basic": PASS_PHRASE_LEVEL_BASIC,
+    "mapped": PASS_PHRASE_LEVEL_MAPPED,
+    "mixed": PASS_PHRASE_LEVEL_MAPPED_MIXED,
+    "dated": PASS_PHRASE_LEVEL_MAPPED_DATED,
+    "random": PASS_PHRASE_LEVEL_STRICT,
 }
 
 
-BASIC_PASSWORD_SIZE = 4    # bytes
+BASIC_PASSWORD_SIZE = 4  # bytes
 
 #: An upper limit for generated password length.
 MAX_PASSWORD_SIZE = 512
@@ -63,12 +65,12 @@ SAMPLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
 
 def _normalize_level(level):
-    '''Normalize the `level` argument.
+    """Normalize the `level` argument.
 
     If passed a string, it must be a key in `PASS_LEVEL_NAME_MAPPING`:obj:.
     Otherwise it must be a valid level number.
 
-    '''
+    """
     if isinstance(level, str):
         return PASS_LEVEL_NAME_MAPPING[level]
     else:
@@ -76,7 +78,7 @@ def _normalize_level(level):
 
 
 def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
-    '''Generate a password from a source `pass-phrase` and a security `level`.
+    """Generate a password from a source `pass-phrase` and a security `level`.
 
     :param pass_phrase: String pass-phrase to be used as base of password
                         generation process.
@@ -129,17 +131,18 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
     Default level is :data:`PASS_PHRASE_LEVEL_MAPPED_DATED` when using a
     pass-phrase.
 
-    '''
+    """
     from random import sample, randint
     from xotl.tools.string import slugify
+
     level = _normalize_level(level)
-    size = MAX_PASSWORD_SIZE + 1    # means, return all calculated
+    size = MAX_PASSWORD_SIZE + 1  # means, return all calculated
     required = min(max(level, 1) * BASIC_PASSWORD_SIZE, MAX_PASSWORD_SIZE)
     if pass_phrase:
         # PASS_PHRASE_LEVEL_BASIC
-        res = slugify(pass_phrase, '', invalid_chars='_')
+        res = slugify(pass_phrase, "", invalid_chars="_")
         if level >= PASS_PHRASE_LEVEL_MAPPED:
-            for (old, new) in ('e3', 'i1', 'o0', 's5'):
+            for (old, new) in ("e3", "i1", "o0", "s5"):
                 res = res.replace(old, new)
         if level >= PASS_PHRASE_LEVEL_MAPPED_MIXED:
             for new in "BCDFGHJKLM":
@@ -147,6 +150,7 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
                 res = res.replace(old, new)
         if level >= PASS_PHRASE_LEVEL_MAPPED_DATED:
             from datetime import datetime
+
             today = datetime.today()
             res += today.strftime("%Y")
         if level >= PASS_PHRASE_LEVEL_STRICT:
@@ -154,10 +158,10 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
     else:
         size = required
         count = randint(BASIC_PASSWORD_SIZE, 2 * BASIC_PASSWORD_SIZE)
-        res = ''.join(sample(SAMPLE, count))
+        res = "".join(sample(SAMPLE, count))
     if size <= MAX_PASSWORD_SIZE:
         if len(res) < size:
             needed = (size - len(res)) // BASIC_PASSWORD_SIZE + 1
             res += generate_password(None, needed)
-        res = ''.join(sample(res, size))
+        res = "".join(sample(res, size))
     return res[:size]

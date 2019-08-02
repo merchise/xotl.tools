@@ -1,0 +1,1 @@
+- Make `xotl.tools.infinity.Infinity`:obj: pickable.

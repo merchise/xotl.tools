@@ -7,16 +7,16 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Prove validity of values - Base predicate classes.
+"""Prove validity of values - Base predicate classes.
 
 A `predicate`:class: could combine two concepts (*validation* and
 *conversion*) in a single callable object.
 
-'''
+"""
 
 
 class predicate:
-    '''Base class for value proves using logic predicates.
+    """Base class for value proves using logic predicates.
 
     A predicate could combine two operations on values: *validation*, and
     *conversion*.
@@ -34,14 +34,15 @@ class predicate:
 
     When use a predicate, several definitions will be tried until one succeed.
 
-    '''
-    __slots__ = ('inner',)
+    """
+
+    __slots__ = ("inner",)
 
     def __new__(cls, *args):
-        if cls is predicate:    # Parse the right sub-type
+        if cls is predicate:  # Parse the right sub-type
             count = len(args)
             if count == 0:
-                msg = '{}() takes at least 1 argument (0 given)'
+                msg = "{}() takes at least 1 argument (0 given)"
                 raise TypeError(msg.format(cls.__name__))
             elif count == 1:
                 arg = args[0]
@@ -70,11 +71,13 @@ class predicate:
 
 
 class TypeCheck(predicate):
-    '''Check if value is instance of given types.'''
+    """Check if value is instance of given types."""
+
     __slots__ = ()
 
     def __new__(cls, *args):
         from xotl.tools.params import check_count
+
         check_count(len(args) + 1, 2, caller=cls.__name__)
         if len(args) == 1 and isinstance(args[0], tuple):
             args = args[0]
@@ -84,12 +87,13 @@ class TypeCheck(predicate):
             return self
         else:
             wrong = (arg for arg in args if not isinstance(arg, type))
-            wnames = ', or '.join(type(w).__name__ for w in wrong)
-            msg = '`TypeCheck` allows only valid types, not: ({})'
+            wnames = ", or ".join(type(w).__name__ for w in wrong)
+            msg = "`TypeCheck` allows only valid types, not: ({})"
             raise TypeError(msg.format(wnames))
 
     def __call__(self, value):
         from xotl.tools.fp.option import Just, Wrong
+
         ok = isinstance(value, self.inner)
         return (value if value else Just(value)) if ok else Wrong(value)
 
@@ -97,15 +101,16 @@ class TypeCheck(predicate):
         return self._str()
 
     def __crop__(self, max_width=None, canonical=False):
-        '''Calculate both string versions (small and normal).'''
+        """Calculate both string versions (small and normal)."""
         from xotl.tools.symbols import Undefined
         from xotl.tools.clipping import ELLIPSIS, DEFAULT_MAX_WIDTH
+
         if max_width is None:
-            max_width = DEFAULT_MAX_WIDTH    # a big number for this
-        start, end = '{}('.format(type(self).__name__), ')'
+            max_width = DEFAULT_MAX_WIDTH  # a big number for this
+        start, end = "{}(".format(type(self).__name__), ")"
         borders_len = len(start) + len(end)
-        sep = ', '
-        res = ''
+        sep = ", "
+        res = ""
         items = iter(self.inner)
         ok = True
         while ok:
@@ -121,15 +126,17 @@ class TypeCheck(predicate):
                     ok = False
             else:
                 ok = False
-        return '{}{}{}'.format(start, res, end)
+        return "{}{}{}".format(start, res, end)
 
 
 class NoneOrTypeCheck(TypeCheck):
-    '''Check if value is None or instance of given types.'''
+    """Check if value is None or instance of given types."""
+
     __slots__ = ()
 
     def __call__(self, value):
         from xotl.tools.fp.option import Wrong
+
         if value is None:
             _types = self.inner
             i, res = 0, None
@@ -145,15 +152,17 @@ class NoneOrTypeCheck(TypeCheck):
 
     def __str__(self):
         aux = super().__str__()
-        return 'none-or-{}'.format(aux)
+        return "none-or-{}".format(aux)
 
 
 class TypeCast(TypeCheck):
-    '''Cast a value to a correct type.'''
+    """Cast a value to a correct type."""
+
     __slots__ = ()
 
     def __call__(self, value):
         from xotl.tools.fp.option import Just
+
         res = super().__call__(value)
         if not res:
             _types = self.inner
@@ -171,14 +180,15 @@ class TypeCast(TypeCheck):
     def __str__(self):
         # FIX: change this
         aux = super(NoneOrTypeCheck, self).__str__()
-        return 'none-or-{}'.format(aux)
+        return "none-or-{}".format(aux)
 
 
 class CheckAndCast(predicate):
-    '''Check if value, if valid cast it.
+    """Check if value, if valid cast it.
 
     Result value must be valid also.
-    '''
+    """
+
     __slots__ = ()
 
     def __new__(cls, check, cast):
@@ -194,6 +204,7 @@ class CheckAndCast(predicate):
 
     def __call__(self, value):
         from xotl.tools.fp.option import Wrong
+
         check, cast = self.inner
         aux = check(value)
         if aux:
@@ -209,13 +220,15 @@ class CheckAndCast(predicate):
 
     def __str__(self):
         from xotl.tools.clipping import crop
+
         check, cast = self.inner
-        fmt = '({}(…) if {}(…) else _wrong)'
+        fmt = "({}(…) if {}(…) else _wrong)"
         return fmt.format(crop(cast), check)
 
 
 class FunctionalCheck(predicate):
-    '''Check if value is valid with a callable function.'''
+    """Check if value is valid with a callable function."""
+
     __slots__ = ()
 
     def __new__(cls, check):
@@ -232,20 +245,23 @@ class FunctionalCheck(predicate):
 
     def __str__(self):
         from xotl.tools.clipping import crop
-        suffix = 'check'
+
+        suffix = "check"
         kind = type(self).__name__.lower()
         if kind.endswith(suffix):
-            kind = kind[:-len(suffix)]
+            kind = kind[: -len(suffix)]
         inner = crop(self.inner)
-        return '{}({})()'.format(kind, inner)
+        return "{}({})()".format(kind, inner)
 
 
 class LogicalCheck(FunctionalCheck):
-    '''Check if value is valid with a callable function.'''
+    """Check if value is valid with a callable function."""
+
     __slots__ = ()
 
     def __call__(self, value):
         from xotl.tools.fp.option import Just, Wrong
+
         try:
             res = self.inner(value)
             if res:
@@ -257,7 +273,7 @@ class LogicalCheck(FunctionalCheck):
                     return res
             elif isinstance(res, Wrong):
                 return res
-            elif res is False or res is None:    # XXX: None?
+            elif res is False or res is None:  # XXX: None?
                 return Wrong(value)
             else:
                 return Wrong(res)
@@ -266,11 +282,13 @@ class LogicalCheck(FunctionalCheck):
 
 
 class SafeCheck(FunctionalCheck):
-    '''Return a wrong value only if function produce an exception.'''
+    """Return a wrong value only if function produce an exception."""
+
     __slots__ = ()
 
     def __call__(self, value):
         from xotl.tools.fp.option import Wrong
+
         try:
             return self.inner(value)
         except Exception as error:
@@ -278,11 +296,12 @@ class SafeCheck(FunctionalCheck):
 
 
 class MultiCheck(predicate):
-    '''Return a wrong value only when all inner predicates fails.
+    """Return a wrong value only when all inner predicates fails.
 
     Haskell: guards (pp. 132)
 
-    '''
+    """
+
     __slots__ = ()
 
     def __new__(cls, *args):
@@ -293,6 +312,7 @@ class MultiCheck(predicate):
 
     def __call__(self, value):
         from xotl.tools.fp.option import Just, Wrong, none
+
         predicates = self.inner
         i, res = 0, none
         while isinstance(res, Wrong) and i < len(predicates):
@@ -301,5 +321,5 @@ class MultiCheck(predicate):
         return res.inner if isinstance(res, Just) and res.inner else res
 
     def __str__(self):
-        aux = ' OR '.join(str(c) for c in self.inner)
-        return 'combo({})'.format(aux)
+        aux = " OR ".join(str(c) for c in self.inner)
+        return "combo({})".format(aux)

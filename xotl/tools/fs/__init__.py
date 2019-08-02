@@ -7,13 +7,13 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''File system utilities.
+"""File system utilities.
 
 This module contains file-system utilities that could have side-effects. For
 path-handling functions that have no side-effects look at
 `xotl.tools.fs.path`:mod:.
 
-'''
+"""
 
 
 import sys
@@ -22,7 +22,7 @@ from re import compile as _rcompile
 from xotl.tools.fs.path import normalize_path
 
 
-re_magic = _rcompile('[*?[]')
+re_magic = _rcompile("[*?[]")
 has_magic = lambda s: re_magic.search(s) is not None
 
 
@@ -30,12 +30,16 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
     from functools import reduce
     import fnmatch
     from xotl.tools.params import check_count
-    arg_count = reduce(lambda count, p: count + (1 if p is not None else 0),
-                       (pattern, regex_pattern, shell_pattern), 0)
-    check_count(arg_count, 0, 1, caller='_get_regex')    # XXX: WTF?!
+
+    arg_count = reduce(
+        lambda count, p: count + (1 if p is not None else 0),
+        (pattern, regex_pattern, shell_pattern),
+        0,
+    )
+    check_count(arg_count, 0, 1, caller="_get_regex")  # XXX: WTF?!
     if arg_count == 1:
         if pattern is not None:
-            if pattern.startswith('(?') or pattern.startswith('^(?'):
+            if pattern.startswith("(?") or pattern.startswith("^(?"):
                 regex_pattern = pattern
             else:
                 shell_pattern = pattern
@@ -44,9 +48,15 @@ def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
         return None
 
 
-def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
-               followlinks=False, maxdepth=None):
-    '''Iterate filenames recursively.
+def iter_files(
+    top=".",
+    pattern=None,
+    regex_pattern=None,
+    shell_pattern=None,
+    followlinks=False,
+    maxdepth=None,
+):
+    """Iterate filenames recursively.
 
     :param top: The top directory for recurse into.
     :param pattern: A pattern of the files you want to get from the iterator.
@@ -69,12 +79,12 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
 
     .. versionchanged:: 1.2.1 Added parameters `followlinks` and `maxdepth`.
 
-    '''
+    """
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     depth = 0
-    for dirpath, _dirs, filenames in os.walk(normalize_path(top),
-                                             topdown=True,
-                                             followlinks=followlinks):
+    for dirpath, _dirs, filenames in os.walk(
+        normalize_path(top), topdown=True, followlinks=followlinks
+    ):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             if (regex is None) or regex.search(path):
@@ -86,18 +96,20 @@ def iter_files(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
 
 
 # ------------------------------ iter_dict_files ------------------------------
-_REGEX_PYTHON_PACKAGE = _rcompile(r'^(?P<dir>.+(?=/)/)?'
-                                  r'(?P<packagename>[^/_-]+?)'
-                                  r'([-_][Vv]?(?P<version>\d+([.-_]\w+)*))?'
-                                  r'(?P<ext>[.](tar[.](gz|bz2)|zip|egg|tgz))$')
+_REGEX_PYTHON_PACKAGE = _rcompile(
+    r"^(?P<dir>.+(?=/)/)?"
+    r"(?P<packagename>[^/_-]+?)"
+    r"([-_][Vv]?(?P<version>\d+([.-_]\w+)*))?"
+    r"(?P<ext>[.](tar[.](gz|bz2)|zip|egg|tgz))$"
+)
 
-_REGEX_DEFAULT_ALLFILES = _rcompile(r'^(?P<dir>.+(?=/)/)?'
-                                    r'(?P<filename>[^/]+?)'
-                                    r'([.](?P<ext>[^.]+))?$')
+_REGEX_DEFAULT_ALLFILES = _rcompile(
+    r"^(?P<dir>.+(?=/)/)?" r"(?P<filename>[^/]+?)" r"([.](?P<ext>[^.]+))?$"
+)
 
 
-def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
-    '''
+def iter_dict_files(top=".", regex=None, wrong=None, followlinks=False):
+    """
     Iterate filenames recursively.
 
     :param top: The top directory for recurse into.
@@ -112,14 +124,15 @@ def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
 
     .. versionchanged:: 1.2.1 Added parameter `followlinks`.
 
-    '''
+    """
     if regex:
         if isinstance(regex, str):
             regex = _rcompile(regex)
     else:
         regex = _REGEX_DEFAULT_ALLFILES
-    for dirpath, _dirs, filenames in os.walk(normalize_path(top),
-                                             followlinks=followlinks):
+    for dirpath, _dirs, filenames in os.walk(
+        normalize_path(top), followlinks=followlinks
+    ):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             match = regex.match(path)
@@ -129,23 +142,29 @@ def iter_dict_files(top='.', regex=None, wrong=None, followlinks=False):
                 yield {wrong: path}
 
 
-def iter_dirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None):
-    '''
+def iter_dirs(top=".", pattern=None, regex_pattern=None, shell_pattern=None):
+    """
     Iterate directories recursively.
 
     The params have analagous meaning that in `iter_files`:func: and the same
     restrictions.
 
-    '''
+    """
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     for path, _dirs, _files in os.walk(normalize_path(top)):
         if (regex is None) or regex.search(path):
             yield path
 
 
-def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
-           exclude=None, confirm=None):
-    '''Removes all empty dirs at `top`.
+def rmdirs(
+    top=".",
+    pattern=None,
+    regex_pattern=None,
+    shell_pattern=None,
+    exclude=None,
+    confirm=None,
+):
+    """Removes all empty dirs at `top`.
 
     :param top: The top directory to recurse into.
 
@@ -177,24 +196,26 @@ def rmdirs(top='.', pattern=None, regex_pattern=None, shell_pattern=None,
 
     .. versionadded:: 1.1.3
 
-    '''
+    """
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     exclude = _get_regex(exclude)
     if confirm is None:
         confirm = lambda _: True
     for path, _dirs, _files in os.walk(normalize_path(top)):
         # XXX: Make clearest next condition
-        if ((regex is None or regex.search(path)) and
-                (exclude is None or not exclude.search(path)) and
-                not _dirs and
-                not _files and
-                confirm(path) and
-                not os.path.ismount(path)):
+        if (
+            (regex is None or regex.search(path))
+            and (exclude is None or not exclude.search(path))
+            and not _dirs
+            and not _files
+            and confirm(path)
+            and not os.path.ismount(path)
+        ):
             os.rmdir(path)
 
 
 def regex_rename(top, pattern, repl, maxdepth=None):
-    '''Rename files recursively using regular expressions substitution.
+    """Rename files recursively using regular expressions substitution.
 
     :param top: The top directory to start walking.
 
@@ -209,8 +230,9 @@ def regex_rename(top, pattern, repl, maxdepth=None):
 
        .. versionadded:: 1.2.1
 
-    '''
+    """
     from re import subn as _re_subn
+
     if isinstance(pattern, str):
         pattern = _rcompile(pattern)
     depth = 0
@@ -227,12 +249,12 @@ def regex_rename(top, pattern, repl, maxdepth=None):
                 _dirs[:] = []
 
 
-filter_not_hidden = lambda path, _st: (path[0] != '.') and ('/.' not in path)
+filter_not_hidden = lambda path, _st: (path[0] != ".") and ("/." not in path)
 filter_false = lambda path, stat_info: False
 
 
 def get_regex_filter(regex):
-    '''Return a filter for "walk" based on a regular expression.'''
+    """Return a filter for "walk" based on a regular expression."""
     if isinstance(regex, str):
         regex = _rcompile(regex)
 
@@ -243,7 +265,7 @@ def get_regex_filter(regex):
 
 
 def get_wildcard_filter(pattern):
-    '''Return a filter for "walk" based on a wildcard pattern a la fnmatch.'''
+    """Return a filter for "walk" based on a wildcard pattern a la fnmatch."""
     regex = _get_regex(pattern)
 
     def _filter(path, stat_info):
@@ -263,25 +285,25 @@ def get_mime_filter(mime_start):
 
 
 def nice_size(size):
-    '''Formats `size` to a nice human-friendly format by appending one of `Kilo`,
+    """Formats `size` to a nice human-friendly format by appending one of `Kilo`,
     `Mega`, `Giga`, `Tera`, `Peta`, or `Eta` suffix.
 
-    '''
-    tails = ' KMGTPE'
+    """
+    tails = " KMGTPE"
     order, highest = 0, len(tails) - 1
     while (size >= 1024) and (order < highest):
         size /= 1024
         order += 1
-    res = ('%.2f' % size).rstrip('0').rstrip('.')
-    return '%s%s' % (res, tails[order])
+    res = ("%.2f" % size).rstrip("0").rstrip(".")
+    return "%s%s" % (res, tails[order])
 
 
 def stat(path):
-    '''
+    """
     Return file or file system status.
 
     This is the same as the function ``os.stat`` but raises no error.
-    '''
+    """
     try:
         return os.stat(path)
     except os.error:
@@ -289,7 +311,7 @@ def stat(path):
 
 
 def lstat(path):
-    '''Same as `os.lstat`, but raises no error.'''
+    """Same as `os.lstat`, but raises no error."""
     try:
         return os.lstat(path)
     except os.error:
@@ -303,16 +325,16 @@ def set_stat(fname, stat_info):
 
 
 def read_file(path):
-    '''Read a full file content and return an string.'''
+    """Read a full file content and return an string."""
     try:
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             return f.read()
     except OSError:
-        return ''
+        return ""
 
 
 def listdir(path):
-    '''Same as ``os.listdir`` but normalizes `path` and raises no error.'''
+    """Same as ``os.listdir`` but normalizes `path` and raises no error."""
     try:
         return os.listdir(normalize_path(path))
     except os.error:
@@ -335,6 +357,7 @@ def _list_one(fname):
 
 def _list(pattern):
     from stat import S_ISDIR as _ISDIR
+
     if has_magic(pattern):
         head, tail = os.path.split(pattern)
         for dirname, st in _list(head):
@@ -351,11 +374,11 @@ def _list(pattern):
         for item in _list_one(pattern):
             yield item
     else:
-        yield ('', lstat(os.curdir))
+        yield ("", lstat(os.curdir))
 
 
 def imap(func, pattern):
-    r'''Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ... for each dir
+    r"""Yields `func(file_0, stat_0)`, `func(file_1, stat_1)`, ... for each dir
     path. The `pattern` may contain:
 
     - Simple shell-style wild-cards à la `fnmatch`.
@@ -364,7 +387,7 @@ def imap(func, pattern):
       in "(?:[^.].*)$" or "(?i).*\.jpe?g$". Remember to add the end mark '$'
       if needed.
 
-    '''
+    """
     for item, st in _list(pattern):
         res = func(item, st)
         if res is not None:
@@ -372,7 +395,7 @@ def imap(func, pattern):
 
 
 def walk_up(start, sentinel):
-    '''Given a `start` directory walk-up the file system tree until either the
+    """Given a `start` directory walk-up the file system tree until either the
     FS root is reached or the `sentinel` is found.
 
     The `sentinel` must be a string containing the file name to be found.
@@ -383,8 +406,9 @@ def walk_up(start, sentinel):
 
     If `start` path exists but is not a directory an OSError is raised.
 
-    '''
+    """
     from os.path import abspath, exists, isdir, join, dirname
+
     current = abspath(start)
     if not exists(current) or not isdir(current):
         raise OSError('Invalid directory "%s"' % current)
@@ -404,7 +428,7 @@ from os import makedirs
 
 
 def ensure_filename(filename, yields=False):
-    '''Ensures the existence of a file with a given filename.
+    """Ensures the existence of a file with a given filename.
 
     If the filename is taken and is not pointing to a file (or a link to a
     file) an OSError is raised.  If `exist_ok` is False the filename must not
@@ -423,25 +447,24 @@ def ensure_filename(filename, yields=False):
 
     .. versionadded:: 1.6.1  Added parameter `yield`.
 
-    '''
+    """
     if not os.path.exists(filename):
         filename = normalize_path(filename)
         dirname = os.path.dirname(filename)
         makedirs(dirname, exist_ok=True)
         # TODO: Better hanlding of mode for reading/writing.
-        fh = open(filename, 'w+b')
+        fh = open(filename, "w+b")
         if not yields:
             fh.close()
         else:
             return fh
     else:
         if not os.path.isfile(filename):
-            raise OSError('Expected a file but another thing is found \'%s\'' %
-                          filename)
+            raise OSError("Expected a file but another thing is found '%s'" % filename)
 
 
 def concatfiles(*files):
-    '''Concat several files to a single one.
+    """Concat several files to a single one.
 
     Each positional argument must be either:
 
@@ -456,23 +479,24 @@ def concatfiles(*files):
     Alternatively if there are only two positional arguments and the first is
     a collection, the sources will be the members of the first argument.
 
-    '''
+    """
     import shutil
     from xotl.tools.values.simple import force_iterable_coerce
     from xotl.tools.params import check_count
-    check_count(files, 2, caller='concatfiles')
+
+    check_count(files, 2, caller="concatfiles")
     if len(files) == 2:
         files, target = force_iterable_coerce(files[0]), files[1]
     else:
         files, target = files[:-1], files[-1]
     if isinstance(target, str):
-        target, opened = open(target, 'wb'), True
+        target, opened = open(target, "wb"), True
     else:
         opened = False
     try:
         for f in files:
             if isinstance(f, str):
-                fh = open(f, 'rb')
+                fh = open(f, "rb")
                 closefh = True
             else:
                 fh = f

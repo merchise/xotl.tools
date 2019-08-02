@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Records definitions.
+"""Records definitions.
 
 A record allows to describe plain external data and a simplified model to
 *read* it.  The main use of records is to represent data that is read from a
@@ -15,7 +15,7 @@ A record allows to describe plain external data and a simplified model to
 
 See the `record`:class: class to find out how to use it.
 
-'''
+"""
 
 
 from xotl.tools.symbols import Unset
@@ -24,31 +24,36 @@ from xotl.tools.future.functools import lru_cache
 
 @lru_cache()
 def field_descriptor(field_name):
-    '''Returns a read-only descriptor for `field_name`.'''
+    """Returns a read-only descriptor for `field_name`."""
+
     class descriptor:
         def __get__(self, instance, owner):
             if instance:
-                return owner.get_field(instance._raw_data,
-                                       owner._rec_fields[field_name])
+                return owner.get_field(
+                    instance._raw_data, owner._rec_fields[field_name]
+                )
             else:
                 return self
+
     return descriptor
 
 
 class _record_type(type):
     @staticmethod
     def _is_rec_definition(attr, val=Unset):
-        result = not attr.startswith('_') and attr.upper() == attr
+        result = not attr.startswith("_") and attr.upper() == attr
         if val is not Unset:
             from numbers import Integral
+
             result = result and isinstance(val, (Integral, str))
         return result
 
     @staticmethod
     def is_reader(attr, func, fields=None):
         from xotl.tools.future.types import FunctionType
+
         attr = attr.lower()
-        good_name = attr.startswith('_') and attr.endswith('_reader')
+        good_name = attr.startswith("_") and attr.endswith("_reader")
         good_type = isinstance(func, (FunctionType, staticmethod))
         return good_name and good_type
 
@@ -56,22 +61,28 @@ class _record_type(type):
         def static(f):
             return f if isinstance(f, staticmethod) else staticmethod(f)
 
-        cls_fields = {attr: val for attr, val in attrs.items()
-                      if cls._is_rec_definition(attr, val)}
-        descriptors = {attr.lower(): field_descriptor(attr)()
-                       for attr in cls_fields}
-        readers = {attr.lower(): static(func) for attr, func in attrs.items()
-                   if cls.is_reader(attr, func)}
+        cls_fields = {
+            attr: val
+            for attr, val in attrs.items()
+            if cls._is_rec_definition(attr, val)
+        }
+        descriptors = {attr.lower(): field_descriptor(attr)() for attr in cls_fields}
+        readers = {
+            attr.lower(): static(func)
+            for attr, func in attrs.items()
+            if cls.is_reader(attr, func)
+        }
         new_attrs = dict(attrs, **descriptors)
         new_attrs.update(readers)
         result = super().__new__(cls, name, bases, new_attrs)
         # Make a copy, or else the super-class attribute gets contaminated
-        fields = dict(getattr(result, '_rec_fields', {}))
-        index = dict(getattr(result, '_rec_index', {}))
+        fields = dict(getattr(result, "_rec_fields", {}))
+        index = dict(getattr(result, "_rec_index", {}))
         fields.update(cls_fields)
         if len(fields) != len({val for val in fields.values()}):
-            msg = ('Duplicated field index definition in class "%s"' % name)
+            msg = 'Duplicated field index definition in class "%s"' % name
             import logging
+
             logger = logging.getLogger(__name__)
             logger.error(msg)
             logger.debug(fields)
@@ -83,12 +94,13 @@ class _record_type(type):
 
     def get_field(self, raw_data, field):
         from xotl.tools.symbols import Undefined
+
         field_name = self._rec_index[field]
         try:
             value = raw_data[field]
         except (IndexError, KeyError):
             value = Undefined
-        reader_name = '_%s_reader' % field_name.lower()
+        reader_name = "_%s_reader" % field_name.lower()
         reader = getattr(self, reader_name, None)
         if reader:
             return reader(value)
@@ -97,7 +109,7 @@ class _record_type(type):
 
 
 class record(metaclass=_record_type):
-    '''Base record class.
+    """Base record class.
 
     Records allow to represent a sequence or mapping of values extracted from
     external sources into a dict-like Python value.
@@ -164,21 +176,21 @@ class record(metaclass=_record_type):
        context into the `kwargs` argument would be possible to write readers
        that fetch other instances.
 
-    '''
+    """
 
     def __init__(self, raw_data):
         self._raw_data = raw_data
 
     def __repr__(self):
         cls = type(self)
-        return '%s(%r)' % (cls.__name__, self._raw_data)
+        return "%s(%r)" % (cls.__name__, self._raw_data)
 
     def __getitem__(self, field_index):
         return type(self).get_field(self._raw_data, field_index)
 
 
 def isnull(val):
-    '''Return True if `val` is null.
+    """Return True if `val` is null.
 
     Null values are None, the empty string and any False instance of
     `xotl.tools.symbols.boolean`:class:.
@@ -188,14 +200,15 @@ def isnull(val):
     correctly treated while other sources that provide numbers (and 0 is a
     valid number) are not misinterpreted as null.
 
-    '''
+    """
     from xotl.tools.symbols import boolean
-    return val in (None, '') or (isinstance(val, boolean) and not val)
+
+    return val in (None, "") or (isinstance(val, boolean) and not val)
 
 
 # Standard readers
 def check_nullable(val, nullable):
-    '''Check the restriction of nullable.
+    """Check the restriction of nullable.
 
     Return True if the val is non-null.  If nullable is True and the val is
     null returns False.  If `nullable` is False and `val` is null, raise a
@@ -203,17 +216,17 @@ def check_nullable(val, nullable):
 
     Test for null is done with function `isnull`:func:.
 
-    '''
+    """
     null = isnull(val)
     if not null or nullable:
         return not null
     else:
-        raise ValueError('NULL value was not expected here')
+        raise ValueError("NULL value was not expected here")
 
 
 @lru_cache()
 def datetime_reader(format, nullable=False, default=None, strict=True):
-    '''Returns a datetime reader.
+    """Returns a datetime reader.
 
     :param format: The format the datetime is expected to be in the external
        data.  This is passed to `datetime.datetime.strptime`:func:.
@@ -235,7 +248,7 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
     .. versionchanged: 1.6.7.1  Keep the meaning of null when testing for
        `default` if strict is False and dateutil is not available.
 
-    '''
+    """
     try:
         from dateutil.parser import parse
     except ImportError:
@@ -244,6 +257,7 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
     def reader(val):
         if check_nullable(val, nullable):
             from datetime import datetime
+
             try:
                 return datetime.strptime(val, format)
             except ValueError:
@@ -260,12 +274,13 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
                         raise ValueError
         else:
             return default
+
     return reader
 
 
 @lru_cache()
 def date_reader(format, nullable=False, default=None, strict=True):
-    '''Return a date reader.
+    """Return a date reader.
 
     This is similar to `datetime_reader`:func: but instead of returning a
     `datetime.datetime`:class: it returns a `datetime.date`.
@@ -275,9 +290,8 @@ def date_reader(format, nullable=False, default=None, strict=True):
 
     .. versionadded: 1.6.8
 
-    '''
-    reader = datetime_reader(format, nullable=nullable, default=default,
-                             strict=strict)
+    """
+    reader = datetime_reader(format, nullable=nullable, default=default, strict=strict)
 
     def res(val):
         result = reader(val)
@@ -285,56 +299,66 @@ def date_reader(format, nullable=False, default=None, strict=True):
             return result.date()
         else:
             return result
+
     return res
 
 
 @lru_cache()
-def boolean_reader(true=('1', ), nullable=False, default=None):
-    '''Returns a boolean reader.
+def boolean_reader(true=("1",), nullable=False, default=None):
+    """Returns a boolean reader.
 
     :param true: A collection of raw values considered to be True.  Only the
                  values in this collection will be considered True values.
 
-    '''
+    """
+
     def reader(val):
         if check_nullable(val, nullable):
             return val in true
         else:
             return default
+
     return reader
 
 
 @lru_cache()
 def integer_reader(nullable=False, default=None):
-    '''Returns an integer reader.'''
+    """Returns an integer reader."""
+
     def reader(val):
         if check_nullable(val, nullable):
             return int(val)
         else:
             return default
+
     return reader
 
 
 @lru_cache()
 def decimal_reader(nullable=False, default=None):
-    '''Returns a Decimal reader.'''
+    """Returns a Decimal reader."""
+
     def reader(val):
         if check_nullable(val, nullable):
             from decimal import Decimal
+
             return Decimal(val)
         else:
             return default
+
     return reader
 
 
 @lru_cache()
 def float_reader(nullable=False, default=None):
-    '''Returns a float reader.'''
+    """Returns a float reader."""
+
     def reader(val):
         if check_nullable(val, nullable):
             return float(val)
         else:
             return default
+
     return reader
 
 

@@ -11,8 +11,8 @@ from hypothesis import strategies
 
 
 @strategies.composite
-def timespans(draw, dates=None, unbounds='any', always_valid=True):
-    '''A strategy that generates `xotl.tools.future.datetime.TimeSpan`:class:.
+def timespans(draw, dates=None, unbounds="any", always_valid=True):
+    """A strategy that generates `xotl.tools.future.datetime.TimeSpan`:class:.
 
     This is a `hypothesis`_ strategy.
 
@@ -43,24 +43,23 @@ def timespans(draw, dates=None, unbounds='any', always_valid=True):
 
     .. versionadded:: 1.8.2
 
-    '''
+    """
     from xotl.tools.future.datetime import TimeSpan
+
     if dates is None:
         dates = strategies.dates()
     maybe = strategies.none() | dates
-    if unbounds in ('any', 'past', 'future', 'none'):
-        if unbounds in ('any', 'past'):
+    if unbounds in ("any", "past", "future", "none"):
+        if unbounds in ("any", "past"):
             date1 = draw(maybe)
         else:
             date1 = draw(dates)
-        if unbounds in ('any', 'future'):
+        if unbounds in ("any", "future"):
             date2 = draw(maybe)
         else:
             date2 = draw(dates)
     else:
-        raise ValueError(
-            "unbounds should be one of 'any', 'past', or 'future'."
-        )
+        raise ValueError("unbounds should be one of 'any', 'past', or 'future'.")
     if date1 and date2 and always_valid:
         start1 = min(date1, date2)
         end1 = max(date1, date2)
@@ -71,8 +70,8 @@ def timespans(draw, dates=None, unbounds='any', always_valid=True):
 
 
 @strategies.composite
-def datetimespans(draw, dates=None, unbounds='any', always_valid=True):
-    '''A strategy that generates `xotl.tools.future.datetime.DateTimeSpan`:class:.
+def datetimespans(draw, dates=None, unbounds="any", always_valid=True):
+    """A strategy that generates `xotl.tools.future.datetime.DateTimeSpan`:class:.
 
     This is a `hypothesis`_ strategy.
 
@@ -103,24 +102,23 @@ def datetimespans(draw, dates=None, unbounds='any', always_valid=True):
 
     .. versionadded:: 1.9.7
 
-    '''
+    """
     from xotl.tools.future.datetime import DateTimeSpan
+
     if dates is None:
         dates = strategies.datetimes()
     maybe = strategies.none() | dates
-    if unbounds in ('any', 'past', 'future', 'none'):
-        if unbounds in ('any', 'past'):
+    if unbounds in ("any", "past", "future", "none"):
+        if unbounds in ("any", "past"):
             date1 = draw(maybe)
         else:
             date1 = draw(dates)
-        if unbounds in ('any', 'future'):
+        if unbounds in ("any", "future"):
             date2 = draw(maybe)
         else:
             date2 = draw(dates)
     else:
-        raise ValueError(
-            "unbounds should be one of 'any', 'past', or 'future'."
-        )
+        raise ValueError("unbounds should be one of 'any', 'past', or 'future'.")
     if date1 and date2 and always_valid:
         start1 = min(date1, date2)
         end1 = max(date1, date2)

@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-r'''Utilities to obtain identifiers that are unique at different contexts.
+r"""Utilities to obtain identifiers that are unique at different contexts.
 
 Contexts could be global, host local or application local.  All standard
 `uuid`:mod: tools are included in this one: `UUID`:class:, `uuid1`:func:,
@@ -24,19 +24,29 @@ This module also contains:
 
 .. deprecated:: 2.1.0
 
-'''
+"""
 
-from uuid import (UUID, uuid1, uuid3, uuid4, uuid5, getnode,    # noqa
-                  NAMESPACE_DNS, NAMESPACE_URL, NAMESPACE_OID, NAMESPACE_X500)
+from uuid import (
+    UUID,
+    uuid1,
+    uuid3,
+    uuid4,
+    uuid5,
+    getnode,  # noqa
+    NAMESPACE_DNS,
+    NAMESPACE_URL,
+    NAMESPACE_OID,
+    NAMESPACE_X500,
+)
 
 
-def str_uuid(random=False):      # pragma: no cover
-    '''Return a "Global Unique ID" as a string.
+def str_uuid(random=False):  # pragma: no cover
+    """Return a "Global Unique ID" as a string.
 
     :param random: If True, a random uuid is generated (does not use host id).
 
     .. deprecated:: 2.1.0 Use `uuid.uuid4`:func: or `uuid.uuid1`:func:.
 
-    '''
+    """
     fn = uuid4 if random else uuid1
     return str(fn())

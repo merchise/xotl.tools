@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Some generic coercers (or checkers) for value types.
+"""Some generic coercers (or checkers) for value types.
 
 This module coercion function are not related in any way to deprecated old
 python feature, are similar to a combination of object mold/check:
@@ -30,7 +30,7 @@ Also contains sub-modules to obtain, convert and check values of common types.
 
 .. versionadded:: 1.7.0
 
-'''
+"""
 
 import re
 from abc import ABCMeta
@@ -40,15 +40,16 @@ from xotl.tools.symbols import boolean, Unset
 from xotl.tools.fp.prove import vouch
 
 from xotl.tools.deprecation import deprecate_linked
-deprecate_linked(check='xotl.tools.values')
+
+deprecate_linked(check="xotl.tools.values")
 del deprecate_linked
 
 
-_coercer_decorator = lwraps(__coercer__=True)    # FIX: refactor
+_coercer_decorator = lwraps(__coercer__=True)  # FIX: refactor
 
 
 class logical(boolean):
-    '''Represent Common Lisp two special values `t` and `nil`.
+    """Represent Common Lisp two special values `t` and `nil`.
 
     Include redefinition of `__call__`:meth: to check values with special
     semantic:
@@ -64,14 +65,16 @@ class logical(boolean):
     Constructor could receive a valid name ('nil' or 't') or any other
     ``boolean`` instance.
 
-    '''
+    """
+
     __slots__ = ()
-    _valid = {'nil': False, 't': True}
+    _valid = {"nil": False, "t": True}
 
     def __new__(cls, arg):
         from xotl.tools.symbols import boolean
         from xotl.tools.symbols import Invalid
-        name = ('t' if arg else 'nil') if isinstance(arg, boolean) else arg
+
+        name = ("t" if arg else "nil") if isinstance(arg, boolean) else arg
         value = cls._valid.get(name, Invalid)
         if value is not Invalid:
             return super().__new__(cls, name, value)
@@ -80,17 +83,17 @@ class logical(boolean):
             raise TypeError(msg.format(arg))
 
     def __call__(self, arg):
-        if self:    # self is t
+        if self:  # self is t
             return arg if arg or arg is nil else self
-        else:    # self is nil
+        else:  # self is nil
             return t if arg is self else self
 
 
-nil, t = logical('nil'), logical('t')
+nil, t = logical("nil"), logical("t")
 
 
 class MetaCoercer(ABCMeta):
-    r'''Meta-class for `coercer`:class:.
+    r"""Meta-class for `coercer`:class:.
 
     This meta-class allows that several objects are considered valid instances
     of `coercer`:class:\ :
@@ -104,14 +107,16 @@ class MetaCoercer(ABCMeta):
 
     See the class declaration (`coercer`:class:) for more information.
 
-    '''
+    """
+
     def __instancecheck__(self, instance):
-        return (getattr(instance, '__coercer__', False) or
-                super().__instancecheck__(instance))
+        return getattr(instance, "__coercer__", False) or super().__instancecheck__(
+            instance
+        )
 
 
 class coercer(metaclass=MetaCoercer):
-    '''Special coercer class.
+    """Special coercer class.
 
     This class has several facets:
 
@@ -138,18 +143,20 @@ class coercer(metaclass=MetaCoercer):
         >>> isinstance(age_coerce, coercer)
         True
 
-    '''
+    """
+
     __slots__ = ()
     __coercer__ = True
 
     def __new__(cls, source):
         from types import FunctionType as function
         from xotl.tools.symbols import boolean
+
         if source == 1 and isinstance(source, boolean):
             return identity_coerce
         elif source is None or (source == 0 and isinstance(source, boolean)):
             return void_coerce
-        elif isinstance(source, coercer):    # TODO: don't use isinstance
+        elif isinstance(source, coercer):  # TODO: don't use isinstance
             return source
         elif isinstance(source, (function, staticmethod, classmethod)):
             return _coercer_decorator(source)
@@ -159,7 +166,7 @@ class coercer(metaclass=MetaCoercer):
 
 
 def coercer_name(arg, join=None):
-    '''Get the name of a coercer.
+    """Get the name of a coercer.
 
     :param arg: Coercer to get the name.  Also processes collections (tuple,
            list, or set) of coercers.  Any other value is considered invalid
@@ -185,7 +192,7 @@ def coercer_name(arg, join=None):
     This function not only works with coercers, all objects that fulfill
     needed protocol to get names will also be valid.
 
-    '''
+    """
     # TODO: Maybe this function must be moved to `xotl.tools.names`
     if isinstance(arg, (tuple, list, set)):
         res = type(arg)(coercer_name(c) for c in arg)
@@ -197,33 +204,33 @@ def coercer_name(arg, join=None):
             res = arg.__name__
         except Exception:
             res = str(arg)
-        suffix = str('_coerce')
+        suffix = str("_coerce")
         if res.endswith(suffix):
-            res = res[:-len(suffix)]
+            res = res[: -len(suffix)]
         return res
 
 
 @coercer
 def identity_coerce(arg):
-    'Leaves unchanged the passed argument `arg`.'
+    "Leaves unchanged the passed argument `arg`."
     return arg
 
 
 @coercer
 def void_coerce(arg):
-    '''Always `nil`.'''
+    """Always `nil`."""
     return nil
 
 
 @coercer
 def type_coerce(arg):
-    '''Check if `arg` is a valid type.'''
+    """Check if `arg` is a valid type."""
     return arg if isinstance(arg, type) else nil
 
 
 @coercer
 def types_tuple_coerce(arg):
-    '''Check if `arg` is valid for `isinstance` or `issubclass` 2nd argument.
+    """Check if `arg` is valid for `isinstance` or `issubclass` 2nd argument.
 
     Type checkers are any class, a type or tuple of types.  For example::
 
@@ -238,9 +245,9 @@ def types_tuple_coerce(arg):
 
     See `type_coerce` for more information.
 
-    '''
+    """
     if t(type_coerce(arg)):
-        return (arg, )
+        return (arg,)
     elif isinstance(arg, tuple) and all(t(type_coerce(tp)) for tp in arg):
         return arg
     else:
@@ -249,26 +256,27 @@ def types_tuple_coerce(arg):
 
 @coercer
 def callable_coerce(arg):
-    '''Check if `arg` is a callable object.'''
+    """Check if `arg` is a callable object."""
     return arg if callable(arg) else nil
 
 
 @coercer
 def file_coerce(arg):
-    '''Check if `arg` is a file-like object.'''
+    """Check if `arg` is a file-like object."""
     from io import IOBase
-    METHODS = ('close', 'write', 'read')
+
+    METHODS = ("close", "write", "read")
     ok = isinstance(arg, IOBase) or all(hasattr(arg, a) for a in METHODS)
     return arg if ok else nil
 
 
 @coercer
 def float_coerce(arg):
-    '''Check if `arg` is a valid float.
+    """Check if `arg` is a valid float.
 
     Other types are checked (string, int, complex).
 
-    '''
+    """
     if isinstance(arg, float):
         return arg
     elif isinstance(arg, int):
@@ -286,11 +294,11 @@ def float_coerce(arg):
 
 @coercer
 def int_coerce(arg):
-    '''Check if `arg` is a valid integer.
+    """Check if `arg` is a valid integer.
 
     Other types are checked (string, float, complex).
 
-    '''
+    """
     if isinstance(arg, int):
         return arg
     else:
@@ -304,11 +312,11 @@ def int_coerce(arg):
 
 @coercer
 def number_coerce(arg):
-    '''Check if `arg` is a valid number (integer or float).
+    """Check if `arg` is a valid number (integer or float).
 
     Types that are checked (string, int, float, complex).
 
-    '''
+    """
     if isinstance(arg, int):
         return arg
     else:
@@ -322,15 +330,16 @@ def number_coerce(arg):
 
 @coercer
 def positive_int_coerce(arg):
-    '''Check if `arg` is a valid positive integer.'''
+    """Check if `arg` is a valid positive integer."""
     res = int_coerce(arg)
     return res if res is nil or res >= 0 else nil
 
 
 def create_int_range_coerce(min, max):
-    '''Create a coercer to check integers between a range.'''
+    """Create a coercer to check integers between a range."""
     min, max = vouch(int_coerce, min), vouch(int_coerce, max)
     if min < max:
+
         @coercer
         def inner(arg):
             'Check if `arg` is a valid integer between "{}" and "{}".'
@@ -339,7 +348,8 @@ def create_int_range_coerce(min, max):
                 return arg
             else:
                 return nil
-        inner.__name__ = str('int_between_{}_and_{}_coerce'.format(min, max))
+
+        inner.__name__ = str("int_between_{}_and_{}_coerce".format(min, max))
         inner.__doc__ = inner.__doc__.format(min, max)
         return inner
     else:
@@ -350,53 +360,54 @@ def create_int_range_coerce(min, max):
 # Identifiers and strings
 
 # TODO: In Py3k "ña" is a valid identifier and this regex won't allow it
-_IDENTIFIER_REGEX = re.compile(r'(?i)^[_a-z][\w]*$')
+_IDENTIFIER_REGEX = re.compile(r"(?i)^[_a-z][\w]*$")
 
 
 # XXX: 'eight' pending.
 @coercer
 def identifier_coerce(arg):
-    '''Check if `arg` is a valid Python identifier.
+    """Check if `arg` is a valid Python identifier.
 
     .. note:: Only Python 2's version of valid identifier. This means that
               some Python 3 valid identifiers are not considered valid.  This
               helps to keep things working the same in Python 2 and 3.
 
-    '''
+    """
     ok = isinstance(arg, str) and _IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil
 
 
-_FULL_IDENTIFIER_REGEX = re.compile(r'(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$')
+_FULL_IDENTIFIER_REGEX = re.compile(r"(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$")
 
 
 @coercer
 def full_identifier_coerce(arg):
-    '''Check if `arg` is a valid dotted Python identifier.
+    """Check if `arg` is a valid dotted Python identifier.
 
     See `identifier_coerce`:func: for what "validity" means.
 
-    '''
+    """
     ok = isinstance(arg, str) and _FULL_IDENTIFIER_REGEX.match(arg)
     return str(arg) if ok else nil
 
 
 @coercer
 def names_coerce(arg):
-    '''Check `arg` as a tuple of valid object names (identifiers).
+    """Check `arg` as a tuple of valid object names (identifiers).
 
     If only one string is given, is returned as the only member of the
     resulting tuple.
 
-    '''
+    """
     arg = (arg,) if isinstance(arg, str) else tuple(arg)
     return iterable(identifier_coerce)(arg)
 
 
 # == Iterators ==
 
+
 def create_unique_member_coerce(coerce, container):
-    '''Useful to wrap member coercers when coercing containers.
+    """Useful to wrap member coercers when coercing containers.
 
     See `iterable`:class: and `mapping`:class:.
 
@@ -418,12 +429,12 @@ def create_unique_member_coerce(coerce, container):
       >>> dc(dict(sample))
       nil
 
-    '''
+    """
     coerce = vouch(coercer, coerce)
 
     @coercer
     def inner(arg):
-        '''Check a member with "{}" coercer and warrant that is unique.'''
+        """Check a member with "{}" coercer and warrant that is unique."""
         # assert arg in container
         res = coerce(arg)
         if t(res) and hash(res) != hash(arg) and res in container:
@@ -431,14 +442,14 @@ def create_unique_member_coerce(coerce, container):
         return res
 
     cname = coercer_name(coerce)
-    inner.__name__ = str('unique_member_{}_coerce'.format(cname))
+    inner.__name__ = str("unique_member_{}_coerce".format(cname))
     inner.__doc__ = inner.__doc__.format(cname)
     return inner
 
 
 @coercer
 def sized_coerce(arg):
-    '''Return a valid sized iterable from `arg`.
+    """Return a valid sized iterable from `arg`.
 
     If `arg` is iterable but not sized, is converted to a list.  For example::
 
@@ -449,8 +460,9 @@ def sized_coerce(arg):
       >>> sized_coerce(s) is s
       True
 
-    '''
+    """
     from collections import Iterable, Sized
+
     if isinstance(arg, Iterable):
         return arg if isinstance(arg, Sized) else list(arg)
     else:
@@ -459,7 +471,7 @@ def sized_coerce(arg):
 
 @coercer.register
 class custom:
-    '''Base class for any custom coercer.
+    """Base class for any custom coercer.
 
     The field `inner` stores an internal data used for the custom coercer;
     could be a callable, an inner coercer, or a tuple of inner checkers if
@@ -484,11 +496,12 @@ class custom:
     are used to call `coercer_name`:func: in `__str__`:meth: and
     `__repr__`:meth: special methods.
 
-    '''
-    __slots__ = ('inner', 'scope')
+    """
 
-    _str_join = '_'
-    _repr_join = ', '
+    __slots__ = ("inner", "scope")
+
+    _str_join = "_"
+    _repr_join = ", "
 
     def __init__(self, *args, **kwargs):
         # This constructor is a placeholder for those custom coercers that can
@@ -498,24 +511,24 @@ class custom:
     def __str__(self):
         name = coercer_name(self.inner, join=self._str_join)
         cls_name = type(self).__name__
-        return str('{}_{}_coerce'.format(name, cls_name))
+        return str("{}_{}_coerce".format(name, cls_name))
 
     def __repr__(self):
         name = coercer_name(self.inner, join=self._repr_join)
         cls_name = type(self).__name__
-        return str('{}({})'.format(cls_name, name))
+        return str("{}({})".format(cls_name, name))
 
     def __call__(self, arg):
         return nil
 
     @classmethod
     def flatten(cls, obj, avoid=Unset):
-        '''Flatten a coercer set.
+        """Flatten a coercer set.
 
         :param obj: Could be a coercer representing other inner coercers, or a
                tuple or list containing coercers.
 
-        '''
+        """
         aux = obj.inner if isinstance(obj, cls) else obj
         if isinstance(aux, (tuple, list)):
             if not types_tuple_coerce(aux):
@@ -530,7 +543,7 @@ class custom:
 
 
 class istype(custom):
-    '''Pure type-checker.
+    """Pure type-checker.
 
     It's constructed from an argument valid for `types_tuple_coerce`:func:
     coercer.
@@ -553,7 +566,8 @@ class istype(custom):
         >>> number_coerce('1.25')
         nil
 
-    '''
+    """
+
     __slots__ = ()
 
     def __new__(cls, types):
@@ -569,7 +583,7 @@ class istype(custom):
 
 
 class typecast(istype):
-    '''A type-caster.
+    """A type-caster.
 
     It's constructed from an argument valid for `types_tuple_coerce`:func:
     coercer.  Similar to `istype`:class: but try to convert the value if
@@ -585,7 +599,8 @@ class typecast(istype):
         >>> int_cast('1x')
         nil
 
-    '''
+    """
+
     __slots__ = ()
 
     def __call__(self, arg):
@@ -602,7 +617,7 @@ class typecast(istype):
 
 
 class safe(custom):
-    '''Uses a function (or callable) in a safe way.
+    """Uses a function (or callable) in a safe way.
 
     Receives a coercer that expects only one argument and returns another
     value.
@@ -614,7 +629,8 @@ class safe(custom):
     exception is raised the coercer returns ``nil`` and the error is saved in
     the instance attribute ``scope``.
 
-    '''
+    """
+
     __slots__ = ()
 
     def __init__(self, func):
@@ -624,6 +640,7 @@ class safe(custom):
     def __call__(self, arg):
         try:
             from xotl.tools.symbol import boolean
+
             res = self.inner(arg)
             return logical(res) if isinstance(res, boolean) else res
         except Exception as error:
@@ -632,7 +649,7 @@ class safe(custom):
 
 
 class compose(custom):
-    '''Returns the composition of several inner `coercers`.
+    """Returns the composition of several inner `coercers`.
 
     ``compose(f1, ... fn)`` is equivalent to f1(...(fn(arg))...)``.
 
@@ -645,7 +662,8 @@ class compose(custom):
     If no value results in `coercers`, a default coercer could be given as a
     keyword argument; `identity_coerce` is assumed if missing.
 
-    '''
+    """
+
     __slots__ = ()
 
     def __new__(cls, *coercers, **kwds):
@@ -658,7 +676,7 @@ class compose(custom):
         elif count == 1:
             return inner[0]
         else:
-            res = kwds.pop('default', identity_coerce)
+            res = kwds.pop("default", identity_coerce)
             if not kwds:
                 return res
             else:
@@ -683,14 +701,15 @@ class compose(custom):
 
 
 class some(custom):
-    '''Represent OR composition of several inner `coercers`.
+    """Represent OR composition of several inner `coercers`.
 
     ``compose(f1, ... fn)`` is equivalent to f1(arg) or f2(arg) ... fn(arg)``
     in the sense "the first not `nil`".
 
     If no coercer is given return `void_coerce`:func:.
 
-    '''
+    """
+
     __slots__ = ()
 
     def __new__(cls, *coercers):
@@ -720,7 +739,7 @@ class some(custom):
 
 
 class combo(custom):
-    '''Represent a zip composition of several inner `coercers`.
+    """Represent a zip composition of several inner `coercers`.
 
     An instance of this class is constructed from a sequence of coercers and
     the its purpose is coerce a sequence of values.  Return a sequence\
@@ -743,7 +762,8 @@ class combo(custom):
     .. [#type] The returned sequence is of the same type as the argument
                sequence if possible.
 
-    '''
+    """
+
     __slots__ = ()
 
     def __init__(self, *coercers):
@@ -753,6 +773,7 @@ class combo(custom):
 
     def __call__(self, arg):
         from collections import Iterable
+
         if isinstance(arg, Iterable):
             coercers = self.inner
             items = iter(arg)
@@ -783,7 +804,7 @@ class combo(custom):
 
 
 class pargs(custom):
-    r'''Create a inner coercer that check variable argument passing.
+    r"""Create a inner coercer that check variable argument passing.
 
     Created coercer closure must always receives an argument that is an valid
     iterable with all members coerced properly with the argument of this outer
@@ -842,7 +863,7 @@ class pargs(custom):
     See `combo`:class: for a combined coercer that  validate each member with
     a separate member coercer.
 
-    '''
+    """
     __slots__ = ()
 
     def __init__(self, arg_coerce):
@@ -851,6 +872,7 @@ class pargs(custom):
 
     def __call__(self, arg):
         from collections import Iterable
+
         coerce = self.inner
         if isinstance(arg, Iterable):
             arg = tuple(arg)
@@ -858,7 +880,7 @@ class pargs(custom):
                 item = arg[0]
                 aux = coerce(item)
                 if t(aux):
-                    res = (aux, )
+                    res = (aux,)
                 elif isinstance(item, Iterable):
                     res = Unset
                     arg = tuple(item)
@@ -890,7 +912,7 @@ class pargs(custom):
 
 
 class iterable(custom):
-    '''Create a inner coercer that coerces an `iterable` member a member.
+    """Create a inner coercer that coerces an `iterable` member a member.
 
     See constructor for more information.
 
@@ -923,11 +945,12 @@ class iterable(custom):
     (1) iterables that are coerced without modifications, (2) the modified
     ones but conserving its type, and (3) those that are returned in a list.
 
-    '''
+    """
+
     __slots__ = ()
 
     def __init__(self, member_coerce, outer_coerce=True):
-        '''Constructor for `iterable`:class: coercers.
+        """Constructor for `iterable`:class: coercers.
 
         :param member_coerce: A coerce to check each iterable member.
 
@@ -935,14 +958,15 @@ class iterable(custom):
                iterable.  Normally a type or tuple of types subclases of
                ``collections.Iterable``.
 
-        '''
+        """
         super().__init__()
         member_coerce = vouch(coercer, member_coerce)
         outer_coerce = compose(coercer(outer_coerce), sized_coerce)
         self.inner = (member_coerce, outer_coerce)
 
     def __call__(self, arg):
-        from collections import (Set, Sequence, MutableSequence)
+        from collections import Set, Sequence, MutableSequence
+
         member_coerce, outer_coerce = self.inner
         modified = False
         aux = outer_coerce(arg)
@@ -985,7 +1009,7 @@ class iterable(custom):
 
 
 class mapping(custom):
-    '''Create a coercer to check dictionaries.
+    """Create a coercer to check dictionaries.
 
     Receives two coercers, one for keys and one for values.
 
@@ -1019,20 +1043,22 @@ class mapping(custom):
       >>> {1: int, 1.0: float, 1+0j: complex} == {1: complex}
       True
 
-    '''
+    """
+
     __slots__ = ()
-    _str_join = _repr_join = ':'
+    _str_join = _repr_join = ":"
 
     def __new__(cls, key_coercer=Unset, value_coercer=Unset):
-        '''Constructor for `mapping`:class: coercers.
+        """Constructor for `mapping`:class: coercers.
 
         :param key_coercer: A coerce to check each one of the mapping keys.
 
         :param value_coercer: A coerce to check each one of corresponding
                mapping values.
 
-        '''
+        """
         from collections import Mapping
+
         if key_coercer is value_coercer is Unset:
             return coercer(Mapping)
         else:
@@ -1043,7 +1069,8 @@ class mapping(custom):
             return self
 
     def __call__(self, arg):
-        from collections import (Mapping, MutableMapping)
+        from collections import Mapping, MutableMapping
+
         if isinstance(arg, Mapping):
             key_coercer, value_coercer = self.inner
             res = arg

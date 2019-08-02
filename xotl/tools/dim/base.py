@@ -7,17 +7,14 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''The standard `physical quantities`_.
+"""The standard `physical quantities`_.
 
 .. _physical quantities: \
 https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
 
-'''
+"""
 
-from .meta import (
-    Dimension,
-    UNIT,
-)
+from .meta import Dimension, UNIT
 
 
 def kilo(v):
@@ -37,7 +34,7 @@ def micro(v):
 
 
 def nano(v):
-    return v / (10**9)
+    return v / (10 ** 9)
 
 
 @Dimension.new()
@@ -66,7 +63,7 @@ second = s = Time.s = Time.second
 T = Time
 
 
-@Dimension.new(unit_aliases=('kg', ))
+@Dimension.new(unit_aliases=("kg",))
 class Mass:
     kilogram = UNIT
     gram = kilogram / 1000
@@ -76,7 +73,7 @@ kilogram = kg = Mass.kg
 M = Mass
 
 
-@Dimension.new(unit_aliases='A')
+@Dimension.new(unit_aliases="A")
 class ElectricCurrent:
     ampere = UNIT
     milliampere = milli(ampere)
@@ -86,26 +83,26 @@ A = ampere = ElectricCurrent.A
 I = ElectricCurrent
 
 
-@Dimension.new(unit_aliases='K')
+@Dimension.new(unit_aliases="K")
 class Temperature:
     kelvin = UNIT
 
     @classmethod
     def from_celcius(cls, val):
-        'Convert `val` ºC to K'
+        "Convert `val` ºC to K"
         return (val + 273.15) * cls.kelvin
 
     @classmethod
     def from_fahrenheit(cls, val):
-        'Convert `val` ºF to K'
+        "Convert `val` ºF to K"
         return (val + 459.67) * (5 / 9) * cls.kelvin
 
 
 K = kelvin = Temperature.K
-O = Temperature   # The actual symbol would be the capital letter Theta: Θ
+O = Temperature  # The actual symbol would be the capital letter Theta: Θ
 
 
-@Dimension.new(unit_alias='mol')
+@Dimension.new(unit_alias="mol")
 class Substance:
     mole = UNIT
 
@@ -123,23 +120,23 @@ J = Luminosity
 
 
 # Derived quantities
-Area = L**2
-Volume = L**3
+Area = L ** 2
+Volume = L ** 3
 Volume.metre_cubic = Volume._unit_
-Volume._unitname_ = 'metre_cubic'
+Volume._unitname_ = "metre_cubic"
 
-Frequency = T**-1
+Frequency = T ** -1
 Frequency.Hz = Frequency._unit_
 
-Force = L * M / T**2
-assert hasattr(Force, 'metre_kilogram_per_second_squared')
-assert Force == L * M * T**-2
+Force = L * M / T ** 2
+assert hasattr(Force, "metre_kilogram_per_second_squared")
+assert Force == L * M * T ** -2
 Force.Newton = Force.N = Force._unit_
 
-Presure = M / L / T**2
-assert hasattr(Presure, 'kilogram_per_metre_per_second_squared')
-assert Presure == L**-1 * M * T**-2, 'as defined in Wikipedia'
+Presure = M / L / T ** 2
+assert hasattr(Presure, "kilogram_per_metre_per_second_squared")
+assert Presure == L ** -1 * M * T ** -2, "as defined in Wikipedia"
 Presure.Pascal = Presure.Pa = Presure._unit_
 
 Velocity = L / T
-Acceleration = L / T**2
+Acceleration = L / T ** 2

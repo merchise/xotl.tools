@@ -7,21 +7,28 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Utilities to inspect the CPython's stack.'''
+"""Utilities to inspect the CPython's stack."""
 
 import inspect
 from xotl.tools.deprecation import deprecated
 
 
-__all__ = ('MAX_DEEP', 'getargvalues', 'error_info',
-           'object_info_finder', 'object_finder', 'track_value',
-           'iter_stack', 'iter_frames')
+__all__ = (
+    "MAX_DEEP",
+    "getargvalues",
+    "error_info",
+    "object_info_finder",
+    "object_finder",
+    "track_value",
+    "iter_stack",
+    "iter_frames",
+)
 
 MAX_DEEP = 25
 
 
 def getargvalues(frame):
-    '''Inspects the given frame for arguments and returns a dictionary that
+    """Inspects the given frame for arguments and returns a dictionary that
     maps parameters names to arguments values. If an `*` argument was passed
     then the key on the returning dictionary would be formatted as
     `<name-of-*-param>[index]`.
@@ -38,9 +45,10 @@ def getargvalues(frame):
         >>> autocontained(1, 2, -10, -11)['margs[0]']
         -10
 
-    '''
+    """
     from xotl.tools.values.simple import force_sequence_coerce as array
     from xotl.tools.future.itertools import flatten
+
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
     for keys in pos:
@@ -49,7 +57,7 @@ def getargvalues(frame):
     if args:
         i = 0
         for item in values[args]:
-            res['%s[%s]' % (args, i)] = item
+            res["%s[%s]" % (args, i)] = item
             i += 1
     if kwds:
         res.update(values[kwds])
@@ -57,10 +65,10 @@ def getargvalues(frame):
 
 
 def __error_info(tb, *args, **kwargs):
-    '''Internal function used by `error_info`:func: and
+    """Internal function used by `error_info`:func: and
     `printable_error_info`:func:.
 
-    '''
+    """
     # TODO: Formalize tests for this
     ALL = True
     res = []
@@ -86,10 +94,10 @@ def __error_info(tb, *args, **kwargs):
                     item = frame.f_locals.copy()
                 else:
                     item = {key: frame.f_locals.get(key) for key in attrs}
-                item['function-name'] = func_name
-                item['traceback-deep'] = deep
-                item['line-number'] = tb.tb_lineno
-                item['file-name'] = frame.f_code.co_filename
+                item["function-name"] = func_name
+                item["traceback-deep"] = deep
+                item["line-number"] = tb.tb_lineno
+                item["file-name"] = frame.f_code.co_filename
                 res.append(item)
             tb = tb.tb_next
             deep += 1
@@ -97,12 +105,12 @@ def __error_info(tb, *args, **kwargs):
             if item in kwargs:
                 del kwargs[item]
         if kwargs:
-            res['unprocessed-items'] = kwargs
+            res["unprocessed-items"] = kwargs
     return res
 
 
 def error_info(*args, **kwargs):
-    '''Get error information in current trace-back.
+    """Get error information in current trace-back.
 
     No all trace-back are returned, to select which are returned use:
 
@@ -143,14 +151,15 @@ def error_info(*args, **kwargs):
          ERROR: integer division or modulo by zero
          ...
 
-    '''
+    """
     import sys
+
     _error_type, _error, tb = sys.exc_info()
     return __error_info(tb, *args, **kwargs)
 
 
 def printable_error_info(base, *args, **kwargs):
-    '''Get error information in current trace-back.
+    """Get error information in current trace-back.
 
     No all trace-back are returned, to select which are returned use:
 
@@ -169,19 +178,20 @@ def printable_error_info(base, *args, **kwargs):
 
     See `error_info`:func: for an example.
 
-    '''
+    """
     import sys
+
     _error_type, error, tb = sys.exc_info()
     if tb:
-        res = '%s\n\tERROR: %s\n\t' % (base, error)
+        res = "%s\n\tERROR: %s\n\t" % (base, error)
         info = __error_info(tb, *args, **kwargs)
-        return res + '\n\t'.join(str(item) for item in info)
+        return res + "\n\t".join(str(item) for item in info)
     else:
-        return ''
+        return ""
 
 
 def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
-    '''Find an object of the given type through all arguments in stack frames.
+    """Find an object of the given type through all arguments in stack frames.
 
     Returns a tuple with the following values:
         (arg-value, arg-name, deep, frame).
@@ -194,7 +204,7 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
         arg_name: the arg_name to find; if None find in all arguments
         max_deep: the max deep to enter in the stack frames.
 
-    '''
+    """
     frame = inspect.currentframe()
     try:
         deep = 0
@@ -210,27 +220,27 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
             deep += 1
         return res
     finally:
-        del frame   # As recommended in the Python's doc to avoid memory leaks
+        del frame  # As recommended in the Python's doc to avoid memory leaks
 
 
 def object_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
-    '''Find an object of the given type through all arguments in stack frames.
+    """Find an object of the given type through all arguments in stack frames.
 
     The difference with `object_info_finder`:func: is that this function
     returns the object directly, not a tuple.
 
-    '''
+    """
     finder = object_info_finder(obj_type, arg_name, max_deep)
     info = finder()
     return info[0] if info else None
 
 
 def track_value(value, max_deep=MAX_DEEP):
-    '''Find a value through all arguments in stack frames.
+    """Find a value through all arguments in stack frames.
 
     Returns a dictionary with the full-context in the same level as "value".
 
-    '''
+    """
     frame = inspect.currentframe().f_back.f_back
     deep = 0
     res = None
@@ -246,7 +256,7 @@ def track_value(value, max_deep=MAX_DEEP):
 
 
 def iter_stack(max_deep=MAX_DEEP):
-    '''Iterates through stack frames until exhausted or `max_deep` is reached.
+    """Iterates through stack frames until exhausted or `max_deep` is reached.
 
     To find a frame fulfilling a condition use::
 
@@ -254,7 +264,7 @@ def iter_stack(max_deep=MAX_DEEP):
 
     .. versionadded:: 1.6.8
 
-    '''
+    """
     # Using the previous pattern, functions `object_info_finder`,
     # `object_finder` and `track_value` can be reprogrammed or deprecated.
 
@@ -266,12 +276,12 @@ def iter_stack(max_deep=MAX_DEEP):
             frame = frame.f_back
             deep += 1
     finally:
-        del frame   # As recommended in the Python's doc to avoid memory leaks
+        del frame  # As recommended in the Python's doc to avoid memory leaks
 
 
 @deprecated(iter_stack)
 def iter_frames(max_deep=MAX_DEEP):
-    '''Iterates through all stack frames.
+    """Iterates through all stack frames.
 
     Returns tuples with the following::
 
@@ -281,18 +291,23 @@ def iter_frames(max_deep=MAX_DEEP):
 
     .. deprecated:: 1.6.8 The use of params `attr_filter` and `value_filter`.
 
-    '''
+    """
     # TODO: @manu Use this in all previous functions with same structure
     frame = inspect.currentframe()
     try:
         deep = 0
         while (deep < max_deep) and (frame is not None):
-            yield (deep, frame.f_code.co_filename, frame.f_lineno,
-                   frame.f_code.co_firstlineno, frame.f_locals)
+            yield (
+                deep,
+                frame.f_code.co_filename,
+                frame.f_lineno,
+                frame.f_code.co_firstlineno,
+                frame.f_locals,
+            )
             frame = frame.f_back
             deep += 1
     finally:
-        del frame   # As recommended in the Python's doc to avoid memory leaks
+        del frame  # As recommended in the Python's doc to avoid memory leaks
 
 
 del deprecated

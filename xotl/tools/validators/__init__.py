@@ -7,10 +7,10 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Some generic value validators and regular expressions and validation
+"""Some generic value validators and regular expressions and validation
 functions for several identifiers.
 
-'''
+"""
 
 
 # TODO: Check next import, it looks like one of the modules must be deprecated
@@ -19,51 +19,54 @@ from xotl.tools.validators.identifiers import (  # noqa
     check_identifier,
     is_valid_full_identifier,
     is_valid_public_identifier,
-    is_valid_slug
+    is_valid_slug,
 )
 
 
 def _adorn_checker_name(name):
-    '''Make more attractive or legible a checker name.'''
-    res = name.replace('_AND_', ' & ')
-    res = res.replace('_OR_', ' | ')
-    return res.replace('<lambda>', '<λ>')
+    """Make more attractive or legible a checker name."""
+    res = name.replace("_AND_", " & ")
+    res = res.replace("_OR_", " | ")
+    return res.replace("<lambda>", "<λ>")
 
 
 def _get_checker_name(checker):
-    '''Return a nice name for a `checker`.
+    """Return a nice name for a `checker`.
 
     A `checker` could be a type, a tuple of types, a callable or a list of
     other checkers.
 
-    '''
-    l = lambda o: str('(%s)' % o.join(_get_checker_name(c) for c in checker))
+    """
+    l = lambda o: str("(%s)" % o.join(_get_checker_name(c) for c in checker))
     if isinstance(checker, list):
-        return l('_AND_')
+        return l("_AND_")
     elif isinstance(checker, tuple):
-        return l('_OR_')
+        return l("_OR_")
     else:
         from xotl.tools.future.inspect import safe_name
+
         res = safe_name(checker, affirm=True)
         if not isinstance(checker, type):
             assert callable(checker)
-            if 'lambda' in res:
+            if "lambda" in res:
                 from inspect import getargspec
+
                 args = getargspec(checker).args
                 assert len(args) == 1
-                res = str('%s(%s)' % (res, args[0]))
+                res = str("%s(%s)" % (res, args[0]))
         return res
 
 
 def is_type(cls):
-    '''Return a validator with the same name as the type given as argument
+    """Return a validator with the same name as the type given as argument
     `value`.
 
     :param cls: Class or type or tuple of several types.
 
-    '''
+    """
+
     def inner(obj):
-        '''Check is a value object is a valid instance of (%s).'''
+        """Check is a value object is a valid instance of (%s)."""
         return isinstance(obj, cls)
 
     name = _get_checker_name(cls)
@@ -75,7 +78,7 @@ def is_type(cls):
 # TODO: With this new function, `is_type` could be deprecated
 # TODO: Migrate to a class
 def predicate(*checkers, **kwargs):
-    '''Return a validation checker for types and simple conditions.
+    """Return a validation checker for types and simple conditions.
 
     :param checkers: A variable number of checkers; each one could be:
 
@@ -141,12 +144,12 @@ def predicate(*checkers, **kwargs):
       >>> always_false('any string')
       False
 
-    '''
+    """
     from xotl.tools.symbols import boolean
     from xotl.tools.future.collections import Set, Mapping
 
     def inner(obj):
-        '''Check is `obj` is a valid instance for a set of checkers.'''
+        """Check is `obj` is a valid instance for a set of checkers."""
 
         def valid(chk):
             if isinstance(chk, boolean):
@@ -169,8 +172,8 @@ def predicate(*checkers, **kwargs):
         # XXX: WTF, must be ``all(valid(chk) for chk in checkers)``
         return next((chk for chk in checkers if not valid(chk)), None) is None
 
-    name = kwargs.get('name')
-    if name is None and kwargs.get('force_name'):
+    name = kwargs.get("name")
+    if name is None and kwargs.get("force_name"):
         name = _get_checker_name(list(checkers))
     if name is not None:
         inner.__name__ = name
@@ -178,7 +181,7 @@ def predicate(*checkers, **kwargs):
 
 
 def check(value, validator, msg=None):
-    '''Check a `value` with a `validator`.
+    """Check a `value` with a `validator`.
 
     Argument `validator` could be a callable, a type, or a tuple of types.
 
@@ -195,7 +198,7 @@ def check(value, validator, msg=None):
       >>> check(11/2, (int, float))
       True
 
-    '''
+    """
     if isinstance(validator, (type, tuple)):
         checker = is_type(validator)
     else:
@@ -204,6 +207,7 @@ def check(value, validator, msg=None):
         return True
     else:
         from xotl.tools.future.inspect import safe_name
+
         if not msg:
             # TODO: Use the name of validator with `inspect.getattr_static`
             # when `xotl.tools.future` is ready
@@ -214,7 +218,7 @@ def check(value, validator, msg=None):
 
 # TODO: deprecate `check` in favor of `ok`.
 def ok(value, *checkers, **kwargs):
-    '''Validate a value with several checkers.
+    """Validate a value with several checkers.
 
     Return the value if it is Ok, or raises an `ValueError` exception if not.
 
@@ -263,21 +267,22 @@ def ok(value, *checkers, **kwargs):
       >>> res
       '---'
 
-    '''
-    extra_checkers = kwargs.get('extra_checkers', ())
+    """
+    extra_checkers = kwargs.get("extra_checkers", ())
     pred = predicate(*(checkers + extra_checkers))
     if pred(value):
         return value
     else:
         from xotl.tools.future.itertools import multi_get as get
         from xotl.tools.future.inspect import safe_name
-        msg = next(get(kwargs, 'message', 'msg'), 'Invalid {type}: {value}!')
+
+        msg = next(get(kwargs, "message", "msg"), "Invalid {type}: {value}!")
         msg = msg.format(value=value, type=safe_name(value, affirm=True))
         raise ValueError(msg)
 
 
 def check_no_extra_kwargs(kwargs):
-    '''Check that no extra keyword arguments are still not processed.
+    """Check that no extra keyword arguments are still not processed.
 
     For example::
 
@@ -287,8 +292,8 @@ def check_no_extra_kwargs(kwargs):
       ...     check_no_extra_kwargs(kwargs)
       ...     print('OK for safe:', safe)
 
-    '''
+    """
     if kwargs:
-        plural = '' if len(kwargs) == 1 else 's'
+        plural = "" if len(kwargs) == 1 else "s"
         msg = 'Unexpected keyword argument%s: "%s"!'
-        raise TypeError(msg % (plural, ', '.join(kwargs)))
+        raise TypeError(msg % (plural, ", ".join(kwargs)))

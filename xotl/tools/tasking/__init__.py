@@ -7,13 +7,13 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Task, multitasking, and concurrent programming tools.
+"""Task, multitasking, and concurrent programming tools.
 
 .. warning:: Experimental.  API is not settled.
 
 .. versionadded:: 1.8.0
 
-'''
+"""
 
 import sys
 from xotl.tools.deprecation import deprecated_alias
@@ -21,19 +21,19 @@ from xotl.tools.deprecation import deprecated_alias
 
 # TODO: Must be implemented using `xotl.tools.api` mechanisms for correct
 # driver determination, in this case "thread-local data".
-if 'greenlet' in sys.modules:
-    from ._greenlet_local import local    # noqa
+if "greenlet" in sys.modules:
+    from ._greenlet_local import local  # noqa
 else:
     try:
-        from threading import local    # noqa
+        from threading import local  # noqa
     except ImportError:
-        from dummy_threading import local    # noqa
+        from dummy_threading import local  # noqa
 
 del sys
 
 
 class AutoLocal(local):
-    '''Initialize thread-safe local data in one shoot.
+    """Initialize thread-safe local data in one shoot.
 
     Typical use is::
 
@@ -43,9 +43,11 @@ class AutoLocal(local):
     When at least one attribute is given, ``del AutoLocal`` it's executed
     automatically avoiding this common statement at the end of your module.
 
-    '''
+    """
+
     def __init__(self, **attrs):
         import sys
+
         super().__init__()
         for attr in attrs:
             setattr(self, attr, attrs[attr])
@@ -68,7 +70,7 @@ DEFAULT_WAIT_INTERVAL = 50 / 1000  # 50 ms
 
 
 class ConstantWait:
-    '''A constant wait algorithm.
+    """A constant wait algorithm.
 
     Instances are callables that comply with the need of the `wait` argument
     for `retrier`:class:.  This callable always return the same `wait` value.
@@ -83,9 +85,11 @@ class ConstantWait:
     .. versionchanged:: 2.0.1 Renamed; it was ``StandardWait``.  The old name
        is kept as a deprecated alias.
 
-    '''
+    """
+
     def __init__(self, wait=DEFAULT_WAIT_INTERVAL):
         import numbers
+
         if not isinstance(wait, numbers.Real):
             raise TypeError("'wait' must a number.")
         self.wait = max(MIN_WAIT_INTERVAL, wait)
@@ -95,13 +99,12 @@ class ConstantWait:
 
 
 StandardWait = deprecated_alias(
-    ConstantWait,
-    msg='StandardWait is deprecated. Use ConstantWait instead'
+    ConstantWait, msg="StandardWait is deprecated. Use ConstantWait instead"
 )
 
 
 class BackoffWait:
-    '''A wait algorithm with an exponential backoff.
+    """A wait algorithm with an exponential backoff.
 
     Instances are callables that comply with the need of the `wait` argument
     for `retrier`:class:.
@@ -113,7 +116,8 @@ class BackoffWait:
 
     .. versionadded:: 1.8.2
 
-    '''
+    """
+
     def __init__(self, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
         self.wait = max(MIN_WAIT_INTERVAL, wait)
         self.backoff = min(max(0.1, backoff), 1)
@@ -125,13 +129,13 @@ class BackoffWait:
 
 
 def get_backoff_wait(n, *, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
-    '''Compute the total backoff wait time after `n` tries.
+    """Compute the total backoff wait time after `n` tries.
 
     .. seealso:: `BackoffWait`:class:.
 
     .. versionadded:: 2.1.0
 
-    '''
+    """
     res = 0
     fn = BackoffWait(wait=wait, backoff=backoff)
     for _ in range(n):
@@ -139,9 +143,17 @@ def get_backoff_wait(n, *, wait=DEFAULT_WAIT_INTERVAL, backoff=1):
     return res
 
 
-def retry(fn, args=None, kwargs=None, *, max_tries=None, max_time=None,
-          wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
-    '''Run `fn` with args and kwargs in an auto-retrying loop.
+def retry(
+    fn,
+    args=None,
+    kwargs=None,
+    *,
+    max_tries=None,
+    max_time=None,
+    wait=DEFAULT_WAIT_INTERVAL,
+    retry_only=None
+):
+    """Run `fn` with args and kwargs in an auto-retrying loop.
 
     See `retrier`:class:.  This is just::
 
@@ -150,17 +162,18 @@ def retry(fn, args=None, kwargs=None, *, max_tries=None, max_time=None,
 
     .. versionadded:: 1.8.2
 
-    '''
+    """
     if args is None:
         args = ()
     if kwargs is None:
         kwargs = {}
-    return retrier(max_tries=max_tries, max_time=max_time, wait=wait,
-                   retry_only=retry_only)(fn, *args, **kwargs)
+    return retrier(
+        max_tries=max_tries, max_time=max_time, wait=wait, retry_only=retry_only
+    )(fn, *args, **kwargs)
 
 
 class retrier:
-    '''An auto-retrying dispatcher.
+    """An auto-retrying dispatcher.
 
     A retrier it's a callable that takes another callable (`func`) and its
     arguments and runs it in an auto-retrying loop.
@@ -188,11 +201,13 @@ class retrier:
 
     .. versionadded:: 1.8.2
 
-    '''
-    def __init__(self, max_tries=None, max_time=None,
-                 wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
+    """
+
+    def __init__(
+        self, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None
+    ):
         if not max_tries and not max_time:
-            raise TypeError('One of tries or times must be set')
+            raise TypeError("One of tries or times must be set")
         self.max_tries = max_tries
         self.max_time = max_time
         if not callable(wait):
@@ -200,7 +215,7 @@ class retrier:
         else:
             self.wait = wait
         if not retry_only:
-            self.retry_only = (Exception, )
+            self.retry_only = (Exception,)
         else:
             self.retry_only = retry_only
 
@@ -208,7 +223,7 @@ class retrier:
         return self.decorate(fn)(*args, **kwargs)
 
     def decorate(self, fn):
-        '''Return `fn` decorated to run in an auto-retry loop.
+        """Return `fn` decorated to run in an auto-retry loop.
 
         You can use this to decorate a function you'll always run inside a
         retrying loop:
@@ -217,9 +232,10 @@ class retrier:
            ... def read_from_url(url):
            ...     pass
 
-        '''
+        """
         from time import monotonic as clock, sleep
         from xotl.tools.future.functools import wraps
+
         max_time = self.max_time
         max_tries = self.max_tries
 

@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Functional Programming *Option Type* definition.
+"""Functional Programming *Option Type* definition.
 
 In Programming, and Type Theory, an *option type*, or *maybe type*, represents
 encapsulation of an optional value; e.g., it is used in functions which may or
@@ -28,11 +28,11 @@ Instead of *None* or *Nothing*, `Wrong` is used because two reasons:
 also wraps incorrect values and can have several instances (not only a *null*
 value).
 
-'''
+"""
 
 
 class Maybe:
-    '''Wrapper for optional values.
+    """Wrapper for optional values.
 
     The Maybe type encapsulates an optional value.  A value of type
     ``Maybe a`` either contains a value of type ``a`` (represented as
@@ -65,9 +65,10 @@ class Maybe:
     Case analysis for the Either type.  If the value is Left a, apply the
     first function to a; if it is Right b, apply the second function to b.
 
-    '''
-    __slots__ = 'inner'
-    _singletons = [None, None, None]    # False, True, None
+    """
+
+    __slots__ = "inner"
+    _singletons = [None, None, None]  # False, True, None
 
     def __new__(cls, *args):
         default = cls is Just
@@ -94,7 +95,7 @@ class Maybe:
             self.inner = arg
             return self
         else:
-            msg = 're-wrapping inverted value: {}({})'
+            msg = "re-wrapping inverted value: {}({})"
             raise ValueError(msg.format(cls.__name__, arg))
 
     def __init__(self, *args):
@@ -102,22 +103,27 @@ class Maybe:
 
     def __nonzero__(self):
         return isinstance(self, Just)
+
     __bool__ = __nonzero__
 
     def __str__(self):
-        return '{}({!r})'.format(type(self).__name__, self.inner)
+        return "{}({!r})".format(type(self).__name__, self.inner)
+
     __repr__ = __str__
 
     def __eq__(self, other):
-        return (isinstance(other, type(self)) and self.inner == other.inner or
-                self.inner is other)    # TODO: check if `==` instead `is`
+        return (
+            isinstance(other, type(self))
+            and self.inner == other.inner
+            or self.inner is other
+        )  # TODO: check if `==` instead `is`
 
     def __ne__(self, other):
         return not (self == other)
 
     @classmethod
     def compel(cls, value):
-        '''Coerce to the correspondent logical Boolean value.
+        """Coerce to the correspondent logical Boolean value.
 
         `Just`:class: is logically true, and `Wrong` is false.
 
@@ -135,7 +141,7 @@ class Maybe:
             >>> Wrong.compel([])
             []
 
-        '''
+        """
         if cls is not Maybe:
             test = cls is Just
             dual = Wrong if test else Just
@@ -148,11 +154,11 @@ class Maybe:
                 vname = type(value).__name__
                 raise TypeError(msg.format(vname, cls.__name__))
         else:
-            raise TypeError('''don't call at Maybe base level''')
+            raise TypeError("""don't call at Maybe base level""")
 
     @classmethod
     def choose(cls, *types):
-        '''Decorator to force `Maybe` values constraining to expecting types.
+        """Decorator to force `Maybe` values constraining to expecting types.
 
         For example, a function that return a collection (tuple or list) if
         valid or False if not, if not decorated could be ambiguous for an
@@ -174,22 +180,24 @@ class Maybe:
             >>> check_range(set(range(10)), 7, 17)
             False
 
-        '''
+        """
         pass
 
 
 class Just(Maybe):
-    '''A wrapper for valid results.'''
+    """A wrapper for valid results."""
+
     __slots__ = ()
 
 
 class Wrong(Maybe):
-    '''A wrapper for invalid results.'''
+    """A wrapper for invalid results."""
+
     __slots__ = ()
 
 
 def take(value):
-    '''Extract a value.'''
+    """Extract a value."""
     return value.inner if isinstance(value, Maybe) else value
 
 

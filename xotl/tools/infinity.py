@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''The Infinity value.
+"""The Infinity value.
 
 Not all values are comparable with `Infinity`:obj: by default.  The ABC
 `InfinityComparable`:class: holds the registry of such values.  Any `number
@@ -20,7 +20,7 @@ Not all values are comparable with `Infinity`:obj: by default.  The ABC
              operand, as in ``Infinity > today``.  Doing ``today < Infinity``
              fails in Python 2.
 
-'''
+"""
 
 import abc
 import datetime
@@ -29,7 +29,7 @@ from functools import total_ordering
 
 
 class InfinityComparable(metaclass=abc.ABCMeta):
-    '''Any type that can be sensibly compared to infinity.
+    """Any type that can be sensibly compared to infinity.
 
     All types in the `number <numbers.Number>`:class: tower are *always*
     comparable.
@@ -37,7 +37,7 @@ class InfinityComparable(metaclass=abc.ABCMeta):
     Classes `datetime.date`:class:, `datetime.datetime`:class:, and
     `datetime.timedelta`:class: are automatically registered.
 
-    '''
+    """
 
     @classmethod
     def __subclasshook__(self, cls):
@@ -57,6 +57,9 @@ class InfinityType:
     _positive = None
     _negative = None
 
+    def __getnewargs__(self):
+        return (self.sign,)
+
     def __new__(cls, sign):
         if sign < 0:
             res = cls._negative
@@ -73,28 +76,29 @@ class InfinityType:
 
     def __lt__(self, other):
         if isinstance(other, InfinityComparable):
-            return self.sign < 0   # True iff -Infinity
+            return self.sign < 0  # True iff -Infinity
         elif isinstance(other, InfinityType):
             return self.sign < other.sign
         else:
-            raise TypeError(
-                'Incomparable types: %r and %r' % (type(self), type(other))
-            )
+            raise TypeError("Incomparable types: %r and %r" % (type(self), type(other)))
 
     def __eq__(self, other):
         if isinstance(other, InfinityType):
             return self.sign == other.sign
         else:
-            return False
+            return NotImplemented
 
     def __neg__(self):
         return type(self)(-self.sign)
 
     def __str__(self):
-        return '∞' if self.sign > 0 else '-∞'
+        return "∞" if self.sign > 0 else "-∞"
 
     def __repr__(self):
-        return 'Infinity' if self.sign > 0 else '-Infinity'
+        return "Infinity" if self.sign > 0 else "-Infinity"
+
+    def __hash__(self):
+        return id(self)
 
 
 Infinity = InfinityType(+1)

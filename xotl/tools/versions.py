@@ -8,35 +8,36 @@
 #
 
 # TODO: Document (version.rst) this module.  Add tests.
-'''Versions API
+"""Versions API
 
-'''
+"""
 
 from xotl.tools.decorator import singleton
 
 
 def _check(info):
-    '''Validate a version info.
+    """Validate a version info.
 
     :param info: could be a string, an integer, float, or any integer
            collection (only first three valid integers are used).
 
     :returns: a valid tuple or an error if invalid.
 
-    '''
+    """
     from collections import Iterable
     from distutils.version import LooseVersion, StrictVersion
+
     MAX_COUNT = 3
     if isinstance(info, (int, float)):
         aux = str(info)
     elif isinstance(info, Iterable) and not isinstance(info, str):
-        aux = '.'.join(map(str, info))
+        aux = ".".join(map(str, info))
     else:
         aux = info
     if isinstance(aux, str):
         try:
             essay = StrictVersion(aux)
-        except (TypeError, ValueError):    # Being as safe as possible.
+        except (TypeError, ValueError):  # Being as safe as possible.
             essay = LooseVersion(aux)
         res = essay.version[:MAX_COUNT]
         if any(res):
@@ -49,7 +50,7 @@ def _check(info):
 
 
 class ThreeNumbersVersion(tuple):
-    '''Structured version info considering valid first 3 members
+    """Structured version info considering valid first 3 members
 
     This class is mainly intended to be sub-classed as a singleton resulting
     in a tuple with three integer components as 'major', 'minor', and 'micro'.
@@ -69,7 +70,8 @@ class ThreeNumbersVersion(tuple):
 
     .. versionadded:: 1.8.0
 
-    '''
+    """
+
     def __new__(cls, info):
         MAX_COUNT = 3
         head = _check(info)
@@ -89,7 +91,7 @@ class ThreeNumbersVersion(tuple):
         return self[2]
 
     def to_float(self):
-        return float('{}.{}'.format(*self[:2]))
+        return float("{}.{}".format(*self[:2]))
 
     __float__ = to_float
     __trunc__ = major
@@ -97,7 +99,7 @@ class ThreeNumbersVersion(tuple):
     def __eq__(self, other):
         try:
             aux = _check(other)
-            this = self[:len(aux)]
+            this = self[: len(aux)]
             return this == aux
         except (TypeError, ValueError):
             return False
@@ -126,7 +128,7 @@ class ThreeNumbersVersion(tuple):
 
 @singleton
 class python_version(ThreeNumbersVersion):
-    '''Current Python version.
+    """Current Python version.
 
     Initialized with `~sys.version_info`:obj: 5 components tuple.
 
@@ -135,11 +137,13 @@ class python_version(ThreeNumbersVersion):
     'final'), and 'serial' (an integer).  The attribute 'pypy' could be used
     to determine if this is a PyPy instance or not.
 
-    '''
+    """
+
     def __new__(cls):
         import sys
+
         self = super().__new__(cls, sys.version_info)
-        self.pypy = sys.version.find('PyPy') >= 0
+        self.pypy = sys.version.find("PyPy") >= 0
         return self
 
     @property
@@ -152,13 +156,19 @@ class python_version(ThreeNumbersVersion):
 
 
 def _get_mod_version(mod):
-    '''Get a valid version from a module.
+    """Get a valid version from a module.
 
     Used internally by `PackageVersion`:class:.
 
-    '''
-    valid_names = ('VERSION_INFO', 'VERSION', 'version_info', 'version',
-                   '__VERSION__', '__version__')
+    """
+    valid_names = (
+        "VERSION_INFO",
+        "VERSION",
+        "version_info",
+        "version",
+        "__VERSION__",
+        "__version__",
+    )
     i = 0
     res = None
     while res is None and i < len(valid_names):
@@ -172,6 +182,7 @@ def _get_mod_version(mod):
         i += 1
     if not res:
         import os
+
         path = os.path.dirname(os.__file__)
         if mod.__file__.startswith(path):
             res = python_version
@@ -179,26 +190,28 @@ def _get_mod_version(mod):
 
 
 class PackageVersion(ThreeNumbersVersion):
-    '''Current Package version.
+    """Current Package version.
 
     Extra components (besides 'major', 'minor', and 'micro') are:
     'releaselevel' (a string that could be 'alpha', 'beta', 'candidate', or
     'final'), and 'serial' (an integer).  The attribute 'pypy' could be used
     to determine if this is a PyPy instance or not.
 
-    '''
+    """
+
     def __new__(cls, package_name):
         info = cls._find_version(package_name)
         if info:
             return super().__new__(cls, info)
         else:
-            msg = '{}() could not determine a valid version'
+            msg = "{}() could not determine a valid version"
             raise ValueError(msg.format(cls.__name__))
 
     @staticmethod
     def _find_version(package_name):
         from pkg_resources import get_distribution, ResolutionError
-        if package_name in ('__builtin__', 'builtins'):
+
+        if package_name in ("__builtin__", "builtins"):
             return python_version
         else:
             res = None
@@ -211,10 +224,9 @@ class PackageVersion(ThreeNumbersVersion):
                         res = dist.version
                 except ResolutionError:
                     from importlib import import_module
+
                     try:
-                        mod = import_module('.'.join(
-                            (package_name, 'release')
-                        ))
+                        mod = import_module(".".join((package_name, "release")))
                         res = _get_mod_version(mod)
                     except ImportError:
                         try:
@@ -224,6 +236,6 @@ class PackageVersion(ThreeNumbersVersion):
                             mod = __import__(package_name)
                             res = _get_mod_version(mod)
                 if not res:
-                    aux = package_name.rsplit('.', 1)
-                    package_name = aux[0] if len(aux) > 1 else ''
+                    aux = package_name.rsplit(".", 1)
+                    package_name = aux[0] if len(aux) > 1 else ""
             return res

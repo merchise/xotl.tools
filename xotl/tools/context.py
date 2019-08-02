@@ -7,16 +7,17 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''A context manager for execution context flags.'''
+"""A context manager for execution context flags."""
 
 from xotl.tools.tasking import local
 from xotl.tools.future.collections import StackedDict, Mapping
 
-__all__ = ('Context', 'context', 'NullContext')
+__all__ = ("Context", "context", "NullContext")
 
 
 class LocalData(local):
-    '''Thread-local data for contexts.'''
+    """Thread-local data for contexts."""
+
     def __init__(self):
         super().__init__()
         self.contexts = {}
@@ -36,12 +37,12 @@ class MetaContext(type(StackedDict)):  # type: ignore
         return _data.contexts.get(name, _null_context)
 
     def __contains__(self, name):
-        '''Basic support for the 'A in context' idiom.'''
+        """Basic support for the 'A in context' idiom."""
         return bool(self[name])
 
 
 class Context(StackedDict, metaclass=MetaContext):
-    '''An execution context manager with parameters (or flags).
+    """An execution context manager with parameters (or flags).
 
     Use as::
 
@@ -93,12 +94,13 @@ class Context(StackedDict, metaclass=MetaContext):
         ...
         RuntimeError: Entering the same context level twice! ...
 
-    '''
-    __slots__ = ('name', 'count', )
+    """
+
+    __slots__ = ("name", "count")
 
     def __new__(cls, name, **data):
         self = cls[name]
-        if not self:     # if self is _null_context:
+        if not self:  # if self is _null_context:
             self = super().__new__(cls)
             super(Context, self).__init__()
             self.name = name
@@ -108,14 +110,14 @@ class Context(StackedDict, metaclass=MetaContext):
 
     @classmethod
     def from_dicts(cls, ctx, overrides=None, defaults=None):
-        '''Creates a context introducing both defaults and overrides.
+        """Creates a context introducing both defaults and overrides.
 
         This combines both the standard constructor and `from_defaults`:meth:.
 
         If the same key appears in both `overrides` and `defaults`, ignore the
         default.
 
-        '''
+        """
         if not overrides:
             overrides = {}
         if not defaults:
@@ -128,7 +130,7 @@ class Context(StackedDict, metaclass=MetaContext):
 
     @classmethod
     def from_defaults(cls, ctx, **defaults):
-        '''Creates context `ctx` introducing only new keys given in `defaults`.
+        """Creates context `ctx` introducing only new keys given in `defaults`.
 
         The normal behavior when you enter a new level in the context is to
         override the values with the new one.
@@ -139,24 +141,25 @@ class Context(StackedDict, metaclass=MetaContext):
            ...    with context.from_defaults('A', a=2, b=1) as c:
            ...        assert c['a'] == 1
 
-        '''
+        """
         return cls.from_dicts(ctx, defaults=defaults)
 
     def __init__(self, *args, **kwargs):
-        '''Must be defined empty for `__new__` parameters compatibility.
+        """Must be defined empty for `__new__` parameters compatibility.
 
         Using generic parameters definition allow any redefinition of this
         class can use this `__init__`.
 
-        '''
+        """
 
     def __call__(self, **data):
-        '''Allow re-enter in a new level to an already assigned context.'''
+        """Allow re-enter in a new level to an already assigned context."""
         self.push_level(**data)
         return self
 
     def __nonzero__(self):
         return bool(self.count)
+
     __bool__ = __nonzero__
 
     def __enter__(self):
@@ -166,7 +169,7 @@ class Context(StackedDict, metaclass=MetaContext):
             self.count += 1
             return self
         else:
-            msg = 'Entering the same context level twice! -- c(%s, %d, %d)'
+            msg = "Entering the same context level twice! -- c(%s, %d, %d)"
             raise RuntimeError(msg % (self.name, self.count, self.level))
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -182,15 +185,15 @@ context = Context
 
 
 class NullContext(Mapping):
-    '''Singleton context to be used (returned) as default when no one is
+    """Singleton context to be used (returned) as default when no one is
     defined.
 
-    '''
+    """
 
     __slots__ = ()
 
     instance = None
-    name = ''
+    name = ""
 
     def __new__(cls):
         if cls.instance is None:
@@ -208,6 +211,7 @@ class NullContext(Mapping):
 
     def __nonzero__(self):
         return False
+
     __bool__ = __nonzero__
 
     def __enter__(self):
