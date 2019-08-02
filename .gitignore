@@ -1,11 +1,7 @@
-# Python + Eclipse
 *.pyc
 *.pyo
 *.*~
 *.*~*
-.project
-.pydevproject
-.settings/
 .tox/
 .cache/
 .hypothesis/
@@ -13,24 +9,6 @@ build/
 dist/
 __pycache__/
 .mypy_cache/
-
-# Python Coverage files generate by nose
 .coverage
-
-# Ditz stuff
-.ditz-config
-
-# Git cacharra
-*.orig
-
-# Paquetes .egg-info
 *.egg-info/
-
-# Python Rope for Emacs
-.ropeproject/
-*#
-#*
-
-eproject.cfg
-
-.coverage*
+monkeytype.sqlite3
