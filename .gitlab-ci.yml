@@ -22,7 +22,7 @@ check code smells:
   image: python:$PYTHON-alpine
   stage: test
   script:
-    - apk add g++
+    - apk add g++ git
     - pip install tox
     - tox -e system-unit,$PYTHON-greenlets
 
@@ -36,7 +36,7 @@ check code smells:
       - .tox/3.6-staticcheck/
       - .mypy_cache/
   script:
-    - apk add g++
+    - apk add g++ git
     - pip install tox
     - tox -e 3.6-staticcheck
 
