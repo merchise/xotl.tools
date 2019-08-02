@@ -19,7 +19,6 @@ def execfile(filename):
         return exec_(code, globals())
 
 
-# Import the version from the release module
 project_name = os.environ.get("PROJECT_NAME", "xotl.tools")
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 dev_classifier = "Development Status :: 5 - Production/Stable"
@@ -45,7 +44,7 @@ _cmdclass.update(versioneer.get_cmdclass())
 setup(
     name=project_name,
     version=versioneer.get_version(),
-    description=("Collection of usefull algorithms and other very " "disparate stuff"),
+    description="Collection of usefull algorithms and other very disparate stuff",
     long_description=open(os.path.join(_current_dir, "README.rst")).read(),
     classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -55,22 +54,18 @@ setup(
             "License :: OSI Approved :: "
             "GNU General Public License v3 or later (GPLv3+)"
         ),
-        "Operating System :: POSIX :: Linux",  # This is where we are
-        # testing. Don't promise
-        # anything else.
+        "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords="",
-    author="Merchise",
+    author="Merchise Autrement",
     author_email="project+xoutil@merchise.org",
-    # TODO: @med, @manu Negotiate with Maykel Moya to obtain plain "Merchise"
-    #       folder at "https://github.com"
-    url="https://github.com/merchise-autrement/xoutil/",
+    url="https://gitlab.merchise.org/merchise/xoutil",
     license="GPLv3+",
     tests_require=["pytest"],
-    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.4",
