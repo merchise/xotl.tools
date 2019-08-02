@@ -5,33 +5,28 @@ import os
 import sys
 from setuptools import setup, find_packages
 
-try:
-    execfile
-except NameError:
-    def execfile(filename):
-        'To run in Python 3'
-        import builtins
-        exec_ = getattr(builtins, 'exec')
-        with open(filename, "rb") as f:
-            code = compile(f.read().decode('utf-8'), filename, 'exec')
-            return exec_(code, globals())
+
+def execfile(filename):
+    "To run in Python 3"
+    import builtins
+
+    exec_ = getattr(builtins, "exec")
+    with open(filename, "rb") as f:
+        code = compile(f.read().decode("utf-8"), filename, "exec")
+        return exec_(code, globals())
 
 
 # Import the version from the release module
-project_name = os.environ.get('PROJECT_NAME', 'xotl.tools')
+project_name = os.environ.get("PROJECT_NAME", "xotl.tools")
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-release = os.path.join(
-    _current_dir,
-    project_name.replace('.', os.sep),
-    'release.py'
-)
+release = os.path.join(_current_dir, project_name.replace(".", os.sep), "release.py")
 execfile(release)
 version = VERSION  # noqa
 
-if RELEASE_TAG != '':   # noqa
-    dev_classifier = 'Development Status :: 4 - Beta'
+if RELEASE_TAG != "":  # noqa
+    dev_classifier = "Development Status :: 4 - Beta"
 else:
-    dev_classifier = 'Development Status :: 5 - Production/Stable'
+    dev_classifier = "Development Status :: 5 - Production/Stable"
 
 from setuptools.command.test import test as TestCommand
 
@@ -44,50 +39,48 @@ class PyTest(TestCommand):
 
     def run_tests(self):
         import pytest
+
         errno = pytest.main(self.test_args)
         sys.exit(errno)
+
 
 setup(
     name=project_name,
     version=version,
-    description=("Collection of usefull algorithms and other very "
-                 "disparate stuff"),
-    long_description=open(os.path.join(_current_dir, 'README.rst')).read(),
+    description=("Collection of usefull algorithms and other very " "disparate stuff"),
+    long_description=open(os.path.join(_current_dir, "README.rst")).read(),
     classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
         dev_classifier,
-        'Intended Audience :: Developers',
-        ('License :: OSI Approved :: '
-         'GNU General Public License v3 or later (GPLv3+)'),
-        'Operating System :: POSIX :: Linux',  # This is where we are
-                                               # testing. Don't promise
-                                               # anything else.
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        "Intended Audience :: Developers",
+        (
+            "License :: OSI Approved :: "
+            "GNU General Public License v3 or later (GPLv3+)"
+        ),
+        "Operating System :: POSIX :: Linux",  # This is where we are
+        # testing. Don't promise
+        # anything else.
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords='',
-    author='Merchise',
-    author_email='project+xoutil@merchise.org',
+    keywords="",
+    author="Merchise",
+    author_email="project+xoutil@merchise.org",
     # TODO: @med, @manu Negotiate with Maykel Moya to obtain plain "Merchise"
     #       folder at "https://github.com"
-    url='https://github.com/merchise-autrement/xoutil/',
-    license='GPLv3+',
-    tests_require=['pytest'],
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+    url="https://github.com/merchise-autrement/xoutil/",
+    license="GPLv3+",
+    tests_require=["pytest"],
+    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
     include_package_data=True,
     zip_safe=False,
-    python_requires='>=3.4',
+    python_requires=">=3.4",
     install_requires=[
         'monotonic; python_version<"3.3"',
         'contextlib2; python_version<"3.4"',
         'typing; python_version<"3.5"',
     ],
-    extras_require={
-        'recommended': [
-            'python-dateutil',
-            'enum34; python_version<"3.4"'
-        ],
-    },
-    cmdclass={'test': PyTest},
+    extras_require={"recommended": ["python-dateutil", 'enum34; python_version<"3.4"']},
+    cmdclass={"test": PyTest},
 )
