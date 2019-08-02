@@ -65,6 +65,7 @@ setup(
     url="https://gitlab.merchise.org/merchise/xoutil",
     license="GPLv3+",
     tests_require=["pytest"],
+    namespace_package="xotl",
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
