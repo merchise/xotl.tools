@@ -549,8 +549,8 @@ def test_save_attributes():
 
 
 def test_temp_attributes():
-    from xoutil.future.types import SimpleNamespace as new
-    from xoutil.objects import temp_attributes
+    from xotl.tools.future.types import SimpleNamespace as new
+    from xotl.tools.objects import temp_attributes
 
     obj = new(a=1, b=2)
     with temp_attributes(obj, dict(a=2)):
@@ -563,8 +563,8 @@ def test_temp_attributes():
 
 
 def test_save_raises_errors():
-    from xoutil.future.types import SimpleNamespace as new
-    from xoutil.objects import save_attributes
+    from xotl.tools.future.types import SimpleNamespace as new
+    from xotl.tools.objects import save_attributes
 
     getter = lambda o: lambda a: getattr(o, a)
     obj = new(a=1, b=2)
@@ -584,14 +584,14 @@ def test_save_raises_errors():
 
 
 def test_import_object():
-    from xoutil.objects import import_object
+    from xotl.tools.objects import import_object
 
-    assert import_object("xoutil.objects.import_object") is import_object
-    assert import_object("xoutil.objects:import_object") is import_object
+    assert import_object("xotl.tools.objects.import_object") is import_object
+    assert import_object("xotl.tools.objects:import_object") is import_object
 
 
 def test_delegator():
-    from xoutil.objects import delegator
+    from xotl.tools.objects import delegator
 
     class Bar:
         x = object()
@@ -608,7 +608,7 @@ def test_delegator():
 
 
 def test_final_subclasses():
-    from xoutil.objects import get_final_subclasses
+    from xotl.tools.objects import get_final_subclasses
 
     class Base:
         pass
@@ -630,7 +630,7 @@ def test_final_subclasses():
 
 
 def test_FinalSubclassEnumeration():
-    from xoutil.objects import FinalSubclassEnumeration
+    from xotl.tools.objects import FinalSubclassEnumeration
 
     class Base:
         pass

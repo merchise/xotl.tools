@@ -10,36 +10,30 @@ from hypothesis import strategies as s, given, example
 
 
 def test_fp_compose():
-    from xoutil.fp.tools import (
-        identity,
-        compose,
-        pos_args,
-        kw_args,
-        full_args
-    )
+    from xotl.tools.fp.tools import identity, compose, pos_args, kw_args, full_args
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__
 
     def join(*args):
         if args:
-            return ' -- '.join(str(arg) for arg in args)
+            return " -- ".join(str(arg) for arg in args)
         # functions return 'None' when no explicit 'return' is issued.
 
     def plus2(value):
         return value + 2
 
     def plus2d(value):
-        return {'stop': value + 2}
+        return {"stop": value + 2}
 
     def myrange(stop):
         return list(range(stop))
 
-    assert compose(join, pos_args, myrange, plus2)(0) == '0 -- 1'
-    assert compose(join, myrange, plus2)(0) == '[0, 1]'
+    assert compose(join, pos_args, myrange, plus2)(0) == "0 -- 1"
+    assert compose(join, myrange, plus2)(0) == "[0, 1]"
 
-    assert compose(join, myrange, kw_args, plus2d)(0) == '[0, 1]'
-    assert compose(join, myrange, full_args.parse, plus2d)(0) == '[0, 1]'
+    assert compose(join, myrange, kw_args, plus2d)(0) == "[0, 1]"
+    assert compose(join, myrange, full_args.parse, plus2d)(0) == "[0, 1]"
 
     assert compose() is identity
     assert compose()(x) is x
@@ -51,10 +45,10 @@ def test_fp_compose():
 
 def test_fp_compose_wrapable():
     from functools import wraps
-    from xoutil.fp.tools import compose
+    from xotl.tools.fp.tools import compose
 
     def wrapper():
-        'X'
+        "X"
         pass
 
     res = wraps(wrapper)(compose(wrapper, lambda: None))
@@ -64,26 +58,26 @@ def test_fp_compose_wrapable():
 
 
 def test_fp_tools():
-    from xoutil.fp.tools import identity, compose
+    from xotl.tools.fp.tools import identity, compose
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__
 
     def join(*args):
         if args:
-            return ' -- '.join(str(arg) for arg in args)
+            return " -- ".join(str(arg) for arg in args)
         # functions return 'None' when no explicit 'return' is issued.
 
     def plus2(value):
         return value + 2
 
     def plus2d(value):
-        return {'stop': value + 2}
+        return {"stop": value + 2}
 
     def myrange(stop):
         return list(range(stop))
 
-    assert compose(join, myrange, plus2)(0) == '[0, 1]'
+    assert compose(join, myrange, plus2)(0) == "[0, 1]"
     assert compose() is identity
     assert compose()(x) is x
     assert compose()(obj) is obj
@@ -99,10 +93,10 @@ def test_fp_tools():
 @given(s.integers(min_value=0, max_value=20))
 @example(4)
 def test_fp_kleisli_compose(n):
-    from xoutil.fp.iterators import kleisli_compose
+    from xotl.tools.fp.iterators import kleisli_compose
 
     def fullrange(n):
-        '[0..n]'
+        "[0..n]"
         return range(n + 1)
 
     def odds(n):
@@ -111,23 +105,23 @@ def test_fp_kleisli_compose(n):
     odd_seqs = kleisli_compose(odds, fullrange)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
     id_ = lambda x: [x]
-    pad = (id_, ) * n
-    args = pad + (odds, ) + pad + (fullrange, ) + pad
+    pad = (id_,) * n
+    args = pad + (odds,) + pad + (fullrange,) + pad
     odd_seqs = kleisli_compose(*args)
     assert list(odd_seqs(n)) == [z for y in fullrange(n) for z in odds(y)]
 
     odd_seqs = kleisli_compose(fullrange, odds)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
-    args = pad + (fullrange, ) + pad + (odds, ) + pad
+    args = pad + (fullrange,) + pad + (odds,) + pad
     odd_seqs = kleisli_compose(*args)
     assert list(odd_seqs(n)) == [z for y in odds(n) for z in fullrange(y)]
 
 
 def test_fp_kleisli_compose4():
-    from xoutil.fp.iterators import kleisli_compose
+    from xotl.tools.fp.iterators import kleisli_compose
 
     def fullrange(n):
-        '[0..n]'
+        "[0..n]"
         return range(n + 1)
 
     def odds(n):

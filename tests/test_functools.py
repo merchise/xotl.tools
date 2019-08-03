@@ -12,7 +12,7 @@ import unittest
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
-from xoutil.future.functools import lru_cache
+from xotl.tools.future.functools import lru_cache
 
 
 @lru_cache(3)
@@ -24,14 +24,14 @@ def fib(n):
         # It seems that there's a difference in the execution path for `return
         # fib(n-2) + fib(n-1)` between Python 2.7 and Python 3.2, so let's make
         # more explicit the order we'd like so the test is more reliable.
-        a = fib(n-1)
-        b = fib(n-2)
+        a = fib(n - 1)
+        b = fib(n - 2)
         return a + b
 
 
 def takes_no_more_than(duration, msg=None):
     if not msg:
-        msg = 'It took longer than {s} seconds'.format(s=duration)
+        msg = "It took longer than {s} seconds".format(s=duration)
 
     @contextmanager
     def inner():
@@ -41,6 +41,7 @@ def takes_no_more_than(duration, msg=None):
         max_duration = timedelta(seconds=duration)
         if (end - start) > max_duration:
             raise AssertionError(msg)
+
     return inner()
 
 
@@ -57,7 +58,7 @@ def test_lrucache_stats():
     pass
 
 
-from xoutil.fp.tools import compose, identity
+from xotl.tools.fp.tools import compose, identity
 
 
 class TestCompose(unittest.TestCase):
@@ -80,7 +81,8 @@ class TestCompose(unittest.TestCase):
         self.assertEqual(3, add_3(0))
 
     def test_with_pow(self):
-        from xoutil.future.functools import power
+        from xotl.tools.future.functools import power
+
         incr = lambda x: x + 1
         add_1 = power(incr, 1)
         self.assertIs(incr, add_1)
@@ -89,29 +91,29 @@ class TestCompose(unittest.TestCase):
 
 
 def test_lwraps():
-    from xoutil.future.functools import lwraps
+    from xotl.tools.future.functools import lwraps
 
     class foobar:
-        @lwraps('method-one', one=True)
+        @lwraps("method-one", one=True)
         def one(self):
             return type(self).__name__
 
-        @lwraps('method-two', two=True)
+        @lwraps("method-two", two=True)
         @classmethod
         def two(cls):
             return cls.__name__
 
-        @lwraps('method-three', three=True)
+        @lwraps("method-three", three=True)
         @staticmethod
         def three():
-            return 'foobar'
+            return "foobar"
 
-    @lwraps('function-four', four=True, one=False)
+    @lwraps("function-four", four=True, one=False)
     def four(*args):
         return [(arg.__name__, arg()) for arg in args]
 
     f = foobar()
-    names = ('method-one', 'method-two', 'method-three', 'function-four')
+    names = ("method-one", "method-two", "method-three", "function-four")
 
     assert four.__name__ == names[3]
     assert foobar.one.__name__ == names[0]
@@ -129,4 +131,4 @@ def test_lwraps():
 
     for i, (a, b) in enumerate(four(f.one, f.two, f.three)):
         assert a == names[i]
-        assert b == 'foobar'
+        assert b == "foobar"

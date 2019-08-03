@@ -9,12 +9,13 @@
 
 
 def test_csv():
-    from xoutil.future.csv import parse, DefaultDialect
+    from xotl.tools.future.csv import parse, DefaultDialect
 
-    data = ['A,B,C,D',
-            '1,1.2,1.3,Spanish',
-            '2,2.2,2.3,Español',
-            '''"One, comma","""double quotes""",I'm a single quote,Inglés'''
+    data = [
+        "A,B,C,D",
+        "1,1.2,1.3,Spanish",
+        "2,2.2,2.3,Español",
+        '''"One, comma","""double quotes""",I'm a single quote,Inglés''',
     ]
 
     def forge(cell):

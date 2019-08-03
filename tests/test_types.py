@@ -10,20 +10,21 @@
 import unittest
 import pickle
 
-from xoutil.future import types
+from xotl.tools.future import types
 
 
 def test_iscollection():
     # TODO: move this test to equivalent for
-    # `xoutil.values.simple.logic_collection_coerce`
-    from xoutil.future.collections import UserList, UserDict
+    # `xotl.tools.values.simple.logic_collection_coerce`
+    from xotl.tools.future.collections import UserList, UserDict
 
     def is_collection(arg):
         from collections import Iterable, Mapping
+
         avoid = (Mapping, str)
         return isinstance(arg, Iterable) and not isinstance(arg, avoid)
 
-    assert is_collection('all strings are iterable') is False
+    assert is_collection("all strings are iterable") is False
     assert is_collection(1) is False
     assert is_collection(range(1)) is True
     assert is_collection({}) is False
@@ -43,14 +44,15 @@ def test_iscollection():
 
 
 class NoneTypeTests(unittest.TestCase):
-    'To avoid FlyCheck errors'
+    "To avoid FlyCheck errors"
+
     def test_identity(self):
-        from xoutil.future.types import NoneType
+        from xotl.tools.future.types import NoneType
+
         self.assertIs(NoneType, type(None))
 
 
 class SimpleNamespaceTests(unittest.TestCase):
-
     def test_constructor(self):
         ns1 = types.SimpleNamespace()
         ns2 = types.SimpleNamespace(x=1, y=2)
@@ -62,16 +64,16 @@ class SimpleNamespaceTests(unittest.TestCase):
         self.assertEqual(len(ns1.__dict__), 0)
         self.assertEqual(vars(ns1), {})
         self.assertEqual(len(ns2.__dict__), 2)
-        self.assertEqual(vars(ns2), {'y': 2, 'x': 1})
+        self.assertEqual(vars(ns2), {"y": 2, "x": 1})
         self.assertEqual(len(ns3.__dict__), 2)
-        self.assertEqual(vars(ns3), {'y': 2, 'x': 1})
+        self.assertEqual(vars(ns3), {"y": 2, "x": 1})
 
     def test_unbound(self):
         ns1 = vars(types.SimpleNamespace())
         ns2 = vars(types.SimpleNamespace(x=1, y=2))
 
         self.assertEqual(ns1, {})
-        self.assertEqual(ns2, {'y': 2, 'x': 1})
+        self.assertEqual(ns2, {"y": 2, "x": 1})
 
     def test_underlying_dict(self):
         ns1 = types.SimpleNamespace()
@@ -81,7 +83,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         del ns3
 
         self.assertEqual(ns1.__dict__, {})
-        self.assertEqual(ns2.__dict__, {'y': 2, 'x': 1})
+        self.assertEqual(ns2.__dict__, {"y": 2, "x": 1})
         self.assertEqual(mapping, dict(a=True, b=False))
 
     def test_attrget(self):
@@ -96,12 +98,12 @@ class SimpleNamespaceTests(unittest.TestCase):
     def test_attrset(self):
         ns1 = types.SimpleNamespace()
         ns2 = types.SimpleNamespace(x=1, y=2, w=3)
-        ns1.a = 'spam'
-        ns1.b = 'ham'
+        ns1.a = "spam"
+        ns1.b = "ham"
         ns2.z = 4
         ns2.theta = None
 
-        self.assertEqual(ns1.__dict__, dict(a='spam', b='ham'))
+        self.assertEqual(ns1.__dict__, dict(a="spam", b="ham"))
         self.assertEqual(ns2.__dict__, dict(x=1, y=2, w=3, z=4, theta=None))
 
     def test_attrdel(self):
@@ -115,8 +117,8 @@ class SimpleNamespaceTests(unittest.TestCase):
 
         del ns2.y
         self.assertEqual(vars(ns2), dict(w=3, x=1))
-        ns2.y = 'spam'
-        self.assertEqual(vars(ns2), dict(w=3, x=1, y='spam'))
+        ns2.y = "spam"
+        self.assertEqual(vars(ns2), dict(w=3, x=1, y="spam"))
         del ns2.y
         self.assertEqual(vars(ns2), dict(w=3, x=1))
 
@@ -149,17 +151,17 @@ class SimpleNamespaceTests(unittest.TestCase):
         ns2 = types.SimpleNamespace()
         ns3 = types.SimpleNamespace(x=ns1)
         ns2.spam = ns1
-        ns2.ham = '?'
+        ns2.ham = "?"
         ns2.spam = ns3
 
         self.assertEqual(vars(ns1), dict(a=1, b=2))
-        self.assertEqual(vars(ns2), dict(spam=ns3, ham='?'))
+        self.assertEqual(vars(ns2), dict(spam=ns3, ham="?"))
         self.assertEqual(ns2.spam, ns3)
         self.assertEqual(vars(ns3), dict(x=ns1))
         self.assertEqual(ns3.x.a, 1)
 
     def test_recursive(self):
-        ns1 = types.SimpleNamespace(c='cookie')
+        ns1 = types.SimpleNamespace(c="cookie")
         ns2 = types.SimpleNamespace()
         ns3 = types.SimpleNamespace(x=1)
         ns1.spam = ns1
@@ -174,7 +176,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         self.assertEqual(ns2.spam.spam, ns2)
 
     def test_recursive_repr(self):
-        ns1 = types.SimpleNamespace(c=str('cookie'))
+        ns1 = types.SimpleNamespace(c=str("cookie"))
         ns2 = types.SimpleNamespace()
         ns3 = types.SimpleNamespace(x=1)
         ns1.spam = ns1
@@ -188,16 +190,16 @@ class SimpleNamespaceTests(unittest.TestCase):
         self.assertEqual(repr(ns2), repr2)
 
     def test_as_dict(self):
-        ns = types.SimpleNamespace(spam='spamspamspam')
+        ns = types.SimpleNamespace(spam="spamspamspam")
 
         with self.assertRaises(TypeError):
             len(ns)
         with self.assertRaises(TypeError):
             iter(ns)
         with self.assertRaises(TypeError):
-            'spam' in ns
+            "spam" in ns
         with self.assertRaises(TypeError):
-            ns['spam']
+            ns["spam"]
 
     def test_subclass(self):
         class Spam(types.SimpleNamespace):
@@ -206,7 +208,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         spam = Spam(ham=8, eggs=9)
 
         self.assertIs(type(spam), Spam)
-        self.assertEqual(vars(spam), {'ham': 8, 'eggs': 9})
+        self.assertEqual(vars(spam), {"ham": 8, "eggs": 9})
 
     def test_pickle(self):
         ns = types.SimpleNamespace(breakfast="spam", lunch="spam")
@@ -224,4 +226,4 @@ class SimpleNamespaceTests(unittest.TestCase):
 
 class TestDynamicClassAttribute(unittest.TestCase):
     def test_isimportable(self):
-        from xoutil.future.types import DynamicClassAttribute    # noqa
+        from xotl.tools.future.types import DynamicClassAttribute  # noqa

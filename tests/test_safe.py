@@ -6,13 +6,11 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
-
-from xoutil.tasking.safe import SafeData
+from xotl.tools.tasking.safe import SafeData
 
 
 def test_safe():
-    from xoutil.future.threading import async_call
+    from xotl.tools.future.threading import async_call
     from time import sleep
 
     data = {}
@@ -23,10 +21,11 @@ def test_safe():
         for i in range(start, end, step):
             with qd as d:
                 d[i] = d.get(i, 0) + 1
-            sleep(0.001*i)
+            sleep(0.001 * i)
         with qd as d:
             d[name] = True
-    one, two = 'one', 'two'
+
+    one, two = "one", "two"
     async_call(inner, args=[one, 1, 6])
     async_call(inner, args=[two, 8, 3])
     finish = {one: False, two: False}

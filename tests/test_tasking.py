@@ -8,7 +8,7 @@
 #
 
 import pytest
-from xoutil.tasking import retry
+from xotl.tools.tasking import retry
 
 
 class FailingMock:
@@ -20,6 +20,7 @@ class FailingMock:
     def __call__(self, incr=1):
         if self.sleeper:
             import time
+
             time.sleep(self.sleeper)
         self.start += incr
         if self.start < self.threshold:

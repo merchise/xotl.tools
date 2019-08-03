@@ -8,7 +8,7 @@
 #
 import pickle
 from hypothesis import given, strategies as s
-from xoutil.infinity import Infinity, InfinityType
+from xotl.tools.infinity import Infinity, InfinityType
 
 
 @given(s.floats() | s.integers())
