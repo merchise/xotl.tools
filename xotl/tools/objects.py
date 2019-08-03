@@ -795,7 +795,7 @@ def get_first_of(source, *keys, default=None, pred=None):
 
 
 def pop_first_of(source, *keys, default=None):
-    '''Similar to `get_first_of`:func: using as `source` either an object or a
+    """Similar to `get_first_of`:func: using as `source` either an object or a
     mapping and deleting the first attribute or key.
 
     Examples::
@@ -1365,7 +1365,7 @@ def smart_copy(*args, defaults=None):
 
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
-    '''
+    """
     from xotl.tools.future.collections import MutableMapping, Mapping
     from xotl.tools.symbols import Undefined
     from xotl.tools.validators.identifiers import is_valid_identifier
