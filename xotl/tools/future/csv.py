@@ -7,19 +7,19 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''CSV parsing and writing extensions.
+"""CSV parsing and writing extensions.
 
 This module is an extension of `csv`:mod: Python standard module, it provides
 classes and tools that assist in the reading and writing of `Comma Separated
 Value (CSV)`:abbr: files, and implements the interface described by PEP
 `305`:pep:.
 
-'''
+"""
 
 
-from csv import *    # noqa
+from csv import *  # noqa
 from csv import unix_dialect
-import csv as _stdlib    # noqa
+import csv as _stdlib  # noqa
 
 
 #: Define 'unix dialect' as our base default for inheritance.
@@ -29,7 +29,7 @@ reader = _stdlib.reader
 
 
 def parse(data, *dialect, **options):
-    r'''Parse `data` into a sheet.
+    r"""Parse `data` into a sheet.
 
     This function has the exact parameters protocol as `~csv.reader`:func:\ ::
 
@@ -65,7 +65,7 @@ def parse(data, *dialect, **options):
       van Rossum, Guido
       Stallman, Richard
 
-    '''
-    string_force = text_force = str    # They were different in Python 2.
+    """
+    string_force = text_force = str  # They were different in Python 2.
     rows = reader((string_force(line) for line in data), *dialect, **options)
     return [[text_force(cell) for cell in row] for row in rows]

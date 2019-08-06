@@ -7,59 +7,62 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Special logical values like Unset, Undefined, Ignored, Invalid, ...
+"""Special logical values like Unset, Undefined, Ignored, Invalid, ...
 
 All values only could be `True` or `False` but are intended in places where
 `None` is expected to be a valid value or for special Boolean formats.
 
-'''
+"""
 
 
-SYMBOL = 'symbol'
-BOOLEAN = 'boolean'
+SYMBOL = "symbol"
+BOOLEAN = "boolean"
 
 TIMEOUT = 2.0
 
 
 class MetaSymbol(type):
-    '''Meta-class for symbol types.'''
+    """Meta-class for symbol types."""
+
     def __new__(cls, name, bases, ns):
-        if ns['__module__'] == __name__ or name not in {SYMBOL, BOOLEAN}:
+        if ns["__module__"] == __name__ or name not in {SYMBOL, BOOLEAN}:
             self = super().__new__(cls, name, bases, ns)
             if name == SYMBOL:
                 self._instances = {str(v): v for v in (False, True)}
             return self
         else:
-            raise TypeError('invalid class "{}" declared outside of "{}" '
-                            'module'.format(name, __name__))
+            raise TypeError(
+                'invalid class "{}" declared outside of "{}" '
+                "module".format(name, __name__)
+            )
 
     def __instancecheck__(self, instance):
-        '''Override for isinstance(instance, self).'''
+        """Override for isinstance(instance, self)."""
         if instance is False or instance is True:
             return True
         else:
             return super().__instancecheck__(instance)
 
     def __subclasscheck__(self, subclass):
-        '''Override for issubclass(subclass, self).'''
+        """Override for issubclass(subclass, self)."""
         if subclass is bool:
             return True
         else:
             return super().__subclasscheck__(subclass)
 
     def nameof(self, s):
-        '''Get the name of a symbol instance (`s`).'''
+        """Get the name of a symbol instance (`s`)."""
         items = self._instances.items()
         return next((name for name, value in items if value is s), None)
 
     def parse(self, name):
-        '''Returns instance from a string.
+        """Returns instance from a string.
 
         Standard Python Boolean values are parsed too.
 
-        '''
-        if '#' in name:    # Remove comment
-            name = name.split('#')[0].strip()
+        """
+        if "#" in name:  # Remove comment
+            name = name.split("#")[0].strip()
         res = self._instances.get(name, None)
         if res is not None:
             if isinstance(res, self):
@@ -74,7 +77,7 @@ class MetaSymbol(type):
 
 
 class symbol(int, metaclass=MetaSymbol):
-    '''Instances are custom symbols.
+    """Instances are custom symbols.
 
     Symbol instances identify uniquely a semantic concept by its name.  Each
     one has an ordinal value associated.
@@ -87,11 +90,12 @@ class symbol(int, metaclass=MetaSymbol):
       >>> ONE_TO_MANY is ONE2MANY
       True
 
-    '''
+    """
+
     __slots__ = ()
 
     def __new__(cls, name, value=None):
-        '''Get or create a new symbol instance.
+        """Get or create a new symbol instance.
 
         :param name: String representing the internal name.  `Symbol`:class:
                instances are unique (singletons) in the context of this
@@ -102,28 +106,31 @@ class symbol(int, metaclass=MetaSymbol):
                `None` is used as a special value to create a value using the
                name hash.
 
-        '''
+        """
         from sys import intern as unique
+
         name = unique(name)
         if name:
             if value is None:
                 value = hash(name)
             res = cls._instances.get(name)
-            if res is None:    # Create the new instance
+            if res is None:  # Create the new instance
                 if isinstance(value, int):
                     res = super().__new__(cls, value)
                     cls._instances[name] = res
                 else:
-                    msg = ('instancing "{}" with name "{}" and incorrect '
-                           'value "{}" of type "{}"')
+                    msg = (
+                        'instancing "{}" with name "{}" and incorrect '
+                        'value "{}" of type "{}"'
+                    )
                     cn, vt = cls.__name__, type(value).__name__
                     raise TypeError(msg.format(cn, name, value, vt))
-            elif res != value:    # Check existing instance
+            elif res != value:  # Check existing instance
                 msg = 'value "{}" mismatch for existing instance: "{}"'
                 raise ValueError(msg.format(value, name))
             return res
         else:
-            raise ValueError('name must be a valid non empty string')
+            raise ValueError("name must be a valid non empty string")
 
     def __init__(self, *args, **kwds):
         pass
@@ -135,7 +142,7 @@ class symbol(int, metaclass=MetaSymbol):
 
 
 class boolean(symbol):
-    '''Instances are custom logical values (`True` or `False`).
+    """Instances are custom logical values (`True` or `False`).
 
     Special symbols allowing only logical (False or True) values.
 
@@ -170,14 +177,15 @@ class boolean(symbol):
       >>> true == True
       True
 
-    '''
+    """
+
     __slots__ = ()
 
     def __new__(cls, name, value=False):
-        '''Get or create a new symbol instance.
+        """Get or create a new symbol instance.
 
         See `~Symbol.__new__`:meth: for information about parameters.
-        '''
+        """
         return super().__new__(cls, name, bool(value))
 
 
@@ -185,19 +193,19 @@ class boolean(symbol):
 
 #: False value, mainly for function parameter definitions, where None could
 #: be a valid value.
-Unset = boolean('Unset')
+Unset = boolean("Unset")
 
 #: False value for local scope use or where ``Unset`` could be a valid value
-Undefined = boolean('Undefined')
+Undefined = boolean("Undefined")
 
 #: To be used in arguments that are currently ignored because they are being
 #: deprecated.  The only valid reason to use `Ignored` is to signal ignored
 #: arguments in method's/function's signature
-Ignored = boolean('Ignored')
+Ignored = boolean("Ignored")
 
 #: To be used in functions resulting in a fail where False could be a valid
 #: value.
-Invalid = boolean('Invalid')
+Invalid = boolean("Invalid")
 
 #: To be used as a mark for current context as a mechanism of comfort.
-This = boolean('This', True)
+This = boolean("This", True)

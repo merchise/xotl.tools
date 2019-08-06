@@ -7,18 +7,20 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Python context with thread-safe queued data.
+"""Python context with thread-safe queued data.
 
-'''
+"""
 
 
 # TODO: Optimize this by using standard threading locks
 class SafeData:
-    '''Python context with queued data.'''
-    __slots__ = ('queue', 'timeout', 'data',)
+    """Python context with queued data."""
+
+    __slots__ = ("queue", "timeout", "data")
 
     def __init__(self, data, timeout=None):
         from queue import Queue
+
         self.queue = Queue(1)
         self.queue.put(data)
         self.timeout = timeout
@@ -29,7 +31,7 @@ class SafeData:
         if res is self.data:
             return res
         else:
-            raise RuntimeError('unexpected error, invalid queued data')
+            raise RuntimeError("unexpected error, invalid queued data")
 
     def __exit__(self, exc_type, exc_value, traceback):
         data = self.data

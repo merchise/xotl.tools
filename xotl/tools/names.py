@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''A protocol to obtain or manage object names.'''
+"""A protocol to obtain or manage object names."""
 
 # FIX: These imports must be local
 from xotl.tools.symbols import Undefined as _undef
@@ -15,20 +15,23 @@ from xotl.tools.symbols import Undefined as _undef
 
 # TODO: This module must be reviewed and deprecate most of it.
 
+
 def _get_mappings(source):
-    '''Return a sequence of mappings from `source`.
+    """Return a sequence of mappings from `source`.
 
     Source could be a stack frame, a single dictionary, or any sequence of
     dictionaries.
 
-    '''
+    """
     from collections import Mapping
+
     if isinstance(source, Mapping):
         return (source,)
     else:
         from xotl.tools.future.inspect import get_attr_value
-        l = get_attr_value(source, 'f_locals', _undef)
-        g = get_attr_value(source, 'f_globals', _undef)
+
+        l = get_attr_value(source, "f_locals", _undef)
+        g = get_attr_value(source, "f_globals", _undef)
         if isinstance(l, Mapping) and isinstance(g, Mapping):
             return (l,) if l is g else (l, g)
         else:
@@ -36,7 +39,7 @@ def _get_mappings(source):
 
 
 def _key_for_value(source, value, strict=True):
-    '''Returns the tuple (key, mapping) where the "value" is found.
+    """Returns the tuple (key, mapping) where the "value" is found.
 
     if strict is True, then look first for the same object::
         >>> x = [1]
@@ -53,7 +56,7 @@ def _key_for_value(source, value, strict=True):
     Source could be a stack frame, a single dictionary, or any sequence of
     dictionaries.
 
-    '''
+    """
     source = _get_mappings(source)
     found, equal = _undef, (None, {})
     i, mapping_count = 0, len(source)
@@ -77,14 +80,14 @@ def _key_for_value(source, value, strict=True):
 
 
 def _get_value(source, key, default=None):
-    '''Returns the value for the given `key` in `source` mappings.
+    """Returns the value for the given `key` in `source` mappings.
 
     This is mainly intended to obtain object values in stack frame variables.
 
     Source could be a stack frame, a single dictionary, or any sequence of
     dictionaries.
 
-    '''
+    """
     source = _get_mappings(source)
     res = _undef
     i, mapping_count = 0, len(source)
@@ -96,7 +99,7 @@ def _get_value(source, key, default=None):
 
 
 def _get_best_name(names, safe=False, full=False):
-    '''Get the best name in the give list of `names`.
+    """Get the best name in the give list of `names`.
 
     Best names are chosen in the following order (from worst to best):
 
@@ -115,13 +118,14 @@ def _get_best_name(names, safe=False, full=False):
     True (halted if `safe` is not True) then the returned name must a valid
     full identifier.
 
-    '''
+    """
     from xotl.tools.validators import (
         is_valid_full_identifier,
         is_valid_public_identifier,
         is_valid_identifier,
-        is_valid_slug
+        is_valid_slug,
     )
+
     names = list(names)
 
     def inner(start=0):
@@ -130,9 +134,9 @@ def _get_best_name(names, safe=False, full=False):
         assert start < count, 'start is "%s", max is "%s".' % (start, count)
         while i < count:
             name = names[i]
-            if '%(next)s' in name:
+            if "%(next)s" in name:
                 next = inner(i + 1)
-                names[i] = name % {'next': next}
+                names[i] = name % {"next": next}
                 count = i + 1
             else:
                 if is_valid_slug(name):
@@ -150,26 +154,28 @@ def _get_best_name(names, safe=False, full=False):
                 i += 1
         idx = best_idx if best_idx >= 0 else ok
         return names[idx]
+
     res = inner()
     if safe:
         # TODO: Improve these methods to return False of reserved identifiers
         is_valid = is_valid_full_identifier if full else is_valid_identifier
         if not is_valid(res):
             from xotl.tools.string import slugify
-            _mark = 'dot_dot_dot'
-            full = full and '.' in res
+
+            _mark = "dot_dot_dot"
+            full = full and "." in res
             if full:
-                res = res.replace('.', _mark)
-            res = slugify(res, '_')
+                res = res.replace(".", _mark)
+            res = slugify(res, "_")
             if full:
-                res = res.replace(_mark, '.')
+                res = res.replace(_mark, ".")
             if not is_valid(res):
-                res = '_' + res
+                res = "_" + res
     return str(res)
 
 
 def module_name(item):
-    '''Returns the full module name where the given object is declared.
+    """Returns the full module name where the given object is declared.
 
     Examples::
 
@@ -180,23 +186,24 @@ def module_name(item):
        >>> module_name(Unset)
        'xotl.tools.symbols'
 
-    '''
+    """
     from xotl.tools.future.inspect import get_attr_value
+
     if item is None:
-        res = ''
+        res = ""
     elif isinstance(item, str):
         res = item
     else:
-        res = get_attr_value(item, '__module__', None)
+        res = get_attr_value(item, "__module__", None)
         if res is None:
-            res = get_attr_value(type(item), '__module__', '')
-    if res.startswith('__') or res in ('builtins', 'exceptions', '<module>'):
-        res = ''
+            res = get_attr_value(type(item), "__module__", "")
+    if res.startswith("__") or res in ("builtins", "exceptions", "<module>"):
+        res = ""
     return str(res)
 
 
 def simple_name(item, join=True):
-    '''Returns the simple name for the given object.
+    """Returns the simple name for the given object.
 
     :param join: If False, only the object inner name is returned; if it is a
            callable is used similar to a string join receiving a tuple of
@@ -228,9 +235,10 @@ def simple_name(item, join=True):
 
     To get a name in a more precise way, use `nameof`:func:.
 
-    '''
+    """
     # TODO: deprecate `join` argument
     from xotl.tools.future.inspect import safe_name
+
     singletons = (None, True, False, Ellipsis, NotImplemented)
     res = next((str(s) for s in singletons if s is item), None)
     if res is None:
@@ -240,14 +248,16 @@ def simple_name(item, join=True):
             res = safe_name(item)
         if join:
             if join is True:
+
                 def join(arg):
-                    return str('.'.join(arg).strip('.'))
+                    return str(".".join(arg).strip("."))
+
             res = join((module_name(item), res))
     return res
 
 
 def nameof(*args, **kwargs):
-    '''Obtain the name of each one of a set of objects.
+    """Obtain the name of each one of a set of objects.
 
     .. versionadded:: 1.4.0
 
@@ -296,10 +306,11 @@ def nameof(*args, **kwargs):
     .. warning:: The names of objects imported from 'xoutil' are still in the
        namespace 'xotl.tools'.
 
-    '''
+    """
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
     from xotl.tools.future.inspect import safe_name
+
     arg_count = len(args)
     names = [[] for i in range(arg_count)]
 
@@ -324,30 +335,31 @@ def nameof(*args, **kwargs):
 
     while idx < arg_count:
         item = args[idx]
-        if param('typed') and not safe_name(item):
+        if param("typed") and not safe_name(item):
             item = type(item)
-        if param('inner'):
+        if param("inner"):
             res = safe_name(item)
             if res:
-                if param('full'):
+                if param("full"):
                     head = module_name(item)
                     if head:
-                        res = '.'.join((head, res))
+                        res = ".".join((head, res))
                 grant(res)
             elif isinstance(item, (str, Number)):
                 grant(str(item))
             else:
-                grant('@'.join(('%(next)s', hex(id(item)))), typed=True)
+                grant("@".join(("%(next)s", hex(id(item)))), typed=True)
         else:
             import sys
-            sf = sys._getframe(param('depth', 1))
+
+            sf = sys._getframe(param("depth", 1))
             try:
                 i, LIMIT, res = 0, 5, _undef
-                _full = param('full')
+                _full = param("full")
                 while not res and sf and (i < LIMIT):
                     key, mapping = _key_for_value(sf, item)
                     if key and _full:
-                        head = module_name(_get_value(mapping, '__name__'))
+                        head = module_name(_get_value(mapping, "__name__"))
                         if not head:
                             head = module_name(sf.f_code.co_name)
                         if not head:
@@ -364,7 +376,7 @@ def nameof(*args, **kwargs):
                 # variable 'sf' referenced in nested scope".
                 sf = None
             if res:
-                grant('.'.join((head, res)) if head else res)
+                grant(".".join((head, res)) if head else res)
             else:
                 res = safe_name(item)
                 if res:
@@ -372,7 +384,7 @@ def nameof(*args, **kwargs):
                 else:
                     grant(None, inner=True)
     for i in range(arg_count):
-        names[i] = _get_best_name(names[i], safe=param('safe'))
+        names[i] = _get_best_name(names[i], safe=param("safe"))
     if arg_count == 0:
         return None
     elif arg_count == 1:
@@ -382,7 +394,7 @@ def nameof(*args, **kwargs):
 
 
 def identifier_from(*args):
-    '''Build an valid identifier from the name extracted from an object.
+    """Build an valid identifier from the name extracted from an object.
 
     .. versionadded:: 1.5.6
 
@@ -397,28 +409,28 @@ def identifier_from(*args):
         >>> identifier_from({})
         'dict'
 
-    '''
+    """
     if len(args) == 1:
-        from xotl.tools.validators.identifiers \
-            import is_valid_identifier as valid
+        from xotl.tools.validators.identifiers import is_valid_identifier as valid
         from xotl.tools.future.inspect import get_attr_value
+
         res = None
         if isinstance(args[0], type):
-            aux = get_attr_value(args[0], '__name__', None)
+            aux = get_attr_value(args[0], "__name__", None)
             if valid(aux):
-                res = str('_%s' % aux)
+                res = str("_%s" % aux)
         if res is None:
-            tests = ({'inner': True}, {}, {'typed': True})
+            tests = ({"inner": True}, {}, {"typed": True})
             names = (nameof(args[0], depth=2, **test) for test in tests)
             res = next((name for name in names if valid(name)), None)
         return res
     else:
-        msg = 'identifier_from() takes exactly 1 argument (%s given)'
+        msg = "identifier_from() takes exactly 1 argument (%s given)"
         raise TypeError(msg % len(args))
 
 
 class namelist(list):
-    '''Similar to list, but only intended for storing object names.
+    """Similar to list, but only intended for storing object names.
 
     Constructors:
 
@@ -437,10 +449,12 @@ class namelist(list):
         >>> 'foobar' in __all__
         True
 
-    '''
+    """
+
     def __init__(self, *args):
         if len(args) == 1:
             from types import GeneratorType as gtype
+
             if isinstance(args[0], (tuple, list, set, frozenset, gtype)):
                 args = args[0]
         super().__init__(nameof(arg, depth=2) for arg in args)
@@ -455,42 +469,42 @@ class namelist(list):
         return super().__contains__(nameof(item, inner=True))
 
     def append(self, value):
-        '''l.append(value) -- append a name object to end'''
+        """l.append(value) -- append a name object to end"""
         super().append(nameof(value, depth=2))
-        return value    # What allow to use its instances as a decorator
+        return value  # What allow to use its instances as a decorator
 
     __call__ = append
 
     def extend(self, items):
-        '''l.extend(items) -- extend list by appending items from the iterable
-        '''
+        """l.extend(items) -- extend list by appending items from the iterable
+        """
         items = (nameof(item, depth=2) for item in items)
         return super().extend(items)
 
     def index(self, value, *args):
-        '''l.index(value, [start, [stop]]) -> int -- return first index of name
+        """l.index(value, [start, [stop]]) -> int -- return first index of name
 
         Raises ValueError if the name is not present.
 
-        '''
+        """
         return super().index(nameof(value, depth=2), *args)
 
     def insert(self, index, value):
-        '''l.insert(index, value) -- insert object before index
-        '''
+        """l.insert(index, value) -- insert object before index
+        """
         return super().insert(index, nameof(value, depth=2))
 
     def remove(self, value):
-        '''l.remove(value) -- remove first occurrence of value
+        """l.remove(value) -- remove first occurrence of value
 
         Raises ValueError if the value is not present.
 
-        '''
+        """
         return list.remove(self, nameof(value, depth=2))
 
 
 class strlist(list):
-    '''Similar to list, but only intended for storing ``str`` instances.
+    """Similar to list, but only intended for storing ``str`` instances.
 
     Constructors:
       * strlist() -> new empty list
@@ -501,10 +515,12 @@ class strlist(list):
     strings, but some object names can be only ``str``. To be compatible with
     Python 3.x in an easy way, use this list.
 
-    '''
+    """
+
     def __init__(self, *args):
         if len(args) == 1:
             from types import GeneratorType as gtype
+
             if isinstance(args[0], (tuple, list, set, frozenset, gtype)):
                 args = args[0]
         super().__init__(str(arg) for arg in args)
@@ -519,37 +535,37 @@ class strlist(list):
         return super().__contains__(str(item))
 
     def append(self, value):
-        '''l.append(value) -- append a name object to end'''
+        """l.append(value) -- append a name object to end"""
         super().append(str(value))
-        return value    # What allow to use its instances as a decorator
+        return value  # What allow to use its instances as a decorator
 
     __call__ = append
 
     def extend(self, items):
-        '''l.extend(items) -- extend list by appending items from the iterable
-        '''
+        """l.extend(items) -- extend list by appending items from the iterable
+        """
         items = (str(item) for item in items)
         return super().extend(items)
 
     def index(self, value, *args):
-        '''l.index(value, [start, [stop]]) -> int -- return first index of name
+        """l.index(value, [start, [stop]]) -> int -- return first index of name
 
         Raises ValueError if the name is not present.
 
-        '''
+        """
         return super().index(str(value), *args)
 
     def insert(self, index, value):
-        '''l.insert(index, value) -- insert object before index
-        '''
+        """l.insert(index, value) -- insert object before index
+        """
         return super().insert(index, str(value))
 
     def remove(self, value):
-        '''l.remove(value) -- remove first occurrence of value
+        """l.remove(value) -- remove first occurrence of value
 
         Raises ValueError if the value is not present.
 
-        '''
+        """
         return list.remove(self, str(value))
 
 
@@ -557,7 +573,7 @@ class strlist(list):
 # Otherwise the `tests/` directory would need to be a proper package.
 
 import unittest as _utest
-from xotl.tools.symbols import Unset as _Unset   # Use a tier 0 module!
+from xotl.tools.symbols import Unset as _Unset  # Use a tier 0 module!
 
 
 class TestRelativeImports(_utest.TestCase):
@@ -565,15 +581,17 @@ class TestRelativeImports(_utest.TestCase):
     AbsoluteUndefined = _undef
 
     def test_relative_imports(self):
-        self.assertEquals(nameof(self.RelativeUnset), '_Unset')
-        self.assertEquals(nameof(self.RelativeUnset, inner=True), 'Unset')
+        self.assertEquals(nameof(self.RelativeUnset), "_Unset")
+        self.assertEquals(nameof(self.RelativeUnset, inner=True), "Unset")
 
         # Even relative imports are resolved properly with `full=True`
-        self.assertEquals(nameof(self.RelativeUnset, full=True),
-                          'xotl.tools.names._Unset')
+        self.assertEquals(
+            nameof(self.RelativeUnset, full=True), "xotl.tools.names._Unset"
+        )
 
-        self.assertEquals(nameof(self.AbsoluteUndefined, full=True),
-                          'xotl.tools.names._undef')
+        self.assertEquals(
+            nameof(self.AbsoluteUndefined, full=True), "xotl.tools.names._undef"
+        )
 
 
 # Don't delete the _Unset name, so that the nameof inside the test could find

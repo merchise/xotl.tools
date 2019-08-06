@@ -3,7 +3,7 @@
 
 .. module:: xotl.tools.infinity
 
-.. object:: xotl.tools.infinity.Infinity
+.. data:: Infinity
 
    The positive infinite value.  The negative infinite value is ``-Infinity``.
 
@@ -14,4 +14,4 @@
    the ABC `InfinityComparable`:class:.
 
 
-.. autoclass:: xotl.tools.infinity.InfinityComparable
+.. autoclass:: InfinityComparable

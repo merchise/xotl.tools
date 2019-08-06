@@ -7,19 +7,19 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extensions to the `functools` module from the Python's standard library.
+"""Extensions to the `functools` module from the Python's standard library.
 
 You may use this module as drop-in replacement of `functools`.
 
-'''
-from functools import *    # noqa
+"""
+from functools import *  # noqa
 from functools import _CacheInfo  # noqa
 
 
 # TODO: Check relevance of the following function.
 # The real signature should be (*funcs, times)
 def power(*args):
-    '''Returns the "power" composition of several functions.
+    """Returns the "power" composition of several functions.
 
     Examples::
 
@@ -33,24 +33,25 @@ def power(*args):
        ...
        TypeError: power() takes at least 2 arguments (1 given)
 
-    '''
+    """
     from xotl.tools.params import check_count
     from xotl.tools.fp.tools import compose
-    check_count(args, 2, caller='power')
+
+    check_count(args, 2, caller="power")
     *funcs, times = args
     if any(not callable(func) for func in funcs):
-        raise TypeError('Arguments of `power`, but last, must be callables')
+        raise TypeError("Arguments of `power`, but last, must be callables")
     if not (isinstance(times, int) and times > 0):
-        raise TypeError('Last argument of `power` must be a positive integer')
+        raise TypeError("Last argument of `power` must be a positive integer")
     if len(funcs) > 1:
-        base = (compose(funcs), )
+        base = (compose(funcs),)
     else:
-        base = (funcs[0], )
+        base = (funcs[0],)
     return compose(*(base * times))
 
 
 def lwraps(*args, **kwargs):
-    '''Lambda wrapper.
+    """Lambda wrapper.
 
     Useful for decorate lambda functions with name and documentation.
 
@@ -103,7 +104,7 @@ def lwraps(*args, **kwargs):
 
     .. versionadded:: 1.7.0
 
-    '''
+    """
     from types import FunctionType, MethodType
     from xotl.tools.symbols import Unset
     from xotl.tools.params import check_count
@@ -124,16 +125,16 @@ def lwraps(*args, **kwargs):
                 raise TypeError(msg.format(name, type(value).__name__))
 
     methods = (staticmethod, classmethod, MethodType)
-    decorables = methods + (FunctionType, )
+    decorables = methods + (FunctionType,)
 
-    name_key = '__name__'
-    doc_key = '__doc__'
-    mod_key = '__module__'
+    name_key = "__name__"
+    doc_key = "__doc__"
+    mod_key = "__module__"
     safes = {name_key, mod_key}
     source = {}
     target = Unset
     count = len(args)
-    check_count(count, 0, 2, caller='lwraps')
+    check_count(count, 0, 2, caller="lwraps")
     i = 0
     while i < count:
         arg = args[i]
@@ -143,15 +144,15 @@ def lwraps(*args, **kwargs):
             if target is Unset:
                 target = arg
             else:
-                repeated('target-function')
+                repeated("target-function")
         else:
-            msg = 'lwraps arg {} must be a string or decorable function'
+            msg = "lwraps arg {} must be a string or decorable function"
             raise TypeError(msg.format(i))
         i += 1
-    wrapped = kwargs.pop('wrapped', Unset)
-    settle_str(name_key, kwargs.pop('name', Unset))
+    wrapped = kwargs.pop("wrapped", Unset)
+    settle_str(name_key, kwargs.pop("name", Unset))
     settle_str(name_key, kwargs.pop(name_key, Unset))
-    settle_str(doc_key, kwargs.pop('doc', Unset))
+    settle_str(doc_key, kwargs.pop("doc", Unset))
     settle_str(doc_key, kwargs.pop(doc_key, Unset))
     source.update(kwargs)
     if wrapped is not Unset:
@@ -160,7 +161,7 @@ def lwraps(*args, **kwargs):
         for name in (mod_key, name_key, doc_key):
             if name not in source:
                 source[str(name)] = getattr(wrapped, name)
-        d = source.setdefault('__dict__', {})
+        d = source.setdefault("__dict__", {})
         d.update(wrapped.__dict__)
 
     def wrapper(target):
@@ -174,14 +175,14 @@ def lwraps(*args, **kwargs):
                     if name in safes:
                         value = str(value)
                     setattr(target, str(name), value)
-                d = source.pop('__dict__', Unset)
+                d = source.pop("__dict__", Unset)
                 if d:
                     target.__dict__.update(d)
             for key in source:
                 setattr(target, key, source[key])
             return res
         else:
-            msg = 'only functions are decorated, not {}'
+            msg = "only functions are decorated, not {}"
             raise TypeError(msg.format(type(target).__name__))
 
     return wrapper(target) if target else wrapper
@@ -194,7 +195,7 @@ def lwraps(*args, **kwargs):
 
 
 def curry(f):
-    '''Return a function that automatically 'curries' is positional arguments.
+    """Return a function that automatically 'curries' is positional arguments.
 
     Example::
 
@@ -207,8 +208,9 @@ def curry(f):
 
         >>> add()()()(1, 2)
         3
-    '''
+    """
     from xotl.tools.future.inspect import getfullargspec
+
     fargs = getfullargspec(f)[0]
 
     def curried(cargs=None):
@@ -221,5 +223,7 @@ def curry(f):
                 return curried(cargs_)
             else:
                 return f(*cargs_, **kwargs)
+
         return inner
+
     return curried()

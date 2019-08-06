@@ -15,7 +15,7 @@ from xoutil.future.datetime import TimeSpan, EmptyTimeSpan, DateTimeSpan
 from xoutil.testing.datetime import timespans, datetimespans
 
 import hypothesis
-from hypothesis import strategies, given
+from hypothesis import strategies, given, settings
 
 
 dates = strategies.dates
@@ -391,6 +391,7 @@ def test_timespan_diff(start_date, delta):
 @given(strategies.datetimes(min_value=datetime(1970, 1, 1),
                             max_value=datetime(5000, 12, 31)),
        strategies.integers(min_value=1, max_value=10000))
+@settings(deadline=None)
 def test_datetimespan_diff(start_date, delta):
     secs = timedelta(seconds=delta)
     big = DateTimeSpan(start_date, start_date + 3 * secs)

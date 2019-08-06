@@ -29,7 +29,7 @@
 
 - Add `xotl.tools.objects.iter_final_subclasses`:func:,
   `xotl.tools.objects.get_final_subclasses`:func: and
-  ``xotl.tools.objects.FinalSubclassEnumeration`:func:`
+  `xotl.tools.objects.FinalSubclassEnumeration`:func:.
 
 - Deprecate module ``xotl.tools.progress``.
 

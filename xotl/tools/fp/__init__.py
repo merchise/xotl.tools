@@ -7,9 +7,9 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Advanced functional programming in Python.
+"""Advanced functional programming in Python.
 
 .. note:: This module is in **EXPERIMENTAL** state, we encourage not to use it
    before declared stable.
 
-'''
+"""

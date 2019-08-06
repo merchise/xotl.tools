@@ -4,6 +4,24 @@ Changelog
 2.1 series
 ----------
 
+2019-05-26.  Release 2.1.3
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.3.rst
+
+
+2019-05-26. Release 2.1.2
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.2.rst
+
+
+2019-03-13. Release 2.1.1
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.1.rst
+
+
 2019-02-27. Release 2.1.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 

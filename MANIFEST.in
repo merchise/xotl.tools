@@ -5,7 +5,11 @@ include *.ini
 include *.rst
 
 recursive-include docs *.rst *.txt Makefile *.py
+recursive-include xotl *.py *.txt *.rst *.pyi
 recursive-include xoutil *.py *.txt *.rst *.pyi
 
 prune .tox
 prune docs/build
+include versioneer.py
+include xotl/tools/release.py
+include xotl/tools/_version.py

@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extends the standard `calendar` module.
+"""Extends the standard `calendar` module.
 
 xotl.tools extensions:
 
@@ -15,10 +15,10 @@ xotl.tools extensions:
 
 Original documentation:
 
-'''
+"""
 
-from calendar import *    # noqa
-import calendar as _stdlib    # noqa
+from calendar import *  # noqa
+import calendar as _stdlib  # noqa
 
 __doc__ += _stdlib.__doc__
 
@@ -28,5 +28,17 @@ except AttributeError:
     pass
 
 
-(January, February, March, April, May, June,
- July, August, September, October, November, December) = range(1, 13)
+(
+    January,
+    February,
+    March,
+    April,
+    May,
+    June,
+    July,
+    August,
+    September,
+    October,
+    November,
+    December,
+) = range(1, 13)

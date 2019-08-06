@@ -1,6 +1,6 @@
-=============================
- How to contribute to xoutil
-=============================
+=====================================
+ How to contribute to ``xotl.tools``
+=====================================
 
 Testing
 =======
@@ -8,34 +8,17 @@ Testing
 Running tests
 -------------
 
-`xoutil` uses `pytest` and `tox` for tests.  We have a bundled version of
-`pytest` in the ``runtests.py`` scripts so for running tests in your environment
-you don't really have to install `pytest` and/or `tox`.
+Quick::
 
-Given you have installed `xoutil` as development user-local package with::
-
-    $ python setup.py develop --user
-
-You may run the tests with::
-
-    $ python runtests.py
-
-Use the ``-h`` to show the `pytest` command line options.
-
-If you have `tox` installed, then should have also Python 2.7, Python 3.5 and
-PyPy interpreters\ [#py-for-tests]_ installed and in your path to run the
-tests with `tox`.  Having done so, you may run the tests with::
-
-    $ tox
-
-This will run the tests suite in those three environments.
+  pipenv install --dev
+  tox
 
 
 Writing tests
 -------------
 
-Testing was not introduced in `xoutil` until late in the project life.  So
-there are many modules that lack a proper test suite.
+Testing was not introduced in ``xotl.tools`` until late in the project life.
+So there are many modules that lack a proper test suite.
 
 To ease the task of writing tests, we chose `pytest`.
 
@@ -53,8 +36,8 @@ However, it won't hurt if we write them.
 Documentation
 =============
 
-Since `xoutil` is collection of very disparate stuff, the documentation is
-hardly narrative but is contained in the docstrings of every "exported"
+Since ``xotl.tools`` is collection of very disparate stuff, the documentation
+is hardly narrative but is contained in the docstrings of every "exported"
 element, except perhaps for module-level documentation in some cases.  In
 these later cases, a more narrative text is placed in the ``.rst`` file that
 documents the module.
@@ -69,6 +52,9 @@ The first number refers to language compatibility: `xoutil` 1.x series are
 devoted to keeping compatible versions of the code for both Python 2.7 and
 Python 3.2+.  The jump to 2.x version series will made when `xoutil` won't
 support Python 2.7 any longer.
+
+From version 2.1.0, we renamed the package to ``xotl.tools`` but we keep
+imports up to version 3.0, and distribution of ``xoutil`` up to version 2.2.0.
 
 The second number is library major version indicator.  This indicates, that
 some deprecated stuff are finally removed and/or new functionality is
@@ -85,7 +71,7 @@ packaging problem, or bug in the documentation.
 Module layout and rules
 =======================
 
-Many modules in `xoutil` contains definitions used in `xoutil` itself.  Though
+Many modules in ``xotl.tools`` contains definitions used in ``xotl.tools`` itself.  Though
 we try to logically place every feature into a rightful, logical module;
 sometimes this is not possible because it would lead to import dependency
 cycles.
@@ -103,22 +89,20 @@ We divide xoutil modules into 4 tiers:
    are exported through other xoutil modules.  These module are never
    documented, but their re-exported features are documented elsewhere.
 
-   Also the exported module `xoutil.eight`:mod: is this tier.
-
 #. Tier 1
 
    In this tier we have:
 
-   - `xoutil.decorator.meta`:mod:.  This is to allow the definition of
+   - `xotl.tools.decorator.meta`:mod:.  This is to allow the definition of
      decorators in other modules.
 
-   - `xoutil.names`:mod:.  This is to allow the use of
-     `xoutil.names.namelist`:class: for the ``__all__`` attribute of other
+   - ``xotl.tools.names`:mod:.  This is to allow the use of
+     `xotl.tools.names.namelist`:class: for the ``__all__`` attribute of other
      modules.
 
-   - `xoutil.deprecation`:mod:.  It **must not** depend on any other module
-     besides `xoutil.eight`:mod:.  Many modules in `xoutil` will use this
-     module at import time to declare deprecated features.
+   - `xotl.tools.deprecation`:mod:.  It **must not** depend on any other
+     module.  Many modules in ``xotl.tools`` will use this module at import
+     time to declare deprecated features.
 
 #. Tier 2
 
@@ -126,18 +110,17 @@ We divide xoutil modules into 4 tiers:
    modules, and that export features that could be imported at the module
    level.
 
-   This tier only has the `xoutil.modules`:mod:.  Both
-   `xoutil.modules.modulepropery`:func: and
-   `xoutil.modules.modulemethod`:func: are meant be used at module level
+   This tier only has the `xotl.tools.modules`:mod:.  Both
+   `xotl.tools.modules.modulepropery`:func: and
+   `xotl.tools.modules.modulemethod`:func: are meant be used at module level
    definitions, so they are likely to be imported at module level.
 
 #. Tier 3
 
    The rest of the modules.
 
-   In this tier, `xoutil.objects`:mod: and `xoutil.types`:mod: are kings.  But
-   in order to allow the import of other modules the following pair of rules
-   are placed:
+   In this tier, `xotl.tools.objects`:mod: is king.  But in order to allow the
+   import of other modules the following pair of rules are placed:
 
   - At the module level only import from upper tiers.
 
@@ -146,7 +129,7 @@ We divide xoutil modules into 4 tiers:
 
   This entails that you can't define a function that must be a module level
   import, like a decorator for other functions.  For that reason, decorators
-  are mostly placed in the `xoutil.decorator`:mod: module.
+  are mostly placed in the `xotl.tools.decorator`:mod: module.
 
 
 The tiers above are a "logical suggestion" of how xoutil modules are organized

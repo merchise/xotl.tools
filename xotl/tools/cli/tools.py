@@ -7,18 +7,18 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Utilities for command-line interface (CLI) applications.
+r"""Utilities for command-line interface (CLI) applications.
 
 - `program_name`:func:\ : calculate the program name from "sys.argv[0]".
 
 - `command_name`:func:\ : calculate command names using class names in lower
    case inserting a hyphen before each new capital letter.
 
-'''
+"""
 
 
 def hyphen_name(name, join_numbers=True):
-    '''Convert a name to a hyphened slug.
+    """Convert a name to a hyphened slug.
 
     Expects a `name` in Camel-Case.  All invalid characters (those invalid in
     Python identifiers) are ignored.  Numbers are joined with preceding part
@@ -35,47 +35,49 @@ def hyphen_name(name, join_numbers=True):
       >> hyphen_name('ICQNámeP12', join_numbers=False) == 'icq-name-p-12'
       True
 
-    '''
+    """
     import re
     from xotl.tools.string import force_ascii
+
     name = force_ascii(name)
-    regex = re.compile('[^A-Za-z0-9]+')
-    name = regex.sub('-', name)
-    regex = re.compile('([A-Z]+|[a-z]+|[0-9]+|-)')
+    regex = re.compile("[^A-Za-z0-9]+")
+    name = regex.sub("-", name)
+    regex = re.compile("([A-Z]+|[a-z]+|[0-9]+|-)")
     all = regex.findall(name)
     i, count, parts = 0, len(all), []
     while i < count:
         part = all[i]
-        if part != '-':
-            upper = 'A' <= part <= 'Z'
+        if part != "-":
+            upper = "A" <= part <= "Z"
             if upper:
                 part = part.lower()
             j = i + 1
-            if j < count and upper and 'a' <= all[j] <= 'z':
+            if j < count and upper and "a" <= all[j] <= "z":
                 aux = part[:-1]
                 if aux:
                     parts.append(aux)
                 part = part[-1] + all[j]
                 i = j
                 j += 1
-            if j < count and '0' <= all[j] <= '9' and join_numbers:
+            if j < count and "0" <= all[j] <= "9" and join_numbers:
                 part = part + all[j]
                 i = j
             parts.append(part)
         i += 1
-    return '-'.join(parts)
+    return "-".join(parts)
 
 
 def program_name():
-    '''Calculate the program name from "sys.argv[0]".'''
+    """Calculate the program name from "sys.argv[0]"."""
     # TODO: Use 'argparse' standard (parser.prog)
     import sys
     from os.path import basename
+
     return basename(sys.argv[0])
 
 
 def command_name(cls):
-    '''Calculate a command name from given class.
+    """Calculate a command name from given class.
 
     Names are calculated putting class names in lower case and inserting
     hyphens before each new capital letter.  For example "MyCommand" will
@@ -111,9 +113,9 @@ def command_name(cls):
            ...
         TypeError: Attribute 'command_cli_name' must be a string.
 
-    '''
+    """
     unset = object()
-    names = ('command_cli_name', '__command_name__')
+    names = ("command_cli_name", "__command_name__")
     i, res = 0, unset
     while i < len(names) and res is unset:
         name = names[i]

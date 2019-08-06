@@ -6,18 +6,18 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-'''Functional tools for functions that returns iterators (generators, etc.)
+"""Functional tools for functions that returns iterators (generators, etc.)
 
 .. warning:: This module is experimental.  It may be removed completely, moved
    or otherwise changed.
 
-'''
+"""
 from functools import reduce
 from xotl.tools.deprecation import deprecated_alias
 
 
 def kleisli_compose(*fs):
-    '''The Kleisli composition operator.
+    """The Kleisli composition operator.
 
     For two functions, ``kleisli_compose(g, f)`` returns::
 
@@ -35,7 +35,8 @@ def kleisli_compose(*fs):
     .. versionadded:: 1.9.6
     .. versionchanged:: 1.9.7 Name changed to ``kleisli_compose``.
 
-    '''
+    """
+
     def _kleisli_compose(g, f):
         # (>>.) :: Monad m => (b -> m c) -> (a -> m b) -> a -> m c
         # g >>. f = \x -> f x >>= g

@@ -1,87 +1,118 @@
 ---
 stages:
+  - pre-check
   - test
   - check
   - build
   - publish
 
-lint:
+check code smells:
+  image: python:3.6-alpine
+  script:
+    - pip install merchise.lint==0.11
+    - merchise_lint3
+  stage: pre-check
+  allow_failure: true
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
+
+.run_tox_tests: &run_tox_tests
+  image: python:$PYTHON-alpine
   stage: test
   script:
-    - merchise_lint3
-  tags:
-    - merchise-lint3
+    - apk add g++
+    - pip install tox
+    - tox -e system-unit,$PYTHON-greenlets
 
 
-check with mypy:
-  stage: test
+.run_tox_staticcheck: &run_tox_staticcheck
+  image: python:3.6-alpine
+  stage: pre-check
   cache:
     key: mypy-${CI_COMMIT_REF_SLUG}
     paths:
       - .tox/3.6-staticcheck/
       - .mypy_cache/
   script:
-    - tox -e3.6-staticcheck
-  tags:
-    - python
-    - virtualenv
-    - tox
-  only:
-    - branches
-  allow_failure: true
-
-.run_tests: &run_tests
-  stage: test
-  script:
-    - if git show --oneline --name-only $CI_COMMIT_SHA | egrep '(\.py|\.gitlab-ci.yml|tox.ini)$'; then tox -re$PYTHON-unit,$PYTHON-greenlets; fi
-  tags:
-    - python
-    - virtualenv
-    - tox
-  only:
-    - branches
-
+    - apk add g++
+    - pip install tox
+    - tox -e 3.6-staticcheck
 
 run all Python 3.4 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
+  image: python:3.4-alpine
   variables:
     PYTHON: "3.4"
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
 
 
 run all Python 3.5 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
+  image: python:3.5-alpine
   variables:
     PYTHON: "3.5"
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
 
 run all Python 3.6 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
+  image: python:3.6-alpine
   variables:
     PYTHON: "3.6"
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
 
 run all Python 3.7 tests:
-  <<: *run_tests
+  <<: *run_tox_tests
+  image: python:3.7-alpine
   variables:
     PYTHON: "3.7"
-
-
-check signature of tag:
-  stage: check
-  script:
-    - git verify-tag $CI_COMMIT_REF_NAME
-  tags:
-    - git
-    - gpg
   only:
-    - tags
+    - master
+    - /^releases-2/
+    - merge_requests
+
+
+run static checks:
+  <<: *run_tox_staticcheck
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
+  allow_failure: true
+
 
 build source distribution:
+  image: python:3.6-alpine
   stage: build
   script:
-    - rm -f dist/*
-    - python3 setup.py sdist
+    - apk add git
+    - python setup.py sdist
     - PROJECT_NAME=xoutil python3 setup.py sdist
-  tags:
-    - python3
+  artifacts:
+    paths:
+      - dist/
+  only:
+    - tags
+
+
+build binary distribution:
+  image: python:3.6-alpine
+  stage: build
+  script:
+    - apk add git
+    - pip install wheel
+    - python3 setup.py bdist_wheel
+    - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
   artifacts:
     expire_in: 4 hours
     paths:
@@ -89,27 +120,23 @@ build source distribution:
   only:
     - tags
 
-build binary distribution:
-  stage: build
+check signature of tag:
+  image: alpine
+  stage: check
   script:
-    - rm -f dist/*
-    - python3 setup.py bdist_wheel
-    - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
-  tags:
-    - wheel
-    - python3
-  artifacts:
-    expire_in: 4 hours
-    paths:
-      - dist/
+    - apk add git gnupg
+    - gpg --recv-key $GNUPG_KEY
+    - git verify-tag $CI_COMMIT_REF_NAME
   only:
     - tags
+
 
 publish_locally:
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
+    - ssh-keyscan -H gestion.lahavane.com >> ~/.ssh/known_hosts
     - ssh manu@gestion.lahavane.com "mkdir -p Repos/xoutil"
     - scp dist/xoutil* manu@gestion.lahavane.com:Repos/xoutil/
     - ssh manu@gestion.lahavane.com "mkdir -p Repos/xotl.tools"
@@ -126,15 +153,14 @@ publish_locally:
     name: repo.lahavane.com
     url: http://repo.lahavane.com/pypi/$CI_PROJECT_NAME
 
-
 publish in pypi:
+  image: python:3.6-alpine
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - twine upload --skip-existing dist/*
-  tags:
-    - twine
+    - pip install twine
+    - twine upload --skip-existing -u "$PYPI_USERNAME" -p "$PYPI_PASSWORD" dist/*
   only:
     - tags
   dependencies:
@@ -147,16 +173,15 @@ publish in pypi:
 
 
 build documentation:
+  image: python:3.6-alpine
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
     paths:
       - builds/doctrees
   script:
-    - mkdir -p envs
-    - virtualenv -p `which python3` envs/$CI_COMMIT_SHA
-    - source envs/$CI_COMMIT_SHA/bin/activate
-    - pip install sphinx sphinx-rtd-theme
+    - apk add make g++ git
+    - pip install sphinx sphinx-rtd-theme hypothesis
     - pip install -e .
     - make -C docs/ html
     - cd docs/build/html
@@ -165,12 +190,11 @@ build documentation:
     paths:
       - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
     expire_in: 4 days
-  tags:
-    - virtualenv
   only:
     - tags
     - /^releases-/
     - master
+    - merge_requests
 
 publish in our rtd:
   variables:
@@ -178,6 +202,7 @@ publish in our rtd:
   stage: publish
   script:
     - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 rtd@docs.lahavane.com:.
+    - ssh-keyscan -H docs.lahavane.com >> ~/.ssh/known_hosts
     - ssh rtd@docs.lahavane.com mkdir -p $CI_PROJECT_NAME/.$CI_COMMIT_SHA
     - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
     - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -sr /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
@@ -194,3 +219,4 @@ publish in our rtd:
     - tags
     - /^releases-/
     - master
+    - merge_requests

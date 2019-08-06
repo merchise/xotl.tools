@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Concrete numbers for money.
+"""Concrete numbers for money.
 
 You may have 10 dollars and 5 euros in your wallet, that does not mean that
 you have 15 of anything (but bills, perhaps).  Though you may *evaluate* your
@@ -63,12 +63,13 @@ If you convert your euros to dollars::
 
 .. _ISO 4217: https://en.wikipedia.org/wiki/ISO_4217
 
-'''
+"""
 
 
 class ValueType(type):
     def __instancecheck__(self, which):
         from .meta import Quantity
+
         if isinstance(which, Quantity):
             return any(
                 which.signature is currency.signature
@@ -85,6 +86,7 @@ class Valuation(metaclass=ValueType):
 class RateType(type):
     def __instancecheck__(self, which):
         from .meta import Quantity
+
         if isinstance(which, Quantity):
             top, bottom = which.signature.top, which.signature.bottom
             if len(top) == len(bottom) == 1:
@@ -106,13 +108,14 @@ class _Currency:
 
     def __new__(cls, name):
         from .meta import Quantity, Signature
+
         name = name.upper()
         res = cls.instances.get(name, None)
         if res is None:
             res = super().__new__(cls)
             res.name = name
             cls.instances[name] = res
-            cls.units[name] = Quantity(1, Signature(top=(res, )))
+            cls.units[name] = Quantity(1, Signature(top=(res,)))
         return res
 
     def __str__(self):
@@ -124,7 +127,7 @@ class _Currency:
 
 
 def currency(name):
-    '''Get the canonical value for the given currency `name`.
+    """Get the canonical value for the given currency `name`.
 
-    '''
+    """
     return _Currency(name).unit

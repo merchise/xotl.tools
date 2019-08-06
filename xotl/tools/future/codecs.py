@@ -7,20 +7,21 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Codec registry, base classes and tools.
+"""Codec registry, base classes and tools.
 
 In this module, some additions for `codecs` standard module.
 
-'''
+"""
 
 
-from codecs import *    # noqa
-from codecs import __all__    # noqa
+from codecs import *  # noqa
+from codecs import __all__  # noqa
+
 __all__ = list(__all__)
 
 
 def force_encoding(encoding=None):
-    '''Validates an encoding value.
+    """Validates an encoding value.
 
     If `encoding` is None use `locale.getdefaultlocale`:func:.  If that is
     also none, return 'UTF-8'.
@@ -32,7 +33,7 @@ def force_encoding(encoding=None):
     .. versionchanged:: 1.8.7 Stop using `locale.getpreferrededencoding`:func:
        and improve documentation.
 
-    '''
+    """
     # TODO: This mechanism is tricky, we must find out how to unroll the mess
     # involving the concept of which encoding to use by default:
     #
@@ -47,11 +48,12 @@ def force_encoding(encoding=None):
     #
     # All these considerations where also proved in Mac-OS.
     import locale
-    return encoding or locale.getdefaultlocale()[1] or 'UTF-8'
+
+    return encoding or locale.getdefaultlocale()[1] or "UTF-8"
 
 
 def safe_decode(s, encoding=None):
-    '''Similar to bytes `decode` method returning unicode.
+    """Similar to bytes `decode` method returning unicode.
 
     Decodes `s` using the given `encoding`, or determining one from the system.
 
@@ -60,7 +62,7 @@ def safe_decode(s, encoding=None):
     .. versionadded:: 1.1.3
     .. versionchanged:: 1.8.0 migrated to 'future.codecs'
 
-    '''
+    """
     if isinstance(s, str):
         return s
     else:
@@ -68,7 +70,7 @@ def safe_decode(s, encoding=None):
         try:
             # In Python 3 str(b'm') returns the string "b'm'" and not just "m",
             # this fixes this.
-            return str(s, encoding, 'replace')
+            return str(s, encoding, "replace")
         except LookupError:
             # The provided enconding is not know, try with no encoding.
             return safe_decode(s)
@@ -78,7 +80,7 @@ def safe_decode(s, encoding=None):
 
 
 def safe_encode(u, encoding=None):
-    '''Similar to unicode `encode` method returning bytes.
+    """Similar to unicode `encode` method returning bytes.
 
     Encodes `u` using the given `encoding`, or determining one from the system.
 
@@ -87,7 +89,7 @@ def safe_encode(u, encoding=None):
     .. versionadded:: 1.1.3
     .. versionchanged:: 1.8.0 migrated to 'future.codecs'
 
-    '''
+    """
     # XXX: 'eight' pending.
     # TODO: This is not nice for Python 3, bytes is not valid string any more
     #       See `json.encoder.py_encode_basestring_ascii`:func: of Python 2.x
@@ -98,13 +100,13 @@ def safe_encode(u, encoding=None):
         try:
             try:
                 if isinstance(u, str):
-                    return bytes(u, encoding, 'replace')
+                    return bytes(u, encoding, "replace")
                 else:
-                    return str(u).encode(encoding, 'replace')
+                    return str(u).encode(encoding, "replace")
             except (UnicodeError, TypeError):
-                return str(u).encode(encoding, 'replace')
+                return str(u).encode(encoding, "replace")
         except LookupError:
             return safe_encode(u)
 
 
-__all__ += ('force_encoding', 'safe_decode', 'safe_encode')
+__all__ += ("force_encoding", "safe_decode", "safe_encode")

@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Extends the standard `types` module.
+"""Extends the standard `types` module.
 
 Standard module defines names for all type symbols known in the standard
 interpreter.
@@ -20,10 +20,10 @@ In Jython and PyPy, `MemberDescriptorType` is identical to
 `GetSetDescriptorType`; to mantain compatibility in some `xotl.tools` code,
 they are differentiated in this module.
 
-'''
+"""
 
-from types import *    # noqa
-import types as _stdlib    # noqa
+from types import *  # noqa
+import types as _stdlib  # noqa
 
 from xotl.tools.deprecation import deprecated
 
@@ -32,51 +32,62 @@ from collections import Mapping
 
 
 try:
-    from types import __all__    # noqa
+    from types import __all__  # noqa
+
     __all__ = list(__all__)
 except ImportError:
     # Python 3.3 don't implement '__all__' for 'string' module.
-    __all__ = [name for name in dir(_stdlib) if not name.startswith('_')]
+    __all__ = [name for name in dir(_stdlib) if not name.startswith("_")]
 
 try:
-    NoneType = _stdlib.NoneType    # noqa
+    NoneType = _stdlib.NoneType  # noqa
 except AttributeError:
     try:
         # In PyPy3 'NoneType' is a built-in
-        from builtins import NoneType    # noqa
+        from builtins import NoneType  # noqa
     except ImportError:
         NoneType = type(None)
-    __all__.append('NoneType')
+    __all__.append("NoneType")
 
 try:
     # It is maintained in this module for perhaps using it in `mypy`.
-    EllipsisType    # noqa
+    EllipsisType  # noqa
 except NameError:
     EllipsisType = type(Ellipsis)
-    __all__.append('EllipsisType')
+    __all__.append("EllipsisType")
 
 # Check Jython and PyPy peculiarity
-if MemberDescriptorType is GetSetDescriptorType:    # noqa
+if MemberDescriptorType is GetSetDescriptorType:  # noqa
+
     class _foo:
-        __slots__ = 'bar'
+        __slots__ = "bar"
+
     MemberDescriptorType = type(_foo.bar)
     del _foo
 
-FuncTypes = tuple({FunctionType, MethodType, LambdaType,    # noqa
-                   BuiltinFunctionType, BuiltinMethodType})    # noqa
+FuncTypes = tuple(
+    {
+        FunctionType,
+        MethodType,
+        LambdaType,  # noqa
+        BuiltinFunctionType,
+        BuiltinMethodType,
+    }
+)  # noqa
 
-func_types = FuncTypes    # Just an alias
+func_types = FuncTypes  # Just an alias
 
 from types import _calculate_meta  # noqa
 
 
 import re
-RegexPattern = type(re.compile(''))
+
+RegexPattern = type(re.compile(""))
 del re
 
 
 def _get_mro_attr(target, name, *default):
-    '''Get a named attribute from a type.
+    """Get a named attribute from a type.
 
     Similar to `getattr` but looking in the MRO dictionaries for the type.
     Used internally in this module.
@@ -98,9 +109,10 @@ def _get_mro_attr(target, name, *default):
       >>> _get_mro_attr(b, 'y')
       56
 
-    '''
+    """
     from xotl.tools.future.inspect import _static_getmro
     from xotl.tools.params import check_default, Undefined
+
     # force type
     target = target if isinstance(target, type) else type(target)
     target_mro = _static_getmro(target)
@@ -116,7 +128,7 @@ def _get_mro_attr(target, name, *default):
 
 @deprecated(_get_mro_attr)
 class mro_dict(Mapping):
-    '''Utility behaving like a read-only dict of `target` MRO attributes.
+    """Utility behaving like a read-only dict of `target` MRO attributes.
 
     Used internally in this module.
 
@@ -143,11 +155,13 @@ class mro_dict(Mapping):
 
     .. deprecated:: 1.8.4
 
-    '''
-    __slots__ = ('_probes', '_keys')
+    """
+
+    __slots__ = ("_probes", "_keys")
 
     def __init__(self, target):
         from xotl.tools.future.inspect import _static_getmro
+
         type_ = target if isinstance(target, type) else type(target)
         target_mro = _static_getmro(type_)
         self._probes = tuple(c.__dict__ for c in target_mro)
@@ -155,6 +169,7 @@ class mro_dict(Mapping):
 
     def __getitem__(self, name):
         from xotl.tools.objects import get_first_of
+
         result = get_first_of(self._probes, name, default=_unset)
         if result is not _unset:
             return result
@@ -178,34 +193,35 @@ class mro_dict(Mapping):
                     self._keys.add(key)
 
 
-@deprecated('None', '"mro_get_value_list" will be removed.')
+@deprecated("None", '"mro_get_value_list" will be removed.')
 def mro_get_value_list(cls, name):
-    '''Return a list with all `cls` class attributes in MRO.
+    """Return a list with all `cls` class attributes in MRO.
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     return list(mro_get_full_mapping(cls, name).values())
 
 
-@deprecated('None', '"mro_get_full_mapping" will be removed.')
+@deprecated("None", '"mro_get_full_mapping" will be removed.')
 def mro_get_full_mapping(cls, name):
-    '''Return a dictionary with all items from `cls` in MRO.
+    """Return a dictionary with all items from `cls` in MRO.
 
     All values corresponding to `name` must be valid mappings.
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     from xotl.tools.future.inspect import _static_getmro
-    cls = cls if isinstance(cls, type) else type(cls)    # force type
+
+    cls = cls if isinstance(cls, type) else type(cls)  # force type
     mro = _static_getmro(cls)
     return {t: t.__dict__[name] for t in mro if name in t.__dict__}
 
 
-@deprecated('``iter(maybe)`` in an exception management block.')
+@deprecated("``iter(maybe)`` in an exception management block.")
 def is_iterable(maybe):
-    '''Returns True if `maybe` is an iterable object.
+    """Returns True if `maybe` is an iterable object.
 
     e.g. implements the `__iter__` method::
 
@@ -230,7 +246,7 @@ def is_iterable(maybe):
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     try:
         iter(maybe)
     except TypeError:
@@ -239,15 +255,15 @@ def is_iterable(maybe):
         return True
 
 
-_is_collection_replacement = '''::
+_is_collection_replacement = """::
     from xotl.tools.values.simple import collection, nil
     collection(avoid=Mapping)(maybe) is not nil
-'''
+"""
 
 
 @deprecated(_is_collection_replacement)
 def is_collection(maybe):
-    '''Test `maybe` to see if it is a tuple, a list, a set or a generator
+    """Test `maybe` to see if it is a tuple, a list, a set or a generator
     function.
 
     It returns False for dictionaries and strings::
@@ -278,28 +294,29 @@ def is_collection(maybe):
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     from xotl.tools.values.simple import logic_collection_coerce, nil
+
     return logic_collection_coerce(maybe) is not nil
 
 
-@deprecated('``isinstance(maybe, Mapping)``')
+@deprecated("``isinstance(maybe, Mapping)``")
 def is_mapping(maybe):
-    '''Test `maybe` to see if it is a valid mapping.
+    """Test `maybe` to see if it is a valid mapping.
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     return isinstance(maybe, Mapping)
 
 
 @deprecated('``maybe + ""`` in an exception management block.')
 def is_string_like(maybe):
-    '''Returns True if `maybe` acts like a string.
+    """Returns True if `maybe` acts like a string.
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     try:
         maybe + ""
     except TypeError:
@@ -308,19 +325,20 @@ def is_string_like(maybe):
         return True
 
 
-@deprecated('None', '"is_scalar" will be removed.')
+@deprecated("None", '"is_scalar" will be removed.')
 def is_scalar(maybe):
-    '''Returns if `maybe` is not not an iterable or a string.
+    """Returns if `maybe` is not not an iterable or a string.
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     from collections import Iterable
+
     return isinstance(maybe, str) or not isinstance(maybe, Iterable)
 
 
 def is_staticmethod(cls, name):
-    '''Returns true if a `method` is a static method.
+    """Returns true if a `method` is a static method.
 
     :param cls: The class or object that holds the method.
 
@@ -342,13 +360,13 @@ def is_staticmethod(cls, name):
       >>> is_staticmethod(Foo, 'bar')
       True
 
-    '''
+    """
     desc = _get_mro_attr(cls, name)
     return isinstance(desc, staticmethod)
 
 
 def is_classmethod(cls, name):
-    '''Returns if a `method` is a class method.
+    """Returns if a `method` is a class method.
 
     :param cls: The class or object that holds the method.
 
@@ -370,13 +388,13 @@ def is_classmethod(cls, name):
       >>> is_classmethod(Foo, 'bar')
       True
 
-    '''
+    """
     desc = _get_mro_attr(cls, name)
     return isinstance(desc, classmethod)
 
 
 def is_instancemethod(cls, name):
-    '''Returns if a `method` is neither a static nor a class method.
+    """Returns if a `method` is neither a static nor a class method.
 
     :param cls: The class or object that holds the method.
 
@@ -403,24 +421,24 @@ def is_instancemethod(cls, name):
       >>> is_instancemethod(Foobar, 'cm')
       False
 
-    '''
+    """
     desc = _get_mro_attr(cls, name)
-    return isinstance(desc, FunctionType)    # noqa
+    return isinstance(desc, FunctionType)  # noqa
 
 
-@deprecated('``isinstance(maybe, ModuleType)``')
+@deprecated("``isinstance(maybe, ModuleType)``")
 def is_module(maybe):
-    '''Returns True if `maybe` is a module.
+    """Returns True if `maybe` is a module.
 
     .. deprecated:: 1.8.4
 
-    '''
-    return isinstance(maybe, ModuleType)    # noqa
+    """
+    return isinstance(maybe, ModuleType)  # noqa
 
 
-@deprecated('``all(isinstance(obj, types) for obj in subjects)``')
+@deprecated("``all(isinstance(obj, types) for obj in subjects)``")
 def are_instances(*args):
-    '''Return True if every `subject` is an instance of (any) `types`.
+    """Return True if every `subject` is an instance of (any) `types`.
 
     :param subjects: All but last positional arguments.  Are the objects
         required to be instances of `types`.
@@ -442,18 +460,19 @@ def are_instances(*args):
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     from xotl.tools.params import check_count
-    check_count(args, 1, caller='are_instances')
+
+    check_count(args, 1, caller="are_instances")
     *subjects, types = args
     if not subjects:
-        isinstance(None, types)   # HACK: always validate `types`.
+        isinstance(None, types)  # HACK: always validate `types`.
     return all(isinstance(subject, types) for subject in subjects)
 
 
-@deprecated('``all(not isinstance(obj, types) for obj in subjects)``')
+@deprecated("``all(not isinstance(obj, types) for obj in subjects)``")
 def no_instances(*args):
-    '''Return True if every `subject` is **not** an instance of (neither)
+    """Return True if every `subject` is **not** an instance of (neither)
     `types`.
 
     :param subjects: All but last positional arguments.  Are the objects
@@ -479,10 +498,11 @@ def no_instances(*args):
 
     .. deprecated:: 1.8.4
 
-    '''
+    """
     from xotl.tools.params import check_count
-    check_count(args, 1, caller='no_instances')
+
+    check_count(args, 1, caller="no_instances")
     *subjects, types = args
     if not subjects:
-        isinstance(None, types)   # HACK: always validate `types`.
+        isinstance(None, types)  # HACK: always validate `types`.
     return all(not isinstance(subject, types) for subject in subjects)

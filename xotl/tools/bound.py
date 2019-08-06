@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''Helpers for bounded execution of co-routines.
+"""Helpers for bounded execution of co-routines.
 
 Example::
 
@@ -42,19 +42,20 @@ Unless you pass in a generator::
     >>> fib8() is None
     True
 
-'''
+"""
 
 from types import GeneratorType
 from xotl.tools.decorator.meta import decorator
 
 
 class BoundedType(type):
-    '''A bounded generator/function.'''
+    """A bounded generator/function."""
+
     pass
 
 
 class Bounded(metaclass=BoundedType):
-    '''The bounded function.
+    """The bounded function.
 
     This is the result of applying a `boundary definition` to an `unbounded
     function` (or generator).
@@ -64,7 +65,8 @@ class Bounded(metaclass=BoundedType):
     (``__call__``) this instance, or consuming the generator given by
     `generate`:meth:.
 
-    '''
+    """
+
     def __init__(self, target):
         self.target = target
 
@@ -72,24 +74,24 @@ class Bounded(metaclass=BoundedType):
     # apply method of BoundaryCondition.  Nevertheless, they are documented
     # here as an API promise.
     def __call__(self, *args, **kwargs):
-        '''Return the last value from the underlying `bounded generator`.
+        """Return the last value from the underlying `bounded generator`.
 
-        '''
+        """
         raise NotImplementedError()
 
     def generate(self, *args, **kwargs):
-        '''Return the `bounded generator`.
+        """Return the `bounded generator`.
 
         This method exposes the `bounded generator`.  This allows you to "see"
         all the values yielded by the `unbounded generator` up to the point
         when the boundary condition is met.
 
-        '''
+        """
         raise NotImplementedError()
 
 
 class BoundaryCondition:
-    '''Embodies the boundary protocol.
+    """Embodies the boundary protocol.
 
     The `definition` argument must a function that implements a `boundary
     definition`.  This function may take arguments to initialize the state of
@@ -111,13 +113,16 @@ class BoundaryCondition:
     GeneratorExit and StopIteration, are not handled (so the bubble up).  See
     `until_error`:func:.
 
-    '''
+    """
+
     def __new__(cls, definition, name=None, errors=None):
         from types import FunctionType
+
         if not isinstance(definition, FunctionType):
             raise TypeError('"definition" must be a function')
         if not name:
             from xotl.tools.names import nameof
+
             name = nameof(definition, inner=True, full=True)
         result = super().__new__(cls)
         result.name = name  # needs to be set here or it'll be None
@@ -125,6 +130,7 @@ class BoundaryCondition:
 
     def __init__(self, definition, name=None, errors=None):
         from inspect import getargspec
+
         spec = getargspec(definition)
         self.args = spec[0]
         self.defaults = spec[3]
@@ -132,11 +138,11 @@ class BoundaryCondition:
         self.varkwargs = spec[2]
         self.definition = definition
         if not errors:
-            errors = (Exception, )
+            errors = (Exception,)
         self.errors = errors
 
     def __str__(self):
-        return str('boundary %s(...)' % self.name)
+        return str("boundary %s(...)" % self.name)
 
     def __repr__(self):
         return str(self)
@@ -147,7 +153,7 @@ class BoundaryCondition:
 
     def apply(self, args, kwargs):
         def execute(boundary, unbounded, initial):
-            '''Executes the unbounded generator guarded by a boundary condition.
+            """Executes the unbounded generator guarded by a boundary condition.
 
             `boundary` is the boundary condition. `unbounded` is the unbounded
             generator.  Both must be generators.
@@ -160,14 +166,12 @@ class BoundaryCondition:
             algorithm that interleaves the boundary condition with the
             unbounded generator.
 
-            '''
+            """
             try:
                 next(boundary)  # Initialize the boundary condition
                 stop = boundary.send(initial)
             except StopIteration:
-                raise RuntimeError(
-                    'Invalid boundary definition "%r"' % self.definition
-                )
+                raise RuntimeError('Invalid boundary definition "%r"' % self.definition)
             try:
                 while stop is not True:
                     try:
@@ -182,8 +186,7 @@ class BoundaryCondition:
                             stop = boundary.send(data)
                         except StopIteration:
                             raise RuntimeError(
-                                'Invalid boundary definition "%r"' %
-                                self.definition
+                                'Invalid boundary definition "%r"' % self.definition
                             )
             finally:
                 boundary.close()
@@ -224,6 +227,7 @@ class BoundaryCondition:
             result = self.apply((), {})(*args, **kwargs)
             if len(args) == 1:
                 from functools import update_wrapper
+
                 update_wrapper(result, args[0])
             return result
         else:
@@ -232,7 +236,7 @@ class BoundaryCondition:
 
 @decorator
 def boundary(definition, name=None, base=BoundaryCondition, errors=None):
-    '''Helper to define a boundary condition.
+    """Helper to define a boundary condition.
 
     The `definition` must be a function that returns a generator.  The
     following rules **must be** followed.  Collectively these rules are called
@@ -279,15 +283,16 @@ def boundary(definition, name=None, base=BoundaryCondition, errors=None):
     `bounded function` and not when applying the boundary to the `unbounded
     generator`.
 
-    '''
+    """
     from functools import update_wrapper
+
     result = base(definition, name=name, errors=errors)
     return update_wrapper(result, definition)
 
 
 @boundary
 def timed(maxtime):
-    '''Becomes True after a given amount of time.
+    """Becomes True after a given amount of time.
 
     The bounded generator will be allowed to yields values until the `maxtime`
     time frame has elapsed.
@@ -314,8 +319,9 @@ def timed(maxtime):
     If `maxtime` is not a timedelta, the timedelta will be computed as
     ``timedelta(seconds=maxtime)``.
 
-    '''
+    """
     from datetime import datetime, timedelta
+
     if isinstance(maxtime, timedelta):
         bound = maxtime
     else:
@@ -324,12 +330,12 @@ def timed(maxtime):
     yield False  # Deal with next-send calling scheme for boundaries
     while datetime.now() - start < bound:
         yield False
-    yield True   # Or we're not compliant with the boundary protocol.
+    yield True  # Or we're not compliant with the boundary protocol.
 
 
 @boundary
 def times(n):
-    '''Becomes True after a given after the `nth` item have been produced.'''
+    """Becomes True after a given after the `nth` item have been produced."""
     passed = 0
     yield False
     while passed < n:
@@ -340,7 +346,7 @@ def times(n):
 
 @boundary
 def accumulated(mass, *attrs, **kwargs):
-    '''Becomes True after accumulating a given "mass".
+    """Becomes True after accumulating a given "mass".
 
     `mass` is the maximum allowed to accumulate.  This is usually a positive
     number.  Each value produced by the `unbounded generator` is added
@@ -356,11 +362,12 @@ def accumulated(mass, *attrs, **kwargs):
     If the keyword argument `initial` is provided the accumulator is
     initialized with that value.  By default this is 0.
 
-    '''
+    """
     from xotl.tools.objects import get_first_of
-    accum = kwargs.pop('initial', 0)
+
+    accum = kwargs.pop("initial", 0)
     if kwargs:
-        raise TypeError('Invalid keyword arguments %r' % kwargs.keys())
+        raise TypeError("Invalid keyword arguments %r" % kwargs.keys())
     yield False
     while accum < mass:
         data = yield False
@@ -370,7 +377,7 @@ def accumulated(mass, *attrs, **kwargs):
 
 @boundary
 def pred(func, skipargs=True):
-    '''Allow "normal" functions to engage within the boundary protocol.
+    """Allow "normal" functions to engage within the boundary protocol.
 
     `func` should take a single argument and return True if the boundary
     condition has been met.
@@ -394,7 +401,7 @@ def pred(func, skipargs=True):
       >>> fibonacci()
       13
 
-    '''
+    """
     sentinel = object()
     data = yield False
     if skipargs:
@@ -405,7 +412,7 @@ def pred(func, skipargs=True):
 
 
 def until_errors(*errors, **kwargs):
-    '''Becomes True after any of `errors` has been raised.
+    """Becomes True after any of `errors` has been raised.
 
     Any other exceptions (except GeneratorExit) is propagated.  You must pass
     at least an error.
@@ -425,18 +432,16 @@ def until_errors(*errors, **kwargs):
 
     .. versionchanged:: 1.7.5 Added the keyword argument `on_error`.
 
-    '''
+    """
     if not errors:
-        raise TypeError('catch must be called with at least an exception')
+        raise TypeError("catch must be called with at least an exception")
     elif any(not issubclass(e, Exception) for e in errors):
-        raise TypeError(
-            'catch must be called only with subclasses of Exception'
-        )
+        raise TypeError("catch must be called only with subclasses of Exception")
     if any(issubclass(e, GeneratorExit) for e in errors):
-        raise TypeError('You cannot catch GeneratorExit')
-    on_error = kwargs.pop('on_error', None)
+        raise TypeError("You cannot catch GeneratorExit")
+    on_error = kwargs.pop("on_error", None)
     if kwargs:
-        raise TypeError('Invalid keyword arguments: %s' % ', '.join(kwargs))
+        raise TypeError("Invalid keyword arguments: %s" % ", ".join(kwargs))
 
     @boundary(errors=errors)
     def _catch():
@@ -448,11 +453,12 @@ def until_errors(*errors, **kwargs):
             if on_error is not None:
                 on_error()
             yield True
+
     return _catch()
 
 
 def until(**kwargs):
-    '''An idiomatic alias to other boundary definitions.
+    """An idiomatic alias to other boundary definitions.
 
     - ``until(maxtime=n)`` is the same as ``timed(n)``.
 
@@ -471,38 +477,38 @@ def until(**kwargs):
 
     .. versionadded:: 1.7.2
 
-    '''
-    maxtime = kwargs.pop('maxtime', None)
+    """
+    maxtime = kwargs.pop("maxtime", None)
     if maxtime:
         return timed(maxtime, **kwargs)
-    n = kwargs.pop('times', None)
+    n = kwargs.pop("times", None)
     if n:
         return times(n, **kwargs)
-    func = kwargs.pop('pred', None)
+    func = kwargs.pop("pred", None)
     if func:
         return pred(func, **kwargs)
-    errors = kwargs.pop('errors', None)
+    errors = kwargs.pop("errors", None)
     if errors:
         return until_errors(*errors, **kwargs)
-    mass = kwargs.pop('accumulate', None)
+    mass = kwargs.pop("accumulate", None)
     if mass:
-        path = kwargs.pop('path', None)
+        path = kwargs.pop("path", None)
         if path:
-            return accumulated(mass, *path.split('.'), **kwargs)
+            return accumulated(mass, *path.split("."), **kwargs)
         else:
             return accumulated(mass, **kwargs)
     raise TypeError
 
 
 class HighLevelBoundary(BoundaryCondition):
-    '''Boundary class for high-level boundary conditions.
+    """Boundary class for high-level boundary conditions.
 
     The `apply` method of this only accepts the `args`, which must be
     BoundaryCondition objects or BoundedType objects (ie. an instance of a
     boundary condition), then it replaces the normal boundary condition for
     that of the high-level given the subordinate definitions.
 
-    '''
+    """
 
     def apply(self, boundaries, kwargs):
         assert boundaries and not kwargs
@@ -512,6 +518,7 @@ class HighLevelBoundary(BoundaryCondition):
             @classmethod
             def build_pred(cls):
                 from types import FunctionType, GeneratorType
+
                 subordinates = []
                 for bound in boundaries:
                     if isinstance(bound, FunctionType):
@@ -521,9 +528,7 @@ class HighLevelBoundary(BoundaryCondition):
                         bound = boundary(lambda: gen)
                     if isinstance(bound, BoundaryCondition):
                         if bound.receive_args:
-                            raise TypeError(
-                                '"%s" must be initialized' % bound.name
-                            )
+                            raise TypeError('"%s" must be initialized' % bound.name)
                         bound = bound.apply((), {})
                     if isinstance(bound, BoundedType):
                         sub = bound.build_pred()
@@ -531,12 +536,13 @@ class HighLevelBoundary(BoundaryCondition):
                         raise TypeError('Invalid argument "%r"' % bound)
                     subordinates.append(sub)
                 return self.definition(*subordinates)
+
         return rebounded
 
 
 @boundary(base=HighLevelBoundary)
 def whenall(*subordinates):
-    '''An AND-like boundary condition.
+    """An AND-like boundary condition.
 
     It takes several boundaries and returns a single one that behaves like the
     logical AND i.e, will yield True when **all** of its subordinate boundary
@@ -560,7 +566,7 @@ def whenall(*subordinates):
 
     Any other type is a TypeError.
 
-    '''
+    """
     preds = list(subordinates)  # a copy of the list
     for pred in preds:
         next(pred)
@@ -573,7 +579,7 @@ def whenall(*subordinates):
                 try:
                     res = pred.send(data)
                 except StopIteration:
-                    raise RuntimeError('Invalid predicated in %r' % preds)
+                    raise RuntimeError("Invalid predicated in %r" % preds)
                 else:
                     if res is True:
                         del preds[i]  # no more send() for this pred
@@ -588,7 +594,7 @@ def whenall(*subordinates):
 
 @boundary(base=HighLevelBoundary)
 def whenany(*preds):
-    '''An OR-like boundary condition.
+    """An OR-like boundary condition.
 
     It takes several boundaries and returns a single one that behaves like the
     logical OR, i.e, will yield True when **any** of its subordinate boundary
@@ -609,7 +615,7 @@ def whenany(*preds):
 
     Any other type is a TypeError.
 
-    '''
+    """
     for pred in preds:
         next(pred)
     stop = False
@@ -622,7 +628,7 @@ def whenany(*preds):
                 try:
                     stop = stop or pred.send(data)
                 except StopIteration:
-                    raise RuntimeError('Invalid predicated in %r' % preds)
+                    raise RuntimeError("Invalid predicated in %r" % preds)
                 else:
                     i += 1
         yield stop
