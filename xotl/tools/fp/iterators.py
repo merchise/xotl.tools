@@ -12,12 +12,15 @@
    or otherwise changed.
 
 """
+from typing import Callable, Iterable, TypeVar
 from functools import reduce
 
-from xotl.tools.deprecation import deprecated_alias
+X = TypeVar("X")
+Y = TypeVar("Y")
+Z = TypeVar("Z")
 
 
-def kleisli_compose(*fs):
+def kleisli_compose(*fs: Callable[[X], Iterable[X]]) -> Callable[[X], Iterable[X]]:
     """The Kleisli composition operator.
 
     For two functions, ``kleisli_compose(g, f)`` returns::
@@ -38,7 +41,9 @@ def kleisli_compose(*fs):
 
     """
 
-    def _kleisli_compose(g, f):
+    def _kleisli_compose(
+        g: Callable[[Y], Iterable[Z]], f: Callable[[X], Iterable[Y]]
+    ) -> Callable[[X], Iterable[Z]]:
         # (>>.) :: Monad m => (b -> m c) -> (a -> m b) -> a -> m c
         # g >>. f = \x -> f x >>= g
         #
@@ -53,9 +58,3 @@ def kleisli_compose(*fs):
         return _kleisli_compose(*fs)
     else:
         return reduce(_kleisli_compose, fs, lambda x: iter([x]))
-
-
-iter_compose = deprecated_alias(kleisli_compose)
-
-
-del deprecated_alias
