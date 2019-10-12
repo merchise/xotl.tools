@@ -28,6 +28,16 @@ stages:
     - pip install tox
     - tox -e 3.6-staticcheck
 
+run static checks:
+  <<: *run_tox_staticcheck
+  only:
+    refs:
+      - master
+      - merge_requests
+    changes:
+      - xotl/tools/*.py
+      - xotl/tools/**/*.py
+
 run all Python 3.4 tests:
   <<: *run_tox_tests
   image: python:3.4-alpine
