@@ -4,6 +4,12 @@ Changelog
 2.1 series
 ----------
 
+2019-10-26. Release 2.1.4
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+No visible changes.  Only solves a packaging issue with the 'xotl' namespace.
+
+
 2019-05-26.  Release 2.1.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
