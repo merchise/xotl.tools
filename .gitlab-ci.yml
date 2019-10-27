@@ -36,11 +36,11 @@ check code smells:
     - pip install tox
     - tox -e 3.6-staticcheck
 
-run all Python 3.4 tests:
+run all Python 3.8 tests:
   <<: *run_tox_tests
-  image: registry.merchise.org/merchise/python-dev:3.4-alpine
+  image: registry.merchise.org/merchise/python-dev:3.8-alpine
   variables:
-    PYTHON: "3.4"
+    PYTHON: "3.8"
   only:
     - master
     - /^releases-2/
