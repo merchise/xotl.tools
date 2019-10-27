@@ -6,35 +6,10 @@ stages:
   - build
   - publish
 
-check code smells:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
-  script:
-    - pip install merchise.lint==0.11
-    - merchise_lint3
-  stage: pre-check
-  allow_failure: true
-  only:
-    - master
-    - /^releases-2/
-    - merge_requests
-
 .run_tox_tests: &run_tox_tests
   stage: test
   script:
     - tox -e system-unit,system-greenlets
-
-.run_tox_staticcheck: &run_tox_staticcheck
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
-  stage: pre-check
-  cache:
-    key: mypy-${CI_COMMIT_REF_SLUG}
-    paths:
-      - .tox/3.6-staticcheck/
-      - .mypy_cache/
-  script:
-    - apk add g++
-    - pip install tox
-    - tox -e 3.6-staticcheck
 
 run all Python 3.8 tests:
   <<: *run_tox_tests
@@ -76,16 +51,6 @@ run all Python 3.7 tests:
     - master
     - /^releases-2/
     - merge_requests
-
-
-run static checks:
-  <<: *run_tox_staticcheck
-  only:
-    - master
-    - /^releases-2/
-    - merge_requests
-  allow_failure: true
-
 
 build source distribution:
   image: registry.merchise.org/merchise/python-dev:3.6-alpine
