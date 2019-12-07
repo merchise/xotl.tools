@@ -560,6 +560,8 @@ class TimeSpan:
         # type: (date) -> bool
         """Test date `other` is in the time span."""
         if isinstance(other, date):
+            if isinstance(other, datetime):
+                other = other.date()
             if self.start_date and self.end_date:
                 return self.start_date <= other <= self.end_date
             elif self.start_date:
