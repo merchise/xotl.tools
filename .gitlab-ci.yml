@@ -8,6 +8,10 @@ stages:
 
 .run_tox_tests: &run_tox_tests
   stage: test
+  cache:
+    key: tests-${PYTHON}-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    paths:
+      - .tox/
   script:
     - tox -e system-unit,system-greenlets
 
