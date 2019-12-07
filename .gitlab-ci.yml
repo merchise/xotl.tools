@@ -135,7 +135,7 @@ build documentation:
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
     paths:
-      - builds/doctrees
+      - docs/builds/
   script:
     - pip install -e .
     - make -C docs/ html
