@@ -12,6 +12,7 @@
 from contextlib import contextmanager
 
 from xotl.tools.symbols import Unset
+from xotl.tools.deprecation import deprecated
 
 
 __docstring_format__ = "rst"
@@ -904,13 +905,12 @@ def iter_branch_subclasses(cls, include_this=True):
     children = type.__subclasses__(cls)
     if children:
         for sc in children:
-            for item in iter_branch_subclasses(sc):
-                yield item
+            yield from iter_branch_subclasses(sc)
     elif include_this:
         yield cls
 
 
-def get_branch_subclasses(cls):
+def get_branch_subclasses(cls, *, include_this=False):
     """Similar to `type.__subclasses__`:meth: but recursive.
 
     Only return sub-classes in branches (those with no sub-classes).  Instead
@@ -918,10 +918,13 @@ def get_branch_subclasses(cls):
 
     .. versionadded:: 1.7.0
 
+    .. versionchanged:: 2.1.5 Add keyword-only argument `include_this`.
+
     """
-    return list(iter_branch_subclasses(cls, include_this=False))
+    return list(iter_branch_subclasses(cls, include_this=include_this))
 
 
+@deprecated(iter_branch_subclasses)
 def iter_final_subclasses(cls, *, include_this=True):
     """Iterate over the final sub-classes of `cls`.
 
@@ -930,26 +933,23 @@ def iter_final_subclasses(cls, *, include_this=True):
 
     .. versionadded:: 2.1.0
 
+    .. deprecated:: 2.1.5 This is actually a duplicate of
+                    `iter_branch_subclasses`:func:.
+
     """
-    from collections import deque
-
-    nodes = deque([cls])
-    while nodes:
-        node = nodes.pop()
-        children = node.__subclasses__()
-        if children:
-            nodes.extend(children)
-        else:
-            if node is not cls or include_this:
-                yield node
+    return iter_branch_subclasses(cls, include_this=include_this)
 
 
+@deprecated(get_branch_subclasses)
 def get_final_subclasses(cls, *, include_this=True):
     """List final sub-classes of `cls`.
 
     See `iter_final_subclasses`:func:.
 
     .. versionadded:: 2.1.0
+
+    .. deprecated:: 2.1.5 This is a duplicate of
+                   `get_branch_subclasses`:func:.
 
     """
     return list(iter_final_subclasses(cls, include_this=include_this))
@@ -978,7 +978,7 @@ def FinalSubclassEnumeration(superclass, *, dynamic=True):
             if self._cached_members is None or self._dynamic:
                 result = {
                     c.__name__: c
-                    for c in iter_final_subclasses(superclass, include_this=False)
+                    for c in iter_branch_subclasses(superclass, include_this=False)
                 }
                 if not self._dynamic:
                     self._cached_members = dict(result)
@@ -1785,4 +1785,4 @@ class DelegatedAttribute:
         return "<DelegatedAttr '%s.%s'>" % (self.target_name, self.attr)
 
 
-del contextmanager
+del contextmanager, deprecated

@@ -29,6 +29,8 @@
 
 .. autofunction:: iter_delete_duplicates(iter[, key=lambda x: x])
 
+.. autofunction:: iter_without_duplicates(iter[, key=lambda x: x])
+
 .. autofunction:: flatten(sequence, is_scalar=xotl.tools.types.is_scalar, depth=None)
 
 .. function:: xotl.tools.iterators.zip([iter1[, iter2[, ...]]])
