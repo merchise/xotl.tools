@@ -20,6 +20,7 @@ class FailingMock:
     def __call__(self, incr=1):
         if self.sleeper:
             import time
+
             time.sleep(self.sleeper)
         self.start += incr
         if self.start < self.threshold:

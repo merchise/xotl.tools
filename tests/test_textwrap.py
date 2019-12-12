@@ -10,21 +10,20 @@ from xoutil.future.textwrap import wrap, fill, dedent, indent
 
 
 class BaseTestCase(unittest.TestCase):
-    '''Parent class with utility methods for textwrap tests.'''
+    """Parent class with utility methods for textwrap tests."""
 
     def show(self, textin):
         if isinstance(textin, list):
             result = []
             for i in range(len(textin)):
                 result.append("  %d: %r" % (i, textin[i]))
-            result = '\n'.join(result)
+            result = "\n".join(result)
         elif isinstance(textin, str):
             result = "  %s\n" % repr(textin)
         return result
 
     def check(self, result, expect):
-        msg = 'expected:\n%s\nbut got:\n%s' % (self.show(expect),
-                                               self.show(result))
+        msg = "expected:\n%s\nbut got:\n%s" % (self.show(expect), self.show(result))
         self.assertEqual(result, expect, msg)
 
     def check_wrap(self, text, width, expect, **kwargs):
@@ -33,26 +32,26 @@ class BaseTestCase(unittest.TestCase):
 
     def check_split(self, text, expect):
         result = self.wrapper._split(text)
-        self.assertEqual(result, expect,
-                         "\nexpected %r\n"
-                         "but got  %r" % (expect, result))
+        self.assertEqual(
+            result, expect, "\nexpected %r\n" "but got  %r" % (expect, result)
+        )
 
 
 class IndentTestCases(BaseTestCase):
 
     # called before each test method
     def setUp(self):
-        self.text = '''\
+        self.text = """\
 This paragraph will be filled, first without any indentation,
-and then with some (including a hanging indent).'''
+and then with some (including a hanging indent)."""
 
     def test_fill(self):
         # Test the fill() method
 
-        expect = '''\
+        expect = """\
 This paragraph will be filled, first
 without any indentation, and then with
-some (including a hanging indent).'''
+some (including a hanging indent)."""
 
         result = fill(self.text, 40)
         self.check(result, expect)
@@ -60,9 +59,11 @@ some (including a hanging indent).'''
     def test_initial_indent(self):
         # Test initial_indent parameter
 
-        expect = ["     This paragraph will be filled,",
-                  "first without any indentation, and then",
-                  "with some (including a hanging indent)."]
+        expect = [
+            "     This paragraph will be filled,",
+            "first without any indentation, and then",
+            "with some (including a hanging indent).",
+        ]
         result = wrap(self.text, 40, initial_indent="     ")
         self.check(result, expect)
 
@@ -72,14 +73,13 @@ some (including a hanging indent).'''
 
     def test_subsequent_indent(self):
         # Test subsequent_indent parameter
-        expect = '''\
+        expect = """\
   * This paragraph will be filled, first
     without any indentation, and then
     with some (including a hanging
-    indent).'''
+    indent)."""
 
-        result = fill(self.text, 40,
-                      initial_indent="  * ", subsequent_indent="    ")
+        result = fill(self.text, 40, initial_indent="  * ", subsequent_indent="    ")
         self.check(result, expect)
 
 
@@ -125,16 +125,16 @@ class DedentTestCase(unittest.TestCase):
 
     def test_dedent_uneven(self):
         # Lines indented unevenly.
-        text = '''\
+        text = """\
         def foo():
             while 1:
                 return foo
-        '''
-        expect = '''\
+        """
+        expect = """\
 def foo():
     while 1:
         return foo
-'''
+"""
         self.assertEqual(expect, dedent(text))
 
         # Uneven indentation with a blank line.
@@ -208,45 +208,45 @@ class IndentTestCase(unittest.TestCase):
     def test_indent_nomargin_default(self):
         # indent should do nothing if 'prefix' is empty.
         for text in self.CASES:
-            self.assertEqual(indent(text, ''), text)
+            self.assertEqual(indent(text, ""), text)
 
     def test_indent_nomargin_explicit_default(self):
         # The same as test_indent_nomargin, but explicitly requesting
         # the default behaviour by passing None as the predicate
         for text in self.CASES:
-            self.assertEqual(indent(text, '', None), text)
+            self.assertEqual(indent(text, "", None), text)
 
     def test_indent_nomargin_all_lines(self):
         # The same as test_indent_nomargin, but using the optional
         # predicate argument
         predicate = lambda line: True
         for text in self.CASES:
-            self.assertEqual(indent(text, '', predicate), text)
+            self.assertEqual(indent(text, "", predicate), text)
 
     def test_indent_no_lines(self):
         # Explicitly skip indenting any lines
         predicate = lambda line: False
         for text in self.CASES:
-            self.assertEqual(indent(text, '    ', predicate), text)
+            self.assertEqual(indent(text, "    ", predicate), text)
 
     def test_roundtrip_spaces(self):
         # A whitespace prefix should roundtrip with dedent
         for text in self.ROUNDTRIP_CASES:
-            self.assertEqual(dedent(indent(text, '    ')), text)
+            self.assertEqual(dedent(indent(text, "    ")), text)
 
     def test_roundtrip_tabs(self):
         # A whitespace prefix should roundtrip with dedent
         for text in self.ROUNDTRIP_CASES:
-            self.assertEqual(dedent(indent(text, '\t\t')), text)
+            self.assertEqual(dedent(indent(text, "\t\t")), text)
 
     def test_roundtrip_mixed(self):
         # A whitespace prefix should roundtrip with dedent
         for text in self.ROUNDTRIP_CASES:
-            self.assertEqual(dedent(indent(text, ' \t  \t ')), text)
+            self.assertEqual(dedent(indent(text, " \t  \t ")), text)
 
     def test_indent_default(self):
         # Test default indenting of lines that are not whitespace only
-        prefix = '  '
+        prefix = "  "
         expected = (
             # Basic test case
             "  Hi.\n  This is a test.\n  Testing.",
@@ -264,7 +264,7 @@ class IndentTestCase(unittest.TestCase):
 
     def test_indent_explicit_default(self):
         # Test default indenting of lines that are not whitespace only
-        prefix = '  '
+        prefix = "  "
         expected = (
             # Basic test case
             "  Hi.\n  This is a test.\n  Testing.",
@@ -282,7 +282,7 @@ class IndentTestCase(unittest.TestCase):
 
     def test_indent_all_lines(self):
         # Add 'prefix' to all lines, including whitespace-only ones.
-        prefix = '  '
+        prefix = "  "
         expected = (
             # Basic test case
             "  Hi.\n  This is a test.\n  Testing.",
@@ -301,7 +301,7 @@ class IndentTestCase(unittest.TestCase):
 
     def test_indent_empty_lines(self):
         # Add 'prefix' solely to whitespace-only lines.
-        prefix = '  '
+        prefix = "  "
         expected = (
             # Basic test case
             "Hi.\nThis is a test.\nTesting.",
