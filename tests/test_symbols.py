@@ -57,6 +57,14 @@ class BooleanTests(unittest.TestCase):
         b = boolean.parse(value)
         self.assertIs(a, b)
 
+    def test_symbols_are_pickable(self):
+        import pickle
+        from xotl.tools.symbols import Unset, Undefined
+
+        for protocol in range(pickle.DEFAULT_PROTOCOL, pickle.HIGHEST_PROTOCOL + 1):
+            self.assertIs(Unset, pickle.loads(pickle.dumps(Unset, protocol)))
+            self.assertIs(Undefined, pickle.loads(pickle.dumps(Undefined, protocol)))
+
 
 def test_symbols_is_importable():
     import sys
