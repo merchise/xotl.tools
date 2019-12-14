@@ -137,3 +137,13 @@ def test_fp_kleisli_compose4():
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
     odd_seqs = kleisli_compose(id_, fullrange, id_, id_, odds, id_)
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
+
+
+if __name__ == "__main__":
+    # Allow to run this test as an independent python script, for example:
+    #   monkeytype run tests/test_fp.py
+    test_fp_compose()
+    test_fp_compose_wrapable()
+    test_fp_tools()
+    test_fp_kleisli_compose()
+    test_fp_kleisli_compose4()
