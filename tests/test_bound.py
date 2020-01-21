@@ -29,17 +29,17 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         fib8 = times(8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
-        self.assertEquals(fib8(), 21)
+        self.assertEqual(fib8(), 21)
 
         fib8 = until(times=8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
-        self.assertEquals(fib8(), 21)
+        self.assertEqual(fib8(), 21)
 
         fib8 = times(8)(fibonacci)
 
         fib8gen = fib8.generate()  # exposed bounded generator
-        self.assertEquals(tuple(fib8gen), (1, 1, 2, 3, 5, 8, 13, 21))
+        self.assertEqual(tuple(fib8gen), (1, 1, 2, 3, 5, 8, 13, 21))
 
     def test_until_error(self):
         from xoutil.bound import until
@@ -78,19 +78,19 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         # (10 ms) fib1ms will only be able to yield a single value (notice
         # that `timed` always allow a cycle.)
         res = fib10ms(wait=1 / 10)
-        self.assertEquals(res, 1)
+        self.assertEqual(res, 1)
 
         fib10ms = until(maxtime=1 / 100)(fibonacci)
         # Since the wait time below will be larger than the allowed execution
         # (10 ms) fib1ms will only be able to yield a single value (notice
         # that `timed` always allow a cycle.)
         res = fib10ms(wait=1 / 10)
-        self.assertEquals(res, 1)
+        self.assertEqual(res, 1)
 
         # If the time boundary is too low timed will allow not allow a cycle.
         fib0ms = timed(0)(fibonacci)
         res = fib0ms()
-        self.assertEquals(res, None)
+        self.assertEqual(res, None)
 
     def test_accumulated(self):
         from xoutil.bound import until
@@ -112,7 +112,8 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         self.assertEqual(fib500timed(), 233)
 
         self.assertEqual(
-            tuple(fib500.generate()), (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
+            tuple(fib500.generate()),
+            (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233),
         )
 
         # With .generate()  you may count
@@ -137,7 +138,7 @@ class TestBoundaryDefinitions(unittest.TestCase):
         #   def fibonacci():
         #      ....
         fib2 = argless(fibonacci)
-        self.assertEquals(fib2(), 1)
+        self.assertEqual(fib2(), 1)
 
 
 class TestHigherLevelPreds(unittest.TestCase):
@@ -187,7 +188,7 @@ class TestBoundedUnnamedPredicates(unittest.TestCase):
         fib8 = times(8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
-        self.assertEquals(fib8(), 21)
+        self.assertEqual(fib8(), 21)
 
     def test_invalid_unnamed(self):
         @boundary
@@ -240,7 +241,9 @@ class TestBoundedPredicates(unittest.TestCase):
             while passes < atmost:
                 yield passes
                 passes += 1
-            raise AssertionError("Invalid reach point a GeneratorExit was " "expected.")
+            raise AssertionError(
+                "Invalid reach point a GeneratorExit was " "expected."
+            )
 
         with self.assertRaises(RuntimeError):
             foobar()
@@ -251,8 +254,8 @@ class TestMisc(unittest.TestCase):
         @boundary
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {})
             yield True
 
         @pred
@@ -274,8 +277,8 @@ class TestMisc(unittest.TestCase):
         @boundary
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {"egg": "ham"})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {"egg": "ham"})
             yield True
 
         @whenall(pred, pred())
@@ -305,8 +308,8 @@ class TestMisc(unittest.TestCase):
     def test_plain_function(self):
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {"egg": "ham"})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {"egg": "ham"})
             yield True
 
         @whenall(pred)
@@ -319,8 +322,8 @@ class TestMisc(unittest.TestCase):
     def test_generators(self):
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {"egg": "ham"})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {"egg": "ham"})
             yield True
 
         @whenall(pred())  # a generator!!

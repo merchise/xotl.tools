@@ -34,18 +34,26 @@ class TestFs(unittest.TestCase):
         sentinel = tempfile.mkstemp(prefix="X", dir=wexpected)
         self.sentinel = os.path.basename(sentinel[-1])
         files.append(sentinel)  # For testing `walk_up`
-        files.append(tempfile.mkstemp(prefix="M", dir=pjoin(self.base, "A", "B")))
-        files.append(tempfile.mkstemp(prefix="P", dir=pjoin(self.base, "A", "B")))
+        files.append(
+            tempfile.mkstemp(prefix="M", dir=pjoin(self.base, "A", "B"))
+        )
+        files.append(
+            tempfile.mkstemp(prefix="P", dir=pjoin(self.base, "A", "B"))
+        )
         wstart = self.walk_up_start = pjoin(self.base, "A", "B", "C")
         files.append(tempfile.mkstemp(prefix="z", dir=wstart))
-        files.append(tempfile.mkstemp(suffix="ending", dir=pjoin(self.base, "A", "D")))
-        files.append(tempfile.mkstemp(prefix="Z", dir=pjoin(self.base, "A", "F")))
+        files.append(
+            tempfile.mkstemp(suffix="ending", dir=pjoin(self.base, "A", "D"))
+        )
+        files.append(
+            tempfile.mkstemp(prefix="Z", dir=pjoin(self.base, "A", "F"))
+        )
 
     def test_iter_files_with_regex_pattern(self):
         from xoutil.fs import iter_files
 
         res = list(iter_files(self.base, "(?xi)/Z"))
-        self.assertEquals(2, len(res))
+        self.assertEqual(2, len(res))
         self.assertIn(self.files[-3][-1], res)
         self.assertIn(self.files[-1][-1], res)
 
@@ -53,10 +61,10 @@ class TestFs(unittest.TestCase):
         from xoutil.fs import iter_files
 
         res = list(iter_files(self.base, "(?xi)/Z", maxdepth=3))
-        self.assertEquals(1, len(res))
+        self.assertEqual(1, len(res))
         self.assertIn(self.files[-1][-1], res)
         res = list(iter_files(self.base, "(?xi)/Z", maxdepth=2))
-        self.assertEquals(0, len(res))
+        self.assertEqual(0, len(res))
 
     def test_walk_up(self):
         from xoutil.fs import walk_up
@@ -70,7 +78,7 @@ class TestFs(unittest.TestCase):
 
         filename = os.path.join(self.base, "en", "sure", "filename.txt")
         ensure_filename(filename)
-        self.assert_(os.path.isfile(filename))
+        self.assertTrue(os.path.isfile(filename))
 
     def tearDown(self):
         shutil.rmtree(self.base)

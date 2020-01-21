@@ -49,7 +49,7 @@ class TestModuleDecorators(unittest.TestCase):
             return (self, args)
 
         current_module = sys.modules[__name__]
-        self.assertEquals((current_module, (1, 2)), echo(1, 2))
+        self.assertEqual((current_module, (1, 2)), echo(1, 2))
 
     def test_moduleproperties(self):
         import customizetestbed as m
@@ -59,8 +59,8 @@ class TestModuleDecorators(unittest.TestCase):
         self.assertIsNone(m.prop)
         m.store = (1, 2)
         m.prop = "prop"
-        self.assertEquals((1, 2), m.store)
-        self.assertEquals((1, 2), m._store)
+        self.assertEqual((1, 2), m.store)
+        self.assertEqual((1, 2), m._store)
         self.assertIs("prop", m.prop)
 
         with self.assertRaises(AttributeError):
