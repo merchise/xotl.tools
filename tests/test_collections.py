@@ -76,11 +76,15 @@ def test_stacked_dict():
     assert sd["a"] == "level-0"
     try:
         sd.pop_level()
-        assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
+        assert False, (
+            "Level 0 cannot be poped. " "It should have raised a TypeError"
+        )
     except TypeError:
         pass
     except:
-        assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
+        assert False, (
+            "Level 0 cannot be poped. " "It should have raised a TypeError"
+        )
 
 
 # Backported from Python 3.3.0 standard library
@@ -156,7 +160,11 @@ class TestChainMap(unittest.TestCase):
                 self.assertIs(m1, m2)
 
         # check deep copies
-        for e in [pickle.loads(pickle.dumps(d)), copy.deepcopy(d), eval(repr(d))]:
+        for e in [
+            pickle.loads(pickle.dumps(d)),
+            copy.deepcopy(d),
+            eval(repr(d)),
+        ]:
             self.assertEqual(d, e)
             self.assertEqual(d.maps, e.maps)
             self.assertIsNot(d, e)
@@ -255,8 +263,8 @@ class TestCounter(unittest.TestCase):
         c = Counter("abcaba")
         self.assertEqual(c, Counter({"a": 3, "b": 2, "c": 1}))
         self.assertEqual(c, Counter(a=3, b=2, c=1))
-        self.assert_(isinstance(c, dict))
-        self.assert_(isinstance(c, Mapping))
+        self.assertIsInstance(c, dict)
+        self.assertIsInstance(c, Mapping)
         self.assertTrue(issubclass(Counter, dict))
         self.assertTrue(issubclass(Counter, Mapping))
         self.assertEqual(len(c), 3)
@@ -275,7 +283,9 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
         self.assertEqual(c.most_common(), [("a", 3), ("b", 2), ("c", 1)])
         for i in range(5):
-            self.assertEqual(c.most_common(i), [("a", 3), ("b", 2), ("c", 1)][:i])
+            self.assertEqual(
+                c.most_common(i), [("a", 3), ("b", 2), ("c", 1)][:i]
+            )
         self.assertEqual("".join(sorted(c.elements())), "aaabbc")
         c["a"] += 1  # increment an existing value
         c["b"] -= 2  # sub existing value to zero
@@ -424,10 +434,14 @@ class TestCounter(unittest.TestCase):
     def test_subtract(self):
         c = Counter(a=-5, b=0, c=5, d=10, e=15, g=40)
         c.subtract(a=1, b=2, c=-3, d=10, e=20, f=30, h=-50)
-        self.assertEqual(c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50))
+        self.assertEqual(
+            c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50)
+        )
         c = Counter(a=-5, b=0, c=5, d=10, e=15, g=40)
         c.subtract(Counter(a=1, b=2, c=-3, d=10, e=20, f=30, h=-50))
-        self.assertEqual(c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50))
+        self.assertEqual(
+            c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50)
+        )
         c = Counter("aaabbcd")
         c.subtract("aaaabbcce")
         self.assertEqual(c, Counter(a=-1, b=0, c=-1, d=1, e=-1))
@@ -475,7 +489,9 @@ class TestOrderedDict(unittest.TestCase):
         # mixed input
         self.assertEqual(
             list(
-                OrderedDict([("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5).items()
+                OrderedDict(
+                    [("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5
+                ).items()
             ),
             pairs,
         )
@@ -486,7 +502,15 @@ class TestOrderedDict(unittest.TestCase):
         d.__init__([("e", 5), ("f", 6)], g=7, d=4)
         self.assertEqual(
             list(d.items()),
-            [("a", 1), ("b", 2), ("c", 3), ("d", 4), ("e", 5), ("f", 6), ("g", 7)],
+            [
+                ("a", 1),
+                ("b", 2),
+                ("c", 3),
+                ("d", 4),
+                ("e", 5),
+                ("f", 6),
+                ("g", 7),
+            ],
         )
 
     def test_update(self):
@@ -532,11 +556,19 @@ class TestOrderedDict(unittest.TestCase):
         d.update([("e", 5), ("f", 6)], g=7, d=4)
         self.assertEqual(
             list(d.items()),
-            [("a", 1), ("b", 2), ("c", 3), ("d", 4), ("e", 5), ("f", 6), ("g", 7)],
+            [
+                ("a", 1),
+                ("b", 2),
+                ("c", 3),
+                ("d", 4),
+                ("e", 5),
+                ("f", 6),
+                ("g", 7),
+            ],
         )
 
     def test_abc(self):
-        self.assert_(isinstance(OrderedDict(), MutableMapping))
+        self.assertIsInstance(OrderedDict(), MutableMapping)
         self.assertTrue(issubclass(OrderedDict, MutableMapping))
 
     def test_clear(self):
@@ -662,7 +694,9 @@ class TestOrderedDict(unittest.TestCase):
         od = OrderedDict(pairs)
         # yaml.dump(od) -->
         # '!!python/object/apply:__main__.OrderedDict\n- - [a, 1]\n  - [b, 2]\n'
-        self.assertTrue(all(type(pair) == list for pair in od.__reduce__()[1]))
+        self.assertTrue(
+            all(type(pair) == list for pair in od.__reduce__()[1])
+        )
 
     def test_reduce_not_too_fat(self):
         import sys
@@ -676,7 +710,9 @@ class TestOrderedDict(unittest.TestCase):
 
     def test_repr(self):
         od = OrderedDict([("c", 1), ("b", 2), ("a", 3)])
-        self.assertEqual(repr(od), "OrderedDict([('c', 1), ('b', 2), ('a', 3)])")
+        self.assertEqual(
+            repr(od), "OrderedDict([('c', 1), ('b', 2), ('a', 3)])"
+        )
         self.assertEqual(eval(repr(od)), od)
         self.assertEqual(repr(OrderedDict()), "OrderedDict()")
 
@@ -686,7 +722,10 @@ class TestOrderedDict(unittest.TestCase):
         od["x"] = od
         self.assertEqual(
             repr(od),
-            ("OrderedDict([('a', None), ('b', None), " "('c', None), ('x', ...)])"),
+            (
+                "OrderedDict([('a', None), ('b', None), "
+                "('c', None), ('x', ...)])"
+            ),
         )
 
     def test_setdefault(self):
@@ -766,7 +805,9 @@ class TestRankedDict(unittest.TestCase):
         # mixed input
         self.assertNotEqual(
             list(
-                RankedDict([("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5).items()
+                RankedDict(
+                    [("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5
+                ).items()
             ),
             pairs,
         )
@@ -818,7 +859,7 @@ class TestRankedDict(unittest.TestCase):
         )
 
     def test_abc(self):
-        self.assert_(isinstance(RankedDict(), MutableMapping))
+        self.assertIsInstance(RankedDict(), MutableMapping)
         self.assertTrue(issubclass(RankedDict, MutableMapping))
 
     def test_clear(self):
@@ -944,11 +985,15 @@ class TestRankedDict(unittest.TestCase):
         od = RankedDict(pairs)
         # yaml.dump(od) -->
         # '!!python/object/apply:__main__.RankedDict\n- - [a, 1]\n  - [b, 2]\n'
-        self.assertTrue(all(type(pair) == list for pair in od.__reduce__()[1]))
+        self.assertTrue(
+            all(type(pair) == list for pair in od.__reduce__()[1])
+        )
 
     def test_repr(self):
         od = RankedDict([("c", 1), ("b", 2), ("a", 3)])
-        self.assertEqual(repr(od), "RankedDict([('c', 1), ('b', 2), ('a', 3)])")
+        self.assertEqual(
+            repr(od), "RankedDict([('c', 1), ('b', 2), ('a', 3)])"
+        )
         self.assertEqual(eval(repr(od)), od)
         self.assertEqual(repr(RankedDict()), "RankedDict()")
 
@@ -958,7 +1003,10 @@ class TestRankedDict(unittest.TestCase):
         od["x"] = od
         self.assertEqual(
             repr(od),
-            ("RankedDict([('a', None), ('b', None), " "('c', None), ('x', ...)])"),
+            (
+                "RankedDict([('a', None), ('b', None), "
+                "('c', None), ('x', ...)])"
+            ),
         )
 
     def test_setdefault(self):
