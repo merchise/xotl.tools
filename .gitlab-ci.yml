@@ -62,7 +62,6 @@ build source distribution:
   stage: build
   script:
     - python setup.py sdist
-    - PROJECT_NAME=xoutil python3 setup.py sdist
   artifacts:
     paths:
       - dist/
@@ -75,7 +74,6 @@ build binary distribution:
   stage: build
   script:
     - python3 setup.py bdist_wheel
-    - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
   artifacts:
     expire_in: 4 hours
     paths:
@@ -99,8 +97,6 @@ publish_locally:
   stage: publish
   script:
     - ssh-keyscan -H gestion.lahavane.com >> ~/.ssh/known_hosts
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xoutil"
-    - scp dist/xoutil* manu@gestion.lahavane.com:Repos/xoutil/
     - ssh manu@gestion.lahavane.com "mkdir -p Repos/xotl.tools"
     - scp dist/xotl* manu@gestion.lahavane.com:Repos/xotl.tools/
   tags:

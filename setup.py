@@ -22,7 +22,7 @@ except NameError:
 
 
 # Import the version from the release module
-project_name = os.environ.get("PROJECT_NAME", "xotl.tools")
+project_name = "xotl.tools"
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 dev_classifier = "Development Status :: 5 - Production/Stable"
 
@@ -49,7 +49,9 @@ _cmdclass.update(versioneer.get_cmdclass())
 setup(
     name=project_name,
     version=versioneer.get_version(),
-    description=("Collection of usefull algorithms and other very " "disparate stuff"),
+    description=(
+        "Collection of usefull algorithms and other very " "disparate stuff"
+    ),
     long_description=open(os.path.join(_current_dir, "README.rst")).read(),
     classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -82,6 +84,8 @@ setup(
         'contextlib2; python_version<"3.4"',
         'typing; python_version<"3.5"',
     ],
-    extras_require={"recommended": ["python-dateutil", 'enum34; python_version<"3.4"']},
+    extras_require={
+        "recommended": ["python-dateutil", 'enum34; python_version<"3.4"']
+    },
     cmdclass=_cmdclass,
 )
