@@ -13,6 +13,7 @@ from xoutil.bound import boundary, whenall, whenany
 
 def fibonacci(wait=None):
     import time
+
     a, b = 1, 1
     while True:
         if wait:
@@ -24,44 +25,44 @@ def fibonacci(wait=None):
 class TestBoundedWithStandardPredicates(unittest.TestCase):
     def test_times(self):
         from xoutil.bound import times, until
+
         fib8 = times(8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
-        self.assertEquals(fib8(), 21)
+        self.assertEqual(fib8(), 21)
 
         fib8 = until(times=8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
-        self.assertEquals(fib8(), 21)
-
+        self.assertEqual(fib8(), 21)
 
         fib8 = times(8)(fibonacci)
 
         fib8gen = fib8.generate()  # exposed bounded generator
-        self.assertEquals(tuple(fib8gen), (1, 1, 2, 3, 5, 8, 13, 21))
+        self.assertEqual(tuple(fib8gen), (1, 1, 2, 3, 5, 8, 13, 21))
 
     def test_until_error(self):
         from xoutil.bound import until
 
         d = dict(a=1, b=2, c=3, d=4)
 
-        @until(errors=(KeyError, ))
+        @until(errors=(KeyError,))
         def getall(d, *keys):
             for k in keys:
                 yield d[k]
 
-        assert d['d'] == getall(d, 'a', 'b', 'd')
-        assert d['a'] == getall(d, 'a', 'kkk')
+        assert d["d"] == getall(d, "a", "b", "d")
+        assert d["a"] == getall(d, "a", "kkk")
 
-        @until(errors=(ValueError, ))
+        @until(errors=(ValueError,))
         def getall(d, *keys):
             for k in keys:
                 yield d[k]
 
         with self.assertRaises(KeyError):
-            getall(d, 'kkk')
+            getall(d, "kkk")
 
-        @until(errors=(RuntimeError, ))
+        @until(errors=(RuntimeError,))
         def failing():
             raise RuntimeError
             yield 1
@@ -71,29 +72,30 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
 
     def test_timed(self):
         from xoutil.bound import timed, until
-        fib10ms = timed(1/100)(fibonacci)
+
+        fib10ms = timed(1 / 100)(fibonacci)
         # Since the wait time below will be larger than the allowed execution
         # (10 ms) fib1ms will only be able to yield a single value (notice
         # that `timed` always allow a cycle.)
-        res = fib10ms(wait=1/10)
-        self.assertEquals(res, 1)
+        res = fib10ms(wait=1 / 10)
+        self.assertEqual(res, 1)
 
-        fib10ms = until(maxtime=1/100)(fibonacci)
+        fib10ms = until(maxtime=1 / 100)(fibonacci)
         # Since the wait time below will be larger than the allowed execution
         # (10 ms) fib1ms will only be able to yield a single value (notice
         # that `timed` always allow a cycle.)
-        res = fib10ms(wait=1/10)
-        self.assertEquals(res, 1)
-
+        res = fib10ms(wait=1 / 10)
+        self.assertEqual(res, 1)
 
         # If the time boundary is too low timed will allow not allow a cycle.
         fib0ms = timed(0)(fibonacci)
         res = fib0ms()
-        self.assertEquals(res, None)
+        self.assertEqual(res, None)
 
     def test_accumulated(self):
         from xoutil.bound import until
         from xoutil.bound import accumulated, timed, times
+
         # 1 + 1 + 2 + 3 + 5 + 8 + 13 + 21 + 34 + 55 + 89 + 144 = 376
         # ^   ^        ...                                  ^
         # |   |        ...                                  |
@@ -111,7 +113,7 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
 
         self.assertEqual(
             tuple(fib500.generate()),
-            (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
+            (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233),
         )
 
         # With .generate()  you may count
@@ -136,7 +138,7 @@ class TestBoundaryDefinitions(unittest.TestCase):
         #   def fibonacci():
         #      ....
         fib2 = argless(fibonacci)
-        self.assertEquals(fib2(), 1)
+        self.assertEqual(fib2(), 1)
 
 
 class TestHigherLevelPreds(unittest.TestCase):
@@ -150,7 +152,7 @@ class TestHigherLevelPreds(unittest.TestCase):
             except GeneratorExit:
                 pass
             else:
-                raise AssertionError('close() must have been called')
+                raise AssertionError("close() must have been called")
 
         fibnone = whenall(whenany(bailout))(fibonacci)
         self.assertEqual(fibnone(), 1)
@@ -182,10 +184,11 @@ class TestHigherLevelPreds(unittest.TestCase):
 class TestBoundedUnnamedPredicates(unittest.TestCase):
     def test_atmost_unnamed(self):
         from xoutil.bound import times
+
         fib8 = times(8)(fibonacci)
         # Fibonacci numbers are yielded:
         # 1 1 2 3 5 8 13 21
-        self.assertEquals(fib8(), 21)
+        self.assertEqual(fib8(), 21)
 
     def test_invalid_unnamed(self):
         @boundary
@@ -238,8 +241,9 @@ class TestBoundedPredicates(unittest.TestCase):
             while passes < atmost:
                 yield passes
                 passes += 1
-            raise AssertionError('Invalid reach point a GeneratorExit was '
-                                 'expected.')
+            raise AssertionError(
+                "Invalid reach point a GeneratorExit was " "expected."
+            )
 
         with self.assertRaises(RuntimeError):
             foobar()
@@ -250,8 +254,8 @@ class TestMisc(unittest.TestCase):
         @boundary
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {})
             yield True
 
         @pred
@@ -263,6 +267,7 @@ class TestMisc(unittest.TestCase):
 
     def test_whens_receives_args(self):
         from xoutil.bound import whenall, whenany
+
         self.assertTrue(whenall.receive_args)
         self.assertTrue(whenany.receive_args)
 
@@ -272,8 +277,8 @@ class TestMisc(unittest.TestCase):
         @boundary
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {'egg': 'ham'})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {"egg": "ham"})
             yield True
 
         @whenall(pred, pred())
@@ -281,14 +286,14 @@ class TestMisc(unittest.TestCase):
             while True:
                 yield 1
 
-        foobar(1, 2, egg='ham')
+        foobar(1, 2, egg="ham")
 
         @whenany(pred(), pred)
         def foobar(*args, **kwargs):
             while True:
                 yield 1
 
-        foobar(1, 2, egg='ham')
+        foobar(1, 2, egg="ham")
 
     def test_needs_args(self):
         from xoutil.bound import times
@@ -303,8 +308,8 @@ class TestMisc(unittest.TestCase):
     def test_plain_function(self):
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {'egg': 'ham'})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {"egg": "ham"})
             yield True
 
         @whenall(pred)
@@ -312,13 +317,13 @@ class TestMisc(unittest.TestCase):
             while True:
                 yield 1
 
-        foobar(1, 2, egg='ham')
+        foobar(1, 2, egg="ham")
 
     def test_generators(self):
         def pred():
             args, kwargs = yield
-            self.assertEquals(args, (1, 2))
-            self.assertEquals(kwargs, {'egg': 'ham'})
+            self.assertEqual(args, (1, 2))
+            self.assertEqual(kwargs, {"egg": "ham"})
             yield True
 
         @whenall(pred())  # a generator!!
@@ -326,10 +331,11 @@ class TestMisc(unittest.TestCase):
             while True:
                 yield 1
 
-        foobar(1, 2, egg='ham')
+        foobar(1, 2, egg="ham")
 
     def test_plain_generator(self):
         from xoutil.bound import times
+
         fibseq = fibonacci()
         limited = times(5)(fibseq)
         self.assertEqual(limited(), 5)
@@ -352,9 +358,9 @@ class TestTerminationCases(unittest.TestCase):
             except GeneratorExit:
                 pass  # ok
             else:
-                raise AssertionError('close() not called to boundary')
+                raise AssertionError("close() not called to boundary")
 
         bounded = forever()(magic_number)
         bounded(0)  # No exception
         with self.assertRaises(TypeError):
-            bounded('invalid')
+            bounded("invalid")

@@ -188,6 +188,11 @@ class boolean(symbol):
         """
         return super().__new__(cls, name, bool(value))
 
+    def __getnewargs__(self):
+        cls = type(self)
+        name = next((key for key, obj in cls._instances.items() if obj is self))
+        return (name, bool(self))
+
 
 # --- Special singleton values ---
 

@@ -18,29 +18,31 @@ def this(self):
 
 @moduleproperty
 def store(self):
-    return getattr(self, '_store', None)
+    return getattr(self, "_store", None)
 
 
 @store.setter
 def store(self, value):
-    setattr(self, '_store', value)
+    setattr(self, "_store", value)
 
 
 @store.deleter
 def store(self):
-    delattr(self, '_store')
+    delattr(self, "_store")
 
 
 def prop(self):
-    return getattr(self, '_prop', None)
+    return getattr(self, "_prop", None)
 
 
 def _prop_set(self, val):
-    setattr(self, '_prop', val)
+    setattr(self, "_prop", val)
 
 
 def _prop_del(self):
-    delattr(self, '_prop')
+    delattr(self, "_prop")
+
+
 prop = moduleproperty(prop, _prop_set, _prop_del)
 
 
@@ -50,13 +52,18 @@ def otherfunction():
 
 def memoized(self):
     return self
+
+
 memoized = moduleproperty(memoized, base=memoized_property)
 
 try:
+
     @memoized.setter
     def memoized(self, value):
         pass
+
+
 except AttributeError:
     pass  # Ok
 else:
-    raise AssertionError('module-level memoized_property should be read-only')
+    raise AssertionError("module-level memoized_property should be read-only")

@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-'''This module simply serves the purposes of the testing weaving modules'''
+"""This module simply serves the purposes of the testing weaving modules"""
 
 from xoutil.modules import moduleproperty, modulemethod
 

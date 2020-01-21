@@ -10,19 +10,13 @@
 import pytest
 from hypothesis import given, strategies as s
 
-from xoutil.dim.meta import (
-    Signature,
-    Quantity,
-    Dimension,
-    Scalar,
-    UNIT,
-)
+from xoutil.dim.meta import Signature, Quantity, Dimension, Scalar, UNIT
 
 
 # A reasonable exponent.  We won't be dealing with universes of 100s
 # dimensions.
 exponents = s.integers(min_value=1, max_value=10)
-signatures = s.text(alphabet='abcdefghijok', min_size=0, max_size=10)
+signatures = s.text(alphabet="abcdefghijok", min_size=0, max_size=10)
 
 
 def test_usage():
@@ -45,12 +39,12 @@ def test_usage():
     assert -km == -1 * km == -(1000 * m)
     assert +km == km
 
-    Speed = L/T
+    Speed = L / T
 
     assert isinstance(m / s, Speed)
     assert not isinstance(m, T)
 
-    assert hasattr(L / T, 'metre_per_second')
+    assert hasattr(L / T, "metre_per_second")
 
     assert 10 * km == 10000 * m
     assert m < km
@@ -64,11 +58,11 @@ def test_usage():
     assert Speed.metre_per_second == m / s
 
     Acceleration = L / (T * T)
-    assert hasattr(Acceleration, 'metre_per_second_squared')
+    assert hasattr(Acceleration, "metre_per_second_squared")
     # however:
     Not_Acceleration = L / T * T
-    assert hasattr(Not_Acceleration, 'metre_per_second_second')
-    assert L == Not_Acceleration, 'It is the same as Length'
+    assert hasattr(Not_Acceleration, "metre_per_second_second")
+    assert L == Not_Acceleration, "It is the same as Length"
 
 
 def test_effort():
@@ -91,6 +85,7 @@ def test_effort():
 
 def test_scalar_downgrade():
     from xoutil.dim.base import L
+
     km = L.km
     assert not isinstance(km / km, Quantity)
     assert km / km == 1
@@ -103,6 +98,7 @@ def test_scalar_downgrade():
 
 def test_natural_downgrade():
     from xoutil.dim.base import L
+
     km, cm = L.km, L.cm
     assert float(km) == 1000
     assert int(cm) == 0
@@ -111,22 +107,23 @@ def test_natural_downgrade():
 def test_decimals():
     import decimal
     from xoutil.dim.base import m
+
     with pytest.raises(TypeError):
-        third = decimal.Decimal('0.33') * m
+        third = decimal.Decimal("0.33") * m
         assert third < m
 
 
 def test_signatures():
-    distance = Signature('m')
-    time = Signature('s')
+    distance = Signature("m")
+    time = Signature("s")
     freq = 1 / time
     speed = distance / time
     acceleration = speed / time
-    assert acceleration == distance / (time * Signature('s'))
+    assert acceleration == distance / (time * Signature("s"))
     assert speed == distance * freq
-    assert speed**3 == speed * speed * speed
-    assert speed**0 == Signature() == speed / speed
-    assert speed**-3 == 1 / (speed**3)
+    assert speed ** 3 == speed * speed * speed
+    assert speed ** 0 == Signature() == speed / speed
+    assert speed ** -3 == 1 / (speed ** 3)
 
 
 @given(signatures, signatures)
@@ -144,33 +141,34 @@ def test_signatures_are_always_simplified(top, bottom):
 
 
 def test_quantity_math():
-    metre = m = Quantity(1, Signature('m'))
-    second = Quantity(1, Signature('s'))
+    metre = m = Quantity(1, Signature("m"))
+    second = Quantity(1, Signature("s"))
 
     with pytest.raises(TypeError):
         metre < second
 
     assert metre < 2 * metre < (metre + 2 * metre)
-    assert metre * metre == Quantity(1, Signature('mm'))
-    assert metre / second == Quantity(1, Signature('m', 's'))
-    assert metre * metre * metre == metre**3
-    assert 1/(metre * metre * metre) == metre**-3
+    assert metre * metre == Quantity(1, Signature("mm"))
+    assert metre / second == Quantity(1, Signature("m", "s"))
+    assert metre * metre * metre == metre ** 3
+    assert 1 / (metre * metre * metre) == metre ** -3
 
     assert 1000 * m % 3 == 1 * m
     assert 5 % (2 * m) == 1 / m
     assert 5 / (2 * m) == 2.5 / m
 
     with pytest.raises(TypeError):
-        5 ** (2*m)
+        5 ** (2 * m)
 
 
 def test_quantity_type_definitions():
     from xoutil.dim.base import Length, Time
+
     assert isinstance(Length, Dimension)
     assert isinstance(Time, Dimension)
     assert isinstance(Length / Time, Dimension)
-    assert isinstance(Length**2, Dimension)
-    assert Length * Length == Length**2
+    assert isinstance(Length ** 2, Dimension)
+    assert Length * Length == Length ** 2
 
     assert Time / Time == Scalar
     assert Time / Time * Time == Time
@@ -181,13 +179,13 @@ def test_quantity_type_definitions():
     with pytest.raises(TypeError):
         Length - Time
 
-    assert Length**1 is Length
+    assert Length ** 1 is Length
 
     with pytest.raises(TypeError):
-        Length**1.2
+        Length ** 1.2
 
-    assert Length**0 == Scalar
-    assert Length**-1 == 1 / Length
+    assert Length ** 0 == Scalar
+    assert Length ** -1 == 1 / Length
 
     with pytest.raises(TypeError):
         2 / Length
@@ -199,12 +197,14 @@ def test_quantity_type_definitions():
 @given(exponents, exponents)
 def test_general_power_rules(n, m):
     from xoutil.dim.base import L
-    assert L**n / L**m == L**(n - m)
+
+    assert L ** n / L ** m == L ** (n - m)
 
 
 @given(s.floats(allow_nan=False) | s.integers())
 def test_any_magnitude(m):
     from xoutil.dim.base import L
+
     assert float(m * L.metre) == float(m)
 
 
@@ -212,6 +212,7 @@ def test_any_magnitude(m):
 def test_any_magnitude_noinf(m):
     from xoutil.dim.base import L
     from math import ceil, floor
+
     Int = int
     q = m * L.metre
     for f in (Int, float, abs, round, ceil, floor):
@@ -220,8 +221,9 @@ def test_any_magnitude_noinf(m):
 
 def test_currencies():
     from xoutil.dim.currencies import Rate, Valuation, currency
-    dollar = USD = currency('USD')
-    euro = EUR = currency('EUR')
+
+    dollar = USD = currency("USD")
+    euro = EUR = currency("EUR")
     rate = 1.19196 * USD / EUR
 
     assert isinstance(dollar, Valuation)
@@ -234,7 +236,7 @@ def test_currencies():
     assert not isinstance(dollar / dollar, Valuation)
     assert not isinstance(dollar / dollar, Rate)
 
-    assert currency('a') is currency('A')
+    assert currency("a") is currency("A")
 
     with pytest.raises(TypeError):
         dollar + euro
@@ -265,6 +267,7 @@ def test_bug_30():
         m = UNIT
 
     with pytest.raises(TypeError):
+
         class LL(L):
             mm = UNIT
 

@@ -17,15 +17,17 @@ def build_many_tests():
     def test_many_random_convertions(self):
         subjects = [B32, B64, B64symbolic]
         for _ in range(5):
-            testcase = random.randrange(2**64, 2**128)
+            testcase = random.randrange(2 ** 64, 2 ** 128)
             subject = random.choice(subjects)
             assert testcase == subject.basetoint(subject.inttobase(testcase))
-    return {'test_many_random_convertions_%d' % i:
-            test_many_random_convertions for i in range(10)}
 
-_TestManyConvertions = type(str('TestManyConvertions'),
-                            (object, ),
-                            build_many_tests())
+    return {
+        "test_many_random_convertions_%d" % i: test_many_random_convertions
+        for i in range(10)
+    }
+
+
+_TestManyConvertions = type(str("TestManyConvertions"), (object,), build_many_tests())
 
 
 class TestManyConvertions(unittest.TestCase, _TestManyConvertions):

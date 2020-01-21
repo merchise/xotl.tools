@@ -16,7 +16,7 @@
 import sys
 from itertools import *  # noqa
 from xotl.tools.symbols import Unset
-from xotl.tools.deprecation import deprecated_alias
+from xotl.tools.deprecation import deprecated_alias, deprecated
 
 map = deprecated_alias(map, removed_in_version="3.0", check_version=True)
 zip = deprecated_alias(zip, removed_in_version="3.0", check_version=True)
@@ -328,12 +328,19 @@ def continuously_slides(iterable, width=2, fill=None):
         current = next(i, Unset)
 
 
+@deprecated(
+    None,
+    "first_n is deprecated and it will be removed, use stdlib's itertools.islice",
+)
 def first_n(iterable, n=1, fill=Unset):
     """Takes the first `n` items from iterable.
 
     If there are less than `n` items in the iterable and `fill` is
     `~xotl.tools.symbols.Unset`:class:, a StopIteration exception is raised;
     otherwise it's used as a filling pattern as explained below.
+
+    .. deprecated:: 2.1.6 Use `itertools.islice`:func:, if you need `fill` you
+       can also use `itertools.cycle`:func: or `itertools.repeat`:func:.
 
     :param iterable: An iterable from which the first `n` items should be
                      collected.
@@ -365,6 +372,8 @@ def first_n(iterable, n=1, fill=Unset):
                         string as a valid iterable and `is_collection` not.
 
     """
+    from itertools import islice
+
     if fill is not Unset:
         from collections import Iterable
         from itertools import cycle, repeat, chain
@@ -376,15 +385,7 @@ def first_n(iterable, n=1, fill=Unset):
         seq = chain(iterable, fill)
     else:
         seq = iter(iterable)
-    try:
-        while n > 0:
-            yield next(seq)
-            n -= 1
-    except StopIteration:
-        # Python 3.7+ (PEP 479) does not bubbles the StopIteration, but
-        # converts it to RuntimeError.  Using `return` restores the <3.7
-        # behavior.
-        return
+    return islice(seq, n)
 
 
 def ungroup(iterator):

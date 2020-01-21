@@ -67,14 +67,13 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords="",
-    author="Merchise",
+    author="Merchise Autrement",
     author_email="project+xoutil@merchise.org",
-    # TODO: @med, @manu Negotiate with Maykel Moya to obtain plain "Merchise"
-    #       folder at "https://github.com"
-    url="https://github.com/merchise-autrement/xoutil/",
+    url="https://github.com/merchise/xoutil/",
     license="GPLv3+",
     tests_require=["pytest"],
-    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
+    namespace_packages=["xotl"],
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.4",

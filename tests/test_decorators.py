@@ -18,7 +18,7 @@ class TestAssignable(unittest.TestCase):
         def test(name, *args):
             return name * (len(args) + 1)
 
-        self.assertEqual('aaa', test('a', 1, 2))
+        self.assertEqual("aaa", test("a", 1, 2))
 
     def test_assignment(self):
         @assignment_operator()
@@ -26,7 +26,7 @@ class TestAssignable(unittest.TestCase):
             return name * (len(args) + 1)
 
         b = test(1, 2, 4)
-        self.assertEqual('bbbb', b)
+        self.assertEqual("bbbb", b)
 
     def test_regression_inline(self):
         @assignment_operator(maybe_inline=True)
@@ -36,7 +36,7 @@ class TestAssignable(unittest.TestCase):
             else:
                 return None
 
-        self.assertIs(None, test('a', 1, 2))
+        self.assertIs(None, test("a", 1, 2))
 
     def test_regression_on_block(self):
         @assignment_operator(maybe_inline=True)
@@ -48,18 +48,19 @@ class TestAssignable(unittest.TestCase):
 
     def test_argsless_decorator(self):
         @decorator
-        def log(func, fmt='Calling function %s'):
+        def log(func, fmt="Calling function %s"):
             def inner(*args, **kwargs):
                 print(fmt % func.__name__)
                 return func(*args, **kwargs)
+
             return inner
 
         @log
-        def hello(msg='Hi'):
+        def hello(msg="Hi"):
             print(msg)
 
         @log()
-        def hi(msg='Hello'):
+        def hi(msg="Hello"):
             print(msg)
 
         hi()
@@ -71,6 +72,7 @@ class TestAssignable(unittest.TestCase):
         def plus2(func, value=1):
             def inner(*args):
                 return func(*args) + value
+
             return inner
 
         @plus2
@@ -81,16 +83,16 @@ class TestAssignable(unittest.TestCase):
         def ident3(val):
             return val
 
-        self.assertEquals(ident2(10), 11)
-        self.assertEquals(ident3(10), 11)
+        self.assertEqual(ident2(10), 11)
+        self.assertEqual(ident3(10), 11)
 
 
 class RegressionTests(unittest.TestCase):
     def test_with_kwargs(self):
-        '''When passing a function as first positional argument, kwargs should
+        """When passing a function as first positional argument, kwargs should
         be tested empty.
 
-        '''
+        """
         from xoutil.future.functools import partial
 
         @decorator
@@ -118,22 +120,24 @@ class Memoizations(unittest.TestCase):
                 return self
 
             with self.assertRaises(AttributeError):
+
                 @prop.setter
                 def prop(self, value):
                     pass
 
             with self.assertRaises(AttributeError):
+
                 @prop.deleter
                 def prop(self, value):
                     pass
 
         foo = Foobar()
-        self.assertNotEquals(getattr_static(foo, 'prop'), foo)
+        self.assertNotEquals(getattr_static(foo, "prop"), foo)
         self.assertIs(foo.prop, foo)
-        self.assertIs(getattr_static(foo, 'prop'), foo)
+        self.assertIs(getattr_static(foo, "prop"), foo)
         # After the first invocation, the static attr is the result.
         Foobar.prop.reset(foo)
-        self.assertNotEquals(getattr_static(foo, 'prop'), foo)
+        self.assertNotEquals(getattr_static(foo, "prop"), foo)
 
 
 class ConstantBags(unittest.TestCase):
@@ -150,17 +154,17 @@ class ConstantBags(unittest.TestCase):
             return kwds
 
         self.assertIs(type(BAG), type)
-        self.assertIn('ONE', bag)
-        self.assertEquals(bag['ONE'], BAG.ONE)
-        self.assertEquals(BAG.TWO, 2*BAG.ONE)
+        self.assertIn("ONE", bag)
+        self.assertEqual(bag["ONE"], BAG.ONE)
+        self.assertEqual(BAG.TWO, 2 * BAG.ONE)
         with self.assertRaises(AttributeError):
-            self.assertEquals(bag.TWO, 2*bag.ONE)
+            self.assertEqual(bag.TWO, 2 * bag.ONE)
         with self.assertRaises(TypeError):
-            self.assertEquals(BAG['TWO'], 2*BAG['ONE'])
+            self.assertEqual(BAG["TWO"], 2 * BAG["ONE"])
         with self.assertRaises(AttributeError):
-            self.assertEquals(BAG.THREE, 3)
+            self.assertEqual(BAG.THREE, 3)
         self.assertIs(BAG(THREE=3), BAG)
-        self.assertEquals(BAG.THREE, 3)
+        self.assertEqual(BAG.THREE, 3)
 
 
 if __name__ == "__main__":

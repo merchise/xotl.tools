@@ -26,10 +26,12 @@ maybe_datetimes = strategies.datetimes() | strategies.none()
 def test_datetime_imports():
     from xoutil.future import datetime
     from xotl.tools.future import datetime as dt
+
     assert datetime is dt
 
     from xoutil.future.datetime import TimeSpan
     from xotl.tools.future.datetime import TimeSpan as TS
+
     assert TS is TimeSpan
 
 
@@ -103,8 +105,8 @@ def test_interaction_timespan_with_datetimespans(ts, dts):
     assert DateTimeSpan.from_timespan(ts) == ts
     assert ts == DateTimeSpan.from_timespan(ts)
 
-    ts = TimeSpan('2018-01-01', '2018-01-01')
-    dts = DateTimeSpan('2018-01-01 00:00:01', '2018-01-01 00:00:02')
+    ts = TimeSpan("2018-01-01", "2018-01-01")
+    dts = DateTimeSpan("2018-01-01 00:00:01", "2018-01-01 00:00:02")
 
     assert ts != dts
     assert dts != ts
@@ -122,18 +124,23 @@ def test_general_cmp_properties(ts1, ts2, date):
         assert not (ts1 <= ts2) and not (ts2 <= ts1)
 
 
-@given(timespans(unbounds='future'))
+@given(timespans(unbounds="future"))
 def test_outside_date(ts):
     from datetime import timedelta
+
     assert ts.start_date
     outsider = ts.start_date - timedelta(1)
     assert outsider not in ts
 
 
-@given(datetimespans(dates=strategies.datetimes(min_value=datetime(1, 1, 2)),
-                     unbounds='future'))
+@given(
+    datetimespans(
+        dates=strategies.datetimes(min_value=datetime(1, 1, 2)), unbounds="future"
+    )
+)
 def test_outside_datetime(dts):
     from datetime import timedelta
+
     assert dts.start_date
     outsider = dts.start_date - timedelta(1)
     assert outsider not in dts
@@ -141,14 +148,15 @@ def test_outside_datetime(dts):
 
 @given(timespans() | datetimespans())
 def test_empty_timespan(ts):
-    assert ts >= EmptyTimeSpan <= ts, 'Empty is a subset of any TS'
+    assert ts >= EmptyTimeSpan <= ts, "Empty is a subset of any TS"
 
-    assert EmptyTimeSpan <= EmptyTimeSpan >= EmptyTimeSpan, \
-        'Empty is a subset of itself'
+    assert (
+        EmptyTimeSpan <= EmptyTimeSpan >= EmptyTimeSpan
+    ), "Empty is a subset of itself"
 
-    assert not EmptyTimeSpan, 'Empty is considered False'
+    assert not EmptyTimeSpan, "Empty is considered False"
 
-    assert not (ts <= EmptyTimeSpan), 'Empty is not a superset of any TS'
+    assert not (ts <= EmptyTimeSpan), "Empty is not a superset of any TS"
 
     type(EmptyTimeSpan)() is EmptyTimeSpan
 
@@ -156,9 +164,10 @@ def test_empty_timespan(ts):
     assert EmptyTimeSpan | ts == EmptyTimeSpan + ts == ts
 
 
-@given(timespans(unbounds='none'), timespans())
+@given(timespans(unbounds="none"), timespans())
 def test_failure_of_triple_intersection(ts1, ts2):
     from datetime import timedelta
+
     ts0 = TimeSpan.from_date(ts1.start_date - timedelta(1))
     assert not (ts0 & ts1 & ts2)
 
@@ -169,42 +178,44 @@ def test_xoutil_dates_are_representable(value):
 
     class mydate(date):
         pass
+
     value = mydate(value.year, value.month, value.day)
-    assert value.strftime('%Y-%m-%d')
+    assert value.strftime("%Y-%m-%d")
 
 
-@given(timespans(unbounds='none'))
+@given(timespans(unbounds="none"))
 def test_timespans_are_representable(value):
     assert repr(value)
 
 
-@given(timespans(unbounds='none'))
+@given(timespans(unbounds="none"))
 def test_generate_valid_timespans(ts):
     assert ts.valid
 
 
-@given(timespans(unbounds='none'))
+@given(timespans(unbounds="none"))
 def test_ts_returns_dates_not_subtypes(ts):
     from datetime import date
+
     assert type(ts.start_date) is date
     assert type(ts.end_date) is date
 
 
-@given(timespans(unbounds='none'), strategies.dates())
+@given(timespans(unbounds="none"), strategies.dates())
 def test_operate_with_timespans(ts, d):
     assert ts.start_date - d is not None
     assert d - ts.start_date is not None
 
 
-@given(timespans(unbounds='none'), timespans(unbounds='none'))
+@given(timespans(unbounds="none"), timespans(unbounds="none"))
 def test_definition_of_overlaps(ts1, ts2):
     assert ts1.overlaps(ts2) == bool(ts1 & ts2)
 
 
-@given(timespans(unbounds='none'))
+@given(timespans(unbounds="none"))
 def test_duplication_of_timespans(ts1):
     ts2 = TimeSpan(ts1.start_date, ts1.end_date)
-    assert {ts1, ts2} == {ts1}, 'ts1 and ts2 are equal but different!'
+    assert {ts1, ts2} == {ts1}, "ts1 and ts2 are equal but different!"
 
 
 @given(timespans(), strategies.integers(min_value=-1000, max_value=1000))
@@ -241,8 +252,7 @@ def test_timespans_displacement_backandforth(ts1, delta):
         pass
 
 
-@given(timespans(unbounds='none'),
-       strategies.integers(min_value=-1000, max_value=1000))
+@given(timespans(unbounds="none"), strategies.integers(min_value=-1000, max_value=1000))
 def test_timespans_displacement_dates(ts1, delta):
     try:
         res = ts1 << delta
@@ -264,8 +274,10 @@ def test_timespans_displacement_dates(ts1, delta):
         assert (res.end_date - ts1.end_date).days == delta
 
 
-@given(timespans(unbounds='none') | datetimespans(unbounds='none'),
-       strategies.integers(min_value=-1000, max_value=1000))
+@given(
+    timespans(unbounds="none") | datetimespans(unbounds="none"),
+    strategies.integers(min_value=-1000, max_value=1000),
+)
 def test_timespans_displacement_keeps_the_len(ts1, delta):
     try:
         res = ts1 << delta
@@ -278,21 +290,22 @@ def test_timespans_displacement_keeps_the_len(ts1, delta):
 @given(timespans() | datetimespans())
 def test_timespans_are_pickable(ts):
     import pickle
+
     for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
         assert ts == pickle.loads(pickle.dumps(ts, proto))
 
 
 def test_empty_timespan_is_pickable():
     import pickle
+
     for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
-        assert EmptyTimeSpan is pickle.loads(
-            pickle.dumps(EmptyTimeSpan, proto)
-        )
+        assert EmptyTimeSpan is pickle.loads(pickle.dumps(EmptyTimeSpan, proto))
 
 
 @given(strategies.datetimes(), strategies.datetimes())
 def test_timespan_with_datetimes(d1, d2):
     from datetime import datetime as dt, date as d
+
     ts = TimeSpan(d1, d2)
     assert not isinstance(ts.start_date, dt)
     assert isinstance(ts.start_date, d)
@@ -332,9 +345,12 @@ def test_setting_end_date(d, dts):
         assert dts.end_datetime is None
 
 
-@given(strategies.datetimes(min_value=datetime(1970, 1, 1),
-                            max_value=datetime(5000, 12, 31)),
-       strategies.integers(min_value=1, max_value=200))
+@given(
+    strategies.datetimes(
+        min_value=datetime(1970, 1, 1), max_value=datetime(5000, 12, 31)
+    ),
+    strategies.integers(min_value=1, max_value=200),
+)
 def test_timespan_diff(start_date, delta):
     days = timedelta(days=delta)
     big = TimeSpan(start_date, start_date + 3 * days)
@@ -388,9 +404,12 @@ def test_timespan_diff(start_date, delta):
     assert x is EmptyTimeSpan and y is EmptyTimeSpan
 
 
-@given(strategies.datetimes(min_value=datetime(1970, 1, 1),
-                            max_value=datetime(5000, 12, 31)),
-       strategies.integers(min_value=1, max_value=10000))
+@given(
+    strategies.datetimes(
+        min_value=datetime(1970, 1, 1), max_value=datetime(5000, 12, 31)
+    ),
+    strategies.integers(min_value=1, max_value=10000),
+)
 @settings(deadline=None)
 def test_datetimespan_diff(start_date, delta):
     secs = timedelta(seconds=delta)
@@ -450,7 +469,7 @@ def test_datetimespan_diff(start_date, delta):
 @given(datetimespans())
 def test_datetimespan_repr(ts):
     assert eval(repr(ts)) == ts
-    assert DateTimeSpan('2018-01-01') == DateTimeSpan(datetime(2018, 1, 1))
+    assert DateTimeSpan("2018-01-01") == DateTimeSpan(datetime(2018, 1, 1))
 
 
 def add_timespans(x, y):

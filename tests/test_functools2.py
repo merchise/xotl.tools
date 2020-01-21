@@ -9,10 +9,10 @@ from random import choice
 
 
 class TestLRU(unittest.TestCase):
-
     def test_lru(self):
         def orig(x, y):
-            return 3*x+y
+            return 3 * x + y
+
         f = functools.lru_cache(maxsize=20)(orig)
         hits, misses, maxsize, currsize = f.cache_info()
         self.assertEqual(maxsize, 20)
@@ -31,7 +31,7 @@ class TestLRU(unittest.TestCase):
         self.assertEqual(hits + misses, 1000)
         self.assertEqual(currsize, 20)
 
-        f.cache_clear()   # test clearing
+        f.cache_clear()  # test clearing
         hits, misses, maxsize, currsize = f.cache_info()
         self.assertEqual(hits, 0)
         self.assertEqual(misses, 0)
@@ -56,6 +56,7 @@ class TestLRU(unittest.TestCase):
             global f_cnt
             f_cnt += 1
             return 20
+
         self.assertEqual(f.cache_info().maxsize, 0)
         global f_cnt
         f_cnt = 0
@@ -73,6 +74,7 @@ class TestLRU(unittest.TestCase):
             global f_cnt
             f_cnt += 1
             return 20
+
         self.assertEqual(f.cache_info().maxsize, 1)
         f_cnt = 0
         for i in range(5):
@@ -88,12 +90,13 @@ class TestLRU(unittest.TestCase):
         def f(x):
             global f_cnt
             f_cnt += 1
-            return x*10
+            return x * 10
+
         self.assertEqual(f.cache_info().maxsize, 2)
         f_cnt = 0
         for x in 7, 9, 7, 9, 7, 9, 8, 8, 8, 9, 9, 9, 8, 8, 8, 7:
             #    *  *              *                          *
-            self.assertEqual(f(x), x*10)
+            self.assertEqual(f(x), x * 10)
         self.assertEqual(f_cnt, 4)
         hits, misses, maxsize, currsize = f.cache_info()
         self.assertEqual(hits, 12)
@@ -105,30 +108,34 @@ class TestLRU(unittest.TestCase):
         def fib(n):
             if n < 2:
                 return n
-            return fib(n-1) + fib(n-2)
-        self.assertEqual([fib(n) for n in range(16)], [0, 1, 1, 2, 3, 5, 8,
-                                                       13, 21, 34, 55, 89,
-                                                       144, 233, 377, 610])
-        self.assertEqual(fib.cache_info(), functools._CacheInfo(hits=28,
-                                                                misses=16,
-                                                                maxsize=None,
-                                                                currsize=16))
+            return fib(n - 1) + fib(n - 2)
+
+        self.assertEqual(
+            [fib(n) for n in range(16)],
+            [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610],
+        )
+        self.assertEqual(
+            fib.cache_info(),
+            functools._CacheInfo(hits=28, misses=16, maxsize=None, currsize=16),
+        )
         fib.cache_clear()
-        self.assertEqual(fib.cache_info(), functools._CacheInfo(hits=0,
-                                                                misses=0,
-                                                                maxsize=None,
-                                                                currsize=0))
+        self.assertEqual(
+            fib.cache_info(),
+            functools._CacheInfo(hits=0, misses=0, maxsize=None, currsize=0),
+        )
 
     def test_lru_with_exceptions(self):
         # Verify that user_function exceptions get passed through without
         # creating a hard-to-read chained exception.
         # http://bugs.python.org/issue13177
         for maxsize in (None, 100):
+
             @functools.lru_cache(maxsize)
             def func(i):
-                return 'abc'[i]
-            self.assertEqual(func(0), 'a')
-            with self.assertRaises(IndexError) as cm:    # noqa
+                return "abc"[i]
+
+            self.assertEqual(func(0), "a")
+            with self.assertRaises(IndexError) as cm:  # noqa
                 func(15)
             #  The following is only valid in Py33 PEP 3143
             ##  self.assertIsNone(cm.exception.__context__)
@@ -140,9 +147,11 @@ class TestLRU(unittest.TestCase):
 
     def test_lru_with_types(self):
         for maxsize in (None, 100):
+
             @functools.lru_cache(maxsize=maxsize, typed=True)
             def square(x):
                 return x * x
+
             self.assertEqual(square(3), 9)
             self.assertEqual(type(square(3)), type(9))
             self.assertEqual(square(3.0), 9.0)
