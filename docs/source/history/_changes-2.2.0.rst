@@ -1,0 +1,1 @@
+- Drop support for Python 3.5 and commit to support Python 3.8.

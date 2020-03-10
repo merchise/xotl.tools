@@ -1,6 +1,15 @@
 Changelog
 =========
 
+2.2 series
+----------
+
+Unrelased.  Release 2.2.0
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.2.0.rst
+
+
 2.1 series
 ----------
 
