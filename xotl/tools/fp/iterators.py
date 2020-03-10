@@ -73,7 +73,7 @@ def kleisli_compose_foldl(
       >>> s15 = lambda s: tuple(s + str(i) for i in range(1, 5))
       >>> s68 = lambda s: tuple(s + str(i) for i in range(6, 8))
 
-      # kleisli_compose produces "6" >>= 1, 2, 3, 4; and then "7" >>= 1, 2, 3, 4
+      >>> # kleisli_compose produces "6" >>= 1, 2, 3, 4; and then "7" >>= 1, 2, 3, 4
       >>> list(kleisli_compose(s15, s68)(""))
       ['61', '62', '63', '64', '71', '72', '73', '74']
 
