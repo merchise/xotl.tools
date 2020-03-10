@@ -1,0 +1,1 @@
+- Add `xotl.tools.fp.itertools.kleisli_compose_foldl`:func:.
