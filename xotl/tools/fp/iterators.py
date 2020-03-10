@@ -95,8 +95,6 @@ def kleisli_compose_foldl(
     If the operation is commutative you get the same *set* of results, but the
     order may be different.
 
-    The name of `kleisli_compose_foldl` comes from the fact the it resembles
-
     """
     # This basically the same as _kleisli_compose above but with f and g
     # swapped.
