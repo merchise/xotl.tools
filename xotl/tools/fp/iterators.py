@@ -12,11 +12,16 @@
    or otherwise changed.
 
 """
+from typing import Callable, Iterable, TypeVar
 from functools import reduce
 from xotl.tools.deprecation import deprecated_alias
 
+T = TypeVar("T")
 
-def kleisli_compose(*fs):
+
+def kleisli_compose(
+    *fs: Callable[[T], Iterable[T]]
+) -> Callable[[T], Iterable[T]]:
     """The Kleisli composition operator (right-to-left version).
 
     For two functions, ``kleisli_compose(g, f)`` returns::
@@ -58,7 +63,9 @@ def kleisli_compose(*fs):
         return reduce(_kleisli_compose, fs, lambda x: iter([x]))
 
 
-def kleisli_compose_foldl(*fs):
+def kleisli_compose_foldl(
+    *fs: Callable[[T], Iterable[T]]
+) -> Callable[[T], Iterable[T]]:
     """Same as `kleisli_compose`:func: but composes left-to-right.
 
     Examples:
