@@ -20,18 +20,6 @@ run all Python 3.8 tests:
   image: registry.merchise.org/merchise/python-dev:3.8-alpine
   variables:
     PYTHON: "3.8"
-  allow_failure: true
-  only:
-    - master
-    - /^releases-2/
-    - merge_requests
-
-
-run all Python 3.5 tests:
-  <<: *run_tox_tests
-  image: registry.merchise.org/merchise/python-dev:3.5-alpine
-  variables:
-    PYTHON: "3.5"
   only:
     - master
     - /^releases-2/
