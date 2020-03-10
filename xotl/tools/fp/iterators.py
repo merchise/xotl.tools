@@ -12,12 +12,17 @@
    or otherwise changed.
 
 """
+from typing import Callable, Iterable, TypeVar
 from functools import reduce
 from xotl.tools.deprecation import deprecated_alias
 
+T = TypeVar("T")
 
-def kleisli_compose(*fs):
-    """The Kleisli composition operator.
+
+def kleisli_compose(
+    *fs: Callable[[T], Iterable[T]]
+) -> Callable[[T], Iterable[T]]:
+    """The Kleisli composition operator (right-to-left version).
 
     For two functions, ``kleisli_compose(g, f)`` returns::
 
@@ -34,6 +39,10 @@ def kleisli_compose(*fs):
 
     .. versionadded:: 1.9.6
     .. versionchanged:: 1.9.7 Name changed to ``kleisli_compose``.
+
+    .. warning:: You may want to use `kleisli_compose_foldl`:func: which
+       matches the order semantics of the functional kleisli composition
+       ``>=>``.
 
     """
 
@@ -54,7 +63,56 @@ def kleisli_compose(*fs):
         return reduce(_kleisli_compose, fs, lambda x: iter([x]))
 
 
-iter_compose = deprecated_alias(kleisli_compose)
+def kleisli_compose_foldl(
+    *fs: Callable[[T], Iterable[T]]
+) -> Callable[[T], Iterable[T]]:
+    """Same as `kleisli_compose`:func: but composes left-to-right.
 
+    Examples:
+
+      >>> s15 = lambda s: tuple(s + str(i) for i in range(1, 5))
+      >>> s68 = lambda s: tuple(s + str(i) for i in range(6, 8))
+
+      # kleisli_compose produces "6" >>= 1, 2, 3, 4; and then "7" >>= 1, 2, 3, 4
+      >>> list(kleisli_compose(s15, s68)(""))
+      ['61', '62', '63', '64', '71', '72', '73', '74']
+
+      >>> list(kleisli_compose_foldl(s15, s68)(""))
+      ['16', '17', '26', '27', '36', '37', '46', '47']
+
+    If the operation is non-commutative (as the string concatenation) you end
+    up with very different results.
+
+      >>> n15 = lambda s: tuple(s + i for i in range(1, 5))
+      >>> n68 = lambda s: tuple(s + i for i in range(6, 8))
+
+      >>> list(kleisli_compose(n15, n68)(0))
+      [7, 8, 9, 10, 8, 9, 10, 11]
+
+      >>> list(kleisli_compose_foldl(n15, n68)(0))
+      [7, 8, 8, 9, 9, 10, 10, 11]
+
+    If the operation is commutative you get the same *set* of results, but the
+    order may be different.
+
+    The name of `kleisli_compose_foldl` comes from the fact the it resembles
+
+    """
+    # This basically the same as _kleisli_compose above but with f and g
+    # swapped.
+    #
+    # In our derivation of
+    def _kleisli_compose_foldl(f, g):
+        return lambda x: (z for y in f(x) for z in g(y))
+
+    if len(fs) == 2:
+        # optimize a bit so that we can avoid the 'lambda x: [x]' for common
+        # cases.
+        return _kleisli_compose_foldl(*fs)
+    else:
+        return reduce(_kleisli_compose_foldl, fs, lambda x: iter([x]))
+
+
+iter_compose = deprecated_alias(kleisli_compose)
 
 del deprecated_alias
