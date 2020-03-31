@@ -12,7 +12,7 @@ Welcome to xotl.tools's documentation!
 What's new in |release|
 -----------------------
 
-.. include:: history/_changes-2.1.7.rst
+.. include:: history/_changes-2.1.8.rst
 
 
 Contents
