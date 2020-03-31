@@ -4,6 +4,12 @@ Changelog
 2.1 series
 ----------
 
+Unreleased.  Release 2.1.8
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.8.rst
+
+
 2020-03-10.  Release 2.1.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
