@@ -80,7 +80,7 @@ class InfinityType:
         elif isinstance(other, InfinityType):
             return self.sign < other.sign
         else:
-            raise TypeError("Incomparable types: %r and %r" % (type(self), type(other)))
+            return NotImplemented
 
     def __eq__(self, other):
         if isinstance(other, InfinityType):
