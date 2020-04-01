@@ -15,6 +15,9 @@
 """
 import sys
 from itertools import *  # noqa
+
+from typing import Callable, Iterable, TypeVar  # noqa
+
 from xotl.tools.symbols import Unset
 from xotl.tools.deprecation import deprecated_alias, deprecated
 
@@ -329,8 +332,7 @@ def continuously_slides(iterable, width=2, fill=None):
 
 
 @deprecated(
-    None,
-    "first_n is deprecated and it will be removed, use stdlib's itertools.islice",
+    None, "first_n is deprecated and it will be removed, use stdlib's itertools.islice"
 )
 def first_n(iterable, n=1, fill=Unset):
     """Takes the first `n` items from iterable.
@@ -437,6 +439,24 @@ def ungroup(iterator):
     for _, xs in iterator:
         for x in xs:
             yield x
+
+
+A = TypeVar("A")
+B = TypeVar("B")
+
+
+def zip_map(funcs, args):
+    """Apply each function in `funcs` to its corresponding arguments.
+
+    If the iterables are not of the same length, stop as soon as the shortest
+    is exhausted.
+
+    .. versionadded:: 2.1.9
+
+    """
+    # type: (Iterable[Callable[[A], B]], Iterable[A]) -> Iterable[B]
+    for fn, arg in zip(funcs, args):
+        yield fn(arg)
 
 
 if sys.version_info < (3, 5):
