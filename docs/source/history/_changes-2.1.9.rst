@@ -1,1 +1,1 @@
-Nothing yet.
+- Add function `xotl.tools.future.itertools.zip_map`:func:.
