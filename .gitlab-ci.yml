@@ -6,20 +6,50 @@ stages:
   - build
   - publish
 
-.run_tox_tests: &run_tox_tests
+.run_tox_tests_no_greenlets: &run_tox_tests_no_greenlets
   stage: test
   cache:
-    key: tests-${PYTHON}-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    key: tests-${PYTHON}-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-without-greenlets
     paths:
       - .tox/
   script:
-    - tox -e system-unit,system-greenlets
+    - tox -e system-unit
 
-run all Python 3.8 tests:
-  <<: *run_tox_tests
+.run_tox_tests_with_greenlets: &run_tox_tests_with_greenlets
+  stage: test
+  cache:
+    key: tests-${PYTHON}-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-with-greenlets
+    paths:
+      - .tox/
+  script:
+    - tox -e system-unit
+
+
+run all Python 3.8 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
   image: registry.merchise.org/merchise/python-dev:3.8-alpine
   variables:
     PYTHON: "3.8"
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
+
+run all Python 3.8 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  image: registry.merchise.org/merchise/python-dev:3.8-alpine
+  variables:
+    PYTHON: "3.8"
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
+
+run all Python 3.9 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
+  image: registry.merchise.org/merchise/python-dev:3.9-rc-alpine
+  variables:
+    PYTHON: "3.9-rc"
   allow_failure: true
   only:
     - master
@@ -27,18 +57,8 @@ run all Python 3.8 tests:
     - merge_requests
 
 
-run all Python 3.5 tests:
-  <<: *run_tox_tests
-  image: registry.merchise.org/merchise/python-dev:3.5-alpine
-  variables:
-    PYTHON: "3.5"
-  only:
-    - master
-    - /^releases-2/
-    - merge_requests
-
-run all Python 3.6 tests:
-  <<: *run_tox_tests
+run all Python 3.6 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
   image: registry.merchise.org/merchise/python-dev:3.6-alpine
   variables:
     PYTHON: "3.6"
@@ -47,8 +67,19 @@ run all Python 3.6 tests:
     - /^releases-2/
     - merge_requests
 
-run all Python 3.7 tests:
-  <<: *run_tox_tests
+run all Python 3.6 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  variables:
+    PYTHON: "3.6"
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
+
+
+run all Python 3.7 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
   image: registry.merchise.org/merchise/python-dev:3.7-alpine
   variables:
     PYTHON: "3.7"
@@ -56,6 +87,17 @@ run all Python 3.7 tests:
     - master
     - /^releases-2/
     - merge_requests
+
+run all Python 3.7 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  image: registry.merchise.org/merchise/python-dev:3.7-alpine
+  variables:
+    PYTHON: "3.7"
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
+
 
 build source distribution:
   image: registry.merchise.org/merchise/python-dev:3.6-alpine

@@ -35,18 +35,26 @@ def safe_strip(value):
 
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
 # some module dedicated to "string trimming".
-def cut_prefix(value, prefix):
-    """Removes the leading `prefix` if exists, else return `value`
-    unchanged.
 
-    """
-    from xotl.tools.future.codecs import safe_encode, safe_decode
 
-    if isinstance(value, str) and isinstance(prefix, bytes):
-        prefix = safe_decode(prefix)
-    elif isinstance(value, bytes) and isinstance(prefix, str):
-        prefix = safe_encode(prefix)
-    return value[len(prefix) :] if value.startswith(prefix) else value
+try:
+    cut_prefix = str.removeprefix
+except AttributeError:
+
+    def cut_prefix(value, prefix):
+        """Removes the leading `prefix` if exists, else return `value`
+        unchanged.
+
+        In Python 3.9+ this is the same as `str.removeprefix`:func:.
+
+        """
+        from xotl.tools.future.codecs import safe_encode, safe_decode
+
+        if isinstance(value, str) and isinstance(prefix, bytes):
+            prefix = safe_decode(prefix)
+        elif isinstance(value, bytes) and isinstance(prefix, str):
+            prefix = safe_encode(prefix)
+        return value[len(prefix) :] if value.startswith(prefix) else value
 
 
 def cut_any_prefix(value, *prefixes):
@@ -67,24 +75,30 @@ def cut_prefixes(value, *prefixes):
     return result
 
 
-def cut_suffix(value, suffix):
-    """Removes the tailing `suffix` if exists, else return `value`
-    unchanged.
+try:
+    cut_suffix = str.removesuffix
+except AttributeError:
 
-    """
-    from xotl.tools.future.codecs import safe_decode, safe_encode
+    def cut_suffix(value, suffix):
+        """Removes the tailing `suffix` if exists, else return `value`
+        unchanged.
 
-    if isinstance(value, str) and isinstance(suffix, bytes):
-        suffix = safe_decode(suffix)
-    elif isinstance(value, bytes) and isinstance(suffix, str):
-        suffix = safe_encode(suffix)
-    # Since value.endswith('') is always true but value[:-0] is actually
-    # always value[:0], which is always '', we have to explictly test for
-    # len(suffix)
-    if len(suffix) > 0 and value.endswith(suffix):
-        return value[: -len(suffix)]
-    else:
-        return value
+        In Python 3.9+ this is the same as `str.removesuffix`:func:.
+
+        """
+        from xotl.tools.future.codecs import safe_decode, safe_encode
+
+        if isinstance(value, str) and isinstance(suffix, bytes):
+            suffix = safe_decode(suffix)
+        elif isinstance(value, bytes) and isinstance(suffix, str):
+            suffix = safe_encode(suffix)
+        # Since value.endswith('') is always true but value[:-0] is actually
+        # always value[:0], which is always '', we have to explictly test for
+        # len(suffix)
+        if len(suffix) > 0 and value.endswith(suffix):
+            return value[: -len(suffix)]
+        else:
+            return value
 
 
 def cut_any_suffix(value, *suffixes):
