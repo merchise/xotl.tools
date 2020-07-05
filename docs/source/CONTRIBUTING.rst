@@ -71,10 +71,10 @@ packaging problem, or bug in the documentation.
 Module layout and rules
 =======================
 
-Many modules in ``xotl.tools`` contains definitions used in ``xotl.tools`` itself.  Though
-we try to logically place every feature into a rightful, logical module;
-sometimes this is not possible because it would lead to import dependency
-cycles.
+Many modules in ``xotl.tools`` contains definitions used in ``xotl.tools``
+itself.  Though we try to logically place every feature into a rightful,
+logical module; sometimes this is not possible because it would lead to import
+dependency cycles.
 
 We are establishing several rules to keep our module layout and dependency
 quite stable while, at the same time, allowing developers to use almost every
