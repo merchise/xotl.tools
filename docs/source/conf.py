@@ -11,6 +11,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# fmt: off
+
 import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -282,6 +284,7 @@ texinfo_documents = [
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'py3': ('https://docs.python.org/3.6/', None),
+    'py39': ('https://docs.python.org/3.9/', None),
     'gevent': ('http://www.gevent.org', None),
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),
     'hypothesis': ('https://hypothesis.readthedocs.io/en/latest/', None),
