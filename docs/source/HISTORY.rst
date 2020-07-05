@@ -4,7 +4,7 @@ Changelog
 2.1 series
 ----------
 
-Unreleased.  Release 2.1.9
+2020-07-05.  Release 2.1.9
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.1.9.rst
