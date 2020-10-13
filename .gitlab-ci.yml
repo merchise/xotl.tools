@@ -5,6 +5,7 @@ stages:
   - check
   - build
   - publish
+  - clean up
 
 .run_tox_tests_no_greenlets: &run_tox_tests_no_greenlets
   stage: test
@@ -185,11 +186,9 @@ build documentation:
   script:
     - pip install -e .
     - make -C docs/ html
-    - cd docs/build/html
-    - tar -cjf ../../../$CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 ./
   artifacts:
     paths:
-      - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
+      - docs/build/html
     expire_in: 4 days
   only:
     - tags
@@ -198,20 +197,23 @@ build documentation:
     - merge_requests
 
 publish in our rtd:
+  image: alpine
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 rtd@docs.lahavane.com:.
-    - ssh-keyscan -H docs.lahavane.com >> ~/.ssh/known_hosts
-    - ssh rtd@docs.lahavane.com mkdir -p $CI_PROJECT_NAME/.$CI_COMMIT_SHA
-    - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
-    - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -sr /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
-    - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
-    - ssh rtd@docs.lahavane.com "cd /var/www/html/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
-  tags:
-    - rtd@docs.lahavane.com
-  dependencies:
+    - |
+      apk add openssh rsync
+      mkdir -p $HOME/.ssh
+      chmod 700 $HOME/.ssh
+      cp $RSA_KEY_FILE $HOME/.ssh/id_rsa
+      chmod 600 $HOME/.ssh/id_rsa
+      cp $SSH_CONFIG_FILE $HOME/.ssh/config
+      ssh docs.lahavane.com mkdir -p /data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA
+      rsync -auvp -e ssh ./docs/build/html/ docs.lahavane.com:/data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA/
+      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $CI_COMMIT_REF_NAME; ln -s .$CI_COMMIT_SHA $CI_COMMIT_REF_NAME"
+      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
+  needs:
     - build documentation
   environment:
     name: docs.lahavane.com
@@ -221,3 +223,20 @@ publish in our rtd:
     - /^releases-/
     - master
     - merge_requests
+
+automatically remove MR documentation from our RTD server after 4 hours:
+  stage: clean up
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "release-1.9.x"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "release-2.0.x"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "release-2.1.x"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+    - when: never
+  trigger:
+    include: ci/cleanup.yml

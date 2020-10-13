@@ -1,0 +1,22 @@
+---
+stages:
+  - clean up
+
+remove MR documentation:
+  image: alpine
+  stage: clean up
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - |
+      apk add openssh
+      mkdir -p $HOME/.ssh
+      chmod 700 $HOME/.ssh
+      cp $RSA_KEY_FILE $HOME/.ssh/id_rsa
+      chmod 600 $HOME/.ssh/id_rsa
+      cp $SSH_CONFIG_FILE $HOME/.ssh/config
+      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $CI_COMMIT_REF_NAME .$CI_COMMIT_SHA"
+  rules:
+    - when: delayed
+      start_in: '4 hours'
+      allow_failure: true
