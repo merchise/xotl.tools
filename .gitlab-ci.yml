@@ -191,6 +191,7 @@ build documentation:
     paths:
       - docs/build/html
     expire_in: 4 days
+  needs: []
   only:
     - tags
     - /^releases-/
