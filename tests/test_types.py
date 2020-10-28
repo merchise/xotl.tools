@@ -19,7 +19,7 @@ def test_iscollection():
     from xoutil.future.collections import UserList, UserDict
 
     def is_collection(arg):
-        from collections import Iterable, Mapping
+        from collections.abc import Iterable, Mapping
 
         avoid = (Mapping, str)
         return isinstance(arg, Iterable) and not isinstance(arg, avoid)

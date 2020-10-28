@@ -53,7 +53,7 @@ class JSONEncoder(_stdlib.JSONEncoder):
     def default(self, obj):
         from datetime import datetime, date, time
         from decimal import Decimal
-        from collections import Iterable
+        from collections.abc import Iterable
 
         if isinstance(obj, datetime):
             return obj.strftime(self.DT_FORMAT)
@@ -96,9 +96,9 @@ except ImportError:
 def encode_string(string, ensure_ascii=True):
     """Return a JSON representation of a Python string.
 
-     :param ensure_ascii: If True, the output is guaranteed to be of type
-         `str` with all incoming non-ASCII characters escaped.  If False, the
-         output can contain non-ASCII characters.
+    :param ensure_ascii: If True, the output is guaranteed to be of type
+        `str` with all incoming non-ASCII characters escaped.  If False, the
+        output can contain non-ASCII characters.
 
     """
     encode = encode_basestring_ascii if ensure_ascii else encode_basestring
