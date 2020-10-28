@@ -12,7 +12,7 @@ In Python 3 `str` is always unicode but `unicode` and `basestring` types
 doesn't exists.  `bytes` type can be used as an array of one byte each item.
 
 """
-from typing import Any
+from typing import Any, Optional, Pattern
 
 from xotl.tools.deprecation import deprecated  # noqa
 from xotl.tools.deprecation import import_deprecated  # noqa
@@ -38,7 +38,7 @@ try:
     cut_prefix = str.removeprefix
 except AttributeError:
 
-    def cut_prefix(value: str, prefix: str) -> str:
+    def cut_prefix(self: str, prefix: str) -> str:
         """Removes the leading `prefix` if exists, else return `value`
         unchanged.
 
@@ -47,11 +47,11 @@ except AttributeError:
         """
         from xotl.tools.future.codecs import safe_encode, safe_decode
 
-        if isinstance(value, str) and isinstance(prefix, bytes):
+        if isinstance(self, str) and isinstance(prefix, bytes):
             prefix = safe_decode(prefix)
-        elif isinstance(value, bytes) and isinstance(prefix, str):
+        elif isinstance(self, bytes) and isinstance(prefix, str):
             prefix = safe_encode(prefix)
-        return value[len(prefix) :] if value.startswith(prefix) else value
+        return self[len(prefix) :] if self.startswith(prefix) else self
 
 
 def cut_any_prefix(value: str, *prefixes: str) -> str:
@@ -76,7 +76,7 @@ try:
     cut_suffix = str.removesuffix
 except AttributeError:
 
-    def cut_suffix(value: str, suffix: str) -> str:
+    def cut_suffix(self: str, suffix: str) -> str:
         """Removes the tailing `suffix` if exists, else return `value`
         unchanged.
 
@@ -85,17 +85,17 @@ except AttributeError:
         """
         from xotl.tools.future.codecs import safe_decode, safe_encode
 
-        if isinstance(value, str) and isinstance(suffix, bytes):
+        if isinstance(self, str) and isinstance(suffix, bytes):
             suffix = safe_decode(suffix)
-        elif isinstance(value, bytes) and isinstance(suffix, str):
+        elif isinstance(self, bytes) and isinstance(suffix, str):
             suffix = safe_encode(suffix)
         # Since value.endswith('') is always true but value[:-0] is actually
         # always value[:0], which is always '', we have to explictly test for
         # len(suffix)
-        if len(suffix) > 0 and value.endswith(suffix):
-            return value[: -len(suffix)]
+        if len(suffix) > 0 and self.endswith(suffix):
+            return self[: -len(suffix)]
         else:
-            return value
+            return self
 
 
 def cut_any_suffix(value: str, *suffixes: str) -> str:
@@ -248,7 +248,6 @@ def slugify(value: Any, *args, **kwds) -> str:
 
     _str = compose(not_false(""), istype(str))
     _ascii = compose(_str, ascii_coerce)
-    _set = compose(_ascii, lambda v: "".join(set(v)))
 
     # local functions
     def _normalize(v):
@@ -283,6 +282,7 @@ def slugify(value: Any, *args, **kwds) -> str:
         if not isinstance(invalid_chars, str):
             invalid_chars = "".join(invalid_chars)
         invalid_chars = _set(invalid_chars)
+    invalid_regex: Optional[Pattern]
     if invalid_chars:
         invalid_regex = re.compile(r"[{}]+".format(invalid_chars))
         if invalid_regex.search(replacement):
