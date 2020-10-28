@@ -17,15 +17,6 @@ stages:
   script:
     - pip install tox
     - tox -e system-unit
-  only:
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
 
 .run_tox_tests_with_greenlets: &run_tox_tests_with_greenlets
   image: python:$PYTHON
@@ -44,27 +35,55 @@ run all Python 3.8 tests without greenlets:
   variables:
     PYTHON: "3.8"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
 
 run all Python 3.8 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
   variables:
     PYTHON: "3.8"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 run all Python 3.9 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.9"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 
 run all Python 3.9 tests with greenlets:
@@ -72,9 +91,18 @@ run all Python 3.9 tests with greenlets:
   variables:
     PYTHON: "3.9"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 
 run all Python 3.6 tests without greenlets:
@@ -82,38 +110,72 @@ run all Python 3.6 tests without greenlets:
   variables:
     PYTHON: "3.6"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 run all Python 3.6 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
   variables:
     PYTHON: "3.6"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
-
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 run all Python 3.7 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.7"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 run all Python 3.7 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
   variables:
     PYTHON: "3.7"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
-
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 build source distribution:
   image: python:3.8-alpine
@@ -185,7 +247,7 @@ publish in pypi:
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
 
 
-build documentation:
+.build_doc: &build_doc
   image: python:3.8-alpine
   stage: build
   cache:
@@ -202,13 +264,35 @@ build documentation:
       - docs/build/html
     expire_in: 4 days
   needs: []
-  only:
-    - tags
-    - /^releases-/
-    - master
-    - merge_requests
 
-publish in our rtd:
+build documentation for releases:
+  <<: *build_doc
+  only:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
+
+build documentation:
+  <<: *build_doc
+  only:
+    refs:
+      - /^releases-/
+      - master
+      - merge_requests
+    changes:
+      - docs/**/*.rst
+      - docs/**/*.py
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+
+.publish_rtd: &publish_rtd
   image: alpine
   variables:
     GIT_STRATEGY: none
@@ -225,16 +309,41 @@ publish in our rtd:
       rsync -auvp -e ssh ./docs/build/html/ docs.lahavane.com:/data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA/
       ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $CI_COMMIT_REF_NAME; ln -s .$CI_COMMIT_SHA $CI_COMMIT_REF_NAME"
       ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
-  needs:
-    - build documentation
   environment:
     name: docs.lahavane.com
     url: http://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+
+publish in our RTD for releases:
+  <<: *publish_rtd
+  needs:
+    - build documentation for releases
   only:
-    - tags
-    - /^releases-/
-    - master
-    - merge_requests
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
+
+
+publish in our RTD:
+  <<: *publish_rtd
+  needs:
+    - build documentation
+  only:
+    refs:
+      - /^releases-/
+      - master
+      - merge_requests
+    changes:
+      - docs/**/*.rst
+      - docs/**/*.py
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
 
 automatically remove MR documentation from our RTD server after 4 hours:
   stage: clean up
