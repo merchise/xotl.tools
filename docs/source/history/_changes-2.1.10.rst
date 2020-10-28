@@ -13,4 +13,10 @@
   - `xotl.tools.future.objects`:mod:
   - `xotl.tools.future.datetime`:mod:
 
-- Add official support for Python 3.9.  We now our test
+- Add official support for Python 3.9.  The list of Python versions we support
+  is currently:
+
+  - Python 3.6
+  - Python 3.7
+  - Python 3.8, and
+  - Python 3.9.
