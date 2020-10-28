@@ -1,7 +1,6 @@
 from typing import (
     Any,
     Callable,
-    ClassVar,
     Dict,
     Iterator,
     Mapping,
@@ -12,7 +11,11 @@ from typing import (
     Type,
     Union,
     ContextManager,
+    TypeVar,
 )
+from typing_extensions import Protocol
+
+from xotl.tools.symbols import Unset
 
 # def adapt_exception(value: Optional[Union[Tuple[Type[KeyError], str], str, int]], **kwargs) -> Optional[KeyError]: ...
 Getter = Callable[[Any], Callable[[str, Any], Any]]
@@ -27,6 +30,13 @@ def get_first_of(
 def get_traverser(
     *paths: str, default: Any = ..., sep: str = ..., getter: Getter = ...
 ) -> Callable: ...
+def traverse(
+    obj: Any,
+    path: str,
+    default: Any = Unset,
+    sep: str = ".",
+    getter: Optional[Getter] = None,
+) -> Any: ...
 def import_object(
     name: Union[object, str],
     package: str = ...,
@@ -69,3 +79,11 @@ class SafeDataItem:
     def __get__(self, obj, owner): ...
     @staticmethod
     def slot(slot_name: str, *args, **kwargs) -> str: ...
+
+B_co = TypeVar("B_co", covariant=True)
+
+class _FinalSubclassEnum(Protocol[B_co]):
+    def __getattr__(self, clsname: str) -> Type[B_co]: ...
+    __members__: Mapping[str, Type[B_co]]
+
+FinalSubclassEnumeration: _FinalSubclassEnum
