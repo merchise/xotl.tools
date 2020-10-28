@@ -9,26 +9,45 @@ stages:
 
 
 .run_tox_staticcheck: &run_tox_staticcheck
-  image: python:3.8
+  image: python:$PYTHON
   stage: test
   cache:
     key: $CI_JOB_NAME
     paths:
-      - .tox/3.8-staticcheck/
+      - .tox/
       - .mypy_cache/
   script:
     - pip install tox
-    - tox -e 3.8-staticcheck
-
-run static checks:
-  <<: *run_tox_staticcheck
+    - tox -e system-staticcheck
   only:
     refs:
       - master
       - merge_requests
     changes:
-      - xotl/tools/*.py
       - xotl/tools/**/*.py
+      - xotl/tools/**/*.pyi
+
+run static checks in Python 3.6:
+  <<: *run_tox_staticcheck
+  allow_failure: true
+  variables:
+    PYTHON: "3.6"
+
+run static checks in Python 3.7:
+  <<: *run_tox_staticcheck
+  allow_failure: true
+  variables:
+    PYTHON: "3.7"
+
+run static checks in Python 3.8:
+  <<: *run_tox_staticcheck
+  variables:
+    PYTHON: "3.8"
+
+run static checks in Python 3.9:
+  <<: *run_tox_staticcheck
+  variables:
+    PYTHON: "3.9"
 
 
 .run_tox_tests_no_greenlets: &run_tox_tests_no_greenlets
