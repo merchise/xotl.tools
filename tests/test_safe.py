@@ -6,13 +6,11 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
-
-from xoutil.tasking.safe import SafeData
+from xotl.tools.tasking.safe import SafeData
 
 
 def test_safe():
-    from xoutil.future.threading import async_call
+    from xotl.tools.future.threading import async_call
     from time import sleep
 
     data = {}

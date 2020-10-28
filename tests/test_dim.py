@@ -10,7 +10,7 @@
 import pytest
 from hypothesis import given, strategies as s
 
-from xoutil.dim.meta import Signature, Quantity, Dimension, Scalar, UNIT
+from xotl.tools.dim.meta import Signature, Quantity, Dimension, Scalar, UNIT
 
 
 # A reasonable exponent.  We won't be dealing with universes of 100s
@@ -84,7 +84,7 @@ def test_effort():
 
 
 def test_scalar_downgrade():
-    from xoutil.dim.base import L
+    from xotl.tools.dim.base import L
 
     km = L.km
     assert not isinstance(km / km, Quantity)
@@ -97,7 +97,7 @@ def test_scalar_downgrade():
 
 
 def test_natural_downgrade():
-    from xoutil.dim.base import L
+    from xotl.tools.dim.base import L
 
     km, cm = L.km, L.cm
     assert float(km) == 1000
@@ -106,7 +106,7 @@ def test_natural_downgrade():
 
 def test_decimals():
     import decimal
-    from xoutil.dim.base import m
+    from xotl.tools.dim.base import m
 
     with pytest.raises(TypeError):
         third = decimal.Decimal("0.33") * m
@@ -162,7 +162,7 @@ def test_quantity_math():
 
 
 def test_quantity_type_definitions():
-    from xoutil.dim.base import Length, Time
+    from xotl.tools.dim.base import Length, Time
 
     assert isinstance(Length, Dimension)
     assert isinstance(Time, Dimension)
@@ -196,21 +196,21 @@ def test_quantity_type_definitions():
 
 @given(exponents, exponents)
 def test_general_power_rules(n, m):
-    from xoutil.dim.base import L
+    from xotl.tools.dim.base import L
 
     assert L ** n / L ** m == L ** (n - m)
 
 
 @given(s.floats(allow_nan=False) | s.integers())
 def test_any_magnitude(m):
-    from xoutil.dim.base import L
+    from xotl.tools.dim.base import L
 
     assert float(m * L.metre) == float(m)
 
 
 @given(s.floats(allow_nan=False, allow_infinity=False) | s.integers())
 def test_any_magnitude_noinf(m):
-    from xoutil.dim.base import L
+    from xotl.tools.dim.base import L
     from math import ceil, floor
 
     Int = int
@@ -220,7 +220,7 @@ def test_any_magnitude_noinf(m):
 
 
 def test_currencies():
-    from xoutil.dim.currencies import Rate, Valuation, currency
+    from xotl.tools.dim.currencies import Rate, Valuation, currency
 
     dollar = USD = currency("USD")
     euro = EUR = currency("EUR")
@@ -243,7 +243,7 @@ def test_currencies():
 
 
 def test_undistinguishable_definitions():
-    from xoutil.dim.base import L
+    from xotl.tools.dim.base import L
 
     @Dimension.new
     class Length:
@@ -260,7 +260,7 @@ def test_undistinguishable_definitions():
 
 
 def test_bug_30():
-    from xoutil.dim.meta import Dimension, UNIT
+    from xotl.tools.dim.meta import Dimension, UNIT
 
     @Dimension.new
     class L:

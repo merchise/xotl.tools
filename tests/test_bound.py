@@ -8,7 +8,7 @@
 #
 
 import unittest
-from xoutil.bound import boundary, whenall, whenany
+from xotl.tools.bound import boundary, whenall, whenany
 
 
 def fibonacci(wait=None):
@@ -24,7 +24,7 @@ def fibonacci(wait=None):
 
 class TestBoundedWithStandardPredicates(unittest.TestCase):
     def test_times(self):
-        from xoutil.bound import times, until
+        from xotl.tools.bound import times, until
 
         fib8 = times(8)(fibonacci)
         # Fibonacci numbers are yielded:
@@ -42,7 +42,7 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         self.assertEqual(tuple(fib8gen), (1, 1, 2, 3, 5, 8, 13, 21))
 
     def test_until_error(self):
-        from xoutil.bound import until
+        from xotl.tools.bound import until
 
         d = dict(a=1, b=2, c=3, d=4)
 
@@ -71,7 +71,7 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         assert list(failing.generate()) == []
 
     def test_timed(self):
-        from xoutil.bound import timed, until
+        from xotl.tools.bound import timed, until
 
         fib10ms = timed(1 / 100)(fibonacci)
         # Since the wait time below will be larger than the allowed execution
@@ -93,8 +93,8 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         self.assertEqual(res, None)
 
     def test_accumulated(self):
-        from xoutil.bound import until
-        from xoutil.bound import accumulated, timed, times
+        from xotl.tools.bound import until
+        from xotl.tools.bound import accumulated, timed, times
 
         # 1 + 1 + 2 + 3 + 5 + 8 + 13 + 21 + 34 + 55 + 89 + 144 = 376
         # ^   ^        ...                                  ^
@@ -112,8 +112,7 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         self.assertEqual(fib500timed(), 233)
 
         self.assertEqual(
-            tuple(fib500.generate()),
-            (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233),
+            tuple(fib500.generate()), (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
         )
 
         # With .generate()  you may count
@@ -158,7 +157,7 @@ class TestHigherLevelPreds(unittest.TestCase):
         self.assertEqual(fibnone(), 1)
 
     def test_whenall_with_invalid(self):
-        from xoutil.bound import times
+        from xotl.tools.bound import times
 
         @boundary
         def invalid():
@@ -169,7 +168,7 @@ class TestHigherLevelPreds(unittest.TestCase):
             fibinv()
 
     def test_whenall_with_invalid_befored_terminated(self):
-        from xoutil.bound import times
+        from xotl.tools.bound import times
 
         @boundary
         def invalid():
@@ -183,7 +182,7 @@ class TestHigherLevelPreds(unittest.TestCase):
 
 class TestBoundedUnnamedPredicates(unittest.TestCase):
     def test_atmost_unnamed(self):
-        from xoutil.bound import times
+        from xotl.tools.bound import times
 
         fib8 = times(8)(fibonacci)
         # Fibonacci numbers are yielded:
@@ -241,9 +240,7 @@ class TestBoundedPredicates(unittest.TestCase):
             while passes < atmost:
                 yield passes
                 passes += 1
-            raise AssertionError(
-                "Invalid reach point a GeneratorExit was " "expected."
-            )
+            raise AssertionError("Invalid reach point a GeneratorExit was expected.")
 
         with self.assertRaises(RuntimeError):
             foobar()
@@ -266,13 +263,13 @@ class TestMisc(unittest.TestCase):
         foobar(1, 2)
 
     def test_whens_receives_args(self):
-        from xoutil.bound import whenall, whenany
+        from xotl.tools.bound import whenall, whenany
 
         self.assertTrue(whenall.receive_args)
         self.assertTrue(whenany.receive_args)
 
     def test_args_are_passed_to_all(self):
-        from xoutil.bound import whenall, whenany
+        from xotl.tools.bound import whenall, whenany
 
         @boundary
         def pred():
@@ -296,7 +293,7 @@ class TestMisc(unittest.TestCase):
         foobar(1, 2, egg="ham")
 
     def test_needs_args(self):
-        from xoutil.bound import times
+        from xotl.tools.bound import times
 
         @whenall(times)
         def foobar():
@@ -334,7 +331,7 @@ class TestMisc(unittest.TestCase):
         foobar(1, 2, egg="ham")
 
     def test_plain_generator(self):
-        from xoutil.bound import times
+        from xotl.tools.bound import times
 
         fibseq = fibonacci()
         limited = times(5)(fibseq)

@@ -14,14 +14,14 @@
 """
 from typing import Callable, Iterable, TypeVar
 from functools import reduce
-from xotl.tools.deprecation import deprecated_alias
 
+X = TypeVar("X")
+Y = TypeVar("Y")
+Z = TypeVar("Z")
 T = TypeVar("T")
 
 
-def kleisli_compose(
-    *fs: Callable[[T], Iterable[T]]
-) -> Callable[[T], Iterable[T]]:
+def kleisli_compose(*fs: Callable[[T], Iterable[T]]) -> Callable[[T], Iterable[T]]:
     """The Kleisli composition operator (right-to-left version).
 
     For two functions, ``kleisli_compose(g, f)`` returns::
@@ -46,7 +46,9 @@ def kleisli_compose(
 
     """
 
-    def _kleisli_compose(g, f):
+    def _kleisli_compose(
+        g: Callable[[Y], Iterable[Z]], f: Callable[[X], Iterable[Y]]
+    ) -> Callable[[X], Iterable[Z]]:
         # (>>.) :: Monad m => (b -> m c) -> (a -> m b) -> a -> m c
         # g >>. f = \x -> f x >>= g
         #
@@ -109,8 +111,3 @@ def kleisli_compose_foldl(
         return _kleisli_compose_foldl(*fs)
     else:
         return reduce(_kleisli_compose_foldl, fs, lambda x: iter([x]))
-
-
-iter_compose = deprecated_alias(kleisli_compose)
-
-del deprecated_alias

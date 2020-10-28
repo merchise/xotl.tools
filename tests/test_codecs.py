@@ -13,21 +13,21 @@ from hypothesis.strategies import text, binary
 
 @given(s=binary())
 def test_safe_decode_dont_fail_uppon_invalid_encoding(s):
-    from xoutil.future.codecs import safe_decode
+    from xotl.tools.future.codecs import safe_decode
 
     assert safe_decode(s, "i-dont-exist") == safe_decode(s)
 
 
 @given(s=text())
 def test_safe_encode_dont_fail_uppon_invalid_encoding(s):
-    from xoutil.future.codecs import safe_encode
+    from xotl.tools.future.codecs import safe_encode
 
     assert safe_encode(s, "i-dont-exist") == safe_encode(s)
 
 
 @given(text())
 def test_safe_encode_yields_bytes(s):
-    from xoutil.future.codecs import safe_encode
+    from xotl.tools.future.codecs import safe_encode
 
     assert isinstance(safe_encode(s), bytes)
 
@@ -38,6 +38,6 @@ def test_safe_decode_yields_unicode(s):
         Text = unicode
     except NameError:
         Text = str  # Python 3
-    from xoutil.future.codecs import safe_decode
+    from xotl.tools.future.codecs import safe_decode
 
     assert isinstance(safe_decode(s), Text)

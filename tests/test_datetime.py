@@ -9,10 +9,10 @@
 
 import pytest
 
-from xoutil.future.datetime import date, datetime, timedelta
-from xoutil.future.datetime import daterange
-from xoutil.future.datetime import TimeSpan, EmptyTimeSpan, DateTimeSpan
-from xoutil.testing.datetime import timespans, datetimespans
+from xotl.tools.future.datetime import date, datetime, timedelta
+from xotl.tools.future.datetime import daterange
+from xotl.tools.future.datetime import TimeSpan, EmptyTimeSpan, DateTimeSpan
+from xotl.tools.testing.datetime import timespans, datetimespans
 
 import hypothesis
 from hypothesis import strategies, given, settings
@@ -24,12 +24,12 @@ maybe_datetimes = strategies.datetimes() | strategies.none()
 
 
 def test_datetime_imports():
-    from xoutil.future import datetime
+    from xotl.tools.future import datetime
     from xotl.tools.future import datetime as dt
 
     assert datetime is dt
 
-    from xoutil.future.datetime import TimeSpan
+    from xotl.tools.future.datetime import TimeSpan
     from xotl.tools.future.datetime import TimeSpan as TS
 
     assert TS is TimeSpan
@@ -173,8 +173,8 @@ def test_failure_of_triple_intersection(ts1, ts2):
 
 
 @given(strategies.dates())
-def test_xoutil_dates_are_representable(value):
-    from xoutil.future.datetime import date
+def test_dates_are_representable(value):
+    from xotl.tools.future.datetime import date
 
     class mydate(date):
         pass

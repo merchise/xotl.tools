@@ -9,7 +9,7 @@
 
 
 def test_nameof():
-    from xoutil.tools import nameof
+    from xotl.tools.tools import nameof
 
     class foobar:
         pass

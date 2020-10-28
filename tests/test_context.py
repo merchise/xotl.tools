@@ -14,8 +14,8 @@ import pytest
 # the greenlets.  We don't test isolation for threads cause that depends on
 # python's thread locals and we *rely* on its correctness.
 #
-# Since xoutil.context inspects sys.modules to test for greenlet presence we
-# need to import greenlets before importing context.
+# Since xotl.tools.context inspects sys.modules to test for greenlet presence
+# we need to import greenlets before importing context.
 #
 try:
     import greenlet
@@ -26,11 +26,11 @@ else:
 
 import sys
 
-sys.modules.pop("xoutil.tasking", None)
-sys.modules.pop("xoutil.context", None)
+sys.modules.pop("xotl.tools.tasking", None)
+sys.modules.pop("xotl.tools.context", None)
 del sys
 
-from xoutil.context import context
+from xotl.tools.context import context
 
 
 class TestContext(unittest.TestCase):
@@ -146,7 +146,7 @@ def test_recover_from_runtime_bug_33():
 
 
 def test_null_context_is_mapping():
-    from xoutil.context import NullContext
+    from xotl.tools.context import NullContext
 
     dict(**NullContext())
 
@@ -154,7 +154,7 @@ def test_null_context_is_mapping():
 @pytest.mark.skipif(not GREENLETS, reason="greenlet is not installed")
 def test_greenlet_contexts():
     import random
-    from xoutil.symbols import Unset
+    from xotl.tools.symbols import Unset
 
     calls = 0
     switches = 0

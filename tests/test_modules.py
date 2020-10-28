@@ -10,12 +10,12 @@
 import sys
 import unittest
 
-from xoutil.modules import customize, modulemethod
+from xotl.tools.modules import customize, modulemethod
 
 
 class TestModulesCustomization(unittest.TestCase):
     def setUp(self):
-        import testbed
+        from . import testbed
 
         self.testbed = testbed
 
@@ -23,7 +23,7 @@ class TestModulesCustomization(unittest.TestCase):
         sys.modules[self.testbed.__name__] = self.testbed
 
     def test_echo(self):
-        import testbed
+        from . import testbed
 
         module, created, klass = customize(testbed)
         self.assertEqual(10, module.echo(10))
@@ -33,7 +33,7 @@ class TestModulesCustomization(unittest.TestCase):
         def this(mod):
             return mod
 
-        import testbed
+        from . import testbed
 
         attrs = {"this": this}
         module, created, klass = customize(testbed, custom_attrs=attrs)
@@ -52,7 +52,7 @@ class TestModuleDecorators(unittest.TestCase):
         self.assertEqual((current_module, (1, 2)), echo(1, 2))
 
     def test_moduleproperties(self):
-        import customizetestbed as m
+        from . import customizetestbed as m
 
         self.assertIs(m, m.this)
         self.assertIs(None, m.store)
@@ -77,8 +77,8 @@ class TestModuleDecorators(unittest.TestCase):
         self.assertIsNone(m.prop)
 
     def test_module_level_memoized_props(self):
-        import customizetestbed as m
-        from xoutil.future.inspect import getattr_static
+        from . import customizetestbed as m
+        from xotl.tools.future.inspect import getattr_static
 
         self.assertNotEquals(getattr_static(m, "memoized"), m)
         self.assertIs(m.memoized, m)
@@ -121,15 +121,15 @@ def test_get_module_path_by_module_string_abs():
 
 def test_get_module_path_by_module_string_rel():
     import pytest
-    from xoutil.modules import get_module_path
+    from xotl.tools.modules import get_module_path
 
     with pytest.raises(TypeError):
         assert get_module_path(".iterators")
 
 
 def test_object_stability():
-    import testbed
-    from testbed import selfish
+    from . import testbed
+    from .testbed import selfish
 
     a, b = testbed.selfish()
     c, d = selfish()

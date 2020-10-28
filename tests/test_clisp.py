@@ -12,7 +12,7 @@ import unittest
 
 class TestCLisp(unittest.TestCase):
     def test_basic_coercers(self):
-        from xoutil.values import (
+        from xotl.tools.values import (
             identity_coerce,
             void_coerce,
             coercer,
@@ -82,7 +82,7 @@ class TestCLisp(unittest.TestCase):
         self.assertIs(numbercast.scope, float)
 
     def test_compound_coercers(self):
-        from xoutil.values import (
+        from xotl.tools.values import (
             coercer,
             compose,
             some,

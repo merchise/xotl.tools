@@ -795,7 +795,7 @@ def get_first_of(source, *keys, default=None, pred=None):
     return res if res is not Unset else default
 
 
-def pop_first_of(source, *keys, **kwargs):
+def pop_first_of(source, *keys, default=None):
     """Similar to `get_first_of`:func: using as `source` either an object or a
     mapping and deleting the first attribute or key.
 
@@ -846,7 +846,7 @@ def pop_first_of(source, *keys, **kwargs):
             probe = next(source, None)
     else:
         res = inner(source)
-    return res if res is not Unset else kwargs.get("default", None)
+    return res if res is not Unset else default
 
 
 def popattr(obj, name, default=None):
@@ -1421,7 +1421,7 @@ def smart_copy(*args, defaults=None):
     return target
 
 
-def extract_attrs(obj, *names, **kwargs):
+def extract_attrs(obj, *names, default=Unset):
     """Extracts all `names` from an object.
 
     If `obj` is a Mapping, the names will be search in the keys of the `obj`;
@@ -1439,9 +1439,6 @@ def extract_attrs(obj, *names, **kwargs):
        `get_traverser`:func:, but only "." is allowed as separator.
 
     """
-    default = kwargs.pop("default", Unset)
-    if kwargs:
-        raise TypeError("Invalid keyword arguments for `extract_attrs`")
     getter = get_traverser(*names, default=default)
     return getter(obj)
 
@@ -1475,7 +1472,7 @@ def traverse(obj, path, default=Unset, sep=".", getter=None):
     return _traverser(obj)
 
 
-def get_traverser(*paths, **kw):
+def get_traverser(*paths, default=Unset, sep=".", getter=None):
     """Combines the power of `traverse`:func: with the expectations from both
     `operator.itemgetter`:func: and `operator.attrgetter`:func:.
 
@@ -1491,9 +1488,7 @@ def get_traverser(*paths, **kw):
     """
     from xotl.tools.params import check_count
 
-    check_count(paths, 1, caller="get_traverser")
-
-    def _traverser(path, default=Unset, sep=".", getter=None):
+    def _traverser(path, default=default, sep=sep, getter=getter):
         if not getter:
             getter = lambda o, a, default=None: smart_getter(o)(a, default)
 
@@ -1515,9 +1510,9 @@ def get_traverser(*paths, **kw):
         return inner
 
     if len(paths) == 1:
-        result = _traverser(paths[0], **kw)
+        result = _traverser(paths[0], default=default)
     else:
-        _traversers = tuple(_traverser(path, **kw) for path in paths)
+        _traversers = tuple(_traverser(path, default=default) for path in paths)
 
         def _result(obj):
             return tuple(traverse(obj) for traverse in _traversers)

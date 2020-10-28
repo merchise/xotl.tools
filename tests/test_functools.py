@@ -12,7 +12,7 @@ import unittest
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
-from xoutil.future.functools import lru_cache
+from xotl.tools.future.functools import lru_cache
 
 
 @lru_cache(3)
@@ -58,7 +58,7 @@ def test_lrucache_stats():
     pass
 
 
-from xoutil.fp.tools import compose, identity
+from xotl.tools.fp.tools import compose, identity
 
 
 class TestCompose(unittest.TestCase):
@@ -81,7 +81,7 @@ class TestCompose(unittest.TestCase):
         self.assertEqual(3, add_3(0))
 
     def test_with_pow(self):
-        from xoutil.future.functools import power
+        from xotl.tools.future.functools import power
 
         incr = lambda x: x + 1
         add_1 = power(incr, 1)
@@ -91,7 +91,7 @@ class TestCompose(unittest.TestCase):
 
 
 def test_lwraps():
-    from xoutil.future.functools import lwraps
+    from xotl.tools.future.functools import lwraps
 
     class foobar:
         @lwraps("method-one", one=True)

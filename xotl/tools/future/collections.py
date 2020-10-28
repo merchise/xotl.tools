@@ -15,6 +15,8 @@ document all items here.  Refer to `collections`:mod: documentation.
 """
 
 from collections import *  # noqa
+from reprlib import recursive_repr
+
 
 try:
     from collections.abc import *  # noqa
@@ -52,7 +54,6 @@ from collections import (
 from xotl.tools.deprecation import deprecated  # noqa
 from xotl.tools.symbols import Unset  # noqa
 from xotl.tools.objects import SafeDataItem as safe  # noqa
-from xotl.tools.reprlib import recursive_repr  # noqa
 
 
 class safe_dict_iter(tuple):
