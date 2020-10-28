@@ -286,15 +286,15 @@ class Quantity(numbers.Real):
         else:
             raise TypeError("incomparable quantities: %r and %r" % (self, other))
 
-    # The following make Quantity more compatible with numbers.Real.  In all
-    # cases, taking a Quantity for a float takes the magnitude expressed in
-    # the canonical unit.
-
     def __le__(self, other):
         if isinstance(other, Quantity) and self.signature == other.signature:
             return self.magnitude <= other.magnitude
         else:
             raise TypeError("incomparable quantities: %r and %r" % (self, other))
+
+    # The following make Quantity more compatible with numbers.Real.  In all
+    # cases, taking a Quantity for a float takes the magnitude expressed in
+    # the canonical unit.
 
     def __float__(self):
         return float(self.magnitude)
@@ -431,7 +431,7 @@ class Dimension(type):
         return self
 
     @classmethod
-    def new(cls, *source, **kwargs):
+    def new(cls, *source, **kwargs) -> "Dimension":
         """Define a new dimension.
 
         This is a wrapped decorator.  The actual possible signatures are:
