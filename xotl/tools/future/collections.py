@@ -13,7 +13,6 @@ You may use it as drop-in replacement of `collections`.  Although we don't
 document all items here.  Refer to `collections`:mod: documentation.
 
 """
-
 from collections import *  # noqa
 from reprlib import recursive_repr
 
@@ -41,19 +40,19 @@ except ImportError:
     )
 
 
-import collections as _stdlib  # noqa
-from collections import (
+import collections as _stdlib
+from collections import (  # type: ignore
     _itemgetter,
     _heapq,
     _chain,
-    _repeat,  # noqa
+    _repeat,
     _starmap,
     _count_elements,
 )
 
-from xotl.tools.deprecation import deprecated  # noqa
-from xotl.tools.symbols import Unset  # noqa
-from xotl.tools.objects import SafeDataItem as safe  # noqa
+from xotl.tools.deprecation import deprecated
+from xotl.tools.symbols import Unset
+from xotl.tools.objects import SafeDataItem as safe
 
 
 class safe_dict_iter(tuple):
@@ -123,7 +122,7 @@ class safe_dict_iter(tuple):
                 yield (key, self._mapping[key])
 
 
-class defaultdict(_stdlib.defaultdict):
+class defaultdict(_stdlib.defaultdict):  # type: ignore
     """A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
 
@@ -388,7 +387,7 @@ class SmartDictMixin:
         return res
 
 
-class SmartDict(SmartDictMixin, dict):
+class SmartDict(SmartDictMixin, dict):  # type: ignore
     """A "smart" dictionary that can receive a wide variety of arguments.
 
     See `SmartDictMixin.update`:meth: and :meth:`SmartDictMixin.search`.
@@ -508,7 +507,7 @@ class codedict(OpenDictMixin, dict):
     __rlshift__ = __rshift__
 
 
-class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
+class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):  # type: ignore
     """A multi-level mapping.
 
     A level is entered by using the `push`:meth: and is leaved by calling
@@ -652,7 +651,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
         del self.inner[key]
 
 
-class RankedDict(SmartDictMixin, dict):
+class RankedDict(SmartDictMixin, dict):  # type: ignore
     """Mapping that remembers modification order.
 
     Differences with `OrderedDict`:class: are:
@@ -918,7 +917,7 @@ class RankedDict(SmartDictMixin, dict):
         return cls((key, value) for key in iterable)
 
 
-class OrderedSmartDict(SmartDictMixin, OrderedDict):
+class OrderedSmartDict(SmartDictMixin, OrderedDict):  # type: ignore
     """A combination of the `OrderedDict` with the `SmartDictMixin`.
 
     .. warning:: Initializing with kwargs does not ensure any initial ordering,
