@@ -48,9 +48,9 @@ run all Python 3.8 tests with greenlets:
 
 run all Python 3.9 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.9-rc-alpine
+  image: registry.merchise.org/merchise/python-dev:3.9-alpine
   variables:
-    PYTHON: "3.9-rc"
+    PYTHON: "3.9"
   allow_failure: true
   only:
     - master
