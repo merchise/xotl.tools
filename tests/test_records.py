@@ -8,7 +8,7 @@
 #
 
 import unittest
-from mock import patch
+from unittest.mock import patch
 from datetime import datetime, date
 
 from xoutil.records import record, datetime_reader, date_reader
@@ -124,12 +124,8 @@ class TestRecords(unittest.TestCase):
             yesterday.strftime(INVOICE._DATETIME_FORMAT),
             tomorrow.strftime(INVOICE._DATETIME_FORMAT),
         )
-        self.assertEqual(
-            INVOICE.get_field(line, INVOICE.CREATED_DATETIME), yesterday
-        )
-        self.assertEqual(
-            INVOICE.get_field(line, INVOICE.UPDATE_DATETIME), tomorrow
-        )
+        self.assertEqual(INVOICE.get_field(line, INVOICE.CREATED_DATETIME), yesterday)
+        self.assertEqual(INVOICE.get_field(line, INVOICE.UPDATE_DATETIME), tomorrow)
 
         invoice = INVOICE(line)
         self.assertEqual(invoice.created_datetime, yesterday)
@@ -175,9 +171,7 @@ class TestDateTimeReader(unittest.TestCase):
     def test_relaxed_but_nonnullable_with_dateutil(self):
         class rec(record):
             MOMENT = 0
-            _moment_reader = datetime_reader(
-                FMT, nullable=False, strict=False
-            )
+            _moment_reader = datetime_reader(FMT, nullable=False, strict=False)
 
         inst = rec(["201-12-17"])
         self.assertEqual(inst.moment, datetime(201, 12, 17))
@@ -186,9 +180,7 @@ class TestDateTimeReader(unittest.TestCase):
     def test_relaxed_but_nonnullable_without_dateutil(self):
         class rec(record):
             MOMENT = 0
-            _moment_reader = datetime_reader(
-                FMT, nullable=False, strict=False
-            )
+            _moment_reader = datetime_reader(FMT, nullable=False, strict=False)
 
         inst = rec(["201-12-17"])
         with self.assertRaises(ValueError):

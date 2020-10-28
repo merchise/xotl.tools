@@ -16,7 +16,7 @@
 import sys
 from itertools import *  # noqa
 
-from typing import Callable, Iterable, TypeVar  # noqa
+from typing import Callable, Iterable, TypeVar
 
 from xotl.tools.symbols import Unset
 from xotl.tools.deprecation import deprecated_alias, deprecated
@@ -76,7 +76,7 @@ def flatten(sequence, is_scalar=None, depth=None):
 
         def is_scalar(maybe):
             """Returns if `maybe` is not not an iterable or a string."""
-            from collections import Iterable
+            from collections.abc import Iterable
 
             return isinstance(maybe, str) or not isinstance(maybe, Iterable)
 
@@ -277,7 +277,7 @@ def slides(iterable, width=2, fill=None):
 
     """
     from itertools import cycle, repeat
-    from collections import Iterable
+    from collections.abc import Iterable
 
     pos = 0
     res = []
@@ -377,7 +377,7 @@ def first_n(iterable, n=1, fill=Unset):
     from itertools import islice
 
     if fill is not Unset:
-        from collections import Iterable
+        from collections.abc import Iterable
         from itertools import cycle, repeat, chain
 
         if isinstance(fill, Iterable):
@@ -445,7 +445,7 @@ A = TypeVar("A")
 B = TypeVar("B")
 
 
-def zip_map(funcs, args):
+def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]:
     """Apply each function in `funcs` to its corresponding arguments.
 
     If the iterables are not of the same length, stop as soon as the shortest
@@ -454,7 +454,6 @@ def zip_map(funcs, args):
     .. versionadded:: 2.1.9
 
     """
-    # type: (Iterable[Callable[[A], B]], Iterable[A]) -> Iterable[B]
     for fn, arg in zip(funcs, args):
         yield fn(arg)
 

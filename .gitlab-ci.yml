@@ -8,27 +8,39 @@ stages:
   - clean up
 
 .run_tox_tests_no_greenlets: &run_tox_tests_no_greenlets
+  image: python:$PYTHON-alpine
   stage: test
   cache:
-    key: tests-${PYTHON}-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-without-greenlets
+    key: $CI_JOB_NAME
     paths:
       - .tox/
   script:
+    - pip install tox
     - tox -e system-unit
+  only:
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 .run_tox_tests_with_greenlets: &run_tox_tests_with_greenlets
+  image: python:$PYTHON
   stage: test
   cache:
-    key: tests-${PYTHON}-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-with-greenlets
+    key: $CI_JOB_NAME
     paths:
       - .tox/
   script:
-    - tox -e system-unit
+    - pip install tox
+    - tox -e system-greenlets
 
 
 run all Python 3.8 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.8-alpine
   variables:
     PYTHON: "3.8"
   only:
@@ -38,7 +50,6 @@ run all Python 3.8 tests without greenlets:
 
 run all Python 3.8 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.8-alpine
   variables:
     PYTHON: "3.8"
   only:
@@ -48,9 +59,19 @@ run all Python 3.8 tests with greenlets:
 
 run all Python 3.9 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.9-rc-alpine
   variables:
-    PYTHON: "3.9-rc"
+    PYTHON: "3.9"
+  allow_failure: true
+  only:
+    - master
+    - /^releases-2/
+    - merge_requests
+
+
+run all Python 3.9 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  variables:
+    PYTHON: "3.9"
   allow_failure: true
   only:
     - master
@@ -60,7 +81,6 @@ run all Python 3.9 tests without greenlets:
 
 run all Python 3.6 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
   variables:
     PYTHON: "3.6"
   only:
@@ -70,7 +90,6 @@ run all Python 3.6 tests without greenlets:
 
 run all Python 3.6 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
   variables:
     PYTHON: "3.6"
   only:
@@ -81,7 +100,6 @@ run all Python 3.6 tests with greenlets:
 
 run all Python 3.7 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.7-alpine
   variables:
     PYTHON: "3.7"
   only:
@@ -91,7 +109,6 @@ run all Python 3.7 tests without greenlets:
 
 run all Python 3.7 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
-  image: registry.merchise.org/merchise/python-dev:3.7-alpine
   variables:
     PYTHON: "3.7"
   only:
@@ -101,9 +118,10 @@ run all Python 3.7 tests with greenlets:
 
 
 build source distribution:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: python:3.8-alpine
   stage: build
   script:
+    - apk add git
     - python setup.py sdist
     - PROJECT_NAME=xoutil python3 setup.py sdist
   artifacts:
@@ -114,9 +132,10 @@ build source distribution:
 
 
 build binary distribution:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: python:3.8-alpine
   stage: build
   script:
+    - apk add git
     - python3 setup.py bdist_wheel
     - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
   artifacts:
@@ -127,47 +146,27 @@ build binary distribution:
     - tags
 
 check signature of tag:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: alpine
   stage: check
   script:
-    - gpg --recv-key $GNUPG_KEY
+    - apk add gnupg git
+    - cat $GNUPG_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
   only:
     - tags
 
 
-publish_locally:
-  variables:
-    GIT_STRATEGY: none
-  stage: publish
-  script:
-    - ssh-keyscan -H gestion.lahavane.com >> ~/.ssh/known_hosts
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xoutil"
-    - scp dist/xoutil* manu@gestion.lahavane.com:Repos/xoutil/
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xotl.tools"
-    - scp dist/xotl* manu@gestion.lahavane.com:Repos/xotl.tools/
-  tags:
-    - repo.lahavane.com
-  only:
-    - tags
-  dependencies:
-    - check signature of tag
-    - build source distribution
-    - build binary distribution
-  environment:
-    name: repo.lahavane.com
-    url: http://repo.lahavane.com/pypi/$CI_PROJECT_NAME
-
 publish in pypi:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: python:3.8-alpine
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
+    - pip install twine
     - twine upload --skip-existing -u "$PYPI_USERNAME" -p "$PYPI_PASSWORD" dist/*
   only:
     - tags
-  dependencies:
+  needs:
     - check signature of tag
     - build source distribution
     - build binary distribution
@@ -177,13 +176,15 @@ publish in pypi:
 
 
 build documentation:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: python:3.8-alpine
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
     paths:
       - docs/builds/
   script:
+    - apk add make git
+    - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
   artifacts:

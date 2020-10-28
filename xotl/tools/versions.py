@@ -24,7 +24,7 @@ def _check(info):
     :returns: a valid tuple or an error if invalid.
 
     """
-    from collections import Iterable
+    from collections.abc import Iterable
     from distutils.version import LooseVersion, StrictVersion
 
     MAX_COUNT = 3
