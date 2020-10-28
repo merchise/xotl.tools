@@ -226,7 +226,7 @@ def test_traversing():
 
 
 def test_traversing_bug_ignoring_getter():
-    import mock
+    from unittest import mock
     from xoutil.objects import traverse
 
     sentinel = object()
