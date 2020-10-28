@@ -27,6 +27,9 @@ def get_first_of(
 def get_traverser(
     *paths: str, default: Any = ..., sep: str = ..., getter: Getter = ...
 ) -> Callable: ...
+def traverse(
+    obj: Any, path: str, default: Any, sep: str, getter: Optional[Getter]
+) -> Any: ...
 def import_object(
     name: Union[object, str],
     package: str = ...,
