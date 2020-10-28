@@ -131,7 +131,7 @@ this to work.
 """
 import functools
 import numbers
-from typing import FrozenSet, Sequence, Tuple
+from typing import Any, Callable, FrozenSet, Sequence, Tuple, Optional, overload
 
 from xotl.tools.objects import classproperty
 from xotl.tools.future.types import TEq
@@ -434,8 +434,24 @@ class Dimension(type):
         self._signature_ = signature
         return self
 
+    @overload
     @classmethod
-    def new(cls, *source, **kwargs) -> "Dimension":
+    def new(cls, source: Any) -> "Dimension":
+        ...
+
+    @overload
+    @classmethod
+    def new(
+        cls,
+        *,
+        unit_alias: str = None,
+        unit_aliases: Sequence[str] = None,
+        Quantity: type = None
+    ) -> Callable[[Any], "Dimension"]:
+        ...
+
+    @classmethod
+    def new(cls, *source, **kwargs):
         """Define a new dimension.
 
         This is a wrapped decorator.  The actual possible signatures are:
@@ -670,7 +686,8 @@ class Signature:
     __slots__ = ("top", "bottom", "_tps", "_bts")
 
     def __init__(self, top: Sequence[TEq] = None, bottom: Sequence[TEq] = None):
-        self._tps = self._bts = None
+        self._tps: Optional[FrozenSet] = None
+        self._bts: Optional[FrozenSet] = None
         self.top, self.bottom = self.simplify(top, bottom)
 
     @property
