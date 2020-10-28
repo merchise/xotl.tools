@@ -220,7 +220,7 @@ class New:
 
 
 def test_traversing():
-    obj = new(**{"a": 1, "b.c.d": {"x": 2}, "b.c.x": 3})
+    obj = new(**{"a": 1, "b": new(c=new(d={"x": 2}, x=3))})
     assert traverse(obj, "a") == 1
     assert traverse(obj, "b.c.d.x") == 2
     assert traverse(obj, "b.c.x") == 3
