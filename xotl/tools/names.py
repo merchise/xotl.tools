@@ -23,7 +23,7 @@ def _get_mappings(source):
     dictionaries.
 
     """
-    from collections import Mapping
+    from collections.abc import Mapping
 
     if isinstance(source, Mapping):
         return (source,)
@@ -476,8 +476,7 @@ class namelist(list):
     __call__ = append
 
     def extend(self, items):
-        """l.extend(items) -- extend list by appending items from the iterable
-        """
+        """l.extend(items) -- extend list by appending items from the iterable"""
         items = (nameof(item, depth=2) for item in items)
         return super().extend(items)
 
@@ -490,8 +489,7 @@ class namelist(list):
         return super().index(nameof(value, depth=2), *args)
 
     def insert(self, index, value):
-        """l.insert(index, value) -- insert object before index
-        """
+        """l.insert(index, value) -- insert object before index"""
         return super().insert(index, nameof(value, depth=2))
 
     def remove(self, value):
@@ -542,8 +540,7 @@ class strlist(list):
     __call__ = append
 
     def extend(self, items):
-        """l.extend(items) -- extend list by appending items from the iterable
-        """
+        """l.extend(items) -- extend list by appending items from the iterable"""
         items = (str(item) for item in items)
         return super().extend(items)
 
@@ -556,8 +553,7 @@ class strlist(list):
         return super().index(str(value), *args)
 
     def insert(self, index, value):
-        """l.insert(index, value) -- insert object before index
-        """
+        """l.insert(index, value) -- insert object before index"""
         return super().insert(index, str(value))
 
     def remove(self, value):

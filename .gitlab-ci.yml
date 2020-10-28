@@ -5,110 +5,238 @@ stages:
   - check
   - build
   - publish
+  - clean up
 
-.run_tox_tests: &run_tox_tests
+.run_tox_tests_no_greenlets: &run_tox_tests_no_greenlets
+  image: python:$PYTHON-alpine
   stage: test
   cache:
-    key: tests-${PYTHON}-${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    key: $CI_JOB_NAME
     paths:
       - .tox/
   script:
-    - tox -e system-unit,system-greenlets
+    - pip install tox
+    - tox -e system-unit
 
-run all Python 3.8 tests:
-  <<: *run_tox_tests
-  image: registry.merchise.org/merchise/python-dev:3.8-alpine
+.run_tox_tests_with_greenlets: &run_tox_tests_with_greenlets
+  image: python:$PYTHON
+  stage: test
+  cache:
+    key: $CI_JOB_NAME
+    paths:
+      - .tox/
+  script:
+    - pip install tox
+    - tox -e system-greenlets
+
+
+run all Python 3.8 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.8"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
-run all Python 3.6 tests:
-  <<: *run_tox_tests
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+
+run all Python 3.8 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  variables:
+    PYTHON: "3.8"
+  only:
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+run all Python 3.9 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
+  variables:
+    PYTHON: "3.9"
+  only:
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+
+run all Python 3.9 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  variables:
+    PYTHON: "3.9"
+  only:
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+
+run all Python 3.6 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.6"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
-run all Python 3.7 tests:
-  <<: *run_tox_tests
-  image: registry.merchise.org/merchise/python-dev:3.7-alpine
+run all Python 3.6 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  variables:
+    PYTHON: "3.6"
+  only:
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+run all Python 3.7 tests without greenlets:
+  <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.7"
   only:
-    - master
-    - /^releases-2/
-    - merge_requests
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+run all Python 3.7 tests with greenlets:
+  <<: *run_tox_tests_with_greenlets
+  variables:
+    PYTHON: "3.7"
+  only:
+    refs:
+      - master
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
 
 build source distribution:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: python:3.8-alpine
   stage: build
   script:
+    - apk add git
     - python setup.py sdist
   artifacts:
     paths:
       - dist/
   only:
-    - tags
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 
 build binary distribution:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: python:3.8-alpine
   stage: build
   script:
+    - apk add git
     - python3 setup.py bdist_wheel
   artifacts:
     expire_in: 4 hours
     paths:
       - dist/
   only:
-    - tags
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 check signature of tag:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: alpine
   stage: check
   script:
-    - gpg --recv-key $GNUPG_KEY
+    - apk add gnupg git
+    - cat $GNUPG_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
   only:
-    - tags
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
-
-publish_locally:
-  variables:
-    GIT_STRATEGY: none
-  stage: publish
-  script:
-    - ssh-keyscan -H gestion.lahavane.com >> ~/.ssh/known_hosts
-    - ssh manu@gestion.lahavane.com "mkdir -p Repos/xotl.tools"
-    - scp dist/xotl* manu@gestion.lahavane.com:Repos/xotl.tools/
-  tags:
-    - repo.lahavane.com
-  only:
-    - tags
-  dependencies:
-    - check signature of tag
-    - build source distribution
-    - build binary distribution
-  environment:
-    name: repo.lahavane.com
-    url: http://repo.lahavane.com/pypi/$CI_PROJECT_NAME
 
 publish in pypi:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+  image: python:3.8
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
+    - pip install twine
     - twine upload --skip-existing -u "$PYPI_USERNAME" -p "$PYPI_PASSWORD" dist/*
   only:
-    - tags
-  dependencies:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
+  needs:
     - check signature of tag
     - build source distribution
     - build binary distribution
@@ -117,49 +245,117 @@ publish in pypi:
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
 
 
-build documentation:
-  image: registry.merchise.org/merchise/python-dev:3.6-alpine
+.build_doc: &build_doc
+  image: python:3.8-alpine
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
     paths:
       - docs/builds/
   script:
+    - apk add make git
+    - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
-    - cd docs/build/html
-    - tar -cjf ../../../$CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 ./
   artifacts:
     paths:
-      - $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
+      - docs/build/html
     expire_in: 4 days
-  only:
-    - tags
-    - /^releases-/
-    - master
-    - merge_requests
+  needs: []
 
-publish in our rtd:
+build documentation for releases:
+  <<: *build_doc
+  only:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
+
+build documentation:
+  <<: *build_doc
+  only:
+    refs:
+      - /^releases-/
+      - master
+      - merge_requests
+    changes:
+      - docs/**/*.rst
+      - docs/**/*.py
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+
+.publish_rtd: &publish_rtd
+  image: alpine
   variables:
     GIT_STRATEGY: none
   stage: publish
   script:
-    - scp $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 rtd@docs.lahavane.com:.
-    - ssh-keyscan -H docs.lahavane.com >> ~/.ssh/known_hosts
-    - ssh rtd@docs.lahavane.com mkdir -p $CI_PROJECT_NAME/.$CI_COMMIT_SHA
-    - ssh rtd@docs.lahavane.com tar -xf $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2 -C $CI_PROJECT_NAME/.$CI_COMMIT_SHA
-    - ssh rtd@docs.lahavane.com "rm -r /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME; ln -sr /var/www/html/$CI_PROJECT_NAME/.$CI_COMMIT_SHA /var/www/html/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME"
-    - ssh rtd@docs.lahavane.com rm $CI_PROJECT_NAME-$CI_COMMIT_SHA.tar.bz2
-    - ssh rtd@docs.lahavane.com "cd /var/www/html/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
-  tags:
-    - rtd@docs.lahavane.com
-  dependencies:
-    - build documentation
+    - |
+      apk add openssh rsync
+      mkdir -p $HOME/.ssh
+      chmod 700 $HOME/.ssh
+      cp $RSA_KEY_FILE $HOME/.ssh/id_rsa
+      chmod 600 $HOME/.ssh/id_rsa
+      cp $SSH_CONFIG_FILE $HOME/.ssh/config
+      ssh docs.lahavane.com mkdir -p /data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA
+      rsync -auvp -e ssh ./docs/build/html/ docs.lahavane.com:/data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA/
+      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $CI_COMMIT_REF_NAME; ln -s .$CI_COMMIT_SHA $CI_COMMIT_REF_NAME"
+      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
   environment:
     name: docs.lahavane.com
     url: http://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+
+publish in our RTD for releases:
+  <<: *publish_rtd
+  needs:
+    - build documentation for releases
   only:
-    - tags
-    - /^releases-/
-    - master
-    - merge_requests
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
+
+
+publish in our RTD:
+  <<: *publish_rtd
+  needs:
+    - build documentation
+  only:
+    refs:
+      - /^releases-/
+      - master
+      - merge_requests
+    changes:
+      - docs/**/*.rst
+      - docs/**/*.py
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - xoutil/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+
+automatically remove MR documentation from our RTD server after 4 hours:
+  stage: clean up
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "release-1.9.x"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "release-2.0.x"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "release-2.1.x"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+    - when: never
+  trigger:
+    include: ci/cleanup.yml

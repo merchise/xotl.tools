@@ -461,7 +461,7 @@ def sized_coerce(arg):
       True
 
     """
-    from collections import Iterable, Sized
+    from collections.abc import Iterable, Sized
 
     if isinstance(arg, Iterable):
         return arg if isinstance(arg, Sized) else list(arg)
@@ -772,7 +772,7 @@ class combo(custom):
         self.inner = tuple(vouch(coercer, c) for c in coercers)
 
     def __call__(self, arg):
-        from collections import Iterable
+        from collections.abc import Iterable
 
         if isinstance(arg, Iterable):
             coercers = self.inner
@@ -871,7 +871,7 @@ class pargs(custom):
         self.inner = vouch(coercer, arg_coerce)
 
     def __call__(self, arg):
-        from collections import Iterable
+        from collections.abc import Iterable
 
         coerce = self.inner
         if isinstance(arg, Iterable):
@@ -965,7 +965,7 @@ class iterable(custom):
         self.inner = (member_coerce, outer_coerce)
 
     def __call__(self, arg):
-        from collections import Set, Sequence, MutableSequence
+        from collections.abc import Set, Sequence, MutableSequence
 
         member_coerce, outer_coerce = self.inner
         modified = False
@@ -1057,7 +1057,7 @@ class mapping(custom):
                mapping values.
 
         """
-        from collections import Mapping
+        from collections.abc import Mapping
 
         if key_coercer is value_coercer is Unset:
             return coercer(Mapping)
@@ -1069,7 +1069,7 @@ class mapping(custom):
             return self
 
     def __call__(self, arg):
-        from collections import Mapping, MutableMapping
+        from collections.abc import Mapping, MutableMapping
 
         if isinstance(arg, Mapping):
             key_coercer, value_coercer = self.inner

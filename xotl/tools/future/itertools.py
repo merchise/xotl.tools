@@ -15,6 +15,9 @@
 """
 import sys
 from itertools import *  # noqa
+
+from typing import Callable, Iterable, TypeVar
+
 from xotl.tools.symbols import Unset
 from xotl.tools.deprecation import deprecated_alias, deprecated
 
@@ -73,7 +76,7 @@ def flatten(sequence, is_scalar=None, depth=None):
 
         def is_scalar(maybe):
             """Returns if `maybe` is not not an iterable or a string."""
-            from collections import Iterable
+            from collections.abc import Iterable
 
             return isinstance(maybe, str) or not isinstance(maybe, Iterable)
 
@@ -274,7 +277,7 @@ def slides(iterable, width=2, fill=None):
 
     """
     from itertools import cycle, repeat
-    from collections import Iterable
+    from collections.abc import Iterable
 
     pos = 0
     res = []
@@ -329,8 +332,7 @@ def continuously_slides(iterable, width=2, fill=None):
 
 
 @deprecated(
-    None,
-    "first_n is deprecated and it will be removed, use stdlib's itertools.islice",
+    None, "first_n is deprecated and it will be removed, use stdlib's itertools.islice"
 )
 def first_n(iterable, n=1, fill=Unset):
     """Takes the first `n` items from iterable.
@@ -375,7 +377,7 @@ def first_n(iterable, n=1, fill=Unset):
     from itertools import islice
 
     if fill is not Unset:
-        from collections import Iterable
+        from collections.abc import Iterable
         from itertools import cycle, repeat, chain
 
         if isinstance(fill, Iterable):
@@ -437,6 +439,23 @@ def ungroup(iterator):
     for _, xs in iterator:
         for x in xs:
             yield x
+
+
+A = TypeVar("A")
+B = TypeVar("B")
+
+
+def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]:
+    """Apply each function in `funcs` to its corresponding arguments.
+
+    If the iterables are not of the same length, stop as soon as the shortest
+    is exhausted.
+
+    .. versionadded:: 2.1.9
+
+    """
+    for fn, arg in zip(funcs, args):
+        yield fn(arg)
 
 
 if sys.version_info < (3, 5):

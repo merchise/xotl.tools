@@ -177,7 +177,7 @@ class Command(ABC, metaclass=CommandMeta):
             sub_commands.extend(virtuals)
             cmds = getattr(source, "__commands__", None)
             if cmds:
-                from collections import Iterable
+                from collections.abc import Iterable
 
                 if not isinstance(cmds, Iterable):
                     cmds = cmds()
@@ -188,10 +188,12 @@ class Command(ABC, metaclass=CommandMeta):
             else:  # Only branch commands are OK to execute
                 from types import FunctionType as ValidMethodType
 
-                assert isinstance(source.run, ValidMethodType), (
-                    "Invalid type %r for source %r"
-                    % (type(source.run).__name__, source)
-                )  # noqa
+                assert isinstance(
+                    source.run, ValidMethodType
+                ), "Invalid type %r for source %r" % (
+                    type(source.run).__name__,
+                    source,
+                )
                 Command.__registry_cache__[command_name(source)] = source
         else:
             raise ValueError('Reused class "%s"!' % name)

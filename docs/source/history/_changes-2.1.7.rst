@@ -1,1 +1,1 @@
-- Add `xotl.tools.fp.itertools.kleisli_compose_foldl`:func:.
+- Add `xotl.tools.fp.iterators.kleisli_compose_foldl`:func:.
