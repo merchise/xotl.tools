@@ -129,11 +129,12 @@ this to work.
    needed.
 
 """
-
 import functools
 import numbers
+from typing import FrozenSet, Sequence, Tuple
 
 from xotl.tools.objects import classproperty
+from xotl.tools.future.types import TEq
 
 
 #: The unit for any kind of quantity.
@@ -271,6 +272,9 @@ class Quantity(numbers.Real):
             )
         else:
             raise OperandTypeError("//", other, self)
+
+    def __hash__(self):
+        return hash((self.magnitude, self.signature))
 
     def __eq__(self, other):
         if isinstance(other, BareReal) and self.signature == SCALAR:
@@ -663,27 +667,40 @@ class Signature:
 
     """
 
-    __slots__ = ("top", "bottom")
+    __slots__ = ("top", "bottom", "_tps", "_bts")
 
-    def __init__(self, top=None, bottom=None):
+    def __init__(self, top: Sequence[TEq] = None, bottom: Sequence[TEq] = None):
+        self._tps = self._bts = None
         self.top, self.bottom = self.simplify(top, bottom)
 
+    @property
+    def _topset(self) -> FrozenSet[Tuple[TEq, int]]:
+        res = self._tps
+        if res is None:
+            from collections import Counter
+
+            counts = Counter(self.top)  # type: ignore
+            self._tps = res = frozenset(counts.items())
+        return res
+
+    @property
+    def _bottomset(self) -> FrozenSet[Tuple[TEq, int]]:
+        res = self._bts
+        if res is None:
+            from collections import Counter
+
+            counts = Counter(self.bottom)  # type: ignore
+            self._bts = res = frozenset(counts.items())
+        return res
+
     def __eq__(self, other):
-        try:
-            from xotl.tools.future.collections import Counter
-        except ImportError:
-            from xotl.tools.collections import Counter
         if isinstance(other, type(self)):
-            return Counter(self.top) == Counter(other.top) and Counter(
-                self.bottom
-            ) == Counter(other.bottom)
+            return self._topset == other._topset and self._bottomset == other._bottomset
         else:
             return False
 
-    def __ne__(self, other):
-        return not (self == other)
-
-    __hash__ = None  # FIXME: Hash
+    def __hash__(self):
+        return hash(self._topset) + hash(self._bottomset)
 
     def __lt__(self, other):
         raise TypeError("signatures are not orderable")

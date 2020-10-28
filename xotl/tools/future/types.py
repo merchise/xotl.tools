@@ -21,6 +21,8 @@ In Jython and PyPy, `MemberDescriptorType` is identical to
 they are differentiated in this module.
 
 """
+from typing import TypeVar
+from typing_extensions import Protocol
 
 from types import *  # noqa
 import types as _stdlib  # noqa
@@ -506,3 +508,24 @@ def no_instances(*args):
     if not subjects:
         isinstance(None, types)  # HACK: always validate `types`.
     return all(not isinstance(subject, types) for subject in subjects)
+
+
+class TypeClass(Protocol):
+    pass
+
+
+# fmt: off
+class EqTypeClass(TypeClass, Protocol):  # pragma: no cover
+    def __eq__(self, other) -> bool: ...
+    def __ne__(self, other) -> bool: ...
+
+
+class OrdTypeClass(EqTypeClass, Protocol):  # pragma: no cover
+    def __le__(self, other) -> bool: ...
+    def __lt__(self, other) -> bool: ...
+    def __ge__(self, other) -> bool: ...
+    def __gt__(self, other) -> bool: ...
+# fmt: on
+
+TEq = TypeVar("TEq", bound=EqTypeClass)
+TOrd = TypeVar("TOrd", bound=OrdTypeClass)
