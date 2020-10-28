@@ -61,7 +61,6 @@ run all Python 3.9 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.9"
-  allow_failure: true
   only:
     - master
     - /^releases-2/
@@ -72,7 +71,6 @@ run all Python 3.9 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
   variables:
     PYTHON: "3.9"
-  allow_failure: true
   only:
     - master
     - /^releases-2/
