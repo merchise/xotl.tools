@@ -1,10 +1,12 @@
 from typing import (
     Any,
     Callable,
+    ClassVar,
     Dict,
     Iterator,
-    List,
+    Mapping,
     Optional,
+    Sequence,
     Set,
     Tuple,
     Type,
@@ -49,3 +51,15 @@ def setdefaultattr(obj: Any, name: str, value: Any) -> Any: ...
 class lazy:
     def __init__(self, value: Any, *args, **kawrgs) -> None: ...
     def __call__(self) -> Any: ...
+
+class classproperty(property): ...
+class staticproperty(property): ...
+class memoized_property(property): ...
+
+def copy_class(
+    cls: Type,
+    meta: Type = None,
+    ignores: Sequence[str] = None,
+    new_attrs: Mapping[str, Any] = None,
+    new_name: str = None,
+) -> Type: ...
