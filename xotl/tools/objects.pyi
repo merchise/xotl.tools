@@ -1,7 +1,6 @@
 from typing import (
     Any,
     Callable,
-    ClassVar,
     Dict,
     Iterator,
     Mapping,
@@ -12,7 +11,9 @@ from typing import (
     Type,
     Union,
     ContextManager,
+    TypeVar,
 )
+from typing_extensions import Protocol
 
 from xotl.tools.symbols import Unset
 
@@ -72,3 +73,11 @@ def copy_class(
     new_attrs: Mapping[str, Any] = None,
     new_name: str = None,
 ) -> Type: ...
+
+B_co = TypeVar("B_co", covariant=True)
+
+class _FinalSubclassEnum(Protocol[B_co]):
+    def __getattr__(self, clsname: str) -> Type[B_co]: ...
+    __members__: Mapping[str, Type[B_co]]
+
+FinalSubclassEnumeration: _FinalSubclassEnum
