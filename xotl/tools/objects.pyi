@@ -14,6 +14,8 @@ from typing import (
     ContextManager,
 )
 
+from xotl.tools.symbols import Unset
+
 # def adapt_exception(value: Optional[Union[Tuple[Type[KeyError], str], str, int]], **kwargs) -> Optional[KeyError]: ...
 Getter = Callable[[Any], Callable[[str, Any], Any]]
 Setter = Callable[[Any], Callable[[str, Any], None]]
@@ -28,7 +30,11 @@ def get_traverser(
     *paths: str, default: Any = ..., sep: str = ..., getter: Getter = ...
 ) -> Callable: ...
 def traverse(
-    obj: Any, path: str, default: Any, sep: str, getter: Optional[Getter]
+    obj: Any,
+    path: str,
+    default: Any = Unset,
+    sep: str = ".",
+    getter: Optional[Getter] = None,
 ) -> Any: ...
 def import_object(
     name: Union[object, str],
