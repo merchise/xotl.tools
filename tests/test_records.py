@@ -8,7 +8,7 @@
 #
 
 import unittest
-from mock import patch
+from unittest.mock import patch
 from datetime import datetime, date
 
 from xotl.tools.records import record, datetime_reader, date_reader
@@ -54,7 +54,10 @@ def persons(draw):
     name = draw(text())
     lastname = draw(text())
     birthday = draw(datetimes(MIN_DATE, MAX_DATE)).strftime(FMT)
-    return (id, name, lastname, birthday), person((id, name, lastname, birthday))
+    return (
+        (id, name, lastname, birthday),
+        person((id, name, lastname, birthday)),
+    )
 
 
 class TestRecords(unittest.TestCase):
@@ -159,11 +162,11 @@ class TestDateTimeReader(unittest.TestCase):
             _moment_reader = datetime_reader(FMT)
 
         inst = rec(["2014-12-17"])
-        self.assertEquals("2014-12-17", inst.moment.strftime(FMT))
+        self.assertEqual("2014-12-17", inst.moment.strftime(FMT))
 
         inst = rec(["201-12-17"])
         with self.assertRaises(ValueError):
-            self.assertEquals("201-12-17", inst.moment.strftime(FMT))
+            self.assertEqual("201-12-17", inst.moment.strftime(FMT))
 
     def test_relaxed_but_nonnullable_with_dateutil(self):
         class rec(record):
@@ -171,7 +174,8 @@ class TestDateTimeReader(unittest.TestCase):
             _moment_reader = datetime_reader(FMT, nullable=False, strict=False)
 
         inst = rec(["201-12-17"])
-        self.assertEquals(inst.moment, datetime(201, 12, 17))
+
+        self.assertEqual(inst.moment, datetime(201, 12, 17))
 
     @patch("dateutil.parser.parse", None)
     def test_relaxed_but_nonnullable_without_dateutil(self):
@@ -190,7 +194,7 @@ class TestDateTimeReader(unittest.TestCase):
             _moment_reader = datetime_reader(FMT, default=0, strict=False)
 
         inst = rec(["201-12-17"])
-        self.assertEquals(inst.moment, 0)
+        self.assertEqual(inst.moment, 0)
 
 
 class TestDateReader(unittest.TestCase):
@@ -206,7 +210,7 @@ class TestDateReader(unittest.TestCase):
             _when_reader = date_reader(FMT, nullable=True)
 
         inst = rec({"date": "2015-01-01"})
-        self.assertEquals(inst.when, date(2015, 1, 1))
+        self.assertEqual(inst.when, date(2015, 1, 1))
 
         inst = rec({})
         self.assertIsNone(inst.when)
@@ -221,7 +225,7 @@ class TestDateReader(unittest.TestCase):
             _when_reader = date_reader(FMT, strict=False)
 
         inst = rec({"date": "201-01-01"})
-        self.assertEquals(inst.when, date(201, 1, 1))
+        self.assertEqual(inst.when, date(201, 1, 1))
 
     @patch("dateutil.parser.parse", None)
     def test_date_reader_relaxed_nullable_no_dateutil(self):

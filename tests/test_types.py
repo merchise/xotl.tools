@@ -6,9 +6,9 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 import unittest
 import pickle
+import sys
 
 from xotl.tools.future import types
 
@@ -19,7 +19,7 @@ def test_iscollection():
     from xotl.tools.future.collections import UserList, UserDict
 
     def is_collection(arg):
-        from collections import Iterable, Mapping
+        from collections.abc import Iterable, Mapping
 
         avoid = (Mapping, str)
         return isinstance(arg, Iterable) and not isinstance(arg, avoid)
@@ -127,6 +127,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         del ns1.spam
         self.assertEqual(vars(ns1), {})
 
+    @unittest.skipIf(sys.version_info >= (3, 9), "Different order in Python 3.9")
     def test_repr(self):
         ns1 = types.SimpleNamespace(x=1, y=2, w=3)
         ns2 = types.SimpleNamespace()
@@ -136,6 +137,17 @@ class SimpleNamespaceTests(unittest.TestCase):
 
         self.assertEqual(repr(ns1), "{name}(w=3, x=1, y=2)".format(name=name))
         self.assertEqual(repr(ns2), "{name}(_y=5, x='spam')".format(name=name))
+
+    @unittest.skipIf(sys.version_info < (3, 9), "Different order in Python 3.9")
+    def test_repr_py39(self):
+        ns1 = types.SimpleNamespace(x=1, y=2, w=3)
+        ns2 = types.SimpleNamespace()
+        ns2.x = str("spam")
+        ns2._y = 5
+        name = "namespace"
+
+        self.assertEqual(repr(ns1), "{name}(x=1, y=2, w=3)".format(name=name))
+        self.assertEqual(repr(ns2), "{name}(x='spam', _y=5)".format(name=name))
 
     def test_equal(self):
         ns1 = types.SimpleNamespace(x=1)
@@ -175,6 +187,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         self.assertEqual(ns3.spam, ns2)
         self.assertEqual(ns2.spam.spam, ns2)
 
+    @unittest.skipIf(sys.version_info >= (3, 9), "Different order in Python 3.9")
     def test_recursive_repr(self):
         ns1 = types.SimpleNamespace(c=str("cookie"))
         ns2 = types.SimpleNamespace()
@@ -185,6 +198,21 @@ class SimpleNamespaceTests(unittest.TestCase):
         name = "namespace"
         repr1 = "{name}(c='cookie', spam={name}(...))".format(name=name)
         repr2 = "{name}(spam={name}(spam={name}(...), x=1))".format(name=name)
+
+        self.assertEqual(repr(ns1), repr1)
+        self.assertEqual(repr(ns2), repr2)
+
+    @unittest.skipIf(sys.version_info < (3, 9), "Different order in Python 3.9")
+    def test_recursive_repr_py39(self):
+        ns1 = types.SimpleNamespace(c=str("cookie"))
+        ns2 = types.SimpleNamespace()
+        ns3 = types.SimpleNamespace(x=1)
+        ns1.spam = ns1
+        ns2.spam = ns3
+        ns3.spam = ns2
+        name = "namespace"
+        repr1 = "{name}(c='cookie', spam={name}(...))".format(name=name)
+        repr2 = "{name}(spam={name}(x=1, spam={name}(...)))".format(name=name)
 
         self.assertEqual(repr(ns1), repr1)
         self.assertEqual(repr(ns2), repr2)

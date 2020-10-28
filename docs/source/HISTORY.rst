@@ -4,7 +4,36 @@ Changelog
 2.1 series
 ----------
 
-Unreleased. Release 2.1.5
+Unreleased.  Release 2.1.10
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.10.rst
+
+2020-07-05.  Release 2.1.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.9.rst
+
+
+2020-03-31.  Release 2.1.8
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.8.rst
+
+
+2020-03-10.  Release 2.1.7
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.7.rst
+
+
+2020-01-21.  Release 2.1.6
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.1.6.rst
+
+
+2019-12-12. Release 2.1.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.1.5.rst

@@ -68,3 +68,6 @@
    This function is actually an alias to `itertools.izip_longest`:func: in
    Python 2.7, and an alias to `itertools.zip_longest`:func: in Python
    3.3.
+
+
+.. autofunction:: zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]

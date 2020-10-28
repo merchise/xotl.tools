@@ -410,7 +410,7 @@ def smart_getter_and_deleter(obj):
     `collections.MutableMapping`.
 
     """
-    from collections import Mapping, MutableMapping
+    from collections.abc import Mapping, MutableMapping
     from functools import partial
 
     if isinstance(obj, Mapping) and not isinstance(obj, MutableMapping):
@@ -883,9 +883,7 @@ def popattr(obj, name, default=None):
 
 
 class lazy:
-    """Marks a value as a lazily evaluated value. See `setdefaultattr`:func:.
-
-    """
+    """Marks a value as a lazily evaluated value. See `setdefaultattr`:func:."""
 
     def __init__(self, value, *args, **kwargs):
         self.value = value
@@ -1546,7 +1544,7 @@ def dict_merge(*dicts, **others):
     Without arguments, return the empty dict.
 
     """
-    from collections import Mapping, Sequence, Set, Container
+    from collections.abc import Mapping, Sequence, Set, Container
 
     if others:
         dicts = dicts + (others,)

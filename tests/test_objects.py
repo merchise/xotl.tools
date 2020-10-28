@@ -220,7 +220,7 @@ class New:
 
 
 def test_traversing():
-    obj = New(**{"a": 1, "b.c.d": {"x": 2}, "b.c.x": 3})
+    obj = new(**{"a": 1, "b.c.d": {"x": 2}, "b.c.x": 3})
     assert traverse(obj, "a") == 1
     assert traverse(obj, "b.c.d.x") == 2
     assert traverse(obj, "b.c.x") == 3
@@ -237,7 +237,8 @@ def test_traversing():
 
 
 def test_traversing_bug_ignoring_getter():
-    import mock
+    from unittest import mock
+    from xoutil.objects import traverse
 
     sentinel = object()
 
@@ -293,6 +294,8 @@ def test_dict_merge_compatible_cases():
 
 
 def test_dict_merge_errors():
+    from xoutil.objects import dict_merge
+
     first = {192: 192}
     second = {192: [192]}
     with pytest.raises(TypeError):
@@ -526,6 +529,7 @@ def test_multi_getter_failure():
     (see the documentation).
 
     """
+    from xoutil.objects import traverse
 
     class new:
         def __init__(self, **k):
@@ -538,6 +542,9 @@ def test_multi_getter_failure():
 
 
 def test_save_attributes():
+    from xoutil.future.types import SimpleNamespace as new
+    from xoutil.objects import save_attributes
+
     obj = new(a=1, b=2)
     with save_attributes(obj, "a"):
         obj.a = 2
@@ -564,7 +571,6 @@ def test_temp_attributes():
 
 def test_save_raises_errors():
     from xotl.tools.future.types import SimpleNamespace as new
-    from xotl.tools.objects import save_attributes
 
     getter = lambda o: lambda a: getattr(o, a)
     obj = new(a=1, b=2)

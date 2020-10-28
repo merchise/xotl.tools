@@ -41,9 +41,9 @@ class TestContext(unittest.TestCase):
                 with context("context-2"):
                     self.assertIsNot(None, context["CONTEXT-1"])
                     self.assertIsNot(None, context["context-2"])
-                self.assertEquals(False, bool(context["context-2"]))
+                self.assertEqual(False, bool(context["context-2"]))
             self.assertIsNot(None, context["CONTEXT-1"])
-        self.assertEquals(False, bool(context["CONTEXT-1"]))
+        self.assertEqual(False, bool(context["CONTEXT-1"]))
 
     def test_with_objects(self):
         CONTEXT1 = object()
@@ -54,9 +54,9 @@ class TestContext(unittest.TestCase):
                 with context(CONTEXT2):
                     self.assertIsNot(None, context[CONTEXT1])
                     self.assertIsNot(None, context[CONTEXT2])
-                self.assertEquals(False, bool(context[CONTEXT2]))
+                self.assertEqual(False, bool(context[CONTEXT2]))
             self.assertIsNot(None, context[CONTEXT1])
-        self.assertEquals(False, bool(context[CONTEXT1]))
+        self.assertEqual(False, bool(context[CONTEXT1]))
 
 
 def test_stacking_of_data_does_not_leak():

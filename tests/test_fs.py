@@ -42,7 +42,7 @@ class TestFs(unittest.TestCase):
         from xotl.tools.fs import iter_files
 
         res = list(iter_files(self.base, "(?xi)/Z"))
-        self.assertEquals(2, len(res))
+        self.assertEqual(2, len(res))
         self.assertIn(self.files[-3][-1], res)
         self.assertIn(self.files[-1][-1], res)
 
@@ -50,10 +50,10 @@ class TestFs(unittest.TestCase):
         from xotl.tools.fs import iter_files
 
         res = list(iter_files(self.base, "(?xi)/Z", maxdepth=3))
-        self.assertEquals(1, len(res))
+        self.assertEqual(1, len(res))
         self.assertIn(self.files[-1][-1], res)
         res = list(iter_files(self.base, "(?xi)/Z", maxdepth=2))
-        self.assertEquals(0, len(res))
+        self.assertEqual(0, len(res))
 
     def test_walk_up(self):
         from xotl.tools.fs import walk_up
@@ -67,7 +67,7 @@ class TestFs(unittest.TestCase):
 
         filename = os.path.join(self.base, "en", "sure", "filename.txt")
         ensure_filename(filename)
-        self.assert_(os.path.isfile(filename))
+        self.assertTrue(os.path.isfile(filename))
 
     def tearDown(self):
         shutil.rmtree(self.base)

@@ -88,7 +88,7 @@ def name_coerce(arg):
 @coercer
 def iterable_coerce(arg):
     """Return the same argument if it is an iterable."""
-    from collections import Iterable
+    from collections.abc import Iterable
 
     return arg if isinstance(arg, Iterable) else nil
 
@@ -120,13 +120,13 @@ def collection(arg=nil, avoid=(), force=False, base=None, name=None):
              True
 
     :param base: if not ``None``, must be the base to check instead of
-           `~collections.Iterable`:class:.
+           `~collections.abc.Iterable`:class:.
 
     :param name: decorate inner coercer with that function name.
 
     """
     if not base:
-        from collections import Iterable as base
+        from collections.abc import Iterable as base
     if not isinstance(avoid, tuple):
         avoid = (avoid,)
 
@@ -153,7 +153,7 @@ def collection(arg=nil, avoid=(), force=False, base=None, name=None):
         return collection_coerce(arg)
 
 
-from collections import Mapping, Sequence  # noqa
+from collections.abc import Mapping, Sequence  # noqa
 
 logic_iterable_coerce = collection(name="logic_iterable_coerce")
 force_iterable_coerce = collection(force=True, name="force_iterable_coerce")
@@ -454,7 +454,7 @@ class text(str):
 
     def _join(self, coercer, args):
         """Protected method to implement `join`:meth: and `chr_join`:meth:."""
-        from collections import Iterable
+        from collections.abc import Iterable
 
         if len(args) == 1 and isinstance(args[0], Iterable):
             args = args[0]

@@ -3,7 +3,7 @@
 =============================================================================
 
 .. automodule:: xotl.tools.fp.iterators
-   :members: kleisli_compose
+   :members: kleisli_compose, kleisli_compose_foldl
 
 .. function:: iter_compose
 

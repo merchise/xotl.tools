@@ -7,6 +7,8 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 import pickle
+from functools import total_ordering
+
 from hypothesis import given, strategies as s
 from xotl.tools.infinity import Infinity, InfinityType
 
@@ -38,3 +40,31 @@ def test_singleton():
 def test_pickable(inf, proto):
     serialized = pickle.dumps(inf, proto)
     assert inf is pickle.loads(serialized)
+
+
+@total_ordering
+class WrappedValue:
+    def __init__(self, value):
+        self.value = value
+
+    def __eq__(self, other):
+        if isinstance(other, WrappedValue):
+            return self.value == other.value
+        else:
+            return self.value == other
+
+    def __le__(self, other):
+        if isinstance(other, WrappedValue):
+            return self.value <= other.value
+        else:
+            return self.value <= other
+
+
+@given((s.floats() | s.integers()).map(lambda x: WrappedValue(x)))
+def test_comparable_with_wrapped_numbers(x):
+    assert -Infinity < x < Infinity
+
+
+@given((s.dates() | s.datetimes()).map(lambda x: WrappedValue(x)))
+def test_comparable_with_wrapped_dates(x):
+    assert -Infinity < x < Infinity

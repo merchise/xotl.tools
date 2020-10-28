@@ -122,6 +122,13 @@ def test_iter_delete_duplicates():
         "A",
     ]
 
+    assert list(iter_delete_duplicates("AAAaBBBA")) == ["A", "a", "B", "A"]
+    assert list(iter_delete_duplicates("AAAaBBBA", key=lambda x: x.lower())) == [
+        "A",
+        "B",
+        "A",
+    ]
+
 
 @given(
     s.lists(s.integers(), max_size=30),

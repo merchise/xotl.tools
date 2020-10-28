@@ -28,7 +28,7 @@ import types as _stdlib  # noqa
 from xotl.tools.deprecation import deprecated
 
 from xotl.tools.symbols import Unset as _unset
-from collections import Mapping
+from collections.abc import Mapping
 
 
 try:
@@ -332,7 +332,7 @@ def is_scalar(maybe):
     .. deprecated:: 1.8.4
 
     """
-    from collections import Iterable
+    from collections.abc import Iterable
 
     return isinstance(maybe, str) or not isinstance(maybe, Iterable)
 
