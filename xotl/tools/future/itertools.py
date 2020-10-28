@@ -16,7 +16,7 @@
 import sys
 from itertools import *  # noqa
 
-from typing import Callable, Iterable, TypeVar  # noqa
+from typing import Callable, Iterable, TypeVar
 
 from xotl.tools.symbols import Unset
 from xotl.tools.deprecation import deprecated_alias, deprecated
@@ -445,7 +445,7 @@ A = TypeVar("A")
 B = TypeVar("B")
 
 
-def zip_map(funcs, args):
+def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]:
     """Apply each function in `funcs` to its corresponding arguments.
 
     If the iterables are not of the same length, stop as soon as the shortest
@@ -454,7 +454,6 @@ def zip_map(funcs, args):
     .. versionadded:: 2.1.9
 
     """
-    # type: (Iterable[Callable[[A], B]], Iterable[A]) -> Iterable[B]
     for fn, arg in zip(funcs, args):
         yield fn(arg)
 
