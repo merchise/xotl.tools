@@ -139,6 +139,23 @@ def test_fp_kleisli_compose4():
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
 
 
+anything = (
+    s.integers()
+    | s.dictionaries(s.text(), s.integers())
+    | s.text()
+    | s.tuples(s.integers())
+)
+anyargs = s.tuples(anything)
+
+
+@given(anything, anyargs)
+def test_constant(val, args):
+    from xotl.tools.fp.tools import constant
+
+    fn = constant(val)
+    assert fn(*args) is val
+
+
 if __name__ == "__main__":
     # Allow to run this test as an independent python script, for example:
     #   monkeytype run tests/test_fp.py
@@ -147,3 +164,4 @@ if __name__ == "__main__":
     test_fp_tools()
     test_fp_kleisli_compose()
     test_fp_kleisli_compose4()
+    test_constant()
