@@ -76,11 +76,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    python_requires=">=3.4",
+    python_requires=">=3.5",
     install_requires=[
-        'monotonic; python_version<"3.3"',
-        'contextlib2; python_version<"3.4"',
-        'typing; python_version<"3.5"',
+        "typing-extensions~=3.7.4",
     ],
     extras_require={"recommended": ["python-dateutil", 'enum34; python_version<"3.4"']},
     cmdclass=_cmdclass,
