@@ -81,3 +81,13 @@ class _FinalSubclassEnum(Protocol[B_co]):
     __members__: Mapping[str, Type[B_co]]
 
 FinalSubclassEnumeration: _FinalSubclassEnum
+
+class DelegatedAttribute:
+    def __init__(
+        self, target_name: str, delegated_attr: str, default: Any = Unset
+    ) -> None: ...
+    def __get__(self, instance, owner) -> Any: ...
+
+def delegator(
+    attribute: str, attrs_map: Mapping[str, str], metaclass: type = type
+) -> type: ...
