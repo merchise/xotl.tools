@@ -14,8 +14,9 @@
   - `xotl.tools.future.datetime`:mod:
 
   We've published several post-releases for 2.1.10 (2.1.10.post2,
-  2.1.10.post3, ...) the only change in those releases is including more and
-  more support of type hints (those we've missed in the 2.1.10 release).
+  2.1.10.post3, ...).  Those releases don't introduce new functions or
+  bug-fixes, only more and more support for type hints (those we've missed in
+  the 2.1.10 release).
 
 - Add official support for Python 3.9.  The list of Python versions we support
   is currently:
