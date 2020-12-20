@@ -1153,41 +1153,44 @@ class staticproperty(property):
             raise AttributeError("can't delete attribute")
 
 
-# The following is extracted from the SQLAlchemy project's codebase, merit and
-# copyright goes to SQLAlchemy authors.
-#
-# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
-#
-# This module is part of SQLAlchemy and is released under the MIT License:
-# http://www.opensource.org/licenses/mit-license.php
-#
-class memoized_property:
-    """A read-only property that is only evaluated once.
+try:
+    from functools import cached_property
 
-    This is extracted from the SQLAlchemy project's codebase, merit and
-    copyright goes to SQLAlchemy authors::
+    class memoized_property(cached_property):
+        def __init__(self, func, doc=None):
+            super().__init__(func)
+            self.__doc__ = doc or func.__doc__
+            self.__name__ = func.__name__
 
-      Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+        def reset(self, instance):
+            """Clear the cached value of `instance`."""
+            instance.__dict__.pop(self.__name__, None)
 
-      This module is part of SQLAlchemy and is released under the MIT License:
-      http://www.opensource.org/licenses/mit-license.php
 
-    """
+except ImportError:
+    # The following is extracted from the SQLAlchemy project's codebase, merit and
+    # copyright goes to SQLAlchemy authors.
+    #
+    # Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+    #
+    # This module is part of SQLAlchemy and is released under the MIT License:
+    # http://www.opensource.org/licenses/mit-license.php
+    #
+    class memoized_property:
+        def __init__(self, fget, doc=None):
+            self.fget = fget
+            self.__doc__ = doc or fget.__doc__
+            self.__name__ = fget.__name__
 
-    def __init__(self, fget, doc=None):
-        self.fget = fget
-        self.__doc__ = doc or fget.__doc__
-        self.__name__ = fget.__name__
+        def __get__(self, obj, cls):
+            if obj is None:
+                return self
+            obj.__dict__[self.__name__] = result = self.fget(obj)
+            return result
 
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-        obj.__dict__[self.__name__] = result = self.fget(obj)
-        return result
-
-    def reset(self, instance):
-        """Clear the cached value of `instance`."""
-        instance.__dict__.pop(self.__name__, None)
+        def reset(self, instance):
+            """Clear the cached value of `instance`."""
+            instance.__dict__.pop(self.__name__, None)
 
 
 def setdefaultattr(obj, name, value):
