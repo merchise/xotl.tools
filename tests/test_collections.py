@@ -11,7 +11,7 @@ import sys
 import unittest
 
 from random import shuffle
-from xoutil.future.collections import defaultdict
+from xotl.tools.future.collections import defaultdict
 
 
 class TestCollections(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestCollections(unittest.TestCase):
 
 def test_stacked_dict_with_newpop():
     """Test that stacked.pop has the same semantics has dict.pop."""
-    from xoutil.future.collections import StackedDict
+    from xotl.tools.future.collections import StackedDict
 
     sd = StackedDict(a="level-0", b=1)
     assert sd.pop("a") == "level-0"
@@ -46,7 +46,7 @@ def test_stacked_dict_with_newpop():
 
 
 def test_stacked_dict():
-    from xoutil.future.collections import StackedDict
+    from xotl.tools.future.collections import StackedDict
 
     sd = StackedDict(a="level-0")
     assert sd.peek() == dict(a="level-0")
@@ -76,21 +76,17 @@ def test_stacked_dict():
     assert sd["a"] == "level-0"
     try:
         sd.pop_level()
-        assert False, (
-            "Level 0 cannot be poped. " "It should have raised a TypeError"
-        )
+        assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
     except TypeError:
         pass
     except:
-        assert False, (
-            "Level 0 cannot be poped. " "It should have raised a TypeError"
-        )
+        assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
 
 
 # Backported from Python 3.3.0 standard library
-from xoutil.future.collections import ChainMap, Counter
-from xoutil.future.collections import OrderedDict, RankedDict
-from xoutil.future.collections import Mapping, MutableMapping
+from xotl.tools.future.collections import ChainMap, Counter
+from xotl.tools.future.collections import OrderedDict, RankedDict
+from xotl.tools.future.collections import Mapping, MutableMapping
 import copy
 import pickle
 from random import randrange
@@ -98,7 +94,7 @@ from random import randrange
 
 def _items(d):
     "For some reason in new PyPy 5.0.1 for Py 2.7.10, set order is not nice."
-    from xoutil.versions import python_version
+    from xotl.tools.versions import python_version
 
     res = d.items()
     if python_version.pypy and isinstance(res, list):
@@ -160,11 +156,7 @@ class TestChainMap(unittest.TestCase):
                 self.assertIs(m1, m2)
 
         # check deep copies
-        for e in [
-            pickle.loads(pickle.dumps(d)),
-            copy.deepcopy(d),
-            eval(repr(d)),
-        ]:
+        for e in [pickle.loads(pickle.dumps(d)), copy.deepcopy(d), eval(repr(d))]:
             self.assertEqual(d, e)
             self.assertEqual(d.maps, e.maps)
             self.assertIsNot(d, e)
@@ -283,9 +275,7 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(repr(c), "Counter({'a': 3, 'b': 2, 'c': 1})")
         self.assertEqual(c.most_common(), [("a", 3), ("b", 2), ("c", 1)])
         for i in range(5):
-            self.assertEqual(
-                c.most_common(i), [("a", 3), ("b", 2), ("c", 1)][:i]
-            )
+            self.assertEqual(c.most_common(i), [("a", 3), ("b", 2), ("c", 1)][:i])
         self.assertEqual("".join(sorted(c.elements())), "aaabbc")
         c["a"] += 1  # increment an existing value
         c["b"] -= 2  # sub existing value to zero
@@ -434,14 +424,10 @@ class TestCounter(unittest.TestCase):
     def test_subtract(self):
         c = Counter(a=-5, b=0, c=5, d=10, e=15, g=40)
         c.subtract(a=1, b=2, c=-3, d=10, e=20, f=30, h=-50)
-        self.assertEqual(
-            c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50)
-        )
+        self.assertEqual(c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50))
         c = Counter(a=-5, b=0, c=5, d=10, e=15, g=40)
         c.subtract(Counter(a=1, b=2, c=-3, d=10, e=20, f=30, h=-50))
-        self.assertEqual(
-            c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50)
-        )
+        self.assertEqual(c, Counter(a=-6, b=-2, c=8, d=0, e=-5, f=-30, g=40, h=50))
         c = Counter("aaabbcd")
         c.subtract("aaaabbcce")
         self.assertEqual(c, Counter(a=-1, b=0, c=-1, d=1, e=-1))
@@ -458,7 +444,7 @@ class TestCounter(unittest.TestCase):
         self.assertIn("'b': None", r)
 
     def test_helper_function(self):
-        from xoutil.future.collections import _count_elements
+        from xotl.tools.future.collections import _count_elements
 
         # two paths, one for real dicts and one for other mappings
         elems = list("abracadabra")
@@ -489,9 +475,7 @@ class TestOrderedDict(unittest.TestCase):
         # mixed input
         self.assertEqual(
             list(
-                OrderedDict(
-                    [("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5
-                ).items()
+                OrderedDict([("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5).items()
             ),
             pairs,
         )
@@ -502,15 +486,7 @@ class TestOrderedDict(unittest.TestCase):
         d.__init__([("e", 5), ("f", 6)], g=7, d=4)
         self.assertEqual(
             list(d.items()),
-            [
-                ("a", 1),
-                ("b", 2),
-                ("c", 3),
-                ("d", 4),
-                ("e", 5),
-                ("f", 6),
-                ("g", 7),
-            ],
+            [("a", 1), ("b", 2), ("c", 3), ("d", 4), ("e", 5), ("f", 6), ("g", 7)],
         )
 
     def test_update(self):
@@ -556,15 +532,7 @@ class TestOrderedDict(unittest.TestCase):
         d.update([("e", 5), ("f", 6)], g=7, d=4)
         self.assertEqual(
             list(d.items()),
-            [
-                ("a", 1),
-                ("b", 2),
-                ("c", 3),
-                ("d", 4),
-                ("e", 5),
-                ("f", 6),
-                ("g", 7),
-            ],
+            [("a", 1), ("b", 2), ("c", 3), ("d", 4), ("e", 5), ("f", 6), ("g", 7)],
         )
 
     def test_abc(self):
@@ -694,9 +662,7 @@ class TestOrderedDict(unittest.TestCase):
         od = OrderedDict(pairs)
         # yaml.dump(od) -->
         # '!!python/object/apply:__main__.OrderedDict\n- - [a, 1]\n  - [b, 2]\n'
-        self.assertTrue(
-            all(type(pair) == list for pair in od.__reduce__()[1])
-        )
+        self.assertTrue(all(type(pair) == list for pair in od.__reduce__()[1]))
 
     def test_reduce_not_too_fat(self):
         import sys
@@ -710,9 +676,7 @@ class TestOrderedDict(unittest.TestCase):
 
     def test_repr(self):
         od = OrderedDict([("c", 1), ("b", 2), ("a", 3)])
-        self.assertEqual(
-            repr(od), "OrderedDict([('c', 1), ('b', 2), ('a', 3)])"
-        )
+        self.assertEqual(repr(od), "OrderedDict([('c', 1), ('b', 2), ('a', 3)])")
         self.assertEqual(eval(repr(od)), od)
         self.assertEqual(repr(OrderedDict()), "OrderedDict()")
 
@@ -722,10 +686,7 @@ class TestOrderedDict(unittest.TestCase):
         od["x"] = od
         self.assertEqual(
             repr(od),
-            (
-                "OrderedDict([('a', None), ('b', None), "
-                "('c', None), ('x', ...)])"
-            ),
+            ("OrderedDict([('a', None), ('b', None), " "('c', None), ('x', ...)])"),
         )
 
     def test_setdefault(self):
@@ -805,9 +766,7 @@ class TestRankedDict(unittest.TestCase):
         # mixed input
         self.assertNotEqual(
             list(
-                RankedDict(
-                    [("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5
-                ).items()
+                RankedDict([("a", 1), ("b", 2), ("c", 9), ("d", 4)], c=3, e=5).items()
             ),
             pairs,
         )
@@ -985,15 +944,11 @@ class TestRankedDict(unittest.TestCase):
         od = RankedDict(pairs)
         # yaml.dump(od) -->
         # '!!python/object/apply:__main__.RankedDict\n- - [a, 1]\n  - [b, 2]\n'
-        self.assertTrue(
-            all(type(pair) == list for pair in od.__reduce__()[1])
-        )
+        self.assertTrue(all(type(pair) == list for pair in od.__reduce__()[1]))
 
     def test_repr(self):
         od = RankedDict([("c", 1), ("b", 2), ("a", 3)])
-        self.assertEqual(
-            repr(od), "RankedDict([('c', 1), ('b', 2), ('a', 3)])"
-        )
+        self.assertEqual(repr(od), "RankedDict([('c', 1), ('b', 2), ('a', 3)])")
         self.assertEqual(eval(repr(od)), od)
         self.assertEqual(repr(RankedDict()), "RankedDict()")
 
@@ -1003,10 +958,7 @@ class TestRankedDict(unittest.TestCase):
         od["x"] = od
         self.assertEqual(
             repr(od),
-            (
-                "RankedDict([('a', None), ('b', None), "
-                "('c', None), ('x', ...)])"
-            ),
+            ("RankedDict([('a', None), ('b', None), " "('c', None), ('x', ...)])"),
         )
 
     def test_setdefault(self):
@@ -1064,7 +1016,7 @@ class TestRankedDict(unittest.TestCase):
 class TestPascalSet(unittest.TestCase):
     def test_consistency(self):
         from random import randint
-        from xoutil.future.collections import PascalSet
+        from xotl.tools.future.collections import PascalSet
 
         count = 5
         for test in range(count):
@@ -1094,7 +1046,7 @@ class TestPascalSet(unittest.TestCase):
             self.assertGreaterEqual(s1, ss1 - ss2)
 
     def test_syntax_sugar(self):
-        from xoutil.future.collections import PascalSet
+        from xotl.tools.future.collections import PascalSet
 
         s1 = PascalSet[1:4, 9, 15:18]
         s2 = PascalSet[3:18]
@@ -1103,7 +1055,7 @@ class TestPascalSet(unittest.TestCase):
         self.assertEqual(list(PascalSet[3:18]), list(range(3, 18)))
 
     def test_operators(self):
-        from xoutil.future.collections import PascalSet
+        from xotl.tools.future.collections import PascalSet
 
         g = lambda s: (i for i in s)
         s1 = PascalSet[1:4, 9, 15:18]
@@ -1138,7 +1090,7 @@ class TestPascalSet(unittest.TestCase):
 
     def test_errors(self):
         """Test that stacked.pop has the same semantics has dict.pop."""
-        from xoutil.future.collections import PascalSet
+        from xotl.tools.future.collections import PascalSet
 
         s1 = PascalSet[1:4, 9, 15:18]
         s2 = PascalSet(s1, 20)
@@ -1164,7 +1116,7 @@ class TestPascalSet(unittest.TestCase):
 class TestBitPascalSet(unittest.TestCase):
     def test_consistency(self):
         from random import randint
-        from xoutil.future.collections import BitPascalSet
+        from xotl.tools.future.collections import BitPascalSet
 
         count = 5
         for test in range(count):
@@ -1194,7 +1146,7 @@ class TestBitPascalSet(unittest.TestCase):
             self.assertGreaterEqual(s1, ss1 - ss2)
 
     def test_syntax_sugar(self):
-        from xoutil.future.collections import BitPascalSet
+        from xotl.tools.future.collections import BitPascalSet
 
         s1 = BitPascalSet[1:4, 9, 15:18]
         s2 = BitPascalSet[3:18]
@@ -1203,7 +1155,7 @@ class TestBitPascalSet(unittest.TestCase):
         self.assertEqual(list(BitPascalSet[3:18]), list(range(3, 18)))
 
     def test_operators(self):
-        from xoutil.future.collections import BitPascalSet
+        from xotl.tools.future.collections import BitPascalSet
 
         g = lambda s: (i for i in s)
         s1 = BitPascalSet[1:4, 9, 15:18]
@@ -1238,7 +1190,7 @@ class TestBitPascalSet(unittest.TestCase):
 
     def test_errors(self):
         """Test that stacked.pop has the same semantics has dict.pop."""
-        from xoutil.future.collections import BitPascalSet
+        from xotl.tools.future.collections import BitPascalSet
 
         s1 = BitPascalSet[1:4, 9, 15:18]
         s2 = BitPascalSet(s1, 20)
@@ -1263,7 +1215,7 @@ class TestBitPascalSet(unittest.TestCase):
 
 class TestCodeDict(unittest.TestCase):
     def test_formatter(self):
-        from xoutil.future.collections import codedict
+        from xotl.tools.future.collections import codedict
 
         cd = codedict(x=1, y=2, z=3.0)
         self.assertEqual(
@@ -1281,21 +1233,21 @@ class TestCodeDict(unittest.TestCase):
 
 
 def test_abcs():
-    from xoutil.future.collections import Container  # noqa
-    from xoutil.future.collections import Iterable  # noqa
-    from xoutil.future.collections import Iterator  # noqa
-    from xoutil.future.collections import Sized  # noqa
-    from xoutil.future.collections import Callable  # noqa
-    from xoutil.future.collections import Sequence  # noqa
-    from xoutil.future.collections import MutableSequence  # noqa
-    from xoutil.future.collections import Set  # noqa
-    from xoutil.future.collections import MutableSet  # noqa
-    from xoutil.future.collections import Mapping  # noqa
-    from xoutil.future.collections import MutableMapping  # noqa
-    from xoutil.future.collections import MappingView  # noqa
-    from xoutil.future.collections import ItemsView  # noqa
-    from xoutil.future.collections import KeysView  # noqa
-    from xoutil.future.collections import ValuesView  # noqa
+    from xotl.tools.future.collections import Container  # noqa
+    from xotl.tools.future.collections import Iterable  # noqa
+    from xotl.tools.future.collections import Iterator  # noqa
+    from xotl.tools.future.collections import Sized  # noqa
+    from xotl.tools.future.collections import Callable  # noqa
+    from xotl.tools.future.collections import Sequence  # noqa
+    from xotl.tools.future.collections import MutableSequence  # noqa
+    from xotl.tools.future.collections import Set  # noqa
+    from xotl.tools.future.collections import MutableSet  # noqa
+    from xotl.tools.future.collections import Mapping  # noqa
+    from xotl.tools.future.collections import MutableMapping  # noqa
+    from xotl.tools.future.collections import MappingView  # noqa
+    from xotl.tools.future.collections import ItemsView  # noqa
+    from xotl.tools.future.collections import KeysView  # noqa
+    from xotl.tools.future.collections import ValuesView  # noqa
 
 
 def test_opendict():
@@ -1304,7 +1256,7 @@ def test_opendict():
     except ImportError:
         from enum34 import Enum
 
-    from xoutil.future.collections import opendict
+    from xotl.tools.future.collections import opendict
 
     class Foo:
         x = 1

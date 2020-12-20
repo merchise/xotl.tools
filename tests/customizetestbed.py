@@ -7,8 +7,8 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-from xoutil.modules import moduleproperty
-from xoutil.objects import memoized_property
+from xotl.tools.modules import moduleproperty
+from xotl.tools.objects import memoized_property
 
 
 @moduleproperty

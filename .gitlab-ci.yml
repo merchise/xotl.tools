@@ -7,6 +7,51 @@ stages:
   - publish
   - clean up
 
+
+.run_tox_staticcheck: &run_tox_staticcheck
+  image: python:$PYTHON
+  stage: test
+  cache:
+    key: $CI_JOB_NAME
+    paths:
+      - .tox/
+      - .mypy_cache/
+  script:
+    - pip install tox
+    - tox -e system-staticcheck
+  only:
+    refs:
+      - main
+      - merge_requests
+    changes:
+      - xotl/tools/**/*.py
+      - xotl/tools/**/*.pyi
+
+run static checks in Python 3.6:
+  <<: *run_tox_staticcheck
+  allow_failure: true
+  variables:
+    PYTHON: "3.6"
+
+run static checks in Python 3.7:
+  <<: *run_tox_staticcheck
+  allow_failure: true
+  variables:
+    PYTHON: "3.7"
+
+run static checks in Python 3.8:
+  <<: *run_tox_staticcheck
+  allow_failure: true
+  variables:
+    PYTHON: "3.8"
+
+run static checks in Python 3.9:
+  <<: *run_tox_staticcheck
+  allow_failure: true
+  variables:
+    PYTHON: "3.9"
+
+
 .run_tox_tests_no_greenlets: &run_tox_tests_no_greenlets
   image: python:$PYTHON-alpine
   stage: test
@@ -36,7 +81,7 @@ run all Python 3.8 tests without greenlets:
     PYTHON: "3.8"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -55,7 +100,7 @@ run all Python 3.8 tests with greenlets:
     PYTHON: "3.8"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -73,7 +118,7 @@ run all Python 3.9 tests without greenlets:
     PYTHON: "3.9"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -92,7 +137,7 @@ run all Python 3.9 tests with greenlets:
     PYTHON: "3.9"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -111,7 +156,7 @@ run all Python 3.6 tests without greenlets:
     PYTHON: "3.6"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -129,7 +174,7 @@ run all Python 3.6 tests with greenlets:
     PYTHON: "3.6"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -147,7 +192,7 @@ run all Python 3.7 tests without greenlets:
     PYTHON: "3.7"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -165,7 +210,7 @@ run all Python 3.7 tests with greenlets:
     PYTHON: "3.7"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -276,7 +321,7 @@ build documentation:
   only:
     refs:
       - /^releases-/
-      - master
+      - main
       - merge_requests
     changes:
       - docs/**/*.rst
@@ -329,7 +374,7 @@ publish in our RTD:
   only:
     refs:
       - /^releases-/
-      - master
+      - main
       - merge_requests
     changes:
       - docs/**/*.rst
@@ -346,7 +391,7 @@ publish in our RTD:
 automatically remove MR documentation from our RTD server after 4 hours:
   stage: clean up
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
       when: never
     - if: '$CI_COMMIT_REF_NAME == "release-1.9.x"'
       when: never

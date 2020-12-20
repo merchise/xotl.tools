@@ -6,16 +6,15 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 import pytest
-from xoutil.versions import python_version
-from xoutil.future.collections import OrderedSmartDict
+from xotl.tools.versions import python_version
+from xotl.tools.future.collections import OrderedSmartDict
 
 PYPY = python_version.pypy
 
 
 def test_nameof():
-    from xoutil.names import nameof, simple_name
+    from xotl.tools.names import nameof, simple_name
     from collections import OrderedDict as sorted_dict
 
     assert nameof(sorted_dict) == "sorted_dict"
@@ -44,7 +43,7 @@ def test_nameof():
 
 
 def test_nameof_methods():
-    from xoutil.names import nameof, simple_name
+    from xotl.tools.names import nameof, simple_name
 
     class Foobar:
         def __init__(self):
@@ -76,7 +75,7 @@ def test_nameof_methods():
 
 @pytest.mark.skipif(PYPY, reason="'OrderedDict' is in '_pypy_collections'")
 def test_fullnameof():
-    from xoutil.names import nameof, simple_name
+    from xotl.tools.names import nameof, simple_name
 
     _name = "collections.OrderedDict"
     from collections import OrderedDict as sorted_dict
@@ -93,7 +92,7 @@ def test_fullnameof():
 
 @pytest.mark.skipif(PYPY, reason="'OrderedDict' is in '_pypy_collections'")
 def test_fullnameof_no_rename():
-    from xoutil.names import nameof
+    from xotl.tools.names import nameof
     from collections import OrderedDict
 
     _full_name = "test_fullnameof_no_rename.OrderedDict"
@@ -103,16 +102,16 @@ def test_fullnameof_no_rename():
 
 
 def test_module_level_name():
-    from xoutil.names import nameof
+    from xotl.tools.names import nameof
 
     assert nameof(OrderedSmartDict) == "OrderedSmartDict"
     assert nameof(OrderedSmartDict, typed=True) == "OrderedSmartDict"
 
 
 def test_module_level_name_isolated():
-    from xoutil.names import nameof, simple_name
+    from xotl.tools.names import nameof, simple_name
 
-    full_name_1 = "test_names.OrderedSmartDict"
+    full_name_1 = "tests.test_names.OrderedSmartDict"
     full_name_2 = "xotl.tools.future.collections.OrderedSmartDict"
     assert nameof(OrderedSmartDict, full=True) == full_name_1
     assert simple_name(OrderedSmartDict) == full_name_2

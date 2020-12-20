@@ -11,7 +11,7 @@ import pytest
 
 
 def test_regression_Command_repr():
-    from xoutil.cli import Command
+    from xotl.tools.cli import Command
 
     class MyCommand(Command):
         def run(self):
@@ -31,7 +31,7 @@ def test_regression_Command_repr():
 
 
 def test_can_actually_run_the_help():
-    from xoutil.cli.app import main
+    from xotl.tools.cli.app import main
 
     with pytest.raises(SystemExit):
         main(default="help")

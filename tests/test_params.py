@@ -8,10 +8,10 @@
 #
 
 import sys
-from xoutil.values import file_coerce, positive_int_coerce as positive_int
+from xotl.tools.values import file_coerce, positive_int_coerce as positive_int
 
 # old params
-from xoutil.params import ParamSchemeRow as row, ParamScheme as scheme
+from xotl.tools.params import ParamSchemeRow as row, ParamScheme as scheme
 
 
 sample_scheme = scheme(
@@ -88,8 +88,8 @@ def test_param_errors():
 
 
 def test_pop_keyword_values():
-    from xoutil.symbols import Unset
-    from xoutil.params import pop_keyword_values as popkw, Undefined
+    from xotl.tools.symbols import Unset
+    from xotl.tools.params import pop_keyword_values as popkw, Undefined
 
     kwds = dict(default=None, values=[1, 2, 3], collector=sum)
     names = (("func", "collector"), "default")

@@ -8,8 +8,8 @@
 #
 
 import unittest
-from xoutil.decorator import assignment_operator
-from xoutil.decorator.meta import decorator
+from xotl.tools.decorator import assignment_operator
+from xotl.tools.decorator.meta import decorator
 
 
 class TestAssignable(unittest.TestCase):
@@ -93,7 +93,7 @@ class RegressionTests(unittest.TestCase):
         be tested empty.
 
         """
-        from xoutil.future.functools import partial
+        from xotl.tools.future.functools import partial
 
         @decorator
         def ditmoi(target, *args, **kwargs):
@@ -111,8 +111,8 @@ class RegressionTests(unittest.TestCase):
 
 class Memoizations(unittest.TestCase):
     def test_memoized_property(self):
-        from xoutil.future.inspect import getattr_static
-        from xoutil.objects import memoized_property
+        from xotl.tools.future.inspect import getattr_static
+        from xotl.tools.objects import memoized_property
 
         class Foobar:
             @memoized_property
@@ -142,7 +142,7 @@ class Memoizations(unittest.TestCase):
 
 class ConstantBags(unittest.TestCase):
     def test_constant_bags_decorator(self):
-        from xoutil.decorator import constant_bagger as typify
+        from xotl.tools.decorator import constant_bagger as typify
 
         def func(**kwds):
             return kwds

@@ -10,7 +10,7 @@
 import unittest
 import random
 
-from xoutil.bases import B32, B64, B64symbolic
+from xotl.tools.bases import B32, B64, B64symbolic
 
 
 def build_many_tests():

@@ -8,7 +8,7 @@
 #
 
 import pytest
-from xoutil.tasking import retry
+from xotl.tools.tasking import retry
 
 
 class FailingMock:

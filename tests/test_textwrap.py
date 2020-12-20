@@ -6,7 +6,7 @@
 #
 
 import unittest
-from xoutil.future.textwrap import wrap, fill, dedent, indent
+from xotl.tools.future.textwrap import wrap, fill, dedent, indent
 
 
 class BaseTestCase(unittest.TestCase):

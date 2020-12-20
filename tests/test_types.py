@@ -10,13 +10,13 @@ import unittest
 import pickle
 import sys
 
-from xoutil.future import types
+from xotl.tools.future import types
 
 
 def test_iscollection():
     # TODO: move this test to equivalent for
-    # `xoutil.values.simple.logic_collection_coerce`
-    from xoutil.future.collections import UserList, UserDict
+    # `xotl.tools.values.simple.logic_collection_coerce`
+    from xotl.tools.future.collections import UserList, UserDict
 
     def is_collection(arg):
         from collections.abc import Iterable, Mapping
@@ -47,7 +47,7 @@ class NoneTypeTests(unittest.TestCase):
     "To avoid FlyCheck errors"
 
     def test_identity(self):
-        from xoutil.future.types import NoneType
+        from xotl.tools.future.types import NoneType
 
         self.assertIs(NoneType, type(None))
 
@@ -254,4 +254,4 @@ class SimpleNamespaceTests(unittest.TestCase):
 
 class TestDynamicClassAttribute(unittest.TestCase):
     def test_isimportable(self):
-        from xoutil.future.types import DynamicClassAttribute  # noqa
+        from xotl.tools.future.types import DynamicClassAttribute  # noqa

@@ -6,17 +6,34 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 import pytest
-from xoutil.objects import smart_copy
+
+from xotl.tools.objects import (
+    fulldir,
+    smart_copy,
+    lazy,
+    setdefaultattr,
+    traverse,
+    get_traverser,
+    dict_merge,
+    get_first_of,
+    smart_getter,
+    smart_setter,
+    extract_attrs,
+    copy_class,
+    validate_attrs,
+    memoized_property,
+    classproperty,
+    xproperty,
+    staticproperty,
+    multi_getter,
+    save_attributes,
+)
+from xotl.tools.symbols import Unset
+from xotl.tools.future.types import SimpleNamespace as new
 
 
 def test_smart_copy():
-    class new:
-        def __init__(self, **kw):
-            for k, v in kw.items():
-                setattr(self, k, v)
-
     source = new(a=1, b=2, c=4, _d=5)
     target = {}
     smart_copy(source, target, defaults=False)
@@ -92,8 +109,6 @@ def test_smart_copy_with_callable_default():
 
 
 def test_fulldir():
-    from xoutil.objects import fulldir
-
     assert {"__getitem__", "get", "items", "keys"} < fulldir({})
 
 
@@ -175,8 +190,6 @@ def test_new_style_metaclass_registration():
 
 
 def test_lazy():
-    from xoutil.objects import lazy, setdefaultattr
-
     class new:
         pass
 
@@ -189,7 +202,7 @@ def test_lazy():
 
 
 # Easly creates a hierarchy of objects
-class new:
+class New:
     def __init__(self, **kwargs):
         attrs = {}
         children = {}
@@ -203,13 +216,11 @@ class new:
         self.__dict__.update(attrs)
         assert set(attrs.keys()) & set(children.keys()) == set()
         for child, vals in children.items():
-            setattr(self, child, new(**vals))
+            setattr(self, child, New(**vals))
 
 
 def test_traversing():
-    from xoutil.objects import traverse, get_traverser
-
-    obj = new(**{"a": 1, "b.c.d": {"x": 2}, "b.c.x": 3})
+    obj = new(**{"a": 1, "b": new(c=new(d={"x": 2}, x=3))})
     assert traverse(obj, "a") == 1
     assert traverse(obj, "b.c.d.x") == 2
     assert traverse(obj, "b.c.x") == 3
@@ -243,8 +254,6 @@ def test_traversing_bug_ignoring_getter():
 
 
 def test_dict_merge_base_cases():
-    from xoutil.objects import dict_merge
-
     base = {"a": "a", "d": {"attr1": 2}}
     assert dict_merge() == {}
     assert dict_merge(base) == base
@@ -252,8 +261,6 @@ def test_dict_merge_base_cases():
 
 
 def test_dict_merge_simple_cases():
-    from xoutil.objects import dict_merge
-
     first = {"a": {"attr1": 1}, "b": {"attr1": 1}, "c": 194, "shared": 1}
     second = {"a": {"attr2": 2}, "b": {"attr2": 2}, "d": 195, "shared": 2}
     expected = {
@@ -270,8 +277,6 @@ def test_dict_merge_simple_cases():
 
 
 def test_dict_merge_compatible_cases():
-    from xoutil.objects import dict_merge
-
     first = {192: ["attr1", 1], 193: {"attr1", 1}}
     second = {192: ("attr2", 2), 193: ["attr2", 2]}
     assert dict_merge(first, second) == {
@@ -300,8 +305,6 @@ def test_dict_merge_errors():
 
 
 def test_get_first_of():
-    from xoutil.objects import get_first_of
-
     somedict = {"foo": "bar", "spam": "eggs"}
     assert get_first_of(somedict, "no", "foo", "spam") == "bar"
 
@@ -342,11 +345,6 @@ def test_get_first_of():
 
 
 def test_smart_getter():
-    from xoutil.objects import smart_getter
-
-    class new:
-        pass
-
     o = new()
     o.attr1 = 1
     o.attr2 = 1
@@ -372,8 +370,6 @@ def test_smart_getter():
 
 
 def test_smart_setter():
-    from xoutil.objects import smart_setter
-
     class new:
         pass
 
@@ -390,8 +386,6 @@ def test_smart_setter():
 
 
 def test_extract_attrs():
-    from xoutil.objects import extract_attrs
-
     d = dict(a=(1,), b=2, c=3, x=4)
     assert extract_attrs(d, "a") == (1,)
     assert extract_attrs(d, "a", "b", "c", "x") == ((1,), 2, 3, 4)
@@ -414,9 +408,6 @@ def test_extract_attrs():
 
 
 def test_copy_class():
-    from xoutil.symbols import Unset
-    from xoutil.objects import copy_class
-
     u = str
 
     class MetaFoo(type):
@@ -463,8 +454,6 @@ def test_copy_class():
 
 
 def test_validate_attrs():
-    from xoutil.objects import validate_attrs
-
     class Person:
         def __init__(self, **kwargs):
             for which in kwargs:
@@ -482,9 +471,6 @@ def test_validate_attrs():
 
 @pytest.mark.xfail()
 def test_memoized_classproperty():
-    from xoutil.objects import memoized_property
-    from xoutil.objects import classproperty
-
     current = 1
 
     class Foobar:
@@ -504,8 +490,6 @@ def test_memoized_classproperty():
 
 
 def test_properties():
-    from xoutil.objects import xproperty, classproperty, staticproperty
-
     _x = "static"
 
     class Foobar:
@@ -545,7 +529,6 @@ def test_multi_getter_failure():
     (see the documentation).
 
     """
-    from xoutil.objects import multi_getter
     from xoutil.objects import traverse
 
     class new:
@@ -573,8 +556,8 @@ def test_save_attributes():
 
 
 def test_temp_attributes():
-    from xoutil.future.types import SimpleNamespace as new
-    from xoutil.objects import temp_attributes
+    from xotl.tools.future.types import SimpleNamespace as new
+    from xotl.tools.objects import temp_attributes
 
     obj = new(a=1, b=2)
     with temp_attributes(obj, dict(a=2)):
@@ -587,8 +570,7 @@ def test_temp_attributes():
 
 
 def test_save_raises_errors():
-    from xoutil.future.types import SimpleNamespace as new
-    from xoutil.objects import save_attributes
+    from xotl.tools.future.types import SimpleNamespace as new
 
     getter = lambda o: lambda a: getattr(o, a)
     obj = new(a=1, b=2)
@@ -608,14 +590,14 @@ def test_save_raises_errors():
 
 
 def test_import_object():
-    from xoutil.objects import import_object
+    from xotl.tools.objects import import_object
 
-    assert import_object("xoutil.objects.import_object") is import_object
-    assert import_object("xoutil.objects:import_object") is import_object
+    assert import_object("xotl.tools.objects.import_object") is import_object
+    assert import_object("xotl.tools.objects:import_object") is import_object
 
 
 def test_delegator():
-    from xoutil.objects import delegator
+    from xotl.tools.objects import delegator
 
     class Bar:
         x = object()
@@ -632,7 +614,7 @@ def test_delegator():
 
 
 def test_final_subclasses():
-    from xoutil.objects import get_final_subclasses
+    from xotl.tools.objects import get_final_subclasses
 
     class Base:
         pass
@@ -654,7 +636,7 @@ def test_final_subclasses():
 
 
 def test_FinalSubclassEnumeration():
-    from xoutil.objects import FinalSubclassEnumeration
+    from xotl.tools.objects import FinalSubclassEnumeration
 
     class Base:
         pass

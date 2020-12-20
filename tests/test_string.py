@@ -12,7 +12,7 @@ from hypothesis.strategies import text
 
 
 def test_slugify():
-    from xoutil.string import slugify
+    from xotl.tools.string import slugify
 
     value = "  Á.e i  Ó  u  "
     options = dict(encoding="utf-8")
@@ -38,8 +38,8 @@ valid_replacements = text().filter(lambda x: "\\" not in x)
 @example(s="0/0", invalid_chars="-", replacement="-")
 def test_slugify_hypothesis(s, invalid_chars, replacement):
     # TODO: (s='0:0', invalid_chars='z', replacement='ź')
-    from xoutil.string import slugify
-    from xoutil.string import force_ascii
+    from xotl.tools.string import slugify
+    from xotl.tools.string import force_ascii
 
     assert " " not in slugify(s), "Slugs do not contain spaces"
 
@@ -58,7 +58,7 @@ def test_slugify_hypothesis(s, invalid_chars, replacement):
 
 @given(s=text(), p=text())
 def test_cutting_is_inverse_to_adding(s, p):
-    from xoutil.string import cut_prefix, cut_suffix
+    from xotl.tools.string import cut_prefix, cut_suffix
 
     assert cut_prefix(p + s, p) == s
     assert cut_suffix(s + p, p) == s
@@ -68,7 +68,7 @@ def test_cutting_is_inverse_to_adding(s, p):
 
 @given(s=text(), p=text())
 def test_cutting_is_stable(s, p):
-    from xoutil.string import cut_prefix, cut_suffix
+    from xotl.tools.string import cut_prefix, cut_suffix
 
     if not s.startswith(p):
         assert cut_prefix(s, p) == s == cut_prefix(cut_prefix(s, p), p)

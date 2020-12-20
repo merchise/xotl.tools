@@ -9,7 +9,7 @@
 
 
 def test_csv():
-    from xoutil.future.csv import parse, DefaultDialect
+    from xotl.tools.future.csv import parse, DefaultDialect
 
     data = [
         "A,B,C,D",

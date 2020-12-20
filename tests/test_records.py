@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 from datetime import datetime, date
 
-from xoutil.records import record, datetime_reader, date_reader
+from xotl.tools.records import record, datetime_reader, date_reader
 
 from hypothesis import given
 from hypothesis.strategies import composite, text, integers, datetimes
@@ -132,7 +132,7 @@ class TestRecords(unittest.TestCase):
         self.assertEqual(invoice.update_datetime, tomorrow)
 
     def test_default_values(self):
-        from xoutil.records import float_reader
+        from xotl.tools.records import float_reader
 
         class LINE(record):
             DEBIT = "Debit"
@@ -174,6 +174,7 @@ class TestDateTimeReader(unittest.TestCase):
             _moment_reader = datetime_reader(FMT, nullable=False, strict=False)
 
         inst = rec(["201-12-17"])
+
         self.assertEqual(inst.moment, datetime(201, 12, 17))
 
     @patch("dateutil.parser.parse", None)

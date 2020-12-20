@@ -64,6 +64,8 @@ If you convert your euros to dollars::
 .. _ISO 4217: https://en.wikipedia.org/wiki/ISO_4217
 
 """
+from typing import Dict, ClassVar
+from .meta import Quantity, Signature
 
 
 class ValueType(type):
@@ -103,12 +105,11 @@ class Rate(metaclass=RateType):
 
 
 class _Currency:
-    instances = {}
-    units = {}
+    instances: ClassVar[Dict[str, "_Currency"]] = {}
+    units: ClassVar[Dict[str, Quantity]] = {}
+    name: str
 
-    def __new__(cls, name):
-        from .meta import Quantity, Signature
-
+    def __new__(cls, name: str):
         name = name.upper()
         res = cls.instances.get(name, None)
         if res is None:
@@ -125,9 +126,15 @@ class _Currency:
     def unit(self):
         return self.units[self.name]
 
+    def __eq__(self, other):
+        if isinstance(other, _Currency):
+            return self.name == other.name
+        return NotImplemented
+
+    def __hash__(self):
+        return hash(self.name)
+
 
 def currency(name):
-    """Get the canonical value for the given currency `name`.
-
-    """
+    """Get the canonical value for the given currency `name`."""
     return _Currency(name).unit

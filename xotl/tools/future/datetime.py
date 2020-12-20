@@ -22,7 +22,7 @@ You may use this module as a drop-in replacement of the standard library
 """
 
 from datetime import *  # noqa
-from datetime import timedelta
+from datetime import timedelta, date, datetime
 import datetime as _stdlib  # noqa
 
 from re import compile as _regex_compile
@@ -285,8 +285,7 @@ def get_next_month(ref=None, lastday=False):
 
 
 def is_full_month(start, end):
-    """Returns true if the arguments comprises a whole month.
-    """
+    """Returns true if the arguments comprises a whole month."""
     sd, sm, sy = start.day, start.month, start.year
     em, ey = end.month, end.year
     return (
@@ -557,7 +556,6 @@ class TimeSpan:
             return True
 
     def __contains__(self, other):
-        # type: (date) -> bool
         """Test date `other` is in the time span."""
         if isinstance(other, date):
             if isinstance(other, datetime):
@@ -574,33 +572,27 @@ class TimeSpan:
             return False
 
     def overlaps(self, other):
-        # type: (TimeSpan) -> bool
         """Test if the time spans overlaps."""
         return bool(self & other)
 
     def isdisjoint(self, other):
-        # type: (TimeSpan) -> bool
         return not self.overlaps(other)
 
     def __le__(self, other):
-        # type: (TimeSpan) -> bool
         "True if `other` is a superset."
         return (self & other) == self
 
     issubset = __le__
 
     def __lt__(self, other):
-        # type: (TimeSpan) -> bool
         "True if `other` is a proper superset."
         return self != other and self <= other
 
     def __gt__(self, other):
-        # type: (TimeSpan) -> bool
         "True if `other` is a proper subset."
         return self != other and self >= other
 
     def __ge__(self, other):
-        # type: (TimeSpan) -> bool
         "True if `other` is a subset."
         # Notice that ge is not the opposite of lt.
         return (self & other) == other
@@ -608,16 +600,14 @@ class TimeSpan:
     issuperset = covers = __ge__
 
     def __iter__(self):
-        # type: () -> Iterator[date]
         yield self.start_date
         yield self.end_date
 
     def __getitem__(self, index):
-        # type: (int) -> date
         this = tuple(self)
         return this[index]
 
-    def __eq__(self, other: Union[date, "TimeSpan"]) -> bool:  # type: ignore
+    def __eq__(self, other):
         if isinstance(other, date):
             other = type(self).from_date(other)
         elif isinstance(other, DateTimeSpan):
@@ -630,7 +620,6 @@ class TimeSpan:
         return hash((TimeSpan, self.start_date, self.end_date))
 
     def __and__(self, other):
-        # type: (TimeSpan) -> TimeSpan
         """Get the time span that is the intersection with another time span.
 
         If two time spans don't overlap, return `EmptyTimeSpan`:data:.
@@ -737,7 +726,6 @@ class TimeSpan:
         return reduce(operator.mul, others, self)
 
     def diff(self, other):
-        # type: (TimeSpan) -> Tuple[TimeSpan, TimeSpan]
         """Return the two time spans which (combined) contain all the dates in
         `self` which are not in `other`.
 
@@ -1044,9 +1032,7 @@ class DateTimeSpan(TimeSpan):
         """
         if isinstance(other, date):
             if not isinstance(other, datetime):
-                other = datetime(  # type: ignore
-                    other.year, other.month, other.day
-                )
+                other = datetime(other.year, other.month, other.day)  # type: ignore
             if self.start_datetime and self.end_datetime:
                 return self.start_datetime <= other <= self.end_datetime
             elif self.start_datetime:

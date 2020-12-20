@@ -9,7 +9,7 @@
 
 
 def test_ppformat_rtype():
-    from xoutil.future.pprint import ppformat
+    from xotl.tools.future.pprint import ppformat
 
     o = [list(range(i + 1)) for i in range(10)]
     assert type(ppformat(o)) is str

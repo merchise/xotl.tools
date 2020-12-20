@@ -10,7 +10,7 @@ from hypothesis import strategies as s, given, example
 
 
 def test_fp_compose():
-    from xoutil.fp.tools import identity, compose, pos_args, kw_args, full_args
+    from xotl.tools.fp.tools import identity, compose, pos_args, kw_args, full_args
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__
@@ -45,7 +45,7 @@ def test_fp_compose():
 
 def test_fp_compose_wrapable():
     from functools import wraps
-    from xoutil.fp.tools import compose
+    from xotl.tools.fp.tools import compose
 
     def wrapper():
         "X"
@@ -58,7 +58,7 @@ def test_fp_compose_wrapable():
 
 
 def test_fp_tools():
-    from xoutil.fp.tools import identity, compose
+    from xotl.tools.fp.tools import identity, compose
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__
@@ -93,7 +93,7 @@ def test_fp_tools():
 @given(s.integers(min_value=0, max_value=20))
 @example(4)
 def test_fp_kleisli_compose(n):
-    from xoutil.fp.iterators import kleisli_compose
+    from xotl.tools.fp.iterators import kleisli_compose
 
     def fullrange(n):
         "[0..n]"
@@ -118,7 +118,7 @@ def test_fp_kleisli_compose(n):
 
 
 def test_fp_kleisli_compose4():
-    from xoutil.fp.iterators import kleisli_compose
+    from xotl.tools.fp.iterators import kleisli_compose
 
     def fullrange(n):
         "[0..n]"
@@ -137,3 +137,31 @@ def test_fp_kleisli_compose4():
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
     odd_seqs = kleisli_compose(id_, fullrange, id_, id_, odds, id_)
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
+
+
+anything = (
+    s.integers()
+    | s.dictionaries(s.text(), s.integers())
+    | s.text()
+    | s.tuples(s.integers())
+)
+anyargs = s.tuples(anything)
+
+
+@given(anything, anyargs)
+def test_constant(val, args):
+    from xotl.tools.fp.tools import constant
+
+    fn = constant(val)
+    assert fn(*args) is val
+
+
+if __name__ == "__main__":
+    # Allow to run this test as an independent python script, for example:
+    #   monkeytype run tests/test_fp.py
+    test_fp_compose()
+    test_fp_compose_wrapable()
+    test_fp_tools()
+    test_fp_kleisli_compose()
+    test_fp_kleisli_compose4()
+    test_constant()

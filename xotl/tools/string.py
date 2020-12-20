@@ -6,14 +6,13 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 """Some additions for `string` standard module.
 
 In Python 3 `str` is always unicode but `unicode` and `basestring` types
 doesn't exists.  `bytes` type can be used as an array of one byte each item.
 
 """
-
+from typing import Any, Optional, Pattern
 
 from xotl.tools.deprecation import deprecated  # noqa
 from xotl.tools.deprecation import import_deprecated  # noqa
@@ -35,13 +34,11 @@ def safe_strip(value):
 
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
 # some module dedicated to "string trimming".
-
-
 try:
     cut_prefix = str.removeprefix
 except AttributeError:
 
-    def cut_prefix(value, prefix):
+    def cut_prefix(self: str, prefix: str) -> str:
         """Removes the leading `prefix` if exists, else return `value`
         unchanged.
 
@@ -50,14 +47,14 @@ except AttributeError:
         """
         from xotl.tools.future.codecs import safe_encode, safe_decode
 
-        if isinstance(value, str) and isinstance(prefix, bytes):
+        if isinstance(self, str) and isinstance(prefix, bytes):
             prefix = safe_decode(prefix)
-        elif isinstance(value, bytes) and isinstance(prefix, str):
+        elif isinstance(self, bytes) and isinstance(prefix, str):
             prefix = safe_encode(prefix)
-        return value[len(prefix) :] if value.startswith(prefix) else value
+        return self[len(prefix) :] if self.startswith(prefix) else self
 
 
-def cut_any_prefix(value, *prefixes):
+def cut_any_prefix(value: str, *prefixes: str) -> str:
     """Apply `cut_prefix`:func: for the first matching prefix."""
     result = prev = value
     i, top = 0, len(prefixes)
@@ -67,7 +64,7 @@ def cut_any_prefix(value, *prefixes):
     return result
 
 
-def cut_prefixes(value, *prefixes):
+def cut_prefixes(value: str, *prefixes: str) -> str:
     """Apply `cut_prefix`:func: for all provided prefixes in order."""
     result = value
     for prefix in prefixes:
@@ -79,7 +76,7 @@ try:
     cut_suffix = str.removesuffix
 except AttributeError:
 
-    def cut_suffix(value, suffix):
+    def cut_suffix(self: str, suffix: str) -> str:
         """Removes the tailing `suffix` if exists, else return `value`
         unchanged.
 
@@ -88,20 +85,20 @@ except AttributeError:
         """
         from xotl.tools.future.codecs import safe_decode, safe_encode
 
-        if isinstance(value, str) and isinstance(suffix, bytes):
+        if isinstance(self, str) and isinstance(suffix, bytes):
             suffix = safe_decode(suffix)
-        elif isinstance(value, bytes) and isinstance(suffix, str):
+        elif isinstance(self, bytes) and isinstance(suffix, str):
             suffix = safe_encode(suffix)
         # Since value.endswith('') is always true but value[:-0] is actually
         # always value[:0], which is always '', we have to explictly test for
         # len(suffix)
-        if len(suffix) > 0 and value.endswith(suffix):
-            return value[: -len(suffix)]
+        if len(suffix) > 0 and self.endswith(suffix):
+            return self[: -len(suffix)]
         else:
-            return value
+            return self
 
 
-def cut_any_suffix(value, *suffixes):
+def cut_any_suffix(value: str, *suffixes: str) -> str:
     """Apply `cut_suffix`:func: for the first matching suffix."""
     result = prev = value
     i, top = 0, len(suffixes)
@@ -111,7 +108,7 @@ def cut_any_suffix(value, *suffixes):
     return result
 
 
-def cut_suffixes(value, *suffixes):
+def cut_suffixes(value: str, *suffixes: str) -> str:
     """Apply `cut_suffix`:func: for all provided suffixes in order."""
     result = value
     for suffix in suffixes:
@@ -119,7 +116,7 @@ def cut_suffixes(value, *suffixes):
     return result
 
 
-def force_ascii(value, encoding=None):
+def force_ascii(value: Any, encoding: str = None) -> str:
     """Return the string normal form for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'
@@ -135,7 +132,7 @@ def force_ascii(value, encoding=None):
 
     """
     import unicodedata
-    from xotl.tools.future.codecs import safe_decode
+    from .future.codecs import safe_decode
 
     ASCII, IGNORE = "ascii", "ignore"
     if not isinstance(value, str):
@@ -144,7 +141,7 @@ def force_ascii(value, encoding=None):
     return str(res, ASCII, IGNORE)
 
 
-def slugify(value, *args, **kwds):
+def slugify(value: Any, *args, **kwds) -> str:
     """Return the normal-form of a given string value that is valid for slugs.
 
     Convert all non-ascii to valid characters, whenever possible, using
@@ -244,14 +241,13 @@ def slugify(value, *args, **kwds):
 
     """
     import re
-    from xotl.tools.params import ParamManager
 
-    from xotl.tools.values import compose, istype
-    from xotl.tools.values.simple import not_false, ascii_coerce
+    from .params import ParamManager
+    from .values import compose, istype
+    from .values.simple import not_false, ascii_coerce
 
     _str = compose(not_false(""), istype(str))
     _ascii = compose(_str, ascii_coerce)
-    _set = compose(_ascii, lambda v: "".join(set(v)))
 
     # local functions
     def _normalize(v):
@@ -286,6 +282,7 @@ def slugify(value, *args, **kwds):
         if not isinstance(invalid_chars, str):
             invalid_chars = "".join(invalid_chars)
         invalid_chars = _set(invalid_chars)
+    invalid_regex: Optional[Pattern]
     if invalid_chars:
         invalid_regex = re.compile(r"[{}]+".format(invalid_chars))
         if invalid_regex.search(replacement):
@@ -344,7 +341,7 @@ def error2str(error):
         return prefix + res
 
 
-def make_a10z(string):
+def make_a10z(string: str) -> str:
     """Utility to find out that "internationalization" is "i18n".
 
     Examples::
@@ -356,7 +353,7 @@ def make_a10z(string):
 
 
 @deprecated(slugify)
-def normalize_slug(value, *args, **kwds):
+def normalize_slug(value: Any, *args, **kwds) -> str:
     return slugify(value, *args, **kwds)
 
 

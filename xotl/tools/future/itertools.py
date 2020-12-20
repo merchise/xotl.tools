@@ -16,13 +16,27 @@
 import sys
 from itertools import *  # noqa
 
-from typing import Callable, Iterable, TypeVar
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    Iterator,
+    List,
+    Tuple,
+    TypeVar,
+    Optional,
+    Union,
+    cast,
+)
 
 from xotl.tools.symbols import Unset
 from xotl.tools.deprecation import deprecated_alias, deprecated
 
 map = deprecated_alias(map, removed_in_version="3.0", check_version=True)
 zip = deprecated_alias(zip, removed_in_version="3.0", check_version=True)
+
+T = TypeVar("T")
+X = TypeVar("X")
 
 
 def first_non_null(iterable, default=None):
@@ -209,7 +223,9 @@ def delete_duplicates(seq, key=lambda x: x):
     return seq
 
 
-def iter_delete_duplicates(iter, key=lambda x: x):
+def iter_delete_duplicates(
+    iter: Iterable[T], key: Callable[[T], Any] = lambda x: x
+) -> Iterable[T]:
     """Yields non-repeating (and consecutive) items from `iter`.
 
     `key` has the same meaning as in `delete_duplicates`:func:.
@@ -233,7 +249,9 @@ def iter_delete_duplicates(iter, key=lambda x: x):
         last = k
 
 
-def iter_without_duplicates(it, key=lambda x: x):
+def iter_without_duplicates(
+    it: Iterable[T], key: Callable[[T], Any] = lambda x: x
+) -> Iterable[T]:
     """Yields non-repeating items from `iter`.
 
     `key` has the same meaning as in `delete_duplicates`:func:.
@@ -257,7 +275,11 @@ def iter_without_duplicates(it, key=lambda x: x):
             done.add(k)
 
 
-def slides(iterable, width=2, fill=None):
+def slides(
+    iterable: Iterable[T],
+    width: int = 2,
+    fill: X = None,
+) -> Iterable[Tuple[Optional[Union[T, X]], ...]]:
     """Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
@@ -280,13 +302,14 @@ def slides(iterable, width=2, fill=None):
     from collections.abc import Iterable
 
     pos = 0
-    res = []
+    res: List[Union[T, X, None]] = []
     iterator = iter(iterable)
-    current = next(iterator, Unset)
-    while current is not Unset:
+    unset = cast(T, Unset)
+    current = next(iterator, unset)
+    while current is not unset:
         if pos < width:
             res.append(current)
-            current = next(iterator, Unset)
+            current = next(iterator, unset)
             pos = pos + 1
         else:
             yield tuple(res)
@@ -294,16 +317,18 @@ def slides(iterable, width=2, fill=None):
             pos = 0
     if res:
         if isinstance(fill, Iterable):
-            fill = cycle(fill)
+            filler: Iterator[Optional[X]] = cycle(fill)
         else:
-            fill = repeat(fill)
+            filler = repeat(fill)
         while pos < width:
-            res.append(next(fill))
+            res.append(next(filler))
             pos += 1
         yield tuple(res)
 
 
-def continuously_slides(iterable, width=2, fill=None):
+def continuously_slides(
+    iterable: Iterable[T], width: int = 2, fill: X = None
+) -> Iterable[Tuple[Optional[Union[T, X]], ...]]:
     """Similar to `slides`:func: but moves one item at the time (i.e
     continuously).
 
@@ -318,17 +343,18 @@ def continuously_slides(iterable, width=2, fill=None):
 
     """
     i = iter(iterable)
-    res = []
+    res: List[Union[T, X, None]] = []
     while len(res) < width:
         current = next(i, fill)
         res.append(current)
     yield tuple(res)
-    current = next(i, Unset)
-    while current is not Unset:
+    unset = cast(T, Unset)
+    current = next(i, unset)
+    while current is not unset:
         res.pop(0)
         res.append(current)
         yield tuple(res)
-        current = next(i, Unset)
+        current = next(i, unset)
 
 
 @deprecated(
@@ -390,7 +416,7 @@ def first_n(iterable, n=1, fill=Unset):
     return islice(seq, n)
 
 
-def ungroup(iterator):
+def ungroup(iterator: Iterable[Tuple[X, Iterable[T]]]) -> Iterable[T]:
     """Reverses the operation of `itertools.groupby`:func: (or similar).
 
     The `iterator` should produce pairs of ``(_, xs)``; where ``xs`` is

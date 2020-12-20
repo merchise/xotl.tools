@@ -6,9 +6,7 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
-
-from xoutil.keywords import getkwd, setkwd, kwd_getter, kwd_setter, org_kwd
+from xotl.tools.keywords import getkwd, setkwd, kwd_getter, kwd_setter, org_kwd
 
 
 def test_keywords():

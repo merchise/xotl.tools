@@ -9,13 +9,13 @@
 
 
 import unittest
-from xoutil.symbols import boolean
+from xotl.tools.symbols import boolean
 
 
 class BooleanTests(unittest.TestCase):
     def test_singletons(self):
         from sys import intern
-        from xoutil.symbols import Unset
+        from xotl.tools.symbols import Unset
 
         foo = "Un"
         bar = "set"
@@ -70,11 +70,13 @@ class BooleanTests(unittest.TestCase):
 def test_symbols_is_importable():
     import sys
 
-    modules = {mod: sys.modules[mod] for mod in sys.modules if mod.startswith("xoutil")}
+    modules = {
+        mod: sys.modules[mod] for mod in sys.modules if mod.startswith("xotl.tools.")
+    }
     for mod in modules:
         sys.modules.pop(mod)
     try:
-        import xoutil.symbols  # noqa
+        import xotl.tools.symbols  # noqa
     finally:
         for modname, mod in modules.items():
             sys.modules[modname] = mod
