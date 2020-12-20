@@ -21,7 +21,7 @@ stages:
     - tox -e system-staticcheck
   only:
     refs:
-      - master
+      - main
       - merge_requests
     changes:
       - xotl/tools/**/*.py
@@ -81,7 +81,7 @@ run all Python 3.8 tests without greenlets:
     PYTHON: "3.8"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -100,7 +100,7 @@ run all Python 3.8 tests with greenlets:
     PYTHON: "3.8"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -118,7 +118,7 @@ run all Python 3.9 tests without greenlets:
     PYTHON: "3.9"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -137,7 +137,7 @@ run all Python 3.9 tests with greenlets:
     PYTHON: "3.9"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -156,7 +156,7 @@ run all Python 3.6 tests without greenlets:
     PYTHON: "3.6"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -174,7 +174,7 @@ run all Python 3.6 tests with greenlets:
     PYTHON: "3.6"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -192,7 +192,7 @@ run all Python 3.7 tests without greenlets:
     PYTHON: "3.7"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -210,7 +210,7 @@ run all Python 3.7 tests with greenlets:
     PYTHON: "3.7"
   only:
     refs:
-      - master
+      - main
       - /^releases-2/
       - merge_requests
     changes:
@@ -323,7 +323,7 @@ build documentation:
   only:
     refs:
       - /^releases-/
-      - master
+      - main
       - merge_requests
     changes:
       - docs/**/*.rst
@@ -376,7 +376,7 @@ publish in our RTD:
   only:
     refs:
       - /^releases-/
-      - master
+      - main
       - merge_requests
     changes:
       - docs/**/*.rst
@@ -393,7 +393,7 @@ publish in our RTD:
 automatically remove MR documentation from our RTD server after 4 hours:
   stage: clean up
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
       when: never
     - if: '$CI_COMMIT_REF_NAME == "release-1.9.x"'
       when: never
