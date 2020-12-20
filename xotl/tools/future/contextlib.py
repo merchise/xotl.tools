@@ -21,12 +21,3 @@ import contextlib as _stdlib  # noqa
 from contextlib import *  # noqa
 
 __all__ = list(getattr(_stdlib, "__all__", []))
-
-
-try:
-    # New in version 3.5 of standard library.
-    redirect_stderr  # noqa
-except NameError:
-    from contextlib2 import redirect_stderr  # noqa
-
-    __all__.append("redirect_stderr")

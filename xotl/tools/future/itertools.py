@@ -276,7 +276,9 @@ def iter_without_duplicates(
 
 
 def slides(
-    iterable: Iterable[T], width: int = 2, fill: X = None
+    iterable: Iterable[T],
+    width: int = 2,
+    fill: X = None,
 ) -> Iterable[Tuple[Optional[Union[T, X]], ...]]:
     """Creates a sliding window of a given `width` over an iterable::
 
