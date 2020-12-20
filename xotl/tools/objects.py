@@ -9,6 +9,7 @@
 
 """Several utilities for objects in general."""
 
+import sys
 from contextlib import contextmanager
 
 from xotl.tools.symbols import Unset
@@ -1046,8 +1047,29 @@ class xproperty(property):
         return self.fget(instance if instance is not None else owner)
 
 
-class classproperty(property):
-    """A descriptor that behaves like property for instances but for classes.
+if sys.version_info >= (3, 9):
+
+    def classproperty(*args, **kwargs):
+        return classmethod(property(*args, **kwargs))
+
+
+else:
+
+    class classproperty(property):
+        def __get__(self, instance, owner):
+            obj = type(instance) if instance is not None else owner
+            return super().__get__(obj, owner)
+
+        def __set__(self, instance, value):
+            obj = instance if isinstance(instance, type) else type(instance)
+            super().__set__(obj, value)
+
+        def __delete__(self, instance):
+            obj = instance if isinstance(instance, type) else type(instance)
+            super().__delete__(obj)
+
+
+classproperty.__doc__ = """A descriptor that behaves like property for instances but for classes.
 
     Example of its use::
 
@@ -1070,23 +1092,18 @@ class classproperty(property):
                 cls.x = int(x)
             name = classproperty(_get_name, _set_name)
 
+    In Python 3.9+ this is actually the `composition
+    <xotl.tools.fp.tools.compose>`:class: of `classmethod`:any: to
+    `property`:any:.
+
     .. versionadded:: 1.4.1
 
     .. versionchanged:: 1.8.0 Inherits from `property`
 
+    .. versionchanged:: 2.11.0 Changed to be ``compose(classmethod,
+       property)`` in Python 3.9+.
+
     """
-
-    def __get__(self, instance, owner):
-        obj = type(instance) if instance is not None else owner
-        return super().__get__(obj, owner)
-
-    def __set__(self, instance, value):
-        obj = instance if isinstance(instance, type) else type(instance)
-        super().__set__(obj, value)
-
-    def __delete__(self, instance):
-        obj = instance if isinstance(instance, type) else type(instance)
-        super().__delete__(obj)
 
 
 class staticproperty(property):
@@ -1783,4 +1800,4 @@ class DelegatedAttribute:
         return "<DelegatedAttr '%s.%s'>" % (self.target_name, self.attr)
 
 
-del contextmanager, deprecated
+del contextmanager, deprecated, sys
