@@ -8,7 +8,7 @@
   the base property if available.
 
 - Comparing quantities of different dimensions (`xotl.tools.dim`:mod:) no
-  longer raises a TypeError, but we'll return NotImplemented.
+  longer raises a TypeError, but returns NotImplemented.
 
   For ``==`` this means that Python will return False.  For other comparison
   operators (``<``, ``<=``, etc.), if Python cannot reverse the operation, it
