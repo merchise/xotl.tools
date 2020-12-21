@@ -1092,9 +1092,9 @@ classproperty.__doc__ = """A descriptor that behaves like property for instances
                 cls.x = int(x)
             name = classproperty(_get_name, _set_name)
 
-    In Python 3.9+ this is actually the `composition
-    <xotl.tools.fp.tools.compose>`:class: of `classmethod`:any: to
-    `property`:any:.
+    In Python 3.9+ this is actually the composition of `classmethod`:any: to
+    `property`:any: (i.e same as ``lambda *a, **kw: classmethod(property(*a,
+    **kw))``).
 
     .. versionadded:: 1.4.1
 
