@@ -305,7 +305,7 @@ publish in pypi:
     - pip install -e .
     - make -C docs/ html
     - mkdir -p public
-    - cp -rf docs/build/html/* public/*
+    - cp -r docs/build/html/* public/
   artifacts:
     paths:
       - docs/build/html
