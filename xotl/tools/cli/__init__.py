@@ -23,7 +23,7 @@ Commands can be registered by:
 
   - sub-classing the `Command`:class:,
   - using `~abc.ABCMeta.register`:meth: ABC mechanism for virtual sub-classes,
-  - redefining `~`Command.sub_commands`` class method.
+  - redefining ``Command.sub_commands`` class method.
 
 .. versionadded:: 1.4.1
 
