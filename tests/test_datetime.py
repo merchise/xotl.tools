@@ -98,6 +98,7 @@ def test_comparision(ts1, ts2):
 
 
 @given(timespans(), datetimespans())
+@settings(deadline=500)
 def test_interaction_timespan_with_datetimespans(ts, dts):
     assert isinstance(dts & ts, (DateTimeSpan, type(EmptyTimeSpan)))
     assert isinstance(ts & dts, (DateTimeSpan, type(EmptyTimeSpan)))
