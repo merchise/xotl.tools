@@ -304,9 +304,12 @@ publish in pypi:
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
+    - mkdir -p public
+    - cp -rf docs/build/html/* public/*
   artifacts:
     paths:
       - docs/build/html
+      - public
     expire_in: 4 days
   needs: []
 
@@ -317,6 +320,11 @@ build documentation for releases:
       - tags
     variables:
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
+
+pages:
+  <<: *build_doc
+  only:
+    - releases-2.1.x
 
 build documentation:
   <<: *build_doc
