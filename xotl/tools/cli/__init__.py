@@ -11,7 +11,7 @@
 
 .. warning:: Deprecated since 2.1.11
 
-.. deprecated:: 2.1.11 This module is completely deprecated.  Please a
+.. deprecated:: 2.1.11 This module is completely deprecated.  Please use a
    dedicated package like `click`_.
 
 
