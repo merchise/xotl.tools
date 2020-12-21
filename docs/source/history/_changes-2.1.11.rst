@@ -13,3 +13,8 @@
   For ``==`` this means that Python will return False.  For other comparison
   operators (``<``, ``<=``, etc.), if Python cannot reverse the operation, it
   raises a TypeError.
+
+- Deprecates module `xotl.tools.cli`:mod:.  This module hasn't been maintained
+  for long and there are better alternatives in out there (e.g click_).
+
+.. _click: https://click.palletsprojects.com/
