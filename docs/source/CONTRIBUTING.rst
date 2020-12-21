@@ -134,7 +134,3 @@ We divide xoutil modules into 4 tiers:
 
 The tiers above are a "logical suggestion" of how xoutil modules are organized
 and indicated how they might evolve.
-
-
-.. [#py-for-tests] See definitive list of needed Python interpreters in
-                   ``tox.ini`` file.
