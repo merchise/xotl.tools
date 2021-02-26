@@ -75,23 +75,30 @@ run static checks in Python 3.9:
     - tox -e system-greenlets
 
 
+.x-trigger-tests: &changes-to-trigger-tests
+  changes:
+    - xotl/tools/**/*.py
+    - tests/**/*.py
+    - xoutil/**/*.py
+    - pyproject.toml
+    - setup.py
+    - setup.cfg
+    - tox.ini
+    - .gitlab-ci.yml
+
+.x-refs-requiring-tests: &refs-to-trigger-tests
+  refs:
+    - master
+    - /^releases-2/
+    - merge_requests
+
 run all Python 3.8 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.8"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
 
 run all Python 3.8 tests with greenlets:
@@ -99,136 +106,68 @@ run all Python 3.8 tests with greenlets:
   variables:
     PYTHON: "3.8"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
 run all Python 3.9 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.9"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
 run all Python 3.9 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
   variables:
     PYTHON: "3.9"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
 run all Python 3.6 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.6"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
 run all Python 3.6 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
   variables:
     PYTHON: "3.6"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
 run all Python 3.7 tests without greenlets:
   <<: *run_tox_tests_no_greenlets
   variables:
     PYTHON: "3.7"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
 run all Python 3.7 tests with greenlets:
   <<: *run_tox_tests_with_greenlets
   variables:
     PYTHON: "3.7"
   only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+    <<: *refs-to-trigger-tests
+    <<: *changes-to-trigger-tests
 
-build source distribution:
+
+.build_sdist: &build_sdist
   image: python:3.8-alpine
   stage: build
   script:
     - apk add git
     - python setup.py sdist
     - PROJECT_NAME=xoutil python3 setup.py sdist
+
+build source distribution:
+  <<: *build_sdist
   artifacts:
     paths:
       - dist/
@@ -238,14 +177,16 @@ build source distribution:
     variables:
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
-
-build binary distribution:
+.build_wheel: &build_wheel
   image: python:3.8-alpine
   stage: build
   script:
     - apk add git
     - python3 setup.py bdist_wheel
     - PROJECT_NAME=xoutil python3 setup.py bdist_wheel
+
+build binary distribution:
+  <<: *build_wheel
   artifacts:
     expire_in: 4 hours
     paths:
@@ -328,7 +269,7 @@ pages:
 
 build documentation:
   <<: *build_doc
-  only:
+  only: &when-building-documentation-only
     refs:
       - /^releases-/
       - main
@@ -341,6 +282,7 @@ build documentation:
       - xoutil/**/*.py
       - setup.py
       - setup.cfg
+      - pyproject.toml
       - tox.ini
       - .gitlab-ci.yml
 
@@ -382,21 +324,7 @@ publish in our RTD:
   needs:
     - build documentation
   only:
-    refs:
-      - /^releases-/
-      - main
-      - merge_requests
-    changes:
-      - docs/**/*.rst
-      - docs/**/*.py
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
+    <<: *when-building-documentation-only
 
 automatically remove MR documentation from our RTD server after 4 hours:
   stage: clean up
