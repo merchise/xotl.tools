@@ -99,7 +99,8 @@ class ConstantWait:
 
 
 StandardWait = deprecated_alias(
-    ConstantWait, msg="StandardWait is deprecated. Use ConstantWait instead"
+    ConstantWait,
+    msg="StandardWait is deprecated. Use ConstantWait instead",
 )
 
 
@@ -204,8 +205,12 @@ class retrier:
     """
 
     def __init__(
-        self, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None
-    ):
+        self,
+        max_tries=None,
+        max_time=None,
+        wait=DEFAULT_WAIT_INTERVAL,
+        retry_only=None,
+    ) -> None:
         if not max_tries and not max_time:
             raise TypeError("One of tries or times must be set")
         self.max_tries = max_tries

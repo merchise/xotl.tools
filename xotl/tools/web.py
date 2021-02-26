@@ -14,7 +14,10 @@ __all__ = ["slugify"]
 
 # TODO: Why not deprecate this and use standard `xotl.tools.string.slugify`.
 def slugify(
-    s, entities=True, decimal=True, hexadecimal=True
+    s,
+    entities=True,
+    decimal=True,
+    hexadecimal=True,
 ):  # pragma: no cover  # noqa
     """Convert a string to a slug representation.
 
