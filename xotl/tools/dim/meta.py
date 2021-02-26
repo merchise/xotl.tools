@@ -206,7 +206,8 @@ class Quantity(numbers.Real):
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
                 type(self)(
-                    self.magnitude * other.magnitude, self.signature * other.signature
+                    self.magnitude * other.magnitude,
+                    self.signature * other.signature,
                 )
             )
         else:
@@ -229,7 +230,8 @@ class Quantity(numbers.Real):
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
                 type(self)(
-                    self.magnitude / other.magnitude, self.signature / other.signature
+                    self.magnitude / other.magnitude,
+                    self.signature / other.signature,
                 )
             )
         else:
@@ -243,7 +245,8 @@ class Quantity(numbers.Real):
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
                 type(self)(
-                    self.magnitude // other.magnitude, self.signature / other.signature
+                    self.magnitude // other.magnitude,
+                    self.signature / other.signature,
                 )
             )
         else:
@@ -254,7 +257,8 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
             return downgrade_to_scalar(
                 type(self)(
-                    other.magnitude / self.magnitude, other.signature / self.signature
+                    other.magnitude / self.magnitude,
+                    other.signature / self.signature,
                 )
             )
         else:
@@ -267,7 +271,8 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
             return downgrade_to_scalar(
                 type(self)(
-                    other.magnitude // self.magnitude, other.signature / self.signature
+                    other.magnitude // self.magnitude,
+                    other.signature / self.signature,
                 )
             )
         else:

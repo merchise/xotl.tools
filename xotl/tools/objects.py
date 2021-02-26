@@ -557,7 +557,13 @@ def build_documentation(cls, get_doc=None, deep=1):
     return res
 
 
-def fix_class_documentation(cls, ignore=None, min_length=10, deep=1, default=None):
+def fix_class_documentation(
+    cls,
+    ignore=None,
+    min_length=10,
+    deep=1,
+    default=None,
+):
     """Fix the documentation for the given class using its super-classes.
 
     This function may be useful for shells or Python Command Line Interfaces
@@ -591,7 +597,12 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1, default=Non
 
 
 def fix_method_documentation(
-    cls, method_name, ignore=None, min_length=10, deep=1, default=None
+    cls,
+    method_name,
+    ignore=None,
+    min_length=10,
+    deep=1,
+    default=None,
 ):
     """Fix the documentation for the given class using its super-classes.
 
@@ -1256,7 +1267,13 @@ def adapt_exception(value, **kwargs):
         return None
 
 
-def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
+def copy_class(
+    cls,
+    meta=None,
+    ignores=None,
+    new_attrs=None,
+    new_name=None,
+):
     """Copies a class definition to a new class.
 
     The returned class will have the same name, bases and module of `cls`.
