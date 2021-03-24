@@ -40,10 +40,24 @@
 
 .. autofunction:: temp_attributes(obj, attrs, getter=None, setter=None)
 
-.. autoclass:: memoized_property
-   :members: reset
+.. class:: memoized_property
+
+   A read-only property that is only evaluated once.
+
+   In Python 3.8+ this is based on `functools.cached_property`:class:.
+
+   In Python version before 3.8, this code is extracted from the SQLAlchemy
+   project's codebase, merit and copyright goes to SQLAlchemy authors::
+
+     Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+
+     This module is part of SQLAlchemy and is released under the MIT License:
+     http://www.opensource.org/licenses/mit-license.php
 
    .. versionadded:: 1.8.1 Ported from ``xoutil.decorator.memoized_property``.
+
+   .. versionadded:: 2.11.0 Subclass of `functools.cached_property`:class: in
+                     Python 3.8+.
 
 .. autofunction:: delegator
 

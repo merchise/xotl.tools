@@ -9,6 +9,12 @@
 
 """Tools for Command-Line Interface (CLI) applications.
 
+.. warning:: Deprecated since 2.1.11
+
+.. deprecated:: 2.1.11 This module is completely deprecated.  Please use a
+   dedicated package like `click`_.
+
+
 CLI is a mean of interaction with a computer program where the user (or
 client) issues commands to the program in the form of successive lines of text
 (command lines).
@@ -17,15 +23,23 @@ Commands can be registered by:
 
   - sub-classing the `Command`:class:,
   - using `~abc.ABCMeta.register`:meth: ABC mechanism for virtual sub-classes,
-  - redefining `~`Command.sub_commands`` class method.
+  - redefining ``Command.sub_commands`` class method.
 
 .. versionadded:: 1.4.1
+
+
+.. _click: https://click.palletsprojects.com/
 
 """
 
 from abc import abstractmethod, ABCMeta, ABC
 from xotl.tools.objects import staticproperty
 from xotl.tools.cli.tools import command_name, program_name
+
+from xotl.tools.deprecation import deprecate_module
+
+deprecate_module(__name__)
+del deprecate_module
 
 
 class CommandMeta(ABCMeta):
