@@ -922,37 +922,6 @@ def get_branch_subclasses(cls, *, include_this=False):
     return list(iter_branch_subclasses(cls, include_this=include_this))
 
 
-@deprecated(iter_branch_subclasses)
-def iter_final_subclasses(cls, *, include_this=True):
-    """Iterate over the final sub-classes of `cls`.
-
-    Final classes are those which has no sub-classes.  If `cls` is final, the
-    iterator yields only `cls` unless `include_this` is False.
-
-    .. versionadded:: 2.1.0
-
-    .. deprecated:: 2.1.5 This is actually a duplicate of
-                    `iter_branch_subclasses`:func:.
-
-    """
-    return iter_branch_subclasses(cls, include_this=include_this)
-
-
-@deprecated(get_branch_subclasses)
-def get_final_subclasses(cls, *, include_this=True):
-    """List final sub-classes of `cls`.
-
-    See `iter_final_subclasses`:func:.
-
-    .. versionadded:: 2.1.0
-
-    .. deprecated:: 2.1.5 This is a duplicate of
-                   `get_branch_subclasses`:func:.
-
-    """
-    return list(iter_final_subclasses(cls, include_this=include_this))
-
-
 def FinalSubclassEnumeration(superclass, *, dynamic=True):
     """A final sub-class enumeration.
 

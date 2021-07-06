@@ -14,23 +14,6 @@ doesn't exists.  `bytes` type can be used as an array of one byte each item.
 """
 from typing import Any, Optional, Pattern
 
-from xotl.tools.deprecation import deprecated  # noqa
-from xotl.tools.deprecation import import_deprecated  # noqa
-
-
-_MIGRATED_TO_CODECS = ("force_encoding", "safe_decode", "safe_encode")
-
-import_deprecated("xotl.tools.future.codecs", *_MIGRATED_TO_CODECS)
-
-
-@deprecated
-def safe_strip(value):
-    """Removes the leading and tailing space-chars from `value` if string, else
-    return `value` unchanged.
-
-    """
-    return value.strip() if isinstance(value, str) else value
-
 
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
 # some module dedicated to "string trimming".
@@ -350,11 +333,3 @@ def make_a10z(string: str) -> str:
        p13n
     """
     return string[0] + str(len(string[1:-1])) + string[-1]
-
-
-@deprecated(slugify)
-def normalize_slug(value: Any, *args, **kwds) -> str:
-    return slugify(value, *args, **kwds)
-
-
-del deprecated, import_deprecated

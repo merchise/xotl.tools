@@ -429,7 +429,10 @@ def test_copy_class():
     Egg = copy_class(Foo, ignores=["b", "c"])
     assert getattr(Egg, "b", Unset) is Unset
 
-    Egg = copy_class(Foo, ignores=[lambda k: index.get(k) and index.get(k) > 2])
+    Egg = copy_class(
+        Foo,
+        ignores=[lambda k: index.get(k) and index.get(k) > 2],
+    )
     assert Egg.a == Foo.a
     assert getattr(Egg, "c", Unset) is Unset
 
@@ -614,7 +617,7 @@ def test_delegator():
 
 
 def test_final_subclasses():
-    from xotl.tools.objects import get_final_subclasses
+    from xotl.tools.objects import get_branch_subclasses
 
     class Base:
         pass
@@ -631,8 +634,8 @@ def test_final_subclasses():
     class Final2(SubSub):
         pass
 
-    assert set(get_final_subclasses(Base)) == {Final, Final2}
-    assert set(get_final_subclasses(Final, include_this=False)) == set([])
+    assert set(get_branch_subclasses(Base)) == {Final, Final2}
+    assert set(get_branch_subclasses(Final, include_this=False)) == set([])
 
 
 def test_FinalSubclassEnumeration():

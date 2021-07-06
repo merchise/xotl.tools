@@ -31,8 +31,6 @@ from time import strftime as _time_strftime
 from enum import IntEnum
 from typing import Iterator, Tuple, Union  # noqa
 
-from xotl.tools.deprecation import deprecated
-
 
 class WEEKDAY(IntEnum):
     """Simple constants for 'weekday' method."""
@@ -56,37 +54,6 @@ class ISOWEEKDAY(IntEnum):
     FRIDAY = 5
     SATURDAY = 6
     SUNDAY = 7
-
-
-@deprecated("plain objects")
-def assure(obj):
-    """Make sure that a `date` or `datetime` instance is a safe version.
-
-    This is only a type checker alternative to standard library.
-
-    """
-    if isinstance(obj, (date, datetime, _stdlib.time, timedelta)):
-        return obj
-    else:
-        raise TypeError("Not valid type for datetime assuring: %s" % obj)
-
-
-@deprecated(assure)
-def new_date(d):
-    """Generate a safe date from a legacy datetime date object."""
-    return date(d.year, d.month, d.day)
-
-
-@deprecated(assure)
-def new_datetime(d):
-    """Generate a safe datetime given a legacy date or datetime object."""
-    args = [d.year, d.month, d.day]
-    if isinstance(d, datetime):
-        args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
-    return datetime(*args)
-
-
-del deprecated
 
 
 # This library does not support strftime's "%s" or "%y" format strings.

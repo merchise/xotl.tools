@@ -11,36 +11,16 @@ import pytest
 from hypothesis import strategies as s, given
 
 
-def test_first_n_no_filling():
-    from xotl.tools.future.itertools import first_n
-
-    with pytest.raises(StopIteration):
-        next(first_n((), 1))
-
-
-def test_first_n_filling_by_cycling():
-    from xotl.tools.future.itertools import first_n
-
-    assert list(first_n((), 10, range(5))) == [0, 1, 2, 3, 4] * 2
-
-
-def test_first_n_repeat_filling_by_repeating():
-    from xotl.tools.future.itertools import first_n
-    from itertools import repeat
-
-    assert list(first_n((), 10, "0")) == list(repeat("0", 10))
-
-
-def test_first_n_simple():
-    from xotl.tools.future.itertools import first_n
-
-    assert list(first_n(range(100), 10, 0)) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-
 def test_slides():
     from xotl.tools.future.itertools import slides
 
-    assert list(slides(range(1, 11))) == [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
+    assert list(slides(range(1, 11))) == [
+        (1, 2),
+        (3, 4),
+        (5, 6),
+        (7, 8),
+        (9, 10),
+    ]
 
 
 def test_slides_filling():
@@ -83,7 +63,9 @@ def keys(draw):
     return "k%d" % draw(s.integers(min_value=0, max_value=100))
 
 
-@given(s.dictionaries(keys(), s.integers()), s.dictionaries(keys(), s.integers()))
+@given(
+    s.dictionaries(keys(), s.integers()), s.dictionaries(keys(), s.integers())
+)
 def test_dict_update_new(d1, d2):
     from xotl.tools.future.itertools import dict_update_new
 
@@ -109,21 +91,27 @@ def test_delete_duplicates_with_key(l):
     from xotl.tools.future.itertools import delete_duplicates
 
     res = delete_duplicates(l, key=lambda x: x % 3)
-    assert len(res) <= 3, "key yields 0, 1, or 2; thus res can contain at most 3 items"
+    assert (
+        len(res) <= 3
+    ), "key yields 0, 1, or 2; thus res can contain at most 3 items"
 
 
 def test_iter_delete_duplicates():
     from xotl.tools.future.itertools import iter_delete_duplicates
 
     assert list(iter_delete_duplicates("AAAaBBBA")) == ["A", "a", "B", "A"]
-    assert list(iter_delete_duplicates("AAAaBBBA", key=lambda x: x.lower())) == [
+    assert list(
+        iter_delete_duplicates("AAAaBBBA", key=lambda x: x.lower())
+    ) == [
         "A",
         "B",
         "A",
     ]
 
     assert list(iter_delete_duplicates("AAAaBBBA")) == ["A", "a", "B", "A"]
-    assert list(iter_delete_duplicates("AAAaBBBA", key=lambda x: x.lower())) == [
+    assert list(
+        iter_delete_duplicates("AAAaBBBA", key=lambda x: x.lower())
+    ) == [
         "A",
         "B",
         "A",

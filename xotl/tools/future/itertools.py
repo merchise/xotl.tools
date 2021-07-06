@@ -224,7 +224,8 @@ def delete_duplicates(seq, key=lambda x: x):
 
 
 def iter_delete_duplicates(
-    iter: Iterable[T], key: Callable[[T], Any] = lambda x: x
+    iter: Iterable[T],
+    key: Callable[[T], Any] = lambda x: x,
 ) -> Iterable[T]:
     """Yields non-repeating (and consecutive) items from `iter`.
 
@@ -250,7 +251,8 @@ def iter_delete_duplicates(
 
 
 def iter_without_duplicates(
-    it: Iterable[T], key: Callable[[T], Any] = lambda x: x
+    it: Iterable[T],
+    key: Callable[[T], Any] = lambda x: x,
 ) -> Iterable[T]:
     """Yields non-repeating items from `iter`.
 
@@ -357,65 +359,6 @@ def continuously_slides(
         current = next(i, unset)
 
 
-@deprecated(
-    None, "first_n is deprecated and it will be removed, use stdlib's itertools.islice"
-)
-def first_n(iterable, n=1, fill=Unset):
-    """Takes the first `n` items from iterable.
-
-    If there are less than `n` items in the iterable and `fill` is
-    `~xotl.tools.symbols.Unset`:class:, a StopIteration exception is raised;
-    otherwise it's used as a filling pattern as explained below.
-
-    .. deprecated:: 2.1.6 Use `itertools.islice`:func:, if you need `fill` you
-       can also use `itertools.cycle`:func: or `itertools.repeat`:func:.
-
-    :param iterable: An iterable from which the first `n` items should be
-                     collected.
-
-    :param n: The number of items to collect
-    :type n: int
-
-    :param fill: The filling pattern to use. It may be:
-
-                 - a collection, in which case `first_n` fills the last items
-                   by cycling over `fill`.
-
-                 - anything else is used as the filling pattern by repeating.
-
-    :returns: The first `n` items from `iterable`, probably with a filling
-              pattern at the end.
-    :rtype: generator object
-
-    .. versionadded:: 1.2.0
-
-    .. versionchanged:: 1.4.0 The notion of collection for the `fill` argument
-                        uses ``xotl.tools.types.is_collection`` instead of
-                        probing for the ``__iter__`` method.
-
-    .. versionchanged:: 1.7.2 The notion of collection for the `fill` argument
-                        uses ``isinstance(fill, Iterable)`` replacing
-                        ``xotl.tools.types.is_collection``.  We must be
-                        consistent with `iterable` argument that allow an
-                        string as a valid iterable and `is_collection` not.
-
-    """
-    from itertools import islice
-
-    if fill is not Unset:
-        from collections.abc import Iterable
-        from itertools import cycle, repeat, chain
-
-        if isinstance(fill, Iterable):
-            fill = cycle(fill)
-        else:
-            fill = repeat(fill)
-        seq = chain(iterable, fill)
-    else:
-        seq = iter(iterable)
-    return islice(seq, n)
-
-
 def ungroup(iterator: Iterable[Tuple[X, Iterable[T]]]) -> Iterable[T]:
     """Reverses the operation of `itertools.groupby`:func: (or similar).
 
@@ -471,7 +414,9 @@ A = TypeVar("A")
 B = TypeVar("B")
 
 
-def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]:
+def zip_map(
+    funcs: Iterable[Callable[[A], B]], args: Iterable[A]
+) -> Iterable[B]:
     """Apply each function in `funcs` to its corresponding arguments.
 
     If the iterables are not of the same length, stop as soon as the shortest
