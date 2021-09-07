@@ -358,60 +358,6 @@ def deprecate_module(replacement, msg=None):
         warnings.warn(msg, stacklevel=2)
 
 
-@deprecated(import_deprecated)
-def inject_deprecated(funcnames, source, target=None):
-    """Injects a set of functions from a module into another.
-
-    The functions will be marked as deprecated in the target module.
-
-    :param funcnames: function names to take from the source module.
-
-    :param source: the module where the functions resides.
-
-    :param target: the module that will contains the deprecated functions.  If
-           ``None`` will be the module calling this function.
-
-    This function is provided for easing the deprecation of whole modules and
-    should not be used to do otherwise.
-
-    .. deprecated:: 1.8.0  Use `import_deprecated`:func:.
-
-    """
-    if not target:
-        import sys
-
-        frame = sys._getframe(1)
-        try:
-            target_locals = frame.f_locals
-        finally:
-            # As recommended to avoid memory leaks
-            del frame
-    else:
-        # FIX: @manu, there is a consistency error here, 'target_locals' is
-        # never assigned
-        pass
-    for targetname in funcnames:
-        unset = object()
-        target = getattr(source, targetname, unset)
-        if target is not unset:
-            testclasses = (types.FunctionType, types.LambdaType, type)
-            if isinstance(target, testclasses):
-                replacement = source.__name__ + "." + targetname
-                module_name = target_locals.get("__name__", None)
-                target_locals[targetname] = deprecated(replacement, DEFAULT_MSG, module_name)(
-                    target
-                )
-            else:
-                target_locals[targetname] = target
-        else:
-            warnings.warn(
-                "{targetname} was expected to be in {source}".format(
-                    targetname=targetname, source=source.__name__
-                ),
-                stacklevel=2,
-            )
-
-
 def deprecated_alias(f, **kwargs):
     """Declare a deprecated alias.
 

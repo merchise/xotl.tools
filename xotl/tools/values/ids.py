@@ -27,7 +27,7 @@ This module also contains:
 """
 
 from uuid import getnode  # noqa
-from uuid import (
+from uuid import (  # noqa
     NAMESPACE_DNS,
     NAMESPACE_OID,
     NAMESPACE_URL,

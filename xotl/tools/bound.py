@@ -204,7 +204,7 @@ class BoundaryCondition:
 
             def __call__(me, *args, **kwargs):
                 data = None
-                for data in me.generate(*args, **kwargs):
+                for data in me.generate(*args, **kwargs):  # noqa: B007
                     pass
                 return data
 

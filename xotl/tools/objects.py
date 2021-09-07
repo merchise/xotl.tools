@@ -1446,7 +1446,6 @@ def get_traverser(*paths, default=Unset, sep=".", getter=None):
     .. versionadded:: 1.5.3
 
     """
-    from xotl.tools.params import check_count
 
     def _traverser(path, default=default, sep=sep, getter=getter):
         if not getter:

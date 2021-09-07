@@ -16,7 +16,7 @@ document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
 
 from inspect import *  # noqa
 from inspect import _check_instance  # noqa
-from inspect import _check_class, _is_type, _sentinel, _shadowed_dict, _static_getmro
+from inspect import _check_class, _is_type, _sentinel, _shadowed_dict, _static_getmro  # noqa
 
 
 def get_attr_value(obj, name, *default):

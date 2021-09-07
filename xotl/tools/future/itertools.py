@@ -17,7 +17,7 @@ import sys
 from itertools import *  # noqa
 from typing import Any, Callable, Iterable, Iterator, List, Optional, Tuple, TypeVar, Union, cast
 
-from xotl.tools.deprecation import deprecated, deprecated_alias
+from xotl.tools.deprecation import deprecated_alias
 from xotl.tools.symbols import Unset
 
 map = deprecated_alias(map, removed_in_version="3.0", check_version=True)

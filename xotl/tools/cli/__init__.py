@@ -235,7 +235,7 @@ class Help(Command):
 
         """
         # TODO: Use 'add_subparsers' in this logic (see 'backlog.org').
-        res = getattr(cls, "_arg_parser")
+        res = cls._arg_parser
         if not res:
             from argparse import ArgumentParser
 
@@ -243,7 +243,7 @@ class Help(Command):
             cls._arg_parser = res
         return res
 
-    def run(self, args=[]):
+    def run(self, args=[]):  # noqa: B006
         print('The most commonly used "%s" commands are:' % program_name())
         cmds = Command.registry
         ordered = [(getattr(cmds[cmd], "__order__", 0), cmd) for cmd in cmds]

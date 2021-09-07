@@ -33,7 +33,7 @@ except ImportError:
 
 import collections as _stdlib  # noqa
 from collections import _repeat  # noqa
-from collections import _chain, _count_elements, _heapq, _itemgetter, _starmap
+from collections import _chain, _count_elements, _heapq, _itemgetter, _starmap  # noqa
 
 from xotl.tools.deprecation import deprecated  # noqa
 from xotl.tools.objects import SafeDataItem as safe  # noqa
@@ -566,10 +566,8 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
             if not hasattr(cls, "_bad_pop_called"):
                 import warnings
 
-                setattr(cls, "_bad_pop_called", True)
-                msg = (
-                    "Use `pop` method without parameters is deprecated, " "use `pop_level` instead"
-                )
+                cls._bad_pop_called = True
+                msg = "Use `pop` method without parameters is deprecated, use `pop_level` instead"
                 warnings.warn(msg, stacklevel=2)
             return self.pop_level()
         else:

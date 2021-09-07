@@ -9,9 +9,6 @@
 
 """Some useful decorators."""
 
-# TODO: reconsider all this module
-
-
 import sys
 from functools import wraps
 from types import FunctionType as function
