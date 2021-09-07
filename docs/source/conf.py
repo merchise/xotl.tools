@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# xoutil documentation build configuration file, created by
+# xotl.tools documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun 15 14:31:00 2012.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -49,10 +49,10 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'xoutil'
+project = u'xotl.tools'
 
 from datetime import datetime    # noqa
-# Any year before to 2012 xoutil copyrights to "Medardo Rodriguez"
+# Any year before to 2012 xotl.tools copyrights to "Medardo Rodriguez"
 copyright = u'2012-{} Merchise Autrement [~º/~] and Contributors'
 copyright = copyright.format(datetime.now().year)
 del datetime
@@ -63,7 +63,7 @@ del datetime
 #
 # The short X.Y version.
 try:
-    from xoutil.release import VERSION
+    from xotl.tools.release import VERSION
 except ImportError:
     def up(path, level=1):
         result = path
@@ -74,11 +74,11 @@ except ImportError:
     _current_dir = os.path.dirname(os.path.abspath(__file__))
     _project_dir = os.path.abspath(os.path.join(up(_current_dir, 2)))
     sys.path.append(_project_dir)
-    from xoutil.release import VERSION
+    from xotl.tools.release import VERSION
 version = VERSION[:VERSION.rfind('.')]
 
 try:
-    from xoutil.release import RELEASE_TAG
+    from xotl.tools.release import RELEASE_TAG
     release = VERSION
     if RELEASE_TAG:
         release += RELEASE_TAG
@@ -203,88 +203,15 @@ except ImportError:
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'xoutildoc'
-
-
-# -- Options for LaTeX output --------------------------------------------------
-
-latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
-
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
-
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [
-  ('index', 'xoutil.tex', u'xoutil Documentation',
-   u'Merchise', 'manual'),
-]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-#latex_use_parts = False
-
-# If true, show page references after internal links.
-#latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-#latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-#latex_appendices = []
-
-# If false, no module index is generated.
-#latex_domain_indices = True
-
-
-# -- Options for manual page output --------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'xoutil', u'xoutil Documentation',
-     [u'Merchise'], 1)
-]
-
-# If true, show URL addresses after external links.
-#man_show_urls = False
-
-
-# -- Options for Texinfo output ------------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-  ('index', 'xoutil', u'xoutil Documentation',
-   u'Merchise', 'xoutil', 'One line description of project.',
-   'Miscellaneous'),
-]
-
-# Documents to append as an appendix to all manuals.
-#texinfo_appendices = []
-
-# If false, no module index is generated.
-#texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-#texinfo_show_urls = 'footnote'
+htmlhelp_basename = 'xotl-tools-doc'
 
 
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'py3': ('https://docs.python.org/3.6/', None),
-    'py39': ('https://docs.python.org/3.9/', None),
+    'py3': ('https://docs.python.org/3.9/', None),
+    'py38': ('https://docs.python.org/3.8/', None),
+    'py37': ('https://docs.python.org/3.7/', None),
+    'py36': ('https://docs.python.org/3.6/', None),
     'gevent': ('http://www.gevent.org', None),
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),
     'hypothesis': ('https://hypothesis.readthedocs.io/en/latest/', None),
