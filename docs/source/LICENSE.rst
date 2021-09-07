@@ -12,7 +12,7 @@ Foundation (PSF) licence for Python 3.2 as stated `below
 Three modules inside this package are backports from Python 3.2.3's standard
 library and the PSF retains the copyright.
 
-.. |project| replace:: xoutil
+.. |project| replace:: xotl.tools
 
 .. |copyright| replace:: Copyright (c) 2015 Merchise and Contributors
 
