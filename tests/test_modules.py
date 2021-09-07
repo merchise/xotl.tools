@@ -80,7 +80,7 @@ class TestModuleDecorators(unittest.TestCase):
         from . import customizetestbed as m
         from xotl.tools.future.inspect import getattr_static
 
-        self.assertNotEquals(getattr_static(m, "memoized"), m)
+        self.assertNotEqual(getattr_static(m, "memoized"), m)
         self.assertIs(m.memoized, m)
         self.assertIs(getattr_static(m, "memoized"), m)
 

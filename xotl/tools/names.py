@@ -575,13 +575,13 @@ class TestRelativeImports(_utest.TestCase):
     AbsoluteUndefined = _undef
 
     def test_relative_imports(self):
-        self.assertEquals(nameof(self.RelativeUnset), "_Unset")
-        self.assertEquals(nameof(self.RelativeUnset, inner=True), "Unset")
+        self.assertEqual(nameof(self.RelativeUnset), "_Unset")
+        self.assertEqual(nameof(self.RelativeUnset, inner=True), "Unset")
 
         # Even relative imports are resolved properly with `full=True`
-        self.assertEquals(nameof(self.RelativeUnset, full=True), "xotl.tools.names._Unset")
+        self.assertEqual(nameof(self.RelativeUnset, full=True), "xotl.tools.names._Unset")
 
-        self.assertEquals(nameof(self.AbsoluteUndefined, full=True), "xotl.tools.names._undef")
+        self.assertEqual(nameof(self.AbsoluteUndefined, full=True), "xotl.tools.names._undef")
 
 
 # Don't delete the _Unset name, so that the nameof inside the test could find
