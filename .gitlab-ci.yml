@@ -96,7 +96,7 @@ tests:
   <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.6", "3.7", "3.8", "3.9"]
+      - PYTHON: ["3.8", "3.9"]
         GREENLETS: ["unit", "greenlets"]
 
 
