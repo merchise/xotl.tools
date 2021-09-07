@@ -431,7 +431,11 @@ class Dimension(type):
     @overload
     @classmethod
     def new(
-        cls, *, unit_alias: str = None, unit_aliases: Sequence[str] = None, Quantity: type = None
+        cls,
+        *,
+        unit_alias: str = None,
+        unit_aliases: Sequence[str] = None,
+        Quantity: type = None,
     ) -> Callable[[Any], "Dimension"]:
         ...
 
