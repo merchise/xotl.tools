@@ -7,8 +7,67 @@ stages:
   - publish
   - clean up
 
+.x-when-mrs-or-stable: &when-merge-requests-or-stable
+  only:
+    refs:
+      - main
+      - /^releases-2/
+      - merge_requests
+    changes:
+      - docs/**/*.rst
+      - docs/**/*.py
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+.x-when-mrs: &when-merge-requests
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - docs/**/*.rst
+      - docs/**/*.py
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+
+.x-when-stable: &when-stable-branches
+  only:
+    refs:
+      - main
+      - /^releases-2
+    changes:
+      - docs/**/*.rst
+      - docs/**/*.py
+      - xotl/tools/**/*.py
+      - tests/**/*.py
+      - setup.py
+      - setup.cfg
+      - tox.ini
+      - .gitlab-ci.yml
+
+
+check flake8 and black:
+  <<: *when-merge-requests-or-stable
+  interruptible: true
+  image: python:3.9
+  stage: check
+  needs: []
+  script:
+    - pip install --no-cache-dir 'flake8>=3.8.4' 'flake8-bugbear~=21.4.3' 'black==21.5b2' 'isort~=5.9.3'
+    - flake8 xotl/tools
+    - black --check xotl/tools
+    - isort --check --diff xotl/tools
 
 .run_tox_staticcheck: &run_tox_staticcheck
+  interruptible: true
   image: python:$PYTHON
   stage: test
   cache:
@@ -19,51 +78,9 @@ stages:
   script:
     - pip install tox
     - tox -e system-staticcheck
-  only:
-    refs:
-      - main
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - xotl/tools/**/*.pyi
 
-run static checks in Python 3.6:
-  <<: *run_tox_staticcheck
-  allow_failure: true
-  variables:
-    PYTHON: "3.6"
-
-run static checks in Python 3.7:
-  <<: *run_tox_staticcheck
-  allow_failure: true
-  variables:
-    PYTHON: "3.7"
-
-run static checks in Python 3.8:
-  <<: *run_tox_staticcheck
-  allow_failure: true
-  variables:
-    PYTHON: "3.8"
-
-run static checks in Python 3.9:
-  <<: *run_tox_staticcheck
-  allow_failure: true
-  variables:
-    PYTHON: "3.9"
-
-
-.run_tox_tests_no_greenlets: &run_tox_tests_no_greenlets
-  image: python:$PYTHON-alpine
-  stage: test
-  cache:
-    key: $CI_JOB_NAME
-    paths:
-      - .tox/
-  script:
-    - pip install tox
-    - tox -e system-unit
-
-.run_tox_tests_with_greenlets: &run_tox_tests_with_greenlets
+.run_tox_tests: &run_tox_tests
+  interruptible: true
   image: python:$PYTHON
   stage: test
   cache:
@@ -72,165 +89,34 @@ run static checks in Python 3.9:
       - .tox/
   script:
     - pip install tox
-    - tox -e system-greenlets
+    - tox -e system-$GREENLETS
+
+tests:
+  <<: *run_tox_tests
+  <<: *when-merge-requests-or-stable
+  parallel:
+    matrix:
+      - PYTHON: ["3.6", "3.7", "3.8", "3.9"]
+        GREENLETS: ["unit", "greenlets"]
 
 
-run all Python 3.8 tests without greenlets:
-  <<: *run_tox_tests_no_greenlets
-  variables:
-    PYTHON: "3.8"
+run static checks:
+  <<: *run_tox_staticcheck
+  <<: *when-merge-requests-or-stable
+  allow_failure: true
+  parallel:
+    matrix:
+      - PYTHON: ["3.8", "3.9"]
+
+.x-when-releasing: &when-releasing
   only:
     refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
 
 
-run all Python 3.8 tests with greenlets:
-  <<: *run_tox_tests_with_greenlets
-  variables:
-    PYTHON: "3.8"
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
-run all Python 3.9 tests without greenlets:
-  <<: *run_tox_tests_no_greenlets
-  variables:
-    PYTHON: "3.9"
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
-
-run all Python 3.9 tests with greenlets:
-  <<: *run_tox_tests_with_greenlets
-  variables:
-    PYTHON: "3.9"
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
-
-run all Python 3.6 tests without greenlets:
-  <<: *run_tox_tests_no_greenlets
-  variables:
-    PYTHON: "3.6"
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
-run all Python 3.6 tests with greenlets:
-  <<: *run_tox_tests_with_greenlets
-  variables:
-    PYTHON: "3.6"
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
-run all Python 3.7 tests without greenlets:
-  <<: *run_tox_tests_no_greenlets
-  variables:
-    PYTHON: "3.7"
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
-run all Python 3.7 tests with greenlets:
-  <<: *run_tox_tests_with_greenlets
-  variables:
-    PYTHON: "3.7"
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
-build source distribution:
-  image: python:3.8-alpine
-  stage: build
-  script:
-    - apk add git
-    - python setup.py sdist
-  artifacts:
-    paths:
-      - dist/
+.x-when-prereleasing: &when-prereleasing
   only:
     refs:
       - tags
@@ -238,37 +124,33 @@ build source distribution:
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 
-build binary distribution:
-  image: python:3.8-alpine
+build:
+  <<: *when-prereleasing
+  image: python:3.8
   stage: build
+  parallel:
+    matrix:
+      - DIST_CMD: [sdist, bdist_wheel]
   script:
-    - apk add git
-    - python3 setup.py bdist_wheel
+    - apt-get update && apt-get install -y git
+    - python setup.py $DIST_CMD
   artifacts:
-    expire_in: 4 hours
     paths:
       - dist/
-  only:
-    refs:
-      - tags
-    variables:
-      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 check signature of tag:
+  <<: *when-prereleasing
+  interruptible: true
   image: alpine
   stage: check
   script:
     - apk add gnupg git
     - cat $GNUPG_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
-  only:
-    refs:
-      - tags
-    variables:
-      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 
 publish in pypi:
+  <<: *when-releasing
   image: python:3.8
   variables:
     GIT_STRATEGY: none
@@ -276,29 +158,23 @@ publish in pypi:
   script:
     - pip install twine
     - twine upload --skip-existing -u "$PYPI_USERNAME" -p "$PYPI_PASSWORD" dist/*
-  only:
-    refs:
-      - tags
-    variables:
-      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
   needs:
     - check signature of tag
-    - build source distribution
-    - build binary distribution
+    - build
   environment:
     name: pypi
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
 
 
 .build_doc: &build_doc
-  image: python:3.8-alpine
+  image: python:3.8
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
     paths:
       - docs/builds/
   script:
-    - apk add make git
+    - apt-get update && apt-get install -y git make
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
@@ -310,30 +186,12 @@ publish in pypi:
 
 build documentation for releases:
   <<: *build_doc
-  only:
-    refs:
-      - tags
-    variables:
-      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
+  <<: *when-prereleasing
 
 build documentation:
   <<: *build_doc
-  only:
-    refs:
-      - /^releases-/
-      - main
-      - merge_requests
-    changes:
-      - docs/**/*.rst
-      - docs/**/*.py
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
+  <<: *when-merge-requests-or-stable
+  interruptible: true
 
 .publish_rtd: &publish_rtd
   image: alpine
@@ -354,39 +212,20 @@ build documentation:
       ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
   environment:
     name: docs.lahavane.com
-    url: http://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+    url: https://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
 
 publish in our RTD for releases:
   <<: *publish_rtd
+  <<: *when-releasing
   needs:
     - build documentation for releases
-  only:
-    refs:
-      - tags
-    variables:
-      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
 
 
 publish in our RTD:
   <<: *publish_rtd
+  <<: *when-merge-requests-or-stable
   needs:
     - build documentation
-  only:
-    refs:
-      - /^releases-/
-      - main
-      - merge_requests
-    changes:
-      - docs/**/*.rst
-      - docs/**/*.py
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - xoutil/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
-
 
 automatically remove MR documentation from our RTD server after 4 hours:
   stage: clean up

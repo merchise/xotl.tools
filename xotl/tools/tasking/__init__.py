@@ -16,8 +16,8 @@
 """
 
 import sys
-from xotl.tools.deprecation import deprecated_alias
 
+from xotl.tools.deprecation import deprecated_alias
 
 # TODO: Must be implemented using `xotl.tools.api` mechanisms for correct
 # driver determination, in this case "thread-local data".
@@ -151,7 +151,7 @@ def retry(
     max_tries=None,
     max_time=None,
     wait=DEFAULT_WAIT_INTERVAL,
-    retry_only=None
+    retry_only=None,
 ):
     """Run `fn` with args and kwargs in an auto-retrying loop.
 
@@ -167,9 +167,9 @@ def retry(
         args = ()
     if kwargs is None:
         kwargs = {}
-    return retrier(
-        max_tries=max_tries, max_time=max_time, wait=wait, retry_only=retry_only
-    )(fn, *args, **kwargs)
+    return retrier(max_tries=max_tries, max_time=max_time, wait=wait, retry_only=retry_only)(
+        fn, *args, **kwargs
+    )
 
 
 class retrier:
@@ -203,9 +203,7 @@ class retrier:
 
     """
 
-    def __init__(
-        self, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None
-    ):
+    def __init__(self, max_tries=None, max_time=None, wait=DEFAULT_WAIT_INTERVAL, retry_only=None):
         if not max_tries and not max_time:
             raise TypeError("One of tries or times must be set")
         self.max_tries = max_tries
@@ -233,7 +231,9 @@ class retrier:
            ...     pass
 
         """
-        from time import monotonic as clock, sleep
+        from time import monotonic as clock
+        from time import sleep
+
         from xotl.tools.future.functools import wraps
 
         max_time = self.max_time

@@ -24,8 +24,8 @@ Not all values are comparable with `Infinity`:obj: by default.  The ABC
 
 import abc
 import datetime
-from numbers import Number
 from functools import total_ordering
+from numbers import Number
 
 
 class InfinityComparable(metaclass=abc.ABCMeta):

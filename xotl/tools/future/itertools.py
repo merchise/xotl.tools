@@ -15,22 +15,10 @@
 """
 import sys
 from itertools import *  # noqa
+from typing import Any, Callable, Iterable, Iterator, List, Optional, Tuple, TypeVar, Union, cast
 
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Iterator,
-    List,
-    Tuple,
-    TypeVar,
-    Optional,
-    Union,
-    cast,
-)
-
+from xotl.tools.deprecation import deprecated_alias
 from xotl.tools.symbols import Unset
-from xotl.tools.deprecation import deprecated_alias, deprecated
 
 map = deprecated_alias(map, removed_in_version="3.0", check_version=True)
 zip = deprecated_alias(zip, removed_in_version="3.0", check_version=True)
@@ -224,7 +212,8 @@ def delete_duplicates(seq, key=lambda x: x):
 
 
 def iter_delete_duplicates(
-    iter: Iterable[T], key: Callable[[T], Any] = lambda x: x
+    iter: Iterable[T],
+    key: Callable[[T], Any] = lambda x: x,
 ) -> Iterable[T]:
     """Yields non-repeating (and consecutive) items from `iter`.
 
@@ -250,7 +239,8 @@ def iter_delete_duplicates(
 
 
 def iter_without_duplicates(
-    it: Iterable[T], key: Callable[[T], Any] = lambda x: x
+    it: Iterable[T],
+    key: Callable[[T], Any] = lambda x: x,
 ) -> Iterable[T]:
     """Yields non-repeating items from `iter`.
 
@@ -298,8 +288,8 @@ def slides(
                         instead of Unset.
 
     """
-    from itertools import cycle, repeat
     from collections.abc import Iterable
+    from itertools import cycle, repeat
 
     pos = 0
     res: List[Union[T, X, None]] = []
@@ -355,65 +345,6 @@ def continuously_slides(
         res.append(current)
         yield tuple(res)
         current = next(i, unset)
-
-
-@deprecated(
-    None, "first_n is deprecated and it will be removed, use stdlib's itertools.islice"
-)
-def first_n(iterable, n=1, fill=Unset):
-    """Takes the first `n` items from iterable.
-
-    If there are less than `n` items in the iterable and `fill` is
-    `~xotl.tools.symbols.Unset`:class:, a StopIteration exception is raised;
-    otherwise it's used as a filling pattern as explained below.
-
-    .. deprecated:: 2.1.6 Use `itertools.islice`:func:, if you need `fill` you
-       can also use `itertools.cycle`:func: or `itertools.repeat`:func:.
-
-    :param iterable: An iterable from which the first `n` items should be
-                     collected.
-
-    :param n: The number of items to collect
-    :type n: int
-
-    :param fill: The filling pattern to use. It may be:
-
-                 - a collection, in which case `first_n` fills the last items
-                   by cycling over `fill`.
-
-                 - anything else is used as the filling pattern by repeating.
-
-    :returns: The first `n` items from `iterable`, probably with a filling
-              pattern at the end.
-    :rtype: generator object
-
-    .. versionadded:: 1.2.0
-
-    .. versionchanged:: 1.4.0 The notion of collection for the `fill` argument
-                        uses ``xotl.tools.types.is_collection`` instead of
-                        probing for the ``__iter__`` method.
-
-    .. versionchanged:: 1.7.2 The notion of collection for the `fill` argument
-                        uses ``isinstance(fill, Iterable)`` replacing
-                        ``xotl.tools.types.is_collection``.  We must be
-                        consistent with `iterable` argument that allow an
-                        string as a valid iterable and `is_collection` not.
-
-    """
-    from itertools import islice
-
-    if fill is not Unset:
-        from collections.abc import Iterable
-        from itertools import cycle, repeat, chain
-
-        if isinstance(fill, Iterable):
-            fill = cycle(fill)
-        else:
-            fill = repeat(fill)
-        seq = chain(iterable, fill)
-    else:
-        seq = iter(iterable)
-    return islice(seq, n)
 
 
 def ungroup(iterator: Iterable[Tuple[X, Iterable[T]]]) -> Iterable[T]:

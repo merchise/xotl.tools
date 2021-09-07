@@ -12,7 +12,6 @@
 # FIX: These imports must be local
 from xotl.tools.symbols import Undefined as _undef
 
-
 # TODO: This module must be reviewed and deprecate most of it.
 
 
@@ -121,8 +120,8 @@ def _get_best_name(names, safe=False, full=False):
     """
     from xotl.tools.validators import (
         is_valid_full_identifier,
-        is_valid_public_identifier,
         is_valid_identifier,
+        is_valid_public_identifier,
         is_valid_slug,
     )
 
@@ -303,12 +302,10 @@ def nameof(*args, **kwargs):
 
     See `the examples in the documentation <name-of-narrative>`:ref:.
 
-    .. warning:: The names of objects imported from 'xoutil' are still in the
-       namespace 'xotl.tools'.
-
     """
     # XXX: The examples are stripped from here.  Go the documentation page.
     from numbers import Number
+
     from xotl.tools.future.inspect import safe_name
 
     arg_count = len(args)
@@ -411,8 +408,8 @@ def identifier_from(*args):
 
     """
     if len(args) == 1:
-        from xotl.tools.validators.identifiers import is_valid_identifier as valid
         from xotl.tools.future.inspect import get_attr_value
+        from xotl.tools.validators.identifiers import is_valid_identifier as valid
 
         res = None
         if isinstance(args[0], type):
@@ -569,6 +566,7 @@ class strlist(list):
 # Otherwise the `tests/` directory would need to be a proper package.
 
 import unittest as _utest
+
 from xotl.tools.symbols import Unset as _Unset  # Use a tier 0 module!
 
 
@@ -577,17 +575,13 @@ class TestRelativeImports(_utest.TestCase):
     AbsoluteUndefined = _undef
 
     def test_relative_imports(self):
-        self.assertEquals(nameof(self.RelativeUnset), "_Unset")
-        self.assertEquals(nameof(self.RelativeUnset, inner=True), "Unset")
+        self.assertEqual(nameof(self.RelativeUnset), "_Unset")
+        self.assertEqual(nameof(self.RelativeUnset, inner=True), "Unset")
 
         # Even relative imports are resolved properly with `full=True`
-        self.assertEquals(
-            nameof(self.RelativeUnset, full=True), "xotl.tools.names._Unset"
-        )
+        self.assertEqual(nameof(self.RelativeUnset, full=True), "xotl.tools.names._Unset")
 
-        self.assertEquals(
-            nameof(self.AbsoluteUndefined, full=True), "xotl.tools.names._undef"
-        )
+        self.assertEqual(nameof(self.AbsoluteUndefined, full=True), "xotl.tools.names._undef")
 
 
 # Don't delete the _Unset name, so that the nameof inside the test could find

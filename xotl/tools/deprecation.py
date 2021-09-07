@@ -9,9 +9,7 @@
 
 import types
 import warnings
-
 from functools import wraps
-
 
 # TODO: Invalidate this module in favor of new 'xotl.tools.suggest' when
 # implemented
@@ -21,8 +19,7 @@ from functools import wraps
 # type.
 
 DEFAULT_MSG = (
-    "{funcname} is now deprecated and it will be "
-    "removed{in_version}. Use {replacement} instead."
+    "{funcname} is now deprecated and it will be " "removed{in_version}. Use {replacement} instead."
 )
 
 
@@ -47,14 +44,13 @@ class DeprecatedImportDescriptor:
     def __get__(self, instance, owner):
         if instance is not None:
             import warnings
+
             from xotl.tools.objects import import_object
 
             result = import_object(self.replacement)
             warnings.warn(
                 "Importing {name} from xotl.tools is deprecated. "
-                "You should import it from {ns}".format(
-                    name=self.attr, ns=self.replacement
-                ),
+                "You should import it from {ns}".format(name=self.attr, ns=self.replacement),
                 UserWarning,  # DeprecationWarning is silent in ipython
             )
             return result
@@ -151,8 +147,7 @@ def deprecated(
             msg = (
                 "A deprecated feature %r was scheduled to be "
                 "removed in version %r and it is still "
-                "alive in %r!"
-                % (_nameof(target), str(removed_in_version), str(dist.version))
+                "alive in %r!" % (_nameof(target), str(removed_in_version), str(dist.version))
             )
             raise DeprecationError(msg)
 
@@ -176,9 +171,7 @@ def deprecated(
                 if check_version and removed_in_version:
                     raise_if_deprecated(target, removed_in_version)
                 warnings.warn(
-                    msg.format(
-                        funcname=funcname, replacement=repl_name, in_version=in_version
-                    ),
+                    msg.format(funcname=funcname, replacement=repl_name, in_version=in_version),
                     stacklevel=2,
                 )
                 try:
@@ -200,8 +193,7 @@ def deprecated(
             attrs = {
                 name: value
                 for name, value in iteritems()
-                if name
-                not in ("__class__", "__mro__", "__name__", "__weakref__", "__dict__")
+                if name not in ("__class__", "__mro__", "__name__", "__weakref__", "__dict__")
                 # Must remove member descriptors, otherwise the old's
                 # class descriptor will override those that must be
                 # created here.
@@ -217,9 +209,7 @@ def deprecated(
                 if check_version and removed_in_version:
                     raise_if_deprecated(target, removed_in_version)
                 warnings.warn(
-                    msg.format(
-                        funcname=funcname, replacement=repl_name, in_version=in_version
-                    ),
+                    msg.format(funcname=funcname, replacement=repl_name, in_version=in_version),
                     stacklevel=2,
                 )
                 return target(*args, **kw)
@@ -296,9 +286,7 @@ def import_deprecated(module, *names, **aliases):
         if target is not unset:
             if isinstance(target, test_classes):
                 replacement = src_name + "." + name
-                deprecator = deprecated(
-                    replacement, DEFAULT_MSG, dst_name, new_name=alias
-                )
+                deprecator = deprecated(replacement, DEFAULT_MSG, dst_name, new_name=alias)
                 target = deprecator(target)
             setattr(dst, alias, target)
         else:
@@ -363,65 +351,11 @@ def deprecate_module(replacement, msg=None):
         # As recommended in Python's documentation to avoid memory leaks
         del frame
     if msg is None:
-        msg = (
-            '"{}" module is now deprecated and it will be removed; ' 'use "{}" instead.'
-        ).format(name, replacement)
+        msg = ('"{}" module is now deprecated and it will be removed; ' 'use "{}" instead.').format(
+            name, replacement
+        )
     if msg:
         warnings.warn(msg, stacklevel=2)
-
-
-@deprecated(import_deprecated)
-def inject_deprecated(funcnames, source, target=None):
-    """Injects a set of functions from a module into another.
-
-    The functions will be marked as deprecated in the target module.
-
-    :param funcnames: function names to take from the source module.
-
-    :param source: the module where the functions resides.
-
-    :param target: the module that will contains the deprecated functions.  If
-           ``None`` will be the module calling this function.
-
-    This function is provided for easing the deprecation of whole modules and
-    should not be used to do otherwise.
-
-    .. deprecated:: 1.8.0  Use `import_deprecated`:func:.
-
-    """
-    if not target:
-        import sys
-
-        frame = sys._getframe(1)
-        try:
-            target_locals = frame.f_locals
-        finally:
-            # As recommended to avoid memory leaks
-            del frame
-    else:
-        # FIX: @manu, there is a consistency error here, 'target_locals' is
-        # never assigned
-        pass
-    for targetname in funcnames:
-        unset = object()
-        target = getattr(source, targetname, unset)
-        if target is not unset:
-            testclasses = (types.FunctionType, types.LambdaType, type)
-            if isinstance(target, testclasses):
-                replacement = source.__name__ + "." + targetname
-                module_name = target_locals.get("__name__", None)
-                target_locals[targetname] = deprecated(
-                    replacement, DEFAULT_MSG, module_name
-                )(target)
-            else:
-                target_locals[targetname] = target
-        else:
-            warnings.warn(
-                "{targetname} was expected to be in {source}".format(
-                    targetname=targetname, source=source.__name__
-                ),
-                stacklevel=2,
-            )
 
 
 def deprecated_alias(f, **kwargs):

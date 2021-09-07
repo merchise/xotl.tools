@@ -13,7 +13,6 @@ Regular expressions and validation functions for several identifiers.
 
 from re import compile as _regex_compile
 
-
 __all__ = (
     "is_valid_identifier",
     "is_valid_full_identifier",

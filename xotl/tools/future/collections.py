@@ -17,18 +17,9 @@ document all items here.  Refer to `collections`:mod: documentation.
 from collections import *  # noqa
 from reprlib import recursive_repr
 
-
 try:
     from collections.abc import *  # noqa
-    from collections.abc import (
-        Set,
-        Iterable,
-        Sized,
-        Container,
-        MutableSet,
-        Mapping,
-        MutableMapping,
-    )
+    from collections.abc import Container, Iterable, Mapping, MutableMapping, MutableSet, Set, Sized
 except ImportError:
     from collections import (
         Set,
@@ -40,20 +31,13 @@ except ImportError:
         MutableMapping,
     )
 
-
 import collections as _stdlib  # noqa
-from collections import (
-    _itemgetter,
-    _heapq,
-    _chain,
-    _repeat,  # noqa
-    _starmap,
-    _count_elements,
-)
+from collections import _repeat  # noqa
+from collections import _chain, _count_elements, _heapq, _itemgetter, _starmap  # noqa
 
 from xotl.tools.deprecation import deprecated  # noqa
-from xotl.tools.symbols import Unset  # noqa
 from xotl.tools.objects import SafeDataItem as safe  # noqa
+from xotl.tools.symbols import Unset  # noqa
 
 
 class safe_dict_iter(tuple):
@@ -459,11 +443,7 @@ class opendict(OpenDictMixin, dict):
 
         members = getattr(enumclass, "__members__", Unset)
         if members is Unset:
-            members = {
-                k: v
-                for k, v in enumclass.__dict__.items()
-                if is_valid_public_identifier(k)
-            }
+            members = {k: v for k, v in enumclass.__dict__.items() if is_valid_public_identifier(k)}
         return cls(members)
 
 
@@ -586,11 +566,8 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):
             if not hasattr(cls, "_bad_pop_called"):
                 import warnings
 
-                setattr(cls, "_bad_pop_called", True)
-                msg = (
-                    "Use `pop` method without parameters is deprecated, "
-                    "use `pop_level` instead"
-                )
+                cls._bad_pop_called = True
+                msg = "Use `pop` method without parameters is deprecated, use `pop_level` instead"
                 warnings.warn(msg, stacklevel=2)
             return self.pop_level()
         else:
@@ -1409,8 +1386,8 @@ class PascalSet(metaclass=MetaSet):
             return aux is Unset
         else:
             # Generator cases
-            from operator import add
             from functools import reduce
+            from operator import add
 
             lo = reduce(add, (i in self for i in other), 0)
             return lo == ls
@@ -1535,10 +1512,7 @@ class PascalSet(metaclass=MetaSet):
     def _invalid_value(self, value):
         cls_name = type(self).__name__
         vname = type(value).__name__
-        msg = (
-            'Unsupported type for  value "%s" of type "%s" for a "%s", '
-            "must be an integer!"
-        )
+        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", ' "must be an integer!"
         return TypeError(msg % (value, vname, cls_name))
 
     @classmethod
@@ -2029,10 +2003,7 @@ class BitPascalSet(metaclass=MetaSet):
     def _invalid_value(self, value):
         cls_name = type(self).__name__
         vname = type(value).__name__
-        msg = (
-            'Unsupported type for  value "%s" of type "%s" for a "%s", '
-            "must be an integer!"
-        )
+        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", ' "must be an integer!"
         return TypeError(msg % (value, vname, cls_name))
 
     @classmethod

@@ -10,8 +10,6 @@
 """Utilities to inspect the CPython's stack."""
 
 import inspect
-from xotl.tools.deprecation import deprecated
-
 
 __all__ = (
     "MAX_DEEP",
@@ -21,7 +19,6 @@ __all__ = (
     "object_finder",
     "track_value",
     "iter_stack",
-    "iter_frames",
 )
 
 MAX_DEEP = 25
@@ -46,8 +43,8 @@ def getargvalues(frame):
         -10
 
     """
-    from xotl.tools.values.simple import force_sequence_coerce as array
     from xotl.tools.future.itertools import flatten
+    from xotl.tools.values.simple import force_sequence_coerce as array
 
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}
@@ -277,37 +274,3 @@ def iter_stack(max_deep=MAX_DEEP):
             deep += 1
     finally:
         del frame  # As recommended in the Python's doc to avoid memory leaks
-
-
-@deprecated(iter_stack)
-def iter_frames(max_deep=MAX_DEEP):
-    """Iterates through all stack frames.
-
-    Returns tuples with the following::
-
-        (deep, filename, line_no, start_line).
-
-    .. versionadded:: 1.1.3
-
-    .. deprecated:: 1.6.8 The use of params `attr_filter` and `value_filter`.
-
-    """
-    # TODO: @manu Use this in all previous functions with same structure
-    frame = inspect.currentframe()
-    try:
-        deep = 0
-        while (deep < max_deep) and (frame is not None):
-            yield (
-                deep,
-                frame.f_code.co_filename,
-                frame.f_lineno,
-                frame.f_code.co_firstlineno,
-                frame.f_locals,
-            )
-            frame = frame.f_back
-            deep += 1
-    finally:
-        del frame  # As recommended in the Python's doc to avoid memory leaks
-
-
-del deprecated

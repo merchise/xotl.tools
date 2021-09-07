@@ -121,16 +121,12 @@ class BaseConvertor:
 
     @classmethod
     def inttobase(cls, num):
-        """Converts an integer to a base representation using the class' table.
-
-        """
+        """Converts an integer to a base representation using the class' table."""
         return int2str(num, base=cls.table)
 
     @classmethod
     def basetoint(cls, istr):
-        """Converts a base representation to a integer using the class' table.
-
-        """
+        """Converts a base representation to a integer using the class' table."""
         table = cls.table
         if cls.case_insensitive:
             table = table.lower()
@@ -158,28 +154,28 @@ class B32(BaseConvertor):
 class B64(BaseConvertor):
     """Handles [a kind of] base 64 conversions.
 
-    This **is not standard base64**, but a reference-friendly base 64 to help
-    the use case of generating a short reference.
+     This **is not standard base64**, but a reference-friendly base 64 to help
+     the use case of generating a short reference.
 
-    In base 64, each 6-bits chunks are represented by a single "digit".
-    Digits comprises all symbols in 0..9, a..z, A..Z and the three symbols:
-    `()[`.
+     In base 64, each 6-bits chunks are represented by a single "digit".
+     Digits comprises all symbols in 0..9, a..z, A..Z and the three symbols:
+     `()[`.
 
-        >>> B64.inttobase(64) == '10'
-        True
+         >>> B64.inttobase(64) == '10'
+         True
 
-        >>> B64.basetoint('10')
-        64
+         >>> B64.basetoint('10')
+         64
 
-   .. warning::
+    .. warning::
 
-      In this base, letters **are** case sensitive::
+       In this base, letters **are** case sensitive::
 
-          >>> B64.basetoint('a')
-          10
+           >>> B64.basetoint('a')
+           10
 
-          >>> B64.basetoint('A')
-          36
+           >>> B64.basetoint('A')
+           36
 
     """
 

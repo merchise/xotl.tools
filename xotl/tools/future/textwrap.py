@@ -9,8 +9,8 @@
 
 """Text wrapping and filling."""
 
-from textwrap import *  # noqa
 import textwrap as _stdlib
+from textwrap import *  # noqa
 from textwrap import __all__  # noqa
 
 __all__ = list(__all__)

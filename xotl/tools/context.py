@@ -9,8 +9,8 @@
 
 """A context manager for execution context flags."""
 
+from xotl.tools.future.collections import Mapping, StackedDict
 from xotl.tools.tasking import local
-from xotl.tools.future.collections import StackedDict, Mapping
 
 __all__ = ("Context", "context", "NullContext")
 

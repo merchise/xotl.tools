@@ -3,8 +3,8 @@
 # Copyright (c) 2013-2017 Merchise Autrement [~º/~] and Contributors
 # Copyright (c) 2012 Manuel Vazquez
 
-from multiprocessing import Pool, cpu_count
 from itertools import count, islice, repeat
+from multiprocessing import Pool, cpu_count
 
 try:
     from itertools import izip as zip
@@ -29,8 +29,8 @@ def job(args):
 
 
 if __name__ == "__main__":
-    from datetime import datetime
     import argparse
+    from datetime import datetime
 
     cpus = max(cpu_count() - 1, 1)
     parser = argparse.ArgumentParser(

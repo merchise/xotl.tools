@@ -35,11 +35,10 @@ Also contains sub-modules to obtain, convert and check values of common types.
 import re
 from abc import ABCMeta
 
-from xotl.tools.future.functools import lwraps
-from xotl.tools.symbols import boolean, Unset
-from xotl.tools.fp.prove import vouch
-
 from xotl.tools.deprecation import deprecate_linked
+from xotl.tools.fp.prove import vouch
+from xotl.tools.future.functools import lwraps
+from xotl.tools.symbols import Unset, boolean
 
 deprecate_linked(check="xotl.tools.values")
 del deprecate_linked
@@ -71,8 +70,7 @@ class logical(boolean):
     _valid = {"nil": False, "t": True}
 
     def __new__(cls, arg):
-        from xotl.tools.symbols import boolean
-        from xotl.tools.symbols import Invalid
+        from xotl.tools.symbols import Invalid, boolean
 
         name = ("t" if arg else "nil") if isinstance(arg, boolean) else arg
         value = cls._valid.get(name, Invalid)
@@ -110,9 +108,7 @@ class MetaCoercer(ABCMeta):
     """
 
     def __instancecheck__(self, instance):
-        return getattr(instance, "__coercer__", False) or super().__instancecheck__(
-            instance
-        )
+        return getattr(instance, "__coercer__", False) or super().__instancecheck__(instance)
 
 
 class coercer(metaclass=MetaCoercer):
@@ -150,6 +146,7 @@ class coercer(metaclass=MetaCoercer):
 
     def __new__(cls, source):
         from types import FunctionType as function
+
         from xotl.tools.symbols import boolean
 
         if source == 1 and isinstance(source, boolean):
@@ -965,7 +962,7 @@ class iterable(custom):
         self.inner = (member_coerce, outer_coerce)
 
     def __call__(self, arg):
-        from collections.abc import Set, Sequence, MutableSequence
+        from collections.abc import MutableSequence, Sequence, Set
 
         member_coerce, outer_coerce = self.inner
         modified = False

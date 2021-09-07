@@ -1,5 +1,6 @@
 import numbers
-from .meta import Quantity, Dimension
+
+from .meta import Dimension, Quantity
 
 class Length:
     m: Quantity

@@ -47,9 +47,9 @@ def predicative(function, *args, **kwds):
     return an instance of `~xotl.tools.fp.option.Maybe`:class:.
 
     """
-    from xotl.tools.symbols import boolean
-    from xotl.tools.fp.option import Maybe, Just, Wrong
+    from xotl.tools.fp.option import Just, Maybe, Wrong
     from xotl.tools.params import single
+    from xotl.tools.symbols import boolean
 
     # I don't understand anymore why a single argument must be a special case,
     # maybe because the composition problem.
@@ -82,10 +82,10 @@ def vouch(function, *args, **kwds):
     types as fails, use `Just`:class: to return that values wrapped.
 
     """
-    from xotl.tools.symbols import boolean, Invalid
     from xotl.tools.clipping import small
     from xotl.tools.fp.option import Just, Wrong
     from xotl.tools.params import single
+    from xotl.tools.symbols import Invalid, boolean
 
     res = function(*args, **kwds)
     if isinstance(res, boolean):

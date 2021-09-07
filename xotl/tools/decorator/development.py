@@ -9,7 +9,6 @@
 
 from xotl.tools.decorator.meta import decorator
 
-
 # TODO: move to new module 'xotl.tools.hints' when fully implemented.
 
 
@@ -27,13 +26,11 @@ def unstable(target, msg=None):
 
     """
     import warnings
+
     from xotl.tools.names import nameof
 
     if msg is None:
-        msg = (
-            "The {0} `{1}` is declared unstable. "
-            "It may change in the future or be removed."
-        )
+        msg = "The {0} `{1}` is declared unstable. " "It may change in the future or be removed."
     try:
         from zope.interface import Interface
     except ImportError:

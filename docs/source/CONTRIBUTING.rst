@@ -46,7 +46,7 @@ documents the module.
 Versioning and deprecation
 ==========================
 
-`xoutil` uses three version components.
+`xotl.tools` (previously ``xoutil``) uses three version components.
 
 The first number refers to language compatibility: `xoutil` 1.x series are
 devoted to keeping compatible versions of the code for both Python 2.7 and
@@ -134,7 +134,3 @@ We divide xoutil modules into 4 tiers:
 
 The tiers above are a "logical suggestion" of how xoutil modules are organized
 and indicated how they might evolve.
-
-
-.. [#py-for-tests] See definitive list of needed Python interpreters in
-                   ``tox.ini`` file.

@@ -4,7 +4,7 @@
 
 .. automodule:: xotl.tools.dim.base
 
-.. autoclass:: Length
+.. class:: Length
 
    The Length base quantity.
 
@@ -28,7 +28,7 @@
    .. attribute:: nm
 
 
-.. autoclass:: Time
+.. class:: Time
 
    The Time base quantity.
 
@@ -50,7 +50,7 @@
    .. attribute:: hour
 
 
-.. autoclass:: Mass
+.. class:: Mass
 
    The Mass base quantity.
 
@@ -67,7 +67,7 @@
    .. attribute:: gram
 
 
-.. autoclass:: ElectricCurrent
+.. class:: ElectricCurrent
 
    The electrical current base quantity.
 
@@ -80,7 +80,7 @@
       An alias of `ampere`:attr:
 
 
-.. autoclass:: Temperature
+.. class:: Temperature
 
    The thermodynamic temperature base quantity.
 
@@ -98,7 +98,7 @@
    .. automethod:: from_fahrenheit
 
 
-.. autoclass:: Substance
+.. class:: Substance
 
    The amount of substance.
 
@@ -109,7 +109,7 @@
       An alias of `mole`:attr:.
 
 
-.. autoclass:: Luminosity
+.. class:: Luminosity
 
    The luminous intensity base quantity.
 

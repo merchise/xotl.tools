@@ -3,7 +3,16 @@
 ======================================================================
 
 .. automodule:: xotl.tools.dim.meta
-   :members: Dimension, Signature, Quantity, Scalar
+
+.. autoclass:: Dimension()
+   :members: new
+
+.. autoclass:: Signature
+
+.. autoclass:: Quantity
+
+.. autoclass:: Scalar
+
 
 .. data:: UNIT
 

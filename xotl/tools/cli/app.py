@@ -23,7 +23,8 @@ def main(default=None):
 
     """
     import sys
-    from xotl.tools.cli import Command, HELP_NAME
+
+    from xotl.tools.cli import HELP_NAME, Command
 
     args = sys.argv[1:]
     if args and not args[0].startswith("-"):

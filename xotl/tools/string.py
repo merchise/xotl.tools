@@ -14,24 +14,6 @@ doesn't exists.  `bytes` type can be used as an array of one byte each item.
 """
 from typing import Any, Optional, Pattern
 
-from xotl.tools.deprecation import deprecated  # noqa
-from xotl.tools.deprecation import import_deprecated  # noqa
-
-
-_MIGRATED_TO_CODECS = ("force_encoding", "safe_decode", "safe_encode")
-
-import_deprecated("xotl.tools.future.codecs", *_MIGRATED_TO_CODECS)
-
-
-@deprecated
-def safe_strip(value):
-    """Removes the leading and tailing space-chars from `value` if string, else
-    return `value` unchanged.
-
-    """
-    return value.strip() if isinstance(value, str) else value
-
-
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
 # some module dedicated to "string trimming".
 try:
@@ -45,7 +27,7 @@ except AttributeError:
         In Python 3.9+ this is the same as `str.removeprefix`:func:.
 
         """
-        from xotl.tools.future.codecs import safe_encode, safe_decode
+        from xotl.tools.future.codecs import safe_decode, safe_encode
 
         if isinstance(self, str) and isinstance(prefix, bytes):
             prefix = safe_decode(prefix)
@@ -132,6 +114,7 @@ def force_ascii(value: Any, encoding: str = None) -> str:
 
     """
     import unicodedata
+
     from .future.codecs import safe_decode
 
     ASCII, IGNORE = "ascii", "ignore"
@@ -244,7 +227,7 @@ def slugify(value: Any, *args, **kwds) -> str:
 
     from .params import ParamManager
     from .values import compose, istype
-    from .values.simple import not_false, ascii_coerce
+    from .values.simple import ascii_coerce, not_false
 
     _str = compose(not_false(""), istype(str))
     _ascii = compose(_str, ascii_coerce)
@@ -350,11 +333,3 @@ def make_a10z(string: str) -> str:
        p13n
     """
     return string[0] + str(len(string[1:-1])) + string[-1]
-
-
-@deprecated(slugify)
-def normalize_slug(value: Any, *args, **kwds) -> str:
-    return slugify(value, *args, **kwds)
-
-
-del deprecated, import_deprecated

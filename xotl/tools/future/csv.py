@@ -17,10 +17,9 @@ Value (CSV)`:abbr: files, and implements the interface described by PEP
 """
 
 
+import csv as _stdlib  # noqa
 from csv import *  # noqa
 from csv import unix_dialect
-import csv as _stdlib  # noqa
-
 
 #: Define 'unix dialect' as our base default for inheritance.
 DefaultDialect = unix_dialect

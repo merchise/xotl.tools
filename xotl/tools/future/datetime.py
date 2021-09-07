@@ -21,17 +21,13 @@ You may use this module as a drop-in replacement of the standard library
 
 """
 
-from datetime import *  # noqa
-from datetime import timedelta, date, datetime
 import datetime as _stdlib  # noqa
-
+from datetime import *  # noqa
+from datetime import date, datetime, timedelta
+from enum import IntEnum
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
-
-from enum import IntEnum
 from typing import Iterator, Tuple, Union  # noqa
-
-from xotl.tools.deprecation import deprecated
 
 
 class WEEKDAY(IntEnum):
@@ -56,37 +52,6 @@ class ISOWEEKDAY(IntEnum):
     FRIDAY = 5
     SATURDAY = 6
     SUNDAY = 7
-
-
-@deprecated("plain objects")
-def assure(obj):
-    """Make sure that a `date` or `datetime` instance is a safe version.
-
-    This is only a type checker alternative to standard library.
-
-    """
-    if isinstance(obj, (date, datetime, _stdlib.time, timedelta)):
-        return obj
-    else:
-        raise TypeError("Not valid type for datetime assuring: %s" % obj)
-
-
-@deprecated(assure)
-def new_date(d):
-    """Generate a safe date from a legacy datetime date object."""
-    return date(d.year, d.month, d.day)
-
-
-@deprecated(assure)
-def new_datetime(d):
-    """Generate a safe datetime given a legacy date or datetime object."""
-    args = [d.year, d.month, d.day]
-    if isinstance(d, datetime):
-        args.extend([d.hour, d.minute, d.second, d.microsecond, d.tzinfo])
-    return datetime(*args)
-
-
-del deprecated
 
 
 # This library does not support strftime's "%s" or "%y" format strings.
@@ -288,9 +253,7 @@ def is_full_month(start, end):
     """Returns true if the arguments comprises a whole month."""
     sd, sm, sy = start.day, start.month, start.year
     em, ey = end.month, end.year
-    return (
-        (sd == 1) and (sm == em) and (sy == ey) and (em != (end + timedelta(1)).month)
-    )
+    return (sd == 1) and (sm == em) and (sy == ey) and (em != (end + timedelta(1)).month)
 
 
 class flextime(timedelta):
@@ -1089,15 +1052,12 @@ class DateTimeSpan(TimeSpan):
     def __eq__(self, other):
         if isinstance(other, date):
             other = type(self).from_datetime(other)
-        elif isinstance(other, TimeSpan) and not isinstance(
-            other, DateTimeSpan
-        ):  # noqa
+        elif isinstance(other, TimeSpan) and not isinstance(other, DateTimeSpan):  # noqa
             other = self.from_timespan(other)
         elif not isinstance(other, DateTimeSpan):
             return NotImplemented
         return (
-            self.start_datetime == other.start_datetime
-            and self.end_datetime == other.end_datetime
+            self.start_datetime == other.start_datetime and self.end_datetime == other.end_datetime
         )
 
     def __hash__(self):

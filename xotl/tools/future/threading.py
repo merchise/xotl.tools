@@ -14,10 +14,9 @@ document all items here.  Refer to `threading`:mod: documentation.
 
 """
 
-from threading import *  # noqa
 import threading as _stdlib  # noqa
-
-from threading import Event, Thread, RLock, Timer
+from threading import *  # noqa
+from threading import Event, RLock, Thread, Timer
 
 
 def async_call(func, args=None, kwargs=None, callback=None, onerror=None):

@@ -16,7 +16,9 @@ file-system. This module re-exports (without change) several functions from the
 """
 
 import sys
-from os.path import abspath, expanduser, dirname, sep, normpath, join as _orig_join
+from os.path import abspath, dirname, expanduser
+from os.path import join as _orig_join
+from os.path import normpath, sep
 
 from xotl.tools.future.functools import power as pow_
 

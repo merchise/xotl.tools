@@ -18,8 +18,8 @@ See the `record`:class: class to find out how to use it.
 """
 
 
-from xotl.tools.symbols import Unset
 from xotl.tools.future.functools import lru_cache
+from xotl.tools.symbols import Unset
 
 
 @lru_cache()
@@ -29,9 +29,7 @@ def field_descriptor(field_name):
     class descriptor:
         def __get__(self, instance, owner):
             if instance:
-                return owner.get_field(
-                    instance._raw_data, owner._rec_fields[field_name]
-                )
+                return owner.get_field(instance._raw_data, owner._rec_fields[field_name])
             else:
                 return self
 
@@ -61,16 +59,10 @@ class _record_type(type):
         def static(f):
             return f if isinstance(f, staticmethod) else staticmethod(f)
 
-        cls_fields = {
-            attr: val
-            for attr, val in attrs.items()
-            if cls._is_rec_definition(attr, val)
-        }
+        cls_fields = {attr: val for attr, val in attrs.items() if cls._is_rec_definition(attr, val)}
         descriptors = {attr.lower(): field_descriptor(attr)() for attr in cls_fields}
         readers = {
-            attr.lower(): static(func)
-            for attr, func in attrs.items()
-            if cls.is_reader(attr, func)
+            attr.lower(): static(func) for attr, func in attrs.items() if cls.is_reader(attr, func)
         }
         new_attrs = dict(attrs, **descriptors)
         new_attrs.update(readers)

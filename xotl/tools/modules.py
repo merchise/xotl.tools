@@ -233,6 +233,7 @@ def get_module_path(module):
 
     """
     from importlib import import_module
+
     from xotl.tools.fs.path import normalize_path
 
     mod = import_module(module) if isinstance(module, str) else module

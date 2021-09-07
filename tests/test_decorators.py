@@ -132,12 +132,12 @@ class Memoizations(unittest.TestCase):
                     pass
 
         foo = Foobar()
-        self.assertNotEquals(getattr_static(foo, "prop"), foo)
+        self.assertNotEqual(getattr_static(foo, "prop"), foo)
         self.assertIs(foo.prop, foo)
         self.assertIs(getattr_static(foo, "prop"), foo)
         # After the first invocation, the static attr is the result.
         Foobar.prop.reset(foo)
-        self.assertNotEquals(getattr_static(foo, "prop"), foo)
+        self.assertNotEqual(getattr_static(foo, "prop"), foo)
 
 
 class ConstantBags(unittest.TestCase):

@@ -26,17 +26,17 @@ This module also contains:
 
 """
 
-from uuid import (
+from uuid import getnode  # noqa
+from uuid import (  # noqa
+    NAMESPACE_DNS,
+    NAMESPACE_OID,
+    NAMESPACE_URL,
+    NAMESPACE_X500,
     UUID,
     uuid1,
     uuid3,
     uuid4,
     uuid5,
-    getnode,  # noqa
-    NAMESPACE_DNS,
-    NAMESPACE_URL,
-    NAMESPACE_OID,
-    NAMESPACE_X500,
 )
 
 

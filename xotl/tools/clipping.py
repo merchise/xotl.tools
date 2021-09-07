@@ -49,9 +49,9 @@ def _check_max_width(max_width, caller=None):
         max_width = DEFAULT_MAX_WIDTH
     elif max_width < MIN_WIDTH:
         msg = "{}() ".format(caller) if caller else ""
-        msg += (
-            "invalid value for `max_width`, must be between greated than " "{}; got {}"
-        ).format(MIN_WIDTH, max_width)
+        msg += ("invalid value for `max_width`, must be between greated than " "{}; got {}").format(
+            MIN_WIDTH, max_width
+        )
         raise ValueError(msg)
     return max_width
 
@@ -108,7 +108,7 @@ def crop(obj, max_width=None, canonical=False):
 
 def _crop(obj, max_width=None, canonical=False):
     """Internal crop tool."""
-    from collections.abc import Set, Mapping
+    from collections.abc import Mapping, Set
 
     res = repr(obj) if canonical else str(obj)
     if (res.startswith("<") and res.endswith(">")) or len(res) > max_width:
@@ -135,7 +135,7 @@ def crop_iterator(obj, max_width=None, canonical=False):
     .. versionadded:: 1.8.0
 
     """
-    from collections.abc import Set, Mapping
+    from collections.abc import Mapping, Set
 
     max_width = _check_max_width(max_width, caller="crop_iterator")
     classes = (tuple, list, Mapping, Set)

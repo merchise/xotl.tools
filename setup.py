@@ -70,20 +70,19 @@ setup(
     ],
     keywords="",
     author="Merchise Autrement",
-    author_email="project+xoutil@merchise.org",
-    url="https://github.com/merchise/xoutil/",
+    url="https://gitlab.merchise.org/merchise/xotl.tools",
     license="GPLv3+",
     tests_require=["pytest"],
     namespace_packages=["xotl"],
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     install_requires=[
-        "typing-extensions~=3.7.4",
+        "typing-extensions~=3.10.0",
     ],
     extras_require={
-        "recommended": ["python-dateutil", 'enum34; python_version<"3.4"']
+        "recommended": ["python-dateutil"],
     },
     cmdclass=_cmdclass,
 )

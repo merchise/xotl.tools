@@ -6,7 +6,7 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-'''Transition to a new namespace
+"""Transition to a new namespace
 -----------------------------
 
 Since version 2.1, we're transitioning to another name: ``xotl.tools``.  This
@@ -41,14 +41,14 @@ import up to 3.0.
 .. _xotl-tools-dist: https://pypi.org/project/xotl.tools
 .. _xoutil-dist: https://pypi.org/project/xoutil
 
-'''
+"""
 
-import sys
 import importlib
+import sys
 from importlib.abc import MetaPathFinder
 
-XOUTIL_NAMESPACE = 'xoutil.'
-XOTL_TOOLS_NS = 'xotl.tools.'
+XOUTIL_NAMESPACE = "xoutil."
+XOTL_TOOLS_NS = "xotl.tools."
 
 
 class Hook(MetaPathFinder):
@@ -59,7 +59,7 @@ class Hook(MetaPathFinder):
 
     def _from_xoutil_to_xotl(self, full_name):
         if full_name.startswith(XOUTIL_NAMESPACE):
-            path = full_name[len(XOUTIL_NAMESPACE):]
+            path = full_name[len(XOUTIL_NAMESPACE) :]
             return XOTL_TOOLS_NS + path
         else:
             return None
@@ -76,9 +76,11 @@ class Hook(MetaPathFinder):
             result = importlib.import_module(modname)
         if result:
             import warnings
+
             warnings.warn(
-                ('Importing from xoutil ({}) is deprecated; '
-                 'import from xotl.tools ({})').format(full_name, modname)
+                ("Importing from xoutil ({}) is deprecated; " "import from xotl.tools ({})").format(
+                    full_name, modname
+                )
             )
             sys.modules[modname] = sys.modules[full_name] = result
             return result

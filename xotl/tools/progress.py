@@ -54,6 +54,7 @@ class Progress:
         percent = 100 * self.value // self.max_value
         if self.percent != percent:
             import sys
+
             from xotl.tools.future.datetime import strfdelta
 
             self.percent = percent

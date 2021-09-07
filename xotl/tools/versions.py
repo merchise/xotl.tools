@@ -209,7 +209,7 @@ class PackageVersion(ThreeNumbersVersion):
 
     @staticmethod
     def _find_version(package_name):
-        from pkg_resources import get_distribution, ResolutionError
+        from pkg_resources import ResolutionError, get_distribution
 
         if package_name in ("__builtin__", "builtins"):
             return python_version

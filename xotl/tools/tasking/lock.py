@@ -51,7 +51,7 @@ from xotl.tools.modules import moduleproperty
 
 @moduleproperty
 def context_lock(self):
-    """Allocate a lock based on xoutil execution contexts."""
+    """Allocate a lock based on xotl.tools execution contexts."""
     from xotl.tools.objects import classproperty
 
     class ContextLock:

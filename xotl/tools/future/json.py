@@ -20,14 +20,13 @@ case that library is not installed in your system.
 
 # TODO: consider use IoC to extend python json module
 
-from json import *  # noqa
 import json as _stdlib  # noqa
-
+from json import *  # noqa
 from json import __all__  # noqa
 
 __all__ = list(__all__) + ["file_load", "encode_string"]
 
-from json import encoder, decoder  # noqa
+from json import decoder, encoder  # noqa
 
 
 class JSONEncoder(_stdlib.JSONEncoder):
@@ -51,9 +50,9 @@ class JSONEncoder(_stdlib.JSONEncoder):
     DT_FORMAT = str("%s %s") % (DATE_FORMAT, TIME_FORMAT)
 
     def default(self, obj):
-        from datetime import datetime, date, time
-        from decimal import Decimal
         from collections.abc import Iterable
+        from datetime import date, datetime, time
+        from decimal import Decimal
 
         if isinstance(obj, datetime):
             return obj.strftime(self.DT_FORMAT)
@@ -88,9 +87,7 @@ from json.encoder import encode_basestring  # noqa
 try:
     from _json import encode_basestring_ascii
 except ImportError:
-    from json.encoder import (
-        py_encode_basestring_ascii as encode_basestring_ascii,  # noqa
-    )
+    from json.encoder import py_encode_basestring_ascii as encode_basestring_ascii  # noqa
 
 
 def encode_string(string, ensure_ascii=True):
