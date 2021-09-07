@@ -204,7 +204,10 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
-                type(self)(self.magnitude * other.magnitude, self.signature * other.signature)
+                type(self)(
+                    self.magnitude * other.magnitude,
+                    self.signature * other.signature,
+                )
             )
         else:
             raise OperandTypeError("*", self, other)
@@ -225,7 +228,10 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
-                type(self)(self.magnitude / other.magnitude, self.signature / other.signature)
+                type(self)(
+                    self.magnitude / other.magnitude,
+                    self.signature / other.signature,
+                )
             )
         else:
             raise OperandTypeError("/", self, other)
@@ -237,7 +243,10 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
-                type(self)(self.magnitude // other.magnitude, self.signature / other.signature)
+                type(self)(
+                    self.magnitude // other.magnitude,
+                    self.signature / other.signature,
+                )
             )
         else:
             raise OperandTypeError("//", self, other)
@@ -246,7 +255,10 @@ class Quantity(numbers.Real):
         if isinstance(other, BareReal):
             other = type(self)(other, Signature())
             return downgrade_to_scalar(
-                type(self)(other.magnitude / self.magnitude, other.signature / self.signature)
+                type(self)(
+                    other.magnitude / self.magnitude,
+                    other.signature / self.signature,
+                )
             )
         else:
             raise OperandTypeError("/", other, self)
@@ -257,7 +269,10 @@ class Quantity(numbers.Real):
         if isinstance(other, BareReal):
             other = type(self)(other, Signature())
             return downgrade_to_scalar(
-                type(self)(other.magnitude // self.magnitude, other.signature / self.signature)
+                type(self)(
+                    other.magnitude // self.magnitude,
+                    other.signature / self.signature,
+                )
             )
         else:
             raise OperandTypeError("//", other, self)
@@ -271,19 +286,19 @@ class Quantity(numbers.Real):
         elif isinstance(other, Quantity) and self.signature == other.signature:
             return self.magnitude == other.magnitude
         else:
-            raise TypeError("incomparable quantities: %r and %r" % (self, other))
+            return NotImplemented
 
     def __lt__(self, other):
         if isinstance(other, Quantity) and self.signature == other.signature:
             return self.magnitude < other.magnitude
         else:
-            raise TypeError("incomparable quantities: %r and %r" % (self, other))
+            return NotImplemented
 
     def __le__(self, other):
         if isinstance(other, Quantity) and self.signature == other.signature:
             return self.magnitude <= other.magnitude
         else:
-            raise TypeError("incomparable quantities: %r and %r" % (self, other))
+            return NotImplemented
 
     # The following make Quantity more compatible with numbers.Real.  In all
     # cases, taking a Quantity for a float takes the magnitude expressed in
@@ -604,9 +619,7 @@ class Dimension(type):
         if isinstance(other, Dimension):
             return self._signature_ == other._signature_
         else:
-            raise TypeError(
-                "incomparable types '%s' and '%s'" % (type(self).__name__, type(other).__name__)
-            )
+            return NotImplemented
 
 
 class Signature:
@@ -699,10 +712,10 @@ class Signature:
         return res
 
     def __eq__(self, other):
-        if isinstance(other, type(self)):
+        if isinstance(other, Signature):
             return self._topset == other._topset and self._bottomset == other._bottomset
         else:
-            return False
+            return NotImplemented
 
     def __hash__(self):
         return hash(self._topset) + hash(self._bottomset)

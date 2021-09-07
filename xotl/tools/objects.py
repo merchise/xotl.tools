@@ -9,6 +9,7 @@
 
 """Several utilities for objects in general."""
 
+import sys
 from contextlib import contextmanager
 
 from xotl.tools.deprecation import deprecated
@@ -551,7 +552,13 @@ def build_documentation(cls, get_doc=None, deep=1):
     return res
 
 
-def fix_class_documentation(cls, ignore=None, min_length=10, deep=1, default=None):
+def fix_class_documentation(
+    cls,
+    ignore=None,
+    min_length=10,
+    deep=1,
+    default=None,
+):
     """Fix the documentation for the given class using its super-classes.
 
     This function may be useful for shells or Python Command Line Interfaces
@@ -1007,8 +1014,29 @@ class xproperty(property):
         return self.fget(instance if instance is not None else owner)
 
 
-class classproperty(property):
-    """A descriptor that behaves like property for instances but for classes.
+if sys.version_info >= (3, 9):
+
+    def classproperty(*args, **kwargs):
+        return classmethod(property(*args, **kwargs))
+
+
+else:
+
+    class classproperty(property):
+        def __get__(self, instance, owner):
+            obj = type(instance) if instance is not None else owner
+            return super().__get__(obj, owner)
+
+        def __set__(self, instance, value):
+            obj = instance if isinstance(instance, type) else type(instance)
+            super().__set__(obj, value)
+
+        def __delete__(self, instance):
+            obj = instance if isinstance(instance, type) else type(instance)
+            super().__delete__(obj)
+
+
+classproperty.__doc__ = """A descriptor that behaves like property for instances but for classes.
 
     Example of its use::
 
@@ -1031,23 +1059,18 @@ class classproperty(property):
                 cls.x = int(x)
             name = classproperty(_get_name, _set_name)
 
+    In Python 3.9+ this is actually the composition of `classmethod`:any: to
+    `property`:any: (i.e same as ``lambda *a, **kw: classmethod(property(*a,
+    **kw))``).
+
     .. versionadded:: 1.4.1
 
     .. versionchanged:: 1.8.0 Inherits from `property`
 
+    .. versionchanged:: 2.11.0 Changed to be ``compose(classmethod,
+       property)`` in Python 3.9+.
+
     """
-
-    def __get__(self, instance, owner):
-        obj = type(instance) if instance is not None else owner
-        return super().__get__(obj, owner)
-
-    def __set__(self, instance, value):
-        obj = instance if isinstance(instance, type) else type(instance)
-        super().__set__(obj, value)
-
-    def __delete__(self, instance):
-        obj = instance if isinstance(instance, type) else type(instance)
-        super().__delete__(obj)
 
 
 class staticproperty(property):
@@ -1097,41 +1120,44 @@ class staticproperty(property):
             raise AttributeError("can't delete attribute")
 
 
-# The following is extracted from the SQLAlchemy project's codebase, merit and
-# copyright goes to SQLAlchemy authors.
-#
-# Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
-#
-# This module is part of SQLAlchemy and is released under the MIT License:
-# http://www.opensource.org/licenses/mit-license.php
-#
-class memoized_property:
-    """A read-only property that is only evaluated once.
+try:
+    from functools import cached_property
 
-    This is extracted from the SQLAlchemy project's codebase, merit and
-    copyright goes to SQLAlchemy authors::
+    class memoized_property(cached_property):
+        def __init__(self, func, doc=None):
+            super().__init__(func)
+            self.__doc__ = doc or func.__doc__
+            self.__name__ = func.__name__
 
-      Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+        def reset(self, instance):
+            """Clear the cached value of `instance`."""
+            instance.__dict__.pop(self.__name__, None)
 
-      This module is part of SQLAlchemy and is released under the MIT License:
-      http://www.opensource.org/licenses/mit-license.php
 
-    """
+except ImportError:
+    # The following is extracted from the SQLAlchemy project's codebase, merit and
+    # copyright goes to SQLAlchemy authors.
+    #
+    # Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
+    #
+    # This module is part of SQLAlchemy and is released under the MIT License:
+    # http://www.opensource.org/licenses/mit-license.php
+    #
+    class memoized_property:
+        def __init__(self, fget, doc=None):
+            self.fget = fget
+            self.__doc__ = doc or fget.__doc__
+            self.__name__ = fget.__name__
 
-    def __init__(self, fget, doc=None):
-        self.fget = fget
-        self.__doc__ = doc or fget.__doc__
-        self.__name__ = fget.__name__
+        def __get__(self, obj, cls):
+            if obj is None:
+                return self
+            obj.__dict__[self.__name__] = result = self.fget(obj)
+            return result
 
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-        obj.__dict__[self.__name__] = result = self.fget(obj)
-        return result
-
-    def reset(self, instance):
-        """Clear the cached value of `instance`."""
-        instance.__dict__.pop(self.__name__, None)
+        def reset(self, instance):
+            """Clear the cached value of `instance`."""
+            instance.__dict__.pop(self.__name__, None)
 
 
 def setdefaultattr(obj, name, value):
@@ -1197,7 +1223,13 @@ def adapt_exception(value, **kwargs):
         return None
 
 
-def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
+def copy_class(
+    cls,
+    meta=None,
+    ignores=None,
+    new_attrs=None,
+    new_name=None,
+):
     """Copies a class definition to a new class.
 
     The returned class will have the same name, bases and module of `cls`.
@@ -1740,4 +1772,4 @@ class DelegatedAttribute:
         return "<DelegatedAttr '%s.%s'>" % (self.target_name, self.attr)
 
 
-del contextmanager, deprecated
+del contextmanager, deprecated, sys

@@ -212,6 +212,9 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
     result = prop(getter, doc=doc)
     name = getter.__name__
     setattr(cls, getter.__name__, result)
+    set_name = getattr(result, "__set_name__", None)
+    if set_name is not None:
+        set_name(cls, name)
     if setter:
         result = result.setter(setter, _name=name)
     if deleter:

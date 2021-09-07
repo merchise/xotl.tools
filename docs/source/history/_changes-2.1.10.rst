@@ -12,6 +12,7 @@
   - `xotl.tools.string`:mod:
   - `xotl.tools.future.objects`:mod:
   - `xotl.tools.future.datetime`:mod:
+  - `xotl.tools.context`:mod:
 
   We've published several post-releases for 2.1.10 (2.1.10.post2,
   2.1.10.post3, ...).  Those releases don't introduce new functions or

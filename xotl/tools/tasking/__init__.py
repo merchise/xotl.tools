@@ -99,7 +99,8 @@ class ConstantWait:
 
 
 StandardWait = deprecated_alias(
-    ConstantWait, msg="StandardWait is deprecated. Use ConstantWait instead"
+    ConstantWait,
+    msg="StandardWait is deprecated. Use ConstantWait instead",
 )
 
 

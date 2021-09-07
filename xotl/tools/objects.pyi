@@ -69,6 +69,12 @@ def copy_class(
     new_attrs: Mapping[str, Any] = None,
     new_name: str = None,
 ) -> Type: ...
+def validate_attrs(
+    source: Any,
+    target: Any,
+    force_equals: Sequence[str] = (),
+    force_differents: Sequence[str] = (),
+) -> bool: ...
 
 B_co = TypeVar("B_co", covariant=True)
 

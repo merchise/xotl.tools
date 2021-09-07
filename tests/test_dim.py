@@ -251,12 +251,15 @@ def test_undistinguishable_definitions():
 
     assert L.metre == Length.metre
 
+    # This is won't be be the same as L, not Length from above
+
     @Dimension.new
     class Length:
         km = UNIT
 
+    assert L.metre != Length.km
     with pytest.raises(TypeError):
-        assert L.metre != Length.km
+        L.metre < Length.km
 
 
 def test_bug_30():
