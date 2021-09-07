@@ -11,9 +11,8 @@
 
 from contextlib import contextmanager
 
-from xotl.tools.symbols import Unset
 from xotl.tools.deprecation import deprecated
-
+from xotl.tools.symbols import Unset
 
 __docstring_format__ = "rst"
 
@@ -116,10 +115,7 @@ class SafeDataItem:
             if not isinstance(current, SafeDataItem):
                 cls_locals[self.attr_name] = self
             else:
-                msg = (
-                    "class `%s` has already an assigned descriptor with "
-                    "the same name `%s`"
-                )
+                msg = "class `%s` has already an assigned descriptor with the same name `%s`"
                 type_name = type(self).__name__
                 raise AttributeError(msg % (type_name, self.attr_name))
 
@@ -186,6 +182,7 @@ class SafeDataItem:
 
         def inner(method):
             from types import FunctionType as function
+
             from xotl.tools.validators import check
 
             FUNC_KINDS = ("normal", "static", "class")
@@ -269,6 +266,7 @@ class SafeDataItem:
     def _unique_name(self):
         """Generate a unique new name."""
         from time import time
+
         from xotl.tools.bases import int2str
 
         return "_%s" % int2str(int(1000000 * time()))
@@ -311,10 +309,7 @@ class SafeDataItem:
                 bads[key] = value
         self.validator = predicate(self.validator)
         if bads:
-            msg = (
-                "Invalid keyword arguments: %s\n"
-                "See constructor documentation for more info."
-            )
+            msg = "Invalid keyword arguments: %s\n" "See constructor documentation for more info."
             raise ValueError(msg % bads)
         if self.attr_name is Unset:
             from xotl.tools.names import nameof
@@ -393,8 +388,8 @@ def smart_setter(obj):
     .. versionadded:: 1.8.2
 
     """
-    from xotl.tools.future.functools import partial
     from xotl.tools.future.collections import MutableMapping
+    from xotl.tools.future.functools import partial
 
     if isinstance(obj, MutableMapping):
         return obj.__setitem__
@@ -589,9 +584,7 @@ def fix_class_documentation(cls, ignore=None, min_length=10, deep=1, default=Non
             cls.__doc__ = default(cls) if callable(default) else default
 
 
-def fix_method_documentation(
-    cls, method_name, ignore=None, min_length=10, deep=1, default=None
-):
+def fix_method_documentation(cls, method_name, ignore=None, min_length=10, deep=1, default=None):
     """Fix the documentation for the given class using its super-classes.
 
     This function may be useful for shells or Python Command Line Interfaces
@@ -631,7 +624,7 @@ def fix_method_documentation(
 
 def fulldir(obj):
     """Return a set with all attribute names defined in `obj`"""
-    from xotl.tools.future.inspect import get_attr_value, _static_getmro
+    from xotl.tools.future.inspect import _static_getmro, get_attr_value
 
     def getdir(o):
         return set(get_attr_value(o, "__dict__", {}))
@@ -944,8 +937,7 @@ def FinalSubclassEnumeration(superclass, *, dynamic=True):
         def __members__(self):
             if self._cached_members is None or self._dynamic:
                 result = {
-                    c.__name__: c
-                    for c in iter_branch_subclasses(superclass, include_this=False)
+                    c.__name__: c for c in iter_branch_subclasses(superclass, include_this=False)
                 }
                 if not self._dynamic:
                     self._cached_members = dict(result)
@@ -1157,8 +1149,8 @@ def setdefaultattr(obj, name, value):
         >>> setdefaultattr(inst, 'spam', 'with ham')
         'egg'
 
-    (`New in version 1.2.1`). If you want the value to be lazily evaluated you
-    may provide a lazy-lambda::
+    .. versionadded: 1.2.1 If you want the value to be lazily evaluated you
+       may provide a lazy-lambda::
 
         >>> inst = Someclass()
         >>> inst.a = 1
@@ -1237,6 +1229,7 @@ def copy_class(cls, meta=None, ignores=None, new_attrs=None, new_name=None):
 
     """
     from types import new_class
+
     from xotl.tools.future.types import MemberDescriptorType
 
     def _get_ignored(what):
@@ -1333,7 +1326,7 @@ def smart_copy(*args, defaults=None):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     """
-    from xotl.tools.future.collections import MutableMapping, Mapping
+    from xotl.tools.future.collections import Mapping, MutableMapping
     from xotl.tools.symbols import Undefined
     from xotl.tools.validators.identifiers import is_valid_identifier
     from xotl.tools.values.simple import logic_iterable_coerce, nil
@@ -1358,9 +1351,7 @@ def smart_copy(*args, defaults=None):
 
     _mapping = isinstance(defaults, Mapping)
     if _mapping or logic_iterable_coerce(defaults) is not nil:
-        for key, val in (
-            (key, get_first_of(sources, key, default=Unset)) for key in defaults
-        ):
+        for key, val in ((key, get_first_of(sources, key, default=Unset)) for key in defaults):
             if val is Unset:
                 if _mapping:
                     val = defaults.get(key, None)
@@ -1513,7 +1504,7 @@ def dict_merge(*dicts, **others):
     Without arguments, return the empty dict.
 
     """
-    from collections.abc import Mapping, Sequence, Set, Container
+    from collections.abc import Container, Mapping, Sequence, Set
 
     if others:
         dicts = dicts + (others,)
@@ -1707,9 +1698,7 @@ def delegator(attribute, attrs_map, metaclass=type):
     .. versionadded:: 1.9.3
 
     """
-    descriptors = {
-        key: DelegatedAttribute(attribute, attr) for key, attr in attrs_map.items()
-    }
+    descriptors = {key: DelegatedAttribute(attribute, attr) for key, attr in attrs_map.items()}
     return metaclass("delegator", (object,), descriptors)
 
 

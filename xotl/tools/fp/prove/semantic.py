@@ -102,8 +102,8 @@ class TypeCheck(predicate):
 
     def __crop__(self, max_width=None, canonical=False):
         """Calculate both string versions (small and normal)."""
+        from xotl.tools.clipping import DEFAULT_MAX_WIDTH, ELLIPSIS
         from xotl.tools.symbols import Undefined
-        from xotl.tools.clipping import ELLIPSIS, DEFAULT_MAX_WIDTH
 
         if max_width is None:
             max_width = DEFAULT_MAX_WIDTH  # a big number for this

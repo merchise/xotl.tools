@@ -7,6 +7,18 @@ stages:
   - publish
   - clean up
 
+check flake8 and black:
+  image: python:3.9-alpine
+  stage: check
+  needs: []
+  script:
+    - pip install --no-cache-dir 'flake8>=3.8.4' 'flake8-bugbear~=21.4.3' 'black==21.5b2' 'isort~=5.9.3'
+    - flake8 xotl/tools xoutil/
+    - black --check xotl/tools xoutil/
+    - isort --check --diff xotl/tools xoutil/
+  only:
+    - merge_requests
+    - main
 
 .run_tox_staticcheck: &run_tox_staticcheck
   image: python:$PYTHON

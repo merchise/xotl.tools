@@ -1,4 +1,5 @@
-from typing import Any, Dict, ContextManager, TypeVar
+from typing import Any, ContextManager, Dict, TypeVar
+
 from typing_extensions import Protocol
 
 C = TypeVar("C")

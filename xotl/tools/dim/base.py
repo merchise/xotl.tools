@@ -14,7 +14,7 @@ https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
 
 """
 
-from .meta import Dimension, UNIT
+from .meta import UNIT, Dimension
 
 
 def kilo(v):

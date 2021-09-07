@@ -23,9 +23,10 @@ Commands can be registered by:
 
 """
 
-from abc import abstractmethod, ABCMeta, ABC
-from xotl.tools.objects import staticproperty
+from abc import ABC, ABCMeta, abstractmethod
+
 from xotl.tools.cli.tools import command_name, program_name
+from xotl.tools.objects import staticproperty
 
 
 class CommandMeta(ABCMeta):
@@ -188,9 +189,7 @@ class Command(ABC, metaclass=CommandMeta):
             else:  # Only branch commands are OK to execute
                 from types import FunctionType as ValidMethodType
 
-                assert isinstance(
-                    source.run, ValidMethodType
-                ), "Invalid type %r for source %r" % (
+                assert isinstance(source.run, ValidMethodType), "Invalid type %r for source %r" % (
                     type(source.run).__name__,
                     source,
                 )

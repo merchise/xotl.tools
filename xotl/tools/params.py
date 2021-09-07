@@ -357,6 +357,7 @@ class ParamSchemeRow:
 
     def __init__(self, *ids, **options):
         from collections import Counter
+
         from xotl.tools.fp.option import none
 
         iskey = lambda s: isinstance(s, str) and s.isidentifier()
@@ -375,9 +376,7 @@ class ParamSchemeRow:
 
             bad = [k for k in ids if not ok(k)]
             if bad:
-                msg = (
-                    "{}() identifiers with wrong type (only int and str " "allowed): {}"
-                )
+                msg = "{}() identifiers with wrong type (only int and str " "allowed): {}"
                 raise TypeError(msg.format(type(self).__name__, bad))
         key = options.pop("key", none)
         if not (key is none or iskey(key)):
@@ -485,9 +484,9 @@ class ParamScheme:
                 if not aux:
                     used |= this
                 else:
-                    msg = (
-                        '{}() repeated keyword identifiers "{}" in ' "row {}"
-                    ).format(type(self).__name__, aux, idx)
+                    msg = ('{}() repeated keyword identifiers "{}" in ' "row {}").format(
+                        type(self).__name__, aux, idx
+                    )
                     raise ValueError(msg)
         self.rows = rows
         self.cache = None
@@ -536,10 +535,7 @@ class ParamScheme:
         rem = pm.remainder()
         if strict:
             if rem:
-                msg = (
-                    "after a full `{}` process, there are still remainder "
-                    "parameters: {}"
-                )
+                msg = "after a full `{}` process, there are still remainder " "parameters: {}"
                 raise TypeError(msg.format(type(self).__name__, set(rem)))
         else:
             res.update(rem)

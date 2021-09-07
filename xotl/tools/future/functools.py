@@ -34,8 +34,8 @@ def power(*args):
        TypeError: power() takes at least 2 arguments (1 given)
 
     """
-    from xotl.tools.params import check_count
     from xotl.tools.fp.tools import compose
+    from xotl.tools.params import check_count
 
     check_count(args, 2, caller="power")
     *funcs, times = args
@@ -106,8 +106,9 @@ def lwraps(*args, **kwargs):
 
     """
     from types import FunctionType, MethodType
-    from xotl.tools.symbols import Unset
+
     from xotl.tools.params import check_count
+    from xotl.tools.symbols import Unset
 
     def repeated(name):
         msg = "lwraps got multiple values for argument '{}'"

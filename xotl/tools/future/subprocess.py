@@ -11,7 +11,7 @@
 
 
 from subprocess import *  # noqa
-from subprocess import __all__, Popen, PIPE  # noqa
+from subprocess import PIPE, Popen, __all__  # noqa
 
 __all__ = list(__all__) + ["call_and_check_output"]
 

@@ -113,9 +113,7 @@ class Maybe:
 
     def __eq__(self, other):
         return (
-            isinstance(other, type(self))
-            and self.inner == other.inner
-            or self.inner is other
+            isinstance(other, type(self)) and self.inner == other.inner or self.inner is other
         )  # TODO: check if `==` instead `is`
 
     def __ne__(self, other):

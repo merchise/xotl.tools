@@ -45,6 +45,7 @@ Unless you pass in a generator::
 """
 
 from types import GeneratorType
+
 from xotl.tools.decorator.meta import decorator
 
 
@@ -74,9 +75,7 @@ class Bounded(metaclass=BoundedType):
     # apply method of BoundaryCondition.  Nevertheless, they are documented
     # here as an API promise.
     def __call__(self, *args, **kwargs):
-        """Return the last value from the underlying `bounded generator`.
-
-        """
+        """Return the last value from the underlying `bounded generator`."""
         raise NotImplementedError()
 
     def generate(self, *args, **kwargs):
@@ -185,9 +184,7 @@ class BoundaryCondition:
                         try:
                             stop = boundary.send(data)
                         except StopIteration:
-                            raise RuntimeError(
-                                'Invalid boundary definition "%r"' % self.definition
-                            )
+                            raise RuntimeError('Invalid boundary definition "%r"' % self.definition)
             finally:
                 boundary.close()
                 unbounded.close()

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, Type, Union, TypeVar, overload, Tuple
+from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union, overload
+
 from typing_extensions import Literal
 
 A = TypeVar("A")

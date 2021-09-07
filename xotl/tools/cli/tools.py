@@ -37,6 +37,7 @@ def hyphen_name(name, join_numbers=True):
 
     """
     import re
+
     from xotl.tools.string import force_ascii
 
     name = force_ascii(name)

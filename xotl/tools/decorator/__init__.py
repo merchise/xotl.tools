@@ -13,12 +13,10 @@
 
 
 import sys
-
 from functools import wraps
 from types import FunctionType as function
 
 from xotl.tools.decorator.meta import decorator
-
 
 __all__ = (
     "decorator",
@@ -139,8 +137,8 @@ def assignment_operator(func, maybe_inline=False):
                  (in case you change your mind about portability).
 
     """
-    import inspect
     import ast
+    import inspect
 
     if not isinstance(func, function):
         raise TypeError('"func" must be a function.')

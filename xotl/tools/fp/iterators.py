@@ -12,8 +12,8 @@
    or otherwise changed.
 
 """
-from typing import Callable, Iterable, TypeVar
 from functools import reduce
+from typing import Callable, Iterable, TypeVar
 
 X = TypeVar("X")
 Y = TypeVar("Y")
@@ -65,9 +65,7 @@ def kleisli_compose(*fs: Callable[[T], Iterable[T]]) -> Callable[[T], Iterable[T
         return reduce(_kleisli_compose, fs, lambda x: iter([x]))
 
 
-def kleisli_compose_foldl(
-    *fs: Callable[[T], Iterable[T]]
-) -> Callable[[T], Iterable[T]]:
+def kleisli_compose_foldl(*fs: Callable[[T], Iterable[T]]) -> Callable[[T], Iterable[T]]:
     """Same as `kleisli_compose`:func: but composes left-to-right.
 
     Examples:

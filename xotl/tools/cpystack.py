@@ -10,8 +10,8 @@
 """Utilities to inspect the CPython's stack."""
 
 import inspect
-from xotl.tools.deprecation import deprecated
 
+from xotl.tools.deprecation import deprecated
 
 __all__ = (
     "MAX_DEEP",
@@ -46,8 +46,8 @@ def getargvalues(frame):
         -10
 
     """
-    from xotl.tools.values.simple import force_sequence_coerce as array
     from xotl.tools.future.itertools import flatten
+    from xotl.tools.values.simple import force_sequence_coerce as array
 
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {}

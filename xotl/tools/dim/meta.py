@@ -131,11 +131,10 @@ this to work.
 """
 import functools
 import numbers
-from typing import Any, Callable, FrozenSet, Sequence, Tuple, Optional, overload
+from typing import Any, Callable, FrozenSet, Optional, Sequence, Tuple, overload
 
-from xotl.tools.objects import classproperty
 from xotl.tools.future.types import TEq
-
+from xotl.tools.objects import classproperty
 
 #: The unit for any kind of quantity.
 UNIT = 1
@@ -205,9 +204,7 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
-                type(self)(
-                    self.magnitude * other.magnitude, self.signature * other.signature
-                )
+                type(self)(self.magnitude * other.magnitude, self.signature * other.signature)
             )
         else:
             raise OperandTypeError("*", self, other)
@@ -228,9 +225,7 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
-                type(self)(
-                    self.magnitude / other.magnitude, self.signature / other.signature
-                )
+                type(self)(self.magnitude / other.magnitude, self.signature / other.signature)
             )
         else:
             raise OperandTypeError("/", self, other)
@@ -242,9 +237,7 @@ class Quantity(numbers.Real):
             other = type(self)(other, Signature())
         if isinstance(other, Quantity):
             return downgrade_to_scalar(
-                type(self)(
-                    self.magnitude // other.magnitude, self.signature / other.signature
-                )
+                type(self)(self.magnitude // other.magnitude, self.signature / other.signature)
             )
         else:
             raise OperandTypeError("//", self, other)
@@ -253,9 +246,7 @@ class Quantity(numbers.Real):
         if isinstance(other, BareReal):
             other = type(self)(other, Signature())
             return downgrade_to_scalar(
-                type(self)(
-                    other.magnitude / self.magnitude, other.signature / self.signature
-                )
+                type(self)(other.magnitude / self.magnitude, other.signature / self.signature)
             )
         else:
             raise OperandTypeError("/", other, self)
@@ -266,9 +257,7 @@ class Quantity(numbers.Real):
         if isinstance(other, BareReal):
             other = type(self)(other, Signature())
             return downgrade_to_scalar(
-                type(self)(
-                    other.magnitude // self.magnitude, other.signature / self.signature
-                )
+                type(self)(other.magnitude // self.magnitude, other.signature / self.signature)
             )
         else:
             raise OperandTypeError("//", other, self)
@@ -442,11 +431,7 @@ class Dimension(type):
     @overload
     @classmethod
     def new(
-        cls,
-        *,
-        unit_alias: str = None,
-        unit_aliases: Sequence[str] = None,
-        Quantity: type = None
+        cls, *, unit_alias: str = None, unit_aliases: Sequence[str] = None, Quantity: type = None
     ) -> Callable[[Any], "Dimension"]:
         ...
 
@@ -515,8 +500,8 @@ class Dimension(type):
         .. versionchanged:: 2.1.0 Added keyword parameter Quantity.
 
         """
-        from xotl.tools.objects import copy_class
         from xotl.tools.decorator.meta import decorator
+        from xotl.tools.objects import copy_class
 
         @decorator
         def _new(source, unit_alias=None, unit_aliases=None, Quantity=None):
@@ -616,8 +601,7 @@ class Dimension(type):
             return self._signature_ == other._signature_
         else:
             raise TypeError(
-                "incomparable types '%s' and '%s'"
-                % (type(self).__name__, type(other).__name__)
+                "incomparable types '%s' and '%s'" % (type(self).__name__, type(other).__name__)
             )
 
 
@@ -857,9 +841,7 @@ class OperandTypeError(TypeError):
             t2 = val2.signature
         else:
             t2 = type(val2).__name__
-        super().__init__(
-            "unsupported operand type(s) for %s: '%s' and '%s'" % (operand, t1, t2)
-        )
+        super().__init__("unsupported operand type(s) for %s: '%s' and '%s'" % (operand, t1, t2))
 
 
 def downgrade_to_scalar(quantity):

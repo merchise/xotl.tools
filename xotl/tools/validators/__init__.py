@@ -15,9 +15,9 @@ functions for several identifiers.
 
 # TODO: Check next import, it looks like one of the modules must be deprecated
 from xotl.tools.validators.identifiers import (  # noqa
-    is_valid_identifier,
     check_identifier,
     is_valid_full_identifier,
+    is_valid_identifier,
     is_valid_public_identifier,
     is_valid_slug,
 )
@@ -145,8 +145,8 @@ def predicate(*checkers, **kwargs):
       False
 
     """
+    from xotl.tools.future.collections import Mapping, Set
     from xotl.tools.symbols import boolean
-    from xotl.tools.future.collections import Set, Mapping
 
     def inner(obj):
         """Check is `obj` is a valid instance for a set of checkers."""
@@ -273,8 +273,8 @@ def ok(value, *checkers, **kwargs):
     if pred(value):
         return value
     else:
-        from xotl.tools.future.itertools import multi_get as get
         from xotl.tools.future.inspect import safe_name
+        from xotl.tools.future.itertools import multi_get as get
 
         msg = next(get(kwargs, "message", "msg"), "Invalid {type}: {value}!")
         msg = msg.format(value=value, type=safe_name(value, affirm=True))

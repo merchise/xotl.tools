@@ -48,14 +48,12 @@ Original copyright and license notices from decorator package:
 
 """
 
-import sys
-import re
 import inspect
-
-from functools import wraps, partial
-from types import FunctionType as function
-
+import re
+import sys
+from functools import partial, wraps
 from inspect import getfullargspec as _getfullargspec
+from types import FunctionType as function
 
 __all__ = ("FunctionMaker", "flat_decorator", "decorator")
 
@@ -103,9 +101,7 @@ class FunctionMaker:
                     setattr(self, a, getattr(argspec, a, None))
                 for i, arg in enumerate(self.args):
                     setattr(self, "arg%d" % i, arg)
-                self.signature = inspect.formatargspec(
-                    formatvalue=lambda val: "", *argspec
-                )[1:-1]
+                self.signature = inspect.formatargspec(formatvalue=lambda val: "", *argspec)[1:-1]
                 allargs = list(self.args)
                 if self.varargs:
                     allargs.append("*" + self.varargs)
@@ -154,9 +150,7 @@ class FunctionMaker:
         if mo is None:
             raise SyntaxError("not a valid function template\n%s" % src)
         name = mo.group(1)  # extract the function name
-        names = set(
-            [name] + [arg.strip(" *") for arg in self.shortsignature.split(",")]
-        )
+        names = set([name] + [arg.strip(" *") for arg in self.shortsignature.split(",")])
         for n in names:
             if n in ("_func_", "_call_"):
                 raise NameError("%s is overridden in\n%s" % (n, src))
@@ -175,15 +169,7 @@ class FunctionMaker:
 
     @classmethod
     def create(
-        cls,
-        obj,
-        body,
-        evaldict,
-        defaults=None,
-        doc=None,
-        module=None,
-        addsource=True,
-        **attrs
+        cls, obj, body, evaldict, defaults=None, doc=None, module=None, addsource=True, **attrs
     ):
         """
         Create a function from the strings name, signature and body.
@@ -203,9 +189,7 @@ class FunctionMaker:
             func = obj
         self = cls(func, name, signature, defaults, doc, module)
         ibody = "\n".join("    " + line for line in body.splitlines())
-        return self.make(
-            "def %(name)s(%(signature)s):\n" + ibody, evaldict, addsource, **attrs
-        )
+        return self.make("def %(name)s(%(signature)s):\n" + ibody, evaldict, addsource, **attrs)
 
 
 def flat_decorator(caller, func=None):
@@ -347,8 +331,7 @@ def decorator(caller):
             len(args) == 1
             and not kwargs
             and (
-                isinstance(args[0], (function, type))
-                or issubclass(type(args[0]), type(Interface))
+                isinstance(args[0], (function, type)) or issubclass(type(args[0]), type(Interface))
             )
         ):
             # This tries to solve the case of missing () on the decorator::

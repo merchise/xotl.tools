@@ -13,9 +13,7 @@ __all__ = ["slugify"]
 
 
 # TODO: Why not deprecate this and use standard `xotl.tools.string.slugify`.
-def slugify(
-    s, entities=True, decimal=True, hexadecimal=True
-):  # pragma: no cover  # noqa
+def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cover  # noqa
     """Convert a string to a slug representation.
 
     Normalizes string, converts to lower-case, removes non-alpha characters,
@@ -64,8 +62,9 @@ def slugify(
 
     """
     import re
-    from xotl.tools.string import slugify
+
     from xotl.tools.future.codecs import safe_decode
+    from xotl.tools.string import slugify
 
     if not isinstance(s, str):
         s = safe_decode(s)

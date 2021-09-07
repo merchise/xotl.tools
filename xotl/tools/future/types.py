@@ -21,17 +21,14 @@ In Jython and PyPy, `MemberDescriptorType` is identical to
 they are differentiated in this module.
 
 """
-from typing import TypeVar
-from typing_extensions import Protocol
-
-from types import *  # noqa
 import types as _stdlib  # noqa
-
-from xotl.tools.deprecation import deprecated
-
-from xotl.tools.symbols import Unset as _unset
 from collections.abc import Mapping
+from types import *  # noqa
+from typing import TypeVar
 
+from typing_extensions import Protocol
+from xotl.tools.deprecation import deprecated
+from xotl.tools.symbols import Unset as _unset
 
 try:
     from types import __all__  # noqa
@@ -79,10 +76,8 @@ FuncTypes = tuple(
 
 func_types = FuncTypes  # Just an alias
 
-from types import _calculate_meta  # noqa
-
-
 import re
+from types import _calculate_meta  # noqa
 
 RegexPattern = type(re.compile(""))
 del re
@@ -113,7 +108,7 @@ def _get_mro_attr(target, name, *default):
 
     """
     from xotl.tools.future.inspect import _static_getmro
-    from xotl.tools.params import check_default, Undefined
+    from xotl.tools.params import Undefined, check_default
 
     # force type
     target = target if isinstance(target, type) else type(target)

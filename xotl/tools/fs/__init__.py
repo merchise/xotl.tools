@@ -16,19 +16,20 @@ path-handling functions that have no side-effects look at
 """
 
 
-import sys
 import os
+import sys
 from re import compile as _rcompile
-from xotl.tools.fs.path import normalize_path
 
+from xotl.tools.fs.path import normalize_path
 
 re_magic = _rcompile("[*?[]")
 has_magic = lambda s: re_magic.search(s) is not None
 
 
 def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
-    from functools import reduce
     import fnmatch
+    from functools import reduce
+
     from xotl.tools.params import check_count
 
     arg_count = reduce(
@@ -130,9 +131,7 @@ def iter_dict_files(top=".", regex=None, wrong=None, followlinks=False):
             regex = _rcompile(regex)
     else:
         regex = _REGEX_DEFAULT_ALLFILES
-    for dirpath, _dirs, filenames in os.walk(
-        normalize_path(top), followlinks=followlinks
-    ):
+    for dirpath, _dirs, filenames in os.walk(normalize_path(top), followlinks=followlinks):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             match = regex.match(path)
@@ -407,7 +406,7 @@ def walk_up(start, sentinel):
     If `start` path exists but is not a directory an OSError is raised.
 
     """
-    from os.path import abspath, exists, isdir, join, dirname
+    from os.path import abspath, dirname, exists, isdir, join
 
     current = abspath(start)
     if not exists(current) or not isdir(current):
@@ -481,8 +480,9 @@ def concatfiles(*files):
 
     """
     import shutil
-    from xotl.tools.values.simple import force_iterable_coerce
+
     from xotl.tools.params import check_count
+    from xotl.tools.values.simple import force_iterable_coerce
 
     check_count(files, 2, caller="concatfiles")
     if len(files) == 2:

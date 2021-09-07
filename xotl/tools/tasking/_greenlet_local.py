@@ -18,7 +18,6 @@
 # the thread level, so sub-classes of `local` MUST NOT switch greenlets.
 from threading import RLock
 
-
 # since each thread has its own greenlet we can just use those as identifiers
 # for the context.  If greenlets are not available we fall back to the
 # current thread ident depending on where it is.
@@ -27,12 +26,9 @@ try:
 except ImportError:
     from threading import current_thread as getcurrent
 
-
-from weakref import WeakKeyDictionary
-from copy import copy
-
-
 import sys
+from copy import copy
+from weakref import WeakKeyDictionary
 
 PYPY = hasattr(sys, "pypy_version_info")
 
@@ -97,9 +93,7 @@ class local(_localbase):
     def __setattr__(self, name, value):
         if name == "__dict__":
             clsname = self.__class__.__name__
-            raise AttributeError(
-                "%r object attribute '__dict__' is read-only" % clsname
-            )
+            raise AttributeError("%r object attribute '__dict__' is read-only" % clsname)
         d = object.__getattribute__(self, "_local__dicts").get(getcurrent())
         if d is None:
             lock = object.__getattribute__(self, "_local__lock")
@@ -116,9 +110,7 @@ class local(_localbase):
     def __delattr__(self, name):
         if name == "__dict__":
             clsname = self.__class__.__name__
-            raise AttributeError(
-                "%r object attribute '__dict__' is read-only" % clsname
-            )
+            raise AttributeError("%r object attribute '__dict__' is read-only" % clsname)
         d = object.__getattribute__(self, "_local__dicts").get(getcurrent())
         if d is None:
             lock = object.__getattribute__(self, "_local__lock")

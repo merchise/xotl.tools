@@ -17,8 +17,8 @@ Original documentation:
 
 """
 
-from calendar import *  # noqa
 import calendar as _stdlib  # noqa
+from calendar import *  # noqa
 
 __doc__ += _stdlib.__doc__
 

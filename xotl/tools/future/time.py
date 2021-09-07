@@ -17,9 +17,9 @@ Python 3.3.
 
 """
 
+import time as _stdlib  # noqa
 from time import *  # noqa
 from time import monotonic
-import time as _stdlib  # noqa
 
 from xotl.tools.deprecation import deprecate_module
 

@@ -15,14 +15,8 @@ document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
 """
 
 from inspect import *  # noqa
-from inspect import (
-    _sentinel,
-    _static_getmro,
-    _check_instance,  # noqa
-    _check_class,
-    _is_type,
-    _shadowed_dict,
-)
+from inspect import _check_instance  # noqa
+from inspect import _check_class, _is_type, _sentinel, _shadowed_dict, _static_getmro
 
 
 def get_attr_value(obj, name, *default):
@@ -33,7 +27,7 @@ def get_attr_value(obj, name, *default):
     `getattr_static`:func:.
 
     """
-    from xotl.tools.params import check_default, Undefined
+    from xotl.tools.params import Undefined, check_default
 
     default = check_default()(*default)
     is_type = isinstance(obj, type)
@@ -94,8 +88,7 @@ def safe_name(obj, affirm=False):
       '(int, float)'
 
     """
-    from types import FunctionType, MethodType
-    from types import BuiltinFunctionType, BuiltinMethodType
+    from types import BuiltinFunctionType, BuiltinMethodType, FunctionType, MethodType
 
     named_types = (
         FunctionType,

@@ -15,22 +15,10 @@
 """
 import sys
 from itertools import *  # noqa
+from typing import Any, Callable, Iterable, Iterator, List, Optional, Tuple, TypeVar, Union, cast
 
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Iterator,
-    List,
-    Tuple,
-    TypeVar,
-    Optional,
-    Union,
-    cast,
-)
-
+from xotl.tools.deprecation import deprecated, deprecated_alias
 from xotl.tools.symbols import Unset
-from xotl.tools.deprecation import deprecated_alias, deprecated
 
 map = deprecated_alias(map, removed_in_version="3.0", check_version=True)
 zip = deprecated_alias(zip, removed_in_version="3.0", check_version=True)
@@ -300,8 +288,8 @@ def slides(
                         instead of Unset.
 
     """
-    from itertools import cycle, repeat
     from collections.abc import Iterable
+    from itertools import cycle, repeat
 
     pos = 0
     res: List[Union[T, X, None]] = []
@@ -414,9 +402,7 @@ A = TypeVar("A")
 B = TypeVar("B")
 
 
-def zip_map(
-    funcs: Iterable[Callable[[A], B]], args: Iterable[A]
-) -> Iterable[B]:
+def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]:
     """Apply each function in `funcs` to its corresponding arguments.
 
     If the iterables are not of the same length, stop as soon as the shortest

@@ -158,12 +158,8 @@ from collections.abc import Mapping, Sequence  # noqa
 logic_iterable_coerce = collection(name="logic_iterable_coerce")
 force_iterable_coerce = collection(force=True, name="force_iterable_coerce")
 logic_collection_coerce = collection(avoid=Mapping, name="logic_collection_coerce")
-force_collection_coerce = collection(
-    avoid=Mapping, force=True, name="force_collection_coerce"
-)
-logic_sequence_coerce = collection(
-    avoid=Mapping, base=Sequence, name="logic_sequence_coerce"
-)
+force_collection_coerce = collection(avoid=Mapping, force=True, name="force_collection_coerce")
+logic_sequence_coerce = collection(avoid=Mapping, base=Sequence, name="logic_sequence_coerce")
 force_sequence_coerce = collection(
     avoid=Mapping, force=True, base=Sequence, name="force_sequence_coerce"
 )

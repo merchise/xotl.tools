@@ -1,6 +1,7 @@
 from typing import (
     Any,
     Callable,
+    ContextManager,
     Dict,
     Iterator,
     Mapping,
@@ -9,12 +10,11 @@ from typing import (
     Set,
     Tuple,
     Type,
-    Union,
-    ContextManager,
     TypeVar,
+    Union,
 )
-from typing_extensions import Protocol
 
+from typing_extensions import Protocol
 from xotl.tools.symbols import Unset
 
 # def adapt_exception(value: Optional[Union[Tuple[Type[KeyError], str], str, int]], **kwargs) -> Optional[KeyError]: ...
@@ -38,11 +38,7 @@ def traverse(
     getter: Optional[Getter] = None,
 ) -> Any: ...
 def import_object(
-    name: Union[object, str],
-    package: str = ...,
-    sep: str = ...,
-    default: Any = ...,
-    **kwargs
+    name: Union[object, str], package: str = ..., sep: str = ..., default: Any = ..., **kwargs
 ) -> Any: ...
 def iterate_over(source: Any, *keys) -> Iterator[Any]: ...
 def pop_first_of(source: Any, *keys: str, default: Any = ...) -> Any: ...
@@ -83,11 +79,7 @@ class _FinalSubclassEnum(Protocol[B_co]):
 FinalSubclassEnumeration: _FinalSubclassEnum
 
 class DelegatedAttribute:
-    def __init__(
-        self, target_name: str, delegated_attr: str, default: Any = Unset
-    ) -> None: ...
+    def __init__(self, target_name: str, delegated_attr: str, default: Any = Unset) -> None: ...
     def __get__(self, instance, owner) -> Any: ...
 
-def delegator(
-    attribute: str, attrs_map: Mapping[str, str], metaclass: type = type
-) -> type: ...
+def delegator(attribute: str, attrs_map: Mapping[str, str], metaclass: type = type) -> type: ...

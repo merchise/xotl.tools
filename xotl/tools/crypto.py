@@ -132,7 +132,8 @@ def generate_password(pass_phrase, level=DEFAULT_PASS_PHRASE_LEVEL):
     pass-phrase.
 
     """
-    from random import sample, randint
+    from random import randint, sample
+
     from xotl.tools.string import slugify
 
     level = _normalize_level(level)

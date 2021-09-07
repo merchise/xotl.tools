@@ -14,7 +14,6 @@ doesn't exists.  `bytes` type can be used as an array of one byte each item.
 """
 from typing import Any, Optional, Pattern
 
-
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
 # some module dedicated to "string trimming".
 try:
@@ -28,7 +27,7 @@ except AttributeError:
         In Python 3.9+ this is the same as `str.removeprefix`:func:.
 
         """
-        from xotl.tools.future.codecs import safe_encode, safe_decode
+        from xotl.tools.future.codecs import safe_decode, safe_encode
 
         if isinstance(self, str) and isinstance(prefix, bytes):
             prefix = safe_decode(prefix)
@@ -115,6 +114,7 @@ def force_ascii(value: Any, encoding: str = None) -> str:
 
     """
     import unicodedata
+
     from .future.codecs import safe_decode
 
     ASCII, IGNORE = "ascii", "ignore"
@@ -227,7 +227,7 @@ def slugify(value: Any, *args, **kwds) -> str:
 
     from .params import ParamManager
     from .values import compose, istype
-    from .values.simple import not_false, ascii_coerce
+    from .values.simple import ascii_coerce, not_false
 
     _str = compose(not_false(""), istype(str))
     _ascii = compose(_str, ascii_coerce)

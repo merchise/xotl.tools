@@ -1,0 +1,24 @@
+[tool.black]
+line-length = 100
+target-version = ['py37', 'py38', 'py39']
+include = '\.pyi?$'
+exclude = '''
+    /(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | build
+  | dist
+  | docs
+  )/
+  '''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+src_paths = ["xotl/tools",]
+skip_gitignore = true
