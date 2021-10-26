@@ -35,9 +35,8 @@ Commands can be registered by:
 from abc import ABC, ABCMeta, abstractmethod
 
 from xotl.tools.cli.tools import command_name, program_name
-from xotl.tools.objects import staticproperty
-
 from xotl.tools.deprecation import deprecate_module
+from xotl.tools.objects import staticproperty
 
 deprecate_module(__name__)
 del deprecate_module
