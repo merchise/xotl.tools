@@ -46,7 +46,7 @@ class Length:
     nanometer = nm = nano(metre)
 
 
-metre = m = Length.m = Length.metre
+metre = m = Length.m = Length.meter = Length.metre
 L = Length
 
 
@@ -122,7 +122,7 @@ J = Luminosity
 # Derived quantities
 Area = L ** 2
 Volume = L ** 3
-Volume.metre_cubic = Volume._unit_
+Volume.metre_cubic = Volume.meter_cubic = Volume._unit_
 Volume._unitname_ = "metre_cubic"
 
 Frequency = T ** -1
@@ -131,12 +131,16 @@ Frequency.Hz = Frequency._unit_
 Force = L * M / T ** 2
 assert hasattr(Force, "metre_kilogram_per_second_squared")
 assert Force == L * M * T ** -2
-Force.Newton = Force.N = Force._unit_
+Force.Newton = Force.N = Force.meter_kilogram_per_second_squared = Force._unit_
 
 Pressure = Presure = M / L / T ** 2
 assert hasattr(Pressure, "kilogram_per_metre_per_second_squared")
 assert Pressure == L ** -1 * M * T ** -2, "as defined in Wikipedia"
-Pressure.Pascal = Pressure.Pa = Pressure._unit_
+Pressure.Pascal = Pressure.Pa = Pressure.kilogram_per_meter_per_second_squared = Pressure._unit_
+Pressure.bar = 100000 * Pressure.Pa
 
 Speed = Velocity = L / T
+Velocity.meter_per_second = Velocity._unit_
+
 Acceleration = L / T ** 2
+Acceleration.meter_per_second_squared = Acceleration._unit_
