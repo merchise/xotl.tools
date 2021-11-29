@@ -1,3 +1,6 @@
+This release marks the last release of the series of 2.1.x.  We simply don't
+have the manpower to keep many branches at the same time.
+
 - Implement `xotl.tools.objects.memoized_property`:class: using
   `functools.cached_property`:class: in Python 3.8+.
 
@@ -16,5 +19,8 @@
 
 - Deprecates module `xotl.tools.cli`:mod:.  This module hasn't been maintained
   for long and there are better alternatives in out there (e.g click_).
+
+- Correct the name of `xotl.tools.dim.base.Pressure`:any:, previously it was
+  mistyped missing as ``Presure``.
 
 .. _click: https://click.palletsprojects.com/
