@@ -4,11 +4,18 @@ Changelog
 2.2 series
 ----------
 
-Unrelased.  Release 2.2.0
+2021-11-29. Release 2.2.0.post1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Correct the name of `xotl.tools.dim.base.Pressure`:any:, previously it was
+  mistyped missing as ``Presure``.
+
+
+2021-09-08.  Release 2.2.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.2.0.rst
-
+.. include:: history/_changes-2.1.11.rst
 
 2.1 series
 ----------
