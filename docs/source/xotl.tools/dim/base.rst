@@ -202,7 +202,7 @@ Derived quantities
    .. attribute:: N
    .. attribute:: Newton
 
-.. class:: Presure
+.. class:: Pressure
 
    Defined as `L`:class:\ ``**-1 *`` `M`:class: ``*`` `T`:class:\ ``**-2``.
 
@@ -212,6 +212,9 @@ Derived quantities
 
    .. attribute:: pascal
    .. attribute:: Pa
+
+   .. versionchanged:: 2.1.11 Corrected the name from 'Presure' to 'Pressure'.
+      You can still import the mistyped name.
 
 .. class:: Velocity
 
