@@ -4,7 +4,7 @@ Changelog
 2.1 series
 ----------
 
-Unreleased. Release 2.1.11
+2021-11-29. Release 2.1.11
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.1.11.rst
