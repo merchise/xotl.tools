@@ -133,10 +133,10 @@ assert hasattr(Force, "metre_kilogram_per_second_squared")
 assert Force == L * M * T ** -2
 Force.Newton = Force.N = Force._unit_
 
-Presure = M / L / T ** 2
-assert hasattr(Presure, "kilogram_per_metre_per_second_squared")
-assert Presure == L ** -1 * M * T ** -2, "as defined in Wikipedia"
-Presure.Pascal = Presure.Pa = Presure._unit_
+Pressure = Presure = M / L / T ** 2
+assert hasattr(Pressure, "kilogram_per_metre_per_second_squared")
+assert Pressure == L ** -1 * M * T ** -2, "as defined in Wikipedia"
+Pressure.Pascal = Pressure.Pa = Pressure._unit_
 
-Velocity = L / T
+Speed = Velocity = L / T
 Acceleration = L / T ** 2
