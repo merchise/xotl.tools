@@ -4,6 +4,12 @@ Changelog
 2.2 series
 ----------
 
+Unreleased. Release 2.2.2
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.2.2.rst
+
+
 2021-11-29. Releases 2.2.1.post1 and 2.2.0.post1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -265,6 +265,10 @@ def iter_without_duplicates(
             done.add(k)
 
 
+#: A sentinel value to make `slides`:func: not to fill the last chunk.
+NO_FILL = object()
+
+
 def slides(
     iterable: Iterable[T],
     width: int = 2,
@@ -276,16 +280,22 @@ def slides(
         [(1, 2), (3, 4), (5, 6), (7, 8), (9, 10)]
 
     If the iterator does not yield a width-aligned number of items, the last
-    slice returned is filled with `fill` (by default None)::
+    slice returned is filled with `fill` (by default None) unless `fill` is
+    :any:`NO_FILL`::
 
-        >>> list(slides(range(1, 11), width=3))   # doctest: +ELLIPSIS
+        >>> list(slides(range(1, 11), width=3))
         [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10, None, None)]
+
+        >>> list(slides(range(1, 11), width=3, fill=NO_FILL))
+        [(1, 2, 3), (4, 5, 6), (7, 8, 9), (10,)]
 
     .. versionchanged:: 1.4.0 If the `fill` argument is a collection is cycled
                         over to get the filling, just like in `first_n`:func:.
 
     .. versionchanged:: 1.4.2 The `fill` argument now defaults to None,
                         instead of Unset.
+
+    .. versionchanged:: 2.2.2 The `fill` argument can now take the contant `NO_FILL`:any:
 
     """
     from collections.abc import Iterable
@@ -313,7 +323,7 @@ def slides(
         while pos < width:
             res.append(next(filler))
             pos += 1
-        yield tuple(res)
+        yield tuple(item for item in res if item is not NO_FILL)
 
 
 def continuously_slides(

@@ -71,3 +71,7 @@
 
 
 .. autofunction:: zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]
+
+.. data:: NO_FILL
+
+   A sentinel value to make `slides`:func: not to fill the last chunk.
