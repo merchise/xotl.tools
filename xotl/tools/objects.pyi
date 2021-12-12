@@ -64,7 +64,8 @@ class lazy:
 
 class classproperty(property): ...
 class staticproperty(property): ...
-class memoized_property(property): ...
+
+memoized_property = property
 
 def copy_class(
     cls: Type,
