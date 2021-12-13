@@ -239,6 +239,7 @@ build source distribution:
     refs:
       - tags
     variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 
@@ -260,6 +261,7 @@ build binary distribution:
     refs:
       - tags
     variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 check signature of tag:
@@ -276,6 +278,7 @@ check signature of tag:
     refs:
       - tags
     variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
 
 
@@ -294,6 +297,7 @@ publish in pypi:
     refs:
       - tags
     variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
   needs:
     - check signature of tag
@@ -378,18 +382,19 @@ build documentation:
   environment:
     name: docs.lahavane.com
     url: http://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
-  tags:
-    - docker
-    - gitlab.merchise.org
 
 publish in our RTD for releases:
   <<: *publish_rtd
   needs:
     - build documentation for releases
+  tags:
+    - docker
+    - gitlab.merchise.org
   only:
     refs:
       - tags
     variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
 
 
@@ -397,7 +402,12 @@ publish in our RTD:
   <<: *publish_rtd
   needs:
     - build documentation
+  tags:
+    - docker
+    - gitlab.merchise.org
   only:
+    variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
     refs:
       - /^releases-/
       - master
@@ -421,7 +431,7 @@ automatically remove MR documentation from our RTD server after 4 hours:
       when: never
     - if: '$CI_COMMIT_REF_NAME =~ /^releases-/'
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/'
       when: on_success
     - when: never
   trigger:
