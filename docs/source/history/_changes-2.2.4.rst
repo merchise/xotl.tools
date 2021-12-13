@@ -6,3 +6,5 @@
   `~xotl.tools.dim.base.Length`:class:, they were spelled in the documentation
   using the British spelling "metre", but the code actually used the US
   English spelling "meter"; now both spellings are available.
+
+- Drop support for Python 3.6 completely.
