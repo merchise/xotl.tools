@@ -232,6 +232,9 @@ build source distribution:
   artifacts:
     paths:
       - dist/
+  tags:
+    - docker
+    - gitlab.merchise.org
   only:
     refs:
       - tags
@@ -250,6 +253,9 @@ build binary distribution:
     expire_in: 4 hours
     paths:
       - dist/
+  tags:
+    - docker
+    - gitlab.merchise.org
   only:
     refs:
       - tags
@@ -263,6 +269,9 @@ check signature of tag:
     - apk add gnupg git
     - cat $GNUPG_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
+  tags:
+    - docker
+    - gitlab.merchise.org
   only:
     refs:
       - tags
@@ -278,6 +287,9 @@ publish in pypi:
   script:
     - pip install twine
     - twine upload --skip-existing -u "$PYPI_USERNAME" -p "$PYPI_PASSWORD" dist/*
+  tags:
+    - docker
+    - gitlab.merchise.org
   only:
     refs:
       - tags
@@ -304,9 +316,12 @@ publish in pypi:
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
+    - mkdir -p public
+    - cp -r docs/build/html/* public/
   artifacts:
     paths:
       - docs/build/html
+      - public/
     expire_in: 4 days
   needs: []
 
@@ -317,6 +332,12 @@ build documentation for releases:
       - tags
     variables:
       - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
+
+pages:
+  <<: *build_doc
+  only:
+    refs:
+      - releases-2.2.x
 
 build documentation:
   <<: *build_doc
@@ -357,6 +378,9 @@ build documentation:
   environment:
     name: docs.lahavane.com
     url: http://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+  tags:
+    - docker
+    - gitlab.merchise.org
 
 publish in our RTD for releases:
   <<: *publish_rtd
@@ -393,13 +417,9 @@ publish in our RTD:
 automatically remove MR documentation from our RTD server after 4 hours:
   stage: clean up
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
       when: never
-    - if: '$CI_COMMIT_REF_NAME == "release-1.9.x"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME == "release-2.0.x"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME == "release-2.1.x"'
+    - if: '$CI_COMMIT_REF_NAME =~ /^releases-/'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: on_success
