@@ -9,54 +9,50 @@ stages:
   - clean up
 
 .x-when-mrs-or-stable: &when-merge-requests-or-stable
-  only:
-    refs:
-      - main
-      - /^releases-2/
-      - merge_requests
-    changes:
-      - docs/**/*.rst
-      - docs/**/*.py
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+  refs:
+    - main
+    - /^releases-2/
+    - merge_requests
+  changes:
+    - docs/**/*.rst
+    - docs/**/*.py
+    - xotl/tools/**/*.py
+    - tests/**/*.py
+    - setup.py
+    - setup.cfg
+    - tox.ini
+    - .gitlab-ci.yml
 
 .x-when-mrs: &when-merge-requests
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - docs/**/*.rst
-      - docs/**/*.py
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+  refs:
+    - merge_requests
+  changes:
+    - docs/**/*.rst
+    - docs/**/*.py
+    - xotl/tools/**/*.py
+    - tests/**/*.py
+    - setup.py
+    - setup.cfg
+    - tox.ini
+    - .gitlab-ci.yml
 
 
 .x-when-stable: &when-stable-branches
-  only:
-    refs:
-      - main
-      - /^releases-2
-    changes:
-      - docs/**/*.rst
-      - docs/**/*.py
-      - xotl/tools/**/*.py
-      - tests/**/*.py
-      - setup.py
-      - setup.cfg
-      - tox.ini
-      - .gitlab-ci.yml
+  refs:
+    - main
+    - /^releases-2
+  changes:
+    - docs/**/*.rst
+    - docs/**/*.py
+    - xotl/tools/**/*.py
+    - tests/**/*.py
+    - setup.py
+    - setup.cfg
+    - tox.ini
+    - .gitlab-ci.yml
 
 
 check flake8 and black:
-  <<: *when-merge-requests-or-stable
   interruptible: true
   image: python:3.9
   stage: check
@@ -66,6 +62,8 @@ check flake8 and black:
     - flake8 xotl/tools
     - black --check xotl/tools
     - isort --check --diff xotl/tools
+  only:
+    <<: *when-merge-requests-or-stable
 
 .run_tox_staticcheck: &run_tox_staticcheck
   interruptible: true
@@ -99,7 +97,8 @@ check flake8 and black:
 
 run required static checks:
   <<: *run_tox_staticcheck
-  <<: *when-merge-requests-or-stable
+  only:
+    <<: *when-merge-requests-or-stable
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10"]
@@ -107,7 +106,8 @@ run required static checks:
 
 run static checks:
   <<: *run_tox_staticcheck
-  <<: *when-merge-requests-or-stable
+  only:
+    <<: *when-merge-requests-or-stable
   allow_failure: true
   parallel:
     matrix:
@@ -116,7 +116,8 @@ run static checks:
 
 tests:
   <<: *run_tox_tests
-  <<: *when-merge-requests-or-stable
+  only:
+    <<: *when-merge-requests-or-stable
   needs:
     - run required static checks
   parallel:
@@ -126,23 +127,21 @@ tests:
 
 
 .x-when-releasing: &when-releasing
-  only:
-    refs:
-      - tags
-    variables:
-      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
+  refs:
+    - tags
+  variables:
+    - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
+    - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
 
 
 .x-when-prereleasing: &when-prereleasing
-  only:
-    refs:
-      - tags
-    variables:
-      - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
-
+  refs:
+    - tags
+  variables:
+    - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
+    - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
 
 build:
-  <<: *when-prereleasing
   image: python:3.8
   stage: build
   parallel:
@@ -154,9 +153,11 @@ build:
   artifacts:
     paths:
       - dist/
+  only:
+    <<: *when-prereleasing
+
 
 check signature of tag:
-  <<: *when-prereleasing
   interruptible: true
   image: alpine
   stage: check
@@ -164,10 +165,10 @@ check signature of tag:
     - apk add gnupg git
     - cat $GNUPG_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
-
+  only:
+    <<: *when-prereleasing
 
 publish in pypi:
-  <<: *when-releasing
   image: python:3.8
   variables:
     GIT_STRATEGY: none
@@ -181,6 +182,8 @@ publish in pypi:
   environment:
     name: pypi
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+  only:
+    <<: *when-releasing
 
 
 .build_doc: &build_doc
@@ -195,19 +198,24 @@ publish in pypi:
     - pip install sphinx sphinx-rtd-theme
     - pip install -e .
     - make -C docs/ html
+    - mkdir -p public
+    - cp -r docs/build/html/* public/
   artifacts:
     paths:
       - docs/build/html
+      - public/
     expire_in: 4 days
   needs: []
 
 build documentation for releases:
   <<: *build_doc
-  <<: *when-prereleasing
+  only:
+    <<: *when-prereleasing
 
 build documentation:
   <<: *build_doc
-  <<: *when-merge-requests-or-stable
+  only:
+    <<: *when-merge-requests-or-stable
   interruptible: true
 
 .publish_rtd: &publish_rtd
@@ -233,14 +241,22 @@ build documentation:
 
 publish in our RTD for releases:
   <<: *publish_rtd
-  <<: *when-releasing
   needs:
     - build documentation for releases
+  only:
+    <<: *when-releasing
 
+pages:
+  <<: *build_doc
+  only:
+    - releases-2.2.x
 
 publish in our RTD:
   <<: *publish_rtd
-  <<: *when-merge-requests-or-stable
+  only:
+    <<: *when-merge-requests-or-stable
+    variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
   needs:
     - build documentation
 
@@ -249,13 +265,9 @@ automatically remove MR documentation from our RTD server after 4 hours:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
       when: never
-    - if: '$CI_COMMIT_REF_NAME == "release-1.9.x"'
+    - if: '$CI_COMMIT_REF_NAME =~ /releases-/'
       when: never
-    - if: '$CI_COMMIT_REF_NAME == "release-2.0.x"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME == "release-2.1.x"'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/'
       when: on_success
     - when: never
   trigger:
