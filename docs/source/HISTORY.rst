@@ -36,7 +36,7 @@ Unreleased.  Release 2.2.4
 
 
 2021-09-08.  Release 2.2.0
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-2.2.0.rst
 .. include:: history/_changes-2.1.11.rst

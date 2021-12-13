@@ -30,9 +30,7 @@
 
 .. autofunction:: get_branch_subclasses
 
-.. autofunction:: iter_final_subclasses
-
-.. autofunction:: get_final_subclasses
+.. autofunction:: iter_branch_subclasses
 
 .. autofunction:: FinalSubclassEnumeration
 

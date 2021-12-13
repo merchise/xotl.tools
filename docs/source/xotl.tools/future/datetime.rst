@@ -18,8 +18,6 @@ This problem could be solved by redefining the `strftime` function in the
 Python double checks the year (in each method and then again in
 `time.strftime` function).
 
-.. autofunction:: assure
-
 We added the following features.
 
 .. autofunction:: strfdelta

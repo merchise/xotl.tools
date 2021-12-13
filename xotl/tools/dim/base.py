@@ -40,10 +40,10 @@ def nano(v):
 @Dimension.new()
 class Length:
     metre = UNIT
-    kilometer = km = kilo(metre)
-    centimeter = cm = centi(metre)
-    millimeter = mm = milli(metre)
-    nanometer = nm = nano(metre)
+    kilometre = kilometer = km = kilo(metre)
+    centimetre = centimeter = cm = centi(metre)
+    millimetre = millimeter = mm = milli(metre)
+    nanometre = nanometer = nm = nano(metre)
 
 
 metre = m = Length.m = Length.meter = Length.metre

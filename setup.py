@@ -45,22 +45,32 @@ class PyTest(TestCommand):
 _cmdclass = {"test": PyTest}
 _cmdclass.update(versioneer.get_cmdclass())
 
+recommended_requirements = ["python-dateutil"]
+docs_requirements = recommended_requirements + [
+    "hypothesis~=6.31",
+    "pytz",
+    "sphinx~=4.3.1",
+    "sphinx-rtd-theme",
+]
+dev_requirements = docs_requirements + [
+    "flake8>=3.8.4",
+    "flake8-bugbear~=21.4.3",
+    "black==21.5b2",
+    "isort~=5.9.3",
+    "tox",
+]
+
 
 setup(
     name=project_name,
     version=versioneer.get_version(),
-    description=(
-        "Collection of usefull algorithms and other very " "disparate stuff"
-    ),
+    description=("Collection of usefull algorithms and other very " "disparate stuff"),
     long_description=open(os.path.join(_current_dir, "README.rst")).read(),
     classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
         dev_classifier,
         "Intended Audience :: Developers",
-        (
-            "License :: OSI Approved :: "
-            "GNU General Public License v3 or later (GPLv3+)"
-        ),
+        ("License :: OSI Approved :: " "GNU General Public License v3 or later (GPLv3+)"),
         "Operating System :: POSIX :: Linux",  # This is where we are
         # testing. Don't promise
         # anything else.
@@ -82,7 +92,9 @@ setup(
         "typing-extensions~=3.10.0",
     ],
     extras_require={
-        "recommended": ["python-dateutil"],
+        "recommended": recommended_requirements,
+        "dev": dev_requirements,
+        "docs": docs_requirements,
     },
     cmdclass=_cmdclass,
 )
