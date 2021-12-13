@@ -195,8 +195,7 @@ publish in pypi:
       - docs/builds/
   script:
     - apt-get update && apt-get install -y git make
-    - pip install sphinx sphinx-rtd-theme
-    - pip install -e .
+    - pip install -e ".[docs]"
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/
