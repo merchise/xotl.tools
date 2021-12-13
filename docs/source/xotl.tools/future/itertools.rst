@@ -2,7 +2,7 @@
 =======================================================================================
 
 .. automodule:: xotl.tools.future.itertools
-   :members: dict_update_new, first_n, first_non_null,
+   :members: dict_update_new, first_non_null,
 	         slides, continuously_slides, ungroup
 
 .. function:: merge(*iterables, key=None)
