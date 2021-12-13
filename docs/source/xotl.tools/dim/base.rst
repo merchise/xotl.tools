@@ -20,12 +20,16 @@
    .. rubric:: Other attributes:
 
    .. attribute:: kilometre
+   .. attribute:: kilometer
    .. attribute:: km
    .. attribute:: centimetre
+   .. attribute:: centimeter
    .. attribute:: cm
    .. attribute:: millimetre
+   .. attribute:: millimeter
    .. attribute:: mm
    .. attribute:: nanometre
+   .. attribute:: nanometer
    .. attribute:: nm
 
 

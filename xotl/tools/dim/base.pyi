@@ -7,13 +7,19 @@ from .meta import Dimension, Quantity
 class Length(metaclass=Dimension):
     m: Quantity
     metre: Quantity
+    meter: Quantity
     km: Quantity
     kilometer: Quantity
+    kilometre: Quantity
     mm: Quantity
+    centimetre: Quantity
+    centimeter: Quantity
+    cm: Quantity
     millimeter: Quantity
+    millimetre: Quantity
     nm: Quantity
     nanometer: Quantity
-    meter: Quantity
+    nanometre: Quantity
 
 L = Length
 
