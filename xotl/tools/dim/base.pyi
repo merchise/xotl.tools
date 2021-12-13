@@ -1,8 +1,10 @@
+# flake8: noqa
+
 import numbers
 
 from .meta import Dimension, Quantity
 
-class Length:
+class Length(metaclass=Dimension):
     m: Quantity
     metre: Quantity
     km: Quantity
@@ -11,10 +13,11 @@ class Length:
     millimeter: Quantity
     nm: Quantity
     nanometer: Quantity
+    meter: Quantity
 
 L = Length
 
-class Time:
+class Time(metaclass=Dimension):
     s: Quantity
     second: Quantity
     ms: Quantity
@@ -26,21 +29,21 @@ class Time:
 
 T = Time
 
-class Mass:
+class Mass(metaclass=Dimension):
     kg: Quantity
     kilogram: Quantity
     gram: Quantity
 
 M = Mass
 
-class ElectricCurrent:
+class ElectricCurrent(metaclass=Dimension):
     A: Quantity
     ampere: Quantity
     milliampere: Quantity
 
 I = ElectricCurrent
 
-class Temperature:
+class Temperature(metaclass=Dimension):
     K: Quantity
     kelvin: Quantity
     @classmethod
@@ -50,25 +53,45 @@ class Temperature:
 
 O = Temperature
 
-class Substance:
+class Substance(metaclass=Dimension):
     mol: Quantity
     mole: Quantity
 
 N = Substance
 
-class Luminosity:
+class Luminosity(metaclass=Dimension):
     candela: Quantity
 
 J = Luminosity
 
-Area: Dimension
-Volumen: Dimension
+class Area(metaclass=Dimension):
+    metre_squared: Quantity
+    meter_squared: Quantity
 
-Frequency: Dimension
-Force: Dimension
+class Volumen(metaclass=Dimension):
+    metre_cubic: Quantity
+    meter_cubic: Quantity
 
-Pressure: Dimension
-Presure: Dimension
+class Frequency(metaclass=Dimension):
+    unit_per_second: Quantity
+    Hz: Quantity
 
-Velocity: Dimension
-Acceleration: Dimension
+class Force(metaclass=Dimension):
+    metre_kilogram_per_second_squared: Quantity
+    meter_kilogram_per_second_squared: Quantity
+    N: Quantity
+    Newton: Quantity
+
+class Pressure(metaclass=Dimension):
+    kilogram_per_metre_per_second_squared: Quantity
+    Pascal: Quantity
+    Pa: Quantity
+    bar: Quantity
+
+class Velocity(metaclass=Dimension):
+    meter_per_second: Quantity
+    metre_per_second: Quantity
+
+class Acceleration(metaclass=Dimension):
+    meter_per_second_squared: Quantity
+    metre_per_second_squared: Quantity

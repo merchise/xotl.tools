@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from typing import (
     Any,
     Callable,
@@ -77,11 +79,11 @@ def validate_attrs(
     force_differents: Sequence[str] = (),
 ) -> bool: ...
 
-B_co = TypeVar("B_co", covariant=True)
+B = TypeVar("B")
 
-class _FinalSubclassEnum(Protocol[B_co]):
-    def __getattr__(self, clsname: str) -> Type[B_co]: ...
-    __members__: Mapping[str, Type[B_co]]
+class _FinalSubclassEnum(Protocol[B]):
+    def __getattr__(self, clsname: str) -> Type[B]: ...
+    __members__: Mapping[str, Type[B]]
 
 FinalSubclassEnumeration: _FinalSubclassEnum
 
