@@ -36,14 +36,10 @@ except ImportError:
     # Python 3.3 don't implement '__all__' for 'string' module.
     __all__ = [name for name in dir(_stdlib) if not name.startswith("_")]
 
-try:
-    # In PyPy3 'NoneType' is a built-in
-    from builtins import NoneType  # type: ignore
-except ImportError:
-    NoneType = type(None)
+NoneType = type(None)  # type: ignore
 __all__.append("NoneType")
 
-EllipsisType = type(Ellipsis)
+EllipsisType = type(Ellipsis)  # type: ignore
 __all__.append("EllipsisType")
 
 # Check Jython and PyPy peculiarity
