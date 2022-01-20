@@ -199,6 +199,8 @@ publish in pypi:
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
   only:
     <<: *when-releasing
+    variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
 
 
 .build_doc: &build_doc
@@ -261,6 +263,8 @@ publish in our RTD for releases:
     - build documentation for releases
   only:
     <<: *when-releasing
+    variables:
+      - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
 
 pages:
   <<: *build_doc
