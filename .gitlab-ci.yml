@@ -141,7 +141,7 @@ tests:
     - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
     - $CI_REPOSITORY_URL =~ /gitlab\.merchise\.org/
 
-build:
+.build: &build
   image: python:3.8
   stage: build
   parallel:
@@ -153,9 +153,17 @@ build:
   artifacts:
     paths:
       - dist/
-  only:
-    <<: *when-prereleasing
 
+build in MRs:
+  <<: *build
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - setup.cfg
+      - setup.py
+      - xotl/tools/release.py
+      - xotl/tools/_version.py
 
 check signature of tag:
   interruptible: true
@@ -167,6 +175,13 @@ check signature of tag:
     - git verify-tag $CI_COMMIT_REF_NAME
   only:
     <<: *when-prereleasing
+
+
+build:
+  <<: *build
+  only:
+    <<: *when-prereleasing
+
 
 publish in pypi:
   image: python:3.8

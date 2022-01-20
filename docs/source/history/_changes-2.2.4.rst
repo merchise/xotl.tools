@@ -8,3 +8,6 @@
   English spelling "meter"; now both spellings are available.
 
 - Drop support for Python 3.6 completely.
+
+- Change the CI pipeline to run mypy only in Python 3.10, and configure the
+  distribution using ``setup.cfg`` driven metadata and options.
