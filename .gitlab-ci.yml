@@ -16,7 +16,7 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/xotl/tools/**/*.py
     - tests/**/*.py
     - setup.py
     - setup.cfg
@@ -29,7 +29,7 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/xotl/tools/**/*.py
     - tests/**/*.py
     - setup.py
     - setup.cfg
@@ -44,7 +44,7 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/xotl/tools/**/*.py
     - tests/**/*.py
     - setup.py
     - setup.cfg
@@ -59,9 +59,9 @@ check flake8 and black:
   needs: []
   script:
     - pip install --no-cache-dir 'flake8>=3.8.4' 'flake8-bugbear~=21.4.3' 'black==21.5b2' 'isort~=5.9.3'
-    - flake8 xotl/tools
-    - black --check xotl/tools
-    - isort --check --diff xotl/tools
+    - flake8 src/xotl/tools
+    - black --check src/xotl/tools
+    - isort --check --diff src/xotl/tools
   only:
     <<: *when-merge-requests-or-stable
 
@@ -162,8 +162,8 @@ build in MRs:
     changes:
       - setup.cfg
       - setup.py
-      - xotl/tools/release.py
-      - xotl/tools/_version.py
+      - src/xotl/tools/release.py
+      - src/xotl/tools/_version.py
 
 check signature of tag:
   interruptible: true
