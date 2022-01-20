@@ -36,10 +36,18 @@ except ImportError:
     # Python 3.3 don't implement '__all__' for 'string' module.
     __all__ = [name for name in dir(_stdlib) if not name.startswith("_")]
 
-NoneType = type(None)  # type: ignore
+try:
+    # Python 3.10 has it already
+    NoneType
+except NameError:
+    NoneType = type(None)  # type: ignore
 __all__.append("NoneType")
 
-EllipsisType = type(Ellipsis)  # type: ignore
+try:
+    # Python 3.10 has it already
+    EllipsisType
+except NameError:
+    EllipsisType = type(Ellipsis)  # type: ignore
 __all__.append("EllipsisType")
 
 # Check Jython and PyPy peculiarity

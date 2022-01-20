@@ -54,7 +54,7 @@ stages:
 
 check flake8 and black:
   interruptible: true
-  image: python:3.9
+  image: python:3.10
   stage: check
   needs: []
   script:
@@ -101,7 +101,7 @@ run required static checks:
     <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.7", "3.8", "3.9", "3.10"]
+      - PYTHON: ["3.10"]
         TOX_POSARGS: ["tests/test_dim.py"]
 
 run static checks:
@@ -111,7 +111,7 @@ run static checks:
   allow_failure: true
   parallel:
     matrix:
-      - PYTHON: ["3.7", "3.8", "3.9", "3.10"]
+      - PYTHON: [3.10"]
 
 
 tests:
