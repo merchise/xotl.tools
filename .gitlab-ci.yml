@@ -101,7 +101,7 @@ run required static checks:
     <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.7", "3.8", "3.9", "3.10"]
+      - PYTHON: ["3.7", "3.8", "3.9"]
         TOX_POSARGS: ["tests/test_dim.py"]
 
 run static checks:
