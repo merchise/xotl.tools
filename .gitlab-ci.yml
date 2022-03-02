@@ -234,11 +234,11 @@ build documentation:
       cp $SSH_CONFIG_FILE $HOME/.ssh/config
       ssh docs.lahavane.com mkdir -p /data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA
       rsync -auvp -e ssh ./docs/build/html/ docs.lahavane.com:/data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA/
-      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $CI_COMMIT_REF_NAME; ln -s .$CI_COMMIT_SHA $CI_COMMIT_REF_NAME"
+      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $CI_COMMIT_REF_SLUG; ln -s .$CI_COMMIT_SHA $CI_COMMIT_REF_SLUG"
       ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
   environment:
     name: docs.lahavane.com
-    url: https://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+    url: https://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_SLUG
 
 publish in our RTD for releases:
   <<: *publish_rtd
