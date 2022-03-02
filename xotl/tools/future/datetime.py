@@ -56,7 +56,7 @@ class ISOWEEKDAY(IntEnum):
 
 # This library does not support strftime's "%s" or "%y" format strings.
 # Allowed if there's an even number of "%"s because they are escaped.
-_illegal_formatting = _regex_compile(br"((^|[^%])(%%)*%[sy])")
+_illegal_formatting = _regex_compile(rb"((^|[^%])(%%)*%[sy])")
 
 
 def _year_find_all(fmt, year, no_year_tuple):
@@ -247,6 +247,105 @@ def get_next_month(ref=None, lastday=False):
         return get_month_last(result)
     else:
         return result
+
+
+def get_next_monday(ref):
+    """Get the next Monday from `ref`.
+
+    If `ref` is a datetime, return a datetime with the same time and tzinfo as `ref`.  If `ref` is a
+    `datetime.date`:class:, return a `datetime.date`:class:.
+
+    Example:
+
+       >>> d = date(2022, 3, 2)
+       >>> get_next_monday(d)
+       date(2022, 3, 7)
+
+    """
+    return _get_next_wd(ref, 0)  # monday is 0
+
+
+def get_next_tuesday(ref: datetime) -> datetime:
+    """Get the next Tuesday from `ref`."""
+    return _get_next_wd(ref, 1)
+
+
+def get_next_wednesday(ref: datetime) -> datetime:
+    """Get the next Wednesday from `ref`."""
+    return _get_next_wd(ref, 2)
+
+
+def get_next_thursday(ref: datetime) -> datetime:
+    """Get the next Thurday from `ref`."""
+    return _get_next_wd(ref, 3)
+
+
+def get_next_friday(ref: datetime) -> datetime:
+    """Get the next Friday from `ref`."""
+    return _get_next_wd(ref, 4)
+
+
+def get_next_saturday(ref: datetime) -> datetime:
+    """Get the next Saturday from `ref`."""
+    return _get_next_wd(ref, 5)
+
+
+def get_next_sunday(ref: datetime) -> datetime:
+    """Get the next Sunday from `ref`."""
+    return _get_next_wd(ref, 6)
+
+
+def _get_next_wd(ref: datetime, weekday: int) -> datetime:
+    wd = ref.weekday()
+    diff = wd - weekday
+    if wd >= weekday:
+        return ref + timedelta(7 - diff)
+    else:
+        return ref + timedelta(-diff)
+
+
+def get_previous_monday(ref: datetime) -> datetime:
+    """Get the previous Monday from `ref`."""
+    return _get_previous_wd(ref, 0)  # monday is 0
+
+
+def get_previous_tuesday(ref: datetime) -> datetime:
+    """Get the previous Tuesday from `ref`."""
+    return _get_previous_wd(ref, 1)
+
+
+def get_previous_wednesday(ref: datetime) -> datetime:
+    """Get the previous Wednesday from `ref`."""
+    return _get_previous_wd(ref, 2)
+
+
+def get_previous_thursday(ref: datetime) -> datetime:
+    """Get the previous Thurday from `ref`."""
+    return _get_previous_wd(ref, 3)
+
+
+def get_previous_friday(ref: datetime) -> datetime:
+    """Get the previous Friday from `ref`."""
+    return _get_previous_wd(ref, 4)
+
+
+def get_previous_saturday(ref: datetime) -> datetime:
+    """Get the previous Saturday from `ref`."""
+    return _get_previous_wd(ref, 5)
+
+
+def get_previous_sunday(ref: datetime) -> datetime:
+    """Get the previous Sunday from `ref`."""
+    return _get_previous_wd(ref, 6)
+
+
+def _get_previous_wd(ref: datetime, weekday: int) -> datetime:
+    wd = ref.weekday()
+    diff = wd - weekday
+    if wd <= weekday:
+        return ref - timedelta(7 + diff)
+    else:
+        return ref - timedelta(diff)
 
 
 def is_full_month(start, end):
