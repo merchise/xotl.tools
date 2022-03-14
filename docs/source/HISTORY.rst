@@ -4,16 +4,23 @@ Changelog
 2.2 series
 ----------
 
-2022-03-14.  Relase 2.2.0.post2
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2022-03-14.  Release 2.2.0.post2, and 2.2.1.post2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Update to 'typing_extensions>=3.10'.
 
-2021-11-29.  Release 2.2.0.post1
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2021-11-29. Releases 2.2.1.post1 and 2.2.0.post1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Correct the name of `xotl.tools.dim.base.Pressure`:any:, previously it was
   mistyped missing as ``Presure``.
+
+
+2021-10-26.  Release 2.2.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: history/_changes-2.2.1.rst
 
 
 2021-09-08.  Release 2.2.0
@@ -21,6 +28,7 @@ Changelog
 
 .. include:: history/_changes-2.2.0.rst
 .. include:: history/_changes-2.1.11.rst
+
 
 2.1 series
 ----------

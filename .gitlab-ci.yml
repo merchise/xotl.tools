@@ -96,7 +96,7 @@ tests:
   <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.8", "3.9"]
+      - PYTHON: ["3.8", "3.9", "3.10"]
         GREENLETS: ["unit", "greenlets"]
 
 
@@ -106,7 +106,7 @@ run static checks:
   allow_failure: true
   parallel:
     matrix:
-      - PYTHON: ["3.8", "3.9"]
+      - PYTHON: ["3.8", "3.9", "3.10"]
 
 .x-when-releasing: &when-releasing
   only:

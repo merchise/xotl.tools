@@ -33,7 +33,12 @@ except ImportError:
 
 import collections as _stdlib  # noqa
 from collections import _repeat  # noqa
-from collections import _chain, _count_elements, _heapq, _itemgetter, _starmap  # noqa
+from collections import _chain, _count_elements, _itemgetter, _starmap  # noqa
+
+try:
+    from collections import _heapq  # noqa
+except ImportError:
+    pass
 
 from xotl.tools.deprecation import deprecated  # noqa
 from xotl.tools.objects import SafeDataItem as safe  # noqa
