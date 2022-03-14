@@ -49,21 +49,15 @@ _cmdclass.update(versioneer.get_cmdclass())
 setup(
     name=project_name,
     version=versioneer.get_version(),
-    description=(
-        "Collection of usefull algorithms and other very " "disparate stuff"
-    ),
+    description="Collection of usefull algorithms and other very disparate stuff",
     long_description=open(os.path.join(_current_dir, "README.rst")).read(),
     classifiers=[
         # Get from http://pypi.python.org/pypi?%3Aaction=list_classifiers
         dev_classifier,
         "Intended Audience :: Developers",
-        (
-            "License :: OSI Approved :: "
-            "GNU General Public License v3 or later (GPLv3+)"
-        ),
-        "Operating System :: POSIX :: Linux",  # This is where we are
-        # testing. Don't promise
-        # anything else.
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        # This is where we are testing. Don't promise anything else.
+        "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -79,7 +73,7 @@ setup(
     zip_safe=False,
     python_requires=">=3.6",
     install_requires=[
-        "typing-extensions~=3.10.0",
+        "typing-extensions>=3.10.0",
     ],
     extras_require={
         "recommended": ["python-dateutil"],
