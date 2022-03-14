@@ -12,19 +12,24 @@
 
       The canonical unit.
 
+   .. rubric:: Aliases of the canonical unit:
+
    .. attribute:: m
+   .. attribute:: meter
 
-      An alias of `metre`:attr:
-
-   Other attributes:
+   .. rubric:: Other attributes:
 
    .. attribute:: kilometre
+   .. attribute:: kilometer
    .. attribute:: km
    .. attribute:: centimetre
+   .. attribute:: centimeter
    .. attribute:: cm
    .. attribute:: millimetre
+   .. attribute:: millimeter
    .. attribute:: mm
    .. attribute:: nanometre
+   .. attribute:: nanometer
    .. attribute:: nm
 
 
@@ -36,11 +41,11 @@
 
       The canonical unit.
 
+   .. rubric:: Aliases of the canonical unit:
+
    .. attribute:: s
 
-      An alias of `second`:attr:
-
-   Other attributes:
+   .. rubric:: Other attributes:
 
    .. attribute:: millisecond
    .. attribute:: ms
@@ -58,11 +63,11 @@
 
       The canonical unit.
 
+   .. rubric:: Aliases of the canonical unit:
+
    .. attribute:: kg
 
-      An alias of `kilogram`:attr:
-
-   Other attributes:
+   .. rubric:: Other attributes:
 
    .. attribute:: gram
 
@@ -75,9 +80,9 @@
 
       The canonical unit.
 
-   .. attribute:: A
+   .. rubric:: Aliases of the canonical unit:
 
-      An alias of `ampere`:attr:
+   .. attribute:: A
 
 
 .. class:: Temperature
@@ -88,10 +93,9 @@
 
       The canonical unit.
 
+   .. rubric:: Aliases of the canonical unit:
+
    .. attribute:: K
-
-      An alias of `kelvin`:attr:
-
 
    .. automethod:: from_celcius
 
@@ -104,10 +108,11 @@
 
    .. attribute:: mole
 
+      The canonical unit.
+
+   .. rubric:: Aliases of the canonical unit:
+
    .. attribute:: mol
-
-      An alias of `mole`:attr:.
-
 
 .. class:: Luminosity
 
@@ -167,6 +172,11 @@ Derived quantities
 
       The canonical unit.
 
+   .. rubric:: Aliases of the canonical unit:
+
+   .. attribute:: meter_squared
+
+
 .. class:: Volume
 
    Defined as `L`:class:\ ``**3``.
@@ -174,6 +184,10 @@ Derived quantities
    .. attribute:: metre_cubic
 
       The canonical unit.
+
+   .. rubric:: Aliases of the canonical unit:
+
+   .. attribute:: meter_cubic
 
 
 .. class:: Frequency
@@ -184,7 +198,7 @@ Derived quantities
 
       The canonical unit.
 
-   Aliases of the canonical unit:
+   .. rubric:: Aliases of the canonical unit:
 
    .. attribute:: Hz
 
@@ -197,10 +211,11 @@ Derived quantities
 
       The canonical unit.
 
-   Aliases of the canonical unit:
+   .. rubric:: Aliases of the canonical unit:
 
    .. attribute:: N
    .. attribute:: Newton
+   .. attribute:: meter_kilogram_per_second_squared
 
 .. class:: Pressure
 
@@ -208,10 +223,11 @@ Derived quantities
 
    .. attribute:: kilogram_per_metre_per_second_squared
 
-   Aliases of the canonical unit:
+   .. rubric:: Aliases of the canonical unit:
 
    .. attribute:: pascal
    .. attribute:: Pa
+   .. attribute:: kilogram_per_meter_per_second_squared
 
    .. versionchanged:: 2.1.11 Corrected the name from 'Presure' to 'Pressure'.
       You can still import the mistyped name.
@@ -224,6 +240,11 @@ Derived quantities
 
       The canonical unit.
 
+   .. rubric:: Aliases of the canonical unit:
+
+   .. attribute:: meter_per_second
+
+
 .. class:: Acceleration
 
    Defined as `L`:class: ``*`` `T`:class:\ ``**-2``.
@@ -231,6 +252,10 @@ Derived quantities
    .. attribute:: metre_per_second_squared
 
       The canonical unit.
+
+   .. rubric:: Aliases of the canonical unit:
+
+   .. attribute:: meter_per_second_squared
 
 
 On the automatically created names for derived quantities

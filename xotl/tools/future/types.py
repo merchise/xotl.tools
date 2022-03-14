@@ -29,7 +29,7 @@ from typing_extensions import Protocol
 from xotl.tools.symbols import Unset as _unset
 
 try:
-    from types import __all__  # noqa
+    from types import __all__  # type: ignore
 
     __all__ = list(__all__)
 except ImportError:
@@ -37,21 +37,14 @@ except ImportError:
     __all__ = [name for name in dir(_stdlib) if not name.startswith("_")]
 
 try:
-    NoneType = _stdlib.NoneType  # noqa
-except AttributeError:
-    try:
-        # In PyPy3 'NoneType' is a built-in
-        from builtins import NoneType  # noqa
-    except ImportError:
-        NoneType = type(None)
-    __all__.append("NoneType")
+    # In PyPy3 'NoneType' is a built-in
+    from builtins import NoneType  # type: ignore
+except ImportError:
+    NoneType = type(None)
+__all__.append("NoneType")
 
-try:
-    # It is maintained in this module for perhaps using it in `mypy`.
-    EllipsisType  # noqa
-except NameError:
-    EllipsisType = type(Ellipsis)
-    __all__.append("EllipsisType")
+EllipsisType = type(Ellipsis)
+__all__.append("EllipsisType")
 
 # Check Jython and PyPy peculiarity
 if MemberDescriptorType is GetSetDescriptorType:  # noqa
@@ -59,7 +52,7 @@ if MemberDescriptorType is GetSetDescriptorType:  # noqa
     class _foo:
         __slots__ = "bar"
 
-    MemberDescriptorType = type(_foo.bar)
+    MemberDescriptorType = type(_foo.bar)  # type: ignore
     del _foo
 
 FuncTypes = tuple(
@@ -75,7 +68,7 @@ FuncTypes = tuple(
 func_types = FuncTypes  # Just an alias
 
 import re
-from types import _calculate_meta  # noqa
+from types import _calculate_meta  # type: ignore  # noqa
 
 RegexPattern = type(re.compile(""))
 del re

@@ -2,7 +2,7 @@
 =======================================================================================
 
 .. automodule:: xotl.tools.future.itertools
-   :members: dict_update_new, first_n, first_non_null,
+   :members: dict_update_new, first_non_null,
 	         slides, continuously_slides, ungroup
 
 .. function:: merge(*iterables, key=None)
@@ -71,3 +71,7 @@
 
 
 .. autofunction:: zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]
+
+.. data:: NO_FILL
+
+   A sentinel value to make `slides`:func: not to fill the last chunk.
