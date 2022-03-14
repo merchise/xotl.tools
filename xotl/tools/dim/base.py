@@ -34,7 +34,7 @@ def micro(v):
 
 
 def nano(v):
-    return v / (10 ** 9)
+    return v / (10**9)
 
 
 @Dimension.new()
@@ -120,23 +120,23 @@ J = Luminosity
 
 
 # Derived quantities
-Area = L ** 2
-Volume = L ** 3
+Area = L**2
+Volume = L**3
 Volume.metre_cubic = Volume._unit_
 Volume._unitname_ = "metre_cubic"
 
-Frequency = T ** -1
+Frequency = T**-1
 Frequency.Hz = Frequency._unit_
 
-Force = L * M / T ** 2
+Force = L * M / T**2
 assert hasattr(Force, "metre_kilogram_per_second_squared")
-assert Force == L * M * T ** -2
+assert Force == L * M * T**-2
 Force.Newton = Force.N = Force._unit_
 
-Pressure = Presure = M / L / T ** 2
+Pressure = Presure = M / L / T**2
 assert hasattr(Pressure, "kilogram_per_metre_per_second_squared")
-assert Pressure == L ** -1 * M * T ** -2, "as defined in Wikipedia"
+assert Pressure == L**-1 * M * T**-2, "as defined in Wikipedia"
 Pressure.Pascal = Pressure.Pa = Pressure._unit_
 
 Speed = Velocity = L / T
-Acceleration = L / T ** 2
+Acceleration = L / T**2

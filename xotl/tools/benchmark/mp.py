@@ -21,7 +21,7 @@ def gcd(a, b):
 def job(args):
     which, show = args
     try:
-        result = gcd(which, which + 2 ** 37 - 73)
+        result = gcd(which, which + 2**37 - 73)
         if show and result != 1:
             print(which, result)
     except KeyboardInterrupt:
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         print("Working...")
         pool.imap(
             job,
-            zip(islice(count(2 ** 1028 + 1), 10 ** args.magnitude), repeat(args.show)),
+            zip(islice(count(2**1028 + 1), 10**args.magnitude), repeat(args.show)),
             chunksize=1024,
         )
         pool.close()

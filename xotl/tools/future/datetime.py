@@ -56,7 +56,7 @@ class ISOWEEKDAY(IntEnum):
 
 # This library does not support strftime's "%s" or "%y" format strings.
 # Allowed if there's an even number of "%"s because they are escaped.
-_illegal_formatting = _regex_compile(br"((^|[^%])(%%)*%[sy])")
+_illegal_formatting = _regex_compile(rb"((^|[^%])(%%)*%[sy])")
 
 
 def _year_find_all(fmt, year, no_year_tuple):
