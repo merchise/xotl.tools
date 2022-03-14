@@ -89,7 +89,7 @@ setup(
     zip_safe=False,
     python_requires=">=3.7",
     install_requires=[
-        "typing-extensions~=3.10.0",
+        "typing-extensions>=3.10.0",
     ],
     extras_require={
         "recommended": recommended_requirements,

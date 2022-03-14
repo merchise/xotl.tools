@@ -1019,7 +1019,6 @@ if sys.version_info >= (3, 9):
     def classproperty(*args, **kwargs):
         return classmethod(property(*args, **kwargs))
 
-
 else:
 
     class classproperty(property):
@@ -1132,7 +1131,6 @@ try:
         def reset(self, instance):
             """Clear the cached value of `instance`."""
             instance.__dict__.pop(self.__name__, None)
-
 
 except ImportError:
     # The following is extracted from the SQLAlchemy project's codebase, merit and

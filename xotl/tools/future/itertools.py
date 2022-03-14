@@ -474,7 +474,6 @@ if sys.version_info < (3, 5):
         for x in merge(*params):
             yield x.item
 
-
 else:
     from heapq import merge  # noqa
 

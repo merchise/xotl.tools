@@ -34,19 +34,19 @@ def micro(v):
 
 
 def nano(v):
-    return v / (10 ** 9)
+    return v / (10**9)
 
 
 @Dimension.new()
 class Length:
     metre = UNIT
-    kilometre = kilometer = km = kilo(metre)
-    centimetre = centimeter = cm = centi(metre)
-    millimetre = millimeter = mm = milli(metre)
-    nanometre = nanometer = nm = nano(metre)
+    kilometer = km = kilo(metre)
+    centimeter = cm = centi(metre)
+    millimeter = mm = milli(metre)
+    nanometer = nm = nano(metre)
 
 
-metre = m = Length.m = Length.meter = Length.metre
+metre = m = Length.m = Length.metre
 L = Length
 
 
@@ -120,27 +120,23 @@ J = Luminosity
 
 
 # Derived quantities
-Area = L ** 2
-Volume = L ** 3
-Volume.metre_cubic = Volume.meter_cubic = Volume._unit_
+Area = L**2
+Volume = L**3
+Volume.metre_cubic = Volume._unit_
 Volume._unitname_ = "metre_cubic"
 
-Frequency = T ** -1
+Frequency = T**-1
 Frequency.Hz = Frequency._unit_
 
-Force = L * M / T ** 2
+Force = L * M / T**2
 assert hasattr(Force, "metre_kilogram_per_second_squared")
-assert Force == L * M * T ** -2
-Force.Newton = Force.N = Force.meter_kilogram_per_second_squared = Force._unit_
+assert Force == L * M * T**-2
+Force.Newton = Force.N = Force._unit_
 
-Pressure = Presure = M / L / T ** 2
+Pressure = Presure = M / L / T**2
 assert hasattr(Pressure, "kilogram_per_metre_per_second_squared")
-assert Pressure == L ** -1 * M * T ** -2, "as defined in Wikipedia"
-Pressure.Pascal = Pressure.Pa = Pressure.kilogram_per_meter_per_second_squared = Pressure._unit_
-Pressure.bar = 100000 * Pressure.Pa
+assert Pressure == L**-1 * M * T**-2, "as defined in Wikipedia"
+Pressure.Pascal = Pressure.Pa = Pressure._unit_
 
 Speed = Velocity = L / T
-Velocity.meter_per_second = Velocity._unit_
-
-Acceleration = L / T ** 2
-Acceleration.meter_per_second_squared = Acceleration._unit_
+Acceleration = L / T**2

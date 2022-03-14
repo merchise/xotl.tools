@@ -219,7 +219,7 @@ class Quantity(numbers.Real):
             if exp < 0:
                 return 1 / (self ** (-exp))
             else:
-                return type(self)(self.magnitude ** exp, self.signature ** exp)
+                return type(self)(self.magnitude**exp, self.signature**exp)
         else:
             raise OperandTypeError("**", self, exp)
 
@@ -558,7 +558,7 @@ class Dimension(type):
             name = TIMES(self.__name__, other.__name__)
             if self == other:
                 unit = SQUARED(self._unitname_)
-                quant = self._Quantity(UNIT, self._signature_ ** 2)
+                quant = self._Quantity(UNIT, self._signature_**2)
             else:
                 unit = TIMES(self._unitname_, other._unitname_)
                 quant = self._Quantity(UNIT, self._signature_ * other._signature_)
@@ -576,12 +576,12 @@ class Dimension(type):
             elif exp == 2:
                 return self * self
             elif exp < 0:
-                return 1 / (self ** -exp)
+                return 1 / (self**-exp)
             else:
                 assert exp > 0
                 name = POWER(self.__name__, exp)
                 unit = POWER(self._unitname_, exp)
-                quant = self._Quantity(UNIT, self._signature_ ** exp)
+                quant = self._Quantity(UNIT, self._signature_**exp)
                 klass = type(self)
                 return klass(name, (object,), {unit: quant})
         else:

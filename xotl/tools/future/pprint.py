@@ -10,7 +10,7 @@
 """Enhanced data pretty printer."""
 
 from pprint import *  # noqa
-from pprint import __all__, pprint  # noqa
+from pprint import __all__, pprint
 
 __all__ = list(__all__) + ["ppformat"]
 
