@@ -247,6 +247,7 @@ publish in our RTD for releases:
   only:
     <<: *when-releasing
 
+
 pages:
   <<: *build_doc
   only:

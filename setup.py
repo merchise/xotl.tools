@@ -50,7 +50,6 @@ docs_requirements = recommended_requirements + [
     "hypothesis~=6.31",
     "pytz",
     "sphinx~=4.3.1",
-    "sphinx-rtd-theme",
 ]
 dev_requirements = docs_requirements + [
     "flake8>=3.8.4",
