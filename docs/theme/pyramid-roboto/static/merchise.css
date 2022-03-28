@@ -1,7 +1,24 @@
 @import url("pyramid.css");
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400;500;600;700&display=swap');
 
-pre, code {
+body {
+    font-family: "Lora", sans-serif;
+    font-size: 18px;
+}
+
+pre, .pre, code {
     font-size: 1em;
     font-family: "Roboto Mono", monospace;
+}
+code.any, code.any .pre {
+    font-family: "Lora", sans-serif;
+}
+div.body p, div.body dd, div.body li {
+    line-height: 1.5rem;
+}
+
+div.body {
+    min-width: 700px;
+    max-width: 1200px;
 }

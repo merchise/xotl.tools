@@ -125,6 +125,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
+default_role = "code"
 html_theme = "pyramid-roboto"
 html_theme_path = [os.path.join("..", "theme")]
 
