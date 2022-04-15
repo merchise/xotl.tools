@@ -62,13 +62,12 @@ def xdir(
     getter: Callable[[Any, str], Any],
     filter: Callable[[str, Any], bool] = None,
     _depth: int = 0,
-): -> Iterable[Tuple[str, Any]]: ...
+) -> Iterable[Tuple[str, Any]]: ...
 def fdir(
     obj: Any,
-    getter: Callable[[Any, str], Any],
+    getter: Callable[[Any, str], Any] = None,
     filter: Callable[[str, Any], bool] = None,
-): -> Iterable[str]: ...
-
+) -> Iterable[str]: ...
 
 class lazy:
     def __init__(self, value: Any, *args, **kawrgs) -> None: ...
