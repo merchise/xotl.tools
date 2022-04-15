@@ -5,6 +5,7 @@ from typing import (
     Callable,
     ContextManager,
     Dict,
+    Iterable,
     Iterator,
     Mapping,
     Optional,
@@ -56,6 +57,18 @@ def temp_attributes(
     obj: Any, attrs: Dict[Any, Any], getter: Getter = ..., setter: Setter = ...
 ) -> ContextManager: ...
 def setdefaultattr(obj: Any, name: str, value: Any) -> Any: ...
+def xdir(
+    obj: Any,
+    getter: Callable[[Any, str], Any],
+    filter: Callable[[str, Any], bool] = None,
+    _depth: int = 0,
+): -> Iterable[Tuple[str, Any]]: ...
+def fdir(
+    obj: Any,
+    getter: Callable[[Any, str], Any],
+    filter: Callable[[str, Any], bool] = None,
+): -> Iterable[str]: ...
+
 
 class lazy:
     def __init__(self, value: Any, *args, **kawrgs) -> None: ...
