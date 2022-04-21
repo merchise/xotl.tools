@@ -1607,7 +1607,7 @@ def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
     `setter`.  They must take the object and return a callable to get/set the
     its attributes.
 
-    Basic example:
+    Basic example::
 
       >>> from xotl.tools.future.types import SimpleNamespace as new
       >>> obj = new(a=1, b=2)
@@ -1625,6 +1625,8 @@ def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
     Depending on the behavior of `getter` and or the object itself, it may be
     an error to get an attribute or key that does not exists.
 
+    ::
+
       >>> getter = lambda o: lambda a: getattr(o, a)
       >>> with save_attributes(obj, 'c', getter=getter):   # doctest: +ELLIPSIS
       ...    pass
@@ -1634,7 +1636,7 @@ def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
 
     Beware, however, that `smart_getter`:func: is non-strict by default and it
     returns None for a non-existing key or attribute.  In this case, we
-    attempt to set that attribute or key at exit:
+    attempt to set that attribute or key at exit::
 
       >>> with save_attributes(obj, 'x'):
       ...   pass
@@ -1642,7 +1644,7 @@ def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
       >>> obj.x is None
       True
 
-    But, then, setting the value may fail:
+    But, then, setting the value may fail::
 
       >>> obj = object()
       >>> with save_attribute(obj, 'x'):  # doctest: +ELLIPSIS

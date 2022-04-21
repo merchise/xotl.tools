@@ -227,6 +227,8 @@ class retrier:
         You can use this to decorate a function you'll always run inside a
         retrying loop:
 
+           >>> class TransientError(RuntimeError): pass
+
            >>> @retrier(max_tries=5, retry_only=TransientError).decorate
            ... def read_from_url(url):
            ...     pass

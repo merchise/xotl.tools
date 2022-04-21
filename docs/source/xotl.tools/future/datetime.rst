@@ -1,6 +1,11 @@
 `xotl.tools.future.datetime`:mod: - Basic date and time types
 =============================================================
 
+.. testsetup::
+
+   from xotl.tools.future.datetime import *
+
+
 .. module:: xotl.tools.future.datetime
 
 This module extends the standard library's `datetime`:mod:.  You may use it

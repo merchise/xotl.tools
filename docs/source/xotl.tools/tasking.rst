@@ -2,6 +2,10 @@
  :mod:`xotl.tools.tasking` -- Task oriented tools.
 ===================================================
 
+.. testsetup::
+
+   from xotl.tools.tasking import *
+
 .. automodule:: xotl.tools.tasking
 
 

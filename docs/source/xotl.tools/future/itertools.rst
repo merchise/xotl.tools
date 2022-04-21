@@ -1,6 +1,11 @@
 `xotl.tools.future.itertools`:mod: - Functions creating iterators for efficient looping
 =======================================================================================
 
+.. testsetup::
+
+   from xotl.tools.future.itertools import *
+
+
 .. automodule:: xotl.tools.future.itertools
    :members: dict_update_new, first_non_null,
 	         slides, continuously_slides, ungroup

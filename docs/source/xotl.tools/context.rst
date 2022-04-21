@@ -1,9 +1,12 @@
 `xotl.tools.context`:mod: - Simple execution contexts
 =====================================================
 
+.. testsetup::
+
+   from xotl.tools.context import *
+
 .. automodule:: xotl.tools.context
    :members: context, Context
-
 
 .. _context-greenlets:
 
