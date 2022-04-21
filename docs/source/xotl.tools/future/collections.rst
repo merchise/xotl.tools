@@ -3,6 +3,10 @@
 
 .. module:: xotl.tools.future.collections
 
+.. testsetup::
+
+   from xotl.tools.future.collections import *
+
 This module extends the standard library's `collections`:mod:.  You may use it
 as a drop-in replacement in many cases.
 

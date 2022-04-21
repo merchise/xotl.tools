@@ -2,6 +2,10 @@
  `xotl.tools.dim.meta`:mod: -- Meta-definitions for concrete numbers.
 ======================================================================
 
+.. testsetup::
+
+   from xotl.tools.dim.meta import *
+
 .. automodule:: xotl.tools.dim.meta
 
 .. autoclass:: Dimension()

@@ -19,9 +19,10 @@ __ `concrete numbers`_
 .. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number
 
 
-This module allows you to define dimensions (or quantity types):
+This module allows you to define dimensions (or quantity types)::
 
    >>> from xotl.tools.dim.meta import Dimension, UNIT
+
    >>> @Dimension.new
    ... class Length:
    ...     metre = UNIT
@@ -46,7 +47,7 @@ canonical unit.  The name of canonical unit defines the `signature
 <Signature>`:class: for the quantities in the dimension.
 
 When printed (or ``repr``-ed) `quantities <Quantity>`:class: use the format
-``<magnitude>::<signature>``:
+``<magnitude>::<signature>``::
 
    >>> metre = Length.metre
    >>> metre
@@ -54,7 +55,7 @@ When printed (or ``repr``-ed) `quantities <Quantity>`:class: use the format
 
 Quantities support the standard arithmetical operations of addition,
 subtraction, multiplication and division.  In fact, you obtain different
-quantities in the dimension by multiplying with the canonical unit:
+quantities in the dimension by multiplying with the canonical unit::
 
    >>> metre + metre
    2::{<Length.metre>}/{}
@@ -73,8 +74,10 @@ dimension) can be compared, equated, added, or subtracted.
 
 __ https://en.wikipedia.org/wiki/Dimensional_analysis#Dimensional_homogeneity
 
+::
+
    >>> @Dimension.new
-   >>> class Time:
+   ... class Time:
    ...     second = UNIT
 
    >>> metre + Time.second  # doctest: +ELLIPSIS
@@ -86,6 +89,8 @@ __ https://en.wikipedia.org/wiki/Dimensional_analysis#Dimensional_homogeneity
 However, you can take ratios of incommensurable quantities (quantities with
 different dimensions), and multiply or divide them.
 
+::
+
     >>> metre/Time.second
     >>> 1::{<Length.metre>}/{<Time.second>}
 
@@ -93,7 +98,7 @@ different dimensions), and multiply or divide them.
 .. warning:: `Decimal numbers <decimal.Decimal>`:py:class: are not supported.
 
    This module makes not attempt to fix the standing incompatibility between
-   floats and `decimal.Decimal`:py:class:\ :
+   floats and `decimal.Decimal`:py:class:\ ::
 
       >>> import decimal
       >>> decimal.Decimal('0') + 0.1  # doctest: +ELLIPSIS
@@ -456,7 +461,7 @@ class Dimension(type):
 
     @classmethod
     def new(cls, *source, **kwargs):
-        """Define a new dimension.
+        r"""Define a new dimension.
 
         This is a wrapped decorator.  The actual possible signatures are:
 
@@ -482,7 +487,7 @@ class Dimension(type):
                  provide a custom Quantity without having to subclass
                  Dimension.
 
-        Example:
+        Example::
 
            >>> @Dimension.new(unit_alias='man')
            ... class Workforce:
@@ -491,20 +496,20 @@ class Dimension(type):
            >>> Workforce.men == Workforce.man == Workforce._unit_
            True
 
-        The resulting class will be an instance of `Dimension`:class::
+        The resulting class will be an instance of `Dimension`:class:\ ::
 
            >>> isinstance(Workforce, Dimension)
            True
 
-        The original class is totally missed:
+        The original class is totally missed::
 
-           >>> Workforce.mro()
-           [...Workforce, object]
+           >>> Workforce.mro()    # doctest: +ELLIPSIS
+           [<...Workforce>, object]
 
         To complete the example, let's introduce the dimension Effort that
         expresses the usual amount of men-power and time needed to complete
         some task.  However `~xotl.tools.dim.base.Time`:class: has the second
-        as it canonical unit, but the standard for Effort is men-hour:
+        as it canonical unit, but the standard for Effort is men-hour::
 
            >>> class Effort(Workforce * Time):
            ...    # Since the canonical unit of a composed quantity type is
@@ -667,7 +672,7 @@ class Signature:
       >>> acceleration
       {m}/{s, s}
 
-    You may compare signatures for equality.
+    You may compare signatures for equality::
 
       >>> acceleration == distance/(time*Signature('s'))
       True

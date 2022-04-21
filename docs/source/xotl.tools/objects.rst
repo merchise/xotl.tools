@@ -1,6 +1,10 @@
 `xotl.tools.objects`:mod: - Functions for dealing with objects
 ==============================================================
 
+.. testsetup::
+
+   from xotl.tools.objects import *
+
 .. automodule:: xotl.tools.objects
    :members: validate_attrs, iterate_over, smart_getter,
 	     smart_getter_and_deleter, popattr, setdefaultattr, copy_class,

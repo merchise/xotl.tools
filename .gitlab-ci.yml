@@ -115,6 +115,20 @@ tests:
       - PYTHON: ["3.7", "3.8", "3.9", "3.10"]
         GREENLETS: ["unit", "greenlets"]
 
+test doctests:
+  image: python:$PYTHON
+  stage: test
+  script:
+    - pip install tox
+    - tox -e system-doctest
+  only:
+    <<: *when-merge-requests-or-stable
+  needs:
+    - run required static checks
+  parallel:
+    matrix:
+      - PYTHON: ["3.9", "3.10"]
+
 
 .x-when-releasing: &when-releasing
   refs:
@@ -203,6 +217,8 @@ build documentation for releases:
 
 build documentation:
   <<: *build_doc
+  needs:
+    - test doctests
   only:
     <<: *when-merge-requests-or-stable
   variables:

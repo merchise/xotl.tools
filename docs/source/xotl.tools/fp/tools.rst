@@ -2,6 +2,10 @@
  `xotl.tools.fp.tools`:mod: -- High-level pure function tools
 ==============================================================
 
+.. testsetup::
+
+   from xotl.tools.fp.tools import *
+
 .. automodule:: xotl.tools.fp.tools
 
 .. class:: compose(*funcs)

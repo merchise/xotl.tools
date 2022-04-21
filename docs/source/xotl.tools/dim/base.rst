@@ -2,6 +2,10 @@
  `xotl.tools.dim.base`:mod: - The base `physical quantities`_
 ==============================================================
 
+.. testsetup::
+
+   from xotl.tools.dim.base import *
+
 .. automodule:: xotl.tools.dim.base
 
 .. class:: Length

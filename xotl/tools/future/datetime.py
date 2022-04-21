@@ -234,10 +234,10 @@ def get_next_month(ref=None, lastday=False):
     Examples:
 
       >>> get_next_month(date(2017, 1, 23))
-      date(2017, 2, 1)
+      datetime.date(2017, 2, 1)
 
       >>> get_next_month(date(2017, 1, 23), lastday=True)
-      date(2017, 2, 28)
+      datetime.date(2017, 2, 28)
 
     .. versionadded:: 1.7.3
 
@@ -259,7 +259,7 @@ def get_next_monday(ref):
 
        >>> d = date(2022, 3, 2)
        >>> get_next_monday(d)
-       date(2022, 3, 7)
+       datetime.date(2022, 3, 7)
 
     """
     return _get_next_wd(ref, 0)  # monday is 0
