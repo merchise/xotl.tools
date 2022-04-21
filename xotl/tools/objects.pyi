@@ -7,6 +7,7 @@ from typing import (
     Dict,
     Iterable,
     Iterator,
+    List,
     Mapping,
     Optional,
     Sequence,
@@ -105,3 +106,15 @@ class DelegatedAttribute:
     def __get__(self, instance, owner) -> Any: ...
 
 def delegator(attribute: str, attrs_map: Mapping[str, str], metaclass: type = type) -> type: ...
+def iter_branch_subclasses(
+    cls: Type,
+    *,
+    include_this: bool = False,
+    without_duplicates: bool = False,
+) -> Iterator[Type]: ...
+def get_branch_subclasses(
+    cls: Type,
+    *,
+    include_this: bool = False,
+    without_duplicates: bool = False,
+) -> List[Type]: ...

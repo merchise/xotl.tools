@@ -898,28 +898,62 @@ class lazy:
             return res
 
 
-def iter_branch_subclasses(cls, include_this=True):
+def iter_branch_subclasses(cls, include_this=True, without_duplicates=False):
     """Internal function, see `get_branch_subclasses`:func:."""
-    children = type.__subclasses__(cls)
-    if children:
-        for sc in children:
-            yield from iter_branch_subclasses(sc)
-    elif include_this:
-        yield cls
+
+    def _iter(cls):
+        children = type.__subclasses__(cls)
+        if children:
+            for sc in children:
+                yield from iter_branch_subclasses(sc)
+        elif include_this:
+            yield cls
+
+    if without_duplicates:
+        from xotl.tools.future.itertools import iter_without_duplicates
+
+        return iter_without_duplicates(_iter(cls))
+    else:
+        return _iter(cls)
 
 
-def get_branch_subclasses(cls, *, include_this=False):
+def get_branch_subclasses(cls, *, include_this=False, without_duplicates=False):
     """Similar to `type.__subclasses__`:meth: but recursive.
 
-    Only return sub-classes in branches (those with no sub-classes).  Instead
-    of returning a list, yield each valid value.
+    Only return sub-classes in branches (those with no sub-classes).  Return a list of all classes
+    reachable from `cls`.
+
+    The same class can be included more than once if there are two different paths from `cls` to
+    that class::
+
+           >>> class Foo: pass
+           >>> class Bar(Foo): pass
+           >>> class Baz(Foo): pass
+           >>> class Final(Bar, Baz): pass
+
+           >>> get_branch_subclasses(Foo) == [Final, Final]
+           True
+
+
+    You can set `without_duplicates` to True to avoid this::
+
+           >>> get_branch_subclasses(Foo, without_duplicates=True) == [Final]
+           True
 
     .. versionadded:: 1.7.0
 
     .. versionchanged:: 2.1.5 Add keyword-only argument `include_this`.
 
+    .. versionchanged:: 2.2.5 Add keyword-only argument `without_duplicates`.
+
     """
-    return list(iter_branch_subclasses(cls, include_this=include_this))
+    return list(
+        iter_branch_subclasses(
+            cls,
+            include_this=include_this,
+            without_duplicates=without_duplicates,
+        )
+    )
 
 
 def FinalSubclassEnumeration(superclass, *, dynamic=True):
