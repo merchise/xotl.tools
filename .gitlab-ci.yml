@@ -58,7 +58,7 @@ check flake8 and black:
   stage: check
   needs: []
   script:
-    - pip install --no-cache-dir 'flake8>=3.8.4' 'flake8-bugbear~=21.4.3' 'black==22.1.0' 'isort~=5.10.0'
+    - pip install --no-cache-dir 'flake8>=3.8.4' 'flake8-bugbear~=21.4.3' 'black==22.3.0' 'isort~=5.10.0'
     - flake8 xotl/tools
     - black --check xotl/tools
     - isort --check --diff xotl/tools
@@ -103,16 +103,6 @@ run required static checks:
     matrix:
       - PYTHON: ["3.7", "3.8", "3.9"]
         TOX_POSARGS: ["tests/test_dim.py"]
-
-run static checks:
-  <<: *run_tox_staticcheck
-  only:
-    <<: *when-merge-requests-or-stable
-  allow_failure: true
-  parallel:
-    matrix:
-      - PYTHON: ["3.7", "3.8", "3.9", "3.10"]
-
 
 tests:
   <<: *run_tox_tests
