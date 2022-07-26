@@ -214,7 +214,7 @@ def delete_duplicates(seq, key=lambda x: x):
 def iter_delete_duplicates(
     iter: Iterable[T],
     key: Callable[[T], Any] = lambda x: x,
-) -> Iterable[T]:
+) -> Iterator[T]:
     """Yields non-repeating (and consecutive) items from `iter`.
 
     `key` has the same meaning as in `delete_duplicates`:func:.
@@ -241,7 +241,7 @@ def iter_delete_duplicates(
 def iter_without_duplicates(
     it: Iterable[T],
     key: Callable[[T], Any] = lambda x: x,
-) -> Iterable[T]:
+) -> Iterator[T]:
     """Yields non-repeating items from `iter`.
 
     `key` has the same meaning as in `delete_duplicates`:func:.
@@ -327,8 +327,10 @@ def slides(
 
 
 def continuously_slides(
-    iterable: Iterable[T], width: int = 2, fill: X = None
-) -> Iterable[Tuple[Optional[Union[T, X]], ...]]:
+    iterable: Iterable[T],
+    width: int = 2,
+    fill: X = None,
+) -> Iterator[Tuple[Optional[Union[T, X]], ...]]:
     """Similar to `slides`:func: but moves one item at the time (i.e
     continuously).
 
@@ -357,7 +359,7 @@ def continuously_slides(
         current = next(i, unset)
 
 
-def ungroup(iterator: Iterable[Tuple[X, Iterable[T]]]) -> Iterable[T]:
+def ungroup(iterator: Iterable[Tuple[X, Iterable[T]]]) -> Iterator[T]:
     """Reverses the operation of `itertools.groupby`:func: (or similar).
 
     The `iterator` should produce pairs of ``(_, xs)``; where ``xs`` is
@@ -412,7 +414,7 @@ A = TypeVar("A")
 B = TypeVar("B")
 
 
-def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterable[B]:
+def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterator[B]:
     """Apply each function in `funcs` to its corresponding arguments.
 
     If the iterables are not of the same length, stop as soon as the shortest
