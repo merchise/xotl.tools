@@ -273,7 +273,7 @@ def slides(
     iterable: Iterable[T],
     width: int = 2,
     fill: X = None,
-) -> Iterable[Tuple[Optional[Union[T, X]], ...]]:
+) -> Iterator[Tuple[Optional[Union[T, X]], ...]]:
     """Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
