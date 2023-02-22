@@ -522,7 +522,7 @@ class HighLevelBoundary(BoundaryCondition):
                         bound = boundary(bound)
                     elif isinstance(bound, GeneratorType):
                         gen = bound  # get a copy for the lambda below
-                        bound = boundary(lambda: gen)
+                        bound = boundary(lambda: gen)  # noqa
                     if isinstance(bound, BoundaryCondition):
                         if bound.receive_args:
                             raise TypeError('"%s" must be initialized' % bound.name)

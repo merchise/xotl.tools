@@ -23,7 +23,8 @@ def call_and_check_output(*popenargs, **kwargs):
     """
     if "stdout" in kwargs:
         raise ValueError("stdout argument not allowed, it will be overridden.")
-    process = Popen(stdout=PIPE, *popenargs, **kwargs)
+    kwargs["stdout"] = PIPE
+    process = Popen(*popenargs, **kwargs)
     output, err = process.communicate()
     retcode = process.poll()
     return (retcode, output, err)
