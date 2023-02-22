@@ -1048,7 +1048,7 @@ class xproperty(property):
         return self.fget(instance if instance is not None else owner)
 
 
-if sys.version_info >= (3, 9):
+if (3, 9) <= sys.version_info < (3, 11):
 
     def classproperty(*args, **kwargs):
         return classmethod(property(*args, **kwargs))
@@ -1092,9 +1092,12 @@ classproperty.__doc__ = """A descriptor that behaves like property for instances
                 cls.x = int(x)
             name = classproperty(_get_name, _set_name)
 
-    In Python 3.9+ this is actually the composition of `classmethod`:any: to
-    `property`:any: (i.e same as ``lambda *a, **kw: classmethod(property(*a,
-    **kw))``).
+    In Python 3.9, and 3.10 this is actually the composition of `classmethod`:any: to
+    `property`:any: (i.e same as ``lambda *a, **kw: classmethod(property(*a, **kw))``).  In Python
+    3.11 we use our own implementation because of `deprecation of their combination`__ in Python
+    3.11.
+
+    __ https://docs.python.org/3.11/library/functions.html?highlight=classmethod#classmethod
 
     .. versionadded:: 1.4.1
 
@@ -1102,6 +1105,8 @@ classproperty.__doc__ = """A descriptor that behaves like property for instances
 
     .. versionchanged:: 2.11.0 Changed to be ``compose(classmethod,
        property)`` in Python 3.9+.
+
+    .. versionchanged:: 2.2.6 Recover the behavior in Python 3.11.
 
     """
 
