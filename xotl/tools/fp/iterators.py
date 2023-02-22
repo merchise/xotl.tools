@@ -96,6 +96,7 @@ def kleisli_compose_foldl(*fs: Callable[[T], Iterable[T]]) -> Callable[[T], Iter
     order may be different.
 
     """
+
     # This basically the same as _kleisli_compose above but with f and g
     # swapped.
     #

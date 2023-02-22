@@ -103,6 +103,7 @@ def aliases(*names, **kwargs):
         ...     'This function is added to its module with two new names.'
 
     """
+
     # FIX: This is not working in methods.
     def inner(target):
         """Direct closure decorator that settle several attribute aliases."""
