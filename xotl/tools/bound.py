@@ -333,11 +333,9 @@ def timed(maxtime):
 @boundary
 def times(n):
     """Becomes True after a given after the `nth` item have been produced."""
-    passed = 0
     yield False
-    while passed < n:
+    for _ in range(n):
         yield False
-        passed += 1
     yield True
 
 
