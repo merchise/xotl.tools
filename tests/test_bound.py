@@ -111,9 +111,7 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         fib500timed = whenall(accumulated(500), timed(0))(fibonacci)
         self.assertEqual(fib500timed(), 233)
 
-        self.assertEqual(
-            tuple(fib500.generate()), (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
-        )
+        self.assertEqual(tuple(fib500.generate()), (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233))
 
         # With .generate()  you may count
         self.assertEqual(len(tuple(fib500.generate())), 13)  # the 13th
@@ -329,6 +327,36 @@ class TestMisc(unittest.TestCase):
                 yield 1
 
         foobar(1, 2, egg="ham")
+
+    def test_many_generators(self):
+        cycles = []
+
+        def times(n):
+            """Becomes True after a given after the `nth` item have been produced."""
+            yield False
+            for _ in range(n):
+                yield False
+            yield True
+
+        @whenall(times(8), times(3))
+        def foobar():
+            while True:
+                cycles.append(1)
+                yield
+
+        foobar()
+        assert cycles == [1] * 8
+
+        cycles.clear()
+
+        @whenall(times(3), times(8))
+        def foobar():
+            while True:
+                cycles.append(1)
+                yield
+
+        foobar()
+        assert cycles == [1] * 8
 
     def test_plain_generator(self):
         from xotl.tools.bound import times
