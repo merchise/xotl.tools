@@ -128,9 +128,9 @@ class BoundaryCondition:
         return result
 
     def __init__(self, definition, name=None, errors=None):
-        from inspect import getargspec
+        from inspect import getfullargspec
 
-        spec = getargspec(definition)
+        spec = getfullargspec(definition)
         self.args = spec[0]
         self.defaults = spec[3]
         self.varargs = spec[1]

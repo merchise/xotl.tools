@@ -49,9 +49,9 @@ def _get_checker_name(checker):
         if not isinstance(checker, type):
             assert callable(checker)
             if "lambda" in res:
-                from inspect import getargspec
+                from inspect import getfullargspec
 
-                args = getargspec(checker).args
+                args = getfullargspec(checker).args
                 assert len(args) == 1
                 res = str("%s(%s)" % (res, args[0]))
         return res
