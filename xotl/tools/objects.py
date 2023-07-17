@@ -1048,7 +1048,7 @@ class xproperty(property):
         return self.fget(instance if instance is not None else owner)
 
 
-if sys.version_info >= (3, 9):
+if (3, 9) <= sys.version_info < (3, 11):
 
     def classproperty(*args, **kwargs):
         return classmethod(property(*args, **kwargs))
