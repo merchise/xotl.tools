@@ -61,30 +61,33 @@ def setdefaultattr(obj: Any, name: str, value: Any) -> Any: ...
 def xdir(
     obj: Any,
     getter: Callable[[Any, str], Any],
-    filter: Callable[[str, Any], bool] = None,
+    filter: Optional[Callable[[str, Any], bool]] = None,
     _depth: int = 0,
 ) -> Iterable[Tuple[str, Any]]: ...
 def fdir(
     obj: Any,
-    getter: Callable[[Any, str], Any] = None,
-    filter: Callable[[str, Any], bool] = None,
+    getter: Optional[Callable[[Any, str], Any]] = None,
+    filter: Optional[Callable[[str, Any], bool]] = None,
 ) -> Iterable[str]: ...
 
 class lazy:
     def __init__(self, value: Any, *args, **kawrgs) -> None: ...
     def __call__(self) -> Any: ...
 
-class classproperty(property): ...
-class staticproperty(property): ...
+X = TypeVar("X")
+
+def classproperty(fn: Callable[[Type[Any]], X]) -> X: ...
 
 memoized_property = property
 
+T = TypeVar("T", covariant=True)
+
 def copy_class(
-    cls: Type,
-    meta: Type = None,
-    ignores: Sequence[str] = None,
-    new_attrs: Mapping[str, Any] = None,
-    new_name: str = None,
+    cls: Type[T],
+    meta: Optional[Type[Type[T]]] = None,
+    ignores: Optional[Sequence[str]] = None,
+    new_attrs: Optional[Mapping[str, Any]] = None,
+    new_name: Optional[str] = None,
 ) -> Type: ...
 def validate_attrs(
     source: Any,
@@ -107,14 +110,14 @@ class DelegatedAttribute:
 
 def delegator(attribute: str, attrs_map: Mapping[str, str], metaclass: type = type) -> type: ...
 def iter_branch_subclasses(
-    cls: Type,
+    cls: Type[T],
     *,
     include_this: bool = False,
     without_duplicates: bool = False,
-) -> Iterator[Type]: ...
+) -> Iterator[Type[T]]: ...
 def get_branch_subclasses(
-    cls: Type,
+    cls: Type[T],
     *,
     include_this: bool = False,
     without_duplicates: bool = False,
-) -> List[Type]: ...
+) -> List[Type[T]]: ...

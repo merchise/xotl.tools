@@ -1,13 +1,13 @@
 Changelog
 =========
 
-2.3 series
+3.0 series
 ----------
 
-Unreleased.  Release 2.3.0
+Unreleased.  Release 3.0.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.3.0.rst
+.. include:: history/_changes-3.0.0.rst
 
 
 2.2 series

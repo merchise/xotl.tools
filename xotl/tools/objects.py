@@ -1048,28 +1048,8 @@ class xproperty(property):
         return self.fget(instance if instance is not None else owner)
 
 
-if (3, 9) <= sys.version_info < (3, 11):
-
-    def classproperty(*args, **kwargs):
-        return classmethod(property(*args, **kwargs))
-
-else:
-
-    class classproperty(property):
-        def __get__(self, instance, owner):
-            obj = type(instance) if instance is not None else owner
-            return super().__get__(obj, owner)
-
-        def __set__(self, instance, value):
-            obj = instance if isinstance(instance, type) else type(instance)
-            super().__set__(obj, value)
-
-        def __delete__(self, instance):
-            obj = instance if isinstance(instance, type) else type(instance)
-            super().__delete__(obj)
-
-
-classproperty.__doc__ = """A descriptor that behaves like property for instances but for classes.
+class classproperty(property):
+    """A descriptor that behaves like property for instances but for classes.
 
     Example of its use::
 
@@ -1103,12 +1083,25 @@ classproperty.__doc__ = """A descriptor that behaves like property for instances
 
     .. versionchanged:: 1.8.0 Inherits from `property`
 
-    .. versionchanged:: 2.11.0 Changed to be ``compose(classmethod,
-       property)`` in Python 3.9+.
+    .. versionchanged:: 2.11.0 Changed to be ``compose(classmethod, property)`` in Python 3.9+.
 
-    .. versionchanged:: 2.2.6 Recover the behavior in Python 3.11.
+    .. versionchanged:: 3.0.0 Revert composition of `classmethod` and `property` in Python 3.9+.
+       Python 3.11 removed this possibility, so we might be better off with a unique implementation
+       of this pattern.
 
     """
+
+    def __get__(self, instance, owner):
+        obj = type(instance) if instance is not None else owner
+        return super().__get__(obj, owner)
+
+    def __set__(self, instance, value):
+        obj = instance if isinstance(instance, type) else type(instance)
+        super().__set__(obj, value)
+
+    def __delete__(self, instance):
+        obj = instance if isinstance(instance, type) else type(instance)
+        super().__delete__(obj)
 
 
 class staticproperty(property):
