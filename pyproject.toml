@@ -25,10 +25,22 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+packages = [
+   {include = "xotl/tools"},
+]
+
+
+
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
 typing-extensions = ">=3.10.0"
 
+
+[tool.poetry.group.dev.dependencies]
+hypothesis = "^6.91.0"
+pytz = "^2023.3.post1"
+tox = "^4.11.4"
+ruff = "^0.1.7"
 
 [tool.black]
 line-length = 100
