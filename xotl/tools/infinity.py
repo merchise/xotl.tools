@@ -28,7 +28,7 @@ from functools import total_ordering
 from numbers import Number
 
 
-class InfinityComparable(metaclass=abc.ABCMeta):
+class InfinityComparable(metaclass=abc.ABCMeta):  # noqa: B024
     """Any type that can be sensibly compared to infinity.
 
     All types in the `number <numbers.Number>`:class: tower are *always*

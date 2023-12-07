@@ -52,6 +52,7 @@ class DeprecatedImportDescriptor:
                 "Importing {name} from xotl.tools is deprecated. "
                 "You should import it from {ns}".format(name=self.attr, ns=self.replacement),
                 UserWarning,  # DeprecationWarning is silent in ipython
+                stacklevel=3,
             )
             return result
         else:

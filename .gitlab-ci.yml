@@ -54,11 +54,11 @@ stages:
 
 check flake8 and black:
   interruptible: true
-  image: python:3.9
+  image: python:3.10
   stage: check
   needs: []
   script:
-    - pip install --no-cache-dir 'flake8>=3.8.4' 'flake8-bugbear~=21.4.3' 'black==22.3.0' 'isort~=5.10.0'
+    - pip install --no-cache-dir 'flake8~=6.0' 'flake8-bugbear~=23.2' 'black==23.1.0' 'isort~=5.12'
     - flake8 xotl/tools
     - black --check xotl/tools
     - isort --check --diff xotl/tools

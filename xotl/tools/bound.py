@@ -128,9 +128,9 @@ class BoundaryCondition:
         return result
 
     def __init__(self, definition, name=None, errors=None):
-        from inspect import getargspec
+        from inspect import getfullargspec
 
-        spec = getargspec(definition)
+        spec = getfullargspec(definition)
         self.args = spec[0]
         self.defaults = spec[3]
         self.varargs = spec[1]
@@ -333,11 +333,9 @@ def timed(maxtime):
 @boundary
 def times(n):
     """Becomes True after a given after the `nth` item have been produced."""
-    passed = 0
     yield False
-    while passed < n:
+    for _ in range(n):
         yield False
-        passed += 1
     yield True
 
 
@@ -522,7 +520,7 @@ class HighLevelBoundary(BoundaryCondition):
                         bound = boundary(bound)
                     elif isinstance(bound, GeneratorType):
                         gen = bound  # get a copy for the lambda below
-                        bound = boundary(lambda: gen)
+                        bound = boundary(lambda: gen)  # noqa
                     if isinstance(bound, BoundaryCondition):
                         if bound.receive_args:
                             raise TypeError('"%s" must be initialized' % bound.name)
