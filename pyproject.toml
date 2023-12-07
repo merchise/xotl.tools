@@ -1,3 +1,35 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "xotl.tools"
+description = "Collection of usefull algorithms and other very disparate stuff"
+version = "3.0.0dev"
+authors = ["Merchise Autrement"]
+maintainers = ["Manuel Vazquez Acosta", "Medardo Antonio Rodríguez Rodríguez"]
+license="MIT"
+readme="README.rst"
+homepage="https://gitlab.merchise.org/merchise/xotl.tools"
+documentation="https://merchise-autrement.gitlab.io/xotl.tools/"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+typing-extensions = ">=3.10.0"
+
+
 [tool.black]
 line-length = 100
 target-version = ['py38', 'py39', 'py310', 'py311']
@@ -20,5 +52,50 @@ exclude = '''
 [tool.isort]
 profile = "black"
 line_length = 100
-src_paths = ["xotl/tools",]
+src_paths = ["xotl/tools"]
 skip_gitignore = true
+
+
+[tool.coverage.run]
+branch = false
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "pragma: no-cover",
+  "def __repr__",
+  "def __hash__",
+  "def __str__",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "return NotImplemented",
+  "if __name__ == .__main__.:",
+  "if t.TYPE_CHECKING:",
+  "if TYPE_CHECKING:",
+]
+
+omit = [
+    "xotl/tools/release.py",
+    "xotl/tools/dim/base.py",
+    # Files which are difficult to test in every platform
+    "xotl/tools/tasking/_greenlet_local.py"
+]
+
+fail_under = 60
+skip_covered = true
+show_missing = true
+
+
+[tool.pyright]
+strictParameterNoneValue = false
+useLibraryCodeForTypes = true
+reportUnusedImport = true
+reportUnusedClass = true
+reportUnnecessaryCast = true
+reportDuplicateImport = true
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportShadowedImports = "warning"
+stubPath = ""
+include = [
+  "xotl/tools",
+]

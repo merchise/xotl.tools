@@ -13,5 +13,4 @@ In ``xotl.tools`` you will probably find:
 .. [#continuum] http://pubs.opengroup.org/architecture/togaf9-doc/arch/chap39.html#tag_39_04_01
 
 
-You'll find the documentation in `Read the Docs
-<https://xoutil.readthedocs.io/>`__.
+You'll find the documentation in https://merchise-autrement.gitlab.io/xotl.tools/

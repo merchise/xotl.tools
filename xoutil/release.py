@@ -1,1 +1,0 @@
-../xotl/tools/release.py

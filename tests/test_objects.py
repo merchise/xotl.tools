@@ -58,9 +58,7 @@ def test_smart_copy_with_defaults():
     }
     kwargs = {"password": "keep-out!"}
     args = smart_copy(kwargs, {}, defaults=defaults)
-    assert args == dict(
-        host="localhost", port=5432, user="openerp", password="keep-out!"
-    )
+    assert args == dict(host="localhost", port=5432, user="openerp", password="keep-out!")
 
     # if missing a required key
     with pytest.raises(KeyError):
@@ -238,7 +236,7 @@ def test_traversing():
 
 def test_traversing_bug_ignoring_getter():
     from unittest import mock
-    from xoutil.objects import traverse
+    from xotl.tools.objects import traverse
 
     sentinel = object()
 
@@ -294,7 +292,7 @@ def test_dict_merge_compatible_cases():
 
 
 def test_dict_merge_errors():
-    from xoutil.objects import dict_merge
+    from xotl.tools.objects import dict_merge
 
     first = {192: 192}
     second = {192: [192]}
@@ -465,9 +463,7 @@ def test_validate_attrs():
     source = Person(name="Manuel", age=33, sex="male")
     target = {"name": "Manuel", "age": 4, "sex": "male"}
 
-    assert validate_attrs(
-        source, target, force_equals=("sex",), force_differents=("age",)
-    )
+    assert validate_attrs(source, target, force_equals=("sex",), force_differents=("age",))
 
     assert not validate_attrs(source, target, force_equals=("age",))
 
@@ -532,7 +528,7 @@ def test_multi_getter_failure():
     (see the documentation).
 
     """
-    from xoutil.objects import traverse
+    from xotl.tools.objects import traverse
 
     class new:
         def __init__(self, **k):
@@ -545,8 +541,8 @@ def test_multi_getter_failure():
 
 
 def test_save_attributes():
-    from xoutil.future.types import SimpleNamespace as new
-    from xoutil.objects import save_attributes
+    from xotl.tools.future.types import SimpleNamespace as new
+    from xotl.tools.objects import save_attributes
 
     obj = new(a=1, b=2)
     with save_attributes(obj, "a"):

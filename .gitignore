@@ -12,3 +12,4 @@ __pycache__/
 .coverage
 *.egg-info/
 monkeytype.sqlite3
+poetry.lock
