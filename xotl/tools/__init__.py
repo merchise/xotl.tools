@@ -13,8 +13,3 @@ it does not make up a full framework, but it's very useful to be used from a
 diversity of scenarios.
 
 """
-
-from ._version import get_versions  # type: ignore
-
-__version__ = get_versions()["version"]
-del get_versions
