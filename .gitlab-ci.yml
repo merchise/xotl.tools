@@ -18,8 +18,7 @@ stages:
     - docs/**/*.py
     - xotl/tools/**/*.py
     - tests/**/*.py
-    - setup.py
-    - setup.cfg
+    - pyproject.toml
     - tox.ini
     - .gitlab-ci.yml
 
@@ -31,8 +30,7 @@ stages:
     - docs/**/*.py
     - xotl/tools/**/*.py
     - tests/**/*.py
-    - setup.py
-    - setup.cfg
+    - pyproject.toml
     - tox.ini
     - .gitlab-ci.yml
 
@@ -46,8 +44,7 @@ stages:
     - docs/**/*.py
     - xotl/tools/**/*.py
     - tests/**/*.py
-    - setup.py
-    - setup.cfg
+    - pyproject.toml
     - tox.ini
     - .gitlab-ci.yml
 
@@ -148,12 +145,8 @@ test doctests:
 build:
   image: python:3.8
   stage: build
-  parallel:
-    matrix:
-      - DIST_CMD: [sdist, bdist_wheel]
   script:
-    - apt-get update && apt-get install -y git
-    - python setup.py $DIST_CMD
+    - poetry run build
   artifacts:
     paths:
       - dist/
