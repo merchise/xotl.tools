@@ -310,7 +310,10 @@ class SafeDataItem:
                 bads[key] = value
         self.validator = predicate(self.validator)
         if bads:
-            msg = "Invalid keyword arguments: %s\n" "See constructor documentation for more info."
+            msg = (
+                "Invalid keyword arguments: %s\n"
+                "See constructor documentation for more info."
+            )
             raise ValueError(msg % bads)
         if self.attr_name is Unset:
             from xotl.tools.names import nameof
@@ -591,7 +594,9 @@ def fix_class_documentation(
             cls.__doc__ = default(cls) if callable(default) else default
 
 
-def fix_method_documentation(cls, method_name, ignore=None, min_length=10, deep=1, default=None):
+def fix_method_documentation(
+    cls, method_name, ignore=None, min_length=10, deep=1, default=None
+):
     """Fix the documentation for the given class using its super-classes.
 
     This function may be useful for shells or Python Command Line Interfaces
@@ -978,7 +983,8 @@ def FinalSubclassEnumeration(superclass, *, dynamic=True):
         def __members__(self):
             if self._cached_members is None or self._dynamic:
                 result = {
-                    c.__name__: c for c in iter_branch_subclasses(superclass, include_this=False)
+                    c.__name__: c
+                    for c in iter_branch_subclasses(superclass, include_this=False)
                 }
                 if not self._dynamic:
                     self._cached_members = dict(result)
@@ -1072,10 +1078,8 @@ class classproperty(property):
                 cls.x = int(x)
             name = classproperty(_get_name, _set_name)
 
-    In Python 3.9, and 3.10 this is actually the composition of `classmethod`:any: to
-    `property`:any: (i.e same as ``lambda *a, **kw: classmethod(property(*a, **kw))``).  In Python
-    3.11 we use our own implementation because of `deprecation of their combination`__ in Python
-    3.11.
+    Notice that in all Python versions (including 3.9 and 3.10) we use our own implementation
+    because of `deprecation of the combination of classmethod and property`__ in Python 3.11.
 
     __ https://docs.python.org/3.11/library/functions.html?highlight=classmethod#classmethod
 
@@ -1413,7 +1417,9 @@ def smart_copy(*args, defaults=None):
 
     _mapping = isinstance(defaults, Mapping)
     if _mapping or logic_iterable_coerce(defaults) is not nil:
-        for key, val in ((key, get_first_of(sources, key, default=Unset)) for key in defaults):
+        for key, val in (
+            (key, get_first_of(sources, key, default=Unset)) for key in defaults
+        ):
             if val is Unset:
                 if _mapping:
                     val = defaults.get(key, None)
@@ -1761,7 +1767,9 @@ def delegator(attribute, attrs_map, metaclass=type):
     .. versionadded:: 1.9.3
 
     """
-    descriptors = {key: DelegatedAttribute(attribute, attr) for key, attr in attrs_map.items()}
+    descriptors = {
+        key: DelegatedAttribute(attribute, attr) for key, attr in attrs_map.items()
+    }
     return metaclass("delegator", (object,), descriptors)
 
 
