@@ -1,0 +1,1 @@
+- Use `DeprecationWarning`:class: in `xotl.tools.deprecation`:mod:.

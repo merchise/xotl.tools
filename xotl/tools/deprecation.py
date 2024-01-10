@@ -14,12 +14,9 @@ from functools import wraps
 # TODO: Invalidate this module in favor of new 'xotl.tools.suggest' when
 # implemented
 
-# FIX: 'warnings.warn' uses in this module 'UserWarning' instead of
-# 'DeprecationWarning'.  There is a way to signal the warning with the correct
-# type.
-
 DEFAULT_MSG = (
-    "{funcname} is now deprecated and it will be " "removed{in_version}. Use {replacement} instead."
+    "{funcname} is now deprecated and it will be "
+    "removed{in_version}. Use {replacement} instead."
 )
 
 
@@ -50,8 +47,10 @@ class DeprecatedImportDescriptor:
             result = import_object(self.replacement)
             warnings.warn(
                 "Importing {name} from xotl.tools is deprecated. "
-                "You should import it from {ns}".format(name=self.attr, ns=self.replacement),
-                UserWarning,  # DeprecationWarning is silent in ipython
+                "You should import it from {ns}".format(
+                    name=self.attr, ns=self.replacement
+                ),
+                DeprecationWarning,
             )
             return result
         else:
@@ -123,6 +122,8 @@ def deprecated(
 
     .. versionchanged:: 1.4.1 Introduces removed_in_version and check_version.
 
+    .. versionchanged:: 2.2.6 Use DeprecationWarning instead of UserWarning.
+
     """
 
     def raise_if_deprecated(target, target_version):
@@ -145,10 +146,11 @@ def deprecated(
             target_version = pkg_resources.parse_version(target_version)
         if dist.parsed_version >= target_version:
             msg = (
-                "A deprecated feature %r was scheduled to be "
-                "removed in version %r and it is still "
-                "alive in %r!" % (_nameof(target), str(removed_in_version), str(dist.version))
+                f"A deprecated feature {_nameof(target)} was scheduled to be "
+                f"removed in version {removed_in_version} and it is still "
+                f"alive in {dist.version}"
             )
+
             raise DeprecationError(msg)
 
     def decorator(target):
@@ -171,7 +173,11 @@ def deprecated(
                 if check_version and removed_in_version:
                     raise_if_deprecated(target, removed_in_version)
                 warnings.warn(
-                    msg.format(funcname=funcname, replacement=repl_name, in_version=in_version),
+                    msg.format(
+                        funcname=funcname,
+                        replacement=repl_name,
+                        in_version=in_version,
+                    ),
                     stacklevel=2,
                 )
                 try:
@@ -193,7 +199,7 @@ def deprecated(
             attrs = {
                 name: value
                 for name, value in iteritems()
-                if name not in ("__class__", "__mro__", "__name__", "__weakref__", "__dict__")
+                if name not in _DUNDER_ATTRS
                 # Must remove member descriptors, otherwise the old's
                 # class descriptor will override those that must be
                 # created here.
@@ -209,7 +215,9 @@ def deprecated(
                 if check_version and removed_in_version:
                     raise_if_deprecated(target, removed_in_version)
                 warnings.warn(
-                    msg.format(funcname=funcname, replacement=repl_name, in_version=in_version),
+                    msg.format(
+                        funcname=funcname, replacement=repl_name, in_version=in_version
+                    ),
                     stacklevel=2,
                 )
                 return target(*args, **kw)
@@ -286,7 +294,9 @@ def import_deprecated(module, *names, **aliases):
         if target is not unset:
             if isinstance(target, test_classes):
                 replacement = src_name + "." + name
-                deprecator = deprecated(replacement, DEFAULT_MSG, dst_name, new_name=alias)
+                deprecator = deprecated(
+                    replacement, DEFAULT_MSG, dst_name, new_name=alias
+                )
                 target = deprecator(target)
             setattr(dst, alias, target)
         else:
@@ -351,9 +361,9 @@ def deprecate_module(replacement, msg=None):
         # As recommended in Python's documentation to avoid memory leaks
         del frame
     if msg is None:
-        msg = ('"{}" module is now deprecated and it will be removed; ' 'use "{}" instead.').format(
-            name, replacement
-        )
+        msg = (
+            '"{}" module is now deprecated and it will be removed; ' 'use "{}" instead.'
+        ).format(name, replacement)
     if msg:
         warnings.warn(msg, stacklevel=2)
 
@@ -369,3 +379,12 @@ def deprecated_alias(f, **kwargs):
 
     """
     return deprecated(f, **kwargs)(f)
+
+
+_DUNDER_ATTRS = {
+    "__class__",
+    "__dict__",
+    "__mro__",
+    "__name__",
+    "__weakref__",
+}
