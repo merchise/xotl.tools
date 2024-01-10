@@ -98,7 +98,7 @@ run required static checks:
     <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.8", "3.9"]
+      - PYTHON: ["3.10", "3.11", "3.12"]
         TOX_POSARGS: ["tests/test_dim.py"]
 
 tests:
@@ -109,7 +109,7 @@ tests:
     - run required static checks
   parallel:
     matrix:
-      - PYTHON: ["3.8", "3.9", "3.10", "3.11"]
+      - PYTHON: ["3.10", "3.11", "3.12"]
         GREENLETS: ["unit", "greenlets"]
 
 test doctests:
@@ -124,7 +124,7 @@ test doctests:
     - run required static checks
   parallel:
     matrix:
-      - PYTHON: ["3.9", "3.10", "3.11"]
+      - PYTHON: ["3.10", "3.11", "3.12"]
 
 
 .x-when-releasing: &when-releasing
@@ -143,7 +143,7 @@ test doctests:
     - $CI_SERVER_HOST == "gitlab.merchise.org"
 
 build:
-  image: python:3.8
+  image: python:3.10
   stage: build
   script:
     - poetry run build
@@ -166,7 +166,7 @@ check signature of tag:
     <<: *when-prereleasing
 
 publish in pypi:
-  image: python:3.8
+  image: python:3.10
   variables:
     GIT_STRATEGY: none
   stage: publish
@@ -184,7 +184,7 @@ publish in pypi:
 
 
 .build_doc: &build_doc
-  image: python:3.8
+  image: python:3.10
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
