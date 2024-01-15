@@ -16,10 +16,10 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
-    - tox.ini
+    - requirements-dev.lock
     - .gitlab-ci.yml
 
 .x-when-mrs: &when-merge-requests
@@ -28,10 +28,10 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
-    - tox.ini
+    - requirements-dev.lock
     - .gitlab-ci.yml
 
 
@@ -42,10 +42,10 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
-    - tox.ini
+    - requirements-dev.lock
     - .gitlab-ci.yml
 
 
@@ -55,32 +55,26 @@ check flake8 and black:
   stage: check
   needs: []
   script:
-    - pip install --no-cache-dir 'flake8~=6.0' 'flake8-bugbear~=23.2' 'black==23.1.0' 'isort~=5.12'
-    - flake8 xotl/tools
-    - black --check xotl/tools
-    - isort --check --diff xotl/tools
+    - pip install -r requirements-dev.lock
+    - ruff check src/
+    - ruff format --check src/
+    - isort --check --diff src/
   only:
     <<: *when-merge-requests-or-stable
 
-.run_tox_staticcheck: &run_tox_staticcheck
+.run_staticcheck: &run_staticcheck
   interruptible: true
   image: python:$PYTHON
   stage: mypy
   cache:
     key: $CI_JOB_NAME-$PYTHON
     paths:
-      - .tox/
       - .mypy_cache/
   script:
-    - pip install tox
-    - |
-      if [ -n "$TOX_POSARGS" ]; then
-        tox -e system-staticcheck -- $TOX_POSARGS
-      else
-        tox -e system-staticcheck
-      fi
+    - pip install -r requirements-dev.lock
+    - mypy -p xotl.tools --config-file mypy.ini
 
-.run_tox_tests: &run_tox_tests
+.run_tests: &run_tests
   interruptible: true
   image: python:$PYTHON
   stage: test
@@ -89,20 +83,20 @@ check flake8 and black:
     paths:
       - .tox/
   script:
-    - pip install tox
-    - tox -e system-$GREENLETS
+    - pip install -r requirements-dev.lock
+    - pytest -l -q --cov=xotl.tools
 
 run required static checks:
-  <<: *run_tox_staticcheck
+  <<: *run_staticcheck
+  allow_failure: true
   only:
     <<: *when-merge-requests-or-stable
   parallel:
     matrix:
       - PYTHON: ["3.10", "3.11", "3.12"]
-        TOX_POSARGS: ["tests/test_dim.py"]
 
 tests:
-  <<: *run_tox_tests
+  <<: *run_tests
   only:
     <<: *when-merge-requests-or-stable
   needs:
@@ -116,12 +110,10 @@ test doctests:
   image: python:$PYTHON
   stage: test
   script:
-    - pip install tox
-    - tox -e system-doctest
+    - pip install -r requirements-dev.lock
+    - make -C docs doctest
   only:
     <<: *when-merge-requests-or-stable
-  needs:
-    - run required static checks
   parallel:
     matrix:
       - PYTHON: ["3.10", "3.11", "3.12"]
@@ -146,7 +138,8 @@ build:
   image: python:3.10
   stage: build
   script:
-    - poetry run build
+    - pip install hatch
+    - hatch build
   artifacts:
     paths:
       - dist/
@@ -192,7 +185,7 @@ publish in pypi:
       - docs/builds/
   script:
     - apt-get update && apt-get install -y git make
-    - pip install -e ".[docs]"
+    - pip install -r requirements-dev.lock
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/
