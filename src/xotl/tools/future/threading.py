@@ -14,8 +14,6 @@ document all items here.  Refer to `threading`:mod: documentation.
 
 """
 
-import threading as _stdlib  # noqa
-from threading import *  # noqa
 from threading import Event, RLock, Thread, Timer
 
 
@@ -74,11 +72,10 @@ class _SyncronizedCaller:
                 if self._not_bailed:
                     callback(result)
 
-        events, threads = [], []
+        events = []
         for which in funcs:
-            event, thread = async_call(which, callback=_syncronized_callback)
+            event = async_call(which, callback=_syncronized_callback)
             events.append(event)
-            threads.append(thread)
         if timeout:
 
             def set_all_events():
@@ -89,6 +86,9 @@ class _SyncronizedCaller:
 
             timer = Timer(timeout, set_all_events)
             timer.start()
+        else:
+            timer = None
+
         while events:
             terminated = []
             for event in events:
@@ -97,7 +97,8 @@ class _SyncronizedCaller:
                     terminated.append(event)
             for e in terminated:
                 events.remove(e)
-        if timeout:
+
+        if timer is not None:
             timer.cancel()
 
 
@@ -123,6 +124,4 @@ def sync_call(funcs, callback, timeout=None):
     sync_caller(funcs, callback, timeout)
 
 
-from threading import __all__  # noqa
-
-__all__ = list(__all__) + ["async_call", "sync_call"]
+__all__ = ["async_call", "sync_call"]
