@@ -37,7 +37,7 @@ mypy:
 .PHONY: mypy
 
 docs:
-	make SPHINXBUILD="rye run sphinx-build" -C docs html
+	make SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs html
 .PHONY: docs
 
 
