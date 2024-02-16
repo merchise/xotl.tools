@@ -35,3 +35,15 @@ doctest:
 mypy:
 	@$(RYE_EXEC) mypy -p xotl.tools --config mypy.ini
 .PHONY: mypy
+
+docs:
+	make SPHINXBUILD="rye run sphinx-build" -C docs html
+.PHONY: docs
+
+
+CADDY_SERVER_PORT ?= 9999
+caddy: docs
+	@docker run --rm -p $(CADDY_SERVER_PORT):$(CADDY_SERVER_PORT) \
+         -v $(PWD)/docs/build/html:/var/www -it caddy \
+         caddy file-server --browse --listen :$(CADDY_SERVER_PORT) --root /var/www
+.PHONY: caddy

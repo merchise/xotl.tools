@@ -111,8 +111,15 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 default_role = "code"
-html_theme = "pyramid-roboto"
-html_theme_path = [os.path.join("..", "theme")]
+html_theme = "furo"
+html_theme = "furo"
+html_theme_options = {
+    "light_css_variables": {
+        "font-stack--monospace": '"Roboto Mono", "SFMono-Regular", Menlo, Consolas, Monaco, "Liberation Mono", "Lucida Console", monospace',
+    },
+}
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

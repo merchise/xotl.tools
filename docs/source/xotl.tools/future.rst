@@ -1,9 +1,7 @@
 `xotl.tools.future`:mod: - Extend standard modules with "future" features
 =========================================================================
 
-.. automodule:: xotl.tools.future
-   :members:
-
+.. module:: xotl.tools.future
 
 Contents
 --------

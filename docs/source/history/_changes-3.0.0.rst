@@ -9,7 +9,7 @@
 
   The list of supported Python versions is: 3.8, 3.9, 3.10, 3.11, and 3.12.
 
-- Make `xotl.tools.objects.classproperty`:any: work again in Python 3.11.
+- Make `xotl.tools.objects.classproperty`:class: work again in Python 3.11.
 
 - Use `DeprecationWarning`:class: in `xotl.tools.deprecation`:mod:.
 
