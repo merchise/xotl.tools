@@ -150,7 +150,7 @@ class DefaultDict(_stdlib.defaultdict):
             raise KeyError(key)
 
 
-defaultdict = deprecated(DefaultDict)
+defaultdict = deprecated(DefaultDict)(DefaultDict)
 
 
 class OpenDictMixin:

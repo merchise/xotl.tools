@@ -15,10 +15,26 @@ import pickle
 from random import shuffle
 from collections.abc import MutableMapping
 from xotl.tools.future.collections import RankedDict
-from xotl.tools.future.collections import defaultdict
+from xotl.tools.future.collections import DefaultDict, defaultdict
 
 
-class TestCollections(unittest.TestCase):
+class TestDefaultDict(unittest.TestCase):
+    def test_defaultdict(self):
+        d = DefaultDict(lambda key, _: "a")
+        self.assertEqual("a", d["abc"])
+        d["abc"] = 1
+        self.assertEqual(1, d["abc"])
+
+    def test_defaultdict_clone(self):
+        d = DefaultDict(lambda key, d: d["a"], {"a": "default"})
+        self.assertEqual("default", d["abc"])
+
+        d = DefaultDict(lambda key, d: d[key])
+        with self.assertRaises(KeyError):
+            d["abc"]
+
+
+class TestDefaultDictAlias(unittest.TestCase):
     def test_defaultdict(self):
         d = defaultdict(lambda key, _: "a")
         self.assertEqual("a", d["abc"])
