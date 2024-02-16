@@ -127,11 +127,7 @@ def deprecated(
     def raise_if_deprecated(target, target_version):
         from importlib import metadata
         from importlib.metadata import PackageNotFoundError
-
-        try:
-            import pkg_resources  # type: ignore
-        except ImportError:
-            return
+        from packaging.version import parse as parse_version
 
         pkg = _nameof(target)
         pkg, _obj = pkg.rsplit(".", 1)
@@ -147,14 +143,14 @@ def deprecated(
                     pkg, _obj = None, None  # noqa
         assert dist
         if isinstance(target_version, str):
-            target_version = pkg_resources.parse_version(target_version)
-        if dist.parsed_version >= target_version:
+            target_version = parse_version(target_version)
+
+        if parse_version(dist.version) >= target_version:
             msg = (
                 f"A deprecated feature {_nameof(target)} was scheduled to be "
                 f"removed in version {removed_in_version} and it is still "
                 f"alive in {dist.version}"
             )
-
             raise DeprecationError(msg)
 
     def decorator(target):
