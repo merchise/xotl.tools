@@ -102,19 +102,6 @@ def test_stacked_dict():
         assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
 
 
-# Backported from Python 3.3.0 standard library
-
-
-def _items(d):
-    "For some reason in new PyPy 5.0.1 for Py 2.7.10, set order is not nice."
-    from xotl.tools.versions import python_version
-
-    res = d.items()
-    if python_version.pypy and isinstance(res, list):
-        res.sort()
-    return res
-
-
 class TestRankedDict(unittest.TestCase):
     def test_init(self):
         with self.assertRaises(TypeError):
