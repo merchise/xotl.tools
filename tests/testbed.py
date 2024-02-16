@@ -9,7 +9,7 @@
 
 """This module simply serves the purposes of the testing weaving modules"""
 
-from xotl.tools.modules import moduleproperty, modulemethod
+from xotl.tools.modules import modulemethod, moduleproperty
 
 
 def echo(what):

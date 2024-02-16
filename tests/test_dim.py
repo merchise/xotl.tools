@@ -8,10 +8,9 @@
 #
 
 import pytest
-from hypothesis import given, strategies as s
-
-from xotl.tools.dim.meta import Signature, Quantity, Dimension, Scalar, UNIT
-
+from hypothesis import given
+from hypothesis import strategies as s
+from xotl.tools.dim.meta import UNIT, Dimension, Quantity, Scalar, Signature
 
 # A reasonable exponent.  We won't be dealing with universes of 100s
 # dimensions.
@@ -106,6 +105,7 @@ def test_natural_downgrade():
 
 def test_decimals():
     import decimal
+
     from xotl.tools.dim.base import m
 
     with pytest.raises(TypeError):
@@ -121,9 +121,9 @@ def test_signatures():
     acceleration = speed / time
     assert acceleration == distance / (time * Signature("s"))
     assert speed == distance * freq
-    assert speed ** 3 == speed * speed * speed
-    assert speed ** 0 == Signature() == speed / speed
-    assert speed ** -3 == 1 / (speed ** 3)
+    assert speed**3 == speed * speed * speed
+    assert speed**0 == Signature() == speed / speed
+    assert speed**-3 == 1 / (speed**3)
 
 
 @given(signatures, signatures)
@@ -150,8 +150,8 @@ def test_quantity_math():
     assert metre < 2 * metre < (metre + 2 * metre)
     assert metre * metre == Quantity(1, Signature("mm"))
     assert metre / second == Quantity(1, Signature("m", "s"))
-    assert metre * metre * metre == metre ** 3
-    assert 1 / (metre * metre * metre) == metre ** -3
+    assert metre * metre * metre == metre**3
+    assert 1 / (metre * metre * metre) == metre**-3
 
     assert 1000 * m % 3 == 1 * m
     assert 5 % (2 * m) == 1 / m
@@ -167,8 +167,8 @@ def test_quantity_type_definitions():
     assert isinstance(Length, Dimension)
     assert isinstance(Time, Dimension)
     assert isinstance(Length / Time, Dimension)
-    assert isinstance(Length ** 2, Dimension)
-    assert Length * Length == Length ** 2
+    assert isinstance(Length**2, Dimension)
+    assert Length * Length == Length**2
 
     assert Time / Time == Scalar
     assert Time / Time * Time == Time
@@ -179,13 +179,13 @@ def test_quantity_type_definitions():
     with pytest.raises(TypeError):
         Length - Time
 
-    assert Length ** 1 is Length
+    assert Length**1 is Length
 
     with pytest.raises(TypeError):
-        Length ** 1.2
+        Length**1.2
 
-    assert Length ** 0 == Scalar
-    assert Length ** -1 == 1 / Length
+    assert Length**0 == Scalar
+    assert Length**-1 == 1 / Length
 
     with pytest.raises(TypeError):
         2 / Length
@@ -198,7 +198,7 @@ def test_quantity_type_definitions():
 def test_general_power_rules(n, m):
     from xotl.tools.dim.base import L
 
-    assert L ** n / L ** m == L ** (n - m)
+    assert L**n / L**m == L ** (n - m)
 
 
 @given(s.floats(allow_nan=False) | s.integers())
@@ -210,8 +210,9 @@ def test_any_magnitude(m):
 
 @given(s.floats(allow_nan=False, allow_infinity=False) | s.integers())
 def test_any_magnitude_noinf(m):
-    from xotl.tools.dim.base import L
     from math import ceil, floor
+
+    from xotl.tools.dim.base import L
 
     Int = int
     q = m * L.metre
@@ -263,7 +264,7 @@ def test_undistinguishable_definitions():
 
 
 def test_bug_30():
-    from xotl.tools.dim.meta import Dimension, UNIT
+    from xotl.tools.dim.meta import UNIT, Dimension
 
     @Dimension.new
     class L:
@@ -287,7 +288,7 @@ def test_custom_quantity():
         m = UNIT
 
     m = Length.m
-    Area = Length ** 2
+    Area = Length**2
 
     assert isinstance(m, NewQuantity)
     assert isinstance(1000 * m, NewQuantity)

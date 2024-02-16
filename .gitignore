@@ -9,7 +9,9 @@ build/
 dist/
 __pycache__/
 .mypy_cache/
-.coverage
+.coverage*
 *.egg-info/
 monkeytype.sqlite3
 poetry.lock
+requirements-dev.lock
+requirements.lock

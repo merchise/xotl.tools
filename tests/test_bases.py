@@ -7,8 +7,8 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-import unittest
 import random
+import unittest
 
 from xotl.tools.bases import B32, B64, B64symbolic
 
@@ -17,14 +17,11 @@ def build_many_tests():
     def test_many_random_convertions(self):
         subjects = [B32, B64, B64symbolic]
         for _ in range(5):
-            testcase = random.randrange(2 ** 64, 2 ** 128)
+            testcase = random.randrange(2**64, 2**128)
             subject = random.choice(subjects)
             assert testcase == subject.basetoint(subject.inttobase(testcase))
 
-    return {
-        "test_many_random_convertions_%d" % i: test_many_random_convertions
-        for i in range(10)
-    }
+    return {"test_many_random_convertions_%d" % i: test_many_random_convertions for i in range(10)}
 
 
 _TestManyConvertions = type(str("TestManyConvertions"), (object,), build_many_tests())

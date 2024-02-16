@@ -8,14 +8,12 @@
 #
 
 import unittest
+from datetime import date, datetime
 from unittest.mock import patch
-from datetime import datetime, date
-
-from xotl.tools.records import record, datetime_reader, date_reader
 
 from hypothesis import given
-from hypothesis.strategies import composite, text, integers, datetimes
-
+from hypothesis.strategies import composite, datetimes, integers, text
+from xotl.tools.records import date_reader, datetime_reader, record
 
 FMT = "%Y-%m-%d"
 

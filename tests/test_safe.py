@@ -10,8 +10,9 @@ from xotl.tools.tasking.safe import SafeData
 
 
 def test_safe():
-    from xotl.tools.future.threading import async_call
     from time import sleep
+
+    from xotl.tools.future.threading import async_call
 
     data = {}
     qd = SafeData(data, timeout=5.0)

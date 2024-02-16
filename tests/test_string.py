@@ -7,7 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-from hypothesis import given, example
+from hypothesis import example, given
 from hypothesis.strategies import text
 
 
@@ -38,14 +38,10 @@ valid_replacements = text().filter(lambda x: "\\" not in x)
 @example(s="0/0", invalid_chars="-", replacement="-")
 def test_slugify_hypothesis(s, invalid_chars, replacement):
     # TODO: (s='0:0', invalid_chars='z', replacement='ź')
-    from xotl.tools.string import slugify
-    from xotl.tools.string import force_ascii
+    from xotl.tools.string import force_ascii, slugify
 
     assert " " not in slugify(s), "Slugs do not contain spaces"
-
-    assert " " in slugify(
-        s + " ", valid_chars=" "
-    ), "Slugs do contain spaces if explicitly allowed"
+    assert " " in slugify(s + " ", valid_chars=" "), "Slugs do contain spaces if explicitly allowed"
 
     replacement = force_ascii(replacement).lower()
     invalid_chars = force_ascii(invalid_chars).lower()

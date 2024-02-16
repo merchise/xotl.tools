@@ -8,6 +8,7 @@
 #
 
 import unittest
+
 from xotl.tools.bound import boundary, whenall, whenany
 
 
@@ -93,8 +94,7 @@ class TestBoundedWithStandardPredicates(unittest.TestCase):
         self.assertEqual(res, None)
 
     def test_accumulated(self):
-        from xotl.tools.bound import until
-        from xotl.tools.bound import accumulated, timed, times
+        from xotl.tools.bound import accumulated, timed, times, until
 
         # 1 + 1 + 2 + 3 + 5 + 8 + 13 + 21 + 34 + 55 + 89 + 144 = 376
         # ^   ^        ...                                  ^

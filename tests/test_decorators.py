@@ -8,6 +8,7 @@
 #
 
 import unittest
+
 from xotl.tools.decorator import assignment_operator
 from xotl.tools.decorator.meta import decorator
 
@@ -93,7 +94,7 @@ class RegressionTests(unittest.TestCase):
         be tested empty.
 
         """
-        from xotl.tools.future.functools import partial
+        from functools import partial
 
         @decorator
         def ditmoi(target, *args, **kwargs):

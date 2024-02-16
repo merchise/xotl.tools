@@ -8,11 +8,12 @@
 #
 
 import sys
-from xotl.tools.values import file_coerce, positive_int_coerce as positive_int
 
 # old params
-from xotl.tools.params import ParamSchemeRow as row, ParamScheme as scheme
-
+from xotl.tools.params import ParamScheme as scheme
+from xotl.tools.params import ParamSchemeRow as row
+from xotl.tools.values import file_coerce
+from xotl.tools.values import positive_int_coerce as positive_int
 
 sample_scheme = scheme(
     row("stream", 0, -1, "output", default=sys.stdout, coerce=file_coerce),
@@ -60,7 +61,7 @@ def test_param_errors():
         return sample_scheme(args, kwargs)
 
     def error_repr(error):
-        return "{}()".format(type(error).__name__, error)
+        return f"{type(error).__name__}()"
 
     msg = 'Must raised "{}", \n\tnot {}'
 
@@ -88,8 +89,9 @@ def test_param_errors():
 
 
 def test_pop_keyword_values():
+    from xotl.tools.params import Undefined
+    from xotl.tools.params import pop_keyword_values as popkw
     from xotl.tools.symbols import Unset
-    from xotl.tools.params import pop_keyword_values as popkw, Undefined
 
     kwds = dict(default=None, values=[1, 2, 3], collector=sum)
     names = (("func", "collector"), "default")

@@ -8,6 +8,7 @@
 #
 
 import unittest
+
 import pytest
 
 # Test concurrent access to context by several greenlets.  Verify isolation in
@@ -30,7 +31,7 @@ sys.modules.pop("xotl.tools.tasking", None)
 sys.modules.pop("xotl.tools.context", None)
 del sys
 
-from xotl.tools.context import context
+from xotl.tools.context import context  # noqa
 
 
 class TestContext(unittest.TestCase):
@@ -154,6 +155,7 @@ def test_null_context_is_mapping():
 @pytest.mark.skipif(not GREENLETS, reason="greenlet is not installed")
 def test_greenlet_contexts():
     import random
+
     from xotl.tools.symbols import Unset
 
     calls = 0

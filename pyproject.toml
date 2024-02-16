@@ -1,16 +1,13 @@
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-
-[tool.poetry]
+[project]
 name = "xotl.tools"
 description = "Collection of usefull algorithms and other very disparate stuff"
 version = "3.0.0dev"
-authors = ["Merchise Autrement"]
-maintainers = ["Manuel Vazquez Acosta", "Medardo Antonio Rodríguez Rodríguez"]
+authors = [
+   { name = "Merchise Autrement", email="info@merchise.de" }
+]
 license="MIT"
 readme="README.rst"
+requires-python = ">= 3.8"
 homepage="https://gitlab.merchise.org/merchise/xotl.tools"
 documentation="https://merchise-autrement.gitlab.io/xotl.tools/"
 classifiers = [
@@ -24,48 +21,62 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-
-packages = [
-   {include = "xotl/tools"},
+dependencies = [
+    "typing-extensions>=3.10.0",
+    "packaging>=23.2",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "hypothesis~=6.91.0",
+    "pytz>=2023.3.post1",
+    "ruff==0.2.1",
+    "isort~=5.13.2",
+    "pytest>=7.4.4",
+    "pytest-cov>=4.1.0",
+    "coverage[toml]>=7.4.0",
+    "mypy>=1.8.0",
+    "sphinx>=7.1.2",
+    "types-python-dateutil",
+    "ipython>=8.12.3",
+    "tox>=4.12.1",
+    "python-dateutil>=2.8.2",
+    "furo>=2024.1.29",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8,<3.12"
-typing-extensions = ">=3.10.0"
+[tool.hatch.metadata]
+allow-direct-references = true
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/xotl"]
 
-[tool.poetry.group.dev.dependencies]
-hypothesis = "^6.91.0"
-pytz = "^2023.3.post1"
-tox = "^4.11.4"
-ruff = "^0.1.7"
-
-[tool.black]
-line-length = 100
-target-version = ['py38', 'py39', 'py310', 'py311']
-include = '\.pyi?$'
-exclude = '''
-    /(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | build
-  | dist
-  | docs
-  )/
-  '''
 
 [tool.isort]
 profile = "black"
 line_length = 100
 src_paths = ["xotl/tools"]
 skip_gitignore = true
+
+[tool.ruff]
+required-version = "0.2.1"
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+ignore = [
+  "E501", # line-length is left to the formatter
+  "E731", # do not assign a `lambda` expression, use a `def` (we use it a lot)
+]
+preview = true
+
+
+[tool.ruff.format]
+preview = true
 
 
 [tool.coverage.run]

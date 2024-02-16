@@ -6,16 +6,18 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
+import sys
+
 import pytest
-from xotl.tools.versions import python_version
 from xotl.tools.future.collections import OrderedSmartDict
 
-PYPY = python_version.pypy
+PYPY = sys.version.find("PyPy") >= 0
 
 
 def test_nameof():
-    from xotl.tools.names import nameof, simple_name
     from collections import OrderedDict as sorted_dict
+
+    from xotl.tools.names import nameof, simple_name
 
     assert nameof(sorted_dict) == "sorted_dict"
     assert nameof(sorted_dict, inner=True) == "OrderedDict"
@@ -92,8 +94,9 @@ def test_fullnameof():
 
 @pytest.mark.skipif(PYPY, reason="'OrderedDict' is in '_pypy_collections'")
 def test_fullnameof_no_rename():
-    from xotl.tools.names import nameof
     from collections import OrderedDict
+
+    from xotl.tools.names import nameof
 
     _full_name = "test_fullnameof_no_rename.OrderedDict"
     _name = "collections.OrderedDict"

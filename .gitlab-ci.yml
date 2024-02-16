@@ -16,10 +16,11 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
     - tox.ini
+    - requirements-dev-py38.lock
     - .gitlab-ci.yml
 
 .x-when-mrs: &when-merge-requests
@@ -28,10 +29,11 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
     - tox.ini
+    - requirements-dev-py38.lock
     - .gitlab-ci.yml
 
 
@@ -42,45 +44,40 @@ stages:
   changes:
     - docs/**/*.rst
     - docs/**/*.py
-    - xotl/tools/**/*.py
+    - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
     - tox.ini
+    - requirements-dev-py38.lock
     - .gitlab-ci.yml
 
 
 check flake8 and black:
   interruptible: true
-  image: python:3.10
+  image: python:3.8
   stage: check
   needs: []
   script:
-    - pip install --no-cache-dir 'flake8~=6.0' 'flake8-bugbear~=23.2' 'black==23.1.0' 'isort~=5.12'
-    - flake8 xotl/tools
-    - black --check xotl/tools
-    - isort --check --diff xotl/tools
+    - pip install -r requirements-dev-py38.lock
+    - ruff check src/
+    - ruff format --check src/
+    - isort --check --diff src/
   only:
     <<: *when-merge-requests-or-stable
 
-.run_tox_staticcheck: &run_tox_staticcheck
+.run_staticcheck: &run_staticcheck
   interruptible: true
   image: python:$PYTHON
   stage: mypy
   cache:
     key: $CI_JOB_NAME-$PYTHON
     paths:
-      - .tox/
       - .mypy_cache/
   script:
     - pip install tox
-    - |
-      if [ -n "$TOX_POSARGS" ]; then
-        tox -e system-staticcheck -- $TOX_POSARGS
-      else
-        tox -e system-staticcheck
-      fi
+    - tox -e system-staticcheck
 
-.run_tox_tests: &run_tox_tests
+.run_tests: &run_tests
   interruptible: true
   image: python:$PYTHON
   stage: test
@@ -90,27 +87,27 @@ check flake8 and black:
       - .tox/
   script:
     - pip install tox
-    - tox -e system-$GREENLETS
+    - tox -e system-$CASE
 
 run required static checks:
-  <<: *run_tox_staticcheck
+  <<: *run_staticcheck
+  allow_failure: true
   only:
     <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12"]
-        TOX_POSARGS: ["tests/test_dim.py"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 tests:
-  <<: *run_tox_tests
+  <<: *run_tests
   only:
     <<: *when-merge-requests-or-stable
   needs:
     - run required static checks
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12"]
-        GREENLETS: ["unit", "greenlets"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        CASE: ["unit", "greenlets"]
 
 test doctests:
   image: python:$PYTHON
@@ -120,11 +117,9 @@ test doctests:
     - tox -e system-doctest
   only:
     <<: *when-merge-requests-or-stable
-  needs:
-    - run required static checks
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 
 .x-when-releasing: &when-releasing
@@ -143,10 +138,11 @@ test doctests:
     - $CI_SERVER_HOST == "gitlab.merchise.org"
 
 build:
-  image: python:3.10
+  image: python:3.8
   stage: build
   script:
-    - poetry run build
+    - pip install hatch
+    - hatch build
   artifacts:
     paths:
       - dist/
@@ -166,7 +162,7 @@ check signature of tag:
     <<: *when-prereleasing
 
 publish in pypi:
-  image: python:3.10
+  image: python:3.8
   variables:
     GIT_STRATEGY: none
   stage: publish
@@ -184,7 +180,7 @@ publish in pypi:
 
 
 .build_doc: &build_doc
-  image: python:3.10
+  image: python:3.8
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
@@ -192,7 +188,7 @@ publish in pypi:
       - docs/builds/
   script:
     - apt-get update && apt-get install -y git make
-    - pip install -e ".[docs]"
+    - pip install -r requirements-dev-py38.lock
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/
