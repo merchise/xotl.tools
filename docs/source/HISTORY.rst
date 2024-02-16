@@ -4,7 +4,7 @@ Changelog
 3.0 series
 ----------
 
-2024-02-16.  Release 3.0.0a1
+2024-02-16.  Release 3.0.0a2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-3.0.0.rst
