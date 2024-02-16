@@ -16,3 +16,6 @@
   - ``xotl.tools.future.collections.Counter``
   - ``xotl.tools.future.types.SimpleNamespace``
   - ``xotl.tools.future.types.DynamicClassAttribute``
+
+- Remove deprecated methods ``pop`` and ``push`` of
+  `xotl.tools.future.collections.StackedDict`:class:.

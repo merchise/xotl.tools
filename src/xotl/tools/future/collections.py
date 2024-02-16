@@ -17,6 +17,7 @@ document all items here.  Refer to `collections`:mod: documentation.
 import collections as _stdlib
 from collections.abc import Container, Iterable, Mapping, MutableMapping, MutableSet, Set, Sized
 from reprlib import recursive_repr
+from xotl.tools.deprecation import deprecated
 
 from xotl.tools.objects import SafeDataItem as safe
 from xotl.tools.symbols import Unset
@@ -25,6 +26,7 @@ __all__ = (
     "safe_dict_iter",
     "opendict",
     "defaultdict",
+    "DefaultDict",
     "OpenDictMixin",
     "SmartDictMixin",
     "SmartDict",
@@ -107,8 +109,8 @@ class safe_dict_iter(tuple):
                 yield (key, self._mapping[key])
 
 
-class defaultdict(_stdlib.defaultdict):
-    """A hack for ``collections.defaultdict`` that passes the key and a copy of
+class DefaultDict(_stdlib.defaultdict):
+    """A version of ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
 
     Examples::
@@ -146,6 +148,9 @@ class defaultdict(_stdlib.defaultdict):
                 return super().__missing__(key)
         else:
             raise KeyError(key)
+
+
+defaultdict = deprecated(DefaultDict)
 
 
 class OpenDictMixin:
@@ -546,27 +551,6 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):  # type: ignor
         self.inner = self.inner.new_child()
         self.update(*args, **kwargs)
         return self.level
-
-    def pop(self, *args):
-        """Remove this, always use original `MutableMapping.pop`:meth:.
-
-        If none arguments are given, `pop_level`:meth: is called and a
-        deprecation warning is printed in `sys.stderr` the first time.  If one
-        or two arguments are given, those are interpreted as (key, default)
-        values of the super class `pop`:meth:.
-
-        """
-        if len(args) == 0:
-            cls = type(self)
-            if not hasattr(cls, "_bad_pop_called"):
-                import warnings
-
-                cls._bad_pop_called = True
-                msg = "Use `pop` method without parameters is deprecated, use `pop_level` instead"
-                warnings.warn(msg, stacklevel=2)
-            return self.pop_level()
-        else:
-            return super().pop(*args)
 
     def pop_level(self):
         """Pops the last pushed level and returns the whole level.

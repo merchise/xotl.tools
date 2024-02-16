@@ -13,6 +13,7 @@ import unittest
 import copy
 import pickle
 from random import shuffle
+from collections.abc import MutableMapping
 from xotl.tools.future.collections import RankedDict
 from xotl.tools.future.collections import defaultdict
 

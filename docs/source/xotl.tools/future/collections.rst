@@ -3,18 +3,21 @@
 
 .. module:: xotl.tools.future.collections
 
+This module extends the standard library's `collections`:mod:.
+
 .. testsetup::
 
    from xotl.tools.future.collections import *
 
-This module extends the standard library's `collections`:mod:.  You may use it
-as a drop-in replacement in many cases.
+.. autoclass:: DefaultDict
 
-Avoid importing ``*`` from this module since this is different in Python 2.7
-and Python 3.3.  Notably importing ``abc`` is not available in Python 2.7.
+.. class:: defaultdict
 
+   This a deprecated alias of `DefaultDict`:class: because it clashes with the
+   standard one hurting type-hints.
 
-.. autoclass:: defaultdict
+   .. deprecated:: 3.0.0
+
 
 .. autoclass:: opendict
    :members: from_enum
@@ -29,18 +32,6 @@ and Python 3.3.  Notably importing ``abc`` is not available in Python 2.7.
 
 .. autoclass:: StackedDict
    :members: push_level, pop_level, level, peek
-
-   .. method:: pop()
-
-      A deprecated alias for `pop_level`:meth:.
-
-      .. deprecated:: 1.7.0
-
-   .. method:: push(*args, **kwargs)
-
-      A deprecated alias for `push_level`:meth:.
-
-      .. deprecated:: 1.7.0
 
 .. autoclass:: PascalSet
 
