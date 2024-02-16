@@ -30,7 +30,7 @@ from xotl.tools.objects import (
     save_attributes,
 )
 from xotl.tools.symbols import Unset
-from xotl.tools.future.types import SimpleNamespace as new
+from types import SimpleNamespace as new
 
 
 def test_smart_copy():
@@ -541,7 +541,7 @@ def test_multi_getter_failure():
 
 
 def test_save_attributes():
-    from xotl.tools.future.types import SimpleNamespace as new
+    from types import SimpleNamespace as new
     from xotl.tools.objects import save_attributes
 
     obj = new(a=1, b=2)
@@ -555,7 +555,7 @@ def test_save_attributes():
 
 
 def test_temp_attributes():
-    from xotl.tools.future.types import SimpleNamespace as new
+    from types import SimpleNamespace as new
     from xotl.tools.objects import temp_attributes
 
     obj = new(a=1, b=2)
@@ -569,7 +569,7 @@ def test_temp_attributes():
 
 
 def test_save_raises_errors():
-    from xotl.tools.future.types import SimpleNamespace as new
+    from types import SimpleNamespace as new
 
     getter = lambda o: lambda a: getattr(o, a)
     obj = new(a=1, b=2)

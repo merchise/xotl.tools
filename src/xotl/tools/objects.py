@@ -1605,7 +1605,7 @@ def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
 
     Basic example::
 
-      >>> from xotl.tools.future.types import SimpleNamespace as new
+      >>> types import SimpleNamespace as new
       >>> obj = new(a=1, b=2)
 
       >>> with save_attributes(obj, 'a'):

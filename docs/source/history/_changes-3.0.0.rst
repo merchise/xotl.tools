@@ -9,3 +9,7 @@
 - Make `xotl.tools.objects.classproperty`:any: work again in Python 3.11.
 
 - Use `DeprecationWarning`:class: in `xotl.tools.deprecation`:mod:.
+
+- Remove backports introduced before Python 3.4
+  - ``xotl.tools.types.SimpleNamespace``, and
+  - ``xotl.tools.types.DynamicClassAttribute``
