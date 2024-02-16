@@ -21,8 +21,6 @@ You may use this module as a drop-in replacement of the standard library
 
 """
 
-import datetime as _stdlib  # noqa
-from datetime import *  # noqa
 from datetime import date, datetime, timedelta
 from enum import IntEnum
 from re import compile as _regex_compile

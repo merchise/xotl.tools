@@ -22,5 +22,10 @@
   - ``xotl.tools.future.types.SimpleNamespace``
   - ``xotl.tools.future.types.DynamicClassAttribute``
 
+- Remove deprecated modules:
+
+  - ``xotl.tools.future.contextlib``
+  - ``xotl.tools.future.time``
+
 - Remove deprecated methods ``pop`` and ``push`` of
   `xotl.tools.future.collections.StackedDict`:class:.

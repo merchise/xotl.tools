@@ -6,13 +6,11 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 """Extensions the `subprocess` module in the standard library."""
 
-from subprocess import *  # noqa
-from subprocess import PIPE, Popen, __all__
+from subprocess import PIPE, Popen
 
-__all__ = list(__all__) + ["call_and_check_output"]
+__all__ = ["call_and_check_output"]
 
 
 def call_and_check_output(*popenargs, **kwargs):

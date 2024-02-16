@@ -13,8 +13,7 @@ You may use this module as drop-in replacement of `functools`.
 
 """
 
-from functools import *  # noqa
-from functools import _CacheInfo  # noqa
+__all__ = ("power", "lwraps", "curry")
 
 
 # TODO: Check relevance of the following function.

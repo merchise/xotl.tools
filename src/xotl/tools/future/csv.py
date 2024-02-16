@@ -17,13 +17,15 @@ Value (CSV)`:abbr: files, and implements the interface described by PEP
 """
 
 import csv as _stdlib  # noqa
-from csv import *  # noqa
 from csv import unix_dialect
 
 #: Define 'unix dialect' as our base default for inheritance.
 DefaultDialect = unix_dialect
 
 reader = _stdlib.reader
+
+
+__all__ = ("parse",)
 
 
 def parse(data, *dialect, **options):

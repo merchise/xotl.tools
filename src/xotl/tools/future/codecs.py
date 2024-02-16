@@ -6,17 +6,9 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
+"""Codec registry, base classes and tools."""
 
-"""Codec registry, base classes and tools.
-
-In this module, some additions for `codecs` standard module.
-
-"""
-
-from codecs import *  # noqa
-from codecs import __all__  # noqa
-
-__all__ = list(__all__)
+__all__ = ["force_encoding", "safe_decode"]
 
 
 def force_encoding(encoding=None):
@@ -106,6 +98,3 @@ def safe_encode(u, encoding=None):
                 return str(u).encode(encoding, "replace")
         except LookupError:
             return safe_encode(u)
-
-
-__all__ += ("force_encoding", "safe_decode", "safe_encode")
