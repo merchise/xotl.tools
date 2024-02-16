@@ -10,10 +10,9 @@
 """Several utilities for objects in general."""
 
 import sys
-from collections.abc import MutableMapping
+from collections.abc import Mapping, MutableMapping
 from contextlib import contextmanager
 from functools import partial
-from collections.abc import Mapping, MutableMapping
 
 from xotl.tools.deprecation import deprecated
 from xotl.tools.symbols import Unset

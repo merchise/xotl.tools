@@ -18,9 +18,26 @@ import collections as _stdlib
 from collections.abc import Container, Iterable, Mapping, MutableMapping, MutableSet, Set, Sized
 from reprlib import recursive_repr
 
-from xotl.tools.deprecation import deprecated
 from xotl.tools.objects import SafeDataItem as safe
 from xotl.tools.symbols import Unset
+
+__all__ = (
+    "safe_dict_iter",
+    "opendict",
+    "defaultdict",
+    "OpenDictMixin",
+    "SmartDictMixin",
+    "SmartDict",
+    "codedict",
+    "StackedDict",
+    "RankedDict",
+    "OrderedSmartDict",
+    "MetaSet",
+    "PascalSet",
+    "BitPascalSet",
+    "pair",
+    "smart_iter_items",
+)
 
 
 class safe_dict_iter(tuple):
@@ -529,11 +546,6 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):  # type: ignor
         self.inner = self.inner.new_child()
         self.update(*args, **kwargs)
         return self.level
-
-    @deprecated(push_level)
-    def push(self, *args, **kwargs):
-        """Don't use thid method, use new `push_level`:meth: instead."""
-        return self.push_level(*args, **kwargs)
 
     def pop(self, *args):
         """Remove this, always use original `MutableMapping.pop`:meth:.
@@ -2040,7 +2052,3 @@ def smart_iter_items(*args, **kwds):
                     raise TypeError(msg.format(type(item).__name__, item))
     for key in kwds:
         yield key, kwds[key]
-
-
-# get rid of unused global variables
-del deprecated, recursive_repr
