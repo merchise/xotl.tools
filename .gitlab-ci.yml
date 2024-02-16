@@ -19,7 +19,8 @@ stages:
     - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
-    - requirements-dev.lock
+    - tox.ini
+    - requirements-dev-py38.lock
     - .gitlab-ci.yml
 
 .x-when-mrs: &when-merge-requests
@@ -31,7 +32,8 @@ stages:
     - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
-    - requirements-dev.lock
+    - tox.ini
+    - requirements-dev-py38.lock
     - .gitlab-ci.yml
 
 
@@ -45,7 +47,8 @@ stages:
     - src/**/*.py
     - tests/**/*.py
     - pyproject.toml
-    - requirements-dev.lock
+    - tox.ini
+    - requirements-dev-py38.lock
     - .gitlab-ci.yml
 
 
@@ -55,7 +58,7 @@ check flake8 and black:
   stage: check
   needs: []
   script:
-    - pip install -r requirements-dev.lock
+    - pip install -r requirements-dev-py38.lock
     - ruff check src/
     - ruff format --check src/
     - isort --check --diff src/
@@ -135,7 +138,7 @@ test doctests:
     - $CI_SERVER_HOST == "gitlab.merchise.org"
 
 build:
-  image: python:3.10
+  image: python:3.8
   stage: build
   script:
     - pip install hatch
@@ -159,7 +162,7 @@ check signature of tag:
     <<: *when-prereleasing
 
 publish in pypi:
-  image: python:3.10
+  image: python:3.8
   variables:
     GIT_STRATEGY: none
   stage: publish
@@ -177,7 +180,7 @@ publish in pypi:
 
 
 .build_doc: &build_doc
-  image: python:3.10
+  image: python:3.8
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
@@ -185,7 +188,7 @@ publish in pypi:
       - docs/builds/
   script:
     - apt-get update && apt-get install -y git make
-    - pip install -r requirements-dev.lock
+    - pip install -r requirements-dev-py38.lock
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/
