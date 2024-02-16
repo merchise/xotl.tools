@@ -38,7 +38,7 @@ dev-dependencies = [
     "isort~=5.13.2",
     "pytest>=7.4.4",
     "pytest-cov>=4.1.0",
-    "coverage>=7.4.0",
+    "coverage[toml]>=7.4.0",
     "mypy>=1.8.0",
     "sphinx>=7.1.2",
     "types-python-dateutil",

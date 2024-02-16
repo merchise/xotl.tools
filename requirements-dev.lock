@@ -29,6 +29,7 @@ charset-normalizer==3.3.2
 colorama==0.4.6
     # via tox
 coverage==7.4.0
+    # via coverage
     # via pytest-cov
 decorator==5.1.1
     # via ipython
