@@ -44,6 +44,7 @@ dev-dependencies = [
     "types-python-dateutil",
     "ipython>=8.12.3",
     "tox>=4.12.1",
+    "python-dateutil>=2.8.2",
 ]
 
 [tool.hatch.metadata]

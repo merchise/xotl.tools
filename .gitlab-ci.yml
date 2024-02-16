@@ -51,7 +51,7 @@ stages:
 
 check flake8 and black:
   interruptible: true
-  image: python:3.10
+  image: python:3.8
   stage: check
   needs: []
   script:
@@ -71,8 +71,8 @@ check flake8 and black:
     paths:
       - .mypy_cache/
   script:
-    - pip install -r requirements-dev.lock
-    - mypy -p xotl.tools --config-file mypy.ini
+    - pip install tox
+    - tox -e system-staticcheck
 
 .run_tests: &run_tests
   interruptible: true
@@ -83,8 +83,8 @@ check flake8 and black:
     paths:
       - .tox/
   script:
-    - pip install -r requirements-dev.lock
-    - pytest -l -q --cov=xotl.tools
+    - pip install tox
+    - tox -e system-$CASE
 
 run required static checks:
   <<: *run_staticcheck
@@ -104,14 +104,14 @@ tests:
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        GREENLETS: ["unit", "greenlets"]
+        CASE: ["unit", "greenlets"]
 
 test doctests:
   image: python:$PYTHON
   stage: test
   script:
-    - pip install -r requirements-dev.lock
-    - make -C docs doctest
+    - pip install tox
+    - tox -e system-doctest
   only:
     <<: *when-merge-requests-or-stable
   parallel:
