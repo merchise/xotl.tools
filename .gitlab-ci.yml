@@ -130,13 +130,6 @@ test doctests:
     - $CI_SERVER_HOST == "gitlab.merchise.org"
 
 
-.x-when-prereleasing: &when-prereleasing
-  refs:
-    - tags
-  variables:
-    - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+|\.dev\d+)?$/
-    - $CI_SERVER_HOST == "gitlab.merchise.org"
-
 build:
   image: python:3.8
   stage: build
@@ -147,7 +140,7 @@ build:
     paths:
       - dist/
   only:
-    <<: *when-prereleasing
+    <<: *when-releasing
 
 
 check signature of tag:
@@ -159,7 +152,7 @@ check signature of tag:
     - cat $GNUPG_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
   only:
-    <<: *when-prereleasing
+    <<: *when-releasing
 
 publish in pypi:
   image: python:3.8
@@ -202,7 +195,7 @@ publish in pypi:
 build documentation for releases:
   <<: *build_doc
   only:
-    <<: *when-prereleasing
+    <<: *when-releasing
 
 build documentation:
   <<: *build_doc
