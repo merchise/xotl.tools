@@ -6,7 +6,8 @@
 #
 
 import unittest
-from xotl.tools.future.textwrap import wrap, fill, dedent, indent
+from textwrap import wrap, fill, indent
+from xotl.tools.future.textwrap import dedent
 
 
 class BaseTestCase(unittest.TestCase):
@@ -20,6 +21,8 @@ class BaseTestCase(unittest.TestCase):
             result = "\n".join(result)
         elif isinstance(textin, str):
             result = "  %s\n" % repr(textin)
+        else:
+            raise TypeError(f"Invalid input {textin}")
         return result
 
     def check(self, result, expect):
@@ -32,13 +35,10 @@ class BaseTestCase(unittest.TestCase):
 
     def check_split(self, text, expect):
         result = self.wrapper._split(text)
-        self.assertEqual(
-            result, expect, "\nexpected %r\n" "but got  %r" % (expect, result)
-        )
+        self.assertEqual(result, expect, "\nexpected %r\n" "but got  %r" % (expect, result))
 
 
 class IndentTestCases(BaseTestCase):
-
     # called before each test method
     def setUp(self):
         self.text = """\

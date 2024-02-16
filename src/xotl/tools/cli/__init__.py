@@ -33,7 +33,6 @@ Commands can be registered by:
 """
 
 import typing as t
-
 from abc import ABC, ABCMeta, abstractmethod
 
 from xotl.tools.cli.tools import command_name, program_name

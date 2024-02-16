@@ -23,21 +23,20 @@ they are differentiated in this module.
 """
 
 import re
-from types import __all__
 from types import (
     BuiltinFunctionType,
     BuiltinMethodType,
     FunctionType,
-    LambdaType,
-    MethodType,
-    MemberDescriptorType,
     GetSetDescriptorType,
+    LambdaType,
+    MemberDescriptorType,
+    MethodType,
+    __all__,
 )
 from typing import TypeVar
 
 from typing_extensions import Protocol
 from xotl.tools.symbols import Unset as _unset
-
 
 __all__ = list(__all__)
 
