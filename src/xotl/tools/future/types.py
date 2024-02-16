@@ -60,6 +60,11 @@ if MemberDescriptorType is GetSetDescriptorType:
     MemberDescriptorType = type(_foo.bar)  # type: ignore
     del _foo
 
+try:
+    from types import NoneType
+except ImportError:
+    NoneType = type(None)
+
 FuncTypes = tuple({
     FunctionType,
     MethodType,

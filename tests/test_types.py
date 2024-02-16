@@ -42,6 +42,6 @@ class NoneTypeTests(unittest.TestCase):
     "To avoid FlyCheck errors"
 
     def test_identity(self):
-        from types import NoneType
+        from xotl.tools.future.types import NoneType
 
         self.assertIs(NoneType, type(None))
