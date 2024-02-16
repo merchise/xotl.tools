@@ -6,11 +6,11 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
+import sys
 import pytest
 from xotl.tools.future.collections import OrderedSmartDict
-from xotl.tools.versions import python_version
 
-PYPY = python_version.pypy
+PYPY = sys.version.find("PyPy") >= 0
 
 
 def test_nameof():
