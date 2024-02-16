@@ -1,7 +1,6 @@
 [project]
 name = "xotl.tools"
 description = "Collection of usefull algorithms and other very disparate stuff"
-version = "3.0.0dev"
 authors = [
    { name = "Merchise Autrement", email="info@merchise.de" }
 ]
@@ -25,10 +24,18 @@ dependencies = [
     "typing-extensions>=3.10.0",
     "packaging>=23.2",
 ]
+dynamic = ["version"]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/xotl/tools/_version.py"
+
 
 [tool.rye]
 managed = true
