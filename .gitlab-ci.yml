@@ -93,7 +93,7 @@ run required static checks:
     <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 tests:
   <<: *run_tests
@@ -103,7 +103,7 @@ tests:
     - run required static checks
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         GREENLETS: ["unit", "greenlets"]
 
 test doctests:
@@ -116,7 +116,7 @@ test doctests:
     <<: *when-merge-requests-or-stable
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 
 .x-when-releasing: &when-releasing

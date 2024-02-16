@@ -43,6 +43,7 @@ dev-dependencies = [
     "sphinx>=7.1.2",
     "types-python-dateutil",
     "ipython>=8.12.3",
+    "tox>=4.12.1",
 ]
 
 [tool.hatch.metadata]
