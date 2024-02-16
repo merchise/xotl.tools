@@ -15,3 +15,4 @@ monkeytype.sqlite3
 poetry.lock
 requirements-dev.lock
 requirements.lock
+src/xotl/tools/_version.py
