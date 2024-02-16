@@ -14,15 +14,9 @@
 
 """
 
-import sys
-from itertools import *  # noqa
 from typing import Any, Callable, Iterable, Iterator, List, Optional, Tuple, TypeVar, Union, cast
 
-from xotl.tools.deprecation import deprecated_alias
 from xotl.tools.symbols import Unset
-
-map = deprecated_alias(map, removed_in_version="3.0", check_version=True)
-zip = deprecated_alias(zip, removed_in_version="3.0", check_version=True)
 
 T = TypeVar("T")
 X = TypeVar("X")
@@ -426,58 +420,3 @@ def zip_map(funcs: Iterable[Callable[[A], B]], args: Iterable[A]) -> Iterator[B]
     """
     for fn, arg in zip(funcs, args):
         yield fn(arg)
-
-
-if sys.version_info < (3, 5):
-
-    class _safeitem:
-        __slots__ = ["item", "key"]
-
-        def __init__(self, item, key=None):
-            self.item = item
-            self.key = key or (lambda x: x)
-
-        def __le__(self, other):
-            return self.key(self.item) <= self.key(other.item)
-
-        def __lt__(self, other):
-            return self.key(self.item) < self.key(other.item)
-
-        def __ge__(self, other):
-            return self.key(self.item) >= self.key(other.item)
-
-        def __gt__(self, other):
-            return self.key(self.item) > self.key(other.item)
-
-        def __eq__(self, other):
-            return self.key(self.item) == self.key(other.item)
-
-    def merge(*iterables, key=None):
-        """Merge the iterables in order.
-
-        Return an iterator that yields all items from `iterables` following
-        the order given by `key`.  If `key` is not given we compare the items.
-
-        If the `iterables` yield their items in order (w.r.t `key`), the
-        result is also ordered (like a merge sort).
-
-        ``merge()`` returns the *empty* iterator.
-
-        .. versionadded:: 1.8.4
-
-        .. versionchanged:: 2.1.0 Based on `heapq.merge`:func:.  In Python
-           3.5+, this is just an alias of it.
-
-        """
-        from heapq import merge  # noqa
-
-        if key is None:
-            key = lambda x: x
-        params = ((_safeitem(x, key) for x in iter_) for iter_ in iterables)
-        for x in merge(*params):
-            yield x.item
-
-else:
-    from heapq import merge  # noqa
-
-del sys

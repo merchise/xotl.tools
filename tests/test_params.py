@@ -60,7 +60,7 @@ def test_param_errors():
         return sample_scheme(args, kwargs)
 
     def error_repr(error):
-        return "{}()".format(type(error).__name__, error)
+        return f"{type(error).__name__}()"
 
     msg = 'Must raised "{}", \n\tnot {}'
 

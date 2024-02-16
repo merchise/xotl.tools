@@ -10,7 +10,12 @@
 
 - Use `DeprecationWarning`:class: in `xotl.tools.deprecation`:mod:.
 
-- Remove backports introduced before Python 3.4
+- Remove old backports or aliases:
+
+  - ``xotl.tools.future.itertools.merge``
+  - ``xotl.tools.future.itertools.zip``
+  - ``xotl.tools.future.itertools.zip_longest``
+  - ``xotl.tools.future.itertools.map``
 
   - ``xotl.tools.future.collections.ChainMap``
   - ``xotl.tools.future.collections.Counter``
