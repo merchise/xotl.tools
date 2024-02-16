@@ -247,10 +247,9 @@ class retrier:
            ...     pass
 
         """
+        from functools import wraps
         from time import monotonic as clock
         from time import sleep
-
-        from xotl.tools.future.functools import wraps
 
         max_time = self.max_time
         max_tries = self.max_tries

@@ -10,9 +10,9 @@
 import unittest
 from contextlib import contextmanager
 from datetime import datetime, timedelta
+from functools import lru_cache
 
 from xotl.tools.fp.tools import compose, identity
-from xotl.tools.future.functools import lru_cache
 
 
 @lru_cache(3)
