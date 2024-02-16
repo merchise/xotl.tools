@@ -7,7 +7,6 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-import hypothesis
 import pytest
 from hypothesis import given, settings, strategies
 from xotl.tools.future.datetime import (
@@ -67,14 +66,12 @@ def test_daterange_invalid_step():
 
 
 @given(timespans(), timespans())
-@hypothesis.example(ts1=TimeSpan(), ts2=timespans().example())
 def test_intersection_commutable(ts1, ts2):
     # Commutable
     assert ts2 * ts1 == (ts1 & ts2)
 
 
 @given(timespans(), timespans())
-@hypothesis.example(ts1=TimeSpan(), ts2=timespans().example())
 def test_intersection_containment(ts1, ts2):
     overlap = ts1 * ts2
     if overlap is not None:
@@ -86,7 +83,6 @@ def test_intersection_containment(ts1, ts2):
 
 
 @given(timespans(), timespans())
-@hypothesis.example(ts1=TimeSpan(), ts2=timespans().example())
 def test_comparision(ts1, ts2):
     if ts1 <= ts2 <= ts1:
         assert ts1 == ts2

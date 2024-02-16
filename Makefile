@@ -25,7 +25,11 @@ lint:
 .PHONY: lint
 
 test:
-	@$(RYE_EXEC) pytest -l -q --cov=xotl.tools
+	@$(RYE_EXEC) tox -e system-unit,system-greenlets
+.PHONY: test
+
+doctest:
+	@$(RYE_EXEC) tox -e system-doctest
 .PHONY: test
 
 mypy:

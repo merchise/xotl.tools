@@ -7,21 +7,11 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Extensions to Python's ``inspect`` module.
-
-You may use it as drop-in replacement of ``inspect``.  Although we don't
-document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
-
-"""
+"""Extensions to Python's ``inspect`` module."""
 
 from inspect import getattr_static, isdatadescriptor
 
-try:
-    from inspect import _static_getmro  # type: ignore
-except ImportError:
-
-    def _static_getmro(klass):
-        return type.__dict__["__mro__"].__get__(klass)
+__all__ = ("get_attr_value", "safe_name")
 
 
 def get_attr_value(obj, name, *default):
@@ -145,25 +135,3 @@ def safe_name(obj, affirm=False):
             return safe_name(type(obj))
     else:
         return None
-
-
-def _static_issubclass(C, B):
-    """like ``issubclass(C, B) -> bool`` but without using ABCs.
-
-    Return whether class C is a strict subclass (i.e., a derived class) of
-    class B.
-
-    When using a tuple as the second argument it's a shortcut for::
-
-      any(_static_issubclass(C, b) for b in B)
-
-    This function returns False instead raising "TypeError: issubclass() arg 2
-    must be a class or tuple of classes" if `B` any tuple member) is not
-    instance of `type`.
-
-    """
-    mro = _static_getmro(C)
-    if isinstance(B, tuple):
-        return any(b in mro for b in B)
-    else:
-        return B in mro

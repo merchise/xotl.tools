@@ -1,1 +1,1 @@
-- Add module `xoutil.future.contextlib`:mod:.
+- Add module ``xoutil.future.contextlib``.
