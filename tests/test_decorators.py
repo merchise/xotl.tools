@@ -8,6 +8,7 @@
 #
 
 import unittest
+
 from xotl.tools.decorator import assignment_operator
 from xotl.tools.decorator.meta import decorator
 

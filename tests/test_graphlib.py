@@ -6,6 +6,7 @@
 # Foundation
 import unittest
 from itertools import chain
+
 from xotl.tools.future import graphlib
 
 
@@ -32,7 +33,7 @@ class TestTopologicalSort(unittest.TestCase):
         try:
             ts.prepare()
         except graphlib.CycleError as e:
-            msg, seq = e.args
+            _msg, seq = e.args
             self.assertIn(" ".join(map(str, cycle)), " ".join(map(str, seq * 2)))
         else:
             raise
@@ -45,9 +46,7 @@ class TestTopologicalSort(unittest.TestCase):
 
         self._test_graph({1: {}}, [(1,)])
 
-        self._test_graph(
-            {x: {x + 1} for x in range(10)}, [(x,) for x in range(10, -1, -1)]
-        )
+        self._test_graph({x: {x + 1} for x in range(10)}, [(x,) for x in range(10, -1, -1)])
 
         self._test_graph(
             {2: {3}, 3: {4}, 4: {5}, 5: {1}, 11: {12}, 12: {13}, 13: {14}, 14: {15}},

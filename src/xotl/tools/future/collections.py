@@ -17,8 +17,8 @@ document all items here.  Refer to `collections`:mod: documentation.
 import collections as _stdlib
 from collections.abc import Container, Iterable, Mapping, MutableMapping, MutableSet, Set, Sized
 from reprlib import recursive_repr
-from xotl.tools.deprecation import deprecated
 
+from xotl.tools.deprecation import deprecated
 from xotl.tools.objects import SafeDataItem as safe
 from xotl.tools.symbols import Unset
 

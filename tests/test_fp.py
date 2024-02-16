@@ -6,11 +6,12 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-from hypothesis import strategies as s, given, example
+from hypothesis import example, given
+from hypothesis import strategies as s
 
 
 def test_fp_compose():
-    from xotl.tools.fp.tools import identity, compose, pos_args, kw_args, full_args
+    from xotl.tools.fp.tools import compose, full_args, identity, kw_args, pos_args
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__
@@ -45,6 +46,7 @@ def test_fp_compose():
 
 def test_fp_compose_wrapable():
     from functools import wraps
+
     from xotl.tools.fp.tools import compose
 
     def wrapper():
@@ -58,7 +60,7 @@ def test_fp_compose_wrapable():
 
 
 def test_fp_tools():
-    from xotl.tools.fp.tools import identity, compose
+    from xotl.tools.fp.tools import compose, identity
 
     x, obj = 15, object()
     f, g, h = x.__add__, x.__mul__, x.__xor__
@@ -139,12 +141,7 @@ def test_fp_kleisli_compose4():
     assert list(odd_seqs(4)) == [0, 1, 0, 1, 2, 3]
 
 
-anything = (
-    s.integers()
-    | s.dictionaries(s.text(), s.integers())
-    | s.text()
-    | s.tuples(s.integers())
-)
+anything = s.integers() | s.dictionaries(s.text(), s.integers()) | s.text() | s.tuples(s.integers())
 anyargs = s.tuples(anything)
 
 

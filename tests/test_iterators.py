@@ -6,7 +6,8 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-from hypothesis import strategies as s, given
+from hypothesis import given
+from hypothesis import strategies as s
 
 
 def test_slides():
@@ -22,7 +23,7 @@ def test_slides():
 
 
 def test_slides_with_repeating_filling():
-    from xotl.tools.future.itertools import slides, NO_FILL
+    from xotl.tools.future.itertools import NO_FILL, slides
 
     assert list(slides(range(1, 11), width=3, fill=None)) == [
         (1, 2, 3),
@@ -79,21 +80,22 @@ def test_dict_update_new(d1, d2):
 
 
 @given(s.lists(s.integers(), max_size=30))
-def test_delete_duplicates(l):
+def test_delete_duplicates(ls):
     from collections import Counter
+
     from xotl.tools.future.itertools import delete_duplicates
 
-    res = delete_duplicates(l)
-    assert type(l) is type(res)  # noqa
-    assert len(res) <= len(l)
-    assert all(Counter(res)[item] == 1 for item in l)
+    res = delete_duplicates(ls)
+    assert type(ls) is type(res)  # noqa
+    assert len(res) <= len(ls)
+    assert all(Counter(res)[item] == 1 for item in ls)
 
 
 @given(s.lists(s.integers(), max_size=30))
-def test_delete_duplicates_with_key(l):
+def test_delete_duplicates_with_key(ls):
     from xotl.tools.future.itertools import delete_duplicates
 
-    res = delete_duplicates(l, key=lambda x: x % 3)
+    res = delete_duplicates(ls, key=lambda x: x % 3)
     assert len(res) <= 3, "key yields 0, 1, or 2; thus res can contain at most 3 items"
 
 

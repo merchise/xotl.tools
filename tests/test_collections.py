@@ -7,15 +7,14 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-import sys
-import unittest
-
 import copy
 import pickle
-from random import shuffle
+import sys
+import unittest
 from collections.abc import MutableMapping
-from xotl.tools.future.collections import RankedDict
-from xotl.tools.future.collections import DefaultDict, defaultdict
+from random import shuffle
+
+from xotl.tools.future.collections import DefaultDict, RankedDict, defaultdict
 
 
 class TestDefaultDict(unittest.TestCase):
@@ -86,7 +85,7 @@ def test_stacked_dict():
         assert False, "Should have raise KeyError"
     except KeyError:
         pass
-    except:
+    except Exception:
         assert False, "Should have raise KeyError"
     assert sd.pop_level() == {"b": 4}
     assert sd["b"] == 2
@@ -99,7 +98,7 @@ def test_stacked_dict():
         assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
     except TypeError:
         pass
-    except:
+    except Exception:
         assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
 
 
@@ -279,7 +278,7 @@ class TestRankedDict(unittest.TestCase):
         od = RankedDict(pairs)
         update_test = RankedDict()
         update_test.update(od)
-        for i, dup in enumerate([
+        for _i, dup in enumerate([
             od.copy(),
             copy.copy(od),
             copy.deepcopy(od),
@@ -305,7 +304,7 @@ class TestRankedDict(unittest.TestCase):
         od = RankedDict(pairs)
         # yaml.dump(od) -->
         # '!!python/object/apply:__main__.RankedDict\n- - [a, 1]\n  - [b, 2]\n'
-        self.assertTrue(all(type(pair) == list for pair in od.__reduce__()[1]))
+        self.assertTrue(all(type(pair) is list for pair in od.__reduce__()[1]))
 
     def test_repr(self):
         od = RankedDict([("c", 1), ("b", 2), ("a", 3)])
@@ -377,6 +376,7 @@ class TestRankedDict(unittest.TestCase):
 class TestPascalSet(unittest.TestCase):
     def test_consistency(self):
         from random import randint
+
         from xotl.tools.future.collections import PascalSet
 
         count = 5
@@ -477,6 +477,7 @@ class TestPascalSet(unittest.TestCase):
 class TestBitPascalSet(unittest.TestCase):
     def test_consistency(self):
         from random import randint
+
         from xotl.tools.future.collections import BitPascalSet
 
         count = 5
@@ -595,6 +596,7 @@ class TestCodeDict(unittest.TestCase):
 
 def test_opendict():
     from enum import Enum
+
     from xotl.tools.future.collections import opendict
 
     class Foo:

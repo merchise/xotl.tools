@@ -8,7 +8,7 @@
 #
 
 from hypothesis import given
-from hypothesis.strategies import text, binary
+from hypothesis.strategies import binary, text
 
 
 @given(s=binary())

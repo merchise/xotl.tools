@@ -12,26 +12,26 @@ import unittest
 
 class TestCLisp(unittest.TestCase):
     def test_basic_coercers(self):
+        from xotl.tools.fp.prove import vouch
         from xotl.tools.values import (
-            identity_coerce,
-            void_coerce,
             coercer,
-            vouch,
-            t,
-            int_coerce,
-            float_coerce,
             create_int_range_coerce,
+            create_unique_member_coerce,
+            float_coerce,
+            identity_coerce,
+            int_coerce,
             istype,
-            typecast,
             iterable,
             mapping,
-            create_unique_member_coerce,
             nil,
+            t,
+            typecast,
+            void_coerce,
         )
 
         d = {"1": 2, 3.0: "4", 5.0 + 0j: 7.3 + 0j, 1: "2"}
         s = {1, "2", 3.0, "1"}
-        l = [1, "2", 3.0, "1", "x10"]
+        ls = [1, "2", 3.0, "1", "x10"]
         number_types = (int, float, complex)
         mc = mapping(int_coerce, float_coerce)
         uint_coerce = create_unique_member_coerce(int_coerce, d)
@@ -64,9 +64,9 @@ class TestCLisp(unittest.TestCase):
         self.assertIs(mcu(d), nil)
         self.assertEqual(mcu.scope, ({"1": 2}, uint_coerce))
         self.assertEqual(ic(s), {1, 2, 3})
-        self.assertIs(ic(l), nil)
-        self.assertIs(ic.scope, l[-1])
-        self.assertEqual(l, [1, 2, 3, 1, "x10"])
+        self.assertIs(ic(ls), nil)
+        self.assertIs(ic.scope, ls[-1])
+        self.assertEqual(ls, [1, 2, 3, 1, "x10"])
         self.assertIs(age_coerce(80), 80)
         self.assertFalse(t(age_coerce(120)))
         self.assertIs(vouch(age_coerce, 80), 80)
@@ -84,14 +84,14 @@ class TestCLisp(unittest.TestCase):
     def test_compound_coercers(self):
         from xotl.tools.values import (
             coercer,
-            compose,
-            some,
             combo,
-            iterable,
-            typecast,
-            int_coerce,
+            compose,
             float_coerce,
+            int_coerce,
+            iterable,
             nil,
+            some,
+            typecast,
         )
 
         isstr = coercer(str)

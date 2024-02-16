@@ -9,12 +9,14 @@
 
 
 import unittest
+
 from xotl.tools.symbols import boolean
 
 
 class BooleanTests(unittest.TestCase):
     def test_singletons(self):
         from sys import intern
+
         from xotl.tools.symbols import Unset
 
         foo = "Un"
@@ -60,7 +62,8 @@ class BooleanTests(unittest.TestCase):
 
     def test_symbols_are_pickable(self):
         import pickle
-        from xotl.tools.symbols import Unset, Undefined
+
+        from xotl.tools.symbols import Undefined, Unset
 
         for protocol in range(pickle.DEFAULT_PROTOCOL, pickle.HIGHEST_PROTOCOL + 1):
             self.assertIs(Unset, pickle.loads(pickle.dumps(Unset, protocol)))
@@ -70,9 +73,7 @@ class BooleanTests(unittest.TestCase):
 def test_symbols_is_importable():
     import sys
 
-    modules = {
-        mod: sys.modules[mod] for mod in sys.modules if mod.startswith("xotl.tools.")
-    }
+    modules = {mod: sys.modules[mod] for mod in sys.modules if mod.startswith("xotl.tools.")}
     for mod in modules:
         sys.modules.pop(mod)
     try:

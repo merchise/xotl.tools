@@ -6,7 +6,8 @@
 #
 
 import unittest
-from textwrap import wrap, fill, indent
+from textwrap import fill, indent, wrap
+
 from xotl.tools.future.textwrap import dedent
 
 

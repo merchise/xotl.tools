@@ -7,9 +7,9 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 import os
-import unittest
-import tempfile
 import shutil
+import tempfile
+import unittest
 
 # Makes sure our package is always importable
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),

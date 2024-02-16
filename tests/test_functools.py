@@ -8,10 +8,10 @@
 #
 
 import unittest
-
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
+from xotl.tools.fp.tools import compose, identity
 from xotl.tools.future.functools import lru_cache
 
 
@@ -56,9 +56,6 @@ def test_lrucache():
 
 def test_lrucache_stats():
     pass
-
-
-from xotl.tools.fp.tools import compose, identity
 
 
 class TestCompose(unittest.TestCase):

@@ -25,7 +25,7 @@ class TestModulesCustomization(unittest.TestCase):
     def test_echo(self):
         from . import testbed
 
-        module, created, klass = customize(testbed)
+        module, _created, _klass = customize(testbed)
         self.assertEqual(10, module.echo(10))
 
     def test_module_props(self):
@@ -36,7 +36,7 @@ class TestModulesCustomization(unittest.TestCase):
         from . import testbed
 
         attrs = {"this": this}
-        module, created, klass = customize(testbed, custom_attrs=attrs)
+        module, _created, _klass = customize(testbed, custom_attrs=attrs)
         self.assertEqual(module, module.this)
 
 
@@ -77,8 +77,9 @@ class TestModuleDecorators(unittest.TestCase):
         self.assertIsNone(m.prop)
 
     def test_module_level_memoized_props(self):
-        from . import customizetestbed as m
         from xotl.tools.future.inspect import getattr_static
+
+        from . import customizetestbed as m
 
         self.assertNotEqual(getattr_static(m, "memoized"), m)
         self.assertIs(m.memoized, m)
@@ -86,9 +87,10 @@ class TestModuleDecorators(unittest.TestCase):
 
 
 def test_get_module_path_by_module_object():
+    from os.path import join
+
     import xotl.tools
     import xotl.tools.future.itertools
-    from os.path import join
     from xotl.tools.modules import get_module_path
 
     top = xotl.tools.__path__[0]
@@ -104,8 +106,9 @@ def test_get_module_path_by_module_object():
 
 
 def test_get_module_path_by_module_string_abs():
-    import xotl.tools
     from os.path import join
+
+    import xotl.tools
     from xotl.tools.modules import get_module_path
 
     top = xotl.tools.__path__[0]

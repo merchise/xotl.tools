@@ -278,7 +278,6 @@ def import_deprecated(module, *names, **aliases):
     dst_name = dst.__name__
     dst = force_module(2)
     if not names and not aliases:
-        # from module import *
         names = getattr(src, "__all__", None)
         if not names:
             names = (n for n in dir(src) if not n.startswith("_"))

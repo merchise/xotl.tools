@@ -7,16 +7,19 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-import pytest
-
-from xotl.tools.future.datetime import date, datetime, timedelta
-from xotl.tools.future.datetime import daterange
-from xotl.tools.future.datetime import TimeSpan, EmptyTimeSpan, DateTimeSpan
-from xotl.tools.testing.datetime import timespans, datetimespans
-
 import hypothesis
-from hypothesis import strategies, given, settings
-
+import pytest
+from hypothesis import given, settings, strategies
+from xotl.tools.future.datetime import (
+    DateTimeSpan,
+    EmptyTimeSpan,
+    TimeSpan,
+    date,
+    daterange,
+    datetime,
+    timedelta,
+)
+from xotl.tools.testing.datetime import datetimespans, timespans
 
 dates = strategies.dates
 maybe_date = dates() | strategies.none()
@@ -134,11 +137,7 @@ def test_outside_date(ts):
     assert outsider not in ts
 
 
-@given(
-    datetimespans(
-        dates=strategies.datetimes(min_value=datetime(1, 1, 2)), unbounds="future"
-    )
-)
+@given(datetimespans(dates=strategies.datetimes(min_value=datetime(1, 1, 2)), unbounds="future"))
 def test_outside_datetime(dts):
     from datetime import timedelta
 
@@ -151,9 +150,7 @@ def test_outside_datetime(dts):
 def test_empty_timespan(ts):
     assert ts >= EmptyTimeSpan <= ts, "Empty is a subset of any TS"
 
-    assert (
-        EmptyTimeSpan <= EmptyTimeSpan >= EmptyTimeSpan
-    ), "Empty is a subset of itself"
+    assert EmptyTimeSpan <= EmptyTimeSpan >= EmptyTimeSpan, "Empty is a subset of itself"
 
     assert not EmptyTimeSpan, "Empty is considered False"
 
@@ -305,7 +302,8 @@ def test_empty_timespan_is_pickable():
 
 @given(strategies.datetimes(), strategies.datetimes())
 def test_timespan_with_datetimes(d1, d2):
-    from datetime import datetime as dt, date as d
+    from datetime import date as d
+    from datetime import datetime as dt
 
     ts = TimeSpan(d1, d2)
     assert not isinstance(ts.start_date, dt)
@@ -347,9 +345,7 @@ def test_setting_end_date(d, dts):
 
 
 @given(
-    strategies.datetimes(
-        min_value=datetime(1970, 1, 1), max_value=datetime(5000, 12, 31)
-    ),
+    strategies.datetimes(min_value=datetime(1970, 1, 1), max_value=datetime(5000, 12, 31)),
     strategies.integers(min_value=1, max_value=200),
 )
 def test_timespan_diff(start_date, delta):
@@ -406,9 +402,7 @@ def test_timespan_diff(start_date, delta):
 
 
 @given(
-    strategies.datetimes(
-        min_value=datetime(1970, 1, 1), max_value=datetime(5000, 12, 31)
-    ),
+    strategies.datetimes(min_value=datetime(1970, 1, 1), max_value=datetime(5000, 12, 31)),
     strategies.integers(min_value=1, max_value=10000),
 )
 @settings(deadline=None)

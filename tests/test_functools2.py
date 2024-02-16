@@ -3,9 +3,10 @@
 # Copyright (c) 2001-2012, 2017 Python Software Foundation.  All rights reserved.
 #
 
-from xotl.tools.future import functools
 import unittest
 from random import choice
+
+from xotl.tools.future import functools
 
 
 class TestLRU(unittest.TestCase):

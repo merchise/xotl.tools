@@ -35,14 +35,9 @@ Also contains sub-modules to obtain, convert and check values of common types.
 import re
 from abc import ABCMeta
 
-from xotl.tools.deprecation import deprecate_linked
 from xotl.tools.fp.prove import vouch
 from xotl.tools.future.functools import lwraps
 from xotl.tools.symbols import Unset, boolean
-
-deprecate_linked(check="xotl.tools.values")
-del deprecate_linked
-
 
 _coercer_decorator = lwraps(__coercer__=True)  # FIX: refactor
 

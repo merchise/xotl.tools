@@ -6,31 +6,31 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-import pytest
+from types import SimpleNamespace as new
 
+import pytest
 from xotl.tools.objects import (
-    fulldir,
-    smart_copy,
-    lazy,
-    setdefaultattr,
-    traverse,
-    get_traverser,
-    dict_merge,
-    get_first_of,
-    smart_getter,
-    smart_setter,
-    extract_attrs,
-    copy_class,
-    validate_attrs,
-    memoized_property,
     classproperty,
-    xproperty,
-    staticproperty,
+    copy_class,
+    dict_merge,
+    extract_attrs,
+    fulldir,
+    get_first_of,
+    get_traverser,
+    lazy,
+    memoized_property,
     multi_getter,
     save_attributes,
+    setdefaultattr,
+    smart_copy,
+    smart_getter,
+    smart_setter,
+    staticproperty,
+    traverse,
+    validate_attrs,
+    xproperty,
 )
 from xotl.tools.symbols import Unset
-from types import SimpleNamespace as new
 
 
 def test_smart_copy():
@@ -236,6 +236,7 @@ def test_traversing():
 
 def test_traversing_bug_ignoring_getter():
     from unittest import mock
+
     from xotl.tools.objects import traverse
 
     sentinel = object()
@@ -542,6 +543,7 @@ def test_multi_getter_failure():
 
 def test_save_attributes():
     from types import SimpleNamespace as new
+
     from xotl.tools.objects import save_attributes
 
     obj = new(a=1, b=2)
@@ -556,6 +558,7 @@ def test_save_attributes():
 
 def test_temp_attributes():
     from types import SimpleNamespace as new
+
     from xotl.tools.objects import temp_attributes
 
     obj = new(a=1, b=2)
