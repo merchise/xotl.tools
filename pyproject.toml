@@ -22,7 +22,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "typing-extensions>=3.10.0"
+    "typing-extensions>=3.10.0",
+    "packaging>=23.2",
 ]
 
 [build-system]

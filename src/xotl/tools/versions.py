@@ -10,6 +10,9 @@
 # TODO: Document (version.rst) this module.  Add tests.
 """Versions API"""
 
+from collections.abc import Iterable
+
+from packaging.version import LooseVersion, StrictVersion
 from xotl.tools.decorator import singleton
 
 
@@ -22,9 +25,6 @@ def _check(info):
     :returns: a valid tuple or an error if invalid.
 
     """
-    from collections.abc import Iterable
-    from distutils.version import LooseVersion, StrictVersion
-
     MAX_COUNT = 3
     if isinstance(info, (int, float)):
         aux = str(info)
