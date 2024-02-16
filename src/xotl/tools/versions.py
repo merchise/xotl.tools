@@ -217,10 +217,7 @@ class PackageVersion(ThreeNumbersVersion):
             while not res and package_name:
                 try:
                     dist = metadata.distribution(package_name)
-                    try:
-                        res = dist.parsed_version.base_version
-                    except AttributeError:
-                        res = dist.version
+                    res = dist.version
                 except PackageNotFoundError:
                     try:
                         mod = import_module(".".join((package_name, "release")))
