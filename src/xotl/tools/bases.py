@@ -9,7 +9,7 @@
 
 """Integer encoding and decoding in different bases."""
 
-_DEFAULT_TABLE = "0123456789" "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+_DEFAULT_TABLE = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 _MAX_BASE = len(_DEFAULT_TABLE)
 
