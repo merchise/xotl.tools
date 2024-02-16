@@ -190,10 +190,11 @@ htmlhelp_basename = 'xotl-tools-doc'
 
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'py3': ('https://docs.python.org/3.9/', None),
+    'py3': ('https://docs.python.org/3.12/', None),
     'py38': ('https://docs.python.org/3.8/', None),
-    'py37': ('https://docs.python.org/3.7/', None),
-    'py36': ('https://docs.python.org/3.6/', None),
+    'py39': ('https://docs.python.org/3.9/', None),
+    'py310': ('https://docs.python.org/3.10/', None),
+    'py311': ('https://docs.python.org/3.11/', None),
     'gevent': ('http://www.gevent.org', None),
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),
     'hypothesis': ('https://hypothesis.readthedocs.io/en/latest/', None),
