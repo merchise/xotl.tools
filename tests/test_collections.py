@@ -576,30 +576,8 @@ class TestCodeDict(unittest.TestCase):
         )
 
 
-def test_abcs():
-    from xotl.tools.future.collections import Container  # noqa
-    from xotl.tools.future.collections import Iterable  # noqa
-    from xotl.tools.future.collections import Iterator  # noqa
-    from xotl.tools.future.collections import Sized  # noqa
-    from xotl.tools.future.collections import Callable  # noqa
-    from xotl.tools.future.collections import Sequence  # noqa
-    from xotl.tools.future.collections import MutableSequence  # noqa
-    from xotl.tools.future.collections import Set  # noqa
-    from xotl.tools.future.collections import MutableSet  # noqa
-    from xotl.tools.future.collections import Mapping  # noqa
-    from xotl.tools.future.collections import MutableMapping  # noqa
-    from xotl.tools.future.collections import MappingView  # noqa
-    from xotl.tools.future.collections import ItemsView  # noqa
-    from xotl.tools.future.collections import KeysView  # noqa
-    from xotl.tools.future.collections import ValuesView  # noqa
-
-
 def test_opendict():
-    try:
-        from enum import Enum
-    except ImportError:
-        from enum34 import Enum
-
+    from enum import Enum
     from xotl.tools.future.collections import opendict
 
     class Foo:

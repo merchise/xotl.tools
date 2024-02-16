@@ -82,8 +82,8 @@ def test_dict_update_new(d1, d2):
 
 @given(s.lists(s.integers(), max_size=30))
 def test_delete_duplicates(l):
+    from collections import Counter
     from xotl.tools.future.itertools import delete_duplicates
-    from xotl.tools.future.collections import Counter
 
     res = delete_duplicates(l)
     assert type(l) is type(res)  # noqa

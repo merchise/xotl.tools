@@ -10,7 +10,10 @@
 """Several utilities for objects in general."""
 
 import sys
+from collections.abc import MutableMapping
 from contextlib import contextmanager
+from functools import partial
+from collections.abc import Mapping, MutableMapping
 
 from xotl.tools.deprecation import deprecated
 from xotl.tools.symbols import Unset
@@ -338,7 +341,7 @@ def smart_getter(obj, strict=False):
     .. versionchanged:: 1.5.3 Added the parameter `strict`.
 
     """
-    from xotl.tools.future.collections import Mapping
+    from collections.abc import Mapping
 
     if isinstance(obj, Mapping):
         if not strict:
@@ -389,9 +392,6 @@ def smart_setter(obj):
     .. versionadded:: 1.8.2
 
     """
-    from xotl.tools.future.collections import MutableMapping
-    from xotl.tools.future.functools import partial
-
     if isinstance(obj, MutableMapping):
         return obj.__setitem__
     else:
@@ -1386,7 +1386,6 @@ def smart_copy(*args, defaults=None):
     .. versionchanged:: 1.7.0 `defaults` is now keyword only.
 
     """
-    from xotl.tools.future.collections import Mapping, MutableMapping
     from xotl.tools.symbols import Undefined
     from xotl.tools.validators.identifiers import is_valid_identifier
     from xotl.tools.values.simple import logic_iterable_coerce, nil
