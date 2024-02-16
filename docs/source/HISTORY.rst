@@ -4,8 +4,8 @@ Changelog
 3.0 series
 ----------
 
-Unreleased.  Release 3.0.0
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+2024-02-16.  Release 3.0.0a1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: history/_changes-3.0.0.rst
 
