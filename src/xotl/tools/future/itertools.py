@@ -273,8 +273,8 @@ NO_FILL = object()
 def slides(
     iterable: Iterable[T],
     width: int = 2,
-    fill: X = None,
-) -> Iterator[Tuple[Optional[Union[T, X]], ...]]:
+    fill: Optional[X] = None,
+) -> Iterator[Tuple[Union[T, X, None], ...]]:
     """Creates a sliding window of a given `width` over an iterable::
 
         >>> list(slides(range(1, 11)))
@@ -330,7 +330,7 @@ def slides(
 def continuously_slides(
     iterable: Iterable[T],
     width: int = 2,
-    fill: X = None,
+    fill: Optional[X] = None,
 ) -> Iterator[Tuple[Optional[Union[T, X]], ...]]:
     """Similar to `slides`:func: but moves one item at the time (i.e
     continuously).

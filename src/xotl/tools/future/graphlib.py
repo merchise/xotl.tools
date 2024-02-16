@@ -13,6 +13,8 @@
 """
 
 try:
-    from graphlib import *  # noqa
+    from graphlib import CycleError, TopologicalSorter  # type: ignore
 except ImportError:
-    from ._graphlib import *  # noqa
+    from ._graphlib import CycleError, TopologicalSorter
+
+__all__ = ["TopologicalSorter", "CycleError"]

@@ -90,7 +90,7 @@ class safe_dict_iter(tuple):
                 yield (key, self._mapping[key])
 
 
-class defaultdict(_stdlib.defaultdict):  # type: ignore
+class defaultdict(_stdlib.defaultdict):
     """A hack for ``collections.defaultdict`` that passes the key and a copy of
     self as a plain dict (to avoid infinity recursion) to the callable.
 

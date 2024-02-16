@@ -32,11 +32,13 @@ Commands can be registered by:
 
 """
 
+import typing as t
+
 from abc import ABC, ABCMeta, abstractmethod
 
 from xotl.tools.cli.tools import command_name, program_name
 from xotl.tools.deprecation import deprecate_module
-from xotl.tools.objects import staticproperty
+from xotl.tools.objects import staticproperty  # type: ignore
 
 deprecate_module(__name__)
 del deprecate_module
@@ -150,10 +152,10 @@ class CommandMeta(ABCMeta):
 class Command(ABC, metaclass=CommandMeta):
     """Base for all commands."""
 
-    __settings__ = {
+    __settings__: t.Dict[str, t.Any] = {
         # 'default_command' : None
     }
-    __registry_cache__ = {}
+    __registry_cache__: t.Dict[str, t.Any] = {}
 
     def __str__(self):
         return command_name(type(self))
@@ -162,7 +164,7 @@ class Command(ABC, metaclass=CommandMeta):
         return "<command: %s>" % command_name(type(self))
 
     @staticproperty
-    def registry():
+    def registry():  # type: ignore
         """Obtain all registered commands."""
         res = Command.__registry_cache__
         if not res:

@@ -69,12 +69,8 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cov
     if not isinstance(s, str):
         s = safe_decode(s)
     if entities:
-        try:
-            from htmlentitydefs import name2codepoint
-        except ImportError:
-            # Py3k: The ``htmlentitydefs`` module has been renamed to
-            # ``html.entities`` in Python 3
-            from html.entities import name2codepoint
+        from html.entities import name2codepoint
+
         s = re.sub(
             str("&(%s);") % str("|").join(name2codepoint),
             lambda m: chr(name2codepoint[m.group(1)]),

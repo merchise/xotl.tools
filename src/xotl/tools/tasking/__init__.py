@@ -25,9 +25,9 @@ if "greenlet" in sys.modules:
     from ._greenlet_local import local  # noqa
 else:
     try:
-        from threading import local  # noqa
+        from threading import local  # type: ignore
     except ImportError:
-        from dummy_threading import local  # noqa
+        from dummy_threading import local  # type: ignore
 
 del sys
 

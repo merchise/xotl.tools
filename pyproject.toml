@@ -41,6 +41,8 @@ dev-dependencies = [
     "coverage>=7.4.0",
     "mypy>=1.8.0",
     "sphinx>=7.1.2",
+    "types-python-dateutil",
+    "ipython>=8.12.3",
 ]
 
 [tool.hatch.metadata]

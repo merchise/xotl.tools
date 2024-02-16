@@ -84,11 +84,11 @@ def classproperty(fn: Callable[[Type[Any]], X]) -> X: ...
 
 memoized_property = property
 
-T = TypeVar("T", covariant=True)
+T = TypeVar("T")
 
 def copy_class(
-    cls: Type[T],
-    meta: Optional[Type[Type[T]]] = None,
+    cls: T,
+    meta: Optional[Type[T]] = None,
     ignores: Optional[Sequence[str]] = None,
     new_attrs: Optional[Mapping[str, Any]] = None,
     new_name: Optional[str] = None,

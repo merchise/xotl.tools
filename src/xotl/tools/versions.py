@@ -207,7 +207,8 @@ class PackageVersion(ThreeNumbersVersion):
 
     @staticmethod
     def _find_version(package_name):
-        from pkg_resources import ResolutionError, get_distribution
+        from importlib import import_module, metadata
+        from importlib.metadata import PackageNotFoundError
 
         if package_name in ("__builtin__", "builtins"):
             return python_version
@@ -215,14 +216,12 @@ class PackageVersion(ThreeNumbersVersion):
             res = None
             while not res and package_name:
                 try:
-                    dist = get_distribution(package_name)
+                    dist = metadata.distribution(package_name)
                     try:
                         res = dist.parsed_version.base_version
                     except AttributeError:
                         res = dist.version
-                except ResolutionError:
-                    from importlib import import_module
-
+                except PackageNotFoundError:
                     try:
                         mod = import_module(".".join((package_name, "release")))
                         res = _get_mod_version(mod)

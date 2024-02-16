@@ -125,15 +125,21 @@ def deprecated(
     """
 
     def raise_if_deprecated(target, target_version):
-        import pkg_resources
+        from importlib import metadata
+        from importlib.metadata import PackageNotFoundError
+
+        try:
+            import pkg_resources  # type: ignore
+        except ImportError:
+            return
 
         pkg = _nameof(target)
         pkg, _obj = pkg.rsplit(".", 1)
         dist = None
         while not dist and pkg:
             try:
-                dist = pkg_resources.get_distribution(pkg)
-            except pkg_resources.DistributionNotFound:
+                dist = metadata.distribution(pkg)
+            except PackageNotFoundError:
                 dist = None
                 if "." in pkg:
                     pkg, _obj = pkg.rsplit(".", 1)

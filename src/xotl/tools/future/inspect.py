@@ -21,7 +21,7 @@ try:
 except ImportError:
 
     def _static_getmro(klass):
-        return type.__dict__["__mro__"].__get__(klass)  # type: ignore
+        return type.__dict__["__mro__"].__get__(klass)
 
 
 def get_attr_value(obj, name, *default):

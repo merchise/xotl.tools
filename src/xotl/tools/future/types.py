@@ -23,12 +23,21 @@ they are differentiated in this module.
 """
 
 import re
-from types import __all__  # type: ignore
-from types import BuiltinFunctionType, BuiltinMethodType, FunctionType, LambdaType, MethodType
+from types import __all__
+from types import (
+    BuiltinFunctionType,
+    BuiltinMethodType,
+    FunctionType,
+    LambdaType,
+    MethodType,
+    MemberDescriptorType,
+    GetSetDescriptorType,
+)
 from typing import TypeVar
 
 from typing_extensions import Protocol
 from xotl.tools.symbols import Unset as _unset
+
 
 __all__ = list(__all__)
 
@@ -44,7 +53,7 @@ __all__.append("EllipsisType")
 
 
 # Check Jython and PyPy peculiarity
-if MemberDescriptorType is GetSetDescriptorType:  # noqa
+if MemberDescriptorType is GetSetDescriptorType:
 
     class _foo:
         __slots__ = "bar"

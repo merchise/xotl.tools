@@ -254,7 +254,7 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
             except ValueError:
                 if strict:
                     raise
-                elif parse:
+                elif parse is not None:
                     return parse(val)
                 else:
                     if nullable:

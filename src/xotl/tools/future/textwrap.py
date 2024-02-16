@@ -10,10 +10,6 @@
 """Text wrapping and filling."""
 
 import textwrap as _stdlib
-from textwrap import *  # noqa
-from textwrap import __all__  # noqa
-
-__all__ = list(__all__)
 
 
 def dedent(text, skip_firstline=False):

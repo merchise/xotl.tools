@@ -2,7 +2,7 @@ from typing import Any, ContextManager, Dict, TypeVar
 
 from typing_extensions import Protocol
 
-C = TypeVar("C")
+C = TypeVar("C", contravariant=True)
 
 class _ContextData(Dict[str, Any]): ...
 

@@ -399,7 +399,7 @@ class Dimension(type):
     #: number and a signature, and returns a Quantity-like object.
     Quantity = Quantity
 
-    @classproperty
+    @classproperty  # type: ignore
     def _Quantity(self):
         from xotl.tools.objects import import_object
 
@@ -453,9 +453,9 @@ class Dimension(type):
     def new(
         cls,
         *,
-        unit_alias: str = None,
-        unit_aliases: Sequence[str] = None,
-        Quantity: type = None,
+        unit_alias: Optional[str] = None,
+        unit_aliases: Optional[Sequence[str]] = None,
+        Quantity: Optional[type] = None,
     ) -> Callable[[Any], "Dimension"]: ...
 
     @classmethod
@@ -690,7 +690,7 @@ class Signature:
 
     __slots__ = ("top", "bottom", "_tps", "_bts")
 
-    def __init__(self, top: Sequence[TEq] = None, bottom: Sequence[TEq] = None):
+    def __init__(self, top: Optional[Sequence[TEq]] = None, bottom: Optional[Sequence[TEq]] = None):
         self._tps: Optional[FrozenSet] = None
         self._bts: Optional[FrozenSet] = None
         self.top, self.bottom = self.simplify(top, bottom)
@@ -701,7 +701,7 @@ class Signature:
         if res is None:
             from collections import Counter
 
-            counts = Counter(self.top)  # type: ignore
+            counts = Counter(self.top)
             self._tps = res = frozenset(counts.items())
         return res
 
@@ -711,7 +711,7 @@ class Signature:
         if res is None:
             from collections import Counter
 
-            counts = Counter(self.bottom)  # type: ignore
+            counts = Counter(self.bottom)
             self._bts = res = frozenset(counts.items())
         return res
 

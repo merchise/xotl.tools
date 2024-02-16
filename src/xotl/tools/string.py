@@ -18,7 +18,7 @@ from typing import Any, Optional, Pattern
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
 # some module dedicated to "string trimming".
 try:
-    cut_prefix = str.removeprefix
+    cut_prefix = str.removeprefix  # type: ignore
 except AttributeError:
 
     def cut_prefix(self: str, prefix: str) -> str:
@@ -56,7 +56,7 @@ def cut_prefixes(value: str, *prefixes: str) -> str:
 
 
 try:
-    cut_suffix = str.removesuffix
+    cut_suffix = str.removesuffix  # type: ignore
 except AttributeError:
 
     def cut_suffix(self: str, suffix: str) -> str:
@@ -99,7 +99,7 @@ def cut_suffixes(value: str, *suffixes: str) -> str:
     return result
 
 
-def force_ascii(value: Any, encoding: str = None) -> str:
+def force_ascii(value: Any, encoding: Optional[str] = None) -> str:
     """Return the string normal form for the `value`
 
     Convert all non-ascii to valid characters using unicode 'NFKC'

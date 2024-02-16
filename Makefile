@@ -1,5 +1,5 @@
 RYE_EXEC ?= rye run
-PYTHON_VERSION ?= 3.12
+PYTHON_VERSION ?= 3.8
 PATH := $(HOME)/.rye/shims:$(PATH)
 
 SHELL := /bin/bash
@@ -13,8 +13,8 @@ install:
 
 
 format:
-	@$(RYE_EXEC) isort src/
 	@$(RYE_EXEC) ruff --fix src/
+	@$(RYE_EXEC) isort src/
 	@$(RYE_EXEC) ruff format src/
 .PHONY: format
 
@@ -27,3 +27,7 @@ lint:
 test:
 	@$(RYE_EXEC) pytest -l -q --cov=xotl.tools
 .PHONY: test
+
+mypy:
+	@$(RYE_EXEC) mypy -p xotl.tools --config mypy.ini
+.PHONY: mypy

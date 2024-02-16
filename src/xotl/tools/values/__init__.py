@@ -636,7 +636,7 @@ class safe(custom):
 
     def __call__(self, arg):
         try:
-            from xotl.tools.symbol import boolean
+            from xotl.tools.symbols import boolean
 
             res = self.inner(arg)
             return logical(res) if isinstance(res, boolean) else res
