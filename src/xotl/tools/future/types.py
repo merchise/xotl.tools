@@ -45,7 +45,7 @@ except ImportError:
         # In PyPy3 'NoneType' is a built-in
         from builtins import NoneType  # type: ignore
     except ImportError:
-        NoneType = type(None)
+        NoneType = type(None)  # type: ignore
 
 EllipsisType = type(Ellipsis)
 

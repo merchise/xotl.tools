@@ -15,6 +15,6 @@
 try:
     from graphlib import CycleError, TopologicalSorter  # type: ignore
 except ImportError:
-    from ._graphlib import CycleError, TopologicalSorter
+    from ._graphlib import CycleError, TopologicalSorter  # type: ignore
 
 __all__ = ["TopologicalSorter", "CycleError"]

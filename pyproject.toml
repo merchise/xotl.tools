@@ -80,10 +80,12 @@ ignore = [
   "E731", # do not assign a `lambda` expression, use a `def` (we use it a lot)
 ]
 preview = true
+extend-exclude = ["src/xotl/tools/_version.py"]
 
 
 [tool.ruff.format]
 preview = true
+exclude = ["src/xotl/tools/_version.py"]
 
 
 [tool.coverage.run]
