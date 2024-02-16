@@ -11,5 +11,8 @@
 - Use `DeprecationWarning`:class: in `xotl.tools.deprecation`:mod:.
 
 - Remove backports introduced before Python 3.4
-  - ``xotl.tools.types.SimpleNamespace``, and
-  - ``xotl.tools.types.DynamicClassAttribute``
+
+  - ``xotl.tools.future.collections.ChainMap``
+  - ``xotl.tools.future.collections.Counter``
+  - ``xotl.tools.future.types.SimpleNamespace``
+  - ``xotl.tools.future.types.DynamicClassAttribute``
