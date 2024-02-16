@@ -127,6 +127,7 @@ def deprecated(
     def raise_if_deprecated(target, target_version):
         from importlib import metadata
         from importlib.metadata import PackageNotFoundError
+
         from packaging.version import parse as parse_version
 
         pkg = _nameof(target)

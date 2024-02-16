@@ -11,9 +11,12 @@
 """Versions API"""
 
 from collections.abc import Iterable
+from importlib import import_module, metadata
+from importlib.metadata import PackageNotFoundError
 
-from packaging.version import LooseVersion, StrictVersion
+from packaging.version import parse as parse_version
 from xotl.tools.decorator import singleton
+from xotl.tools.deprecation import deprecated
 
 
 def _check(info):
@@ -25,7 +28,6 @@ def _check(info):
     :returns: a valid tuple or an error if invalid.
 
     """
-    MAX_COUNT = 3
     if isinstance(info, (int, float)):
         aux = str(info)
     elif isinstance(info, Iterable) and not isinstance(info, str):
@@ -33,20 +35,14 @@ def _check(info):
     else:
         aux = info
     if isinstance(aux, str):
-        try:
-            essay = StrictVersion(aux)
-        except (TypeError, ValueError):  # Being as safe as possible.
-            essay = LooseVersion(aux)
-        res = essay.version[:MAX_COUNT]
-        if any(res):
-            return tuple(res)
-        else:
-            raise ValueError("invalid version value '{}'".format(info))
+        ver = parse_version(aux)
+        return (ver.major, ver.minor, ver.micro)
     else:
         msg = "Invalid type '{}' for version '{}'"
         raise TypeError(msg.format(type(info).__name__, info))
 
 
+@deprecated(None, "ThreeNumbersVersion is deprecated, use packaging.version.Version.")
 class ThreeNumbersVersion(tuple):
     """Structured version info considering valid first 3 members
 
@@ -187,6 +183,7 @@ def _get_mod_version(mod):
     return res
 
 
+@deprecated(None, msg="Use a combination of packaging with importlib.metadata")
 class PackageVersion(ThreeNumbersVersion):
     """Current Package version.
 
@@ -207,9 +204,6 @@ class PackageVersion(ThreeNumbersVersion):
 
     @staticmethod
     def _find_version(package_name):
-        from importlib import import_module, metadata
-        from importlib.metadata import PackageNotFoundError
-
         if package_name in ("__builtin__", "builtins"):
             return python_version
         else:

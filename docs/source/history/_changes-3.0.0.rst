@@ -29,3 +29,5 @@
 
 - Remove deprecated methods ``pop`` and ``push`` of
   `xotl.tools.future.collections.StackedDict`:class:.
+
+- Deprecate undocumented module ``xotl.tools.versions``.
