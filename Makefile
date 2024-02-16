@@ -13,15 +13,15 @@ install:
 
 
 format:
-	@$(RYE_EXEC) ruff --fix src/
-	@$(RYE_EXEC) isort src/
-	@$(RYE_EXEC) ruff format src/
+	@$(RYE_EXEC) ruff --fix src/ tests/
+	@$(RYE_EXEC) isort src/ tests/
+	@$(RYE_EXEC) ruff format src/ tests/
 .PHONY: format
 
 lint:
-	@$(RYE_EXEC) ruff src/
-	@$(RYE_EXEC) ruff format --check src/
-	@$(RYE_EXEC) isort --check src/
+	@$(RYE_EXEC) ruff src/ tests/
+	@$(RYE_EXEC) ruff format --check src/ tests/
+	@$(RYE_EXEC) isort --check src/ tests/
 .PHONY: lint
 
 test:
