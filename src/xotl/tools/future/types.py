@@ -23,6 +23,7 @@ they are differentiated in this module.
 """
 
 import re
+from inspect import _static_getmro  # type: ignore
 from types import (
     BuiltinFunctionType,
     BuiltinMethodType,
@@ -31,24 +32,22 @@ from types import (
     LambdaType,
     MemberDescriptorType,
     MethodType,
-    __all__,
 )
 from typing import TypeVar
 
 from typing_extensions import Protocol
 from xotl.tools.symbols import Unset as _unset
 
-__all__ = list(__all__)
-
 try:
-    # In PyPy3 'NoneType' is a built-in
-    from builtins import NoneType  # type: ignore
+    from types import NoneType  # type: ignore
 except ImportError:
-    NoneType = type(None)
-__all__.append("NoneType")
+    try:
+        # In PyPy3 'NoneType' is a built-in
+        from builtins import NoneType  # type: ignore
+    except ImportError:
+        NoneType = type(None)
 
 EllipsisType = type(Ellipsis)
-__all__.append("EllipsisType")
 
 
 # Check Jython and PyPy peculiarity
@@ -60,10 +59,6 @@ if MemberDescriptorType is GetSetDescriptorType:
     MemberDescriptorType = type(_foo.bar)  # type: ignore
     del _foo
 
-try:
-    from types import NoneType
-except ImportError:
-    NoneType = type(None)
 
 FuncTypes = tuple({
     FunctionType,
@@ -77,7 +72,6 @@ func_types = FuncTypes  # Just an alias
 
 
 RegexPattern = type(re.compile(""))
-del re
 
 
 def _get_mro_attr(target, name, *default):
@@ -104,7 +98,6 @@ def _get_mro_attr(target, name, *default):
       56
 
     """
-    from xotl.tools.future.inspect import _static_getmro
     from xotl.tools.params import Undefined, check_default
 
     # force type
@@ -229,3 +222,21 @@ class OrdTypeClass(EqTypeClass, Protocol):  # pragma: no cover
 
 TEq = TypeVar("TEq", bound=EqTypeClass)
 TOrd = TypeVar("TOrd", bound=OrdTypeClass)
+
+
+__all__ = (
+    "EllipsisType",
+    "EqTypeClass",
+    "FuncTypes",
+    "MemberDescriptorType",
+    "NoneType",
+    "OrdTypeClass",
+    "RegexPattern",
+    "TEq",
+    "TOrd",
+    "TypeClass",
+    "func_types",
+    "is_classmethod",
+    "is_instancemethod",
+    "is_staticmethod",
+)

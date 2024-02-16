@@ -13,6 +13,7 @@ import sys
 from collections.abc import Mapping, MutableMapping
 from contextlib import contextmanager
 from functools import partial
+from inspect import _static_getmro
 
 from xotl.tools.deprecation import deprecated
 from xotl.tools.symbols import Unset
@@ -630,7 +631,7 @@ def fix_method_documentation(cls, method_name, ignore=None, min_length=10, deep=
 
 def fulldir(obj):
     """Return a set with all attribute names defined in `obj`"""
-    from xotl.tools.future.inspect import _static_getmro, get_attr_value
+    from xotl.tools.future.inspect import get_attr_value
 
     def getdir(o):
         return set(get_attr_value(o, "__dict__", {}))

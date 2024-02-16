@@ -7,6 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 import sys
+
 import pytest
 from xotl.tools.future.collections import OrderedSmartDict
 
