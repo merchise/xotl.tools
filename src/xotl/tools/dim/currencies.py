@@ -64,6 +64,7 @@ If you convert your euros to dollars::
 .. _ISO 4217: https://en.wikipedia.org/wiki/ISO_4217
 
 """
+
 from typing import ClassVar, Dict
 
 from .meta import Quantity, Signature

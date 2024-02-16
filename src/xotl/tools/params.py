@@ -23,11 +23,10 @@ means several possibilities.
 
 """
 
+from xotl.tools.symbols import Undefined  # used implicitly for absent default
 
 #: The maximum number of positional arguments allowed when calling a function.
 MAX_ARG_COUNT = 1024 * 1024  # just any large number
-
-from xotl.tools.symbols import Undefined  # used implicitly for absent default
 
 
 def issue_9137(args):

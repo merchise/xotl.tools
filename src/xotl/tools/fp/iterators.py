@@ -12,6 +12,7 @@
    or otherwise changed.
 
 """
+
 from functools import reduce
 from typing import Callable, Iterable, TypeVar
 

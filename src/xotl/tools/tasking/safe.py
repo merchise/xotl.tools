@@ -7,9 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Python context with thread-safe queued data.
-
-"""
+"""Python context with thread-safe queued data."""
 
 
 # TODO: Optimize this by using standard threading locks

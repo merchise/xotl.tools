@@ -9,7 +9,6 @@
 
 """Extensions the `subprocess` module in the standard library."""
 
-
 from subprocess import *  # noqa
 from subprocess import PIPE, Popen, __all__
 

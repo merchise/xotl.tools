@@ -8,9 +8,7 @@
 #
 
 # TODO: Document (version.rst) this module.  Add tests.
-"""Versions API
-
-"""
+"""Versions API"""
 
 from xotl.tools.decorator import singleton
 

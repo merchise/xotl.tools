@@ -134,6 +134,7 @@ this to work.
    needed.
 
 """
+
 import functools
 import numbers
 from typing import Any, Callable, FrozenSet, Optional, Sequence, Tuple, overload
@@ -445,8 +446,7 @@ class Dimension(type):
 
     @overload
     @classmethod
-    def new(cls, source: Any) -> "Dimension":
-        ...
+    def new(cls, source: Any) -> "Dimension": ...
 
     @overload
     @classmethod
@@ -456,8 +456,7 @@ class Dimension(type):
         unit_alias: str = None,
         unit_aliases: Sequence[str] = None,
         Quantity: type = None,
-    ) -> Callable[[Any], "Dimension"]:
-        ...
+    ) -> Callable[[Any], "Dimension"]: ...
 
     @classmethod
     def new(cls, *source, **kwargs):

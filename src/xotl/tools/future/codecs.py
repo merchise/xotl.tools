@@ -13,7 +13,6 @@ In this module, some additions for `codecs` standard module.
 
 """
 
-
 from codecs import *  # noqa
 from codecs import __all__  # noqa
 

@@ -17,7 +17,6 @@ See the `record`:class: class to find out how to use it.
 
 """
 
-
 from xotl.tools.future.functools import lru_cache
 from xotl.tools.symbols import Unset
 

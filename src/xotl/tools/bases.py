@@ -7,9 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Integer encoding and decoding in different bases.
-
-"""
+"""Integer encoding and decoding in different bases."""
 
 _DEFAULT_TABLE = "0123456789" "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 

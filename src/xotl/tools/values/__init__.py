@@ -529,7 +529,7 @@ class custom:
         aux = obj.inner if isinstance(obj, cls) else obj
         if isinstance(aux, (tuple, list)):
             if not types_tuple_coerce(aux):
-                res = (i for l in map(cls.flatten, aux) for i in l)
+                res = (i for ls in map(cls.flatten, aux) for i in ls)
             else:
                 res = (coercer(aux),)
         else:
@@ -861,6 +861,7 @@ class pargs(custom):
     a separate member coercer.
 
     """
+
     __slots__ = ()
 
     def __init__(self, arg_coerce):

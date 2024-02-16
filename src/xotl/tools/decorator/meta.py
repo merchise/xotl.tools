@@ -19,6 +19,7 @@ time, implement the decorator `~xotl.tools.deprecation.deprecated`:func: more
 easily.
 
 """
+
 from functools import partial, wraps
 from types import FunctionType as function
 

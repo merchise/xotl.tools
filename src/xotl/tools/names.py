@@ -29,10 +29,10 @@ def _get_mappings(source):
     else:
         from xotl.tools.future.inspect import get_attr_value
 
-        l = get_attr_value(source, "f_locals", _undef)
+        ls = get_attr_value(source, "f_locals", _undef)
         g = get_attr_value(source, "f_globals", _undef)
-        if isinstance(l, Mapping) and isinstance(g, Mapping):
-            return (l,) if l is g else (l, g)
+        if isinstance(ls, Mapping) and isinstance(g, Mapping):
+            return (ls,) if ls is g else (ls, g)
         else:
             return tuple(source)
 
@@ -309,7 +309,7 @@ def nameof(*args, **kwargs):
     from xotl.tools.future.inspect import safe_name
 
     arg_count = len(args)
-    names = [[] for i in range(arg_count)]
+    names = [[] for _ in range(arg_count)]
 
     params = kwargs
     idx = 0
@@ -565,9 +565,10 @@ class strlist(list):
 # Theses tests need to be defined in this module to test relative imports.
 # Otherwise the `tests/` directory would need to be a proper package.
 
-import unittest as _utest
+import unittest as _utest  # noqa
 
-from xotl.tools.symbols import Unset as _Unset  # Use a tier 0 module!
+# Use a tier 0 module!
+from xotl.tools.symbols import Unset as _Unset  # noqa
 
 
 class TestRelativeImports(_utest.TestCase):

@@ -15,7 +15,6 @@ This module reexport all functions the *current* version of Python.
 
 """
 
-
 import mimetypes as _stdlib
 from mimetypes import *  # noqa
 

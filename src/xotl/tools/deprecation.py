@@ -15,8 +15,7 @@ from functools import wraps
 # implemented
 
 DEFAULT_MSG = (
-    "{funcname} is now deprecated and it will be "
-    "removed{in_version}. Use {replacement} instead."
+    "{funcname} is now deprecated and it will be " "removed{in_version}. Use {replacement} instead."
 )
 
 
@@ -214,9 +213,7 @@ def deprecated(
                 if check_version and removed_in_version:
                     raise_if_deprecated(target, removed_in_version)
                 warnings.warn(
-                    msg.format(
-                        funcname=funcname, replacement=repl_name, in_version=in_version
-                    ),
+                    msg.format(funcname=funcname, replacement=repl_name, in_version=in_version),
                     stacklevel=2,
                 )
                 return target(*args, **kw)
@@ -293,9 +290,7 @@ def import_deprecated(module, *names, **aliases):
         if target is not unset:
             if isinstance(target, test_classes):
                 replacement = src_name + "." + name
-                deprecator = deprecated(
-                    replacement, DEFAULT_MSG, dst_name, new_name=alias
-                )
+                deprecator = deprecated(replacement, DEFAULT_MSG, dst_name, new_name=alias)
                 target = deprecator(target)
             setattr(dst, alias, target)
         else:
@@ -360,9 +355,9 @@ def deprecate_module(replacement, msg=None):
         # As recommended in Python's documentation to avoid memory leaks
         del frame
     if msg is None:
-        msg = (
-            '"{}" module is now deprecated and it will be removed; ' 'use "{}" instead.'
-        ).format(name, replacement)
+        msg = ('"{}" module is now deprecated and it will be removed; ' 'use "{}" instead.').format(
+            name, replacement
+        )
     if msg:
         warnings.warn(msg, stacklevel=2)
 

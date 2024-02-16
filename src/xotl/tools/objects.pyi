@@ -116,14 +116,10 @@ class _FinalSubclassEnum(Protocol[B]):
 FinalSubclassEnumeration: _FinalSubclassEnum
 
 class DelegatedAttribute:
-    def __init__(
-        self, target_name: str, delegated_attr: str, default: Any = Unset
-    ) -> None: ...
+    def __init__(self, target_name: str, delegated_attr: str, default: Any = Unset) -> None: ...
     def __get__(self, instance, owner) -> Any: ...
 
-def delegator(
-    attribute: str, attrs_map: Mapping[str, str], metaclass: type = type
-) -> type: ...
+def delegator(attribute: str, attrs_map: Mapping[str, str], metaclass: type = type) -> type: ...
 def iter_branch_subclasses(
     cls: Type[T],
     *,

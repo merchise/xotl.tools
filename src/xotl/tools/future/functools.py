@@ -12,6 +12,7 @@
 You may use this module as drop-in replacement of `functools`.
 
 """
+
 from functools import *  # noqa
 from functools import _CacheInfo  # noqa
 

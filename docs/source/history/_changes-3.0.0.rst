@@ -1,5 +1,7 @@
 - No longer distribute the package 'xoutil'.
 
+- No longer keep re-exporting all symbols from the standard library.
+
 - Add support for Python 3.11 and Python 3.12, drop support for Python 3.7.
   This means we now include Python 3.11, 3.12 in our CI tests and no longer
   test with 3.7.

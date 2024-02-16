@@ -14,7 +14,6 @@ All values only could be `True` or `False` but are intended in places where
 
 """
 
-
 SYMBOL = "symbol"
 BOOLEAN = "boolean"
 

@@ -7,9 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Tools for working with functions in a more "pure" way.
-
-"""
+"""Tools for working with functions in a more "pure" way."""
 
 from abc import ABCMeta
 
@@ -69,7 +67,6 @@ def snd(pair, strict=True):
 
 
 class MetaCompose(ABCMeta):
-
     """Meta-class for function composition."""
 
     def __instancecheck__(self, instance):
@@ -126,6 +123,7 @@ class compose(metaclass=MetaCompose):
     expect tuples.
 
     """
+
     # TODO: __slots__ = ('inner', 'scope')
 
     def __new__(cls, *functions):

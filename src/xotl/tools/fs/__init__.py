@@ -15,9 +15,9 @@ path-handling functions that have no side-effects look at
 
 """
 
-
 import os
 import sys
+from os import makedirs
 from re import compile as _rcompile
 
 from xotl.tools.fs.path import normalize_path
@@ -421,9 +421,6 @@ def walk_up(start, sentinel):
             previouspath = current
             current = dirname(current)
     return current if found else None
-
-
-from os import makedirs
 
 
 def ensure_filename(filename, yields=False):

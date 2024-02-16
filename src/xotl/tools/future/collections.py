@@ -13,17 +13,10 @@ You may use it as drop-in replacement of `collections`.  Although we don't
 document all items here.  Refer to `collections`:mod: documentation.
 
 """
-from reprlib import recursive_repr
-from collections.abc import (
-    Container,
-    Iterable,
-    Mapping,
-    MutableMapping,
-    MutableSet,
-    Set,
-    Sized,
-)
+
 import collections as _stdlib
+from collections.abc import Container, Iterable, Mapping, MutableMapping, MutableSet, Set, Sized
+from reprlib import recursive_repr
 
 from xotl.tools.deprecation import deprecated
 from xotl.tools.objects import SafeDataItem as safe
@@ -433,11 +426,7 @@ class opendict(OpenDictMixin, dict):
 
         members = getattr(enumclass, "__members__", Unset)
         if members is Unset:
-            members = {
-                k: v
-                for k, v in enumclass.__dict__.items()
-                if is_valid_public_identifier(k)
-            }
+            members = {k: v for k, v in enumclass.__dict__.items() if is_valid_public_identifier(k)}
         return cls(members)
 
 
@@ -504,7 +493,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):  # type: ignor
     """
 
     __slots__ = (
-        safe.slot("inner", ChainMap),
+        safe.slot("inner", _stdlib.ChainMap),
         safe.slot(OpenDictMixin.__cache_name__, dict),
     )
 
@@ -818,7 +807,7 @@ class RankedDict(SmartDictMixin, dict):  # type: ignore
         if res:
             if isinstance(other, RankedDict):
                 return self._ranks == other._ranks
-            elif isinstance(other, OrderedDict):
+            elif isinstance(other, _stdlib.OrderedDict):
                 return self._ranks == list(other)
             else:
                 return True
@@ -889,7 +878,7 @@ class RankedDict(SmartDictMixin, dict):  # type: ignore
         return cls((key, value) for key in iterable)
 
 
-class OrderedSmartDict(SmartDictMixin, OrderedDict):  # type: ignore
+class OrderedSmartDict(SmartDictMixin, _stdlib.OrderedDict):  # type: ignore
     """A combination of the `OrderedDict` with the `SmartDictMixin`.
 
     .. warning:: Initializing with kwargs does not ensure any initial ordering,
@@ -960,8 +949,8 @@ class PascalSet(metaclass=MetaSet):
             else:
                 return "%s..%s" % (s, e)
 
-        l = self._items
-        ranges = ((l[i], l[i + 1]) for i in range(0, len(l), 2))
+        ls = self._items
+        ranges = ((ls[i], ls[i + 1]) for i in range(0, len(ls), 2))
         return str("{%s}" % ", ".join((aux(s, e) for (s, e) in ranges)))
 
     def __repr__(self):
@@ -970,10 +959,10 @@ class PascalSet(metaclass=MetaSet):
         return str("%s([%s])" % (cname, ", ".join((str(i) for i in self))))
 
     def __iter__(self):
-        l = self._items
-        i, count = 0, len(l)
+        ls = self._items
+        i, count = 0, len(ls)
         while i < count:
-            s, e = l[i], l[i + 1]
+            s, e = ls[i], ls[i + 1]
             while s <= e:
                 yield s
                 s += 1
@@ -981,10 +970,10 @@ class PascalSet(metaclass=MetaSet):
 
     def __len__(self):
         res = 0
-        l = self._items
-        i, count = 0, len(l)
+        ls = self._items
+        i, count = 0, len(ls)
         while i < count:
-            res += l[i + 1] - l[i] + 1
+            res += ls[i + 1] - ls[i] + 1
             i += 2
         return res
 
@@ -1172,15 +1161,15 @@ class PascalSet(metaclass=MetaSet):
         """Update a set with the union of itself and others."""
         for other in others:
             if isinstance(other, PascalSet):
-                l = other._items
+                ls = other._items
                 if self._items:
-                    count = len(l)
+                    count = len(ls)
                     i = 0
                     while i < count:
-                        self._insert(l[i], l[i + 1])
+                        self._insert(ls[i], ls[i + 1])
                         i += 2
                 else:
-                    self._items = l[:]
+                    self._items = ls[:]
             elif isinstance(other, int):
                 self._insert(other)
             elif isinstance(other, Iterable):
@@ -1213,29 +1202,29 @@ class PascalSet(metaclass=MetaSet):
 
     def intersection_update(self, *others):
         """Update a set with the intersection of itself and another."""
-        l = self._items
+        ls = self._items
         oi, count = 0, len(others)
-        while l and oi < count:
+        while ls and oi < count:
             other = others[oi]
             if not isinstance(other, PascalSet):
                 # safe mode for intersection
                 other = PascalSet(i for i in other if isinstance(i, int))
             o = other._items
             if o:
-                sl, el = l[0], l[-1]
+                sl, el = ls[0], ls[-1]
                 so, eo = o[0], o[-1]
                 if sl < so:
                     self._remove(sl, so - 1)
                 if eo < el:
                     self._remove(eo + 1, el)
                 i = 2
-                while l and i < len(o):
+                while ls and i < len(o):
                     s, e = o[i - 1] + 1, o[i] - 1
                     if s <= e:
                         self._remove(s, e)
                     i += 2
             else:
-                del l[:]
+                del ls[:]
             oi += 1
 
     def difference(self, *others):
@@ -1252,11 +1241,11 @@ class PascalSet(metaclass=MetaSet):
         """Remove all elements of another set from this set."""
         for other in others:
             if isinstance(other, PascalSet):
-                l = other._items
-                count = len(l)
+                ls = other._items
+                count = len(ls)
                 i = 0
                 while i < count:
-                    self._remove(l[i], l[i + 1])
+                    self._remove(ls[i], ls[i + 1])
                     i += 2
             else:
                 for i in other:
@@ -1311,13 +1300,13 @@ class PascalSet(metaclass=MetaSet):
         Raises KeyError if the set is empty.
 
         """
-        l = self._items
-        if l:
-            res = l[0]
-            if l[0] < l[1]:
-                l[0] += 1
+        ls = self._items
+        if ls:
+            res = ls[0]
+            if ls[0] < ls[1]:
+                ls[0] += 1
             else:
-                del l[0:2]
+                del ls[0:2]
             return res
         else:
             raise KeyError("pop from an empty set!")
@@ -1334,15 +1323,15 @@ class PascalSet(metaclass=MetaSet):
         """Return True if two sets have a null intersection."""
         if isinstance(other, PascalSet):
             if self and other:
-                l, o = self._items, other._items
-                i, lcount, ocount = 0, len(l), len(o)
+                ls, o = self._items, other._items
+                i, lcount, ocount = 0, len(ls), len(o)
                 maybe = True
                 while maybe and i < lcount:
-                    found, idx = other._search(l[i])
+                    found, idx = other._search(ls[i])
                     if idx == ocount:  # exhausted
                         # assert not found
                         i = lcount
-                    elif found or l[i + 1] >= o[idx]:
+                    elif found or ls[i + 1] >= o[idx]:
                         maybe = False
                     else:
                         i += 2
@@ -1360,12 +1349,12 @@ class PascalSet(metaclass=MetaSet):
                 if ls > len(other):  # Fast check for obvious cases
                     return False
                 else:
-                    l, o = self._items, other._items
-                    i, lcount = 0, len(l)
+                    ls, o = self._items, other._items
+                    i, lcount = 0, len(ls)
                     maybe = True
                     while maybe and i < lcount:
-                        found, idx = other._search(l[i])
-                        if found and l[i + 1] <= o[idx + 1]:
+                        found, idx = other._search(ls[i])
+                        if found and ls[i + 1] <= o[idx + 1]:
                             i += 2
                         else:
                             maybe = False
@@ -1394,12 +1383,12 @@ class PascalSet(metaclass=MetaSet):
                 if ls < len(other):  # Fast check for obvious cases
                     return False
                 else:
-                    l, o = self._items, other._items
+                    ls, o = self._items, other._items
                     i, ocount = 0, len(o)
                     maybe = True
                     while maybe and i < ocount:
                         found, idx = self._search(o[i])
-                        if found and o[i + 1] <= l[idx + 1]:
+                        if found and o[i + 1] <= ls[idx + 1]:
                             i += 2
                         else:
                             maybe = False
@@ -1420,11 +1409,11 @@ class PascalSet(metaclass=MetaSet):
 
         """
         if isinstance(other, int):
-            l = self._items
-            start, end = 0, len(l)
+            ls = self._items
+            start, end = 0, len(ls)
             res, pivot = False, 2 * (end // 4)
             while not res and start < end:
-                s, e = l[pivot], l[pivot + 1]
+                s, e = ls[pivot], ls[pivot + 1]
                 if other < s:
                     end = pivot
                 elif other > e:
@@ -1441,34 +1430,34 @@ class PascalSet(metaclass=MetaSet):
         if not end:
             end = start
         assert start <= end
-        l = self._items
-        count = len(l)
+        ls = self._items
+        count = len(ls)
         found, idx = self._search(start)
         if not found:
-            if idx > 0 and start == l[idx - 1] + 1:
+            if idx > 0 and start == ls[idx - 1] + 1:
                 found = True
                 idx -= 2
-                l[idx + 1] = start
-                if idx < count - 2 and end == l[idx + 2] - 1:
-                    end = l[idx + 3]
-            elif idx < count and end >= l[idx] - 1:
+                ls[idx + 1] = start
+                if idx < count - 2 and end == ls[idx + 2] - 1:
+                    end = ls[idx + 3]
+            elif idx < count and end >= ls[idx] - 1:
                 found = True
-                l[idx] = start
+                ls[idx] = start
         if found:
-            while end > l[idx + 1]:
-                if idx < count - 2 and end >= l[idx + 2] - 1:
-                    if end <= l[idx + 3]:
-                        l[idx + 1] = l[idx + 3]
-                    del l[idx + 2 : idx + 4]
+            while end > ls[idx + 1]:
+                if idx < count - 2 and end >= ls[idx + 2] - 1:
+                    if end <= ls[idx + 3]:
+                        ls[idx + 1] = ls[idx + 3]
+                    del ls[idx + 2 : idx + 4]
                     count -= 2
                 else:
-                    l[idx + 1] = end
+                    ls[idx + 1] = end
         else:
             if idx < count:
-                l.insert(idx, start)
-                l.insert(idx + 1, end)
+                ls.insert(idx, start)
+                ls.insert(idx + 1, end)
             else:
-                l.extend((start, end))
+                ls.extend((start, end))
             count += 2
 
     def _remove(self, start, end=None):
@@ -1476,40 +1465,37 @@ class PascalSet(metaclass=MetaSet):
         if not end:
             end = start
         assert start <= end
-        l = self._items
+        ls = self._items
         sfound, sidx = self._search(start)
         efound, eidx = self._search(end)
         if sfound and efound and sidx == eidx:
-            first = l[sidx] < start
-            last = l[eidx + 1] > end
+            first = ls[sidx] < start
+            last = ls[eidx + 1] > end
             if first and last:
-                l.insert(eidx + 1, end + 1)
-                l.insert(sidx + 1, start - 1)
+                ls.insert(eidx + 1, end + 1)
+                ls.insert(sidx + 1, start - 1)
             elif first:
-                l[sidx + 1] = start - 1
+                ls[sidx + 1] = start - 1
             elif last:
-                l[eidx] = end + 1
+                ls[eidx] = end + 1
             else:
-                del l[sidx : eidx + 2]
+                del ls[sidx : eidx + 2]
         else:
-            if sfound and l[sidx] < start:
-                l[sidx + 1] = start - 1
+            if sfound and ls[sidx] < start:
+                ls[sidx + 1] = start - 1
                 sidx += 2
             if efound:
-                if l[eidx + 1] > end:
-                    l[eidx] = end + 1
+                if ls[eidx + 1] > end:
+                    ls[eidx] = end + 1
                 else:
                     eidx += 2
             if sidx < eidx:
-                del l[sidx:eidx]
+                del ls[sidx:eidx]
 
     def _invalid_value(self, value):
         cls_name = type(self).__name__
         vname = type(value).__name__
-        msg = (
-            'Unsupported type for  value "%s" of type "%s" for a "%s", '
-            "must be an integer!"
-        )
+        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", ' "must be an integer!"
         return TypeError(msg % (value, vname, cls_name))
 
     @classmethod
@@ -1595,7 +1581,7 @@ class BitPascalSet(metaclass=MetaSet):
         """True if this bit-set has the element ``other``, else False."""
         res = self._search(other)
         if res:
-            k, ref, v = res
+            _k, ref, v = res
             return bool(v & (1 << ref))
         else:
             return False
@@ -2000,10 +1986,7 @@ class BitPascalSet(metaclass=MetaSet):
     def _invalid_value(self, value):
         cls_name = type(self).__name__
         vname = type(value).__name__
-        msg = (
-            'Unsupported type for  value "%s" of type "%s" for a "%s", '
-            "must be an integer!"
-        )
+        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", ' "must be an integer!"
         return TypeError(msg % (value, vname, cls_name))
 
     @classmethod

@@ -14,7 +14,6 @@ secury strong level.
 
 """
 
-
 __all__ = (
     "PASS_PHRASE_LEVEL_BASIC",
     "PASS_PHRASE_LEVEL_MAPPED",

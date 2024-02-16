@@ -12,6 +12,7 @@ In Python 3 `str` is always unicode but `unicode` and `basestring` types
 doesn't exists.  `bytes` type can be used as an array of one byte each item.
 
 """
+
 from typing import Any, Optional, Pattern
 
 # TODO: Functions starting with 'cut_' must be reviewed, maybe migrated to
@@ -253,8 +254,9 @@ def slugify(value: Any, *args, **kwds) -> str:
         replacement = _normalize(replacement)
     else:
         raise TypeError(
-            'slugify() replacement "{}" must be a string or None,'
-            ' not "{}".'.format(replacement, type(replacement))
+            'slugify() replacement "{}" must be a string or None,' ' not "{}".'.format(
+                replacement, type(replacement)
+            )
         )
     if invalid_chars is True:
         # Backward compatibility with former `invalid_underscore` argument
@@ -270,8 +272,9 @@ def slugify(value: Any, *args, **kwds) -> str:
         invalid_regex = re.compile(r"[{}]+".format(invalid_chars))
         if invalid_regex.search(replacement):
             raise ValueError(
-                'slugify() replacement "{}" must not contain '
-                "any invalid character.".format(replacement)
+                'slugify() replacement "{}" must not contain ' "any invalid character.".format(
+                    replacement
+                )
             )
     else:
         invalid_regex = None

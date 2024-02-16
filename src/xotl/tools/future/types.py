@@ -21,20 +21,16 @@ In Jython and PyPy, `MemberDescriptorType` is identical to
 they are differentiated in this module.
 
 """
-import types as _stdlib  # noqa
-from types import *  # noqa
+
+import re
+from types import __all__  # type: ignore
+from types import BuiltinFunctionType, BuiltinMethodType, FunctionType, LambdaType, MethodType
 from typing import TypeVar
 
 from typing_extensions import Protocol
 from xotl.tools.symbols import Unset as _unset
 
-try:
-    from types import __all__  # type: ignore
-
-    __all__ = list(__all__)
-except ImportError:
-    # Python 3.3 don't implement '__all__' for 'string' module.
-    __all__ = [name for name in dir(_stdlib) if not name.startswith("_")]
+__all__ = list(__all__)
 
 try:
     # In PyPy3 'NoneType' is a built-in
@@ -46,6 +42,7 @@ __all__.append("NoneType")
 EllipsisType = type(Ellipsis)
 __all__.append("EllipsisType")
 
+
 # Check Jython and PyPy peculiarity
 if MemberDescriptorType is GetSetDescriptorType:  # noqa
 
@@ -55,20 +52,16 @@ if MemberDescriptorType is GetSetDescriptorType:  # noqa
     MemberDescriptorType = type(_foo.bar)  # type: ignore
     del _foo
 
-FuncTypes = tuple(
-    {
-        FunctionType,
-        MethodType,
-        LambdaType,  # noqa
-        BuiltinFunctionType,
-        BuiltinMethodType,
-    }
-)  # noqa
+FuncTypes = tuple({
+    FunctionType,
+    MethodType,
+    LambdaType,
+    BuiltinFunctionType,
+    BuiltinMethodType,
+})
 
 func_types = FuncTypes  # Just an alias
 
-import re
-from types import _calculate_meta  # type: ignore  # noqa
 
 RegexPattern = type(re.compile(""))
 del re

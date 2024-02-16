@@ -13,6 +13,7 @@
    ``xotl.tools.iterators`` is now a deprecated alias.
 
 """
+
 import sys
 from itertools import *  # noqa
 from typing import Any, Callable, Iterable, Iterator, List, Optional, Tuple, TypeVar, Union, cast

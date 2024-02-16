@@ -21,6 +21,10 @@ default values, see `crop`:func: function for details.
 
 """
 
+from functools import partial
+
+__all__ = ("crop", "small", "ELLIPSIS", "DEFAULT_MAX_WIDTH")
+
 
 #: Value for `max_width` parameter in functions that shorten strings, must not
 #: be less than this value.
@@ -78,8 +82,6 @@ def crop(obj, max_width=None, canonical=False):
     .. versionadded:: 1.8.0
 
     """
-    from functools import partial
-
     max_width = _check_max_width(max_width, caller="crop")
     if isinstance(obj, str):
         res = obj  # TODO: reduce
@@ -176,8 +178,9 @@ def crop_iterator(obj, max_width=None, canonical=False):
         return "{}{}{}".format(borders[0], res, borders[1])
     else:
         raise TypeError(
-            "crop_iterator() expects tuple, list, set, or "
-            "mapping; got {}".format(type(obj).__name__)
+            "crop_iterator() expects tuple, list, set, or " "mapping; got {}".format(
+                type(obj).__name__
+            )
         )
 
 

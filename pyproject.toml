@@ -66,8 +66,11 @@ ignore = [
   "E501", # line-length is left to the formatter
   "E731", # do not assign a `lambda` expression, use a `def` (we use it a lot)
 ]
+preview = true
+
 
 [tool.ruff.format]
+preview = true
 
 
 [tool.coverage.run]

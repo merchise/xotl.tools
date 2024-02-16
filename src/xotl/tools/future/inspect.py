@@ -14,15 +14,14 @@ document all items here.  Refer to `inspect's <inspect>`:mod: documentation.
 
 """
 
-from inspect import *  # noqa
-from inspect import _check_instance  # type: ignore  # noqa
-from inspect import (  # type: ignore  # noqa
-    _check_class,
-    _is_type,
-    _sentinel,
-    _shadowed_dict,
-    _static_getmro,
-)
+from inspect import getattr_static, isdatadescriptor
+
+try:
+    from inspect import _static_getmro  # type: ignore
+except ImportError:
+
+    def _static_getmro(klass):
+        return type.__dict__["__mro__"].__get__(klass)  # type: ignore
 
 
 def get_attr_value(obj, name, *default):
@@ -33,7 +32,8 @@ def get_attr_value(obj, name, *default):
     `getattr_static`:func:.
 
     """
-    from xotl.tools.params import Undefined, check_default
+    from xotl.tools.params import check_default
+    from xotl.tools.symbols import Undefined
 
     default = check_default()(*default)
     is_type = isinstance(obj, type)

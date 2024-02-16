@@ -12,7 +12,6 @@ functions for several identifiers.
 
 """
 
-
 # TODO: Check next import, it looks like one of the modules must be deprecated
 from xotl.tools.validators.identifiers import (  # noqa
     check_identifier,
@@ -37,11 +36,14 @@ def _get_checker_name(checker):
     other checkers.
 
     """
-    l = lambda o: str("(%s)" % o.join(_get_checker_name(c) for c in checker))
+
+    def serial(o):
+        return str("(%s)" % o.join(_get_checker_name(c) for c in checker))
+
     if isinstance(checker, list):
-        return l("_AND_")
+        return serial("_AND_")
     elif isinstance(checker, tuple):
-        return l("_OR_")
+        return serial("_OR_")
     else:
         from xotl.tools.future.inspect import safe_name
 

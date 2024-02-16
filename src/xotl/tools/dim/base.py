@@ -80,7 +80,7 @@ class ElectricCurrent:
 
 
 A = ampere = ElectricCurrent.A
-I = ElectricCurrent
+I = ElectricCurrent  # noqa
 
 
 @Dimension.new(unit_aliases="K")
@@ -99,7 +99,8 @@ class Temperature:
 
 
 K = kelvin = Temperature.K
-O = Temperature  # The actual symbol would be the capital letter Theta: Θ
+# The actual symbol would be the capital letter Theta: Θ
+O = Temperature  # noqa
 
 
 @Dimension.new(unit_alias="mol")
