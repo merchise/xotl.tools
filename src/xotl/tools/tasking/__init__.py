@@ -241,8 +241,8 @@ class retrier:
         retrying loop:
 
            >>> class TransientError(RuntimeError): pass
-
-           >>> @retrier(max_tries=5, retry_only=TransientError).decorate
+           >>> decorator = retrier(max_tries=5, retry_only=TransientError).decorate
+           >>> @decorator
            ... def read_from_url(url):
            ...     pass
 
