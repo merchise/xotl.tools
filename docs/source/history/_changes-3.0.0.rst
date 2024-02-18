@@ -34,3 +34,6 @@
   `xotl.tools.future.collections.StackedDict`:class:.
 
 - Remove undocumented module ``xotl.tools.versions``.
+
+- Change the signature of `xotl.tools.objects.copy_class`:func: to take
+  keyword-only arguments.

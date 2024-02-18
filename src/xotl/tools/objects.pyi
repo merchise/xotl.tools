@@ -16,6 +16,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    overload,
 )
 
 from typing_extensions import Generic, Protocol
@@ -88,12 +89,22 @@ memoized_property = property
 
 T = TypeVar("T", bound=type)
 
+@overload
 def copy_class(
     cls: T,
+    *,
     meta: Optional[Type[T]] = None,
-    ignores: Optional[Sequence[str]] = None,
     new_attrs: Optional[Mapping[str, Any]] = None,
     new_name: Optional[str] = None,
+) -> T: ...
+@overload
+def copy_class(
+    cls: T,
+    *,
+    meta: Optional[Type[T]] = None,
+    new_attrs: Optional[Mapping[str, Any]] = None,
+    new_name: Optional[str] = None,
+    ignores: Sequence[str],
 ) -> Type: ...
 def validate_attrs(
     source: Any,

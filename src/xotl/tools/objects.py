@@ -1287,6 +1287,15 @@ def copy_class(
 
     .. versionadded:: 1.7.1 The `new_name` argument.
 
+    .. versionchanged:: 3.0.0 Keywords-only arguments: `meta`, `ignores`, `new_attrs`, and
+       `new_name`.
+
+    .. warning:: The type hint of the result cannot be properly inferred in general.
+
+       The result of calling 'copy_class' is another class that is not a sub-type of 'cls'.
+       Nevertheless, unless `ignore` is not None, it will be duck-type compatible with the original
+       cls.  Therefore, the type hint of the result is the same of `cls`, unless ignore is not None.
+
     """
     from types import new_class
 
