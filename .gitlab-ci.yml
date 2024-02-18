@@ -200,8 +200,7 @@ build documentation for releases:
 build documentation:
   <<: *build_doc
   interruptible: true
-  needs:
-    - test doctests
+  needs: []
   only:
     <<: *when-merge-requests-or-stable
   variables:
