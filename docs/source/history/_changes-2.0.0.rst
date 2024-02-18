@@ -2,7 +2,7 @@
   good time!  Good bye, Python 2!
 
 - The following imports are no longer available.  Look for them in
-  `xoutil.future`:mod:\ :
+  ``xoutil.future``\ :
 
   .. hlist::
      :columns: 3

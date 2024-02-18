@@ -7,7 +7,3 @@
 
 
 .. autofunction:: slugify(value, replacement='-', invalid_chars='', valid_chars='', encoding=None)
-
-.. function:: normalize_slug(value, replacement='-', invalid_chars='', valid_chars='', encoding=None)
-
-   Deprecated alias of `slugify`:func:.

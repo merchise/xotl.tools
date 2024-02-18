@@ -1,8 +1,8 @@
-- Fix a bug in `xoutil.objects.extract_attrs`:func:.  It was not raising
+- Fix a bug in ``xoutil.objects.extract_attrs``.  It was not raising
   exceptions when some attribute was not found and `default` was not provided.
 
   Also now the function supports paths like
-  `xoutil.objects.get_traverser`:func:.
+  ``xoutil.objects.get_traverser``.
 
 - `xoutil` contains now a copy of the excellent project `six`_ exported as
   ``xoutil.six`` (not documented here).  Thus the compatibility module

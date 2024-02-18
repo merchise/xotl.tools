@@ -1,4 +1,4 @@
-- Fix bug #29: Issues with `xoutil.symbols.symbol`:class: documentation and
+- Fix bug #29: Issues with ``xoutil.symbols.symbol`` documentation and
   implementation.
 
 - Fix bug #30: It was possible to define a dimension with two (or more)
@@ -6,5 +6,4 @@
 
 - Fix bug #33: Reusing a context leaves the context unusable.
 
-- Renamed ``xoutil.tasking.StandardWait`` to
-  `xoutil.tasking.ConstantWait`:class:.
+- Renamed ``xoutil.tasking.StandardWait`` to ``xoutil.tasking.ConstantWait``.

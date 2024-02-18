@@ -1,1 +1,1 @@
-- `xoutil.context.NullContext`:class: is now a Mapping.
+- ``xoutil.context.NullContext`` is now a Mapping.

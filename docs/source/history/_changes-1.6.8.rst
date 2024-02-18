@@ -1,8 +1,8 @@
-- Added `xoutil.records.date_reader`:func:.
+- Added ``xoutil.records.date_reader``.
 
 - Added a forward-compatible ``xoutil.inspect.getfullargspec``.
 
-- Now `contexts <xoutil.context>`:mod: will support gevent-locals if
+- Now ``xoutil.context`` will support gevent-locals if
   available.  See the note in `the module documentation
   <context-greenlets>`:ref:.
 

@@ -1,5 +1,5 @@
-- Added the `yield` parameter in `xoutil.fs.ensure_filename`:func:.
+- Added the `yield` parameter in ``xoutil.fs.ensure_filename``.
 
-- Added the `base` parameter in `xoutil.modules.moduleproperty`:func:.
+- Added the `base` parameter in ``xoutil.modules.moduleproperty``.
 
-- Added the function `xoutil.fs.concatfiles`:func:.
+- Added the function ``xoutil.fs.concatfiles``.

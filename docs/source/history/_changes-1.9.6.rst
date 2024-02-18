@@ -1,4 +1,4 @@
-- Add parameter 'encoding' to `xoutil.eight.string.force`:func: and
-  `xoutil.eight.string.safe_join`:func:.
+- Add parameter 'encoding' to ``xoutil.eight.string.force`` and
+  ``xoutil.eight.string.safe_join``.
 
-- Add `xoutil.fp.iterators`:mod: and `xoutil.fp.iterators.iter_compose`:func:.
+- Add ``xoutil.fp.iterators`` and ``xoutil.fp.iterators.iter_compose``.

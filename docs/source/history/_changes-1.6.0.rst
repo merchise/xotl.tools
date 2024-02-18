@@ -1,4 +1,4 @@
-- Changes the signature of `xoutil.names.nameof`:func:, also the semantics of
+- Changes the signature of ``xoutil.names.nameof``, also the semantics of
   the `full` parameter is improved.
 
   This is the major change in this release.  Actually, this release has being

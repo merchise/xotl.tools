@@ -1,1 +1,1 @@
-- Bug fixes in `!xoutil.proxy`:mod: and `!xoutil.aop.classical`:mod:.
+- Bug fixes in ``xoutil.proxy`` and ``xoutil.aop.classical``.

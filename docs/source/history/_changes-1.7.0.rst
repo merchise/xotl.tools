@@ -4,16 +4,15 @@ the 1.6.11 to allow deprecation messages to be included properly.
 
 The following is the list of changes:
 
-- The `defaults` `xoutil.objects.smart_copy`:func: has being made keyword
+- The `defaults` ``xoutil.objects.smart_copy`` has being made keyword
   only.
 
-- Deprecates the `~xoutil.collections.StackedDict.pop`:meth: semantics, they
-  shadow the `dict.pop`:func:.  A new
-  `~xoutil.collections.StackedDict.pop_level`:meth: is provided to explicitly
-  pop a stack level.  The same is done for the
-  `~xoutil.collections.StackedDict.pop`:meth: method.
+- Deprecates the ``xoutil.collections.StackedDict.pop`` semantics, they shadow
+  the `dict.pop`:func:.  A new ``xoutil.collections.StackedDict.pop_level`` is
+  provided to explicitly pop a stack level.  The same is done for the
+  ``xoutil.collections.StackedDict.pop`` method.
 
 - Deprecates function ``xoutil.iterators.fake_dict_iteritems``.
 
-- Deprecates `xoutil.objects.metaclass`:class: in favor for
-  `xoutil.eight.meta.metaclass`:func:.
+- Deprecates ``xoutil.objects.metaclass`` in favor for
+  ``xoutil.eight.meta.metaclass``.

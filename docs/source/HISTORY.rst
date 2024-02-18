@@ -621,16 +621,16 @@ Unreleased. Release 1.6.11
 2012-11-01. Release 1.1.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Introduces `xoutil.compat.iteritems_`:func:, `xoutil.compat.iterkeys_`:func:
-  and `xoutil.compat.itervalues_`:func:.
+- Introduces ``xoutil.compat.iteritems_``, ``xoutil.compat.iterkeys_``
+  and ``xoutil.compat.itervalues_``.
 
-- `execution context <xoutil.context>`:mod: are now aware of `zope.interface`
-  interfaces; so that you may ask for a context name implementing a given
-  interface, instead of the name itself.
+- Execution context are now aware of ``zope.interface`` interfaces; so that
+  you may ask for a context name implementing a given interface, instead of
+  the name itself.
 
 - Improves xoutil.formatter documentation.
 
-- Several fixes to `xoutil.aop.classical`:mod:. It has sudden backwards
+- Several fixes to ``xoutil.aop.classical``. It has sudden backwards
   incompatible changes.
 
 - `before` and `after` methods may use the `*args, **kwargs` idiom to get the
@@ -641,14 +641,14 @@ Unreleased. Release 1.6.11
 2012-08-22. Release 1.1.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Adds function `xoutil.fs.rmdirs`:func: that removes empty dirs.
+- Adds function ``xoutil.fs.rmdirs`` that removes empty dirs.
 
-- Adds functions `xoutil.string.safe_join`:func:,
-  `xoutil.string.safe_encode`:func:, `xoutil.string.safe_decode`:func:,
-  and `xoutil.string.safe_strip`:func:; and the class
-  `xoutil.string.SafeFormatter`:class:.
+- Adds functions ``xoutil.string.safe_join``,
+  ``xoutil.string.safe_encode``, ``xoutil.string.safe_decode``,
+  and ``xoutil.string.safe_strip``; and the class
+  ``xoutil.string.SafeFormatter``.
 
-- Adds function `xoutil.cpystack.iter_frames`:func:.
+- Adds function ``xoutil.cpystack.iter_frames``.
 
 2012-07-11. Release 1.1.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -667,7 +667,7 @@ Unreleased. Release 1.6.11
 
 - Improves deprecation warnings by pointing to the real calling filename
 - Removes all internal use of simple_memoize since it's deprecated. We now use
-  `~xoutil.functools.lru_cache`:func:.
+  ``xoutil.functools.lru_cache``.
 
 2012-07-03. Release 1.1.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -678,15 +678,15 @@ Unreleased. Release 1.6.11
 
 - Removed xoutil.annotate, since it's not portable across Python's VMs.
 
-- Introduced module `xoutil.collections`:mod:
+- Introduced module ``xoutil.collections``
 
-- Deprecated modules `xoutil.default_dict`:mod:, `xoutil.opendict`:mod: in
-  favor of `xoutil.collections`:mod:.
+- Deprecated modules ``xoutil.default_dict``, ``xoutil.opendict`` in
+  favor of ``xoutil.collections``.
 
-- Backported `xoutil.functools.lru_cache`:func: from Python 3.2.
+- Backported ``xoutil.functools.lru_cache`` from Python 3.2.
 
-- Deprecated module `xoutil.memoize`:mod: in favor of
-  `xoutil.functools.lru_cache`:func:.
+- Deprecated module ``xoutil.memoize`` in favor of
+  ``xoutil.functools.lru_cache``.
 
 
 1.0 series
@@ -695,7 +695,7 @@ Unreleased. Release 1.6.11
 2012-06-15. Release 1.0.30
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Introduces a new module :py`xoutil.proxy`:mod:.
+- Introduces a new module :py``xoutil.proxy``.
 
 - Starts working on the sphinx documentation so that we move to 1.1 release we
   a decent documentation.
@@ -727,7 +727,7 @@ Unreleased. Release 1.6.11
 
   It is expected that the signature of those methods change in the future.
 
-- Introducing a default argument for `xoutil.objects.get_first_of`:func:.
+- Introducing a default argument for ``xoutil.objects.get_first_of``.
 
 - Other minor additions in the code. Refactoring and the like.
 
@@ -770,5 +770,5 @@ Unreleased. Release 1.6.11
 2012-04-03. Release 1.0.21
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Includes a new module `xoutil.annotate`:mod: that provides a way to place
+- Includes a new module ``xoutil.annotate`` that provides a way to place
   Python annotations in forward-compatible way.

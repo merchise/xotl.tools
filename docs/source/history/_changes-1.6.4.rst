@@ -1,1 +1,1 @@
-- Fix bug in `xoutil.fs.concatfiles`:func:\ : There were leaked opened files.
+- Fix bug in ``xoutil.fs.concatfiles``: There were leaked opened files.

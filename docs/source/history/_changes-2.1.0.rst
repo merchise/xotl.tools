@@ -1,5 +1,5 @@
 - Repackage ``xoutil`` under `xotl.tools`:mod:.  You can still import from the
-  `xoutil namespace<xoutil>`:mod:.
+  xoutil namespace.
 
 - Remove deprecated module ``xoutil.logger``.
 

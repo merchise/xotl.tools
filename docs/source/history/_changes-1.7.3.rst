@@ -1,3 +1,3 @@
-- Add `xoutil.iterators.ungroup`:func:.
+- Add ``xoutil.iterators.ungroup``.
 
-- Add `xoutil.future.datetime.get_next_month`:func:.
+- Add ``xoutil.future.datetime.get_next_month``.

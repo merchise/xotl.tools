@@ -1,1 +1,1 @@
-- `xoutil.datetime.EmptyTimeSpan`:obj: is now pickable.
+- ``xoutil.datetime.EmptyTimeSpan`` is now pickable.

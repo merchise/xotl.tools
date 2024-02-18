@@ -1,38 +1,33 @@
-- Deprecations and introductions:
+.. rubric:: Deprecations and introductions:
 
-  - Importing `xoutil.Unset`:data: and `xoutil.Ignored`:data: from
-    `xoutil.types`:mod: now issues a warning.
+- Importing ``xoutil.Unset`` and ``xoutil.Ignored`` from ``xoutil.types``
+  now issues a warning.
 
-  - New style for declaring portable metaclasses in
-    `xoutil.objects.metaclass`:func:, so
-    `xoutil.decorator.compat.metaclass`:func: is now deprecated.
+- New style for declaring portable metaclasses in
+  ``xoutil.objects.metaclass``, so ``xoutil.decorator.compat.metaclass`` is
+  now deprecated.
 
-  - Adds the module `xoutil.pprint`:mod: and function
-    `xoutil.pprint.ppformat`:func:.
+- Adds the module ``xoutil.pprint`` and function ``xoutil.pprint.ppformat``.
 
-  - Adds the first version of package `xoutil.cli`:mod:.
+- Adds the first version of package ``xoutil.cli``.
 
-  - Adds the `filter` parameter to functions `xoutil.objects.xdir`:func: and
-    `xoutil.objects.fdir`:func: and deprecates `attr_filter` and
-    `value_filter`.
+- Adds the `filter` parameter to functions ``xoutil.objects.xdir`` and
+  ``xoutil.objects.fdir`` and deprecates `attr_filter` and `value_filter`.
 
-  - Adds functions `xoutil.objects.attrclass`:func:,
-    `xoutil.objects.fulldir`:func:.
+- Adds functions ``xoutil.objects.attrclass``, ``xoutil.objects.fulldir``.
 
-  - Adds function `xoutil.iterators.continuously_slides`:func:.
+- Adds function ``xoutil.iterators.continuously_slides``.
 
-  - Adds package `xoutil.threading`:mod:.
+- Adds package ``xoutil.threading``.
 
-  - Adds package ``xoutil.html`` module and begins the port of
-    ``xoutil.html.parser`` from Python 3.3 to xoutil, so that a common
-    implementation for both Python 2.7 and Python 3.3 is available.
+- Adds package ``xoutil.html`` module and begins the port of
+  ``xoutil.html.parser`` from Python 3.3 to xoutil, so that a common
+  implementation for both Python 2.7 and Python 3.3 is available.
 
-- Bug fixes:
+.. rubric:: Bug fixes:
 
-  - Fixes some errors with `classical <!xoutil.aop.classical>`:mod: AOP weaving
-    of functions in modules that where `customized
-    <xoutil.modules.customize>`:func:.
+- Fixes some errors with classical AOP weaving of functions in modules that
+  where customized.
 
-  - Fixes bugs with `xoutil.modules`:mod:: makes
-    `xoutil.modules.modulemethod`:func: to customize the module, and improves
-    performance.
+- Fixes bugs with ``xoutil.modules``: makes ``xoutil.modules.modulemethod`` to
+  customize the module, and improves performance.

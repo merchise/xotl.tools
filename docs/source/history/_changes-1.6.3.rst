@@ -1,1 +1,1 @@
-- Added the pre-release version of `xoutil.bound`:mod: module.
+- Added the pre-release version of ``xoutil.bound`` module.
