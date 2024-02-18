@@ -37,7 +37,7 @@ from abc import ABC, ABCMeta, abstractmethod
 
 from xotl.tools.cli.tools import command_name, program_name
 from xotl.tools.deprecation import deprecate_module
-from xotl.tools.objects import staticproperty  # type: ignore
+from xotl.tools.objects import classproperty
 
 deprecate_module(__name__)
 del deprecate_module
@@ -162,8 +162,8 @@ class Command(ABC, metaclass=CommandMeta):
     def __repr__(self):
         return "<command: %s>" % command_name(type(self))
 
-    @staticproperty
-    def registry():  # type: ignore
+    @classproperty
+    def registry(cls):
         """Obtain all registered commands."""
         res = Command.__registry_cache__
         if not res:
@@ -295,4 +295,3 @@ HELP_NAME = command_name(Help)
 # TODO: Create "xotl.tools.config" here
 
 del abstractmethod, ABCMeta
-del staticproperty

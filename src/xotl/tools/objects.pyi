@@ -18,7 +18,7 @@ from typing import (
     Union,
 )
 
-from typing_extensions import ParamSpec, Protocol
+from typing_extensions import Generic, Protocol
 from xotl.tools.symbols import Unset
 
 # def adapt_exception(value: Optional[Union[Tuple[Type[KeyError], str], str, int]], **kwargs) -> Optional[KeyError]: ...
@@ -78,15 +78,15 @@ class lazy:
     def __init__(self, value: Any, *args, **kawrgs) -> None: ...
     def __call__(self) -> Any: ...
 
-X = TypeVar("X")
+_R_co = TypeVar("_R_co", covariant=True)
 
-P = ParamSpec("P")
-
-def classproperty(fn: Callable[[Type[Any]], X]) -> X: ...
+class classproperty(Generic[_R_co]):
+    def __init__(self, method: Callable[[Any], _R_co]) -> None: ...
+    def __get__(self, instance: Any, cls: Optional[type] = ...) -> _R_co: ...
 
 memoized_property = property
 
-T = TypeVar("T")
+T = TypeVar("T", bound=type)
 
 def copy_class(
     cls: T,
