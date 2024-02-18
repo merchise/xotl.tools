@@ -1,0 +1,6 @@
+Release 3.0.0
+=============
+
+*Unreleased*
+
+.. include:: _changes-3.0.0.rst

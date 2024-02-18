@@ -14,11 +14,11 @@ version number because we've removed some deprecated functions and/or modules.
 - Extracts decorator-making facilities from ``xoutil.decorators`` into
   ``xoutil.mdeco``.
 
-  .. The decorator-making decorator
-  .. ``xoutil.mdeco.decorator`` returns a signature-keeping decorator.
+  The decorator-making decorator ``xoutil.mdeco.decorator`` returns a
+  signature-keeping decorator.
 
-- Fixes in ``!xoutil.aop.extended``. Added parameters in
-  ``!xoutil.aop.classical.weave``.
+- Fixes in ``xoutil.aop.extended``. Added parameters in
+  ``xoutil.aop.classical.weave``.
 
 - Introduces ``xoutil.iterators.first_n`` and deprecates
   ``xoutil.iterators.first`` and ``xoutil.iterators.get_first``.

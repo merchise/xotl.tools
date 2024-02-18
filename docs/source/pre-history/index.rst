@@ -1,14 +1,6 @@
-Changelog
-=========
-
-3.0 series
-----------
-
-2024-02-16.  Release 3.0.0a2
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. include:: history/_changes-3.0.0.rst
-
+=======================================
+Changelog for old, unmantained versions
+=======================================
 
 2.2 series
 ----------
@@ -16,13 +8,13 @@ Changelog
 Unreleased.  Release 2.2.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.2.6.rst
+.. include:: 2.2.6.rst
 
 
 2022-04-21.  Release 2.2.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.2.5.rst
+.. include:: 2.2.5.rst
 
 
 2022-03-14.  Release 2.2.4.post1
@@ -34,19 +26,19 @@ Unreleased.  Release 2.2.6
 2022-03-02.  Release 2.2.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.2.4.rst
+.. include:: 2.2.4.rst
 
 
 2021-12-12.  Release 2.2.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.2.3.rst
+.. include:: 2.2.3.rst
 
 
 2021-12-02. Release 2.2.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.2.2.rst
+.. include:: 2.2.2.rst
 
 
 2021-11-29. Releases 2.2.1.post1 and 2.2.0.post1
@@ -59,14 +51,14 @@ Unreleased.  Release 2.2.6
 2021-10-26.  Release 2.2.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.2.1.rst
+.. include:: 2.2.1.rst
 
 
 2021-09-08.  Release 2.2.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.2.0.rst
-.. include:: history/_changes-2.1.11.rst
+.. include:: 2.2.0.rst
+.. include:: 2.1.11.rst
 
 
 2.1 series
@@ -75,72 +67,72 @@ Unreleased.  Release 2.2.6
 2021-11-29. Release 2.1.11
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.11.rst
+.. include:: 2.1.11.rst
 
 
 2020-10-28.  Release 2.1.10
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.10.rst
+.. include:: 2.1.10.rst
 
 2020-07-05.  Release 2.1.9
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.9.rst
+.. include:: 2.1.9.rst
 
 
 2020-03-31.  Release 2.1.8
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.8.rst
+.. include:: 2.1.8.rst
 
 
 2020-03-10.  Release 2.1.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.7.rst
+.. include:: 2.1.7.rst
 
 
 2020-01-21.  Release 2.1.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.6.rst
+.. include:: 2.1.6.rst
 
 
 2019-12-12. Release 2.1.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.5.rst
+.. include:: 2.1.5.rst
 
 
 2019-10-26. Release 2.1.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.4.rst
+.. include:: 2.1.4.rst
 
 
 2019-05-26.  Release 2.1.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.3.rst
+.. include:: 2.1.3.rst
 
 
 2019-05-26. Release 2.1.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.2.rst
+.. include:: 2.1.2.rst
 
 
 2019-03-13. Release 2.1.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.1.rst
+.. include:: 2.1.1.rst
 
 
 2019-02-27. Release 2.1.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.1.0.rst
+.. include:: 2.1.0.rst
 
 
 2.0 series
@@ -166,67 +158,67 @@ Unreleased.  Release 2.2.6
 2018-11-07.  Release 2.0.9
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.9.rst
+.. include:: 2.0.9.rst
 
 
 2018-09-24.  Release 2.0.8
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.8.rst
+.. include:: 2.0.8.rst
 
 
 2018-09-14.  Release 2.0.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.7.rst
+.. include:: 2.0.7.rst
 
 
 2018-07-30. Release 2.0.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.6.rst
+.. include:: 2.0.6.rst
 
 
 2018-06-25. Release 2.0.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.5.rst
+.. include:: 2.0.5.rst
 
 
 2018-05-09.  Release 2.0.4.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.4.1.rst
+.. include:: 2.0.4.1.rst
 
 
 2018-05-08.  Release 2.0.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.4.rst
+.. include:: 2.0.4.rst
 
 
 2018-04-16.  Release 2.0.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.3.rst
+.. include:: 2.0.3.rst
 
 
 2018-03-30.  Release 2.0.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.2.rst
+.. include:: 2.0.2.rst
 
 
 2018-03-22.  Release 2.0.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.1.rst
+.. include:: 2.0.1.rst
 
 
 2018-03-02.  Release 2.0.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-2.0.0.rst
+.. include:: 2.0.0.rst
 
 
 1.9 series
@@ -242,21 +234,21 @@ Unreleased.  Release 2.2.6
 2018-11-07.  Release 1.9.9
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.9.rst
+.. include:: 1.9.9.rst
 
 .. _rel-1.9.8:
 
 2018-09-24.  Release 1.9.8
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.8.rst
+.. include:: 1.9.8.rst
 
 .. _rel-1.9.7:
 
 2018-09-14.  Release 1.9.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.7.rst
+.. include:: 1.9.7.rst
 
 
 .. _rel-1.9.6:
@@ -264,14 +256,14 @@ Unreleased.  Release 2.2.6
 2018-07-30.  Release 1.9.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.6.rst
+.. include:: 1.9.6.rst
 
 .. _rel-1.9.5:
 
 2018-06-25. Release 1.9.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.5.rst
+.. include:: 1.9.5.rst
 
 
 .. _rel-1.9.4:
@@ -279,7 +271,7 @@ Unreleased.  Release 2.2.6
 2018-05-08. Release 1.9.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.4.rst
+.. include:: 1.9.4.rst
 
 
 .. _rel-1.9.3:
@@ -287,27 +279,27 @@ Unreleased.  Release 2.2.6
 2018-04-16. Release 1.9.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.3.rst
+.. include:: 1.9.3.rst
 
 .. _rel-1.9.2:
 
 2018-03-30. Release 1.9.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.2.rst
+.. include:: 1.9.2.rst
 
 .. _rel-1.9.1:
 
 2018-03-22.  Release 1.9.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.1.rst
+.. include:: 1.9.1.rst
 
 
 2018-03-02.  Release 1.9.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.9.0.rst
+.. include:: 1.9.0.rst
 
 
 1.8 series
@@ -316,55 +308,55 @@ Unreleased.  Release 2.2.6
 2018-02-24. Release 1.8.8
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.8.rst
+.. include:: 1.8.8.rst
 
 
 2018-01-06. Release 1.8.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.7.rst
+.. include:: 1.8.7.rst
 
 
 2018-01-02. Release 1.8.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.6.rst
+.. include:: 1.8.6.rst
 
 
 2017-12-22. Release 1.8.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.5.rst
+.. include:: 1.8.5.rst
 
 
 2017-12-15. Release 1.8.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.4.rst
+.. include:: 1.8.4.rst
 
 
 2017-11-28. Release 1.8.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.3.rst
+.. include:: 1.8.3.rst
 
 
 2017-11-22. Release 1.8.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.2.rst
+.. include:: 1.8.2.rst
 
 
 2017-11-17. Release 1.8.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.1.rst
+.. include:: 1.8.1.rst
 
 
 2017-11-03. Release 1.8.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.8.0.rst
+.. include:: 1.8.0.rst
 
 
 1.7 series
@@ -373,73 +365,73 @@ Unreleased.  Release 2.2.6
 2017-10-31. Release 1.7.12
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.12.rst
+.. include:: 1.7.12.rst
 
 
 2017-10-05.  1.7.11
 ~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.11.rst
+.. include:: 1.7.11.rst
 
 
 2017-09-21.  1.7.10
 ~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.10.rst
+.. include:: 1.7.10.rst
 
 
 2017-09-20.  1.7.9
 ~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.9.rst
+.. include:: 1.7.9.rst
 
 
 2017-09-19.  1.7.8
 ~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.8.rst
+.. include:: 1.7.8.rst
 
 
 2017-09-07. 1.7.7
 ~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.7.rst
+.. include:: 1.7.7.rst
 
 
 2017-09-05.  Release 1.7.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.6.rst
+.. include:: 1.7.6.rst
 
 
 2017-09-05.  Release 1.7.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.5.rst
+.. include:: 1.7.5.rst
 
 
 2017-04-06. Release 1.7.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.4.rst
+.. include:: 1.7.4.rst
 
 
 2017-02-23. Release 1.7.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.3.rst
+.. include:: 1.7.3.rst
 
 
 2017-02-07. Release 1.7.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.2.rst
+.. include:: 1.7.2.rst
 
 
 2015-12-17. Release 1.7.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.1.rst
+.. include:: 1.7.1.rst
 
 .. warning:: Due to lack of time, we have decided to release this version
    without proper releases of 1.7.0 and 1.6.11.
@@ -450,7 +442,7 @@ Unreleased.  Release 2.2.6
 Unreleased. Release 1.7.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.7.0.rst
+.. include:: 1.7.0.rst
 
 
 1.6 series
@@ -460,72 +452,72 @@ Unreleased. Release 1.7.0
 Unreleased. Release 1.6.11
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.11.rst
+.. include:: 1.6.11.rst
 
 
 2015-04-15. Release 1.6.10
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.10.rst
+.. include:: 1.6.10.rst
 
 
 2015-04-03.  Release 1.6.9
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.9.rst
+.. include:: 1.6.9.rst
 
 
 2015-01-26. Release 1.6.8
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.8.rst
+.. include:: 1.6.8.rst
 
 
 2014-12-17. Release 1.6.7
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.7.rst
+.. include:: 1.6.7.rst
 
 
 2014-11-26. Release 1.6.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.6.rst
+.. include:: 1.6.6.rst
 
 
 2014-10-13. Release 1.6.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.5.rst
+.. include:: 1.6.5.rst
 
 
 2014-09-13. Release 1.6.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.4.rst
+.. include:: 1.6.4.rst
 
 2014-08-05. Release 1.6.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.3.rst
+.. include:: 1.6.3.rst
 
 
 2014-08-04. Release 1.6.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.2.rst
+.. include:: 1.6.2.rst
 
 
 2014-07-18. Release 1.6.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.1.rst
+.. include:: 1.6.1.rst
 
 
 2014-06-02. Release 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.6.0.rst
+.. include:: 1.6.0.rst
 
 
 1.5 series
@@ -534,59 +526,59 @@ Unreleased. Release 1.6.11
 2014-05-29. Release 1.5.6
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.5.6.rst
+.. include:: 1.5.6.rst
 
 
 2014-05-13. Release 1.5.5
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.5.5.rst
+.. include:: 1.5.5.rst
 
 2014-04-08. Release 1.5.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.5.4.rst
+.. include:: 1.5.4.rst
 
 
 2014-04-01. Release 1.5.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.5.3.rst
+.. include:: 1.5.3.rst
 
 2014-03-03. Release 1.5.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.5.2.rst
+.. include:: 1.5.2.rst
 
 
 2014-02-14. Release 1.5.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.5.1.rst
+.. include:: 1.5.1.rst
 
 
 2014-01-24. Release 1.5.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/_changes-1.5.0.rst
+.. include:: 1.5.0.rst
 
 
 1.4 series
 ----------
 
-.. include:: history/changes-1.4.2.rst
-.. include:: history/changes-1.4.1.rst
+.. include:: 1.4.2.rst
+.. include:: 1.4.1.rst
 
 2013-04-26. Release 1.4.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/changes-1.4.0.rst
+.. include:: 1.4.0.rst
 
 
 1.3 series
 ----------
 
-.. include:: history/changes-1.3.0.rst
+.. include:: 1.3.0.rst
 
 1.2 series
 ----------
@@ -594,25 +586,25 @@ Unreleased. Release 1.6.11
 2013-04-03. Release 1.2.3
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/changes-1.2.3.rst
+.. include:: 1.2.3.rst
 
 
 2013-03-25. Release 1.2.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/changes-1.2.2.rst
+.. include:: 1.2.2.rst
 
 
 2013-02-14. Release 1.2.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/changes-1.2.1.rst
+.. include:: 1.2.1.rst
 
 
 2013-01-04. Release 1.2.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: history/changes-1.2.0.rst
+.. include:: 1.2.0.rst
 
 
 1.1 series
