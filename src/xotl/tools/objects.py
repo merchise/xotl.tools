@@ -640,7 +640,7 @@ def fulldir(obj):
         res = set.union(getdir(cls) for cls in _static_getmro(obj))
     else:
         res = getdir(obj)
-    return res if isinstance(obj, type) else res | set(dir(type(obj)))
+    return res if isinstance(obj, type) else (res | set(dir(type(obj))))
 
 
 def xdir(obj, getter=None, filter=None, _depth=0):

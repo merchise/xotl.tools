@@ -23,6 +23,7 @@ means several possibilities.
 
 """
 
+from xotl.tools.deprecation import deprecated
 from xotl.tools.symbols import Undefined  # used implicitly for absent default
 
 #: The maximum number of positional arguments allowed when calling a function.
@@ -131,6 +132,8 @@ def check_default(absent=Undefined):
 
     .. versionadded:: 1.8.0
 
+    .. deprecated:: 3.0.0 Use the positional-only '/' syntax introduced in `PEP 570<570>`:pep:.
+
     """
 
     def default(res=absent):
@@ -146,6 +149,8 @@ def single(args, kwds):
     `~xotl.tools.fp.option.Maybe`:class:.
 
     .. versionadded:: 1.8.0
+
+    .. deprecated:: 3.0.0
 
     """
     from xotl.tools.fp.option import Just, Wrong, take
@@ -244,6 +249,7 @@ def pop_keyword_values(kwargs, *names, **options):
     return res
 
 
+@deprecated(None, "This will removed in 4.0.0")
 class ParamManager:
     """Function parameters parser.
 
@@ -264,6 +270,8 @@ class ParamManager:
 
 
     .. versionadded:: 1.8.0
+
+    .. deprecated:: 3.0.0
 
     """
 
@@ -322,6 +330,7 @@ class ParamManager:
         return {k: args[k] if isinstance(k, int) else kwds[k] for k in ids}
 
 
+@deprecated(None, "This will removed in 4.0.0")
 class ParamSchemeRow:
     """Scheme row for a  `ParamManager`:class: instance call.
 
@@ -349,6 +358,8 @@ class ParamSchemeRow:
            information.
 
     .. versionadded:: 1.8.0
+
+    .. deprecated:: 3.0.0
 
     """
 
@@ -459,6 +470,7 @@ class ParamSchemeRow:
         return res
 
 
+@deprecated(None, "This will removed in 4.0.0")
 class ParamScheme:
     """Full scheme for a  `ParamManager`:class: instance call.
 
@@ -466,6 +478,8 @@ class ParamScheme:
     validate them as a whole.
 
     .. versionadded:: 1.8.0
+
+    .. deprecated:: 3.0.0
 
     """
 

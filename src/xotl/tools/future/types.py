@@ -36,6 +36,7 @@ from types import (
 from typing import TypeVar
 
 from typing_extensions import Protocol
+from xotl.tools.params import Undefined
 from xotl.tools.symbols import Unset as _unset
 
 try:
@@ -74,7 +75,7 @@ func_types = FuncTypes  # Just an alias
 RegexPattern = type(re.compile(""))
 
 
-def _get_mro_attr(target, name, *default):
+def _get_mro_attr(target, name, default=Undefined, /):
     """Get a named attribute from a type.
 
     Similar to `getattr` but looking in the MRO dictionaries for the type.
@@ -98,16 +99,14 @@ def _get_mro_attr(target, name, *default):
       56
 
     """
-    from xotl.tools.params import Undefined, check_default
-
     # force type
     target = target if isinstance(target, type) else type(target)
     target_mro = _static_getmro(target)
     cls = next((c for c in target_mro if name in c.__dict__), _unset)
     if cls is not _unset:
         return cls.__dict__[name]
-    elif check_default()(*default) is not Undefined:
-        return default[0]
+    elif default is not Undefined:
+        return default
     else:
         msg = "'{}' type has no attribute '{}'"
         raise AttributeError(msg.format(target, name))

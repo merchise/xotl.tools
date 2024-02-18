@@ -37,3 +37,16 @@
 
 - Change the signature of `xotl.tools.objects.copy_class`:func: to take
   keyword-only arguments.
+
+
+- Make 'default' positional-only argument in
+  `xotl.tools.future.inspect.get_attr_value`:func:.
+
+- Deprecate param-related utitilies for which there are now better syntactical
+  approaches:
+
+  - `xotl.tools.params.check_default`:func:
+  - `xotl.tools.params.single`:func:
+  - `xotl.tools.params.ParamManager`:class:
+  - `xotl.tools.params.ParamSchemeRow`:class:
+  - `xotl.tools.params.ParamScheme`:class:
