@@ -34,7 +34,7 @@ doctest:
 .PHONY: test
 
 mypy:
-	@$(RYE_EXEC) mypy -p xotl.tools --config mypy.ini
+	@$(RYE_EXEC) tox -e system-staticcheck
 .PHONY: mypy
 
 docs:
