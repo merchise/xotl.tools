@@ -60,8 +60,9 @@ del datetime
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 try:
-    from xotl.tools._version import version
-    release = version
+    from xotl.tools._version import version_tuple
+    version = " ".join(str(p) for p in version_tuple[:3])
+    release = " ".join(str(p) for p in version_tuple[:4])
 except ImportError:
     from importlib import metadata
     from importlib.metadata import PackageNotFoundError
