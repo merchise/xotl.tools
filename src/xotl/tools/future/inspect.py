@@ -11,21 +11,22 @@
 
 from inspect import getattr_static, isdatadescriptor
 
+from xotl.tools.symbols import Undefined
+
 __all__ = ("get_attr_value", "safe_name")
 
 
-def get_attr_value(obj, name, *default):
+def get_attr_value(obj, name, default=Undefined, /):
     """Get a named attribute from an object in a safe way.
 
     Similar to `getattr` but without triggering dynamic look-up via the
     descriptor protocol, `__getattr__` or `__getattribute__` by using
     `getattr_static`:func:.
 
-    """
-    from xotl.tools.params import check_default
-    from xotl.tools.symbols import Undefined
+    .. versionchanged:: 3.0.0 Now `default` is a positional-only argument.  Before we used a trick
+       to ``*default`` and check it had 0 or one value.
 
-    default = check_default()(*default)
+    """
     is_type = isinstance(obj, type)
     res = getattr_static(obj, name, Undefined)
     if isdatadescriptor(res):  # noqa

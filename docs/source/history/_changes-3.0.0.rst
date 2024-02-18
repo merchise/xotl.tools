@@ -1,3 +1,5 @@
+.. rubric:: Packaging and distribution changes
+
 - No longer distribute the package 'xoutil'.
 
 - No longer keep re-exporting all symbols from the standard library.
@@ -9,9 +11,32 @@
 
   The list of supported Python versions is: 3.8, 3.9, 3.10, 3.11, and 3.12.
 
+.. rubric:: General changes (mostly backwards-compatible)
+
 - Make `xotl.tools.objects.classproperty`:class: work again in Python 3.11.
 
 - Use `DeprecationWarning`:class: in `xotl.tools.deprecation`:mod:.
+
+- Make 'default' positional-only argument in
+  `xotl.tools.future.inspect.get_attr_value`:func:.
+
+
+.. rubric:: Possibly backwards-incompatible changes (excluding removals).
+
+- Change the signature of `xotl.tools.objects.copy_class`:func: to take
+  keyword-only arguments.
+
+
+.. rubric:: Removals and deprecations
+
+- Deprecate param-related utitilies for which there are now better syntactical
+  approaches:
+
+  - `xotl.tools.params.check_default`:func:
+  - `xotl.tools.params.single`:func:
+  - `xotl.tools.params.ParamManager`:class:
+  - `xotl.tools.params.ParamSchemeRow`:class:
+  - `xotl.tools.params.ParamScheme`:class:
 
 - Remove old backports or aliases:
 
