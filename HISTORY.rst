@@ -1,1 +1,1 @@
-docs/source/HISTORY.rst
+docs/source/history/index.rst

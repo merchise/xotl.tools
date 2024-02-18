@@ -7,7 +7,7 @@ Welcome to xotl.tools's documentation!
 What's new in |release|
 -----------------------
 
-.. include:: history/_changes-3.0.0.rst
+.. include:: history/3.0/_changes-3.0.0.rst
 
 
 Contents
@@ -18,10 +18,11 @@ Contents
    :glob:
 
    xotl.tools/*
-   HISTORY
+   history/index.rst
    CONTRIBUTING
    CONTRIBUTORS
    LICENSE
+   pre-history/index.rst
 
 
 Indices and tables

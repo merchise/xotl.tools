@@ -1,0 +1,1 @@
+- Added module ``xoutil.dim`` -- Facilities to work with concrete numbers.
