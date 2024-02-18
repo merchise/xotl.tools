@@ -18,7 +18,7 @@ from typing import (
     Union,
 )
 
-from typing_extensions import Protocol, ParamSpec
+from typing_extensions import ParamSpec, Protocol
 from xotl.tools.symbols import Unset
 
 # def adapt_exception(value: Optional[Union[Tuple[Type[KeyError], str], str, int]], **kwargs) -> Optional[KeyError]: ...
