@@ -9,6 +9,7 @@ install:
 	rye self update || curl -sSf https://rye-up.com/get | bash
 	rye pin --relaxed $(PYTHON_VERSION)
 	rye sync
+	cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
 .PHONY: install
 
 

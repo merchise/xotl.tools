@@ -52,13 +52,13 @@ stages:
     - .gitlab-ci.yml
 
 
-check flake8 and black:
+lint:
   interruptible: true
-  image: python:3.8
+  image: python:3.12
   stage: check
   needs: []
   script:
-    - pip install -r requirements-dev-py38.lock
+    - pip install -r requirements-dev-py312.lock
     - ruff check src/
     - ruff format --check src/
     - isort --check --diff src/
@@ -131,7 +131,7 @@ test doctests:
 
 
 build:
-  image: python:3.8
+  image: python:3.12
   stage: build
   script:
     - pip install hatch
@@ -155,7 +155,7 @@ check signature of tag:
     <<: *when-releasing
 
 publish in pypi:
-  image: python:3.8
+  image: python:3.12
   variables:
     GIT_STRATEGY: none
   stage: publish
@@ -173,7 +173,7 @@ publish in pypi:
 
 
 .build_doc: &build_doc
-  image: python:3.8
+  image: python:3.12
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}
@@ -181,7 +181,7 @@ publish in pypi:
       - docs/builds/
   script:
     - apt-get update && apt-get install -y git make
-    - pip install -r requirements-dev-py38.lock
+    - pip install -r requirements-dev-py312.lock
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/

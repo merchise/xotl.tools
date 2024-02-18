@@ -18,7 +18,7 @@ from typing import (
     Union,
 )
 
-from typing_extensions import Protocol
+from typing_extensions import Protocol, ParamSpec
 from xotl.tools.symbols import Unset
 
 # def adapt_exception(value: Optional[Union[Tuple[Type[KeyError], str], str, int]], **kwargs) -> Optional[KeyError]: ...
@@ -79,6 +79,8 @@ class lazy:
     def __call__(self) -> Any: ...
 
 X = TypeVar("X")
+
+P = ParamSpec("P")
 
 def classproperty(fn: Callable[[Type[Any]], X]) -> X: ...
 
