@@ -221,7 +221,14 @@ build documentation:
       cp $SSH_CONFIG_FILE $HOME/.ssh/config
       ssh docs.lahavane.com mkdir -p /data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA
       rsync -auvp -e ssh ./docs/build/html/ docs.lahavane.com:/data/$CI_PROJECT_NAME/.$CI_COMMIT_SHA/
-      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $CI_COMMIT_REF_SLUG; ln -s .$CI_COMMIT_SHA $CI_COMMIT_REF_SLUG"
+
+      if [ -n "$CI_COMMIT_TAG" ]; then
+         slug="$CI_COMMIT_TAG"
+      else
+         slug="$CI_COMMIT_REF_SLUG"
+      fi
+
+      ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; rm -r $slug; ln -s .$CI_COMMIT_SHA $slug"
       ssh docs.lahavane.com "cd /data/$CI_PROJECT_NAME; ls -al | grep -oE '\.([0-9]|[a-z])*$' | sort | uniq -c | grep '1 ' | grep -oE '\.([0-9]|[a-z])*$' | xargs rm -rf"
   environment:
     name: docs.lahavane.com
