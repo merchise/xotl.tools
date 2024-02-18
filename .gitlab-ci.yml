@@ -66,7 +66,6 @@ lint:
     <<: *when-merge-requests-or-stable
 
 .run_staticcheck: &run_staticcheck
-  interruptible: true
   image: python:$PYTHON
   stage: mypy
   cache:
@@ -78,7 +77,6 @@ lint:
     - tox -e system-staticcheck
 
 .run_tests: &run_tests
-  interruptible: true
   image: python:$PYTHON
   stage: test
   cache:
@@ -91,6 +89,7 @@ lint:
 
 run required static checks:
   <<: *run_staticcheck
+  interruptible: true
   allow_failure: true
   only:
     <<: *when-merge-requests-or-stable
@@ -100,6 +99,7 @@ run required static checks:
 
 tests:
   <<: *run_tests
+  interruptible: true
   only:
     <<: *when-merge-requests-or-stable
   needs:
@@ -112,6 +112,7 @@ tests:
 test doctests:
   image: python:$PYTHON
   stage: test
+  interruptible: true
   script:
     - pip install tox
     - tox -e system-doctest
@@ -144,7 +145,6 @@ build:
 
 
 check signature of tag:
-  interruptible: true
   image: alpine
   stage: check
   script:
@@ -199,13 +199,13 @@ build documentation for releases:
 
 build documentation:
   <<: *build_doc
+  interruptible: true
   needs:
     - test doctests
   only:
     <<: *when-merge-requests-or-stable
   variables:
     SPHINXOPTS: "-W"
-  interruptible: true
 
 .publish_rtd: &publish_rtd
   image: alpine
@@ -239,10 +239,15 @@ publish in our RTD for releases:
 pages:
   <<: *build_doc
   only:
-    - releases-2.2.x
+    refs:
+      - releases-2.2.x
+    variables:
+      - $CI_SERVER_HOST == "gitlab.com"
+
 
 publish in our RTD:
   <<: *publish_rtd
+  interruptible: true
   only:
     <<: *when-merge-requests-or-stable
     variables:
