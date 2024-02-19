@@ -11,11 +11,8 @@ import types
 import warnings
 from functools import wraps
 
-# TODO: Invalidate this module in favor of new 'xotl.tools.suggest' when
-# implemented
-
 DEFAULT_MSG = (
-    "{funcname} is now deprecated and it will be " "removed{in_version}. Use {replacement} instead."
+    "{funcname} is now deprecated and it will be removed{in_version}. Use {replacement} instead."
 )
 
 
