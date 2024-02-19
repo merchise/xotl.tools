@@ -17,7 +17,7 @@
 
 import sys
 
-from xotl.tools.deprecation import deprecated_alias
+from typing_extensions import deprecated
 
 # TODO: Must be implemented using `xotl.tools.api` mechanisms for correct
 # driver determination, in this case "thread-local data".
@@ -111,10 +111,7 @@ class ConstantWait:
         return self.wait
 
 
-StandardWait = deprecated_alias(
-    ConstantWait,
-    msg="StandardWait is deprecated. Use ConstantWait instead",
-)
+StandardWait = deprecated("Use ConstantWait instead")(ConstantWait)
 
 
 class BackoffWait:
@@ -275,6 +272,3 @@ class retrier:
                         raise
 
         return inner
-
-
-del deprecated_alias

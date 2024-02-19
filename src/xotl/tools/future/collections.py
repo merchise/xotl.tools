@@ -18,7 +18,7 @@ import collections as _stdlib
 from collections.abc import Container, Iterable, Mapping, MutableMapping, MutableSet, Set, Sized
 from reprlib import recursive_repr
 
-from xotl.tools.deprecation import deprecated
+from typing_extensions import deprecated
 from xotl.tools.objects import SafeDataItem as safe
 from xotl.tools.symbols import Unset
 
@@ -150,7 +150,7 @@ class DefaultDict(_stdlib.defaultdict):
             raise KeyError(key)
 
 
-defaultdict = deprecated(DefaultDict)(DefaultDict)
+defaultdict = deprecated("Use DefaultDict")(DefaultDict)
 
 
 class OpenDictMixin:
