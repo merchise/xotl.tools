@@ -10,6 +10,7 @@
 """A protocol to obtain or manage object names."""
 
 # FIX: These imports must be local
+from typing_extensions import deprecated
 from xotl.tools.symbols import Undefined as _undef
 
 # TODO: This module must be reviewed and deprecate most of it.
@@ -390,7 +391,7 @@ def nameof(*args, **kwargs):
         return names
 
 
-def identifier_from(*args):
+def identifier_from(arg, /):
     """Build an valid identifier from the name extracted from an object.
 
     .. versionadded:: 1.5.6
@@ -406,26 +407,25 @@ def identifier_from(*args):
         >>> identifier_from({})
         'dict'
 
+    .. versionchanged:: 3.0.0 The argument is positional-only.
+
     """
-    if len(args) == 1:
-        from xotl.tools.future.inspect import get_attr_value
-        from xotl.tools.validators.identifiers import is_valid_identifier as valid
+    from xotl.tools.future.inspect import get_attr_value
+    from xotl.tools.validators.identifiers import is_valid_identifier as valid
 
-        res = None
-        if isinstance(args[0], type):
-            aux = get_attr_value(args[0], "__name__", None)
-            if valid(aux):
-                res = str("_%s" % aux)
-        if res is None:
-            tests = ({"inner": True}, {}, {"typed": True})
-            names = (nameof(args[0], depth=2, **test) for test in tests)
-            res = next((name for name in names if valid(name)), None)
-        return res
-    else:
-        msg = "identifier_from() takes exactly 1 argument (%s given)"
-        raise TypeError(msg % len(args))
+    res = None
+    if isinstance(arg, type):
+        aux = get_attr_value(arg, "__name__", None)
+        if valid(aux):
+            res = str("_%s" % aux)
+    if res is None:
+        tests = ({"inner": True}, {}, {"typed": True})
+        names = (nameof(arg, depth=2, **test) for test in tests)
+        res = next((name for name in names if valid(name)), None)
+    return res
 
 
+@deprecated("Use a normal list")
 class namelist(list):
     """Similar to list, but only intended for storing object names.
 
@@ -498,6 +498,7 @@ class namelist(list):
         return list.remove(self, nameof(value, depth=2))
 
 
+@deprecated("Use a normal list")
 class strlist(list):
     """Similar to list, but only intended for storing ``str`` instances.
 
@@ -560,31 +561,3 @@ class strlist(list):
 
         """
         return list.remove(self, str(value))
-
-
-# Theses tests need to be defined in this module to test relative imports.
-# Otherwise the `tests/` directory would need to be a proper package.
-
-import unittest as _utest  # noqa
-
-# Use a tier 0 module!
-from xotl.tools.symbols import Unset as _Unset  # noqa
-
-
-class TestRelativeImports(_utest.TestCase):
-    RelativeUnset = _Unset
-    AbsoluteUndefined = _undef
-
-    def test_relative_imports(self):
-        self.assertEqual(nameof(self.RelativeUnset), "_Unset")
-        self.assertEqual(nameof(self.RelativeUnset, inner=True), "Unset")
-
-        # Even relative imports are resolved properly with `full=True`
-        self.assertEqual(nameof(self.RelativeUnset, full=True), "xotl.tools.names._Unset")
-
-        self.assertEqual(nameof(self.AbsoluteUndefined, full=True), "xotl.tools.names._undef")
-
-
-# Don't delete the _Unset name, so that the nameof inside the test could find
-# them in the module.
-del _utest

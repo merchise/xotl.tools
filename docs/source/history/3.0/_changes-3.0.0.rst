@@ -26,12 +26,26 @@
 
 .. rubric:: Removals and deprecations
 
+- Deprecate `xotl.tools.names.namelist`:class:, and
+  `xotl.tools.names.strlist`:class:.
+
 - Deprecate the module `xotl.tools.deprecation`:mod:, and removed deprecated
   ``xotl.tools.deprecation.deprecated_alias``.  Instead you should use the
   upcoming `warnings.deprecated`:func: (or
   `typing_extensions.deprecated`:func:).
 
   This library no longer uses this module for deprecation.
+
+- Deprecate function `xotl.tools.modules.copy_members`:func:, this was mainly
+  an internal function to provide the drop-in replacement of standard library
+  modules.
+
+- Deprecate function `xotl.tools.modules.force_module`:func:, this was mainly
+  an internal function for the (now deprecated) module
+  ``xotl.tools.deprecation``.
+
+- Deprecate function `xotl.tools.modules.get_module_path`:func:.  This is not
+  portable, and can fail for extensions, etc.
 
 - Deprecate param-related utitilies for which there are now better syntactical
   approaches:

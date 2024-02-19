@@ -6,14 +6,14 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-
 """Modules utilities."""
 
 from types import ModuleType
 
-# TODO: Implement the concept of module descriptor
+from typing_extensions import deprecated
 
 
+@deprecated("It will be removed")
 def force_module(ref=None):
     """Load a module from a string or return module if already created.
 
@@ -54,7 +54,7 @@ def force_module(ref=None):
         return import_module(ref)
 
 
-# TODO: Deprecate this method in favor of ``from <module> import *``
+@deprecated("It will be removed")
 def copy_members(source=None, target=None):
     """Copy module members from `source` to `target`.
 
@@ -78,6 +78,8 @@ def copy_members(source=None, target=None):
 
        Function used to inspect the stack is not guaranteed to exist in all
        implementations of Python.
+
+    .. deprecated:: 3.0.0
 
     """
     target = force_module(target or 2)
@@ -222,6 +224,7 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
     return result
 
 
+@deprecated("This will be removed, since not every module it's a path.")
 def get_module_path(module):
     """Gets the absolute path of a `module`.
 
@@ -233,6 +236,8 @@ def get_module_path(module):
     ``__init__``).
 
     If `module` is a string and it's not absolute, raises a TypeError.
+
+    .. deprecated:: 3.0.0
 
     """
     from importlib import import_module
