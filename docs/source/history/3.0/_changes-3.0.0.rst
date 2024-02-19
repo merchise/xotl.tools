@@ -62,6 +62,9 @@
 - Remove deprecated methods ``pop`` and ``push`` of
   `xotl.tools.future.collections.StackedDict`:class:.
 
-- Remove undocumented module ``xotl.tools.versions``.
-
 - Remove deprecated ``xotl.tools.tasking.StandardWait``.
+
+- Remove undocumented module ``xotl.tools.versions`` (use
+  `packaging.versions`:mod:).
+
+- Remove undocumented module ``xotl.tools.tools``.
