@@ -96,10 +96,6 @@ We divide xoutil modules into 4 tiers:
    - `xotl.tools.decorator.meta`:mod:.  This is to allow the definition of
      decorators in other modules.
 
-   - `xotl.tools.names`:mod:.  This is to allow the use of
-     `xotl.tools.names.namelist`:class: for the ``__all__`` attribute of other
-     modules.
-
    - `xotl.tools.deprecation`:mod:.  It **must not** depend on any other
      module.  Many modules in ``xotl.tools`` will use this module at import
      time to declare deprecated features.
@@ -110,8 +106,9 @@ We divide xoutil modules into 4 tiers:
    modules, and that export features that could be imported at the module
    level.
 
-   This tier only has the `xotl.tools.modules`:mod:.  Both
-   `xotl.tools.modules.modulepropery`:func: and
+   This tier only has the `xotl.tools.modules`:mod:.
+
+   Both `xotl.tools.modules.modulepropery`:func: and
    `xotl.tools.modules.modulemethod`:func: are meant be used at module level
    definitions, so they are likely to be imported at module level.
 

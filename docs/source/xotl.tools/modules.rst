@@ -3,4 +3,5 @@
 =================================================================
 
 .. automodule:: xotl.tools.modules
-   :members:
+   :members: modulemethod, moduleproperty, customize,
+             force_module, get_module_path, copy_members

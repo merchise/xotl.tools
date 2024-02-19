@@ -174,7 +174,7 @@ class compose(metaclass=MetaCompose):
 
     def __repr__(self):
         """Get composed function representation"""
-        from xotl.tools.tools import nameof
+        from xotl.tools.names import nameof
 
         if self.inner:
 

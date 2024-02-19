@@ -85,7 +85,7 @@ lint:
       - .tox/
   script:
     - pip install tox
-    - tox -e system-$CASE
+    - tox -e system-$CASE -- -n auto
 
 run required static checks:
   <<: *run_staticcheck

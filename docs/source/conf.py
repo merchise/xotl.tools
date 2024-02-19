@@ -207,6 +207,7 @@ intersphinx_mapping = {
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),
     'hypothesis': ('https://hypothesis.readthedocs.io/en/latest/', None),
     'typing_extensions': ('https://typing-extensions.readthedocs.io/en/latest/', None),
+    'packaging': ('https://packaging.pypa.io/en/stable/', None),
 }
 
 # Maintain the cache forever.
