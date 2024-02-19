@@ -17,8 +17,6 @@
 
 import sys
 
-from typing_extensions import deprecated
-
 # TODO: Must be implemented using `xotl.tools.api` mechanisms for correct
 # driver determination, in this case "thread-local data".
 if "greenlet" in sys.modules:
@@ -37,7 +35,6 @@ __all__ = (
     "ConstantWait",
     "MIN_WAIT_INTERVAL",
     "DEFAULT_WAIT_INTERVAL",
-    "StandardWait",
     "BackoffWait",
     "get_backoff_wait",
     "retry",
@@ -109,9 +106,6 @@ class ConstantWait:
 
     def __call__(self, prev=None):
         return self.wait
-
-
-StandardWait = deprecated("Use ConstantWait instead")(ConstantWait)
 
 
 class BackoffWait:

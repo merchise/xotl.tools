@@ -63,3 +63,5 @@
   `xotl.tools.future.collections.StackedDict`:class:.
 
 - Remove undocumented module ``xotl.tools.versions``.
+
+- Remove deprecated ``xotl.tools.tasking.StandardWait``.
