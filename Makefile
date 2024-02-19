@@ -26,7 +26,7 @@ lint:
 .PHONY: lint
 
 test:
-	@$(RYE_EXEC) tox -e system-unit,system-greenlets
+	@$(RYE_EXEC) tox -e system-unit,system-greenlets -- -n auto
 .PHONY: test
 
 doctest:
