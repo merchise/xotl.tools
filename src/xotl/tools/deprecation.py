@@ -11,6 +11,8 @@ import types
 import warnings
 from functools import wraps
 
+from typing_extensions import deprecated as stdlib_deprecated
+
 DEFAULT_MSG = (
     "{funcname} is now deprecated and it will be removed{in_version}. Use {replacement} instead."
 )
@@ -61,6 +63,7 @@ def _nameof(item):
     return res
 
 
+@stdlib_deprecated("Use warnings.deprecated or typing_extensions.deprecated")
 def deprecated(
     replacement,
     msg=DEFAULT_MSG,
@@ -118,6 +121,8 @@ def deprecated(
     .. versionchanged:: 1.4.1 Introduces removed_in_version and check_version.
 
     .. versionchanged:: 2.2.6 Use DeprecationWarning instead of UserWarning.
+
+    .. deprecated:: 3.0.0
 
     """
 
@@ -225,6 +230,7 @@ def deprecated(
     return decorator
 
 
+@stdlib_deprecated("Use warnings.deprecated or typing_extensions.deprecated")
 def import_deprecated(module, *names, **aliases):
     """Import functions deprecating them in the target module.
 
@@ -262,6 +268,8 @@ def import_deprecated(module, *names, **aliases):
     This function is provided for easing the deprecation of whole modules and
     should not be used to do otherwise.
 
+    .. deprecated:: 3.0.0
+
     """
     from xotl.tools.future.types import func_types
     from xotl.tools.modules import force_module
@@ -297,6 +305,7 @@ def import_deprecated(module, *names, **aliases):
             raise ImportError(msg.format(name, src_name))
 
 
+@stdlib_deprecated("Use warnings.deprecated or typing_extensions.deprecated")
 def deprecate_linked(check=None, msg=None):
     """Deprecate an entire module if used through a link.
 
@@ -310,6 +319,8 @@ def deprecate_linked(check=None, msg=None):
       >>> from xotl.tools.deprecation import deprecate_linked
       >>> deprecate_linked()
       >>> del deprecate_linked
+
+    .. deprecated:: 3.0.0
 
     """
     import inspect
@@ -330,6 +341,7 @@ def deprecate_linked(check=None, msg=None):
         warnings.warn(msg, stacklevel=2)
 
 
+@stdlib_deprecated("Use warnings.deprecated or typing_extensions.deprecated")
 def deprecate_module(replacement, msg=None):
     """Deprecate an entire module.
 
@@ -343,6 +355,8 @@ def deprecate_module(replacement, msg=None):
       >>> from xotl.tools.deprecation import deprecate_module
       >>> deprecate_module('xotl.tools.symbols')
       >>> del deprecate_module
+
+    .. deprecated:: 3.0.0
 
     """
     import inspect
@@ -359,19 +373,6 @@ def deprecate_module(replacement, msg=None):
         )
     if msg:
         warnings.warn(msg, stacklevel=2)
-
-
-def deprecated_alias(f, **kwargs):
-    """Declare a deprecated alias.
-
-    This is roughly the same as ``deprecated(f)(f)``; which is makes it
-    convenient to give a better name to an already released function `f`,
-    while keeping the old name as a deprecated alias.
-
-    .. versionadded:: 2.1.0
-
-    """
-    return deprecated(f, **kwargs)(f)
 
 
 _DUNDER_ATTRS = {

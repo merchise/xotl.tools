@@ -17,8 +17,6 @@
 
 import sys
 
-from xotl.tools.deprecation import deprecated_alias
-
 # TODO: Must be implemented using `xotl.tools.api` mechanisms for correct
 # driver determination, in this case "thread-local data".
 if "greenlet" in sys.modules:
@@ -37,7 +35,6 @@ __all__ = (
     "ConstantWait",
     "MIN_WAIT_INTERVAL",
     "DEFAULT_WAIT_INTERVAL",
-    "StandardWait",
     "BackoffWait",
     "get_backoff_wait",
     "retry",
@@ -109,12 +106,6 @@ class ConstantWait:
 
     def __call__(self, prev=None):
         return self.wait
-
-
-StandardWait = deprecated_alias(
-    ConstantWait,
-    msg="StandardWait is deprecated. Use ConstantWait instead",
-)
 
 
 class BackoffWait:
@@ -275,6 +266,3 @@ class retrier:
                         raise
 
         return inner
-
-
-del deprecated_alias

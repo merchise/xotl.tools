@@ -9,13 +9,11 @@
 
 """Several utilities for objects in general."""
 
-import sys
 from collections.abc import Mapping, MutableMapping
 from contextlib import contextmanager
 from functools import partial
 from inspect import _static_getmro
 
-from xotl.tools.deprecation import deprecated
 from xotl.tools.symbols import Unset
 
 __docstring_format__ = "rst"
@@ -1808,6 +1806,3 @@ class DelegatedAttribute:
 
     def __repr__(self):
         return "<DelegatedAttr '%s.%s'>" % (self.target_name, self.attr)
-
-
-del contextmanager, deprecated, sys

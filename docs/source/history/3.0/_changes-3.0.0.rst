@@ -15,8 +15,6 @@
 
 - Make `xotl.tools.objects.classproperty`:class: work again in Python 3.11.
 
-- Use `DeprecationWarning`:class: in `xotl.tools.deprecation`:mod:.
-
 - Make 'default' positional-only argument in
   `xotl.tools.future.inspect.get_attr_value`:func:.
 
@@ -26,8 +24,14 @@
 - Change the signature of `xotl.tools.objects.copy_class`:func: to take
   keyword-only arguments.
 
-
 .. rubric:: Removals and deprecations
+
+- Deprecate the module `xotl.tools.deprecation`:mod:, and removed deprecated
+  ``xotl.tools.deprecation.deprecated_alias``.  Instead you should use the
+  upcoming `warnings.deprecated`:func: (or
+  `typing_extensions.deprecated`:func:).
+
+  This library no longer uses this module for deprecation.
 
 - Deprecate param-related utitilies for which there are now better syntactical
   approaches:
@@ -59,3 +63,5 @@
   `xotl.tools.future.collections.StackedDict`:class:.
 
 - Remove undocumented module ``xotl.tools.versions``.
+
+- Remove deprecated ``xotl.tools.tasking.StandardWait``.

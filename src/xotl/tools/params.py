@@ -23,7 +23,7 @@ means several possibilities.
 
 """
 
-from xotl.tools.deprecation import deprecated
+from typing_extensions import deprecated
 from xotl.tools.symbols import Undefined  # used implicitly for absent default
 
 #: The maximum number of positional arguments allowed when calling a function.
@@ -249,7 +249,7 @@ def pop_keyword_values(kwargs, *names, **options):
     return res
 
 
-@deprecated(None, "This will removed in 4.0.0")
+@deprecated("This will removed in 4.0.0")
 class ParamManager:
     """Function parameters parser.
 
@@ -330,7 +330,7 @@ class ParamManager:
         return {k: args[k] if isinstance(k, int) else kwds[k] for k in ids}
 
 
-@deprecated(None, "This will removed in 4.0.0")
+@deprecated("This will removed in 4.0.0")
 class ParamSchemeRow:
     """Scheme row for a  `ParamManager`:class: instance call.
 
@@ -470,7 +470,7 @@ class ParamSchemeRow:
         return res
 
 
-@deprecated(None, "This will removed in 4.0.0")
+@deprecated("This will removed in 4.0.0")
 class ParamScheme:
     """Full scheme for a  `ParamManager`:class: instance call.
 

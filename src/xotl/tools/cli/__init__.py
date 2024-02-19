@@ -14,7 +14,6 @@
 .. deprecated:: 2.1.11 This module is completely deprecated.  Please use a
    dedicated package like `click`_.
 
-
 CLI is a mean of interaction with a computer program where the user (or
 client) issues commands to the program in the form of successive lines of text
 (command lines).
@@ -35,14 +34,12 @@ Commands can be registered by:
 import typing as t
 from abc import ABC, ABCMeta, abstractmethod
 
+from typing_extensions import deprecated
 from xotl.tools.cli.tools import command_name, program_name
-from xotl.tools.deprecation import deprecate_module
 from xotl.tools.objects import classproperty
 
-deprecate_module(__name__)
-del deprecate_module
 
-
+@deprecated("This is going to be removed")
 class CommandMeta(ABCMeta):
     """Meta-class for all commands."""
 
@@ -148,6 +145,7 @@ class CommandMeta(ABCMeta):
         Command.set_setting("default_command", name)
 
 
+@deprecated("This is going to be removed")
 class Command(ABC, metaclass=CommandMeta):
     """Base for all commands."""
 
@@ -220,6 +218,7 @@ class Command(ABC, metaclass=CommandMeta):
             Command.__registry_cache__[name] = Help
 
 
+@deprecated("This is going to be removed")
 class Help(Command):
     """Show all commands.
 
@@ -291,7 +290,3 @@ class Help(Command):
 
 
 HELP_NAME = command_name(Help)
-
-# TODO: Create "xotl.tools.config" here
-
-del abstractmethod, ABCMeta

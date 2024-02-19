@@ -202,9 +202,11 @@ intersphinx_mapping = {
     'py39': ('https://docs.python.org/3.9/', None),
     'py310': ('https://docs.python.org/3.10/', None),
     'py311': ('https://docs.python.org/3.11/', None),
+    'py313': ('https://docs.python.org/3.13/', None),
     'gevent': ('http://www.gevent.org', None),
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),
     'hypothesis': ('https://hypothesis.readthedocs.io/en/latest/', None),
+    'typing_extensions': ('https://typing-extensions.readthedocs.io/en/latest/', None),
 }
 
 # Maintain the cache forever.
