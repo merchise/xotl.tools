@@ -1,3 +1,5 @@
+.. _pre-history-index:
+
 =======================================
 Changelog for old, unmantained versions
 =======================================
