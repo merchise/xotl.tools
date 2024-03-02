@@ -88,5 +88,5 @@
 
 - Remove undocumented module ``xotl.tools.tools``.
 
-.. _pydantic:: https://pypi.org/project/pydantic/
-.. _beartype:: https://pypi.org/project/beartype/
+.. _pydantic: https://pypi.org/project/pydantic/
+.. _beartype: https://pypi.org/project/beartype/
