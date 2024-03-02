@@ -88,8 +88,8 @@ class logical(boolean):
             return t if arg is self else self
 
 
-nil = deprecated("Removed in future versions")(logical("nil"))
-t = deprecated("Removed in future versions")(logical("t"))
+nil = logical("nil")
+t = logical("t")
 
 
 @deprecated("Removed in future versions")
