@@ -14,7 +14,10 @@ A `predicate`:class: could combine two concepts (*validation* and
 
 """
 
+from typing_extensions import deprecated
 
+
+@deprecated("Removed in future version")
 class predicate:
     """Base class for value proves using logic predicates.
 
@@ -33,6 +36,8 @@ class predicate:
     alwasy return a moulded value.
 
     When use a predicate, several definitions will be tried until one succeed.
+
+    .. deprecated:: 3.0.0
 
     """
 
@@ -70,8 +75,13 @@ class predicate:
         return str(self)
 
 
+@deprecated("Removed in future version")
 class TypeCheck(predicate):
-    """Check if value is instance of given types."""
+    """Check if value is instance of given types.
+
+    .. deprecated:: 3.0.0
+
+    """
 
     __slots__ = ()
 
@@ -129,8 +139,13 @@ class TypeCheck(predicate):
         return "{}{}{}".format(start, res, end)
 
 
+@deprecated("Removed in future version")
 class NoneOrTypeCheck(TypeCheck):
-    """Check if value is None or instance of given types."""
+    """Check if value is None or instance of given types.
+
+    .. deprecated:: 3.0.0
+
+    """
 
     __slots__ = ()
 
@@ -155,8 +170,13 @@ class NoneOrTypeCheck(TypeCheck):
         return "none-or-{}".format(aux)
 
 
+@deprecated("Removed in future version")
 class TypeCast(TypeCheck):
-    """Cast a value to a correct type."""
+    """Cast a value to a correct type.
+
+    .. deprecated:: 3.0.0
+
+    """
 
     __slots__ = ()
 
@@ -183,10 +203,14 @@ class TypeCast(TypeCheck):
         return "none-or-{}".format(aux)
 
 
+@deprecated("Removed in future version")
 class CheckAndCast(predicate):
     """Check if value, if valid cast it.
 
     Result value must be valid also.
+
+    .. deprecated:: 3.0.0
+
     """
 
     __slots__ = ()
@@ -226,8 +250,13 @@ class CheckAndCast(predicate):
         return fmt.format(crop(cast), check)
 
 
+@deprecated("Removed in future version")
 class FunctionalCheck(predicate):
-    """Check if value is valid with a callable function."""
+    """Check if value is valid with a callable function.
+
+    .. deprecated:: 3.0.0
+
+    """
 
     __slots__ = ()
 
@@ -254,8 +283,13 @@ class FunctionalCheck(predicate):
         return "{}({})()".format(kind, inner)
 
 
+@deprecated("Removed in future version")
 class LogicalCheck(FunctionalCheck):
-    """Check if value is valid with a callable function."""
+    """Check if value is valid with a callable function.
+
+    .. deprecated:: 3.0.0
+
+    """
 
     __slots__ = ()
 
@@ -281,8 +315,13 @@ class LogicalCheck(FunctionalCheck):
             return Wrong(error)
 
 
+@deprecated("Removed in future version")
 class SafeCheck(FunctionalCheck):
-    """Return a wrong value only if function produce an exception."""
+    """Return a wrong value only if function produce an exception.
+
+    .. deprecated:: 3.0.0
+
+    """
 
     __slots__ = ()
 
@@ -295,10 +334,14 @@ class SafeCheck(FunctionalCheck):
             return Wrong(error)
 
 
+@deprecated("Removed in future version")
 class MultiCheck(predicate):
     """Return a wrong value only when all inner predicates fails.
 
     Haskell: guards (pp. 132)
+
+    .. deprecated:: 3.0.0
+
 
     """
 

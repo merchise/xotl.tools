@@ -30,11 +30,14 @@ Also contains sub-modules to obtain, convert and check values of common types.
 
 .. versionadded:: 1.7.0
 
+.. deprecated:: 3.0.0
+
 """
 
 import re
 from abc import ABCMeta
 
+from typing_extensions import deprecated
 from xotl.tools.fp.prove import vouch
 from xotl.tools.future.functools import lwraps
 from xotl.tools.symbols import Unset, boolean
@@ -42,6 +45,7 @@ from xotl.tools.symbols import Unset, boolean
 _coercer_decorator = lwraps(__coercer__=True)  # FIX: refactor
 
 
+@deprecated("Removed in future versions")
 class logical(boolean):
     """Represent Common Lisp two special values `t` and `nil`.
 
@@ -58,6 +62,8 @@ class logical(boolean):
 
     Constructor could receive a valid name ('nil' or 't') or any other
     ``boolean`` instance.
+
+    .. deprecated:: 3.0.0
 
     """
 
@@ -82,9 +88,11 @@ class logical(boolean):
             return t if arg is self else self
 
 
-nil, t = logical("nil"), logical("t")
+nil = deprecated("Removed in future versions")(logical("nil"))
+t = deprecated("Removed in future versions")(logical("t"))
 
 
+@deprecated("Removed in future versions")
 class MetaCoercer(ABCMeta):
     r"""Meta-class for `coercer`:class:.
 
@@ -100,12 +108,15 @@ class MetaCoercer(ABCMeta):
 
     See the class declaration (`coercer`:class:) for more information.
 
+    .. deprecated:: 3.0.0
+
     """
 
     def __instancecheck__(self, instance):
         return getattr(instance, "__coercer__", False) or super().__instancecheck__(instance)
 
 
+@deprecated("Removed in future versions")
 class coercer(metaclass=MetaCoercer):
     """Special coercer class.
 
@@ -134,6 +145,8 @@ class coercer(metaclass=MetaCoercer):
         >>> isinstance(age_coerce, coercer)
         True
 
+    .. deprecated:: 3.0.0
+
     """
 
     __slots__ = ()
@@ -157,6 +170,7 @@ class coercer(metaclass=MetaCoercer):
             return istype(inner) if inner else nil
 
 
+@deprecated("Removed in future versions")
 def coercer_name(arg, join=None):
     """Get the name of a coercer.
 
@@ -184,6 +198,8 @@ def coercer_name(arg, join=None):
     This function not only works with coercers, all objects that fulfill
     needed protocol to get names will also be valid.
 
+    .. deprecated:: 3.0.0
+
     """
     # TODO: Maybe this function must be moved to `xotl.tools.names`
     if isinstance(arg, (tuple, list, set)):
@@ -202,24 +218,28 @@ def coercer_name(arg, join=None):
         return res
 
 
+@deprecated("Removed in future versions")
 @coercer
 def identity_coerce(arg):
     "Leaves unchanged the passed argument `arg`."
     return arg
 
 
+@deprecated("Removed in future versions")
 @coercer
 def void_coerce(arg):
     """Always `nil`."""
     return nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def type_coerce(arg):
     """Check if `arg` is a valid type."""
     return arg if isinstance(arg, type) else nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def types_tuple_coerce(arg):
     """Check if `arg` is valid for `isinstance` or `issubclass` 2nd argument.
@@ -246,12 +266,14 @@ def types_tuple_coerce(arg):
         return nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def callable_coerce(arg):
     """Check if `arg` is a callable object."""
     return arg if callable(arg) else nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def file_coerce(arg):
     """Check if `arg` is a file-like object."""
@@ -262,6 +284,7 @@ def file_coerce(arg):
     return arg if ok else nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def float_coerce(arg):
     """Check if `arg` is a valid float.
@@ -284,6 +307,7 @@ def float_coerce(arg):
         return nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def int_coerce(arg):
     """Check if `arg` is a valid integer.
@@ -302,6 +326,7 @@ def int_coerce(arg):
             return nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def number_coerce(arg):
     """Check if `arg` is a valid number (integer or float).
@@ -320,6 +345,7 @@ def number_coerce(arg):
             return nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def positive_int_coerce(arg):
     """Check if `arg` is a valid positive integer."""
@@ -327,6 +353,7 @@ def positive_int_coerce(arg):
     return res if res is nil or res >= 0 else nil
 
 
+@deprecated("Removed in future versions")
 def create_int_range_coerce(min, max):
     """Create a coercer to check integers between a range."""
     min, max = vouch(int_coerce, min), vouch(int_coerce, max)
@@ -356,6 +383,7 @@ _IDENTIFIER_REGEX = re.compile(r"(?i)^[_a-z][\w]*$")
 
 
 # XXX: 'eight' pending.
+@deprecated("Removed in future versions")
 @coercer
 def identifier_coerce(arg):
     """Check if `arg` is a valid Python identifier.
@@ -372,6 +400,7 @@ def identifier_coerce(arg):
 _FULL_IDENTIFIER_REGEX = re.compile(r"(?i)^[_a-z][\w]*([.][_a-z][\w]*)*$")
 
 
+@deprecated("Removed in future versions")
 @coercer
 def full_identifier_coerce(arg):
     """Check if `arg` is a valid dotted Python identifier.
@@ -383,6 +412,7 @@ def full_identifier_coerce(arg):
     return str(arg) if ok else nil
 
 
+@deprecated("Removed in future versions")
 @coercer
 def names_coerce(arg):
     """Check `arg` as a tuple of valid object names (identifiers).
@@ -398,6 +428,7 @@ def names_coerce(arg):
 # == Iterators ==
 
 
+@deprecated("Removed in future versions")
 def create_unique_member_coerce(coerce, container):
     """Useful to wrap member coercers when coercing containers.
 
@@ -439,6 +470,7 @@ def create_unique_member_coerce(coerce, container):
     return inner
 
 
+@deprecated("Removed in future versions")
 @coercer
 def sized_coerce(arg):
     """Return a valid sized iterable from `arg`.
@@ -461,6 +493,7 @@ def sized_coerce(arg):
         return nil
 
 
+@deprecated("Removed in future versions")
 @coercer.register
 class custom:
     """Base class for any custom coercer.
@@ -534,6 +567,7 @@ class custom:
         return tuple(res)
 
 
+@deprecated("Removed in future versions")
 class istype(custom):
     """Pure type-checker.
 
@@ -574,6 +608,7 @@ class istype(custom):
         return arg if isinstance(arg, self.inner) else nil
 
 
+@deprecated("Removed in future versions")
 class typecast(istype):
     """A type-caster.
 
@@ -608,6 +643,7 @@ class typecast(istype):
         return res
 
 
+@deprecated("Removed in future versions")
 class safe(custom):
     """Uses a function (or callable) in a safe way.
 
@@ -640,6 +676,7 @@ class safe(custom):
             return nil
 
 
+@deprecated("Removed in future versions")
 class compose(custom):
     """Returns the composition of several inner `coercers`.
 
@@ -692,6 +729,7 @@ class compose(custom):
         return res
 
 
+@deprecated("Removed in future versions")
 class some(custom):
     """Represent OR composition of several inner `coercers`.
 
@@ -730,6 +768,7 @@ class some(custom):
         return res
 
 
+@deprecated("Removed in future versions")
 class combo(custom):
     """Represent a zip composition of several inner `coercers`.
 
@@ -795,6 +834,7 @@ class combo(custom):
         return res
 
 
+@deprecated("Removed in future versions")
 class pargs(custom):
     r"""Create a inner coercer that check variable argument passing.
 
@@ -904,6 +944,7 @@ class pargs(custom):
         return res
 
 
+@deprecated("Removed in future versions")
 class iterable(custom):
     """Create a inner coercer that coerces an `iterable` member a member.
 
@@ -1001,6 +1042,7 @@ class iterable(custom):
         return res
 
 
+@deprecated("Removed in future versions")
 class mapping(custom):
     """Create a coercer to check dictionaries.
 

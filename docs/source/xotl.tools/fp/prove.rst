@@ -1,6 +1,9 @@
 `xotl.tools.fp.prove`:mod: - Prove validity of values
 =====================================================
 
+.. deprecated:: 3.0.0
+
+
 Proving success or failure of a function call has two main patterns:
 
 1. Predicative: a function call returns one or more values indicating a

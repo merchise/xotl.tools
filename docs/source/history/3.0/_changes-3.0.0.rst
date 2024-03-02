@@ -56,6 +56,11 @@
   - `xotl.tools.params.ParamSchemeRow`:class:
   - `xotl.tools.params.ParamScheme`:class:
 
+- Deprecate coercion and type-checking modules
+  ``xotl.tools.fp.prove.semantics`` and ``xotl.tools.values``.  More modern
+  approaches have arisen since we created these modules, like `pydantic`_ and
+  `beartype`_.
+
 - Remove old backports or aliases:
 
   - ``xotl.tools.future.itertools.merge``
@@ -82,3 +87,6 @@
   `packaging.versions`:mod:).
 
 - Remove undocumented module ``xotl.tools.tools``.
+
+.. _pydantic:: https://pypi.org/project/pydantic/
+.. _beartype:: https://pypi.org/project/beartype/

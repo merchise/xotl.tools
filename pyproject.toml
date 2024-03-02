@@ -36,6 +36,9 @@ source = "vcs"
 [tool.hatch.build.hooks.vcs]
 version-file = "src/xotl/tools/_version.py"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/xotl"]
+
 
 [tool.rye]
 managed = true
@@ -55,13 +58,6 @@ dev-dependencies = [
     "python-dateutil>=2.8.2",
     "furo>=2024.1.29",
 ]
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/xotl"]
-
 
 [tool.isort]
 profile = "black"
