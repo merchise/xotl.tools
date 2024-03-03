@@ -42,6 +42,7 @@ def _key_for_value(source, value, strict=True):
     """Returns the tuple (key, mapping) where the "value" is found.
 
     if strict is True, then look first for the same object::
+
         >>> x = [1]
         >>> y = [1]  #  equal to `x` but not the same
         >>> src = {'x': x, 'y': y}
