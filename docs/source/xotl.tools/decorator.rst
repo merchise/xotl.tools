@@ -3,6 +3,10 @@
 
 .. module:: xotl.tools.decorator
 
+.. testsetup::
+
+   from xotl.tools.decorator import *
+
 This module contains several useful decorators, for several purposed.  Also it
 severs as a namespace for other well-defined types of decorators.
 
@@ -31,10 +35,6 @@ Top-level decorators
 .. autofunction:: instantiate(target, *args, **kwargs)
 
 .. autofunction:: constant_bagger(func, *args, **kwds)
-
-.. autoclass:: memoized_instancemethod
-
-
 
 
 Sub packages
