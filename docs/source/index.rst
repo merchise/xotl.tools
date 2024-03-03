@@ -18,6 +18,7 @@ Contents
    :glob:
 
    xotl.tools/*
+   xotl.tools/future/*
    history/index.rst
    CONTRIBUTING
    CONTRIBUTORS
