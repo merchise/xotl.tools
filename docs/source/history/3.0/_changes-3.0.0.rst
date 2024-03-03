@@ -94,6 +94,7 @@
   - ``xotl.tools.future.contextlib``
   - ``xotl.tools.future.time``
   - ``xotl.tools.progress``
+  - ``xotl.tools.web``
 
 - Remove deprecated methods ``pop`` and ``push`` of
   `xotl.tools.future.collections.StackedDict`:class:.
