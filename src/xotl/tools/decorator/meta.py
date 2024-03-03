@@ -18,6 +18,10 @@ module `xotl.tools.deprecation`:mod: to be used by decorators and at the same
 time, implement the decorator `~xotl.tools.deprecation.deprecated`:func: more
 easily.
 
+.. testsetup::
+
+   from xotl.tools.decorator.meta import *
+
 """
 
 from functools import partial, wraps
@@ -39,7 +43,9 @@ def decorator(caller):
 
     This decorator reduces the need of the first level by comprising both into
     a single function definition. However it does not removes the need for an
-    ``inner`` function::
+    ``inner`` function:
+
+    .. doctest::
 
         >>> @decorator
         ... def plus(target, value):
@@ -58,7 +64,9 @@ def decorator(caller):
 
     A decorator with default values for all its arguments (except, of course,
     the first one which is the decorated `target`) may be invoked
-    without parenthesis::
+    without parenthesis:
+
+    .. doctest::
 
         >>> @decorator
         ... def plus2(func, value=1, missing=2):
@@ -77,7 +85,9 @@ def decorator(caller):
         2
         11
 
-    But (if you like) you may place the parenthesis::
+    But (if you like) you may place the parenthesis:
+
+    .. doctest::
 
         >>> @plus2()
         ... def ident3(val):
@@ -88,7 +98,9 @@ def decorator(caller):
         11
 
     However, this is not for free, you cannot pass a single positional argument
-    which type is a function::
+    which type is a function:
+
+    .. doctest::
 
         >>> def p():
         ...    print('This is p!!!')

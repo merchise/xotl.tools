@@ -15,7 +15,6 @@ You may use this module as drop-in replacement of `functools`.
 
 from inspect import getfullargspec
 
-
 __all__ = ("power", "lwraps", "curry")
 
 
@@ -24,9 +23,13 @@ __all__ = ("power", "lwraps", "curry")
 def power(*args):
     """Returns the "power" composition of several functions.
 
-    Examples::
+    Examples:
+
+    .. doctest::
 
        >>> import operator
+       >>> from functools import partial
+
        >>> f = power(partial(operator.mul, 3), 3)
        >>> f(23) == 3*(3*(3*23))
        True
@@ -60,13 +63,13 @@ def lwraps(*args, **kwargs):
 
     As positional arguments could be passed the function to be decorated and
     the name in any order.  So the next two ``identity`` definitions are
-    equivalents::
+    equivalents:
 
-      >>> from xotl.tools.future.functools import lwraps as lw
+    .. doctest::
 
-      >>> identity = lw('identity', lambda arg: arg)
-
-      >>> identity = lw(lambda arg: arg, 'identity')
+       >>> from xotl.tools.future.functools import lwraps as lw
+       >>> identity = lw('identity', lambda arg: arg)
+       >>> identity = lw(lambda arg: arg, 'identity')
 
     As keyword arguments could be passed some special values, and any number
     of literal values to be assigned:
@@ -84,26 +87,28 @@ def lwraps(*args, **kwargs):
     same argument function is directly returned after decorated; if not a
     decorator is returned similar to standard `wraps`:func:.
 
-    For example::
+    For example:
 
-      >>> from xotl.tools.future.functools import lwraps as lw
+    .. doctest::
 
-      >>> is_valid_age = lw('is-valid-human-age', lambda age: 0 < age <= 120,
-      ...                   doc=('A predicate to evaluate if an age is '
-      ...                        'valid for a human being.')
+       >>> is_valid_age = lw(
+       ...     'is-valid-human-age',
+       ...     lambda age: 0 < age <= 120,
+       ...     doc='A predicate to evaluate if an age is valid for a human being.'
+       ... )
 
-      >>> @lw(wrapped=is_valid_age)
-      ... def is_valid_working_age(age):
-      ...     return 18 < age <= 70
+       >>> @lw(wrapped=is_valid_age)
+       ... def is_valid_working_age(age):
+       ...     return 18 < age <= 70
 
-      >>> is_valid_age(16)
-      True
+       >>> is_valid_age(16)
+       True
 
-      >>> is_valid_age(200)
-      False
+       >>> is_valid_age(200)
+       False
 
-      >>> is_valid_working_age(16)
-      False
+       >>> is_valid_working_age(16)
+       False
 
     .. versionadded:: 1.7.0
 
@@ -201,17 +206,20 @@ def lwraps(*args, **kwargs):
 def curry(f):
     """Return a function that automatically 'curries' is positional arguments.
 
-    Example::
+    Example:
 
-        >>> add = curry(lambda x, y: x + y)
-        >>> add(1)(2)
-        3
+    .. doctest::
 
-        >>> add(1, 2)
-        3
+       >>> add = curry(lambda x, y: x + y)
+       >>> add(1)(2)
+       3
 
-        >>> add()()()(1, 2)
-        3
+       >>> add(1, 2)
+       3
+
+       >>> add()()()(1, 2)
+       3
+
     """
     fargs = getfullargspec(f)[0]
 

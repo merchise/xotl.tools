@@ -6,6 +6,9 @@
 
 .. versionadded:: 1.6.3
 
+.. testsetup::
+
+   from xotl.tools.bound import *
 
 
 A bounded execution model

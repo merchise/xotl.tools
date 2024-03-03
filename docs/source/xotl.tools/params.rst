@@ -4,6 +4,10 @@
 
 .. automodule:: xotl.tools.params
 
+.. testsetup::
+
+   from xotl.tools.params import *
+
 
 Examples
 ========

@@ -15,17 +15,31 @@ A record allows to describe plain external data and a simplified model to
 
 See the `record`:class: class to find out how to use it.
 
+.. deprecated:: 3.0.0
+
 """
 
 from functools import lru_cache
+from types import FunctionType
 
+from typing_extensions import deprecated
 from xotl.tools.symbols import Unset
+
+__all__ = (
+    "record",
+    "datetime_reader",
+    "boolean_reader",
+    "integer_reader",
+    "decimal_reader",
+    "float_reader",
+    "date_reader",
+    "isnull",
+    "check_nullable",
+)
 
 
 @lru_cache()
-def field_descriptor(field_name):
-    """Returns a read-only descriptor for `field_name`."""
-
+def _field_descriptor(field_name):
     class descriptor:
         def __get__(self, instance, owner):
             if instance:
@@ -36,6 +50,14 @@ def field_descriptor(field_name):
     return descriptor
 
 
+@deprecated("slotted for removal")
+def field_descriptor(field_name):
+    """Returns a read-only descriptor for `field_name`."""
+
+    return _field_descriptor(field_name)
+
+
+@deprecated("slotted for removal")
 class _record_type(type):
     @staticmethod
     def _is_rec_definition(attr, val=Unset):
@@ -48,8 +70,6 @@ class _record_type(type):
 
     @staticmethod
     def is_reader(attr, func, fields=None):
-        from xotl.tools.future.types import FunctionType
-
         attr = attr.lower()
         good_name = attr.startswith("_") and attr.endswith("_reader")
         good_type = isinstance(func, (FunctionType, staticmethod))
@@ -100,6 +120,7 @@ class _record_type(type):
             return value
 
 
+@deprecated("slotted for removal")
 class record(metaclass=_record_type):
     """Base record class.
 
@@ -114,7 +135,9 @@ class record(metaclass=_record_type):
     external data source.
 
     Records are expected to declare `fields`.  Each field must be a
-    CAPITALIZED valid identifier like::
+    CAPITALIZED valid identifier like:
+
+    .. doctest::
 
         >>> class INVOICE(record):
         ...     ID = 0
@@ -125,13 +148,17 @@ class record(metaclass=_record_type):
     those types.
 
     You could use either the classmethod `get_field`:func: to get the value of
-    field in a single line (data as provided by the external source)::
+    field in a single line (data as provided by the external source):
+
+    .. doctest::
 
         >>> line = (1, 'AA20X138874Z012')
         >>> INVOICE.get_field(line, INVOICE.REFERENCE)
         'AA20X138874Z012'
 
-    You may also have an instance::
+    You may also have an instance:
+
+    .. doctest::
 
         >>> invoice = INVOICE(line)
         >>> invoice.reference
@@ -148,7 +175,9 @@ class record(metaclass=_record_type):
     <included-readers>`:ref:.
 
     Readers are always cast as `staticmethods`, whether or not you have
-    explicitly stated that fact::
+    explicitly stated that fact:
+
+    .. doctest::
 
         >>> from dateutil import parser
         >>> class BETTER_INVOICE(INVOICE):
@@ -181,6 +210,7 @@ class record(metaclass=_record_type):
         return type(self).get_field(self._raw_data, field_index)
 
 
+@deprecated("slotted for removal")
 def isnull(val):
     """Return True if `val` is null.
 
@@ -198,7 +228,7 @@ def isnull(val):
     return val in (None, "") or (isinstance(val, boolean) and not val)
 
 
-# Standard readers
+@deprecated("slotted for removal")
 def check_nullable(val, nullable):
     """Check the restriction of nullable.
 
@@ -217,30 +247,7 @@ def check_nullable(val, nullable):
 
 
 @lru_cache()
-def datetime_reader(format, nullable=False, default=None, strict=True):
-    """Returns a datetime reader.
-
-    :param format: The format the datetime is expected to be in the external
-       data.  This is passed to `datetime.datetime.strptime`:func:.
-
-    :param strict: Whether to be strict about datetime format.
-
-    The reader works first by passing the value to strict
-    `datetime.datetime.strptime`:func: function.  If that fails with a
-    ValueError and strict is True the reader fails entirely.
-
-    If strict is False, the worker applies different rules.  First if the
-    `dateutil` package is installed its parser module is tried.  If `dateutil`
-    is not available and nullable is True, return None; if nullable is False
-    and default is not null (as in `isnull`:func:), return `default`,
-    otherwise raise a ValueError.
-
-    .. versionadded: 1.6.7  Add the `strict` argument.
-
-    .. versionchanged: 1.6.7.1  Keep the meaning of null when testing for
-       `default` if strict is False and dateutil is not available.
-
-    """
+def _datetime_reader(format, nullable=False, default=None, strict=True):
     try:
         from dateutil.parser import parse
     except ImportError:
@@ -270,19 +277,38 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
     return reader
 
 
-@lru_cache()
-def date_reader(format, nullable=False, default=None, strict=True):
-    """Return a date reader.
+@deprecated("Slotted for removal")
+def datetime_reader(format, nullable=False, default=None, strict=True):
+    """Returns a datetime reader.
 
-    This is similar to `datetime_reader`:func: but instead of returning a
-    `datetime.datetime`:class: it returns a `datetime.date`.
+    :param format: The format the datetime is expected to be in the external
+       data.  This is passed to `datetime.datetime.strptime`:func:.
 
-    Actually this function delegates to `datetime_reader`:func: most of its
-    functionality.
+    :param strict: Whether to be strict about datetime format.
 
-    .. versionadded: 1.6.8
+    The reader works first by passing the value to strict
+    `datetime.datetime.strptime`:func: function.  If that fails with a
+    ValueError and strict is True the reader fails entirely.
+
+    If strict is False, the worker applies different rules.  First if the
+    `dateutil` package is installed its parser module is tried.  If `dateutil`
+    is not available and nullable is True, return None; if nullable is False
+    and default is not null (as in `isnull`:func:), return `default`,
+    otherwise raise a ValueError.
+
+    .. versionadded: 1.6.7  Add the `strict` argument.
+
+    .. versionchanged: 1.6.7.1  Keep the meaning of null when testing for
+       `default` if strict is False and dateutil is not available.
+
+    .. deprecated:: 3.1.0
 
     """
+    return _datetime_reader(format, nullable, default, strict)
+
+
+@lru_cache()
+def _date_reader(format, nullable=False, default=None, strict=True):
     reader = datetime_reader(format, nullable=nullable, default=default, strict=strict)
 
     def res(val):
@@ -295,15 +321,24 @@ def date_reader(format, nullable=False, default=None, strict=True):
     return res
 
 
-@lru_cache()
-def boolean_reader(true=("1",), nullable=False, default=None):
-    """Returns a boolean reader.
+@deprecated("Slotted for removal")
+def date_reader(format, nullable=False, default=None, strict=True):
+    """Return a date reader.
 
-    :param true: A collection of raw values considered to be True.  Only the
-                 values in this collection will be considered True values.
+    This is similar to `datetime_reader`:func: but instead of returning a
+    `datetime.datetime`:class: it returns a `datetime.date`.
+
+    Actually this function delegates to `datetime_reader`:func: most of its
+    functionality.
+
+    .. versionadded: 1.6.8
 
     """
+    return _date_reader(format, nullable, default, strict)
 
+
+@lru_cache()
+def _boolean_reader(true=("1",), nullable=False, default=None):
     def reader(val):
         if check_nullable(val, nullable):
             return val in true
@@ -313,10 +348,19 @@ def boolean_reader(true=("1",), nullable=False, default=None):
     return reader
 
 
-@lru_cache()
-def integer_reader(nullable=False, default=None):
-    """Returns an integer reader."""
+@deprecated("Slotted for removal")
+def boolean_reader(true=("1",), nullable=False, default=None):
+    """Returns a boolean reader.
 
+    :param true: A collection of raw values considered to be True.  Only the
+                 values in this collection will be considered True values.
+
+    """
+    return _boolean_reader(true, nullable, default)
+
+
+@lru_cache()
+def _integer_reader(nullable=False, default=None):
     def reader(val):
         if check_nullable(val, nullable):
             return int(val)
@@ -326,10 +370,14 @@ def integer_reader(nullable=False, default=None):
     return reader
 
 
-@lru_cache()
-def decimal_reader(nullable=False, default=None):
-    """Returns a Decimal reader."""
+@deprecated("slotted for removal")
+def integer_reader(nullable=False, default=None):
+    """Returns an integer reader."""
+    return _integer_reader(nullable, default)
 
+
+@lru_cache()
+def _decimal_reader(nullable=False, default=None):
     def reader(val):
         if check_nullable(val, nullable):
             from decimal import Decimal
@@ -341,10 +389,14 @@ def decimal_reader(nullable=False, default=None):
     return reader
 
 
-@lru_cache()
-def float_reader(nullable=False, default=None):
-    """Returns a float reader."""
+@deprecated("slotted for removal")
+def decimal_reader(nullable=False, default=None):
+    """Returns a Decimal reader."""
+    return _decimal_reader(nullable, default)
 
+
+@lru_cache()
+def _float_reader(nullable=False, default=None):
     def reader(val):
         if check_nullable(val, nullable):
             return float(val)
@@ -352,6 +404,12 @@ def float_reader(nullable=False, default=None):
             return default
 
     return reader
+
+
+@deprecated("slotted for removal")
+def float_reader(nullable=False, default=None):
+    """Returns a float reader."""
+    return _float_reader(nullable, default)
 
 
 del lru_cache

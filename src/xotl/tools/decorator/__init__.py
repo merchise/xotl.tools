@@ -13,6 +13,7 @@ import sys
 from functools import wraps
 from types import FunctionType as function
 
+from typing_extensions import deprecated
 from xotl.tools.decorator.meta import decorator
 
 __all__ = (
@@ -23,11 +24,11 @@ __all__ = (
     "aliases",
     "assignment_operator",
     "instantiate",
-    "memoized_instancemethod",
-    "reset_memoized",
+    "singleton",
 )
 
 
+@deprecated("Slotted removal")
 class AttributeAlias:
     """Descriptor to create aliases for object attributes.
 
@@ -50,10 +51,13 @@ class AttributeAlias:
         delattr(instance, self.attr_name)
 
 
+@deprecated("Slotted removal")
 def settle(**kwargs):
     """Returns a decorator to settle attributes to the decorated target.
 
-    Usage::
+    Usage:
+
+    .. doctest::
 
        >>> @settle(name='Name')
        ... class Person:
@@ -72,10 +76,13 @@ def settle(**kwargs):
     return inner
 
 
+@deprecated("Slotted removal")
 def namer(name, **kwargs):
     """Like `settle`:func:, but '__name__' is a required positional argument.
 
-    Usage::
+    Usage:
+
+    .. doctest::
 
         >>> @namer('Identity', custom=1)
         ... class I:
@@ -91,16 +98,28 @@ def namer(name, **kwargs):
     return settle(__name__=name, **kwargs)
 
 
+@deprecated("Use assignment")
 def aliases(*names, **kwargs):
     """In a class, create an `AttributeAlias`:class: descriptor for each
     definition as keyword argument (alias=existing_attribute).
 
     If "names" are given, then the definition context is looked and are
-    assigned to it the same decorator target with all new names::
+    assigned to it the same decorator target with all new names:
+
+    .. doctest::
 
         >>> @aliases('foo', 'bar')
         ... def foobar(*args):
-        ...     'This function is added to its module with two new names.'
+        ...    'This function is added to its module with two new names.'
+        ...    return args
+
+        >>> foo is foobar
+        True
+
+        >>> bar is foobar
+        True
+
+    .. deprecated:: 3.0.0
 
     """
 
@@ -122,6 +141,7 @@ def aliases(*names, **kwargs):
     return inner
 
 
+@deprecated("Removed in future versions because it's too magic.")
 @decorator
 def assignment_operator(func, maybe_inline=False):
     """Makes a function that receives a name, and other args to get its first
@@ -133,6 +153,8 @@ def assignment_operator(func, maybe_inline=False):
                  language and won't probably work on other implementations.
                  Use only you don't care about portability, but use sparingly
                  (in case you change your mind about portability).
+
+    .. deprecated:: 3.0.0
 
     """
     import ast
@@ -170,6 +192,7 @@ def assignment_operator(func, maybe_inline=False):
     return inner
 
 
+@deprecated("Create the instance directly and assign it.")
 @decorator
 def instantiate(target, *args, **kwargs):
     """Some singleton classes must be instantiated as part of its declaration
@@ -197,11 +220,15 @@ def instantiate(target, *args, **kwargs):
         >>> Foobar  # doctest: +ELLIPSIS
         <class '...Foobar'>
 
+
+    .. deprecated:: 3.0.0
+
     """
     target(*args, **kwargs)
     return target
 
 
+@deprecated("Use an enum.")
 @decorator
 def constant_bagger(func, *args, **kwds):
     """Create a "bag" with constant values.
@@ -236,6 +263,8 @@ def constant_bagger(func, *args, **kwds):
       >>> MYBAG.Z
       3
 
+    .. deprecated:: 3.0.0
+
     """
     from xotl.tools.objects import mass_setattr
 
@@ -245,32 +274,35 @@ def constant_bagger(func, *args, **kwds):
     return type(func.__name__, (object,), attrs)
 
 
+@deprecated("Slotted removal it was undocumented.")
 @decorator
 def singleton(target, *args, **kwargs):
     """Instantiate a class and assign the instance to the declared symbol.
 
     Every argument, positional or keyword, is passed as such when invoking the
-    target. The following two code samples show two cases::
+    target. The following two code samples show two cases:
 
-      >>> @singleton
-      ... class foobar:
-      ...    def __init__(self):
-      ...        self.doc = 'foobar instance'
+    .. doctest::
 
-      >>> foobar.doc
-      'foobar instance'
+       >>> @singleton
+       ... class foobar:
+       ...    def __init__(self):
+       ...        self.doc = 'foobar instance'
 
-      >>> @singleton('test', context={'x': 1})
-      ... class foobar:
-      ...     def __init__(self, name, context):
-      ...         self.name = name
-      ...         self.context = context
+       >>> foobar.doc
+       'foobar instance'
 
-      >>> foobar.name, foobar.context
-      ('test', {'x': 1})
+       >>> @singleton('test', context={'x': 1})
+       ... class foobar:
+       ...     def __init__(self, name, context):
+       ...         self.name = name
+       ...         self.context = context
 
-      >>> isinstance(foobar, type)
-      False
+       >>> foobar.name, foobar.context
+       ('test', {'x': 1})
+
+       >>> isinstance(foobar, type)
+       False
 
     """
     res = target(*args, **kwargs)
@@ -285,63 +317,3 @@ def singleton(target, *args, **kwargs):
         except Exception:
             pass
     return res
-
-
-class memoized_instancemethod:
-    """Decorate a method memoize its return value.
-
-    Best applied to no-arg methods: memoization is not sensitive to
-    argument values, and will always return the same value even when
-    called with different arguments.
-
-    This is extracted from the SQLAlchemy project's codebase, merit and
-    copyright goes to SQLAlchemy authors::
-
-      Copyright (C) 2005-2011 the SQLAlchemy authors and contributors
-
-      This module is part of SQLAlchemy and is released under the MIT License:
-      http://www.opensource.org/licenses/mit-license.php
-
-    """
-
-    def __init__(self, fget, doc=None):
-        from warnings import warn
-
-        msg = '"memoized_instancemethod" is now deprecated and it will be ' "removed."
-        warn(msg, stacklevel=2)
-        self.fget = fget
-        self.__doc__ = doc or fget.__doc__
-        self.__name__ = fget.__name__
-
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-
-        def oneshot(*args, **kw):
-            result = self.fget(obj, *args, **kw)
-            memo = lambda *a, **kw: result
-            memo.__name__ = self.__name__
-            memo.__doc__ = self.__doc__
-            obj.__dict__[self.__name__] = memo
-            return result
-
-        oneshot.__name__ = self.__name__
-        oneshot.__doc__ = self.__doc__
-        return oneshot
-
-
-def reset_memoized(instance, name):
-    from warnings import warn
-
-    msg = (
-        '"reset_memoized" is now deprecated and it will be '
-        'removed. Use "memoized_property.reset".'
-    )
-    warn(msg, stacklevel=2)
-    instance.__dict__.pop(name, None)
-
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod(verbose=True)

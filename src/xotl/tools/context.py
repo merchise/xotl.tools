@@ -46,10 +46,11 @@ class MetaContext(type(StackedDict)):  # type: ignore
 class Context(StackedDict, metaclass=MetaContext):
     """An execution context manager with parameters (or flags).
 
-    Use as::
+    Use as:
+
+    .. doctest::
 
         >>> SOME_CONTEXT = object()
-        >>> from xotl.tools.context import context
         >>> with context(SOME_CONTEXT):
         ...     if context[SOME_CONTEXT]:
         ...         print('In context SOME_CONTEXT')
@@ -63,7 +64,9 @@ class Context(StackedDict, metaclass=MetaContext):
     When an existing context is re-enter, the former one is reused.
     Nevertheless, the data stored in each context is local to each level.
 
-    For example::
+    For example:
+
+    .. doctest::
 
         >>> with context('A', b=1) as a1:
         ...   with context('A', b=2) as a2:
@@ -79,7 +82,9 @@ class Context(StackedDict, metaclass=MetaContext):
     values. Each new written value is stored in current level without
     affecting upper levels.
 
-    For example::
+    For example:
+
+    .. doctest::
 
         >>> with context('A', b=1) as a1:
         ...   with context('A', b=2) as a2:
@@ -87,7 +92,9 @@ class Context(StackedDict, metaclass=MetaContext):
         ...       print(a2['b'])
         1
 
-    It is an error to *reuse* a context directly like in::
+    It is an error to *reuse* a context directly like in:
+
+    .. doctest::
 
         >>> with context('A', b=1) as a1:   # doctest: +ELLIPSIS
         ...   with a1:

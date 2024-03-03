@@ -42,6 +42,7 @@ def _key_for_value(source, value, strict=True):
     """Returns the tuple (key, mapping) where the "value" is found.
 
     if strict is True, then look first for the same object::
+
         >>> x = [1]
         >>> y = [1]  #  equal to `x` but not the same
         >>> src = {'x': x, 'y': y}
@@ -177,8 +178,11 @@ def _get_best_name(names, safe=False, full=False):
 def module_name(item):
     """Returns the full module name where the given object is declared.
 
-    Examples::
+    Examples:
 
+    .. doctest::
+
+       >>> from xotl.tools.names import module_name
        >>> module_name(module_name)
        'xotl.tools.names'
 
@@ -217,8 +221,11 @@ def simple_name(item, join=True):
            See `module_name`:func: for more information when a not False value
            is used.
 
-    Examples::
+    Examples:
 
+    .. doctest::
+
+       >>> xotl.tools.names import simple_name
        >>> simple_name(simple_name)
        'xotl.tools.names.simple_name'
 
@@ -228,7 +235,9 @@ def simple_name(item, join=True):
 
     This function is intended for named objects (those with the `__name__`
     attribute), if an object without standard name is used, the type name is
-    returned instead; for example::
+    returned instead; for example:
+
+    .. doctest::
 
         >>> simple_name(0)
         'int'

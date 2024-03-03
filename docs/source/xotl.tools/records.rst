@@ -4,6 +4,10 @@
 
 .. automodule:: xotl.tools.records
 
+.. testsetup::
+
+   from xotl.tools.records import *
+
 .. autoclass:: record
 
 .. _included-readers:

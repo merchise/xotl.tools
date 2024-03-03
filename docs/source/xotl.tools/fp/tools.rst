@@ -15,19 +15,27 @@
    Functions are composed right to left.  A composition of zero functions
    gives back the `identity`:func: function.
 
-   Rules must be fulfilled (those inner `all`)::
+   Rules must be fulfilled:
 
-     >>> x = 15
-     >>> f, g, h = x.__add__, x.__mul__, x.__xor__
-     >>> all((compose() is identity,
-     ...
-     ...      # identity functions are optimized
-     ...      compose(identity, f, identity) is f,
-     ...
-     ...      compose(f) is f,
-     ...      compose(g, f)(x) == g(f(x)),
-     ...      compose(h, g, f)(x) == h(g(f(x)))))
-     True
+   .. doctest::
+
+      >>> x = 15
+      >>> f, g, h = x.__add__, x.__mul__, x.__xor__
+
+      >>> compose() is identity
+      True
+
+      >>> compose(identity, f, identity) is f
+      True
+
+      >>> compose(f) is f
+      True
+
+      >>> compose(g, f)(x) == g(f(x))
+      True
+
+      >>> compose(h, g, f)(x) == h(g(f(x)))
+      True
 
    If any "intermediate" function returns an instance of:
 

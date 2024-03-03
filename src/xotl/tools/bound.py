@@ -7,42 +7,7 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Helpers for bounded execution of co-routines.
-
-Example::
-
-    >>> def fibonacci():
-    ...   a, b = 1, 1
-    ...   while True:
-    ...       yield a
-    ...       a, b = b, a + b
-
-This function yields forever.  This module allows to get instances of that
-function that run until a boundary condition is met.  For instance, the
-`times`:func: boundary stops after a given numbers of results are generated::
-
-    >>> fib8 = times(8)(fibonacci)
-    >>> fib8()   # the 8th fibonacci number is
-    21
-
-This is repeatable::
-
-    >>> fib8()   # the 8th fibonacci number is
-    21
-
-    >>> fib8()   # the 8th fibonacci number is
-    21
-
-Unless you pass in a generator::
-
-    >>> fib8 = times(8)(fibonacci())
-    >>> fib8()
-    21
-
-    >>> fib8() is None
-    True
-
-"""
+"""Helpers for bounded execution of co-routines."""
 
 from types import GeneratorType
 
@@ -332,7 +297,23 @@ def timed(maxtime):
 
 @boundary
 def times(n):
-    """Becomes True after a given after the `nth` item have been produced."""
+    """Becomes True after a given after the `nth` item have been produced.
+
+    Example:
+
+    .. doctest::
+
+       >>> def fibonacci():
+       ...   a, b = 1, 1
+       ...   while True:
+       ...       yield a
+       ...       a, b = b, a + b
+
+       >>> fib8 = times(8)(fibonacci)
+       >>> fib8()
+       21
+
+    """
     yield False
     for _ in range(n):
         yield False
@@ -384,17 +365,19 @@ def pred(func, skipargs=True):
     the first time `func` is called will be passed a single argument ``(arg,
     kwargs)``.
 
-    Example::
+    Example:
 
-      >>> @pred(lambda x: x > 10)
-      ... def fibonacci():
-      ...     a, b = 1, 1
-      ...     while True:
-      ...        yield a
-      ...        a, b = b, a + b
+    .. doctest::
 
-      >>> fibonacci()
-      13
+       >>> @pred(lambda x: x > 10)
+       ... def fibonacci():
+       ...     a, b = 1, 1
+       ...     while True:
+       ...        yield a
+       ...        a, b = b, a + b
+
+       >>> fibonacci()
+       13
 
     """
     sentinel = object()

@@ -152,7 +152,9 @@ class TestDateTimeReader(unittest.TestCase):
     def setUp(self):
         # clear lru caches for each test... Needed so that imports done inside
         # datetime_reader are mockable.
-        datetime_reader.cache_clear()
+        from xotl.tools.records import _datetime_reader
+
+        _datetime_reader.cache_clear()
 
     def test_strict(self):
         class rec(record):
@@ -199,8 +201,10 @@ class TestDateReader(unittest.TestCase):
     def setUp(self):
         # clear lru caches for each test... Needed so that imports done inside
         # date_reader are mockable.
-        date_reader.cache_clear()
-        datetime_reader.cache_clear()
+        from xotl.tools.records import _date_reader, _datetime_reader
+
+        _date_reader.cache_clear()
+        _datetime_reader.cache_clear()
 
     def test_date_reader_nullable(self):
         class rec(record):
