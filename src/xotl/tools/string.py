@@ -6,12 +6,7 @@
 #
 # This is free software; you can do what the LICENCE file allows you to.
 #
-"""Some additions for `string` standard module.
-
-In Python 3 `str` is always unicode but `unicode` and `basestring` types
-doesn't exists.  `bytes` type can be used as an array of one byte each item.
-
-"""
+"""Some additions for `string` standard module."""
 
 from typing import Any, Optional, Pattern
 
@@ -171,7 +166,7 @@ def slugify(value: Any, *args, **kwds) -> str:
     :param encoding: If `value` is not a text (unicode), it is decoded before
            `ASCII normalization <force_ascii>`:func:.
 
-    Examples::
+    Examples:
 
       >>> slugify('  Á.e i  Ó  u  ') == 'a-e-i-o-u'
       True
