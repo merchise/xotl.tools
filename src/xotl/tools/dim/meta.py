@@ -19,9 +19,13 @@ __ `concrete numbers`_
 .. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number
 
 
-This module allows you to define dimensions (or quantity types)::
+This module allows you to define dimensions (or quantity types):
 
-   >>> from xotl.tools.dim.meta import Dimension, UNIT
+.. testsetup::
+
+   from xotl.tools.dim.meta import Dimension, UNIT
+
+.. doctest::
 
    >>> @Dimension.new
    ... class Length:
@@ -47,7 +51,9 @@ canonical unit.  The name of canonical unit defines the `signature
 <Signature>`:class: for the quantities in the dimension.
 
 When printed (or ``repr``-ed) `quantities <Quantity>`:class: use the format
-``<magnitude>::<signature>``::
+``<magnitude>::<signature>``:
+
+.. doctest::
 
    >>> metre = Length.metre
    >>> metre
@@ -55,7 +61,9 @@ When printed (or ``repr``-ed) `quantities <Quantity>`:class: use the format
 
 Quantities support the standard arithmetical operations of addition,
 subtraction, multiplication and division.  In fact, you obtain different
-quantities in the dimension by multiplying with the canonical unit::
+quantities in the dimension by multiplying with the canonical unit:
+
+.. doctest::
 
    >>> metre + metre
    2::{<Length.metre>}/{}
@@ -74,50 +82,52 @@ dimension) can be compared, equated, added, or subtracted.
 
 __ https://en.wikipedia.org/wiki/Dimensional_analysis#Dimensional_homogeneity
 
-::
+.. doctest::
 
    >>> @Dimension.new
    ... class Time:
    ...     second = UNIT
 
    >>> metre + Time.second  # doctest: +ELLIPSIS
-   Traceback (...)
-   ...
-   OperandTypeError: unsupported operand type(s) for +:...
+   Traceback (most recent call last):
+      ...
+   TypeError: unsupported operand type(s) for +:...
 
 
 However, you can take ratios of incommensurable quantities (quantities with
 different dimensions), and multiply or divide them.
 
-::
+.. doctest::
 
     >>> metre/Time.second
-    >>> 1::{<Length.metre>}/{<Time.second>}
-
+    1.0::{<Length.metre>}/{<Time.second>}
 
 .. warning:: `Decimal numbers <decimal.Decimal>`:py:class: are not supported.
 
    This module makes not attempt to fix the standing incompatibility between
-   floats and `decimal.Decimal`:py:class:\ ::
+   floats and `decimal.Decimal`:py:class:\ :
+
+   .. doctest::
 
       >>> import decimal
       >>> decimal.Decimal('0') + 0.1  # doctest: +ELLIPSIS
-      Traceback (...)
-      ...
+      Traceback (most recent call last):
+         ...
       TypeError: unsupported operand type(s) for +: 'Decimal' and 'float'
 
 
 The signature created by `Dimension`:class: for its canonical unit is simply a
 string that varies with the name of the dimension and that of the canonical
 unit.  This implies that you can *recreate* the same dimension and it will be
-interoperable with the former::
+interoperable with the former:
+
+.. doctest::
 
    >>> @Dimension.new
    ... class L:
    ...    m = UNIT
 
    >>> m = L.m  # Save this
-
 
    >>> # Recreate the same dimension.
    >>> @Dimension.new
@@ -852,17 +862,16 @@ def POWER(a, e):
     return "{}_pow_{}".format(a, e)
 
 
-class OperandTypeError(TypeError):
-    def __init__(self, operand, val1, val2):
-        if isinstance(val1, Quantity):
-            t1 = val1.signature
-        else:
-            t1 = type(val1).__name__
-        if isinstance(val2, Quantity):
-            t2 = val2.signature
-        else:
-            t2 = type(val2).__name__
-        super().__init__("unsupported operand type(s) for %s: '%s' and '%s'" % (operand, t1, t2))
+def OperandTypeError(operand, val1, val2):
+    if isinstance(val1, Quantity):
+        t1 = val1.signature
+    else:
+        t1 = type(val1).__name__
+    if isinstance(val2, Quantity):
+        t2 = val2.signature
+    else:
+        t2 = type(val2).__name__
+    return TypeError(f"unsupported operand type(s) for {operand}: '{t1}' and '{t2}'")
 
 
 def downgrade_to_scalar(quantity):
