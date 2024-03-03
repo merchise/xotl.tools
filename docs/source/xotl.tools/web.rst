@@ -1,5 +1,10 @@
 `xotl.tools.web`:mod: -- Utils for Web applications
 ===================================================
 
-.. automodule:: xotl.tools.web
-   :members:
+.. module:: xotl.tools.web
+
+.. testsetup::
+
+   from xotl.tools.web import *
+
+.. autofunction:: slugify

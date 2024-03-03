@@ -9,10 +9,12 @@
 
 """Utils for Web applications."""
 
+from typing_extensions import deprecated
+
 __all__ = ["slugify"]
 
 
-# TODO: Why not deprecate this and use standard `xotl.tools.string.slugify`.
+@deprecated("Use xotl.tools.string.slugify")
 def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cover  # noqa
     """Convert a string to a slug representation.
 
@@ -21,41 +23,47 @@ def slugify(s, entities=True, decimal=True, hexadecimal=True):  # pragma: no cov
 
     Parts from http://www.djangosnippets.org/snippets/369/
 
-        >>> slugify("Manuel Vázquez Acosta")    # doctest: +SKIP
+    .. doctest::
+
+        >>> slugify("Manuel Vázquez Acosta")
         'manuel-vazquez-acosta'
 
     If `s` and `entities` is True (the default) all HTML entities
-    are replaced by its equivalent character before normalization::
+    are replaced by its equivalent character before normalization:
 
-        >>> slugify("Manuel V&aacute;zquez Acosta")   # doctest: +SKIP
+        >>> slugify("Manuel V&aacute;zquez Acosta")
         'manuel-vazquez-acosta'
 
-    If `entities` is False, then no HTML-entities substitution is made::
+    If `entities` is False, then no HTML-entities substitution is made:
 
         >>> value = "Manuel V&aacute;zquez Acosta"
-        >>> slugify(value, entities=False)  # doctest: +SKIP
+        >>> slugify(value, entities=False)
         'manuel-v-aacute-zquez-acosta'
 
     If `decimal` is True, then all entities of the form ``&#nnnn`` where
     `nnnn` is a decimal number deemed as a unicode codepoint, are replaced by
-    the corresponding unicode character::
+    the corresponding unicode character:
 
-        >>> slugify('Manuel V&#225;zquez Acosta')  # doctest: +SKIP
+    .. doctest::
+
+        >>> slugify('Manuel V&#225;zquez Acosta')
         'manuel-vazquez-acosta'
 
         >>> value = 'Manuel V&#225;zquez Acosta'
-        >>> slugify(value, decimal=False)  # doctest: +SKIP
+        >>> slugify(value, decimal=False)
         'manuel-v-225-zquez-acosta'
 
 
     If `hexadecimal` is True, then all entities of the form ``&#nnnn`` where
     `nnnn` is a hexdecimal number deemed as a unicode codepoint, are replaced
-    by the corresponding unicode character::
+    by the corresponding unicode character:
 
-        >>> slugify('Manuel V&#x00e1;zquez Acosta')  # doctest: +SKIP
+    .. doctest::
+
+        >>> slugify('Manuel V&#x00e1;zquez Acosta')
         'manuel-vazquez-acosta'
 
-        >>> slugify('Manuel V&#x00e1;zquez Acosta', hexadecimal=False)  # doctest: +SKIP  # noqa
+        >>> slugify('Manuel V&#x00e1;zquez Acosta', hexadecimal=False)
         'manuel-v-x00e1-zquez-acosta'
 
     .. deprecated:: 2.1.0 Use `xotl.tools.strings.slugify`:func:.
