@@ -15,27 +15,31 @@ Context Managers with only one method (`enter`) and one property (`locked`).
 The method `enter` is used with the Python ``with`` statement and the property
 `locked` is logically True or False depending if the lock is active or not.
 
-For example::
+For example:
 
-  >>> from xotl.tools.lock import context_lock as ctx
+.. doctest::
 
-  >>> def get_lock_value():
-  ...     return 'Yes' if ctx.locked else 'No'
+   >>> from xotl.tools.lock import context_lock as ctx
 
-  >>> with ctx.enter():
-  ...     one = get_lock_value()
-  >>> two = get_lock_value()
-  >>> (one, two)
-  ('Yes', 'No')
+   >>> def get_lock_value():
+   ...     return 'Yes' if ctx.locked else 'No'
+
+   >>> with ctx.enter():
+   ...     one = get_lock_value()
+   >>> two = get_lock_value()
+   >>> (one, two)
+   ('Yes', 'No')
 
 
 Locks are implemented using module-property; this means that each time you
-import it, a different lock is returned::
+import it, a different lock is returned:
 
-  >>> from xotl.tools.tasking.lock import context_lock as one
-  >>> from xotl.tools.tasking.lock import context_lock as two
-  >>> one is two
-  False
+.. doctest::
+
+   >>> from xotl.tools.tasking.lock import context_lock as one
+   >>> from xotl.tools.tasking.lock import context_lock as two
+   >>> one is two
+   False
 
 The function `context_lock`:func: implement a module property to create a
 class that use an execution context, see `xotl.tools.context`:mod: module for
