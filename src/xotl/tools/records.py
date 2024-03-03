@@ -15,13 +15,18 @@ A record allows to describe plain external data and a simplified model to
 
 See the `record`:class: class to find out how to use it.
 
+.. deprecated:: 3.0.0
+
 """
 
 from functools import lru_cache
+from types import FunctionType
 
+from typing_extensions import deprecated
 from xotl.tools.symbols import Unset
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 @lru_cache()
 def field_descriptor(field_name):
     """Returns a read-only descriptor for `field_name`."""
@@ -36,6 +41,7 @@ def field_descriptor(field_name):
     return descriptor
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 class _record_type(type):
     @staticmethod
     def _is_rec_definition(attr, val=Unset):
@@ -48,8 +54,6 @@ class _record_type(type):
 
     @staticmethod
     def is_reader(attr, func, fields=None):
-        from xotl.tools.future.types import FunctionType
-
         attr = attr.lower()
         good_name = attr.startswith("_") and attr.endswith("_reader")
         good_type = isinstance(func, (FunctionType, staticmethod))
@@ -100,6 +104,7 @@ class _record_type(type):
             return value
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 class record(metaclass=_record_type):
     """Base record class.
 
@@ -181,6 +186,7 @@ class record(metaclass=_record_type):
         return type(self).get_field(self._raw_data, field_index)
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 def isnull(val):
     """Return True if `val` is null.
 
@@ -198,7 +204,7 @@ def isnull(val):
     return val in (None, "") or (isinstance(val, boolean) and not val)
 
 
-# Standard readers
+@deprecated("Slotted for removal.  Use pydantic.")
 def check_nullable(val, nullable):
     """Check the restriction of nullable.
 
@@ -216,6 +222,7 @@ def check_nullable(val, nullable):
         raise ValueError("NULL value was not expected here")
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 @lru_cache()
 def datetime_reader(format, nullable=False, default=None, strict=True):
     """Returns a datetime reader.
@@ -270,6 +277,7 @@ def datetime_reader(format, nullable=False, default=None, strict=True):
     return reader
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 @lru_cache()
 def date_reader(format, nullable=False, default=None, strict=True):
     """Return a date reader.
@@ -295,6 +303,7 @@ def date_reader(format, nullable=False, default=None, strict=True):
     return res
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 @lru_cache()
 def boolean_reader(true=("1",), nullable=False, default=None):
     """Returns a boolean reader.
@@ -313,6 +322,7 @@ def boolean_reader(true=("1",), nullable=False, default=None):
     return reader
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 @lru_cache()
 def integer_reader(nullable=False, default=None):
     """Returns an integer reader."""
@@ -326,6 +336,7 @@ def integer_reader(nullable=False, default=None):
     return reader
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 @lru_cache()
 def decimal_reader(nullable=False, default=None):
     """Returns a Decimal reader."""
@@ -341,6 +352,7 @@ def decimal_reader(nullable=False, default=None):
     return reader
 
 
+@deprecated("Slotted for removal.  Use pydantic.")
 @lru_cache()
 def float_reader(nullable=False, default=None):
     """Returns a float reader."""

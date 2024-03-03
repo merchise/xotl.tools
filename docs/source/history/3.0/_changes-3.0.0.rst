@@ -38,6 +38,9 @@
 
   This library no longer uses this module for deprecation.
 
+- Deprecate module ``xotl.tools.records``.  Use modern alternatives like
+  `pydantic`_.
+
 - Deprecate function `xotl.tools.modules.copy_members`:func:, this was mainly
   an internal function to provide the drop-in replacement of standard library
   modules.
