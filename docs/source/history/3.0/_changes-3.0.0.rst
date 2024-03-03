@@ -11,8 +11,6 @@
 
   The list of supported Python versions is: 3.8, 3.9, 3.10, 3.11, and 3.12.
 
-- Ensure to run (non deprecated) doctests in the CI pipeline.
-
 .. rubric:: General changes (mostly backwards-compatible)
 
 - Make `xotl.tools.objects.classproperty`:class: work again in Python 3.11.
@@ -37,9 +35,6 @@
   `typing_extensions.deprecated`:func:).
 
   This library no longer uses this module for deprecation.
-
-- Deprecate module ``xotl.tools.records``.  Use modern alternatives like
-  `pydantic`_.
 
 - Deprecate function `xotl.tools.modules.copy_members`:func:, this was mainly
   an internal function to provide the drop-in replacement of standard library
@@ -66,17 +61,6 @@
   approaches have arisen since we created these modules, like `pydantic`_ and
   `beartype`_.
 
-- New deprecations in `xotl.tools.decorator`:mod:\ :
-
-  - ``xotl.tools.decorator.constant_bagger``
-  - ``xotl.tools.decorator.aliases``
-  - ``xotl.tools.decorator.settle``
-  - ``xotl.tools.decorator.namer``
-  - ``xotl.tools.decorator.AttributeAlias``
-  - ``xotl.tools.decorator.assignment_operator``
-  - ``xotl.tools.decorator.instantiate``
-  - ``xotl.tools.decorator.singleton`` (undocumented)
-
 - Remove old backports or aliases:
 
   - ``xotl.tools.future.itertools.merge``
@@ -93,8 +77,6 @@
 
   - ``xotl.tools.future.contextlib``
   - ``xotl.tools.future.time``
-  - ``xotl.tools.progress``
-  - ``xotl.tools.web``
 
 - Remove deprecated methods ``pop`` and ``push`` of
   `xotl.tools.future.collections.StackedDict`:class:.
@@ -105,11 +87,6 @@
   `packaging.versions`:mod:).
 
 - Remove undocumented module ``xotl.tools.tools``.
-
-- Remove deprecated:
-
-  - ``xotl.tools.decorator.memoized_instancemethod``
-  - ``xotl.tools.decorator.reset_memoized``
 
 .. _pydantic: https://pypi.org/project/pydantic/
 .. _beartype: https://pypi.org/project/beartype/

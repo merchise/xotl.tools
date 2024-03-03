@@ -9,6 +9,7 @@ Changelog
    :glob:
 
    ./3.0/3*
+   ./3.1/3*
 
 
 Older series
