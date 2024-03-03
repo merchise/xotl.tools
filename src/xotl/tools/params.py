@@ -214,23 +214,25 @@ def pop_keyword_values(kwargs, *names, **options):
            raised.  If this keyword only option is True, this function returns
            normally.
 
-    Examples::
+    Examples:
 
-      >>> pop_keyword_values({'b': 1}, 'a', 'b')
-      [Undefined, 1]
+    .. doctest::
 
-      >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
-      >>> try:
-      ...     res = pop_keyword_values(kwargs, 'a', 'b')
-      ... except TypeError as error:
-      ...     res = error
-      >>> type(res)
-      TypeError
+       >>> pop_keyword_values({'b': 1}, 'a', 'b')
+       [Undefined, 1]
 
-      >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
-      >>> options = dict(ignore_error=True, default=None)
-      >>> pop_keyword_values(kwargs, 'a', ('B', 'b'), **options)
-      [1, 2]
+       >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
+       >>> try:
+       ...     res = pop_keyword_values(kwargs, 'a', 'b')
+       ... except TypeError as error:
+       ...     res = error
+       >>> type(res)
+       <class 'TypeError'>
+
+       >>> kwargs = {'a': 1, 'b': 2, 'c': 3}
+       >>> options = dict(ignore_error=True, default=None)
+       >>> pop_keyword_values(kwargs, 'a', ('B', 'b'), **options)
+       [1, 2]
 
     .. versionadded:: 1.8.3
 
