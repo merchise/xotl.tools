@@ -1,4 +1,4 @@
 Release 3.0.1
 =============
 
-.. include:: _changes-3.0.1.rst
+.. include:: _changes-3.0.0.rst
