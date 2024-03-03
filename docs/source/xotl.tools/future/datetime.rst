@@ -42,20 +42,22 @@ We added the following features.
 
    If `ref` is a datetime the time-related components are kept the same.
 
-   Examples::
+   Examples:
 
-     >>> d = datetime(2022, 3, 2, 19, 12)
-     >>> get_next_monday(d)
-     datetime.datetime(2022, 3, 7, 19, 12)
+   .. doctest::
 
-     >>> get_next_monday(d.date())
-     datetime.date(2022, 3, 7)
+      >>> d = datetime(2022, 3, 2, 19, 12)
+      >>> get_next_monday(d)
+      datetime.datetime(2022, 3, 7, 19, 12)
 
-     >>> get_previous_monday(d)
-     datetime.datetime(2022, 2, 28, 19, 12)
+      >>> get_next_monday(d.date())
+      datetime.date(2022, 3, 7)
 
-     >>> get_previous_wednesday(d.date())
-     datetime.date(2022, 2, 23)
+      >>> get_previous_monday(d)
+      datetime.datetime(2022, 2, 28, 19, 12)
+
+      >>> get_previous_wednesday(d.date())
+      datetime.date(2022, 2, 23)
 
 
 .. autoclass:: flextime

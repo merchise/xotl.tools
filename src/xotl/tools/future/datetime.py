@@ -63,9 +63,6 @@ def _year_find_all(fmt, year, no_year_tuple):
     return {match.start() for match in regex.finditer(text)}
 
 
-_TD_LABELS = "dhms"  # days, hours, minutes, seconds
-
-
 def _strfnumber(number, format_spec="%0.2f"):
     """Convert a floating point number into string using a smart way.
 
@@ -86,41 +83,36 @@ def strfdelta(delta):
 
     Only two levels of values will be printed.
 
-    ::
+    .. doctest::
 
-        >>> def t(h, m):
-        ...     return timedelta(hours=h, minutes=m)
-
-        >>> strfdelta(t(4, 56)) == '4h 56m'
-        True
+       >>> strfdelta(timedelta(hours=4, minutes=56))
+       '4h 56m'
 
     """
-    ss, sss = str("%s%s"), str(" %s%s")
     if delta.days:
         days = delta.days
         delta -= timedelta(days=days)
-        hours = delta.total_seconds() / 60 / 60
-        res = ss % (days, _TD_LABELS[0])
+        hours = delta.total_seconds() // 3600
+        res = f"{days}d"
         if hours >= 0.01:
-            res += sss % (_strfnumber(hours), _TD_LABELS[1])
+            res += " {_strfnumber(hours)}h"
     else:
         seconds = delta.total_seconds()
         if seconds > 60:
-            minutes = seconds / 60
+            minutes = seconds // 60
             if minutes > 60:
-                hours = int(minutes / 60)
+                hours = minutes // 60
                 minutes -= hours * 60
-                res = ss % (hours, _TD_LABELS[1])
+                res = f"{_strfnumber(hours)}h"
                 if minutes >= 0.01:
-                    res += sss % (_strfnumber(minutes), _TD_LABELS[2])
+                    res += f" {_strfnumber(minutes)}m"
             else:
-                minutes = int(minutes)
                 seconds -= 60 * minutes
-                res = ss % (minutes, _TD_LABELS[2])
+                res = f"{_strfnumber(minutes)}m"
                 if seconds >= 0.01:
-                    res += sss % (_strfnumber(seconds), _TD_LABELS[3])
+                    res += f" {_strfnumber(seconds)}s"
         else:
-            res = ss % (_strfnumber(seconds, "%0.3f"), _TD_LABELS[3])
+            res = f"{_strfnumber(seconds, '%0.3f')}s"
     return res
 
 
@@ -231,11 +223,13 @@ def get_next_month(ref=None, lastday=False):
 
     Examples:
 
-      >>> get_next_month(date(2017, 1, 23))
-      datetime.date(2017, 2, 1)
+    .. doctest::
 
-      >>> get_next_month(date(2017, 1, 23), lastday=True)
-      datetime.date(2017, 2, 28)
+       >>> get_next_month(date(2017, 1, 23))
+       datetime.date(2017, 2, 1)
+
+       >>> get_next_month(date(2017, 1, 23), lastday=True)
+       datetime.date(2017, 2, 28)
 
     .. versionadded:: 1.7.3
 
@@ -524,22 +518,26 @@ class TimeSpan:
     """A *continuous* span of time.
 
     Time spans objects are iterable.  They yield exactly two times: first the
-    start date, and then the end date::
+    start date, and then the end date:
+
+    .. doctest::
 
        >>> ts = TimeSpan('2017-08-01', '2017-09-01')
        >>> tuple(ts)
-       (date(2017, 8, 1), date(2017, 9, 1))
+       (datetime.date(2017, 8, 1), datetime.date(2017, 9, 1))
 
-    Time spans objects have two items::
+    Time spans objects have two items:
+
+    .. doctest::
 
        >>> ts[0]
-       date(2017, 8, 1)
+       datetime.date(2017, 8, 1)
 
        >>> ts[1]
-       date(2017, 9, 1)
+       datetime.date(2017, 9, 1)
 
        >>> ts[:]
-       (date(2017, 8, 1), date(2017, 9, 1))
+       (datetime.date(2017, 8, 1), datetime.date(2017, 9, 1))
 
     Two time spans are equal if their start_date and end_date are equal.  When
     comparing a time span with a date, the date is coerced to a time span
@@ -977,11 +975,13 @@ class DateTimeSpan(TimeSpan):
     subclass.
 
     DateTimeSpan objects are iterable.  They yield exactly two datetimes:
-    first the start date, and then the end date::
+    first the start date, and then the end date:
+
+    .. doctest::
 
        >>> ts = DateTimeSpan('2017-08-01 11:00', '2017-09-01 23:00')
        >>> tuple(ts)
-       (datetime(2017, 8, 1, 11, 0), date(2017, 9, 1, 23, 0))
+       (datetime.datetime(2017, 8, 1, 11, 0), datetime.datetime(2017, 9, 1, 23, 0))
 
     The API of DateTimeSpan is just the natural transformation of the API of
     `TimeSpan`:class:.
