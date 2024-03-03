@@ -13,6 +13,9 @@ You may use this module as drop-in replacement of `functools`.
 
 """
 
+from inspect import getfullargspec
+
+
 __all__ = ("power", "lwraps", "curry")
 
 
@@ -210,8 +213,6 @@ def curry(f):
         >>> add()()()(1, 2)
         3
     """
-    from xotl.tools.future.inspect import getfullargspec
-
     fargs = getfullargspec(f)[0]
 
     def curried(cargs=None):
