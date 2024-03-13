@@ -1,15 +1,15 @@
 Changelog
 =========
 
-3.0 series
+3.x series
 ----------
 
 .. toctree::
    :maxdepth: 1
    :glob:
 
-   ./3.0/3*
    ./3.1/3*
+   ./3.0/3*
 
 
 Older series
