@@ -2,67 +2,53 @@
 stages:
   - pre-check
   - test
-  - check
   - build
   - publish
   - clean up
 
-.x-when-mrs-or-stable: &when-merge-requests-or-stable
-  refs:
-    - main
-    - /^releases-2/
-    - merge_requests
-  changes:
-    - docs/**/*.rst
-    - docs/**/*.py
-    - src/**/*.py
-    - tests/**/*.py
-    - pyproject.toml
-    - tox.ini
-    - requirements-dev-py38.lock
-    - .gitlab-ci.yml
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+    on_job_failure: all
 
-.x-when-mrs: &when-merge-requests
-  refs:
-    - merge_requests
-  changes:
-    - docs/**/*.rst
-    - docs/**/*.py
-    - src/**/*.py
-    - tests/**/*.py
-    - pyproject.toml
-    - tox.ini
-    - requirements-dev-py38.lock
-    - .gitlab-ci.yml
+.x-code: &code
+  - pyproject.toml
+  - mypy.ini
+  - tox.ini
+  - requirements-dev-*.lock
+  - src/**/*.py
+  - tests/**/*.py
+  - .gitlab-ci.yml
 
-
-.x-when-stable: &when-stable-branches
-  refs:
-    - main
-    - /^releases-2
-  changes:
-    - docs/**/*.rst
-    - docs/**/*.py
-    - src/**/*.py
-    - tests/**/*.py
-    - pyproject.toml
-    - tox.ini
-    - requirements-dev-py38.lock
-    - .gitlab-ci.yml
-
+.x-code-and-docs: &code-and-docs
+  - pyproject.toml
+  - mypy.ini
+  - tox.ini
+  - requirements-dev-*.lock
+  - src/**/*.py
+  - tests/**/*.py
+  - .gitlab-ci.yml
+  - docs/**/*.rst
+  - docs/**/*.py
+  - docs/**/*.css
 
 lint:
   interruptible: true
   image: python:3.12
-  stage: check
+  stage: test
   needs: []
   script:
     - pip install -r requirements-dev-py312.lock
     - ruff check src/
     - ruff format --check src/
     - isort --check --diff src/
-  only:
-    <<: *when-merge-requests-or-stable
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^releases-/
+      changes: *code
 
 .run_staticcheck: &run_staticcheck
   image: python:$PYTHON
@@ -93,8 +79,13 @@ test doctests:
   script:
     - pip install tox
     - tox -e system-doctest
-  only:
-    <<: *when-merge-requests-or-stable
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^releases-/
+      changes: *code-and-docs
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
@@ -103,8 +94,13 @@ run required static checks:
   <<: *run_staticcheck
   interruptible: true
   allow_failure: true
-  only:
-    <<: *when-merge-requests-or-stable
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^releases-/
+      changes: *code
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
@@ -112,21 +108,17 @@ run required static checks:
 tests:
   <<: *run_tests
   interruptible: true
-  only:
-    <<: *when-merge-requests-or-stable
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^releases-/
+      changes: *code
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         CASE: ["unit", "greenlets"]
-
-
-.x-when-releasing: &when-releasing
-  refs:
-    - tags
-  variables:
-    - $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
-    - $CI_SERVER_HOST == "gitlab.merchise.org"
-
 
 build:
   image: python:3.12
@@ -137,19 +129,24 @@ build:
   artifacts:
     paths:
       - dist/
-  only:
-    <<: *when-releasing
-
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
+    - if: $CI_MERGE_REQUEST_IID || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^releases-/
+      changes: *code
 
 check signature of tag:
   image: alpine
-  stage: check
+  stage: test
   script:
     - apk add gnupg git
     - cat $GNUPG_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
-  only:
-    <<: *when-releasing
+  rules: &release-rules
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
 
 publish in pypi:
   image: python:3.12
@@ -165,9 +162,7 @@ publish in pypi:
   environment:
     name: pypi
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
-  only:
-    <<: *when-releasing
-
+  rules: *release-rules
 
 .build_doc: &build_doc
   image: python:3.12
@@ -189,19 +184,21 @@ publish in pypi:
     expire_in: 4 days
   needs: []
 
-build documentation for releases:
-  <<: *build_doc
-  only:
-    <<: *when-releasing
-
 build documentation:
   <<: *build_doc
   interruptible: true
   needs: []
-  only:
-    <<: *when-merge-requests-or-stable
-  variables:
-    SPHINXOPTS: "-W"
+  rules:
+    - if: $CI_COMMIT_TAG
+      variables:
+        SPHINXOPTS: ""
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        SPHINXOPTS: ""
+    - if: $CI_MERGE_REQUEST_IID
+      changes: *code-and-docs
+      variables:
+        SPHINXOPTS: "-W"
 
 .publish_rtd: &publish_rtd
   image: alpine
@@ -231,41 +228,34 @@ build documentation:
     name: docs.lahavane.com
     url: https://docs.lahavane.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_SLUG
 
-publish in our RTD for releases:
+publish in our RTD:
   <<: *publish_rtd
   needs:
-    - build documentation for releases
-  only:
-    <<: *when-releasing
-
+    - build documentation
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_BRANCH =~ /^releases-/
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_MERGE_REQUEST_IID
 
 pages:
   <<: *build_doc
-  only:
-    refs:
-      - main
-    variables:
-      - $CI_SERVER_HOST == "gitlab.com"
-
-
-publish in our RTD:
-  <<: *publish_rtd
-  interruptible: true
-  only:
-    <<: *when-merge-requests-or-stable
-    variables:
-      - $CI_SERVER_HOST == "gitlab.merchise.org"
-  needs:
-    - build documentation
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.com"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 automatically remove MR documentation from our RTD server after 4 hours:
   stage: clean up
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main"'
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /releases-/'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_SERVER_HOST == "gitlab.merchise.org"'
+    - if: $CI_COMMIT_BRANCH =~ /^releases-/
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
       when: on_success
     - when: never
   trigger:
