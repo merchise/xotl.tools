@@ -7,9 +7,10 @@ Changelog
 .. toctree::
    :maxdepth: 1
    :glob:
+   :reversed:
 
-   ./3.1/3*
    ./3.0/3*
+   ./3.1/3*
 
 
 Older series

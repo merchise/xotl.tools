@@ -1,5 +1,5 @@
 RYE_EXEC ?= rye run
-PYTHON_VERSION ?= 3.8
+PYTHON_VERSION ?= 3.12
 PATH := $(HOME)/.rye/shims:$(PATH)
 
 SHELL := /bin/bash
@@ -18,12 +18,15 @@ install:
 
 sync:
 	@rye config --set-bool behavior.use-uv=$(USE_UV)
+	@rye pin --relaxed $(PYTHON_VERSION)
 	@rye sync --no-lock
 .PHONY: sync
 
 lock:
 	@rye config --set-bool behavior.use-uv=$(USE_UV)
+	@rye pin --relaxed $(PYTHON_VERSION)
 	@rye sync
+	@cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
 .PHONY: lock
 
 build: sync
