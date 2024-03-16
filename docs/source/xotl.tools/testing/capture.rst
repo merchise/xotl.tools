@@ -4,6 +4,10 @@
 
 .. module:: xotl.tools.testing.capture
 
+.. testsetup::
+
+   from xotl.tools.testing.capture import *
+
 .. autofunction:: captured_stdout
 
 .. autofunction:: captured_stderr

@@ -18,6 +18,7 @@ Contents
 
    xotl.tools/*
    xotl.tools/future/*
+   xotl.tools/testing/*
    history/index.rst
    CONTRIBUTING
    CONTRIBUTORS
