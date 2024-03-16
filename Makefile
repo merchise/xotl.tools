@@ -5,22 +5,41 @@ PATH := $(HOME)/.rye/shims:$(PATH)
 SHELL := /bin/bash
 PYTHON_FILES := $(shell find src/$(PROJECT_NAME) -type f -name '*.py' -o -name '*.pyi')
 
+USE_UV ?= true
 install:
-	rye self update || curl -sSf https://rye-up.com/get | bash
-	rye pin --relaxed $(PYTHON_VERSION)
-	rye sync
-	cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
+	@uv --version || curl -LsSf https://astral.sh/uv/install.sh | sh
+	@rye self update || curl -sSf https://rye-up.com/get | bash
+	@rye config --set-bool behavior.use-uv=$(USE_UV)
+	@rye pin --relaxed $(PYTHON_VERSION)
+	@rye sync --no-lock
+	@cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
 .PHONY: install
 
 
+sync:
+	@rye config --set-bool behavior.use-uv=$(USE_UV)
+	@rye sync --no-lock
+.PHONY: sync
+
+lock:
+	@rye config --set-bool behavior.use-uv=$(USE_UV)
+	@rye sync
+.PHONY: lock
+
+build: sync
+	@rye config --set-bool behavior.use-uv=$(USE_UV)
+	@rye build
+.PHONY: build
+
+
 format:
-	@$(RYE_EXEC) ruff --fix src/ tests/
-	@$(RYE_EXEC) isort src/ tests/
+	@$(RYE_EXEC) ruff check --fix src/ tests/
 	@$(RYE_EXEC) ruff format src/ tests/
+	@$(RYE_EXEC) isort src/ tests/
 .PHONY: format
 
 lint:
-	@$(RYE_EXEC) ruff src/ tests/
+	@$(RYE_EXEC) ruff check src/ tests/
 	@$(RYE_EXEC) ruff format --check src/ tests/
 	@$(RYE_EXEC) isort --check src/ tests/
 .PHONY: lint

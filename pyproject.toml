@@ -45,12 +45,12 @@ managed = true
 dev-dependencies = [
     "hypothesis~=6.91.0",
     "pytz>=2023.3.post1",
-    "ruff==0.2.1",
+    "ruff==0.3.2",
     "isort~=5.13.2",
-    "pytest>=7.4.4",
-    "pytest-cov>=4.1.0",
-    "coverage[toml]>=7.4.0",
-    "mypy>=1.8.0",
+    "pytest~=7.4.4",
+    "pytest-cov~=4.1.0",
+    "coverage[toml]~=7.4.0",
+    "mypy>=1.9.0,<1.10",
     "sphinx>=7.1.2",
     "types-python-dateutil",
     "ipython>=8.12.3",
@@ -66,7 +66,7 @@ src_paths = ["xotl/tools"]
 skip_gitignore = true
 
 [tool.ruff]
-required-version = "0.2.1"
+required-version = "0.3.2"
 line-length = 100
 target-version = "py311"
 
