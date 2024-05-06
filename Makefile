@@ -59,14 +59,16 @@ mypy:
 	@$(RYE_EXEC) tox -e system-staticcheck
 .PHONY: mypy
 
-docs:
+docs/build:
 	make SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs html
-.PHONY: docs
+.PHONY: docs/build
 
 
+CADDY_IMAGE ?= caddy:2.7-alpine
 CADDY_SERVER_PORT ?= 9999
-caddy: docs
-	@docker run --rm -p $(CADDY_SERVER_PORT):$(CADDY_SERVER_PORT) \
-         -v $(PWD)/docs/build/html:/var/www -it caddy \
-         caddy file-server --browse --listen :$(CADDY_SERVER_PORT) --root /var/www
-.PHONY: caddy
+docs/browse: docs/build
+	@docker run --rm --network host \
+        -v $(PWD)/docs/build/html/:/var/www \
+        -it $(CADDY_IMAGE) \
+	    caddy file-server --browse --listen :$(CADDY_SERVER_PORT) --root /var/www
+.PHONY: docs/browse
