@@ -141,7 +141,7 @@ check signature of tag:
   stage: test
   script:
     - apk add gnupg git
-    - cat $GNUPG_KEY_FILE | gpg --import
+    - cat $GNUPG_PUBLIC_KEY_FILE | gpg --import
     - git verify-tag $CI_COMMIT_REF_NAME
   rules: &release-rules
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
