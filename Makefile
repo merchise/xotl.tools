@@ -15,9 +15,9 @@ bootstrap:
 		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 	fi
 	@INSTALLED_RYE_VERSION=$$(rye --version 2>/dev/null | head -n1 | awk '{print $$2}' || echo "0.0.0"); \
-	RYE_VERSION=$$(printf '%s\n' "$(REQUIRED_RYE_VERSION)" "$$INSTALLED_RYE_VERSION" | sort -V | head -n1); \
-	if [ "$$RYE_VERSION" != "$(REQUIRED_RYE_VERSION)" ]; then \
-		rye self update || curl -sSf https://rye-up.com/get | bash; \
+	DETECTED_RYE_VERSION=$$(printf '%s\n' "$(REQUIRED_RYE_VERSION)" "$$INSTALLED_RYE_VERSION" | sort -V | head -n1); \
+	if [ "$$DETECTED_RYE_VERSION" != "$(REQUIRED_RYE_VERSION)" ]; then \
+		rye self update || curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" RYE_VERSION="$(REQUIRED_RY_VERSION)" bash; \
 	fi
 	@rye config --set-bool behavior.use-uv=$(USE_UV)
 	@rye pin --relaxed $(PYTHON_VERSION)
