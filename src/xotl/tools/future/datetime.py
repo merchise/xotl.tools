@@ -942,7 +942,7 @@ EmptyTimeSpan = _EmptyTimeSpan()
 
 
 # TODO: Move this to xotl.tools.objects or somewhere else
-class SynchronizedField(object):
+class SynchronizedField:
     """A synchronized descriptor.
 
     Whenever the `source` gets updated, update the second.
@@ -953,16 +953,18 @@ class SynchronizedField(object):
         self.descriptor = descriptor
         self.setting_descriptor = setting_descriptor
         self.set_throu_get = set_throu_get
+        self._inside_set = False
 
     def __get__(self, instance, owner):
         return self.descriptor.__get__(instance, owner)
 
     def __set__(self, instance, value):
-        from xotl.tools.context import context
+        from xotl.tools.objects import temp_attributes
 
-        self.descriptor.__set__(instance, value)
-        if (SynchronizedField, self.setting_descriptor) not in context:
-            with context((SynchronizedField, self.setting_descriptor)):
+        inside_set = self._inside_set
+        with temp_attributes(self, {"_inside_set": True}):
+            self.descriptor.__set__(instance, value)
+            if not inside_set:
                 if self.set_throu_get:
                     value = self.__get__(instance, type(instance))
                 self.setting_descriptor.__set__(instance, value)
