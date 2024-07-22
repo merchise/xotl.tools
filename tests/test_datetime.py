@@ -7,6 +7,9 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
+import calendar
+import pickle
+
 import pytest
 from hypothesis import given, settings, strategies
 from xotl.tools.future.datetime import (
@@ -16,9 +19,28 @@ from xotl.tools.future.datetime import (
     date,
     daterange,
     datetime,
+    get_month_first,
+    get_month_last,
+    get_next_friday,
+    get_next_monday,
+    get_next_saturday,
+    get_next_sunday,
+    get_next_thursday,
+    get_next_tuesday,
+    get_next_wednesday,
+    get_previous_friday,
+    get_previous_monday,
+    get_previous_saturday,
+    get_previous_sunday,
+    get_previous_thursday,
+    get_previous_tuesday,
+    get_previous_wednesday,
+    parse_date,
+    parse_datetime,
     timedelta,
 )
 from xotl.tools.testing.datetime import datetimespans, timespans
+from xotl.tools.testing.unit import run_module_doctest
 
 dates = strategies.dates
 maybe_date = dates() | strategies.none()
@@ -94,6 +116,36 @@ def test_comparision(ts1, ts2):
         assert ts1 * ts1.start_date == ts1.start_date
         assert ts1.start_date * ts1 == ts1.start_date
         assert ts1.start_date in ts1
+
+
+@given(timespans(unbounds="none"), strategies.dates())
+def test_containment_of_dates_in_timespan(ts, dt):
+    assert (ts.start_date <= dt <= ts.end_date) == (dt in ts)
+    assert (dt <= ts.end_date) == (dt in ts.replace(start_date=None))
+    assert (ts.start_date <= dt) == (dt in ts.replace(end_date=None))
+    assert dt in ts.replace(start_date=None, end_date=None)
+
+
+@given(timespans(unbounds="none"), strategies.datetimes())
+def test_containment_of_datetimes_in_timespan(ts, dt):
+    d = dt.date()
+    assert (ts.start_date <= d <= ts.end_date) == (dt in ts)
+    assert (d <= ts.end_date) == (dt in ts.replace(start_date=None))
+    assert (ts.start_date <= d) == (dt in ts.replace(end_date=None))
+    assert dt in ts.replace(start_date=None, end_date=None)
+
+
+@given(datetimespans(unbounds="none"), strategies.datetimes())
+def test_containment_of_datetimes_in_datetimespan(ts, dt):
+    assert (ts.start_datetime <= dt <= ts.end_datetime) == (dt in ts)
+    assert (dt <= ts.end_datetime) == (dt in ts.replace(start_datetime=None))
+    assert (ts.start_datetime <= dt) == (dt in ts.replace(end_datetime=None))
+    assert dt in ts.replace(start_datetime=None, end_datetime=None)
+
+
+@given(timespans() | datetimespans())
+def test_containment_of_nondate_in_spans(ts):
+    assert 1 not in ts
 
 
 @given(timespans(), datetimespans())
@@ -283,17 +335,8 @@ def test_timespans_displacement_keeps_the_len(ts1, delta):
 
 @given(timespans() | datetimespans())
 def test_timespans_are_pickable(ts):
-    import pickle
-
     for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
         assert ts == pickle.loads(pickle.dumps(ts, proto))
-
-
-def test_empty_timespan_is_pickable():
-    import pickle
-
-    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
-        assert EmptyTimeSpan is pickle.loads(pickle.dumps(EmptyTimeSpan, proto))
 
 
 @given(strategies.datetimes(), strategies.datetimes())
@@ -463,6 +506,24 @@ def test_datetimespan_repr(ts):
     assert DateTimeSpan("2018-01-01") == DateTimeSpan(datetime(2018, 1, 1))
 
 
+def test_empty_timespan_is_pickable():
+    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
+        assert EmptyTimeSpan is pickle.loads(pickle.dumps(EmptyTimeSpan, proto))
+
+
+@given(datetimespans())
+def test_empty_span_invariants(ts):
+    assert ts == EmptyTimeSpan or ts > EmptyTimeSpan
+    assert ts == EmptyTimeSpan or EmptyTimeSpan < ts
+    assert not (EmptyTimeSpan > ts)
+    assert not (ts < EmptyTimeSpan)
+
+    assert EmptyTimeSpan == EmptyTimeSpan
+    assert EmptyTimeSpan != 1
+    assert EmptyTimeSpan != date.today()
+    assert EmptyTimeSpan != TimeSpan.from_date(date.today())
+
+
 def add_timespans(x, y):
     if x.end_date == y.start_date - timedelta(1):
         return TimeSpan(x.start_date, y.end_date)
@@ -475,3 +536,131 @@ def add_dtspans(x, y):
         return DateTimeSpan(x.start_datetime, y.end_datetime)
     else:
         raise ValueError
+
+
+def test_type_of_parse_date():
+    assert isinstance(parse_date(), date)
+
+
+def test_type_of_parse_datetime():
+    assert isinstance(parse_datetime(), datetime)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_month_last(ref: date):
+    last = get_month_last(ref)
+    assert last.year == ref.year
+    assert last.month == ref.month
+    first = last + timedelta(1)
+    assert first.day == 1
+    if last.month == 12:
+        assert first.month == 1
+    else:
+        assert first.month == last.month + 1
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_month_first(ref: date):
+    first = get_month_first(ref)
+    assert first.month == ref.month
+    assert first.year == ref.year
+    assert first.day == 1
+
+
+def _assert_next_WD(ref, result, expected_weekday):
+    assert result.weekday() == expected_weekday
+    if ref.weekday() == expected_weekday:
+        assert result == ref + timedelta(7)
+    else:
+        assert result > ref
+        try:
+            last_week = result - timedelta(7)
+        except OverflowError:
+            # ignore overflow errors when we go to the "first date ever" `date(1, 1, 1)`.
+            pass
+        else:
+            assert last_week < ref
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_monday(ref: date):
+    _assert_next_WD(ref, get_next_monday(ref), calendar.MONDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_tuesday(ref: date):
+    _assert_next_WD(ref, get_next_tuesday(ref), calendar.TUESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_wednesday(ref: date):
+    _assert_next_WD(ref, get_next_wednesday(ref), calendar.WEDNESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_thursday(ref: date):
+    _assert_next_WD(ref, get_next_thursday(ref), calendar.THURSDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_friday(ref: date):
+    _assert_next_WD(ref, get_next_friday(ref), calendar.FRIDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_saturday(ref: date):
+    _assert_next_WD(ref, get_next_saturday(ref), calendar.SATURDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_sunday(ref: date):
+    _assert_next_WD(ref, get_next_sunday(ref), calendar.SUNDAY)
+
+
+def _assert_previous_WD(ref, result, expected_weekday):
+    assert result.weekday() == expected_weekday
+    if ref.weekday() == expected_weekday:
+        assert result == ref - timedelta(7)
+    else:
+        assert result < ref
+        last_week = result + timedelta(7)
+        assert last_week > ref
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_monday(ref: date):
+    _assert_previous_WD(ref, get_previous_monday(ref), calendar.MONDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_tuesday(ref: date):
+    _assert_previous_WD(ref, get_previous_tuesday(ref), calendar.TUESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_wednesday(ref: date):
+    _assert_previous_WD(ref, get_previous_wednesday(ref), calendar.WEDNESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_thursday(ref: date):
+    _assert_previous_WD(ref, get_previous_thursday(ref), calendar.THURSDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_friday(ref: date):
+    _assert_previous_WD(ref, get_previous_friday(ref), calendar.FRIDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_saturday(ref: date):
+    _assert_previous_WD(ref, get_previous_saturday(ref), calendar.SATURDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_sunday(ref: date):
+    _assert_previous_WD(ref, get_previous_sunday(ref), calendar.SUNDAY)
+
+
+def test_doctests():
+    run_module_doctest("xotl.tools.future.datetime")

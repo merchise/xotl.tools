@@ -21,11 +21,16 @@ You may use this module as a drop-in replacement of the standard library
 
 """
 
+import operator
 from datetime import date, datetime, timedelta
 from enum import IntEnum
+from functools import reduce
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
-from typing import Iterator, Tuple, Union  # noqa
+from typing import Iterator, Optional, cast
+
+from typing_extensions import deprecated
+from xotl.tools.symbols import Unset  # noqa
 
 
 class WEEKDAY(IntEnum):
@@ -88,6 +93,21 @@ def strfdelta(delta):
        >>> strfdelta(timedelta(hours=4, minutes=56))
        '4h 56m'
 
+       >>> strfdelta(timedelta(1, hours=4, minutes=56))
+       '1d 4h'
+
+       >>> strfdelta(timedelta(1, minutes=120))
+       '1d 2h'
+
+       >>> strfdelta(timedelta(minutes=45, seconds=1))
+       '45m 1s'
+
+       >>> strfdelta(timedelta(seconds=121))
+       '2m 1s'
+
+       >>> strfdelta(timedelta(seconds=12))
+       '12s'
+
     """
     if delta.days:
         days = delta.days
@@ -95,7 +115,7 @@ def strfdelta(delta):
         hours = delta.total_seconds() // 3600
         res = f"{days}d"
         if hours >= 0.01:
-            res += " {_strfnumber(hours)}h"
+            res += f" {_strfnumber(hours)}h"
     else:
         seconds = delta.total_seconds()
         if seconds > 60:
@@ -116,7 +136,8 @@ def strfdelta(delta):
     return res
 
 
-def strftime(dt, fmt):
+@deprecated("Use the stdlib method")
+def strftime(dt, fmt):  # pragma: no cover
     """Used as `strftime` method of `date` and `datetime` redefined classes.
 
     Also could be used with standard instances.
@@ -150,7 +171,7 @@ def strftime(dt, fmt):
             for site in sites:
                 res = res[:site] + syear + res[site + 4 :]
             return res
-        else:
+        else:  # pragma: no cover
             msg = "strftime of dates before 1900 does not handle  %s"
             raise TypeError(msg % illegal_formatting.group(0))
 
@@ -182,7 +203,7 @@ def parse_datetime(value=None):
             s = 0
         elif len(timing) == 3:
             h, mn, s = timing
-        else:
+        else:  # pragma: no cover
             raise ValueError("Invalid time string %r" % t)
         return datetime(int(y), int(m), int(d), int(h), int(mn), int(s), int(ms))
     else:
@@ -401,10 +422,10 @@ def daterange(*args):
         step = None
     else:
         start, stop, step = args
-    if not step and step is not None:
+    if not step and step is not None:  # pragma: no cover
         raise ValueError("Invalid step value %r" % step)
     if not start:
-        if not isinstance(stop, (date, datetime)):
+        if not isinstance(stop, (date, datetime)):  # pragma: no cover
             raise TypeError("stop must a date if start is None")
         else:
             start = get_month_first(stop)
@@ -450,7 +471,7 @@ class DateField:
         if value in (None, False):
             # We regard False as None, so that working with Odoo is easier:
             # missing values in Odoo, often come as False instead of None.
-            if not self.nullable:
+            if not self.nullable:  # pragma: no cover
                 raise ValueError("Setting None to a required field")
             else:
                 value = None
@@ -485,13 +506,13 @@ class DateTimeField(object):
             res = instance.__dict__[self.name]
             return res
         else:
-            return self
+            return self  # pragma: no cover
 
     def __set__(self, instance, value):
         if value in (None, False):
             # We regard False as None, so that working with Odoo is easier:
             # missing values in Odoo, often come as False instead of None.
-            if not self.nullable:
+            if not self.nullable:  # pragma: no cover
                 raise ValueError("Setting None to a required field")
             else:
                 value = None
@@ -573,6 +594,19 @@ class TimeSpan:
         self.start_date = start_date
         self.end_date = end_date
 
+    def replace(self, *, start_date: Optional[date] = Unset, end_date: Optional[date] = Unset):
+        """Create a copy with possibly changed attributes.
+
+        .. versionadded:: 3.2.0
+
+        """
+        result = TimeSpan(self.start_date, self.end_date)
+        if start_date is not Unset:
+            result.start_date = start_date
+        if end_date is not Unset:
+            result.end_date = end_date
+        return result
+
     @classmethod
     def from_date(self, date: date) -> "TimeSpan":
         """Return a new time span that covers a single `date`."""
@@ -611,7 +645,7 @@ class TimeSpan:
         if self.bound:
             return self.start_date <= self.end_date
         else:
-            return True
+            return True  # pragma: no cover
 
     def __contains__(self, other):
         """Test date `other` is in the time span."""
@@ -631,29 +665,29 @@ class TimeSpan:
 
     def overlaps(self, other):
         """Test if the time spans overlaps."""
-        return bool(self & other)
+        return bool(self & other)  # pragma: no cover
 
     def isdisjoint(self, other):
-        return not self.overlaps(other)
+        return not self.overlaps(other)  # pragma: no cover
 
     def __le__(self, other):
         "True if `other` is a superset."
-        return (self & other) == self
+        return (self & other) == self  # pragma: no cover
 
     issubset = __le__
 
     def __lt__(self, other):
         "True if `other` is a proper superset."
-        return self != other and self <= other
+        return self != other and self <= other  # pragma: no cover
 
     def __gt__(self, other):
         "True if `other` is a proper subset."
-        return self != other and self >= other
+        return self != other and self >= other  # pragma: no cover
 
     def __ge__(self, other):
         "True if `other` is a subset."
         # Notice that ge is not the opposite of lt.
-        return (self & other) == other
+        return (self & other) == other  # pragma: no cover
 
     issuperset = covers = __ge__
 
@@ -699,7 +733,7 @@ class TimeSpan:
             other = TimeSpan.from_date(other)
         elif isinstance(other, DateTimeSpan):
             return other & self
-        elif not isinstance(other, TimeSpan):
+        elif not isinstance(other, TimeSpan):  # pragma: no cover
             raise TypeError("Invalid type '%s'" % type(other).__name__)
         start = max(self.start_date or -Infinity, other.start_date or -Infinity)
         end = min(self.end_date or Infinity, other.end_date or Infinity)
@@ -853,8 +887,8 @@ class _EmptyTimeSpan:
 
     __nonzero__ = __bool__
 
-    def __contains__(self, which):
-        return False  # I don't contain noone
+    def __contains__(self, which):  # pragma: no cover
+        return False  # I don't contain no one
 
     # The empty is equal only to itself
     def __eq__(self, which):
@@ -868,12 +902,12 @@ class _EmptyTimeSpan:
     def __ne__(self, other):
         res = self == other
         if res is not NotImplemented:
-            return not res
+            return True
         else:
-            return res
+            return not res
 
     # The empty set is a subset of any other set.  dates are regarded as the
-    # set that contains that
+    # set that contains that date.
     def __le__(self, which):
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             return True
@@ -890,7 +924,7 @@ class _EmptyTimeSpan:
     # The empty set is a *proper* superset of no one
     def __gt__(self, which):
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
-            return True
+            return False
         else:
             return NotImplemented
 
@@ -898,7 +932,7 @@ class _EmptyTimeSpan:
     def __add__(self, which):
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             return which
-        else:
+        else:  # pragma: no cover
             raise TypeError
 
     __or__ = __add__
@@ -907,7 +941,7 @@ class _EmptyTimeSpan:
     def __mul__(self, other):
         if isinstance(other, (TimeSpan, date, _EmptyTimeSpan)):
             return self
-        else:
+        else:  # pragma: no cover
             raise TypeError
 
     __and__ = __mul__
@@ -938,11 +972,11 @@ class _EmptyTimeSpan:
 
 
 # I solemnly swear that EmptyTimeSpan is of type DateTimeSpan.
-EmptyTimeSpan = _EmptyTimeSpan()
+EmptyTimeSpan = cast(DateTimeField, _EmptyTimeSpan())
 
 
 # TODO: Move this to xotl.tools.objects or somewhere else
-class SynchronizedField(object):
+class SynchronizedField:
     """A synchronized descriptor.
 
     Whenever the `source` gets updated, update the second.
@@ -953,16 +987,18 @@ class SynchronizedField(object):
         self.descriptor = descriptor
         self.setting_descriptor = setting_descriptor
         self.set_throu_get = set_throu_get
+        self._inside_set = False
 
     def __get__(self, instance, owner):
         return self.descriptor.__get__(instance, owner)
 
     def __set__(self, instance, value):
-        from xotl.tools.context import context
+        from xotl.tools.objects import temp_attributes
 
-        self.descriptor.__set__(instance, value)
-        if (SynchronizedField, self.setting_descriptor) not in context:
-            with context((SynchronizedField, self.setting_descriptor)):
+        inside_set = self._inside_set
+        with temp_attributes(self, {"_inside_set": True}):
+            self.descriptor.__set__(instance, value)
+            if not inside_set:
                 if self.set_throu_get:
                     value = self.__get__(instance, type(instance))
                 self.setting_descriptor.__set__(instance, value)
@@ -1015,19 +1051,37 @@ class DateTimeSpan(TimeSpan):
         self.start_datetime = start_datetime
         self.end_datetime = end_datetime
 
+    def replace(
+        self,
+        *,
+        start_datetime: Optional[datetime] = Unset,
+        end_datetime: Optional[datetime] = Unset,
+    ):
+        """Create a copy with possibly changed attributes.
+
+        .. versionadded:: 3.2.0
+
+        """
+        result = DateTimeSpan(self.start_datetime, self.end_datetime)
+        if start_datetime is not Unset:
+            result.start_datetime = start_datetime
+        if end_datetime is not Unset:
+            result.end_datetime = end_datetime
+        return result
+
     @classmethod
-    def from_datetime(self, dt):
-        # type: (datetime) -> DateTimeSpan
+    def from_datetime(cls, dt):
+        # type: (date) -> DateTimeSpan
         """Return a new date time span that covers a single `datetime`.
 
         If `dt` is actually a date, the start_datetime will be at '00:00:00'
         and the end_datetime will be at '23:59:59'.
 
         """
-        return self(start_datetime=dt, end_datetime=dt)
+        return cls(start_datetime=dt, end_datetime=dt)  # pragma: no cover
 
     @classmethod
-    def from_timespan(self, ts):
+    def from_timespan(cls, ts):
         # type: (TimeSpan) -> DateTimeSpan
         """Return a new date time span from a timespan.
 
@@ -1040,7 +1094,7 @@ class DateTimeSpan(TimeSpan):
         if isinstance(ts, DateTimeSpan):
             return ts
         else:
-            return self(start_datetime=ts.start_date, end_datetime=ts.end_date)
+            return cls(start_datetime=ts.start_date, end_datetime=ts.end_date)
 
     @property
     def past_unbound(self):
@@ -1107,34 +1161,34 @@ class DateTimeSpan(TimeSpan):
     def overlaps(self, other):
         # type: (TimeSpan) -> bool
         """Test if the time spans overlaps."""
-        return bool(self & other)
+        return bool(self & other)  # pragma: no cover
 
     def isdisjoint(self, other):
         # type: (TimeSpan) -> bool
-        return not self.overlaps(other)
+        return not self.overlaps(other)  # pragma: no cover
 
     def __le__(self, other):
         # type: (TimeSpan) -> bool
         "True if `other` is a superset."
-        return (self & other) == self
+        return (self & other) == self  # pragma: no cover
 
     issubset = __le__
 
     def __lt__(self, other):
         # type: (TimeSpan) -> bool
         "True if `other` is a proper superset."
-        return self != other and self <= other
+        return self != other and self <= other  # pragma: no cover
 
     def __gt__(self, other):
         # type: (TimeSpan) -> bool
         "True if `other` is a proper subset."
-        return self != other and self >= other
+        return self != other and self >= other  # pragma: no cover
 
     def __ge__(self, other):
         # type: (TimeSpan) -> bool
         "True if `other` is a subset."
         # Notice that ge is not the opposite of lt.
-        return (self & other) == other
+        return (self & other) == other  # pragma: no cover
 
     issuperset = covers = __ge__
 
@@ -1147,8 +1201,8 @@ class DateTimeSpan(TimeSpan):
         return this[index]
 
     def __eq__(self, other):
-        if isinstance(other, date):
-            other = type(self).from_datetime(other)
+        if isinstance(other, date):  # pragma: no cover
+            other = self.from_datetime(other)
         elif isinstance(other, TimeSpan) and not isinstance(other, DateTimeSpan):  # noqa
             other = self.from_timespan(other)
         elif not isinstance(other, DateTimeSpan):
@@ -1177,11 +1231,11 @@ class DateTimeSpan(TimeSpan):
 
         if isinstance(other, _EmptyTimeSpan):
             return other
-        elif isinstance(other, date):
+        elif isinstance(other, date):  # pragma: no cover
             other = DateTimeSpan.from_datetime(other)
         elif isinstance(other, TimeSpan):
             other = DateTimeSpan.from_timespan(other)
-        elif not isinstance(other, TimeSpan):
+        elif not isinstance(other, TimeSpan):  # pragma: no cover
             raise TypeError("Invalid type '%s'" % type(other).__name__)
         start = max(self.start_datetime or -Infinity, other.start_datetime or -Infinity)
         end = min(self.end_datetime or Infinity, other.end_datetime or Infinity)
@@ -1239,10 +1293,7 @@ class DateTimeSpan(TimeSpan):
     def intersection(self, *others):
         # type: (TimeSpan) -> DateTimeSpan
         "Return ``self [& other1 & ...]``."
-        import operator
-        from functools import reduce
-
-        return reduce(operator.mul, others, self)
+        return reduce(operator.mul, others, self)  # pragma: no cover
 
     def diff(self, other):
         # type: (TimeSpan) -> Tuple[DateTimeSpan, DateTimeSpan]

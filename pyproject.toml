@@ -59,10 +59,11 @@ dev-dependencies = [
     "mypy~=1.11.0",
     "sphinx>=7.1.2",
     "types-python-dateutil",
-    "ipython>=8.12.3",
+    "ipython~=8.12.3",
     "tox~=4.16.0",
     "python-dateutil>=2.8.2",
     "furo>=2024.1.29",
+    "pytest-insta~=0.2.0",
 ]
 
 [tool.isort]
@@ -114,7 +115,7 @@ omit = [
     "xotl/tools/tasking/_greenlet_local.py"
 ]
 
-fail_under = 60
+fail_under = 71
 skip_covered = true
 show_missing = true
 

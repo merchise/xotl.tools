@@ -39,5 +39,5 @@ def dedent(text, skip_firstline=False):
         if body:
             result += "\n" + _stdlib.dedent(body)
     else:
-        result = _stdlib.dedent(text)
+        result = _stdlib.dedent(text)  # pragma: no cover
     return result
