@@ -63,6 +63,7 @@ dev-dependencies = [
     "tox~=4.16.0",
     "python-dateutil>=2.8.2",
     "furo>=2024.1.29",
+    "pytest-insta~=0.2.0",
 ]
 
 [tool.isort]
