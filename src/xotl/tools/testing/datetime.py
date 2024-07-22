@@ -58,7 +58,7 @@ def timespans(draw, dates=None, unbounds="any", always_valid=True):
             date2 = draw(maybe)
         else:
             date2 = draw(dates)
-    else:
+    else:  # pragma: no cover
         raise ValueError("unbounds should be one of 'any', 'past', or 'future'.")
     if date1 and date2 and always_valid:
         start1 = min(date1, date2)
@@ -117,7 +117,7 @@ def datetimespans(draw, dates=None, unbounds="any", always_valid=True):
             date2 = draw(maybe)
         else:
             date2 = draw(dates)
-    else:
+    else:  # pragma: no cover
         raise ValueError("unbounds should be one of 'any', 'past', or 'future'.")
     if date1 and date2 and always_valid:
         start1 = min(date1, date2)

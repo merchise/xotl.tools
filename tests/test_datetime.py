@@ -7,6 +7,8 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
+import calendar
+
 import pytest
 from hypothesis import given, settings, strategies
 from xotl.tools.future.datetime import (
@@ -16,9 +18,21 @@ from xotl.tools.future.datetime import (
     date,
     daterange,
     datetime,
+    get_month_first,
+    get_month_last,
+    get_next_friday,
+    get_next_monday,
+    get_next_saturday,
+    get_next_sunday,
+    get_next_thursday,
+    get_next_tuesday,
+    get_next_wednesday,
+    parse_date,
+    parse_datetime,
     timedelta,
 )
 from xotl.tools.testing.datetime import datetimespans, timespans
+from xotl.tools.testing.unit import run_module_doctest
 
 dates = strategies.dates
 maybe_date = dates() | strategies.none()
@@ -463,6 +477,14 @@ def test_datetimespan_repr(ts):
     assert DateTimeSpan("2018-01-01") == DateTimeSpan(datetime(2018, 1, 1))
 
 
+@given(datetimespans())
+def test_empty_span_invariants(ts):
+    assert ts == EmptyTimeSpan or ts > EmptyTimeSpan
+    assert ts == EmptyTimeSpan or EmptyTimeSpan < ts
+    assert not (EmptyTimeSpan > ts)
+    assert not (ts < EmptyTimeSpan)
+
+
 def add_timespans(x, y):
     if x.end_date == y.start_date - timedelta(1):
         return TimeSpan(x.start_date, y.end_date)
@@ -475,3 +497,81 @@ def add_dtspans(x, y):
         return DateTimeSpan(x.start_datetime, y.end_datetime)
     else:
         raise ValueError
+
+
+def test_type_of_parse_date():
+    assert isinstance(parse_date(), date)
+
+
+def test_type_of_parse_datetime():
+    assert isinstance(parse_datetime(), datetime)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_month_last(ref: date):
+    last = get_month_last(ref)
+    assert last.year == ref.year
+    assert last.month == ref.month
+    first = last + timedelta(1)
+    assert first.day == 1
+    if last.month == 12:
+        assert first.month == 1
+    else:
+        assert first.month == last.month + 1
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_month_first(ref: date):
+    first = get_month_first(ref)
+    assert first.month == ref.month
+    assert first.year == ref.year
+    assert first.day == 1
+
+
+def _assert_next_WD(ref, result, expected_weekday):
+    assert result.weekday() == expected_weekday
+    if ref.weekday() == expected_weekday:
+        assert result == ref + timedelta(7)
+    else:
+        assert result > ref
+        last_week = result - timedelta(7)
+        assert last_week < ref
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_monday(ref: date):
+    _assert_next_WD(ref, get_next_monday(ref), calendar.MONDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_tuesday(ref: date):
+    _assert_next_WD(ref, get_next_tuesday(ref), calendar.TUESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_wednesday(ref: date):
+    _assert_next_WD(ref, get_next_wednesday(ref), calendar.WEDNESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_thursday(ref: date):
+    _assert_next_WD(ref, get_next_thursday(ref), calendar.THURSDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_friday(ref: date):
+    _assert_next_WD(ref, get_next_friday(ref), calendar.FRIDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_saturday(ref: date):
+    _assert_next_WD(ref, get_next_saturday(ref), calendar.SATURDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_next_sunday(ref: date):
+    _assert_next_WD(ref, get_next_sunday(ref), calendar.SUNDAY)
+
+
+def test_doctests():
+    run_module_doctest("xotl.tools.future.datetime")
