@@ -1,4 +1,4 @@
-Release 3.2.0 (Unreleased)
+Release 3.2.0 (2024-07-22)
 ==========================
 
 .. include:: _changes-3.2.0.rst
