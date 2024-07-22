@@ -126,12 +126,26 @@ def test_containment_of_dates_in_timespan(ts, dt):
     assert dt in ts.replace(start_date=None, end_date=None)
 
 
+@given(timespans(unbounds="none"), strategies.datetimes())
+def test_containment_of_datetimes_in_timespan(ts, dt):
+    d = dt.date()
+    assert (ts.start_date <= d <= ts.end_date) == (dt in ts)
+    assert (d <= ts.end_date) == (dt in ts.replace(start_date=None))
+    assert (ts.start_date <= d) == (dt in ts.replace(end_date=None))
+    assert dt in ts.replace(start_date=None, end_date=None)
+
+
 @given(datetimespans(unbounds="none"), strategies.datetimes())
 def test_containment_of_datetimes_in_datetimespan(ts, dt):
     assert (ts.start_datetime <= dt <= ts.end_datetime) == (dt in ts)
     assert (dt <= ts.end_datetime) == (dt in ts.replace(start_datetime=None))
     assert (ts.start_datetime <= dt) == (dt in ts.replace(end_datetime=None))
     assert dt in ts.replace(start_datetime=None, end_datetime=None)
+
+
+@given(timespans() | datetimespans())
+def test_containment_of_nondate_in_spans(ts):
+    assert 1 not in ts
 
 
 @given(timespans(), datetimespans())
@@ -559,8 +573,13 @@ def _assert_next_WD(ref, result, expected_weekday):
         assert result == ref + timedelta(7)
     else:
         assert result > ref
-        last_week = result - timedelta(7)
-        assert last_week < ref
+        try:
+            last_week = result - timedelta(7)
+        except OverflowError:
+            # ignore overflow errors when we go to the "first date ever" `date(1, 1, 1)`.
+            pass
+        else:
+            assert last_week < ref
 
 
 @given(strategies.dates() | strategies.datetimes())

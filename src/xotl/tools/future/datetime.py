@@ -29,6 +29,7 @@ from re import compile as _regex_compile
 from time import strftime as _time_strftime
 from typing import Iterator, Optional, cast
 
+from typing_extensions import deprecated
 from xotl.tools.symbols import Unset  # noqa
 
 
@@ -95,6 +96,18 @@ def strfdelta(delta):
        >>> strfdelta(timedelta(1, hours=4, minutes=56))
        '1d 4h'
 
+       >>> strfdelta(timedelta(1, minutes=120))
+       '1d 2h'
+
+       >>> strfdelta(timedelta(minutes=45, seconds=1))
+       '45m 1s'
+
+       >>> strfdelta(timedelta(seconds=121))
+       '2m 1s'
+
+       >>> strfdelta(timedelta(seconds=12))
+       '12s'
+
     """
     if delta.days:
         days = delta.days
@@ -123,7 +136,8 @@ def strfdelta(delta):
     return res
 
 
-def strftime(dt, fmt):
+@deprecated("Use the stdlib method")
+def strftime(dt, fmt):  # pragma: no cover
     """Used as `strftime` method of `date` and `datetime` redefined classes.
 
     Also could be used with standard instances.
@@ -492,7 +506,7 @@ class DateTimeField(object):
             res = instance.__dict__[self.name]
             return res
         else:
-            return self
+            return self  # pragma: no cover
 
     def __set__(self, instance, value):
         if value in (None, False):
@@ -631,7 +645,7 @@ class TimeSpan:
         if self.bound:
             return self.start_date <= self.end_date
         else:
-            return True
+            return True  # pragma: no cover
 
     def __contains__(self, other):
         """Test date `other` is in the time span."""
@@ -651,29 +665,29 @@ class TimeSpan:
 
     def overlaps(self, other):
         """Test if the time spans overlaps."""
-        return bool(self & other)
+        return bool(self & other)  # pragma: no cover
 
     def isdisjoint(self, other):
-        return not self.overlaps(other)
+        return not self.overlaps(other)  # pragma: no cover
 
     def __le__(self, other):
         "True if `other` is a superset."
-        return (self & other) == self
+        return (self & other) == self  # pragma: no cover
 
     issubset = __le__
 
     def __lt__(self, other):
         "True if `other` is a proper superset."
-        return self != other and self <= other
+        return self != other and self <= other  # pragma: no cover
 
     def __gt__(self, other):
         "True if `other` is a proper subset."
-        return self != other and self >= other
+        return self != other and self >= other  # pragma: no cover
 
     def __ge__(self, other):
         "True if `other` is a subset."
         # Notice that ge is not the opposite of lt.
-        return (self & other) == other
+        return (self & other) == other  # pragma: no cover
 
     issuperset = covers = __ge__
 
