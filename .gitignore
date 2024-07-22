@@ -12,7 +12,7 @@ __pycache__/
 .coverage*
 *.egg-info/
 monkeytype.sqlite3
-poetry.lock
+requirements-dev-py38.lock
 requirements-dev.lock
 requirements.lock
 src/xotl/tools/_version.py

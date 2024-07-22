@@ -6,6 +6,8 @@
 #   features: []
 #   all-features: false
 #   with-sources: false
+#   generate-hashes: false
+#   universal: false
 
 -e file:.
 alabaster==0.7.13
@@ -20,7 +22,7 @@ backcall==0.2.0
     # via ipython
 beautifulsoup4==4.12.3
     # via furo
-cachetools==5.3.2
+cachetools==5.4.0
     # via tox
 certifi==2024.2.2
     # via requests
@@ -38,9 +40,12 @@ distlib==0.3.8
     # via virtualenv
 docutils==0.20.1
     # via sphinx
+exceptiongroup==1.2.2
+    # via hypothesis
+    # via pytest
 executing==2.0.1
     # via stack-data
-filelock==3.13.1
+filelock==3.15.4
     # via tox
     # via virtualenv
 furo==2024.1.29
@@ -48,6 +53,8 @@ hypothesis==6.91.2
 idna==3.6
     # via requests
 imagesize==1.4.1
+    # via sphinx
+importlib-metadata==8.0.0
     # via sphinx
 iniconfig==2.0.0
     # via pytest
@@ -61,10 +68,10 @@ markupsafe==2.1.5
     # via jinja2
 matplotlib-inline==0.1.6
     # via ipython
-mypy==1.9.0
+mypy==1.11.0
 mypy-extensions==1.0.0
     # via mypy
-packaging==23.2
+packaging==24.1
     # via pyproject-api
     # via pytest
     # via sphinx
@@ -76,10 +83,10 @@ pexpect==4.9.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-platformdirs==4.2.0
+platformdirs==4.2.2
     # via tox
     # via virtualenv
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
     # via tox
 prompt-toolkit==3.0.43
@@ -92,16 +99,17 @@ pygments==2.17.2
     # via furo
     # via ipython
     # via sphinx
-pyproject-api==1.6.1
+pyproject-api==1.7.1
     # via tox
 pytest==7.4.4
     # via pytest-cov
 pytest-cov==4.1.0
 python-dateutil==2.8.2
 pytz==2024.1
+    # via babel
 requests==2.31.0
     # via sphinx
-ruff==0.4.3
+ruff==0.5.3
 six==1.16.0
     # via asttokens
     # via python-dateutil
@@ -130,17 +138,26 @@ sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
 stack-data==0.6.3
     # via ipython
-tox==4.12.1
+tomli==2.0.1
+    # via coverage
+    # via mypy
+    # via pyproject-api
+    # via pytest
+    # via tox
+tox==4.16.0
 traitlets==5.14.1
     # via ipython
     # via matplotlib-inline
 types-python-dateutil==2.8.19.20240106
 typing-extensions==4.9.0
+    # via ipython
     # via mypy
     # via xotl-tools
 urllib3==2.2.0
     # via requests
-virtualenv==20.25.0
+virtualenv==20.26.3
     # via tox
 wcwidth==0.2.13
     # via prompt-toolkit
+zipp==3.19.2
+    # via importlib-metadata

@@ -245,7 +245,7 @@ def track_value(value, max_deep=MAX_DEEP):
         ctx = getargvalues(frame)
         for _key in ctx:
             _value = ctx[_key]
-            if (type(value) == type(_value)) and (value == _value):
+            if (type(value) == type(_value)) and (value == _value):  # noqa
                 res = (ctx, _key)
         frame = frame.f_back
         deep += 1
