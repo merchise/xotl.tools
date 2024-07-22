@@ -53,6 +53,12 @@ lint:
 	@$(RYE_EXEC) isort --check --diff src/ tests/
 .PHONY: lint
 
+
+shell:
+	@$(RYE_EXEC) ipython
+.PHONY: shell
+
+
 pytest_paths ?= "tests/"
 PYTEST_PATHS ?= $(pytest_paths)
 HYPOTHESIS_PROFILE ?= dev

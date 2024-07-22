@@ -59,7 +59,7 @@ dev-dependencies = [
     "mypy~=1.11.0",
     "sphinx>=7.1.2",
     "types-python-dateutil",
-    "ipython>=8.12.3",
+    "ipython~=8.12.3",
     "tox~=4.16.0",
     "python-dateutil>=2.8.2",
     "furo>=2024.1.29",
