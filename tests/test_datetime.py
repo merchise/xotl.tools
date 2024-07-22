@@ -8,6 +8,7 @@
 #
 
 import calendar
+import pickle
 
 import pytest
 from hypothesis import given, settings, strategies
@@ -304,17 +305,8 @@ def test_timespans_displacement_keeps_the_len(ts1, delta):
 
 @given(timespans() | datetimespans())
 def test_timespans_are_pickable(ts):
-    import pickle
-
     for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
         assert ts == pickle.loads(pickle.dumps(ts, proto))
-
-
-def test_empty_timespan_is_pickable():
-    import pickle
-
-    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
-        assert EmptyTimeSpan is pickle.loads(pickle.dumps(EmptyTimeSpan, proto))
 
 
 @given(strategies.datetimes(), strategies.datetimes())
@@ -484,12 +476,22 @@ def test_datetimespan_repr(ts):
     assert DateTimeSpan("2018-01-01") == DateTimeSpan(datetime(2018, 1, 1))
 
 
+def test_empty_timespan_is_pickable():
+    for proto in range(1, pickle.HIGHEST_PROTOCOL + 1):
+        assert EmptyTimeSpan is pickle.loads(pickle.dumps(EmptyTimeSpan, proto))
+
+
 @given(datetimespans())
 def test_empty_span_invariants(ts):
     assert ts == EmptyTimeSpan or ts > EmptyTimeSpan
     assert ts == EmptyTimeSpan or EmptyTimeSpan < ts
     assert not (EmptyTimeSpan > ts)
     assert not (ts < EmptyTimeSpan)
+
+    assert EmptyTimeSpan == EmptyTimeSpan
+    assert EmptyTimeSpan != 1
+    assert EmptyTimeSpan != date.today()
+    assert EmptyTimeSpan != TimeSpan.from_date(date.today())
 
 
 def add_timespans(x, y):

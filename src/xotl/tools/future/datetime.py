@@ -858,8 +858,8 @@ class _EmptyTimeSpan:
 
     __nonzero__ = __bool__
 
-    def __contains__(self, which):
-        return False  # I don't contain noone
+    def __contains__(self, which):  # pragma: no cover
+        return False  # I don't contain no one
 
     # The empty is equal only to itself
     def __eq__(self, which):
@@ -873,12 +873,12 @@ class _EmptyTimeSpan:
     def __ne__(self, other):
         res = self == other
         if res is not NotImplemented:
-            return NotImplemented
+            return True
         else:
-            return res
+            return not res
 
     # The empty set is a subset of any other set.  dates are regarded as the
-    # set that contains that
+    # set that contains that date.
     def __le__(self, which):
         if isinstance(which, (TimeSpan, date, _EmptyTimeSpan)):
             return True
@@ -1031,7 +1031,7 @@ class DateTimeSpan(TimeSpan):
         and the end_datetime will be at '23:59:59'.
 
         """
-        return cls(start_datetime=dt, end_datetime=dt)
+        return cls(start_datetime=dt, end_datetime=dt)  # pragma: no cover
 
     @classmethod
     def from_timespan(cls, ts):
