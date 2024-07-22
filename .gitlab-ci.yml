@@ -1,4 +1,7 @@
 ---
+variables: &global-vars
+  RYE_EXEC: ""
+
 stages:
   - pre-check
   - test
@@ -14,7 +17,6 @@ workflow:
 .x-code: &code
   - pyproject.toml
   - mypy.ini
-  - tox.ini
   - requirements-dev-*.lock
   - src/**/*.py
   - tests/**/*.py
@@ -23,7 +25,6 @@ workflow:
 .x-code-and-docs: &code-and-docs
   - pyproject.toml
   - mypy.ini
-  - tox.ini
   - requirements-dev-*.lock
   - src/**/*.py
   - tests/**/*.py
@@ -38,10 +39,9 @@ lint:
   stage: test
   needs: []
   script:
-    - pip install -r requirements-dev-py312.lock
-    - ruff check src/
-    - ruff format --check src/
-    - isort --check --diff src/
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
+    - make lint
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
@@ -58,27 +58,26 @@ lint:
     paths:
       - .mypy_cache/
   script:
-    - pip install tox
-    - tox -e system-staticcheck
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
+    - make mypy
 
 .run_tests: &run_tests
   image: python:$PYTHON
   stage: test
-  cache:
-    key: $CI_JOB_NAME-$PYTHON
-    paths:
-      - .tox/
   script:
-    - pip install tox
-    - tox -e system-$CASE -- -n auto
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
+    - make test
 
 test doctests:
   image: python:$PYTHON
   stage: test
   interruptible: true
   script:
-    - pip install tox
-    - tox -e system-doctest
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
+    - make -C docs doctest
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
@@ -118,7 +117,21 @@ tests:
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        CASE: ["unit", "greenlets"]
+        PYTEST_EXTRA_ARGS: ["", "-k greenlet"]
+        PYTEST_COVERAGE_ARGS: [""]
+
+coverage:
+  <<: *run_tests
+  variables:
+    PYTHON: "3.12"
+  interruptible: true
+  coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^releases-/
+      changes: *code
+
 
 build:
   image: python:3.12
@@ -136,33 +149,24 @@ build:
     - if: $CI_MERGE_REQUEST_IID || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^releases-/
       changes: *code
 
-check signature of tag:
-  image: alpine
-  stage: test
-  script:
-    - apk add gnupg git
-    - cat $GNUPG_PUBLIC_KEY_FILE | gpg --import
-    - git verify-tag $CI_COMMIT_REF_NAME
-  rules: &release-rules
-    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
-      when: never
-    - if: $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
-
 publish in pypi:
   image: python:3.12
   variables:
+    <<: *global-vars
     GIT_STRATEGY: none
   stage: publish
   script:
     - pip install twine
     - twine upload --skip-existing -u "$PYPI_USERNAME" -p "$PYPI_PASSWORD" dist/*
   needs:
-    - check signature of tag
     - build
   environment:
     name: pypi
     url: https://pypi.org/project/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
-  rules: *release-rules
+  rules:
+    - if: $CI_SERVER_HOST != "gitlab.merchise.org"
+      when: never
+    - if: $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
 
 .build_doc: &build_doc
   image: python:3.12
@@ -172,8 +176,8 @@ publish in pypi:
     paths:
       - docs/builds/
   script:
-    - apt-get update && apt-get install -y git make
-    - pip install -r requirements-dev-py312.lock
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/
@@ -191,15 +195,10 @@ build documentation:
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
-    - if: $CI_COMMIT_TAG
-      variables:
-        SPHINXOPTS: ""
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      variables:
-        SPHINXOPTS: ""
     - if: $CI_MERGE_REQUEST_IID
       changes: *code-and-docs
       variables:
+        <<: *global-vars
         SPHINXOPTS: "-W"
 
 pages:

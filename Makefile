@@ -26,7 +26,6 @@ bootstrap: bootstrap-uv
 
 install: bootstrap
 	@rye sync --no-lock
-	@cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
 .PHONY: install
 
 sync: bootstrap
@@ -34,8 +33,7 @@ sync: bootstrap
 .PHONY: sync
 
 lock: bootstrap
-	@rye sync
-	@cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
+	@rye sync --universal
 .PHONY: lock
 
 build: sync
@@ -52,18 +50,19 @@ format:
 lint:
 	@$(RYE_EXEC) ruff check src/ tests/
 	@$(RYE_EXEC) ruff format --check src/ tests/
-	@$(RYE_EXEC) isort --check src/ tests/
+	@$(RYE_EXEC) isort --check --diff src/ tests/
 .PHONY: lint
 
 pytest_paths ?= "tests/"
 PYTEST_PATHS ?= $(pytest_paths)
 HYPOTHESIS_PROFILE ?= dev
-PYTEST_HYPOTHESIS_ARGS ?= --hypothesis-show-statistics
+PYTEST_HYPOTHESIS_ARGS ?=
 PYTEST_EXTRA_ARGS ?=
 PYTEST_FAILURE_ARGS ?= --ff --maxfail 1
 PYTEST_ARGS ?= -vv $(PYTEST_FAILURE_ARGS) $(PYTEST_EXTRA_ARGS) $(PYTEST_HYPOTHESIS_ARGS)
 PYTEST_WORKERS ?= auto
 PYTEST_MAXWORKERS ?= 4
+PYTEST_COVERAGE_ARGS ?= --cov-config=pyproject.toml --cov=src/
 
 test:
 	@rm -f .coverage*
@@ -74,20 +73,20 @@ test:
           pytest_workers_args="$$pytest_workers_args --maxprocesses=$(PYTEST_MAXWORKERS)"; \
        fi \
     fi; \
-    $(RYE_EXEC) pytest --cov-report= --cov-config=pyproject.toml --cov=src/ $$pytest_workers_args $(PYTEST_ARGS) $(PYTEST_PATHS)
+    $(RYE_EXEC) pytest $(PYTEST_COVERAGE_ARGS) $$pytest_workers_args $(PYTEST_ARGS) $(PYTEST_PATHS)
 .PHONY: test
 
 
 doctest:
-	@$(RYE_EXEC) tox -e system-doctest
+	@$(MAKE) SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs doctest
 .PHONY: test
 
 mypy:
-	@$(RYE_EXEC) tox -e system-staticcheck
+	@$(RYE_EXEC) mypy --config-file mypy.ini -p xotl.tools
 .PHONY: mypy
 
 docs/build:
-	make SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs html
+	@$(MAKE) SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs html
 .PHONY: docs/build
 
 
