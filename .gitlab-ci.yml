@@ -1,4 +1,7 @@
 ---
+variables: &global-vars
+  RYE_EXEC: ""
+
 stages:
   - pre-check
   - test
@@ -38,9 +41,7 @@ lint:
   script:
     - make bootstrap-uv
     - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
-    - ruff check src/
-    - ruff format --check src/
-    - isort --check --diff src/
+    - make lint
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
@@ -59,20 +60,15 @@ lint:
   script:
     - make bootstrap-uv
     - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
-    - mypy --config-file mypy.ini -p xotl.tools
+    - make mypy
 
 .run_tests: &run_tests
   image: python:$PYTHON
   stage: test
   script:
-    - |
-      make bootstrap-uv
-      $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
-      if [ "$CASE" == "unit" ]; then
-         pytest -l -q --cov=xotl.tools -n auto
-      else
-         pytest -n auto -l -q -k $CASE
-      fi
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
+    - make test
 
 test doctests:
   image: python:$PYTHON
@@ -121,7 +117,7 @@ tests:
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        CASE: ["unit", "greenlet"]
+        PYTEST_EXTRA_ARGS: ["", "-k greenlet"]
 
 build:
   image: python:3.12
@@ -142,6 +138,7 @@ build:
 publish in pypi:
   image: python:3.12
   variables:
+    <<: *global-vars
     GIT_STRATEGY: none
   stage: publish
   script:
@@ -187,6 +184,7 @@ build documentation:
     - if: $CI_MERGE_REQUEST_IID
       changes: *code-and-docs
       variables:
+        <<: *global-vars
         SPHINXOPTS: "-W"
 
 pages:

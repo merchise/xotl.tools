@@ -50,7 +50,7 @@ format:
 lint:
 	@$(RYE_EXEC) ruff check src/ tests/
 	@$(RYE_EXEC) ruff format --check src/ tests/
-	@$(RYE_EXEC) isort --check src/ tests/
+	@$(RYE_EXEC) isort --check --diff src/ tests/
 .PHONY: lint
 
 pytest_paths ?= "tests/"
