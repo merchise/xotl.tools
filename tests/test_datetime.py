@@ -27,6 +27,13 @@ from xotl.tools.future.datetime import (
     get_next_thursday,
     get_next_tuesday,
     get_next_wednesday,
+    get_previous_friday,
+    get_previous_monday,
+    get_previous_saturday,
+    get_previous_sunday,
+    get_previous_thursday,
+    get_previous_tuesday,
+    get_previous_wednesday,
     parse_date,
     parse_datetime,
     timedelta,
@@ -571,6 +578,51 @@ def test_get_next_saturday(ref: date):
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_sunday(ref: date):
     _assert_next_WD(ref, get_next_sunday(ref), calendar.SUNDAY)
+
+
+def _assert_previous_WD(ref, result, expected_weekday):
+    assert result.weekday() == expected_weekday
+    if ref.weekday() == expected_weekday:
+        assert result == ref - timedelta(7)
+    else:
+        assert result < ref
+        last_week = result + timedelta(7)
+        assert last_week > ref
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_monday(ref: date):
+    _assert_previous_WD(ref, get_previous_monday(ref), calendar.MONDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_tuesday(ref: date):
+    _assert_previous_WD(ref, get_previous_tuesday(ref), calendar.TUESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_wednesday(ref: date):
+    _assert_previous_WD(ref, get_previous_wednesday(ref), calendar.WEDNESDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_thursday(ref: date):
+    _assert_previous_WD(ref, get_previous_thursday(ref), calendar.THURSDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_friday(ref: date):
+    _assert_previous_WD(ref, get_previous_friday(ref), calendar.FRIDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_saturday(ref: date):
+    _assert_previous_WD(ref, get_previous_saturday(ref), calendar.SATURDAY)
+
+
+@given(strategies.dates() | strategies.datetimes())
+def test_get_previous_sunday(ref: date):
+    _assert_previous_WD(ref, get_previous_sunday(ref), calendar.SUNDAY)
 
 
 def test_doctests():
