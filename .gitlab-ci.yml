@@ -36,7 +36,8 @@ lint:
   stage: test
   needs: []
   script:
-    - pip install -r requirements-dev.lock
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
     - ruff check src/
     - ruff format --check src/
     - isort --check --diff src/
@@ -56,7 +57,8 @@ lint:
     paths:
       - .mypy_cache/
   script:
-    - pip install -r requirements-dev.lock
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
     - mypy --config-file mypy.ini -p xotl.tools
 
 .run_tests: &run_tests
@@ -64,7 +66,8 @@ lint:
   stage: test
   script:
     - |
-      pip install -r requirements-dev.lock
+      make bootstrap-uv
+      $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
       if [ "$CASE" == "unit" ]; then
          pytest -l -q --cov=xotl.tools -n auto
       else
@@ -76,7 +79,8 @@ test doctests:
   stage: test
   interruptible: true
   script:
-    - pip install -r requirements-dev.lock
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
     - make -C docs doctest
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
@@ -161,8 +165,8 @@ publish in pypi:
     paths:
       - docs/builds/
   script:
-    - apt-get update && apt-get install -y git make
-    - pip install -r requirements-dev.lock
+    - make bootstrap-uv
+    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/
