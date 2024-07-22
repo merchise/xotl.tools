@@ -90,6 +90,9 @@ def strfdelta(delta):
        >>> strfdelta(timedelta(hours=4, minutes=56))
        '4h 56m'
 
+       >>> strfdelta(timedelta(1, hours=4, minutes=56))
+       '1d 4h'
+
     """
     if delta.days:
         days = delta.days
@@ -97,7 +100,7 @@ def strfdelta(delta):
         hours = delta.total_seconds() // 3600
         res = f"{days}d"
         if hours >= 0.01:
-            res += " {_strfnumber(hours)}h"
+            res += f" {_strfnumber(hours)}h"
     else:
         seconds = delta.total_seconds()
         if seconds > 60:
