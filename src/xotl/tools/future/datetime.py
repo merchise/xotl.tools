@@ -27,7 +27,9 @@ from enum import IntEnum
 from functools import reduce
 from re import compile as _regex_compile
 from time import strftime as _time_strftime
-from typing import Iterator, Tuple, Union, cast  # noqa
+from typing import Iterator, Optional, cast
+
+from xotl.tools.symbols import Unset  # noqa
 
 
 class WEEKDAY(IntEnum):
@@ -578,6 +580,19 @@ class TimeSpan:
         self.start_date = start_date
         self.end_date = end_date
 
+    def replace(self, *, start_date: Optional[date] = Unset, end_date: Optional[date] = Unset):
+        """Create a copy with possibly changed attributes.
+
+        .. versionadded:: 3.2.0
+
+        """
+        result = TimeSpan(self.start_date, self.end_date)
+        if start_date is not Unset:
+            result.start_date = start_date
+        if end_date is not Unset:
+            result.end_date = end_date
+        return result
+
     @classmethod
     def from_date(self, date: date) -> "TimeSpan":
         """Return a new time span that covers a single `date`."""
@@ -1021,6 +1036,24 @@ class DateTimeSpan(TimeSpan):
         # Don't call super because our fields are synchronized.
         self.start_datetime = start_datetime
         self.end_datetime = end_datetime
+
+    def replace(
+        self,
+        *,
+        start_datetime: Optional[datetime] = Unset,
+        end_datetime: Optional[datetime] = Unset,
+    ):
+        """Create a copy with possibly changed attributes.
+
+        .. versionadded:: 3.2.0
+
+        """
+        result = DateTimeSpan(self.start_datetime, self.end_datetime)
+        if start_datetime is not Unset:
+            result.start_datetime = start_datetime
+        if end_datetime is not Unset:
+            result.end_datetime = end_datetime
+        return result
 
     @classmethod
     def from_datetime(cls, dt):

@@ -2,6 +2,14 @@
 
 - Add module `xotl.tools.testing.unit`:mod:.
 
+- Add methods `~xotl.tools.future.TimeSpan.replace`:meth:, and
+  `~xotl.tools.future.DateTimeSpan.replace`:meth:.
+
+.. rubric:: Typing changes
+
+- The symbols in `xotl.tools.symbols`:mod: are casted to `typing.Any`:any:.
+
+
 .. rubric:: Bug fixes
 
 - Fix bug with `~xotl.tools.future.datetime.EmptyTimeSpan`:data: ``__gt__``.

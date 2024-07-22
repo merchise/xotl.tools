@@ -69,6 +69,8 @@ We added the following features.
 .. autoclass:: TimeSpan
 
    .. automethod:: from_date
+   .. automethod:: replace
+
 
    .. autoattribute:: past_unbound
    .. autoattribute:: future_unbound
@@ -115,6 +117,7 @@ We added the following features.
 
    .. automethod:: from_datetime
    .. automethod:: from_timespan
+   .. automethod:: replace
 
    .. autoattribute:: past_unbound
    .. autoattribute:: future_unbound

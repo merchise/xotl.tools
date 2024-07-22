@@ -14,6 +14,8 @@ All values only could be `True` or `False` but are intended in places where
 
 """
 
+from typing import Any, cast
+
 SYMBOL = "symbol"
 BOOLEAN = "boolean"
 
@@ -193,19 +195,19 @@ class boolean(symbol):
 
 #: False value, mainly for function parameter definitions, where None could
 #: be a valid value.
-Unset = boolean("Unset")
+Unset = cast(Any, boolean("Unset"))
 
 #: False value for local scope use or where ``Unset`` could be a valid value
-Undefined = boolean("Undefined")
+Undefined = cast(Any, boolean("Undefined"))
 
 #: To be used in arguments that are currently ignored because they are being
 #: deprecated.  The only valid reason to use `Ignored` is to signal ignored
 #: arguments in method's/function's signature
-Ignored = boolean("Ignored")
+Ignored = cast(Any, boolean("Ignored"))
 
 #: To be used in functions resulting in a fail where False could be a valid
 #: value.
-Invalid = boolean("Invalid")
+Invalid = cast(Any, boolean("Invalid"))
 
 #: To be used as a mark for current context as a mechanism of comfort.
-This = boolean("This", True)
+This = cast(Any, boolean("This", True))

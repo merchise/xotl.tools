@@ -118,6 +118,22 @@ def test_comparision(ts1, ts2):
         assert ts1.start_date in ts1
 
 
+@given(timespans(unbounds="none"), strategies.dates())
+def test_containment_of_dates_in_timespan(ts, dt):
+    assert (ts.start_date <= dt <= ts.end_date) == (dt in ts)
+    assert (dt <= ts.end_date) == (dt in ts.replace(start_date=None))
+    assert (ts.start_date <= dt) == (dt in ts.replace(end_date=None))
+    assert dt in ts.replace(start_date=None, end_date=None)
+
+
+@given(datetimespans(unbounds="none"), strategies.datetimes())
+def test_containment_of_datetimes_in_datetimespan(ts, dt):
+    assert (ts.start_datetime <= dt <= ts.end_datetime) == (dt in ts)
+    assert (dt <= ts.end_datetime) == (dt in ts.replace(start_datetime=None))
+    assert (ts.start_datetime <= dt) == (dt in ts.replace(end_datetime=None))
+    assert dt in ts.replace(start_datetime=None, end_datetime=None)
+
+
 @given(timespans(), datetimespans())
 @settings(deadline=500)
 def test_interaction_timespan_with_datetimespans(ts, dts):
