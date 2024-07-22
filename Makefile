@@ -6,14 +6,16 @@ SHELL := /bin/bash
 PYTHON_FILES := $(shell find src/$(PROJECT_NAME) -type f -name '*.py' -o -name '*.pyi')
 
 USE_UV ?= true
-REQUIRED_UV_VERSION ?= 0.2.2
-REQUIRED_RYE_VERSION ?= 0.34.0
-bootstrap:
+REQUIRED_UV_VERSION ?= 0.2.24
+REQUIRED_RYE_VERSION ?= 0.36.0
+bootstrap-uv:
 	@INSTALLED_UV_VERSION=$$(uv --version 2>/dev/null | awk '{print $$2}' || echo "0.0.0"); \
     UV_VERSION=$$(printf '%s\n' "$(REQUIRED_UV_VERSION)" "$$INSTALLED_UV_VERSION" | sort -V | head -n1); \
 	if [ "$$UV_VERSION" != "$(REQUIRED_UV_VERSION)" ]; then \
 		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 	fi
+
+bootstrap: bootstrap-uv
 	@INSTALLED_RYE_VERSION=$$(rye --version 2>/dev/null | head -n1 | awk '{print $$2}' || echo "0.0.0"); \
 	DETECTED_RYE_VERSION=$$(printf '%s\n' "$(REQUIRED_RYE_VERSION)" "$$INSTALLED_RYE_VERSION" | sort -V | head -n1); \
 	if [ "$$DETECTED_RYE_VERSION" != "$(REQUIRED_RYE_VERSION)" ]; then \
