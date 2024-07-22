@@ -56,12 +56,13 @@ lint:
 pytest_paths ?= "tests/"
 PYTEST_PATHS ?= $(pytest_paths)
 HYPOTHESIS_PROFILE ?= dev
-PYTEST_HYPOTHESIS_ARGS ?= --hypothesis-show-statistics
+PYTEST_HYPOTHESIS_ARGS ?=
 PYTEST_EXTRA_ARGS ?=
 PYTEST_FAILURE_ARGS ?= --ff --maxfail 1
 PYTEST_ARGS ?= -vv $(PYTEST_FAILURE_ARGS) $(PYTEST_EXTRA_ARGS) $(PYTEST_HYPOTHESIS_ARGS)
 PYTEST_WORKERS ?= auto
 PYTEST_MAXWORKERS ?= 4
+PYTEST_COVERAGE_ARGS ?= --cov-config=pyproject.toml --cov=src/
 
 test:
 	@rm -f .coverage*
@@ -72,7 +73,7 @@ test:
           pytest_workers_args="$$pytest_workers_args --maxprocesses=$(PYTEST_MAXWORKERS)"; \
        fi \
     fi; \
-    $(RYE_EXEC) pytest --cov-report= --cov-config=pyproject.toml --cov=src/ $$pytest_workers_args $(PYTEST_ARGS) $(PYTEST_PATHS)
+    $(RYE_EXEC) pytest $(PYTEST_COVERAGE_ARGS) $$pytest_workers_args $(PYTEST_ARGS) $(PYTEST_PATHS)
 .PHONY: test
 
 
