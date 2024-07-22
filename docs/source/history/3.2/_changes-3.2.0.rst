@@ -2,8 +2,9 @@
 
 - Add module `xotl.tools.testing.unit`:mod:.
 
-- Add methods `~xotl.tools.future.TimeSpan.replace`:meth:, and
-  `~xotl.tools.future.DateTimeSpan.replace`:meth:.
+- Add methods `TimeSpan.replace
+  <xotl.tools.future.datetime.TimeSpan.replace>`:any:, and
+  `DateTimeSpan.replace <xotl.tools.future.datetime.DateTimeSpan.replace>`:any:.
 
 .. rubric:: Typing changes
 

@@ -96,11 +96,8 @@ docs/build:
 .PHONY: docs/build
 
 
-CADDY_IMAGE ?= caddy:2.7-alpine
-CADDY_SERVER_PORT ?= 9999
+DOC_SERVER_PORT ?= 6942
 docs/browse: docs/build
-	@docker run --rm --network host \
-        -v $(PWD)/docs/build/html/:/var/www \
-        -it $(CADDY_IMAGE) \
-	    caddy file-server --browse --listen :$(CADDY_SERVER_PORT) --root /var/www
+	@$(RYE_RUN) python -m http.server  \
+                       --directory $(PWD)/docs/build/html $(DOC_SERVER_PORT)
 .PHONY: docs/browse
