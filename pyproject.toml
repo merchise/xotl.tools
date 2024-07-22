@@ -115,7 +115,7 @@ omit = [
     "xotl/tools/tasking/_greenlet_local.py"
 ]
 
-fail_under = 60
+fail_under = 71
 skip_covered = true
 show_missing = true
 
