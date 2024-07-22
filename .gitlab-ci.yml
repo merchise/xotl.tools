@@ -14,7 +14,6 @@ workflow:
 .x-code: &code
   - pyproject.toml
   - mypy.ini
-  - tox.ini
   - requirements-dev-*.lock
   - src/**/*.py
   - tests/**/*.py
@@ -23,7 +22,6 @@ workflow:
 .x-code-and-docs: &code-and-docs
   - pyproject.toml
   - mypy.ini
-  - tox.ini
   - requirements-dev-*.lock
   - src/**/*.py
   - tests/**/*.py
@@ -38,7 +36,7 @@ lint:
   stage: test
   needs: []
   script:
-    - pip install -r requirements-dev-py312.lock
+    - pip install -r requirements-dev.lock
     - ruff check src/
     - ruff format --check src/
     - isort --check --diff src/
@@ -58,27 +56,28 @@ lint:
     paths:
       - .mypy_cache/
   script:
-    - pip install tox
-    - tox -e system-staticcheck
+    - pip install -r requirements-dev.lock
+    - mypy --config-file mypy.ini -p xotl.tools
 
 .run_tests: &run_tests
   image: python:$PYTHON
   stage: test
-  cache:
-    key: $CI_JOB_NAME-$PYTHON
-    paths:
-      - .tox/
   script:
-    - pip install tox
-    - tox -e system-$CASE -- -n auto
+    - |
+      pip install -r requirements-dev.lock
+      if [ "$CASE" == "unit" ]; then
+         pytest -l -q --cov=xotl.tools -n auto
+      else
+         pytest -n auto -l -q -k $CASE
+      fi
 
 test doctests:
   image: python:$PYTHON
   stage: test
   interruptible: true
   script:
-    - pip install tox
-    - tox -e system-doctest
+    - pip install -r requirements-dev.lock
+    - make -C docs doctest
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
@@ -118,7 +117,7 @@ tests:
   parallel:
     matrix:
       - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        CASE: ["unit", "greenlets"]
+        CASE: ["unit", "greenlet"]
 
 build:
   image: python:3.12
@@ -173,7 +172,7 @@ publish in pypi:
       - docs/builds/
   script:
     - apt-get update && apt-get install -y git make
-    - pip install -r requirements-dev-py312.lock
+    - pip install -r requirements-dev.lock
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/

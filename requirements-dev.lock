@@ -7,11 +7,13 @@
 #   all-features: false
 #   with-sources: false
 #   generate-hashes: false
-#   universal: false
+#   universal: true
 
 -e file:.
 alabaster==0.7.13
     # via sphinx
+appnope==0.1.4 ; sys_platform == 'darwin'
+    # via ipython
 asttokens==2.4.1
     # via stack-data
 attrs==23.2.0
@@ -31,6 +33,9 @@ chardet==5.2.0
 charset-normalizer==3.3.2
     # via requests
 colorama==0.4.6
+    # via ipython
+    # via pytest
+    # via sphinx
     # via tox
 coverage==7.4.1
     # via pytest-cov
@@ -76,7 +81,7 @@ packaging==24.1
     # via xotl-tools
 parso==0.8.3
     # via jedi
-pexpect==4.9.0
+pexpect==4.9.0 ; sys_platform != 'win32'
     # via ipython
 pickleshare==0.7.5
     # via ipython
@@ -88,7 +93,7 @@ pluggy==1.5.0
     # via tox
 prompt-toolkit==3.0.43
     # via ipython
-ptyprocess==0.7.0
+ptyprocess==0.7.0 ; sys_platform != 'win32'
     # via pexpect
 pure-eval==0.2.2
     # via stack-data

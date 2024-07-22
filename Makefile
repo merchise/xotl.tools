@@ -26,7 +26,6 @@ bootstrap: bootstrap-uv
 
 install: bootstrap
 	@rye sync --no-lock
-	@cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
 .PHONY: install
 
 sync: bootstrap
@@ -34,8 +33,7 @@ sync: bootstrap
 .PHONY: sync
 
 lock: bootstrap
-	@rye sync
-	@cp requirements-dev.lock requirements-dev-py$$(echo $(PYTHON_VERSION) | sed "s/\.//").lock
+	@rye sync --universal
 .PHONY: lock
 
 build: sync
@@ -79,15 +77,15 @@ test:
 
 
 doctest:
-	@$(RYE_EXEC) tox -e system-doctest
+	@$(MAKE) SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs doctest
 .PHONY: test
 
 mypy:
-	@$(RYE_EXEC) tox -e system-staticcheck
+	@$(RYE_EXEC) mypy --config-file mypy.ini -p xotl.tools
 .PHONY: mypy
 
 docs/build:
-	make SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs html
+	@$(MAKE) SPHINXBUILD="$(RYE_EXEC) sphinx-build" -C docs html
 .PHONY: docs/build
 
 
