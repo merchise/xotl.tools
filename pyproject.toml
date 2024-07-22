@@ -54,6 +54,7 @@ dev-dependencies = [
     "isort~=5.13.2",
     "pytest~=7.4.4",
     "pytest-cov~=4.1.0",
+    "pytest-xdist~=2.1",
     "coverage[toml]~=7.4.0",
     "mypy~=1.11.0",
     "sphinx>=7.1.2",

@@ -55,9 +55,28 @@ lint:
 	@$(RYE_EXEC) isort --check src/ tests/
 .PHONY: lint
 
+pytest_paths ?= "tests/"
+PYTEST_PATHS ?= $(pytest_paths)
+HYPOTHESIS_PROFILE ?= dev
+PYTEST_HYPOTHESIS_ARGS ?= --hypothesis-show-statistics
+PYTEST_EXTRA_ARGS ?=
+PYTEST_FAILURE_ARGS ?= --ff --maxfail 1
+PYTEST_ARGS ?= -vv $(PYTEST_FAILURE_ARGS) $(PYTEST_EXTRA_ARGS) $(PYTEST_HYPOTHESIS_ARGS)
+PYTEST_WORKERS ?= auto
+PYTEST_MAXWORKERS ?= 4
+
 test:
-	@$(RYE_EXEC) tox -e system-unit,system-greenlets -- -n auto
+	@rm -f .coverage*
+	@pytest_workers_args=""; \
+    if [ -n "$(PYTEST_WORKERS)" ]; then \
+       pytest_workers_args="-n $(PYTEST_WORKERS)"; \
+       if [ -n "$(PYTEST_MAXWORKERS)" ]; then \
+          pytest_workers_args="$$pytest_workers_args --maxprocesses=$(PYTEST_MAXWORKERS)"; \
+       fi \
+    fi; \
+    $(RYE_EXEC) pytest --cov-report= --cov-config=pyproject.toml --cov=src/ $$pytest_workers_args $(PYTEST_ARGS) $(PYTEST_PATHS)
 .PHONY: test
+
 
 doctest:
 	@$(RYE_EXEC) tox -e system-doctest
