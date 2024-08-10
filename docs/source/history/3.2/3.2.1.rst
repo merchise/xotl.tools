@@ -1,4 +1,4 @@
-Release 3.2.1 (Unreleased)
+Release 3.2.1 (2024-08-10)
 ==========================
 
 .. include:: _changes-3.2.1.rst
