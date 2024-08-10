@@ -23,6 +23,7 @@ classifiers = [
 dependencies = [
     "typing-extensions>=3.10.0",
     "packaging>=23.2",
+    "graphlib_backport; python_version < '3.9'"
 ]
 dynamic = ["version"]
 

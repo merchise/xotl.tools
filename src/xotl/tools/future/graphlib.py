@@ -10,11 +10,10 @@
 
 .. versionadded:: 2.1.9
 
+.. deprecated:: 3.2.1
+
 """
 
-try:
-    from graphlib import CycleError, TopologicalSorter  # type: ignore
-except ImportError:
-    from ._graphlib import CycleError, TopologicalSorter  # type: ignore
+from graphlib import CycleError, TopologicalSorter
 
 __all__ = ["TopologicalSorter", "CycleError"]
