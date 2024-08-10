@@ -56,6 +56,8 @@ filelock==3.15.4
     # via tox
     # via virtualenv
 furo==2024.1.29
+graphlib-backport==1.1.0 ; python_version < '3.9'
+    # via xotl-tools
 hypothesis==6.91.2
 idna==3.6
     # via requests

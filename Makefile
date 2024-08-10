@@ -6,8 +6,8 @@ SHELL := /bin/bash
 PYTHON_FILES := $(shell find src/$(PROJECT_NAME) -type f -name '*.py' -o -name '*.pyi')
 
 USE_UV ?= true
-REQUIRED_UV_VERSION ?= 0.2.24
-REQUIRED_RYE_VERSION ?= 0.36.0
+REQUIRED_UV_VERSION ?= 0.2.33
+REQUIRED_RYE_VERSION ?= 0.38.0
 bootstrap-uv:
 	@INSTALLED_UV_VERSION=$$(uv --version 2>/dev/null | awk '{print $$2}' || echo "0.0.0"); \
     UV_VERSION=$$(printf '%s\n' "$(REQUIRED_UV_VERSION)" "$$INSTALLED_UV_VERSION" | sort -V | head -n1); \
