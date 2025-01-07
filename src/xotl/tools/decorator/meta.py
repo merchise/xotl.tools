@@ -9,15 +9,6 @@
 
 """Decorator-making facilities.
 
-This module provides a signature-keeping version of the
-`xotl.tools.decorators.decorator`:func:, which is now deprecated in favor of
-this module's version.
-
-We scinded the decorator-making facilities from decorators per se to allow the
-module `xotl.tools.deprecation`:mod: to be used by decorators and at the same
-time, implement the decorator `~xotl.tools.deprecation.deprecated`:func: more
-easily.
-
 .. testsetup::
 
    from xotl.tools.decorator.meta import *

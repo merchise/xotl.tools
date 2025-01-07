@@ -108,9 +108,14 @@ docs/build:
 	@$(MAKE) SPHINXBUILD="$(RUN) sphinx-build" -C docs html
 .PHONY: docs/build
 
-
 DOC_SERVER_PORT ?= 6942
 docs/browse: docs/build
 	@$(RUN) python -m http.server  \
                    --directory $(PWD)/docs/build/html $(DOC_SERVER_PORT)
 .PHONY: docs/browse
+
+
+AUTO_RESTART := $(RUN) watchmedo auto-restart --directory docs --directory src --recursive --pattern '*.py' --pattern '*.rst' --
+docs/serve:
+	@$(AUTO_RESTART) $(MAKE) docs/browse
+.PHONY: docs/serve
