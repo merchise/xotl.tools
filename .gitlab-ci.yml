@@ -1,6 +1,6 @@
 ---
 variables: &global-vars
-  RYE_EXEC: ""
+  RUN: "uv run"
 
 stages:
   - pre-check
@@ -17,7 +17,7 @@ workflow:
 .x-code: &code
   - pyproject.toml
   - mypy.ini
-  - requirements-dev-*.lock
+  - uv.lock
   - src/**/*.py
   - tests/**/*.py
   - .gitlab-ci.yml
@@ -25,7 +25,7 @@ workflow:
 .x-code-and-docs: &code-and-docs
   - pyproject.toml
   - mypy.ini
-  - requirements-dev-*.lock
+  - uv.lock
   - src/**/*.py
   - tests/**/*.py
   - .gitlab-ci.yml
@@ -39,9 +39,7 @@ lint:
   stage: test
   needs: []
   script:
-    - make bootstrap-uv
-    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
-    - make lint
+    - make install lint
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
@@ -58,25 +56,20 @@ lint:
     paths:
       - .mypy_cache/
   script:
-    - make bootstrap-uv
-    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
-    - make mypy
+    - make install mypy
 
 .run_tests: &run_tests
   image: python:$PYTHON
   stage: test
   script:
-    - make bootstrap-uv
-    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
-    - make test
+    - make install test
 
 test doctests:
   image: python:$PYTHON
   stage: test
   interruptible: true
   script:
-    - make bootstrap-uv
-    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
+    - make install
     - make -C docs doctest
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
@@ -176,8 +169,7 @@ publish in pypi:
     paths:
       - docs/builds/
   script:
-    - make bootstrap-uv
-    - $HOME/.cargo/bin/uv pip install -r requirements-dev.lock --python $(which python3)
+    - make install
     - make -C docs/ html
     - mkdir -p public
     - cp -r docs/build/html/* public/
