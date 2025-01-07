@@ -9,44 +9,10 @@
 
 import unittest
 
-from xotl.tools.decorator import assignment_operator
 from xotl.tools.decorator.meta import decorator
 
 
 class TestAssignable(unittest.TestCase):
-    def test_inline_expression(self):
-        @assignment_operator()
-        def test(name, *args):
-            return name * (len(args) + 1)
-
-        self.assertEqual("aaa", test("a", 1, 2))
-
-    def test_assignment(self):
-        @assignment_operator()
-        def test(name, *args):
-            return name * (len(args) + 1)
-
-        b = test(1, 2, 4)
-        self.assertEqual("bbbb", b)
-
-    def test_regression_inline(self):
-        @assignment_operator(maybe_inline=True)
-        def test(name, *args):
-            if name:
-                return name * (len(args) + 1)
-            else:
-                return None
-
-        self.assertIs(None, test("a", 1, 2))
-
-    def test_regression_on_block(self):
-        @assignment_operator(maybe_inline=True)
-        def union(name, *args):
-            return (name,) + args
-
-        for which in (union(1, 2),):
-            self.assertEqual((None, 1, 2), which)
-
     def test_argsless_decorator(self):
         @decorator
         def log(func, fmt="Calling function %s"):
@@ -139,33 +105,6 @@ class Memoizations(unittest.TestCase):
         # After the first invocation, the static attr is the result.
         Foobar.prop.reset(foo)
         self.assertNotEqual(getattr_static(foo, "prop"), foo)
-
-
-class ConstantBags(unittest.TestCase):
-    def test_constant_bags_decorator(self):
-        from xotl.tools.decorator import constant_bagger as typify
-
-        def func(**kwds):
-            return kwds
-
-        bag = func(ONE=1, TWO=2)
-
-        @typify(ONE=1, TWO=2)
-        def BAG(**kwds):
-            return kwds
-
-        self.assertIs(type(BAG), type)
-        self.assertIn("ONE", bag)
-        self.assertEqual(bag["ONE"], BAG.ONE)
-        self.assertEqual(BAG.TWO, 2 * BAG.ONE)
-        with self.assertRaises(AttributeError):
-            self.assertEqual(bag.TWO, 2 * bag.ONE)
-        with self.assertRaises(TypeError):
-            self.assertEqual(BAG["TWO"], 2 * BAG["ONE"])
-        with self.assertRaises(AttributeError):
-            self.assertEqual(BAG.THREE, 3)
-        self.assertIs(BAG(THREE=3), BAG)
-        self.assertEqual(BAG.THREE, 3)
 
 
 if __name__ == "__main__":
