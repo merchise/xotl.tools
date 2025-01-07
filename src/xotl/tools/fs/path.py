@@ -9,10 +9,6 @@
 
 """Extensions to os.path
 
-Functions inside this module must not have side-effects on the
-file-system. This module re-exports (without change) several functions from the
-`os.path`:mod: standard module.
-
 .. deprecated:: 3.3.0 Use the `pathlib`:mod: from the standard library.
 
 """
