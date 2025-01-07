@@ -13,6 +13,8 @@ Functions inside this module must not have side-effects on the
 file-system. This module re-exports (without change) several functions from the
 `os.path`:mod: standard module.
 
+.. deprecated:: 3.3.0 Use the `pathlib`:mod: from the standard library.
+
 """
 
 import sys
@@ -20,6 +22,7 @@ from os.path import abspath, dirname, expanduser
 from os.path import join as _orig_join
 from os.path import normpath, sep
 
+from typing_extensions import deprecated
 from xotl.tools.future.functools import power as pow_
 
 __all__ = (
@@ -40,6 +43,7 @@ __all__ = (
 # TODO: import all in "from os.path import *"
 
 
+@deprecated("No direct replacement, you can use pathlib.Path.parent several times.")
 def rtrim(path, n=1):
     """Trims the last `n` components of the pathname `path`.
 
@@ -49,6 +53,8 @@ def rtrim(path, n=1):
 
     .. versionchanged:: 1.5.5 `n` defaults to 1.  In this case rtrim is
                         identical to `os.path.dirname`:func:.
+
+    .. deprecated:: 3.3.0
 
     Example::
 
@@ -63,10 +69,13 @@ def rtrim(path, n=1):
     return pow_(dirname, n)(normalize_path(path))
 
 
+@deprecated("No direct replacement.  Use pathlib.")
 def fix_encoding(name, encoding=None):
     """Fix encoding of a file system resource name.
 
     `encoding` is ignored if `name` is already a `str`.
+
+    .. deprecated:: 3.3.0
 
     """
     if not isinstance(name, str):
@@ -80,6 +89,7 @@ def fix_encoding(name, encoding=None):
         return name
 
 
+@deprecated("Use pathlib '/' operator.")
 def join(base, *extras):
     """Join two or more pathname components, inserting '/' as needed.
 
@@ -87,6 +97,8 @@ def join(base, *extras):
     will be discarded.
 
     Normalize path (after join parts), eliminating double slashes, etc.
+
+    .. deprecated:: 3.3.0
 
     """
     try:
@@ -98,12 +110,15 @@ def join(base, *extras):
     return normpath(path)
 
 
+@deprecated("Use pathlib's method absolute.")
 def normalize_path(base, *extras):
     """Normalize path by:
 
     - expanding '~' and '~user' constructions.
     - eliminating double slashes
     - converting to absolute.
+
+    .. deprecated:: 3.3.0
 
     """
     # FIXME: [med] Redundant "path" in name "xotl.tools.fs.path.normalize_path"
@@ -114,9 +129,12 @@ def normalize_path(base, *extras):
     return abspath(expanduser(path))
 
 
+@deprecated("No direct replacement")
 def shorten_module_filename(filename):
     """A filename, normally a module o package name, is shortened looking his
     head in all python path.
+
+    .. deprecated:: 3.3.0
 
     """
     path = sys.path[:]
@@ -134,6 +152,7 @@ def shorten_module_filename(filename):
     return shorten_user(filename)
 
 
+@deprecated("No direct replacement")
 def shorten_user(filename):
     """A filename is shortened looking for the (expantion) $HOME in his head
     and replacing it by '~'.

@@ -1,4 +1,6 @@
-.. rubric:: Removals
+.. rubric:: Removals and deprecations
+
+- The module `xotl.tools.fs.path`:mod: is deprecated.
 
 - All functions in `xotl.tools.decorator`:mod: were removed.  The entire
   package is not deprecated and slotted for removal in 3.4.0.
