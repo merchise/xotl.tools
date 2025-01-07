@@ -9,6 +9,7 @@
 
 import random
 import unittest
+from typing import Type
 
 from xotl.tools.bases import B32, B64, B64symbolic
 
@@ -24,7 +25,7 @@ def build_many_tests():
     return {"test_many_random_convertions_%d" % i: test_many_random_convertions for i in range(10)}
 
 
-_TestManyConvertions = type(str("TestManyConvertions"), (object,), build_many_tests())
+_TestManyConvertions: Type = type(str("TestManyConvertions"), (object,), build_many_tests())
 
 
 class TestManyConvertions(unittest.TestCase, _TestManyConvertions):

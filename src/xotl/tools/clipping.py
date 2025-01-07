@@ -53,7 +53,7 @@ def _check_max_width(max_width, caller=None):
         max_width = DEFAULT_MAX_WIDTH
     elif max_width < MIN_WIDTH:
         msg = "{}() ".format(caller) if caller else ""
-        msg += ("invalid value for `max_width`, must be between greated than " "{}; got {}").format(
+        msg += ("invalid value for `max_width`, must be between greated than {}; got {}").format(
             MIN_WIDTH, max_width
         )
         raise ValueError(msg)
@@ -178,7 +178,7 @@ def crop_iterator(obj, max_width=None, canonical=False):
         return "{}{}{}".format(borders[0], res, borders[1])
     else:
         raise TypeError(
-            "crop_iterator() expects tuple, list, set, or " "mapping; got {}".format(
+            "crop_iterator() expects tuple, list, set, or mapping; got {}".format(
                 type(obj).__name__
             )
         )

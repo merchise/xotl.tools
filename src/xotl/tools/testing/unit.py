@@ -91,8 +91,7 @@ def run_module_doctest(
         modname = nameof(module, full=True, typed=False, inner=True)
     if not isinstance(module, ModuleType):
         raise ValueError(
-            f"{mod_or_name} must be a module or fully qualified name "
-            f"to a module.  Got {module}."
+            f"{mod_or_name} must be a module or fully qualified name to a module.  Got {module}."
         )
     with captured_stdout() as stdout, captured_stderr() as stderr:
         globs = dict(vars(module))

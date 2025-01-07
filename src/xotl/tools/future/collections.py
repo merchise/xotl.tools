@@ -1491,7 +1491,7 @@ class PascalSet(metaclass=MetaSet):
     def _invalid_value(self, value):
         cls_name = type(self).__name__
         vname = type(value).__name__
-        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", ' "must be an integer!"
+        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", must be an integer!'
         return TypeError(msg % (value, vname, cls_name))
 
     @classmethod
@@ -1982,7 +1982,7 @@ class BitPascalSet(metaclass=MetaSet):
     def _invalid_value(self, value):
         cls_name = type(self).__name__
         vname = type(value).__name__
-        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", ' "must be an integer!"
+        msg = 'Unsupported type for  value "%s" of type "%s" for a "%s", must be an integer!'
         return TypeError(msg % (value, vname, cls_name))
 
     @classmethod

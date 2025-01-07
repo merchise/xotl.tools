@@ -95,11 +95,11 @@ def test_stacked_dict():
     assert sd["a"] == "level-0"
     try:
         sd.pop_level()
-        assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
+        assert False, "Level 0 cannot be poped. It should have raised a TypeError"
     except TypeError:
         pass
     except Exception:
-        assert False, "Level 0 cannot be poped. " "It should have raised a TypeError"
+        assert False, "Level 0 cannot be poped. It should have raised a TypeError"
 
 
 class TestRankedDict(unittest.TestCase):
@@ -305,7 +305,7 @@ class TestRankedDict(unittest.TestCase):
         od["x"] = od
         self.assertEqual(
             repr(od),
-            ("RankedDict([('a', None), ('b', None), " "('c', None), ('x', ...)])"),
+            ("RankedDict([('a', None), ('b', None), ('c', None), ('x', ...)])"),
         )
 
     def test_setdefault(self):

@@ -33,7 +33,7 @@ class MetaSymbol(type):
             return self
         else:
             raise TypeError(
-                'invalid class "{}" declared outside of "{}" ' "module".format(name, __name__)
+                'invalid class "{}" declared outside of "{}" module'.format(name, __name__)
             )
 
     def __instancecheck__(self, instance):
@@ -119,7 +119,7 @@ class symbol(int, metaclass=MetaSymbol):
                     res = super().__new__(cls, value)
                     cls._instances[name] = res
                 else:
-                    msg = 'instancing "{}" with name "{}" and incorrect ' 'value "{}" of type "{}"'
+                    msg = 'instancing "{}" with name "{}" and incorrect value "{}" of type "{}"'
                     cn, vt = cls.__name__, type(value).__name__
                     raise TypeError(msg.format(cn, name, value, vt))
             elif res != value:  # Check existing instance

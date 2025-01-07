@@ -388,11 +388,11 @@ class ParamSchemeRow:
 
             bad = [k for k in ids if not ok(k)]
             if bad:
-                msg = "{}() identifiers with wrong type (only int and str " "allowed): {}"
+                msg = "{}() identifiers with wrong type (only int and str allowed): {}"
                 raise TypeError(msg.format(type(self).__name__, bad))
         key = options.pop("key", none)
         if not (key is none or iskey(key)):
-            msg = '"key" option must be an identifier, "{}" of type "{}" ' "given"
+            msg = '"key" option must be an identifier, "{}" of type "{}" given'
             raise TypeError(msg.format(key, type(key).__name__))
         if "default" in options:
             aux = {"default": options.pop("default")}
@@ -499,7 +499,7 @@ class ParamScheme:
                 if not aux:
                     used |= this
                 else:
-                    msg = ('{}() repeated keyword identifiers "{}" in ' "row {}").format(
+                    msg = ('{}() repeated keyword identifiers "{}" in row {}').format(
                         type(self).__name__, aux, idx
                     )
                     raise ValueError(msg)
@@ -550,7 +550,7 @@ class ParamScheme:
         rem = pm.remainder()
         if strict:
             if rem:
-                msg = "after a full `{}` process, there are still remainder " "parameters: {}"
+                msg = "after a full `{}` process, there are still remainder parameters: {}"
                 raise TypeError(msg.format(type(self).__name__, set(rem)))
         else:
             res.update(rem)

@@ -262,7 +262,7 @@ class SafeDataItem:
         if res:
             return res
         else:
-            msg = "Invalid `SafeDataItem(%s)` call, must be used in a class " "context."
+            msg = "Invalid `SafeDataItem(%s)` call, must be used in a class context."
             raise TypeError(msg % self.attr_name)
 
     def _unique_name(self):
@@ -311,7 +311,7 @@ class SafeDataItem:
                 bads[key] = value
         self.validator = predicate(self.validator)
         if bads:
-            msg = "Invalid keyword arguments: %s\n" "See constructor documentation for more info."
+            msg = "Invalid keyword arguments: %s\nSee constructor documentation for more info."
             raise ValueError(msg % bads)
         if self.attr_name is Unset:
             from xotl.tools.names import nameof
@@ -1401,9 +1401,7 @@ def smart_copy(*args, defaults=None):
     if not sources:
         raise TypeError("smart_copy() requires at least one source")
     if isinstance(target, (bool, type(None), int, float, str)):
-        raise TypeError(
-            "target should be a mutable object, not " "{}".format(type(target).__name__)
-        )
+        raise TypeError("target should be a mutable object, not {}".format(type(target).__name__))
     if isinstance(target, MutableMapping):
 
         def setter(key, val):
