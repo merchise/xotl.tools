@@ -96,10 +96,6 @@ We divide xoutil modules into 4 tiers:
    - `xotl.tools.decorator.meta`:mod:.  This is to allow the definition of
      decorators in other modules.
 
-   - `xotl.tools.deprecation`:mod:.  It **must not** depend on any other
-     module.  Many modules in ``xotl.tools`` will use this module at import
-     time to declare deprecated features.
-
 #. Tier 2
 
    Modules in this tier should depend only on features defined in tiers 0 and 1
