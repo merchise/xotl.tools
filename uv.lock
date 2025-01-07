@@ -1450,7 +1450,7 @@ wheels = [
 
 [[package]]
 name = "xotl-tools"
-version = "3.2.2.dev3+g95d860ea.d20250107"
+version = "3.2.2.dev7+gcd252f9b.d20250107"
 source = { editable = "." }
 dependencies = [
     { name = "graphlib-backport", marker = "python_full_version < '3.9'" },
