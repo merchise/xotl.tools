@@ -21,12 +21,12 @@ def store(self):
     return getattr(self, "_store", None)
 
 
-@store.setter
+@store.setter  # type: ignore
 def store(self, value):
     setattr(self, "_store", value)
 
 
-@store.deleter
+@store.deleter  # type: ignore
 def store(self):
     delattr(self, "_store")
 

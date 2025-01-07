@@ -335,8 +335,7 @@ def deprecate_linked(check=None, msg=None):
     if check not in name:
         if msg is None:
             msg = (
-                '"{}" module is now deprecated and it will be removed; use '
-                'the one in "{}" instead.'
+                '"{}" module is now deprecated and it will be removed; use the one in "{}" instead.'
             ).format(name, check)
         warnings.warn(msg, stacklevel=2)
 
@@ -368,7 +367,7 @@ def deprecate_module(replacement, msg=None):
         # As recommended in Python's documentation to avoid memory leaks
         del frame
     if msg is None:
-        msg = ('"{}" module is now deprecated and it will be removed; ' 'use "{}" instead.').format(
+        msg = ('"{}" module is now deprecated and it will be removed; use "{}" instead.').format(
             name, replacement
         )
     if msg:

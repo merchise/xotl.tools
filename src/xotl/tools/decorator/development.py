@@ -30,7 +30,7 @@ def unstable(target, msg=None):
     from xotl.tools.names import nameof
 
     if msg is None:
-        msg = "The {0} `{1}` is declared unstable. " "It may change in the future or be removed."
+        msg = "The {0} `{1}` is declared unstable. It may change in the future or be removed."
     try:
         from zope.interface import Interface
     except ImportError:

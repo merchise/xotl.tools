@@ -249,7 +249,7 @@ def slugify(value: Any, *args, **kwds) -> str:
         replacement = _normalize(replacement)
     else:
         raise TypeError(
-            'slugify() replacement "{}" must be a string or None,' ' not "{}".'.format(
+            'slugify() replacement "{}" must be a string or None, not "{}".'.format(
                 replacement, type(replacement)
             )
         )
@@ -267,7 +267,7 @@ def slugify(value: Any, *args, **kwds) -> str:
         invalid_regex = re.compile(r"[{}]+".format(invalid_chars))
         if invalid_regex.search(replacement):
             raise ValueError(
-                'slugify() replacement "{}" must not contain ' "any invalid character.".format(
+                'slugify() replacement "{}" must not contain any invalid character.'.format(
                     replacement
                 )
             )

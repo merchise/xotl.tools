@@ -54,7 +54,7 @@ build: sync
 .PHONY: build
 
 format-python:
-	@$(RUN) isort src
+	@$(RUN) isort src test
 	@$(RUN) ruff check --fix src
 	@$(RUN) ruff format src
 
@@ -72,7 +72,7 @@ shell:
 .PHONY: shell
 
 
-pytest_paths ?= "tests/"
+pytest_paths ?= "src/tests/"
 PYTEST_PATHS ?= $(pytest_paths)
 HYPOTHESIS_PROFILE ?= dev
 PYTEST_HYPOTHESIS_ARGS ?=

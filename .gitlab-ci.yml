@@ -69,8 +69,7 @@ test doctests:
   stage: test
   interruptible: true
   script:
-    - make install
-    - make -C docs doctest
+    - make install doctest
   rules:
     - if: $CI_SERVER_HOST != "gitlab.merchise.org"
       when: never
@@ -169,8 +168,7 @@ publish in pypi:
     paths:
       - docs/builds/
   script:
-    - make install
-    - make -C docs/ html
+    - make install docs/build
     - mkdir -p public
     - cp -r docs/build/html/* public/
   artifacts:
