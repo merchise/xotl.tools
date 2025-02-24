@@ -9,7 +9,10 @@
 import contextlib
 import sys
 
+from typing_extensions import deprecated
 
+
+@deprecated("Use contextlib.redirect_stdout or redirect_stderr")
 @contextlib.contextmanager
 def captured_output(stream_name):
     """Return a context manager used by captured_stdout/stdin/stderr
@@ -24,8 +27,11 @@ def captured_output(stream_name):
         setattr(sys, stream_name, orig_stdout)
 
 
+@deprecated("Use contextlib.redirect_stdout")
 def captured_stdout():
     r"""Capture the output of ``sys.stdout``.
+
+    .. deprecated:: 3.4.0
 
     Example:
 
@@ -43,8 +49,11 @@ def captured_stdout():
     return captured_output("stdout")
 
 
+@deprecated("Use contextlib.redirect_stdout")
 def captured_stderr():
     r"""Capture the output of ``sys.stderr``.
+
+    .. deprecated:: 3.4.0
 
     Example:
 
