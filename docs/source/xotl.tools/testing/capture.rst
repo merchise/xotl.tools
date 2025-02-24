@@ -4,8 +4,6 @@
 
 .. module:: xotl.tools.testing.capture
 
-.. deprecated:: 3.4.0
-
 .. testsetup::
 
    from xotl.tools.testing.capture import *

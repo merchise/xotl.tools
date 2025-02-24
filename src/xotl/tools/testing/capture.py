@@ -7,31 +7,12 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 import contextlib
-import sys
-
-from typing_extensions import deprecated
+import io
 
 
-@deprecated("Use contextlib.redirect_stdout or redirect_stderr")
 @contextlib.contextmanager
-def captured_output(stream_name):
-    """Return a context manager used by captured_stdout/stdin/stderr
-    that temporarily replaces the sys stream *stream_name* with a StringIO."""
-    import io
-
-    orig_stdout = getattr(sys, stream_name)
-    setattr(sys, stream_name, io.StringIO())
-    try:
-        yield getattr(sys, stream_name)
-    finally:
-        setattr(sys, stream_name, orig_stdout)
-
-
-@deprecated("Use contextlib.redirect_stdout")
 def captured_stdout():
     r"""Capture the output of ``sys.stdout``.
-
-    .. deprecated:: 3.4.0
 
     Example:
 
@@ -46,19 +27,20 @@ def captured_stdout():
     .. versionadded:: 3.1.1
 
     """
-    return captured_output("stdout")
+    f = io.StringIO()
+    with contextlib.redirect_stdout(f):
+        yield f
 
 
-@deprecated("Use contextlib.redirect_stdout")
+@contextlib.contextmanager
 def captured_stderr():
     r"""Capture the output of ``sys.stderr``.
-
-    .. deprecated:: 3.4.0
 
     Example:
 
     .. doctest::
 
+       >>> import sys
        >>> with captured_stderr() as stderr:
        ...    print("hello", file=sys.stderr)
 
@@ -68,4 +50,6 @@ def captured_stderr():
     .. versionadded:: 3.1.1
 
     """
-    return captured_output("stderr")
+    f = io.StringIO()
+    with contextlib.redirect_stderr(f):
+        yield f
