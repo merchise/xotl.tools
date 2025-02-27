@@ -12,7 +12,11 @@
 .. _physical quantities: \
 https://en.wikipedia.org/wiki/International_System_of_Quantities#Base_quantities
 
+.. deprecated:: 3.4.0
+
 """
+
+from typing_extensions import deprecated
 
 from .meta import UNIT, Dimension
 
@@ -37,6 +41,7 @@ def nano(v):
     return v / (10**9)
 
 
+@deprecated("Length is deprecated without replacement")
 @Dimension.new()
 class Length:
     metre = UNIT
@@ -50,6 +55,7 @@ metre = m = Length.m = Length.metre
 L = Length
 
 
+@deprecated("Length is deprecated without replacement")
 @Dimension.new
 class Time:
     second = UNIT
@@ -63,6 +69,7 @@ second = s = Time.s = Time.second
 T = Time
 
 
+@deprecated("Length is deprecated without replacement")
 @Dimension.new(unit_aliases=("kg",))
 class Mass:
     kilogram = UNIT
@@ -73,6 +80,7 @@ kilogram = kg = Mass.kg
 M = Mass
 
 
+@deprecated("Length is deprecated without replacement")
 @Dimension.new(unit_aliases="A")
 class ElectricCurrent:
     ampere = UNIT
@@ -83,6 +91,7 @@ A = ampere = ElectricCurrent.A
 I = ElectricCurrent  # noqa
 
 
+@deprecated("Length is deprecated without replacement")
 @Dimension.new(unit_aliases="K")
 class Temperature:
     kelvin = UNIT
@@ -103,6 +112,7 @@ K = kelvin = Temperature.K
 O = Temperature  # noqa
 
 
+@deprecated("Length is deprecated without replacement")
 @Dimension.new(unit_alias="mol")
 class Substance:
     mole = UNIT
@@ -112,6 +122,7 @@ mole = mol = Substance.mol
 N = Substance
 
 
+@deprecated("Length is deprecated without replacement")
 @Dimension.new
 class Luminosity:
     candela = UNIT

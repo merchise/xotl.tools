@@ -9,6 +9,8 @@
 
 """Concrete numbers for money.
 
+.. deprecated:: 3.4.0
+
 You may have 10 dollars and 5 euros in your wallet, that does not mean that
 you have 15 of anything (but bills, perhaps).  Though you may *evaluate* your
 cash in any other currency you don't have that value until you perform an
