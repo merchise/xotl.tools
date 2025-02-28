@@ -30,11 +30,3 @@
       if *mode* did not match the mode of the existing directory. Since this
       behavior was impossible to implement safely, it was removed in Python
       3.4.1. See the original `os.makedirs`:py:func:.
-
-
-Contents:
-
-.. toctree::
-   :maxdepth: 1
-
-   fs/path
