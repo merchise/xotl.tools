@@ -9,18 +9,15 @@
 
 """File system utilities.
 
-This module contains file-system utilities that could have side-effects. For
-path-handling functions that have no side-effects look at
-`xotl.tools.fs.path`:mod:.
+This module contains file-system utilities that could have side-effects.
 
 """
 
 import os
+import pathlib
 import sys
 from os import makedirs
 from re import compile as _rcompile
-
-from xotl.tools.fs.path import normalize_path
 
 re_magic = _rcompile("[*?[]")
 has_magic = lambda s: re_magic.search(s) is not None
@@ -84,7 +81,9 @@ def iter_files(
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
     depth = 0
     for dirpath, _dirs, filenames in os.walk(
-        normalize_path(top), topdown=True, followlinks=followlinks
+        pathlib.Path(top).absolute(),
+        topdown=True,
+        followlinks=followlinks,
     ):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
@@ -131,7 +130,7 @@ def iter_dict_files(top=".", regex=None, wrong=None, followlinks=False):
             regex = _rcompile(regex)
     else:
         regex = _REGEX_DEFAULT_ALLFILES
-    for dirpath, _dirs, filenames in os.walk(normalize_path(top), followlinks=followlinks):
+    for dirpath, _dirs, filenames in os.walk(pathlib.Path(top).absolute(), followlinks=followlinks):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             match = regex.match(path)
@@ -150,7 +149,7 @@ def iter_dirs(top=".", pattern=None, regex_pattern=None, shell_pattern=None):
 
     """
     regex = _get_regex(pattern, regex_pattern, shell_pattern)
-    for path, _dirs, _files in os.walk(normalize_path(top)):
+    for path, _dirs, _files in os.walk(pathlib.Path(top).absolute()):
         if (regex is None) or regex.search(path):
             yield path
 
@@ -200,7 +199,7 @@ def rmdirs(
     exclude = _get_regex(exclude)
     if confirm is None:
         confirm = lambda _: True
-    for path, _dirs, _files in os.walk(normalize_path(top)):
+    for path, _dirs, _files in os.walk(pathlib.Path(top).absolute()):
         # XXX: Make clearest next condition
         if (
             (regex is None or regex.search(path))
@@ -335,7 +334,7 @@ def read_file(path):
 def listdir(path):
     """Same as ``os.listdir`` but normalizes `path` and raises no error."""
     try:
-        return os.listdir(normalize_path(path))
+        return os.listdir(pathlib.Path(path).absolute())
     except os.error:
         return []
 
@@ -444,8 +443,8 @@ def ensure_filename(filename, yields=False):
     .. versionadded:: 1.6.1  Added parameter `yield`.
 
     """
+    filename = pathlib.Path(filename).absolute()
     if not os.path.exists(filename):
-        filename = normalize_path(filename)
         dirname = os.path.dirname(filename)
         makedirs(dirname, exist_ok=True)
         # TODO: Better hanlding of mode for reading/writing.

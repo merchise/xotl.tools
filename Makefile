@@ -7,31 +7,23 @@ SHELL := /bin/bash
 PYTHON_FILES := $(shell find src/$(PROJECT_NAME) -type f -name '*.py' -o -name '*.pyi')
 
 UV ?= uv
+ifdef INSIDE_EMACS
+UV_RUN ?= uv run --color never
+else
 UV_RUN ?= uv run
-RYE_RUN ?= rye run
-
-# In some cases we want to run things with rye to avoid bug
-# https://github.com/astral-sh/uv/pull/6738
+endif
 RUN ?= $(UV_RUN)
 
 
-REQUIRED_UV_VERSION ?= 0.5.14
-REQUIRED_RYE_VERSION ?= 0.43.0
-bootstrap-uv:
+REQUIRED_UV_VERSION ?= 0.6.3
+bootstrap:
 	@INSTALLED_UV_VERSION=$$(uv --version 2>/dev/null | awk '{print $$2}' || echo "0.0.0"); \
-    UV_VERSION=$$(printf '%s\n' "$(REQUIRED_UV_VERSION)" "$$INSTALLED_UV_VERSION" | sort -V | head -n1); \
-	if [ "$$UV_VERSION" != "$(REQUIRED_UV_VERSION)" ]; then \
-		curl -LsSf https://astral.sh/uv/install.sh | sh; \
+    DETECTED_UV_VERSION=$$(printf '%s\n' "$(REQUIRED_UV_VERSION)" "$$INSTALLED_UV_VERSION" | sort -V | head -n1); \
+	if [ "$$DETECTED_UV_VERSION" != "$(REQUIRED_UV_VERSION)" ]; then \
+		uv self update $(REQUIRED_UV_VERSION) || curl -LsSf https://astral.sh/uv/$(REQUIRED_UV_VERSION)/install.sh | sh; \
 	fi
 	@echo $(PYTHON_VERSION) > .python-version
-
-bootstrap: bootstrap-uv
-	@INSTALLED_RYE_VERSION=$$(rye --version 2>/dev/null | head -n1 | awk '{print $$2}' || echo "0.0.0"); \
-	DETECTED_RYE_VERSION=$$(printf '%s\n' "$(REQUIRED_RYE_VERSION)" "$$INSTALLED_RYE_VERSION" | sort -V | head -n1); \
-	if [ "$$DETECTED_RYE_VERSION" != "$(REQUIRED_RYE_VERSION)" ]; then \
-		rye self update || curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" RYE_VERSION="$(REQUIRED_RYE_VERSION)" bash; \
-	fi
-.PHONY: bootstrap-uv bootstrap
+.PHONY: bootstrap
 
 sync install: bootstrap
 	@$(UV) sync --frozen

@@ -18,6 +18,7 @@ r"""Facilities to work with `concrete numbers`_.
 __ `concrete numbers`_
 .. _concrete numbers: https://en.wikipedia.org/wiki/Concrete_number
 
+.. deprecated:: 3.4.0
 
 This module allows you to define dimensions (or quantity types):
 
@@ -149,6 +150,7 @@ import functools
 import numbers
 from typing import Any, Callable, FrozenSet, Optional, Sequence, Tuple, overload
 
+from typing_extensions import deprecated
 from xotl.tools.future.types import TEq
 from xotl.tools.objects import classproperty
 
@@ -156,9 +158,12 @@ from xotl.tools.objects import classproperty
 UNIT = 1
 
 
+@deprecated("Quantity is deprecated without replacement.")
 @functools.total_ordering
 class Quantity(numbers.Real):
     """A concrete number of `quantity` (expressed in) `units`.
+
+    .. deprecated:: 3.4.0
 
     .. seealso:: https://en.wikipedia.org/wiki/Concrete_number
 
@@ -360,8 +365,11 @@ class Quantity(numbers.Real):
         raise OperandTypeError("**", other, self)
 
 
+@deprecated("Dimension is deprecated without replacement.")
 class Dimension(type):
     """A type for `quantities`_.
+
+    .. deprecated:: 3.4.0
 
     This is a metaclass for dimensions.  Every instance (class) will
     automatically have the following attributes:
@@ -471,6 +479,8 @@ class Dimension(type):
     @classmethod
     def new(cls, *source, **kwargs):
         r"""Define a new dimension.
+
+        .. deprecated:: 3.4.0
 
         This is a wrapped decorator.  The actual possible signatures are:
 
@@ -636,8 +646,11 @@ class Dimension(type):
             return NotImplemented
 
 
+@deprecated("Signature is deprecated without replacement.")
 class Signature:
     """The layout of the kinds that compose a quantity.
+
+    .. deprecated:: 3.4.0
 
     The layout is given by a pair non-ordered collections (repetition
     is allowed): the numerator (we call it top within the signature)
@@ -819,6 +832,7 @@ class Signature:
     __repr__ = __str__
 
 
+@deprecated("_BareRealType is deprecated without replacement.")
 class _BareRealType(type):
     def __instancecheck__(self, i):
         return isinstance(i, numbers.Real) and not isinstance(i, Quantity)
@@ -831,6 +845,7 @@ class BareReal(metaclass=_BareRealType):
 SCALAR = Signature()
 
 
+@deprecated("Scalar is deprecated without replacement.")
 @Dimension.new
 class Scalar:
     """A quantity whose signature is always *empty*.
@@ -847,6 +862,8 @@ class Scalar:
 
         >>> Scalar * L == L == L * Scalar
         True
+
+    .. deprecated:: 3.4.0
 
     """
 

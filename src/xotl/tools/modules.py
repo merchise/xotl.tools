@@ -222,30 +222,3 @@ def moduleproperty(getter, setter=None, deleter=None, doc=None, base=property):
     if deleter:
         result = result.deleter(deleter, _name=name)
     return result
-
-
-@deprecated("This will be removed, since not every module it's a path.")
-def get_module_path(module):
-    """Gets the absolute path of a `module`.
-
-    :param module: Either module object or a (dotted) string for the module.
-
-    :returns: The path of the module.
-
-    If the module is a package, returns the directory path (not the path to the
-    ``__init__``).
-
-    If `module` is a string and it's not absolute, raises a TypeError.
-
-    .. deprecated:: 3.0.0
-
-    """
-    from importlib import import_module
-
-    from xotl.tools.fs.path import normalize_path
-
-    mod = import_module(module) if isinstance(module, str) else module
-    # The __path__ only exists for packages and does not include the
-    # __init__.py
-    path = mod.__path__[0] if hasattr(mod, "__path__") else mod.__file__
-    return normalize_path(path)

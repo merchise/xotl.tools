@@ -86,50 +86,6 @@ class TestModuleDecorators(unittest.TestCase):
         self.assertIs(getattr_static(m, "memoized"), m)
 
 
-def test_get_module_path_by_module_object():
-    from os.path import join
-
-    import xotl.tools
-    import xotl.tools.future.itertools
-    from xotl.tools.modules import get_module_path
-
-    top = xotl.tools.__path__[0]
-    expected = top
-    assert get_module_path(xotl.tools) == expected
-
-    expected = (
-        join(top, "future", "itertools.py"),
-        join(top, "future", "itertools.pyc"),
-        join(top, "future", "itertools.pyo"),
-    )
-    assert get_module_path(xotl.tools.future.itertools) in expected
-
-
-def test_get_module_path_by_module_string_abs():
-    from os.path import join
-
-    import xotl.tools
-    from xotl.tools.modules import get_module_path
-
-    top = xotl.tools.__path__[0]
-    expected = top
-    assert get_module_path("xotl.tools") == expected
-    expected = (
-        join(top, "future", "itertools.py"),
-        join(top, "future", "itertools.pyc"),
-        join(top, "future", "itertools.pyo"),
-    )
-    assert get_module_path("xotl.tools.future.itertools") in expected
-
-
-def test_get_module_path_by_module_string_rel():
-    import pytest
-    from xotl.tools.modules import get_module_path
-
-    with pytest.raises(TypeError):
-        assert get_module_path(".iterators")
-
-
 def test_object_stability():
     from . import testbed
     from .testbed import selfish

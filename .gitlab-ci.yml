@@ -1,7 +1,4 @@
 ---
-variables: &global-vars
-  RUN: "uv run"
-
 stages:
   - pre-check
   - test
@@ -144,7 +141,6 @@ build:
 publish in pypi:
   image: python:3.12
   variables:
-    <<: *global-vars
     GIT_STRATEGY: none
   stage: publish
   script:
@@ -188,7 +184,6 @@ build documentation:
     - if: $CI_MERGE_REQUEST_IID
       changes: *code-and-docs
       variables:
-        <<: *global-vars
         SPHINXOPTS: "-W"
 
 pages:
