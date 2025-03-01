@@ -1,4 +1,4 @@
-PYTHON_VERSION ?= 3.12
+PYTHON_VERSION ?= 3.8
 
 CARGO_HOME ?= $(HOME)/.cargo
 PATH := $(HOME)/.rye/shims:$(HOME)/.local/bin:$(CARGO_HOME)/bin:$(PATH)
