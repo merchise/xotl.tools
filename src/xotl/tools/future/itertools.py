@@ -62,12 +62,6 @@ def flatten(sequence, is_scalar=None, depth=None):
         >>> tuple(flatten((range(2), range_(2, 4)), depth=0))  # doctest: +ELLIPSIS  # noqa
         (...range(...2), [2, 3])
 
-    .. note:: Compatibility issue
-
-       In Python 2 ``bytes`` is the standard string but in Python 3 is a
-       binary buffer, so ``flatten([b'abc', [1, 2, 3]])`` will deliver
-       different results.
-
     """
     if is_scalar is None:
 
