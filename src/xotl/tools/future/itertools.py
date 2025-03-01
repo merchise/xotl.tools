@@ -20,19 +20,36 @@ from xotl.tools.symbols import Unset
 
 T = TypeVar("T")
 X = TypeVar("X")
+V = TypeVar("V")
 
 
-def first_non_null(iterable, default=None):
-    """Returns the first value from iterable which is non-null.
+def first_non_null(
+    iterable: Iterable[X],
+    default: Optional[V] = None,
+    *,
+    key: Optional[Callable[[X], Any]] = None,
+    getvalue: Optional[Callable[[X], Optional[V]]] = None,
+) -> Optional[V]:
+    """Returns the first value from iterable which is non-null w.r.t to the key.
 
     This is roughly the same as::
 
-         next((x for x in iter(iterable) if x), default)
+         next((getvalue(x) for x in iterable if key(x)), default)
+
+    Use the identity (``lambda x: x``) for `key` and/or `getvalue` if None.
 
     .. versionadded:: 1.4.0
 
+    .. versionchanged:: 3.4.0 Added arguments `key` and `getvalue`.
+
     """
-    return next((x for x in iter(iterable) if x), default)
+    if key is None:
+        key = cast(Callable[[X], X], lambda x: x)
+    if getvalue is None:
+        get = cast(Callable[[X], Optional[V]], lambda x: x)
+    else:
+        get = getvalue
+    return next((get(x) for x in iterable if key(x)), default)
 
 
 def flatten(sequence, is_scalar=None, depth=None):
