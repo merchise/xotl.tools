@@ -91,7 +91,7 @@ run required static checks:
       changes: *code
   parallel:
     matrix:
-      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
 tests:
   <<: *run_tests
@@ -105,7 +105,7 @@ tests:
       changes: *code
   parallel:
     matrix:
-      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+      - PYTHON: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
         PYTEST_EXTRA_ARGS: ["", "-k greenlet"]
         PYTEST_COVERAGE_ARGS: [""]
 
