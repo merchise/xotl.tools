@@ -146,9 +146,6 @@ def multi_get(source, *keys):
       >>> next(multi_get(d, 'a', 'y', 'x'), '---')
       2
 
-      >>> next(multi_get(d, 'a', 'y', 'x'), '---')
-      2
-
       >>> next(multi_get(d, 'a', 'b'), '---')
       '---'
 
