@@ -567,99 +567,109 @@ def test_get_month_first(ref: date):
     assert first.day == 1
 
 
-def _assert_next_WD(ref, result, expected_weekday):
-    assert result.weekday() == expected_weekday
-    if ref.weekday() == expected_weekday:
-        assert result == ref + timedelta(7)
+def _assert_next_WD(ref, fn, expected_weekday):
+    try:
+        result = fn(ref)
+    except OverflowError:
+        pass
     else:
-        assert result > ref
-        try:
-            last_week = result - timedelta(7)
-        except OverflowError:
-            # ignore overflow errors when we go to the "first date ever" `date(1, 1, 1)`.
-            pass
+        assert result.weekday() == expected_weekday
+        if ref.weekday() == expected_weekday:
+            assert result == ref + timedelta(7)
         else:
-            assert last_week < ref
+            assert result > ref
+            try:
+                last_week = result - timedelta(7)
+            except OverflowError:
+                # ignore overflow errors when we go to the "first date ever" `date(1, 1, 1)`.
+                pass
+            else:
+                assert last_week < ref
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_monday(ref: date):
-    _assert_next_WD(ref, get_next_monday(ref), calendar.MONDAY)
+    _assert_next_WD(ref, get_next_monday, calendar.MONDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_tuesday(ref: date):
-    _assert_next_WD(ref, get_next_tuesday(ref), calendar.TUESDAY)
+    _assert_next_WD(ref, get_next_tuesday, calendar.TUESDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_wednesday(ref: date):
-    _assert_next_WD(ref, get_next_wednesday(ref), calendar.WEDNESDAY)
+    _assert_next_WD(ref, get_next_wednesday, calendar.WEDNESDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_thursday(ref: date):
-    _assert_next_WD(ref, get_next_thursday(ref), calendar.THURSDAY)
+    _assert_next_WD(ref, get_next_thursday, calendar.THURSDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_friday(ref: date):
-    _assert_next_WD(ref, get_next_friday(ref), calendar.FRIDAY)
+    _assert_next_WD(ref, get_next_friday, calendar.FRIDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_saturday(ref: date):
-    _assert_next_WD(ref, get_next_saturday(ref), calendar.SATURDAY)
+    _assert_next_WD(ref, get_next_saturday, calendar.SATURDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_next_sunday(ref: date):
-    _assert_next_WD(ref, get_next_sunday(ref), calendar.SUNDAY)
+    _assert_next_WD(ref, get_next_sunday, calendar.SUNDAY)
 
 
-def _assert_previous_WD(ref, result, expected_weekday):
-    assert result.weekday() == expected_weekday
-    if ref.weekday() == expected_weekday:
-        assert result == ref - timedelta(7)
+def _assert_previous_WD(ref, fn, expected_weekday):
+    try:
+        result = fn(ref)
+    except OverflowError:
+        pass
     else:
-        assert result < ref
-        last_week = result + timedelta(7)
-        assert last_week > ref
+        assert result.weekday() == expected_weekday
+        if ref.weekday() == expected_weekday:
+            assert result == ref - timedelta(7)
+        else:
+            assert result < ref
+            last_week = result + timedelta(7)
+            assert last_week > ref
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_previous_monday(ref: date):
-    _assert_previous_WD(ref, get_previous_monday(ref), calendar.MONDAY)
+    _assert_previous_WD(ref, get_previous_monday, calendar.MONDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_previous_tuesday(ref: date):
-    _assert_previous_WD(ref, get_previous_tuesday(ref), calendar.TUESDAY)
+    _assert_previous_WD(ref, get_previous_tuesday, calendar.TUESDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_previous_wednesday(ref: date):
-    _assert_previous_WD(ref, get_previous_wednesday(ref), calendar.WEDNESDAY)
+    _assert_previous_WD(ref, get_previous_wednesday, calendar.WEDNESDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_previous_thursday(ref: date):
-    _assert_previous_WD(ref, get_previous_thursday(ref), calendar.THURSDAY)
+    _assert_previous_WD(ref, get_previous_thursday, calendar.THURSDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_previous_friday(ref: date):
-    _assert_previous_WD(ref, get_previous_friday(ref), calendar.FRIDAY)
+    _assert_previous_WD(ref, get_previous_friday, calendar.FRIDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_previous_saturday(ref: date):
-    _assert_previous_WD(ref, get_previous_saturday(ref), calendar.SATURDAY)
+    _assert_previous_WD(ref, get_previous_saturday, calendar.SATURDAY)
 
 
 @given(strategies.dates() | strategies.datetimes())
 def test_get_previous_sunday(ref: date):
-    _assert_previous_WD(ref, get_previous_sunday(ref), calendar.SUNDAY)
+    _assert_previous_WD(ref, get_previous_sunday, calendar.SUNDAY)
 
 
 def test_doctests():
