@@ -16,7 +16,7 @@ endif
 RUN ?= $(UV_RUN)
 
 
-REQUIRED_UV_VERSION ?= 0.6.3
+REQUIRED_UV_VERSION ?= 0.7.2
 bootstrap:
 	@INSTALLED_UV_VERSION=$$(uv --version 2>/dev/null | awk '{print $$2}' || echo "0.0.0"); \
     DETECTED_UV_VERSION=$$(printf '%s\n' "$(REQUIRED_UV_VERSION)" "$$INSTALLED_UV_VERSION" | sort -V | head -n1); \
