@@ -6,6 +6,7 @@ PATH := $(HOME)/.rye/shims:$(HOME)/.local/bin:$(CARGO_HOME)/bin:$(PATH)
 SHELL := /bin/bash
 PYTHON_FILES := $(shell find src/$(PROJECT_NAME) -type f -name '*.py' -o -name '*.pyi')
 
+UV_PYTHON_PREFERENCE ?= only-managed
 UV ?= uv
 ifdef INSIDE_EMACS
 UV_RUN ?= uv run --color never
