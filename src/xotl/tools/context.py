@@ -9,41 +9,52 @@
 
 """A context manager for execution context flags."""
 
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping
+from contextvars import ContextVar
 
-from xotl.tools.future.collections import StackedDict
-from xotl.tools.tasking import local
+from xotl.tools.future.collections import OpenDictMixin, SmartDictMixin
+from xotl.tools.objects import SafeDataItem as safe
 
 __all__ = ("Context", "context", "NullContext")
 
 
-class LocalData(local):
-    """Thread-local data for contexts."""
-
-    def __init__(self):
-        super().__init__()
-        self.contexts = {}
-
-
-_data = LocalData()
+# The registry maps each active context name to a ``(handle, stack, count)``
+# triple.  ``stack`` is a tuple of plain dicts, one per pushed level, bottom
+# first.  ``count`` is the number of times the handle was entered.  The value
+# held by the variable is never mutated in place; every change stores a new
+# dict, so concurrent ``asyncio`` tasks and ``greenlets`` stay isolated.
+_contexts_var: ContextVar = ContextVar("xotl.tools.contexts", default=None)
 
 
-class MetaContext(type(StackedDict)):  # type: ignore
+def _get_contexts():
+    """Return the current registry, never the shared default."""
+    result = _contexts_var.get()
+    if result is None:
+        return {}
+    return result
+
+
+class MetaContext(type(MutableMapping)):  # type: ignore
     def __len__(self):
-        return len(_data.contexts)
+        return sum(1 for _name, (_, _, count) in _get_contexts().items() if count > 0)
 
     def __iter__(self):
-        return iter(_data.contexts)
+        return (name for name, (_, _, count) in _get_contexts().items() if count > 0)
 
     def __getitem__(self, name):
-        return _data.contexts.get(name, _null_context)
+        entry = _get_contexts().get(name, None)
+        if entry is not None:
+            handle, _stack, count = entry
+            if count > 0:
+                return handle
+        return _null_context
 
     def __contains__(self, name):
         """Basic support for the 'A in context' idiom."""
         return bool(self[name])
 
 
-class Context(StackedDict, metaclass=MetaContext):
+class Context(OpenDictMixin, SmartDictMixin, MutableMapping, metaclass=MetaContext):  # type: ignore
     """An execution context manager with parameters (or flags).
 
     Use as:
@@ -103,19 +114,38 @@ class Context(StackedDict, metaclass=MetaContext):
         ...
         RuntimeError: Entering the same context level twice! ...
 
+    Isolation between concurrent ``asyncio`` tasks and ``greenlets`` is granted
+    by `contextvars`:mod:; each task sees the contexts active where it was
+    created, and nested entries never leak back to the parent.
+
+    .. versionchanged:: 3.4.0 Reimplemented over `contextvars`:mod: replacing the
+       ``threading.local`` and greenlet-local shims.
+
     """
 
-    __slots__ = ("name", "count")
+    __slots__ = (
+        "name",
+        safe.slot(OpenDictMixin.__cache_name__, dict),
+    )
 
     def __new__(cls, name, **data):
-        self = cls[name]
-        if not self:  # if self is _null_context:
+        contexts = _get_contexts()
+        entry = contexts.get(name, None)
+        if entry is not None:
+            self, stack, count = entry
+            new_stack = stack + (dict(data),)
+            new_contexts = dict(contexts)
+            new_contexts[name] = (self, new_stack, count)
+            _contexts_var.set(new_contexts)
+            return self
+        else:
             self = super().__new__(cls)
-            super(Context, self).__init__()
-            self.name = name
-            self.count = 0
+            object.__setattr__(self, "name", name)
+            new_contexts = dict(contexts)
+            new_contexts[name] = (self, (dict(data),), 0)
+            _contexts_var.set(new_contexts)
             # TODO: Redefine all event management
-        return self(**data)
+            return self
 
     @classmethod
     def from_dicts(cls, ctx, overrides=None, defaults=None):
@@ -161,6 +191,57 @@ class Context(StackedDict, metaclass=MetaContext):
 
         """
 
+    def _entry(self):
+        """Return the ``(stack, count)`` pair for this handle.
+
+        The handle is considered inactive when the registry holds no entry
+        for its name, or the entry belongs to a different handle object, or
+        the entry was pushed but not yet entered.  Inactive handles behave
+        like empty mappings.
+
+        """
+        try:
+            name = object.__getattribute__(self, "name")
+        except AttributeError:
+            return ((), 0)
+        entry = _get_contexts().get(name, None)
+        if entry is None:
+            return ((), 0)
+        handle, stack, count = entry
+        if handle is not self:
+            return ((), 0)
+        return (stack, count)
+
+    def _store(self, stack, count):
+        """Store a new ``(stack, count)`` pair for this handle.
+
+        Both the registry dict and the stack tuple are copied, so values
+        already observed in another task or greenlet are never mutated.
+
+        """
+        name = object.__getattribute__(self, "name")
+        new_contexts = dict(_get_contexts())
+        new_contexts[name] = (self, tuple(stack), count)
+        _contexts_var.set(new_contexts)
+
+    def _remove(self):
+        name = object.__getattribute__(self, "name")
+        new_contexts = dict(_get_contexts())
+        new_contexts.pop(name, None)
+        _contexts_var.set(new_contexts)
+
+    @property
+    def count(self):
+        """Number of times this context level was entered."""
+        _stack, count = self._entry()
+        return count
+
+    @property
+    def level(self):
+        """Number of pushed levels for this context."""
+        stack, _count = self._entry()
+        return len(stack)
+
     def __call__(self, **data):
         """Allow re-enter in a new level to an already assigned context."""
         self.push_level(**data)
@@ -171,22 +252,107 @@ class Context(StackedDict, metaclass=MetaContext):
 
     __bool__ = __nonzero__
 
+    def push_level(self, *args, **kwargs):
+        """Push a new level filled with `args` and `kwargs`.
+
+        Returns the pushed `level` number.
+
+        """
+        new_level = {}
+        for arg in args:
+            if hasattr(arg, "keys"):
+                for key in arg.keys():
+                    new_level[key] = arg[key]
+            else:
+                for key, value in arg:
+                    new_level[key] = value
+        new_level.update(kwargs)
+        stack, count = self._entry()
+        new_stack = tuple(stack) + (new_level,)
+        self._store(new_stack, count)
+        return len(new_stack)
+
+    def pop_level(self):
+        """Pop the last pushed level and return it.
+
+        Raises TypeError when there are no levels.
+
+        """
+        stack, count = self._entry()
+        if not stack:
+            raise TypeError("Cannot pop from Context without any levels")
+        self._store(tuple(stack[:-1]), count)
+        return dict(stack[-1])
+
+    def peek(self):
+        """Return a copy of the top-most level without lower level keys."""
+        stack, _count = self._entry()
+        if not stack:
+            raise TypeError("Cannot peek a Context without any levels")
+        return dict(stack[-1])
+
     def __enter__(self):
-        if self.count == 0:
-            _data.contexts[self.name] = self
-        if self.count + 1 == self.level:
-            self.count += 1
+        stack, count = self._entry()
+        if count + 1 == len(stack):
+            self._store(stack, count + 1)
             return self
         else:
             msg = "Entering the same context level twice! -- c(%s, %d, %d)"
-            raise RuntimeError(msg % (self.name, self.count, self.level))
+            raise RuntimeError(msg % (self.name, count, len(stack)))
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.count -= 1
-        if self.count == 0:
-            del _data.contexts[self.name]
-        self.pop_level()
+        stack, count = self._entry()
+        if count <= 0:
+            raise RuntimeError("Exiting a context that was not entered -- c(%s)" % (self.name,))
+        new_stack = tuple(stack[:-1])
+        if count == 1:
+            self._remove()
+        else:
+            self._store(new_stack, count - 1)
         return False
+
+    def __len__(self):
+        return sum(1 for _key in self.__iter__())
+
+    def __iter__(self):
+        stack, _count = self._entry()
+        seen = set()
+        result = []
+        for level in reversed(stack):
+            for key in level:
+                if key not in seen:
+                    seen.add(key)
+                    result.append(key)
+        return iter(result)
+
+    def __getitem__(self, key):
+        stack, _count = self._entry()
+        for level in reversed(stack):
+            if key in level:
+                return level[key]
+        raise KeyError(key)
+
+    def __setitem__(self, key, value):
+        stack, count = self._entry()
+        if not stack:
+            raise KeyError(key)
+        new_top = dict(stack[-1])
+        new_top[key] = value
+        self._store(tuple(stack[:-1]) + (new_top,), count)
+
+    def __delitem__(self, key):
+        stack, count = self._entry()
+        if not stack or key not in stack[-1]:
+            raise KeyError(key)
+        new_top = dict(stack[-1])
+        del new_top[key]
+        self._store(tuple(stack[:-1]) + (new_top,), count)
+
+    def __str__(self):
+        return str(dict(self))
+
+    def __repr__(self):
+        return "%s(%s)" % (type(self).__name__, str(self))
 
 
 # A simple alias for Context
