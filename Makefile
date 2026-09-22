@@ -16,7 +16,7 @@ endif
 RUN ?= $(UV_RUN)
 
 
-REQUIRED_UV_VERSION ?= 0.7.2
+REQUIRED_UV_VERSION ?= 0.12.17
 bootstrap:
 	@INSTALLED_UV_VERSION=$$(uv --version 2>/dev/null | awk '{print $$2}' || echo "0.0.0"); \
     DETECTED_UV_VERSION=$$(printf '%s\n' "$(REQUIRED_UV_VERSION)" "$$INSTALLED_UV_VERSION" | sort -V | head -n1); \
@@ -26,11 +26,11 @@ bootstrap:
 	@echo $(PYTHON_VERSION) > .python-version
 .PHONY: bootstrap
 
-sync install: bootstrap
+sync install: | bootstrap
 	@$(UV) sync --frozen
 .PHONY: install sync
 
-lock: bootstrap
+lock: | bootstrap
 ifdef update_all
 	@$(UV) lock -U
 else
@@ -38,7 +38,7 @@ else
 endif
 .PHONY: lock
 
-update: bootstrap
+update: | bootstrap
 	@$(MAKE) lock update_all=1
 .PHONY: update
 
@@ -46,7 +46,7 @@ build: sync
 	@$(UV) build
 .PHONY: build
 
-format-python:
+format-python: sync
 	@$(RUN) isort src test
 	@$(RUN) ruff check --fix src
 	@$(RUN) ruff format src
@@ -54,13 +54,13 @@ format-python:
 format: format-python
 .PHONY: format format-python
 
-lint:
+lint: sync
 	@$(RUN) ruff check src
 	@$(RUN) ruff format --check src
 	@$(RUN) isort --check src
 .PHONY: lint
 
-shell:
+shell: sync
 	@$(RUN) ipython
 .PHONY: shell
 
@@ -76,7 +76,7 @@ PYTEST_WORKERS ?= auto
 PYTEST_MAXWORKERS ?= 4
 PYTEST_COVERAGE_ARGS ?= --cov-config=pyproject.toml --cov=src/
 
-test:
+test: sync
 	@rm -f .coverage*
 	@pytest_workers_args=""; \
     if [ -n "$(PYTEST_WORKERS)" ]; then \
@@ -89,15 +89,15 @@ test:
 .PHONY: test
 
 
-doctest:
+doctest: sync
 	@$(MAKE) SPHINXBUILD="$(RUN) sphinx-build" -C docs doctest
 .PHONY: test
 
-mypy:
+mypy: sync
 	@$(RUN) mypy --config-file mypy.ini -p xotl.tools
 .PHONY: mypy
 
-docs/build:
+docs/build: sync
 	@$(MAKE) SPHINXBUILD="$(RUN) sphinx-build" -C docs html
 .PHONY: docs/build
 
