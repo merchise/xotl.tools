@@ -51,7 +51,7 @@
   approaches:
 
   - ``xotl.tools.params.check_default``
-  - `xotl.tools.params.single`:func:
+  - ``xotl.tools.params.single``
   - `xotl.tools.params.ParamManager`:class:
   - `xotl.tools.params.ParamSchemeRow`:class:
   - `xotl.tools.params.ParamScheme`:class:

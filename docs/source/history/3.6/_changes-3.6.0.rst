@@ -31,6 +31,9 @@
   exception handling, and conversion instead.  The retained parameter-schema classes keep
   their coercion protocol through a private implementation, independent of the removed APIs.
 
+- Removed ``xotl.tools.params.single`` after removing its proof-framework consumers.
+  Use explicit argument-shape checks where needed.
+
 .. rubric:: Changes
 
 - ``xotl.tools.bound.boundary`` no longer depends on the removed decorator factory.  Its bare,

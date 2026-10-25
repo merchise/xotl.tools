@@ -179,31 +179,6 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
         raise TypeError("{} takes {} ({} given)".format(name, aux, count))
 
 
-def single(args, kwds):
-    """Return a true value only when a unique argument is given.
-
-    When needed, the most suitable result will be wrapped using the
-    `~xotl.tools.fp.option.Maybe`:class:.
-
-    .. versionadded:: 1.8.0
-
-    .. deprecated:: 3.0.0
-
-    """
-    from xotl.tools.fp.option import Just, Wrong, take
-
-    if len(args) == 1 and not kwds:
-        res = take(args[0])
-        if not res:
-            res = Just(res)
-        res = Just(res)
-    elif not args and len(kwds) == 1:
-        res = kwds
-    else:
-        res = Wrong((args, kwds))
-    return res
-
-
 def pop_keyword_arg(kwargs, names, default=Undefined):
     """Return the value of a keyword argument.
 

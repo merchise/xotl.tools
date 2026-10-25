@@ -80,8 +80,6 @@ Module Members
 
 .. autofunction:: check_count
 
-.. autofunction:: single
-
 .. autofunction:: pop_keyword_arg
 
 .. autofunction:: pop_keyword_values
