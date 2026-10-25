@@ -27,6 +27,10 @@
   ``str_coerce`` and ``str_uuid``.  Use explicit validation and conversions, collection ABCs,
   and the standard ``uuid`` module instead.
 
+- Removed ``xotl.tools.fp.prove`` and ``fp.prove.semantic``.  Use explicit validation,
+  exception handling, and conversion instead.  The retained parameter-schema classes keep
+  their coercion protocol through a private implementation, independent of the removed APIs.
+
 .. rubric:: Changes
 
 - ``xotl.tools.bound.boundary`` no longer depends on the removed decorator factory.  Its bare,

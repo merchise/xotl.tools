@@ -246,8 +246,7 @@ def ok(value, *checkers, **kwargs):
 
     Keyword arguments are not validated to be correct.
 
-    This function could be used with type-definitions for arguments, see
-    `xotl.tools.fp.prove.semantic.TypeCheck`:class:.
+    Pass a type or tuple of types to check an argument with ``isinstance``.
 
     Examples::
 

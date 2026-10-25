@@ -31,6 +31,71 @@ from xotl.tools.symbols import Undefined  # used implicitly for absent default
 MAX_ARG_COUNT = 1024 * 1024  # just any large number
 
 
+class _ParamCoercer:
+    """Adapt the coercion definitions accepted by the retained parameter-schema API.
+
+    Types and tuples perform instance checks.  Callables use the legacy logical result
+    protocol: True accepts the original value, False or None rejects it, and Just/Wrong
+    preserve explicit success/failure.  A two-item list checks, converts, then checks again.
+    Callable exceptions become Wrong results so another parameter candidate can be tried.
+    """
+
+    def __new__(cls, definition):
+        if isinstance(definition, cls):
+            return definition
+        return super().__new__(cls)
+
+    def __init__(self, definition):
+        if definition is not self:
+            if isinstance(definition, (type, tuple)):
+                types = definition if isinstance(definition, tuple) else (definition,)
+                if not all(isinstance(item, type) for item in types):
+                    raise TypeError("coerce requires a type or tuple of types")
+                self.kind, self.definition = "types", types
+            elif isinstance(definition, list):
+                if len(definition) != 2:
+                    raise TypeError("coerce requires a two-item [check, cast] list")
+                check, cast = definition
+                if not callable(cast):
+                    raise TypeError("coerce requires a callable cast")
+                self.kind, self.definition = "checked_cast", (_ParamCoercer(check), cast)
+            elif callable(definition):
+                self.kind, self.definition = "callable", definition
+            else:
+                raise TypeError("coerce requires types, a callable, or a [check, cast] list")
+
+    def __call__(self, value):
+        from xotl.tools.fp.option import Just, Wrong
+
+        if self.kind == "types":
+            if isinstance(value, self.definition):
+                return value if value else Just(value)
+            return Wrong(value)
+        elif self.kind == "checked_cast":
+            check, cast = self.definition
+            result = check(value)
+            if result:
+                try:
+                    result = cast(value)
+                except Exception as error:
+                    result = Wrong(error)
+                if check(result):
+                    return result
+            return result if isinstance(result, Wrong) else Wrong(value)
+        else:
+            try:
+                result = self.definition(value)
+                if result:
+                    return Just(value) if result is True else result
+                elif isinstance(result, Wrong):
+                    return result
+                elif result is False or result is None:
+                    return Wrong(value)
+                return Wrong(result)
+            except Exception as error:
+                return Wrong(error)
+
+
 def issue_9137(args):
     """Parse arguments for methods, fixing `issue 9137`__ (self ambiguity).
 
@@ -258,7 +323,6 @@ class ParamManager:
     def __call__(self, *ids, **options):
         """Get a parameter value."""
         from xotl.tools.fp.option import Just, Wrong, none
-        from xotl.tools.fp.prove.semantic import predicate as coercer
 
         args, kwds = self.args, self.kwds
         i, res = 0, none
@@ -274,7 +338,7 @@ class ParamManager:
             elif key in kwds:
                 res = kwds[key]
             if not isinstance(res, Wrong) and "coerce" in options:
-                aux = coercer(options["coerce"])(res)
+                aux = _ParamCoercer(options["coerce"])(res)
                 res = aux.inner if isinstance(aux, Just) else aux
             if not isinstance(res, Wrong):
                 self.consumed.add(key)
@@ -342,7 +406,6 @@ class ParamSchemeRow:
         from xotl.tools.fp.option import none
 
         iskey = lambda s: isinstance(s, str) and s.isidentifier()
-        from xotl.tools.fp.prove.semantic import predicate as coercer
 
         aux = {k: c for k, c in Counter(ids).items() if c > 1}
         if aux:
@@ -367,7 +430,7 @@ class ParamSchemeRow:
         else:
             aux = {}
         if "coerce" in options:
-            aux["coerce"] = coercer(options.pop("coerce"))
+            aux["coerce"] = _ParamCoercer(options.pop("coerce"))
         if options:
             msg = "{}(): received invalid keyword parameters: {}"
             raise TypeError(msg.format(type(self).__name__, set(options)))
