@@ -30,9 +30,20 @@ workflow:
   - docs/**/*.py
   - docs/**/*.css
 
+.x-python-image: &with-python-image
+  image:
+    name: python:3.12@sha256:dd4fe98ab39f91e936f8e7e7a65a3ce59ecfb11e32f9a125b3132779920ba7f7
+    pull_policy: if-not-present
+
+.x-uv-image: &with-uv-image
+  image:
+    name: ghcr.io/astral-sh/uv:0.13.5@sha256:32a7bb39b496babbd997b0a39a4d66c126bdaf5661b302bf6f06abda8deca6ff
+    pull_policy: if-not-present
+
+
 lint:
+  <<: *with-python-image
   interruptible: true
-  image: python:3.12
   stage: test
   needs: []
   script:
@@ -76,7 +87,7 @@ test doctests:
       changes: *code-and-docs
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+      - PYTHON: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
 
 run required static checks:
   <<: *run_staticcheck
@@ -91,7 +102,7 @@ run required static checks:
       changes: *code
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+      - PYTHON: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
 
 tests:
   <<: *run_tests
@@ -105,7 +116,7 @@ tests:
       changes: *code
   parallel:
     matrix:
-      - PYTHON: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+      - PYTHON: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
         PYTEST_EXTRA_ARGS: ["", "-k greenlet"]
         PYTEST_COVERAGE_ARGS: [""]
 
@@ -123,11 +134,11 @@ coverage:
 
 
 build:
-  image: python:3.12
+  <<: *with-uv-image
   stage: build
   script:
-    - pip install hatch
-    - hatch build
+    - pip install uv
+    - uv build
   artifacts:
     paths:
       - dist/
@@ -139,7 +150,7 @@ build:
       changes: *code
 
 publish in pypi:
-  image: python:3.12
+  <<: *with-python-image
   variables:
     GIT_STRATEGY: none
   stage: publish
@@ -157,7 +168,7 @@ publish in pypi:
     - if: $CI_COMMIT_TAG =~ /^\d+(\.\d+)*(|a\d+|b\d+|rc\d+)?(\.post\d+)?$/
 
 .build_doc: &build_doc
-  image: python:3.12
+  <<: *with-python-image
   stage: build
   cache:
     key: docs-${CI_COMMIT_REF_SLUG}

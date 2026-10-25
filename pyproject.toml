@@ -1,5 +1,6 @@
 [project]
 name = "xotl.tools"
+version = "3.5.1"
 description = "Collection of usefull algorithms and other very disparate stuff"
 authors = [
    { name = "Merchise Autrement", email="info@merchise.de" }
@@ -25,7 +26,7 @@ dependencies = [
     "packaging>=23.2",
     "graphlib_backport; python_version < '3.9'"
 ]
-dynamic = ["version"]
+
 
 [dependency-groups]
 typing = [
@@ -61,17 +62,12 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.13.5,<0.14"]
+build-backend = "uv_build"
 
-[tool.hatch.version]
-source = "vcs"
+[tool.uv.build-backend]
+module-name = "xotl.tools"
 
-[tool.hatch.build.hooks.vcs]
-version-file = "src/xotl/tools/_version.py"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/xotl"]
 
 [tool.isort]
 profile = "black"
@@ -89,12 +85,10 @@ ignore = [
   "E731", # do not assign a `lambda` expression, use a `def` (we use it a lot)
 ]
 preview = true
-exclude = ["src/xotl/tools/_version.py"]
 
 
 [tool.ruff.format]
 preview = true
-exclude = ["src/xotl/tools/_version.py"]
 
 
 [tool.coverage.run]

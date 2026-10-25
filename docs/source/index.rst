@@ -7,6 +7,8 @@ Welcome to xotl.tools's documentation!
 What's new in |release|
 -----------------------
 
+.. include:: history/3.5/_changes-3.5.1.rst
+
 .. include:: history/3.5/_changes-3.5.0.rst
 
 
