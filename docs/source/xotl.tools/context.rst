@@ -10,27 +10,21 @@
 
 .. _context-greenlets:
 
-.. note:: About thread-locals and contexts.
+.. note:: About isolation of contexts.
 
-   The `context`:class: uses internally a `thread-local
-   <threading.local>`:class: instance to keep context stacks in different
-   threads from seeing each other.
+   The `context`:class: is implemented over `contextvars`:mod:.  Context stacks
+   are isolated between threads, ``asyncio`` tasks and ``greenlets``.  Tasks
+   created inside a context inherit a copy of the active contexts, and nested
+   entries never leak back to the parent.
 
-   If, when this module is imported, `greenlet`:mod: is **imported** already,
-   greenlet isolation is also warranted (which implies thread isolation).
+   .. versionchanged:: 3.4.0 Reimplemented over `contextvars`:mod:, replacing the
+      ``threading.local`` and greenlet-local shims.  Import order with ``greenlet`` no longer
+      matters.
 
-   If you use collaborative multi-tasking based in other framework other than
-   `greenlet`, you must ensure to monkey patch the `threading.local` class so
-   that isolation is kept.
+   .. versionchanged:: 1.7.1 Changed the test about ``greenlet``.  Instead of testing for `greenlet`
+      to be importable, test it is imported already.
 
-   In future releases of xotl.tools, we plan to provide a way to inject a
-   "process" identity manager so that other frameworks be easily integrated.
+   .. versionchanged:: 1.6.9 Added direct greenlet isolation and removed the need for
+      `gevent.local`:mod:.
 
-   .. versionchanged:: 1.7.1 Changed the test about ``greenlet``.  Instead of
-      testing for `greenlet` to be importable, test it is imported already.
-
-   .. versionchanged:: 1.6.9 Added direct greenlet isolation and removed the
-      need for `gevent.local`:mod:.
-
-   .. versionadded:: 1.6.8 Uses `gevent.local`:mod: if available to isolate
-      greenlets.
+   .. versionadded:: 1.6.8 Uses `gevent.local`:mod: if available to isolate greenlets.

@@ -46,8 +46,8 @@ Unreleased.  Release 2.2.6
 2021-11-29. Releases 2.2.1.post1 and 2.2.0.post1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Correct the name of `xotl.tools.dim.base.Pressure`:any:, previously it was
-  mistyped missing as ``Presure``.
+- Correct the name of ``xotl.tools.dim.base.Pressure``, previously it was mistyped missing as
+  ``Presure``.
 
 
 2021-10-26.  Release 2.2.1

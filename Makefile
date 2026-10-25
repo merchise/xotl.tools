@@ -16,7 +16,9 @@ endif
 RUN ?= $(UV_RUN)
 
 
-REQUIRED_UV_VERSION ?= 0.12.17
+REQUIRED_UV_VERSION ?= 0.13.5
+
+.PHONY: bootstrap
 bootstrap:
 	@INSTALLED_UV_VERSION=$$(uv --version 2>/dev/null | awk '{print $$2}' || echo "0.0.0"); \
     DETECTED_UV_VERSION=$$(printf '%s\n' "$(REQUIRED_UV_VERSION)" "$$INSTALLED_UV_VERSION" | sort -V | head -n1); \
@@ -24,45 +26,53 @@ bootstrap:
 		uv self update $(REQUIRED_UV_VERSION) || curl -LsSf https://astral.sh/uv/$(REQUIRED_UV_VERSION)/install.sh | sh; \
 	fi
 	@echo $(PYTHON_VERSION) > .python-version
-.PHONY: bootstrap
 
+
+.PHONY: install sync
 sync install: | bootstrap
 	@$(UV) sync --frozen
-.PHONY: install sync
 
+
+.PHONY: lock
 lock: | bootstrap
 ifdef update_all
 	@$(UV) lock -U
 else
 	@$(UV) lock
 endif
-.PHONY: lock
 
+
+.PHONY: update
 update: | bootstrap
 	@$(MAKE) lock update_all=1
-.PHONY: update
 
+
+.PHONY: build
 build: sync
 	@$(UV) build
-.PHONY: build
 
+.PHONY: format-python
 format-python: sync
 	@$(RUN) isort src test
 	@$(RUN) ruff check --fix src
 	@$(RUN) ruff format src
 
-format: format-python
-.PHONY: format format-python
 
+.PHONY: format
+format: format-python
+
+
+.PHONY: lint
 lint: sync
 	@$(RUN) ruff check src
 	@$(RUN) ruff format --check src
 	@$(RUN) isort --check src
-.PHONY: lint
 
+
+.PHONY: shell
 shell: sync
 	@$(RUN) ipython
-.PHONY: shell
+
 
 
 pytest_paths ?= "src/tests/"
@@ -76,6 +86,7 @@ PYTEST_WORKERS ?= auto
 PYTEST_MAXWORKERS ?= 4
 PYTEST_COVERAGE_ARGS ?= --cov-config=pyproject.toml --cov=src/
 
+.PHONY: test
 test: sync
 	@rm -f .coverage*
 	@pytest_workers_args=""; \
@@ -86,29 +97,34 @@ test: sync
        fi \
     fi; \
     $(RUN) pytest $(PYTEST_COVERAGE_ARGS) $$pytest_workers_args $(PYTEST_ARGS) $(PYTEST_PATHS)
-.PHONY: test
 
 
+.PHONY: doctest
 doctest: sync
 	@$(MAKE) SPHINXBUILD="$(RUN) sphinx-build" -C docs doctest
-.PHONY: test
 
+
+.PHONY: mypy
 mypy: sync
 	@$(RUN) mypy --config-file mypy.ini -p xotl.tools
-.PHONY: mypy
 
+
+.PHONY: docs/build
 docs/build: sync
 	@$(MAKE) SPHINXBUILD="$(RUN) sphinx-build" -C docs html
-.PHONY: docs/build
+
 
 DOC_SERVER_PORT ?= 6942
+
+.PHONY: docs/browse
 docs/browse: docs/build
 	@$(RUN) python -m http.server  \
                    --directory $(PWD)/docs/build/html $(DOC_SERVER_PORT)
-.PHONY: docs/browse
+
 
 
 AUTO_RESTART := $(RUN) watchmedo auto-restart --directory docs --directory src --recursive --pattern '*.py' --pattern '*.rst' --
+
+.PHONY: docs/serve
 docs/serve:
 	@$(AUTO_RESTART) $(MAKE) docs/browse
-.PHONY: docs/serve
