@@ -31,6 +31,71 @@ from xotl.tools.symbols import Undefined  # used implicitly for absent default
 MAX_ARG_COUNT = 1024 * 1024  # just any large number
 
 
+class _ParamCoercer:
+    """Adapt the coercion definitions accepted by the retained parameter-schema API.
+
+    Types and tuples perform instance checks.  Callables use the legacy logical result
+    protocol: True accepts the original value, False or None rejects it, and Just/Wrong
+    preserve explicit success/failure.  A two-item list checks, converts, then checks again.
+    Callable exceptions become Wrong results so another parameter candidate can be tried.
+    """
+
+    def __new__(cls, definition):
+        if isinstance(definition, cls):
+            return definition
+        return super().__new__(cls)
+
+    def __init__(self, definition):
+        if definition is not self:
+            if isinstance(definition, (type, tuple)):
+                types = definition if isinstance(definition, tuple) else (definition,)
+                if not all(isinstance(item, type) for item in types):
+                    raise TypeError("coerce requires a type or tuple of types")
+                self.kind, self.definition = "types", types
+            elif isinstance(definition, list):
+                if len(definition) != 2:
+                    raise TypeError("coerce requires a two-item [check, cast] list")
+                check, cast = definition
+                if not callable(cast):
+                    raise TypeError("coerce requires a callable cast")
+                self.kind, self.definition = "checked_cast", (_ParamCoercer(check), cast)
+            elif callable(definition):
+                self.kind, self.definition = "callable", definition
+            else:
+                raise TypeError("coerce requires types, a callable, or a [check, cast] list")
+
+    def __call__(self, value):
+        from xotl.tools.fp.option import Just, Wrong
+
+        if self.kind == "types":
+            if isinstance(value, self.definition):
+                return value if value else Just(value)
+            return Wrong(value)
+        elif self.kind == "checked_cast":
+            check, cast = self.definition
+            result = check(value)
+            if result:
+                try:
+                    result = cast(value)
+                except Exception as error:
+                    result = Wrong(error)
+                if check(result):
+                    return result
+            return result if isinstance(result, Wrong) else Wrong(value)
+        else:
+            try:
+                result = self.definition(value)
+                if result:
+                    return Just(value) if result is True else result
+                elif isinstance(result, Wrong):
+                    return result
+                elif result is False or result is None:
+                    return Wrong(value)
+                return Wrong(result)
+            except Exception as error:
+                return Wrong(error)
+
+
 def issue_9137(args):
     """Parse arguments for methods, fixing `issue 9137`__ (self ambiguity).
 
@@ -112,60 +177,6 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
         else:
             name = "called function or method"
         raise TypeError("{} takes {} ({} given)".format(name, aux, count))
-
-
-def check_default(absent=Undefined):
-    """Get a default value passed as a last excess positional argument.
-
-    :param absent: The value to be used by default if no one is given.
-           Defaults to `~xotl.tools.symbols.Undefined`:obj:.
-
-    For example::
-
-        def get(self, name, *default):
-            from xotl.tools.params import check_default, Undefined
-            if name in self.inner_data:
-                return self.inner_data[name]
-            elif check_default()(*default) is not Undefined:
-                return default[0]
-            else:
-                raise KeyError(name)
-
-    .. versionadded:: 1.8.0
-
-    .. deprecated:: 3.0.0 Use the positional-only '/' syntax introduced in `PEP 570<570>`:pep:.
-
-    """
-
-    def default(res=absent):
-        return res
-
-    return default
-
-
-def single(args, kwds):
-    """Return a true value only when a unique argument is given.
-
-    When needed, the most suitable result will be wrapped using the
-    `~xotl.tools.fp.option.Maybe`:class:.
-
-    .. versionadded:: 1.8.0
-
-    .. deprecated:: 3.0.0
-
-    """
-    from xotl.tools.fp.option import Just, Wrong, take
-
-    if len(args) == 1 and not kwds:
-        res = take(args[0])
-        if not res:
-            res = Just(res)
-        res = Just(res)
-    elif not args and len(kwds) == 1:
-        res = kwds
-    else:
-        res = Wrong((args, kwds))
-    return res
 
 
 def pop_keyword_arg(kwargs, names, default=Undefined):
@@ -288,9 +299,6 @@ class ParamManager:
         """Get a parameter value."""
         from xotl.tools.fp.option import Just, Wrong, none
 
-        # TODO: Change this ``from xotl.tools.values import coercer``
-        from xotl.tools.fp.prove.semantic import predicate as coercer
-
         args, kwds = self.args, self.kwds
         i, res = 0, none
         while isinstance(res, Wrong) and i < len(ids):
@@ -305,7 +313,7 @@ class ParamManager:
             elif key in kwds:
                 res = kwds[key]
             if not isinstance(res, Wrong) and "coerce" in options:
-                aux = coercer(options["coerce"])(res)
+                aux = _ParamCoercer(options["coerce"])(res)
                 res = aux.inner if isinstance(aux, Just) else aux
             if not isinstance(res, Wrong):
                 self.consumed.add(key)
@@ -356,9 +364,8 @@ class ParamSchemeRow:
 
     :param default: keyword argument, value used if the parameter is absent;
 
-    :param coerce: check if a value is valid or not and convert to its
-           definitive value; see `xotl.tools.values`:mod: module for more
-           information.
+    The `coerce` option accepts a type or tuple of types for instance checks, a callable for
+    validation or conversion, or a two-item list containing a check and a conversion function.
 
     .. versionadded:: 1.8.0
 
@@ -374,8 +381,6 @@ class ParamSchemeRow:
         from xotl.tools.fp.option import none
 
         iskey = lambda s: isinstance(s, str) and s.isidentifier()
-        # TODO: Change this ``from xotl.tools.values import coercer``
-        from xotl.tools.fp.prove.semantic import predicate as coercer
 
         aux = {k: c for k, c in Counter(ids).items() if c > 1}
         if aux:
@@ -400,7 +405,7 @@ class ParamSchemeRow:
         else:
             aux = {}
         if "coerce" in options:
-            aux["coerce"] = coercer(options.pop("coerce"))
+            aux["coerce"] = _ParamCoercer(options.pop("coerce"))
         if options:
             msg = "{}(): received invalid keyword parameters: {}"
             raise TypeError(msg.format(type(self).__name__, set(options)))
@@ -489,8 +494,6 @@ class ParamScheme:
     __slots__ = ("rows", "cache")
 
     def __init__(self, *rows):
-        from xotl.tools.params import check_count  # type: ignore
-
         check_count(len(rows) + 1, 2, caller=type(self).__name__)
         used = set()
         for idx, row in enumerate(rows):

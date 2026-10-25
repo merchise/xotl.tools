@@ -18,12 +18,14 @@ positional, could be the first or the last one.
 
 
   >>> import sys
-  >>> from xotl.tools.values import file_coerce as is_file
-  >>> from xotl.tools.values import positive_int_coerce as positive_int
+  >>> from io import IOBase
+  >>> def positive_int(value):
+  ...     value = int(value)
+  ...     return value if value >= 0 else False
   >>> from xotl.tools.params import ParamScheme as scheme, ParamSchemeRow as row
 
   >>> sample_scheme = scheme(
-  ...     row('stream', 0, -1, 'output', default=sys.stdout, coerce=is_file),
+  ...     row('stream', 0, -1, 'output', default=sys.stdout, coerce=(IOBase,)),
   ...     row('indent', 0, 1, default=1, coerce=positive_int),
   ...     row('width', 0, 1, 2, 'max_width', default=79, coerce=positive_int),
   ...     row('newline', default='\n', coerce=(str, )))
@@ -65,22 +67,10 @@ Some tests::
    'stream': <open file '<stdout>', mode 'w' at 0x7f3c6815c150>,
    'width': 80}
 
-Another way of use this is through a `ParamManager`:class: instance, using the
-actual arguments of a function to create it::
-
-  >>> def slugify(value, *args, **kwds):
-  ...     from xotl.tools.params import ParamManager
-  ...     getarg = ParamManager(args, kwds)
-  ...     replacement = getarg('replacement', 0, default='-',
-  ...                          coercers=(str, ))
-  ...     invalid_chars = getarg('invalid_chars', 'invalid', 'invalids', 0,
-  ...                            default='', coercers=_ascii)
-  ...     valid_chars = getarg('valid_chars', 'valid', 'valids', 0,
-  ...                          default='', coercers=_ascii)
-  ...     # And so on.
-
-Notice that each call has the same protocol than a parameter definition row
-(see `ParamSchemeRow`:class:).
+The examples above describe the deprecated schema API, retained until 4.0.0.
+New code should declare parameters explicitly and let Python validate calls.
+For example, `xotl.tools.string.slugify`:func: uses named parameters and keyword-only
+options rather than ``ParamManager``.  See its signature for the supported calling convention.
 
 
 Module Members
@@ -89,10 +79,6 @@ Module Members
 .. autofunction:: issue_9137
 
 .. autofunction:: check_count
-
-.. autofunction:: check_default
-
-.. autofunction:: single
 
 .. autofunction:: pop_keyword_arg
 

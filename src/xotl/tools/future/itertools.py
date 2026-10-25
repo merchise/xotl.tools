@@ -9,8 +9,8 @@
 
 """Several util functions for iterators.
 
-.. versionchanged:: 1.8.4 Renamed to `xotl.tools.future.iterator`:mod:.  The
-   ``xotl.tools.iterators`` is now a deprecated alias.
+.. versionchanged:: 1.8.4 Renamed from ``xotl.tools.iterators`` to
+   `xotl.tools.future.itertools`:mod:.  The old module alias is no longer available.
 
 """
 

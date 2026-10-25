@@ -1,0 +1,4 @@
+Release 3.6.0 (unreleased)
+==========================
+
+.. include:: _changes-3.6.0.rst

@@ -13,7 +13,6 @@ This module complements the standard library's `datetime`:mod:.
 We added the following features.
 
 .. autofunction:: strfdelta
-.. autofunction:: strftime
 .. autofunction:: get_month_first
 .. autofunction:: get_month_last
 .. autofunction:: get_next_month

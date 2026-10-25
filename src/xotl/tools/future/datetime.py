@@ -7,29 +7,16 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Extends the standard `datetime` module.
+"""Date and time utilities complementing the standard `datetime` module.
 
-- Python's ``datetime.strftime`` doesn't handle dates previous to 1900.
-  This module define classes to override `date` and `datetime` to support the
-  formatting of a date through its full proleptic Gregorian date range.
-
-Based on code submitted to comp.lang.python by Andrew Dalke, copied from
-Django and generalized.
-
-You may use this module as a drop-in replacement of the standard library
-`datetime` module.
-
+Provides date arithmetic, time spans, and human-readable duration formatting.
 """
 
 import operator
 from datetime import date, datetime, timedelta
 from enum import IntEnum
 from functools import reduce
-from re import compile as _regex_compile
-from time import strftime as _time_strftime
 from typing import Iterator, Optional, cast
-
-from typing_extensions import deprecated
 
 from xotl.tools.symbols import Unset  # noqa
 
@@ -56,17 +43,6 @@ class ISOWEEKDAY(IntEnum):
     FRIDAY = 5
     SATURDAY = 6
     SUNDAY = 7
-
-
-# This library does not support strftime's "%s" or "%y" format strings.
-# Allowed if there's an even number of "%"s because they are escaped.
-_illegal_formatting = _regex_compile(rb"((^|[^%])(%%)*%[sy])")
-
-
-def _year_find_all(fmt, year, no_year_tuple):
-    text = _time_strftime(fmt, (year,) + no_year_tuple)
-    regex = _regex_compile(str(year))
-    return {match.start() for match in regex.finditer(text)}
 
 
 def _strfnumber(number, format_spec="%0.2f"):
@@ -135,46 +111,6 @@ def strfdelta(delta):
         else:
             res = f"{_strfnumber(seconds, '%0.3f')}s"
     return res
-
-
-@deprecated("Use the stdlib method")
-def strftime(dt, fmt):  # pragma: no cover
-    """Used as `strftime` method of `date` and `datetime` redefined classes.
-
-    Also could be used with standard instances.
-
-    """
-    if dt.year >= 1900:
-        bases = type(dt).mro()
-        i = 0
-        base = _strftime = type(dt).strftime
-        while _strftime == base:
-            aux = getattr(bases[i], "strftime", base)
-            if aux != base:
-                _strftime = aux
-            else:
-                i += 1
-        return _strftime(dt, fmt)
-    else:
-        illegal_formatting = _illegal_formatting.search(fmt)
-        if illegal_formatting is None:
-            year = dt.year
-            # For every non-leap year century, advance by 6 years to get into
-            # the 28-year repeat cycle
-            delta = 2000 - year
-            year += 6 * (delta // 100 + delta // 400)
-            year += ((2000 - year) // 28) * 28  # Move to around the year 2000
-            no_year_tuple = dt.timetuple()[1:]
-            sites = _year_find_all(fmt, year, no_year_tuple)
-            sites &= _year_find_all(fmt, year + 28, no_year_tuple)
-            res = _time_strftime(fmt, (year,) + no_year_tuple)
-            syear = "%04d" % dt.year
-            for site in sites:
-                res = res[:site] + syear + res[site + 4 :]
-            return res
-        else:  # pragma: no cover
-            msg = "strftime of dates before 1900 does not handle  %s"
-            raise TypeError(msg % illegal_formatting.group(0))
 
 
 def parse_date(value=None):

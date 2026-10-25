@@ -11,14 +11,6 @@ This module extends the standard library's `collections`:mod:.
 
 .. autoclass:: DefaultDict
 
-.. class:: defaultdict
-
-   This a deprecated alias of `DefaultDict`:class: because it clashes with the
-   standard one hurting type-hints.
-
-   .. deprecated:: 3.0.0
-
-
 .. autoclass:: opendict
    :members: from_enum
 

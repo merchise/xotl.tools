@@ -114,7 +114,7 @@ If none of the boundaries defined deals with a boundary condition you have,
 you may create another one using `boundary`:func:.  This is usually employed
 as decorator on the `boundary definition`:term:.
 
-.. autofunction:: boundary(definition)
+.. autofunction:: boundary
 
 
 Illustration of a boundary

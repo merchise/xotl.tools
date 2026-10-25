@@ -120,51 +120,37 @@ def force_ascii(value: Any, encoding: Optional[str] = None) -> str:
     return str(res, ASCII, IGNORE)
 
 
-def slugify(value: Any, *args, **kwds) -> str:
+def slugify(
+    value: Any,
+    replacement="-",
+    *,
+    invalid_chars="",
+    valid_chars="",
+    encoding: str | None = None,
+) -> str:
     """Return the normal-form of a given string value that is valid for slugs.
 
-    Convert all non-ascii to valid characters, whenever possible, using
-    unicode 'NFKC' normalization and lower-case the result.  Replace unwanted
-    characters by the value of `replacement` (remove extra when repeated).
+    Normalize `value` to ASCII using Unicode NFKD normalization and lowercase it.  The default valid
+    characters are ``[_a-z0-9]``; replace runs of unwanted characters with `replacement` and strip
+    them from the ends.
 
-    Default valid characters are ``[_a-z0-9]``.  Extra arguments
-    `invalid_chars` and `valid_chars` can modify this standard behaviour, see
-    next:
+    Pass `replacement` as the first extra positional argument or as a keyword argument; it defaults
+    to ``"-"``.  An empty string removes unwanted characters instead of separating them.  For
+    compatibility, ``None`` and ``False`` also mean an empty replacement.  A non-string replacement
+    raises `TypeError`, and a replacement containing characters explicitly marked invalid raises
+    `ValueError`.
 
-    :param value: The source value to slugify.
+    The keyword `invalid_chars` removes characters from the valid set.  It defaults to an empty
+    string; ``True`` means ``"_"``, and ``False`` or ``None`` means no additional invalid
+    characters.
+    The keyword `valid_chars` adds valid characters and accepts a string, an iterable of strings,
+    or ``None``.  Both character options are keyword-only.
 
-    :param replacement: A character to be used as replacement for unwanted
-           characters.  Could be both, the first extra positional argument, or
-           as a keyword argument.  Default value is a hyphen ('-').
+    The keyword `encoding` controls decoding of non-text values before `force_ascii`:func:
+    normalization.
 
-           There will be a contradiction if this argument contains any invalid
-           character (see `invalid_chars`).  ``None``, or ``False``, will be
-           converted converted to an empty string for backward compatibility
-           with old versions of this function, but not use this, will be
-           deprecated.
-
-    :param invalid_chars: Characters to be considered invalid.  There is a
-           default set of valid characters which are kept in the resulting
-           slug.  Characters given in this parameter are removed from the
-           resulting valid character set (see `valid_chars`).
-
-           Extra argument values can be used for compatibility with
-           `invalid_underscore` argument in deprecated `normalize_slug`
-           function:
-
-           - ``True`` is a synonymous of underscore ``"_"``.
-
-           - ``False`` or ``None``: An empty set.
-
-           Could be given as a name argument or in the second extra positional
-           argument.  Default value is an empty set.
-
-    :param valid_chars: A collection of extra valid characters.  Could be
-           either a valid string, any iterator of strings, or ``None`` to use
-           only default valid characters.  Non-ASCII characters are ignored.
-
-    :param encoding: If `value` is not a text (unicode), it is decoded before
-           `ASCII normalization <force_ascii>`:func:.
+    Only `value` and `replacement` accept positional arguments.  Unknown keywords, extra positional
+    arguments, and duplicate arguments raise `TypeError`.
 
     Examples:
 
@@ -218,30 +204,20 @@ def slugify(value: Any, *args, **kwds) -> str:
     .. versionchanged:: 2.1.0 Remove deprecated parameters `invalids` and
        `valids`.
 
+    .. versionchanged:: 3.6.0
+       Enforce the documented parameters through native Python argument binding, with character
+       and encoding options keyword-only.  The legacy aliases `invalid` and `valid` are no
+       longer accepted.
+
     """
     import re
 
-    from .params import ParamManager
-    from .values import compose, istype
-    from .values.simple import ascii_coerce, not_false
-
-    _str = compose(not_false(""), istype(str))
-    _ascii = compose(_str, ascii_coerce)
-
-    # local functions
     def _normalize(v):
         return force_ascii(v, encoding=encoding).lower()
 
     def _set(v):
         return re.escape("".join(set(_normalize(v))))
 
-    getarg = ParamManager(args, kwds)
-    replacement = getarg("replacement", 0, default="-", coercers=(str,))
-    invalid_chars = getarg("invalid_chars", "invalid", 0, default="", coercers=_ascii)
-    valid_chars = getarg("valid_chars", "valid", 0, default="", coercers=_ascii)
-    encoding = getarg("encoding", default=None)
-    replacement = args[0] if args else kwds.pop("replacement", "-")
-    # TODO: check unnecessary arguments, raising errors
     if replacement in (None, False):
         # for backward compatibility
         replacement = ""

@@ -26,8 +26,8 @@
 
 .. rubric:: Removals and deprecations
 
-- Deprecate `xotl.tools.names.namelist`:class:, and
-  `xotl.tools.names.strlist`:class:.
+- Deprecate ``xotl.tools.names.namelist``, and
+  ``xotl.tools.names.strlist``.
 
 - Deprecate the module `xotl.tools.deprecation`:mod:, and removed deprecated
   ``xotl.tools.deprecation.deprecated_alias``.  Instead you should use the
@@ -36,11 +36,11 @@
 
   This library no longer uses this module for deprecation.
 
-- Deprecate function `xotl.tools.modules.copy_members`:func:, this was mainly
+- Deprecate function ``xotl.tools.modules.copy_members``, this was mainly
   an internal function to provide the drop-in replacement of standard library
   modules.
 
-- Deprecate function `xotl.tools.modules.force_module`:func:, this was mainly
+- Deprecate function ``xotl.tools.modules.force_module``, this was mainly
   an internal function for the (now deprecated) module
   ``xotl.tools.deprecation``.
 
@@ -50,8 +50,8 @@
 - Deprecate param-related utitilies for which there are now better syntactical
   approaches:
 
-  - `xotl.tools.params.check_default`:func:
-  - `xotl.tools.params.single`:func:
+  - ``xotl.tools.params.check_default``
+  - ``xotl.tools.params.single``
   - `xotl.tools.params.ParamManager`:class:
   - `xotl.tools.params.ParamSchemeRow`:class:
   - `xotl.tools.params.ParamScheme`:class:

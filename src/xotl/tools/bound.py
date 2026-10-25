@@ -9,9 +9,8 @@
 
 """Helpers for bounded execution of co-routines."""
 
-from types import GeneratorType
-
-from xotl.tools.decorator.meta import decorator
+from functools import wraps
+from types import FunctionType, GeneratorType
 
 
 class BoundedType(type):
@@ -196,12 +195,13 @@ class BoundaryCondition:
             return self.apply((), {})
 
 
-@decorator
-def boundary(definition, name=None, base=BoundaryCondition, errors=None):
+def _make_boundary(definition, name=None, base=BoundaryCondition, errors=None):
     """Helper to define a boundary condition.
 
-    The `definition` must be a function that returns a generator.  The
-    following rules **must be** followed.  Collectively these rules are called
+    Use as ``@boundary``, ``@boundary()``, or with positional or keyword configuration
+    for `name`, `base`, and `errors`.  The decorated `definition` must return a generator.
+
+    The following rules **must be** followed.  Collectively these rules are called
     the `boundary protocol`.
 
     - The `boundary definition` will yield True when and only when the
@@ -250,6 +250,24 @@ def boundary(definition, name=None, base=BoundaryCondition, errors=None):
 
     result = base(definition, name=name, errors=errors)
     return update_wrapper(result, definition)
+
+
+@wraps(_make_boundary)
+def boundary(*args, **kwargs):
+    # The first argument can be the definition or a positional decorator option.
+    if len(args) == 1 and not kwargs and isinstance(args[0], (FunctionType, type, type(None))):
+        return _make_boundary(args[0])
+    elif args or kwargs:
+
+        def decorate(definition):
+            return _make_boundary(definition, *args, **kwargs)
+
+        return decorate
+    else:
+        return _make_boundary
+
+
+boundary.__name__ = boundary.__qualname__ = "boundary"
 
 
 @boundary
@@ -614,6 +632,3 @@ def whenany(*preds):
         pass
     for pred in preds:
         pred.close()
-
-
-del decorator

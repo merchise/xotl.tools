@@ -37,7 +37,7 @@ from typing import TypeVar
 
 from typing_extensions import Protocol
 
-from xotl.tools.params import Undefined
+from xotl.tools.symbols import Undefined
 from xotl.tools.symbols import Unset as _unset
 
 try:

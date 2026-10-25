@@ -9,7 +9,7 @@
 
 """Several utilities for objects in general."""
 
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Iterable, Mapping, MutableMapping
 from contextlib import contextmanager
 from functools import partial
 from inspect import _static_getmro
@@ -455,16 +455,14 @@ def multi_getter(source, *ids):
         return next((i for i in map(getter, a) if i is not None), None)
 
     def get(a):
-        from xotl.tools.values.simple import logic_iterable_coerce as many
-
-        return first(a) if many(a) else getter(a)
+        many = isinstance(a, Iterable) and not isinstance(a, str) and bool(a)
+        return first(a) if many else getter(a)
 
     return (get(aux) for aux in ids)
 
 
 def mass_setattr(obj, **attrs):
     """Set all given attributes and return the same object."""
-    # See 'xotl.tools.decorator.constant_bagger' ;)
     for attr in attrs:
         setattr(obj, attr, attrs[attr])
     return obj
@@ -740,9 +738,8 @@ def iterate_over(source, *keys):
 
     If any `key` is missing from `source` is ignored (not yielded).
 
-    If `source` is a `collection
-    <xotl.tools.values.simple.logic_collection_coerce>`:func:, iterate over
-    each of the items searching for any of keys.  This is not recursive.
+    If `source` is an iterable other than a string or mapping, iterate over each item searching
+    for any of the keys.  This is not recursive.
 
     If no `keys` are provided, return an "empty" iterator -- i.e will raise
     StopIteration upon calling `next`.
@@ -750,7 +747,6 @@ def iterate_over(source, *keys):
     .. versionadded:: 1.5.2
 
     """
-    from xotl.tools.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter(source)
@@ -764,7 +760,7 @@ def iterate_over(source, *keys):
             for key, val in generator:
                 yield key, val
 
-    if logic_collection_coerce(source) is not nil:
+    if isinstance(source, Iterable) and not isinstance(source, (str, Mapping)):
         res = when_collection(source)
     else:
         res = inner(source)
@@ -825,7 +821,6 @@ def pop_first_of(source, *keys, default=None):
         True
 
     """
-    from xotl.tools.values.simple import logic_collection_coerce, nil
 
     def inner(source):
         get = smart_getter_and_deleter(source)
@@ -835,7 +830,7 @@ def pop_first_of(source, *keys, default=None):
             i += 1
         return res
 
-    if logic_collection_coerce(source) is not nil:
+    if isinstance(source, Iterable) and not isinstance(source, (str, Mapping)):
         res = Unset
         source = iter(source)
         probe = next(source, None)
@@ -1395,7 +1390,6 @@ def smart_copy(*args, defaults=None):
     """
     from xotl.tools.symbols import Undefined
     from xotl.tools.validators.identifiers import is_valid_identifier
-    from xotl.tools.values.simple import logic_iterable_coerce, nil
 
     *sources, target = args
     if not sources:
@@ -1414,7 +1408,7 @@ def smart_copy(*args, defaults=None):
                 setattr(target, key, val)
 
     _mapping = isinstance(defaults, Mapping)
-    if _mapping or logic_iterable_coerce(defaults) is not nil:
+    if _mapping or (isinstance(defaults, Iterable) and not isinstance(defaults, str)):
         for key, val in ((key, get_first_of(sources, key, default=Unset)) for key in defaults):
             if val is Unset:
                 if _mapping:
@@ -1599,7 +1593,7 @@ def dict_merge(*dicts, **others):
 
 
 @contextmanager
-def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
+def save_attributes(obj, attr, /, *attrs, getter=smart_getter, setter=smart_setter):
     r"""A context manager that restores `obj` attributes at exit.
 
     We deal with `obj`\ 's attributes with `smart_getter`:func: and
@@ -1656,9 +1650,7 @@ def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
     .. versionadded:: 1.8.2
 
     """
-    from xotl.tools.params import check_count
-
-    check_count(attrs, 1)
+    attrs = (attr, *attrs)
     get_ = getter(obj)
     set_ = setter(obj)
     props = {attr: get_(attr) for attr in attrs}

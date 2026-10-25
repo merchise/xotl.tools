@@ -25,16 +25,10 @@ has_magic = lambda s: re_magic.search(s) is not None
 
 def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
     import fnmatch
-    from functools import reduce
 
-    from xotl.tools.params import check_count
-
-    arg_count = reduce(
-        lambda count, p: count + (1 if p is not None else 0),
-        (pattern, regex_pattern, shell_pattern),
-        0,
-    )
-    check_count(arg_count, 0, 1, caller="_get_regex")  # XXX: WTF?!
+    arg_count = sum(p is not None for p in (pattern, regex_pattern, shell_pattern))
+    if arg_count > 1:
+        raise TypeError(f"_get_regex() takes at most one argument ({arg_count} given)")
     if arg_count == 1:
         if pattern is not None:
             if pattern.startswith("(?") or pattern.startswith("^(?"):
@@ -458,33 +452,26 @@ def ensure_filename(filename, yields=False):
             raise OSError("Expected a file but another thing is found '%s'" % filename)
 
 
-def concatfiles(*files):
-    """Concat several files to a single one.
+def concatfiles(source, target_or_source, /, *additional):
+    """Concatenate binary sources into the last positional argument, the destination.
 
-    Each positional argument must be either:
+    Each argument may be a path string or an open file-like object.  Files opened by this
+    function are closed on completion; caller-supplied streams remain open.  At least two
+    positional arguments are required, and keyword arguments are not accepted.
 
-    - a file-like object (ready to be passed to `shutil.copyfileobj`:func:)
-
-    - a string, the file path.
-
-    The last positional argument is the target.  If it's file-like object it
-    must be open for writing, and the caller is the responsible for closing
-    it.
-
-    Alternatively if there are only two positional arguments and the first is
-    a collection, the sources will be the members of the first argument.
-
+    With exactly two arguments, a first argument that is an iterable other than a string
+    supplies the collection of inputs.  An empty collection is allowed.
     """
     import shutil
+    from collections.abc import Iterable
 
-    from xotl.tools.params import check_count
-    from xotl.tools.values.simple import force_iterable_coerce
-
-    check_count(files, 2, caller="concatfiles")
-    if len(files) == 2:
-        files, target = force_iterable_coerce(files[0]), files[1]
+    if additional:
+        files, target = (source, target_or_source, *additional[:-1]), additional[-1]
     else:
-        files, target = files[:-1], files[-1]
+        target = target_or_source
+        files = (
+            source if isinstance(source, Iterable) and not isinstance(source, str) else (source,)
+        )
     if isinstance(target, str):
         target, opened = open(target, "wb"), True
     else:

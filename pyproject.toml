@@ -1,6 +1,6 @@
 [project]
 name = "xotl.tools"
-version = "3.5.1"
+version = "3.6.0"
 description = "Collection of usefull algorithms and other very disparate stuff"
 authors = [
    { name = "Merchise Autrement", email="info@merchise.de" }

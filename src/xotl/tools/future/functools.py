@@ -20,7 +20,7 @@ __all__ = ("power", "lwraps", "curry")
 
 # TODO: Check relevance of the following function.
 # The real signature should be (*funcs, times)
-def power(*args):
+def power(func, func_or_times, /, *additional):
     """Returns the "power" composition of several functions.
 
     Examples:
@@ -34,17 +34,15 @@ def power(*args):
        >>> f(23) == 3*(3*(3*23))
        True
 
-       >>> power(operator.neg)
+       >>> power(operator.neg)  # doctest: +IGNORE_EXCEPTION_DETAIL
        Traceback (most recent call last):
        ...
-       TypeError: power() takes at least 2 arguments (1 given)
+       TypeError: missing the repetition count
 
     """
     from xotl.tools.fp.tools import compose
-    from xotl.tools.params import check_count
 
-    check_count(args, 2, caller="power")
-    *funcs, times = args
+    *funcs, times = (func, func_or_times, *additional)
     if any(not callable(func) for func in funcs):
         raise TypeError("Arguments of `power`, but last, must be callables")
     if not (isinstance(times, int) and times > 0):
@@ -115,7 +113,6 @@ def lwraps(*args, **kwargs):
     """
     from types import FunctionType, MethodType
 
-    from xotl.tools.params import check_count
     from xotl.tools.symbols import Unset
 
     def repeated(name):
@@ -143,7 +140,8 @@ def lwraps(*args, **kwargs):
     source = {}
     target = Unset
     count = len(args)
-    check_count(count, 0, 2, caller="lwraps")
+    if count > 2:
+        raise TypeError(f"lwraps() takes at most 2 arguments ({count} given)")
     i = 0
     while i < count:
         arg = args[i]

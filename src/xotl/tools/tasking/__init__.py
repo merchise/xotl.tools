@@ -89,11 +89,9 @@ class ConstantWait:
 
     .. versionadded:: 1.8.2
 
-    .. versionchanged:: 1.9.1 Renamed; it was ``StandardWait``.  The old name
-       is kept as a deprecated alias.
+    .. versionchanged:: 1.9.1 Renamed from ``StandardWait``.
 
-    .. versionchanged:: 2.0.1 Renamed; it was ``StandardWait``.  The old name
-       is kept as a deprecated alias.
+    .. versionchanged:: 3.0.0 The deprecated ``StandardWait`` alias was removed.
 
     """
 

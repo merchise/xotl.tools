@@ -14,7 +14,7 @@
 - Deprecate module ``xotl.tools.records``.  Use modern alternatives like
   `pydantic`_.
 
-- Deprecate functions `xotl.tools.decorator`:mod:\ :
+- Deprecate functions ``xotl.tools.decorator``:
 
   - ``xotl.tools.decorator.constant_bagger``
   - ``xotl.tools.decorator.aliases``
