@@ -11,7 +11,7 @@
   - `!xotl.tools.future.types.is_module`:func:,
   - `!xotl.tools.future.types.are_instances`:func:,
   - `!xotl.tools.future.types.no_instances`:func:,
-  - `!xotl.tools.decorator.meta.flat_decorator`:func:,
+  - ``xotl.tools.decorator.meta.flat_decorator``,
   - `!xotl.tools.cpystack.iter_frames`:func:,
   - `!xotl.tools.future.types.mro_dict`:class:,
   - `!xotl.tools.future.types.mro_get_value_list`:func:,

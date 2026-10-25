@@ -20,7 +20,13 @@
 - Removed ``xotl.tools.modules.force_module``.  Pass module objects explicitly or use
   ``importlib.import_module`` for module names instead of inspecting the caller's stack.
 
+- Removed ``xotl.tools.decorator``, including ``decorator.meta.decorator``.  Implement decorators
+  as ordinary Python functions with explicit signatures and use ``functools.wraps`` as needed.
+
 .. rubric:: Changes
+
+- ``xotl.tools.bound.boundary`` now implements its decorator forms directly.  Use ``@boundary``
+  or ``@boundary(name=..., base=..., errors=...)``; configuration options are keyword-only.
 
 - `~xotl.tools.string.slugify`:func: remains supported and no longer depends on the deprecated
   parameter-schema and coercion helpers.  Its implementation now declares the documented parameters

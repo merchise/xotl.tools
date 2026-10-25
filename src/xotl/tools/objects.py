@@ -464,7 +464,6 @@ def multi_getter(source, *ids):
 
 def mass_setattr(obj, **attrs):
     """Set all given attributes and return the same object."""
-    # See 'xotl.tools.decorator.constant_bagger' ;)
     for attr in attrs:
         setattr(obj, attr, attrs[attr])
     return obj

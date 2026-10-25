@@ -91,10 +91,9 @@ We divide xoutil modules into 4 tiers:
 
 #. Tier 1
 
-   In this tier we have:
-
-   - `xotl.tools.decorator.meta`:mod:.  This is to allow the definition of
-     decorators in other modules.
+   This tier is reserved for infrastructure used to define module-level decorators.
+   There are currently no modules in this tier.  Define decorators with ordinary Python
+   functions and explicit signatures rather than a general-purpose decorator factory.
 
 #. Tier 2
 
@@ -104,7 +103,7 @@ We divide xoutil modules into 4 tiers:
 
    This tier only has the `xotl.tools.modules`:mod:.
 
-   Both `xotl.tools.modules.modulepropery`:func: and
+   Both `xotl.tools.modules.moduleproperty`:func: and
    `xotl.tools.modules.modulemethod`:func: are meant be used at module level
    definitions, so they are likely to be imported at module level.
 
@@ -120,9 +119,8 @@ We divide xoutil modules into 4 tiers:
   - Imports from tier 3 are allowed, but only inside the functions that use
     them.
 
-  This entails that you can't define a function that must be a module level
-  import, like a decorator for other functions.  For that reason, decorators
-  are mostly placed in the `xotl.tools.decorator`:mod: module.
+  Decorators needed at module level should avoid dependencies on other tier 3 modules during
+  import.  Keep any such imports inside the functions that need them.
 
 
 The tiers above are a "logical suggestion" of how xoutil modules are organized

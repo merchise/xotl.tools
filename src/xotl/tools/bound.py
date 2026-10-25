@@ -11,8 +11,6 @@
 
 from types import GeneratorType
 
-from xotl.tools.decorator.meta import decorator
-
 
 class BoundedType(type):
     """A bounded generator/function."""
@@ -196,12 +194,13 @@ class BoundaryCondition:
             return self.apply((), {})
 
 
-@decorator
-def boundary(definition, name=None, base=BoundaryCondition, errors=None):
+def boundary(definition=None, *, name=None, base=BoundaryCondition, errors=None):
     """Helper to define a boundary condition.
 
-    The `definition` must be a function that returns a generator.  The
-    following rules **must be** followed.  Collectively these rules are called
+    Use as ``@boundary`` or ``@boundary(name=..., base=..., errors=...)``.  The options are
+    keyword-only; `definition`, when supplied, must be a function returning a generator.
+
+    The following rules **must be** followed.  Collectively these rules are called
     the `boundary protocol`.
 
     - The `boundary definition` will yield True when and only when the
@@ -248,8 +247,11 @@ def boundary(definition, name=None, base=BoundaryCondition, errors=None):
     """
     from functools import update_wrapper
 
-    result = base(definition, name=name, errors=errors)
-    return update_wrapper(result, definition)
+    def decorate(function):
+        result = base(function, name=name, errors=errors)
+        return update_wrapper(result, function)
+
+    return decorate if definition is None else decorate(definition)
 
 
 @boundary
@@ -614,6 +616,3 @@ def whenany(*preds):
         pass
     for pred in preds:
         pred.close()
-
-
-del decorator
