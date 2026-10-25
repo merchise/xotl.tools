@@ -49,8 +49,7 @@ test = [
     "pytest-insta~=0.2.0",
 ]
 lint = [
-    "ruff==0.8.*",
-    "isort~=5.13.2",
+    "ruff==0.17.*",
 ]
 tooling = [
     "sphinx>=7.1.2",
@@ -73,17 +72,13 @@ build-backend = "uv_build"
 module-name = "xotl.tools"
 
 
-[tool.isort]
-profile = "black"
-line_length = 100
-src_paths = ["xotl/tools"]
-skip_gitignore = true
-
 [tool.ruff]
 line-length = 100
+src = ["src"]
 target-version = "py311"
 
 [tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
 ignore = [
   "E501", # line-length is left to the formatter
   "E731", # do not assign a `lambda` expression, use a `def` (we use it a lot)

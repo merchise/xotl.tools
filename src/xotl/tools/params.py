@@ -24,6 +24,7 @@ means several possibilities.
 """
 
 from typing_extensions import deprecated
+
 from xotl.tools.symbols import Undefined  # used implicitly for absent default
 
 #: The maximum number of positional arguments allowed when calling a function.

@@ -11,6 +11,7 @@
 
 # FIX: These imports must be local
 from typing_extensions import deprecated
+
 from xotl.tools.symbols import Undefined as _undef
 
 # TODO: This module must be reviewed and deprecate most of it.

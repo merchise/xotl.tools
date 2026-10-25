@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from hypothesis import given
 from hypothesis.strategies import composite, datetimes, integers, text
+
 from xotl.tools.records import date_reader, datetime_reader, record
 
 FMT = "%Y-%m-%d"

@@ -53,7 +53,6 @@ build: sync
 
 .PHONY: format-python
 format-python: sync
-	@$(RUN) isort src test
 	@$(RUN) ruff check --fix src
 	@$(RUN) ruff format src
 
@@ -66,7 +65,6 @@ format: format-python
 lint: sync
 	@$(RUN) ruff check src
 	@$(RUN) ruff format --check src
-	@$(RUN) isort --check src
 
 
 .PHONY: shell

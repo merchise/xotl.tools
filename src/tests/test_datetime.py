@@ -12,6 +12,7 @@ import pickle
 
 import pytest
 from hypothesis import given, settings, strategies
+
 from xotl.tools.future.datetime import (
     DateTimeSpan,
     EmptyTimeSpan,

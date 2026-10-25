@@ -9,6 +9,7 @@
 from types import SimpleNamespace as new
 
 import pytest
+
 from xotl.tools.objects import (
     classproperty,
     copy_class,
