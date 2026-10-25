@@ -28,19 +28,37 @@ Instead of *None* or *Nothing*, `Wrong` is used because two reasons:
 also wraps incorrect values and can have several instances (not only a *null*
 value).
 
+.. deprecated:: 3.6.0
+   This entire module is deprecated, including ``Maybe``, ``Just``, ``Wrong``, their helpers,
+   ``take``, and the ``false``, ``true``, and ``none`` singletons.  Prefer ordinary return values,
+   ``None`` or `xotl.tools.symbols.Unset`:obj: for absence, and exceptions for failures.
+   Compare ``Unset`` by identity, not equality or truthiness.
+   No removal version or minimum retention period is promised.
+
 """
 
+from warnings import warn as _warn
 
+from typing_extensions import deprecated as _deprecated
+
+_DEPRECATION_MESSAGE = (
+    "xotl.tools.fp.option is deprecated; use ordinary values, None or xotl.tools.symbols.Unset, "
+    "and exceptions instead."
+)
+
+# The module creates public singletons on import; only subsequent API calls should warn.
+_INITIALIZING = True
+
+
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 class Maybe:
     """Wrapper for optional values.
 
     The Maybe type encapsulates an optional value.  A value of type
     ``Maybe a`` either contains a value of type ``a`` (represented as
-    ``Just a``), or it is empty (represented as ``Nothing``).  Using `Maybe``
-    is a good way to deal with errors or exceptional cases without resorting
-    to drastic measures such as error. In this implementation we make a
-    variation where a ``Wrong`` object represents a missing (with special
-    value ``Nothing``) or an improper value (including errors).
+    ``Just a``), or it is empty (represented as ``Nothing``).  In this implementation a
+    ``Wrong`` object represents a missing or improper value, including errors.
+    This API is deprecated; prefer ordinary values, explicit absence checks, and exceptions.
 
     See descendant classes `Just`:class: and `Wrong`:class: for more
     information.
@@ -71,6 +89,8 @@ class Maybe:
     _singletons = [None, None, None]  # False, True, None
 
     def __new__(cls, *args):
+        if not _INITIALIZING:
+            _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
         default = cls is Just
         if len(args) == 0:
             arg = default
@@ -120,6 +140,7 @@ class Maybe:
         return not (self == other)
 
     @classmethod
+    @_deprecated(_DEPRECATION_MESSAGE, category=None)
     def compel(cls, value):
         """Coerce to the correspondent logical Boolean value.
 
@@ -140,6 +161,7 @@ class Maybe:
             []
 
         """
+        _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
         if cls is not Maybe:
             test = cls is Just
             dual = Wrong if test else Just
@@ -155,6 +177,7 @@ class Maybe:
             raise TypeError("""don't call at Maybe base level""")
 
     @classmethod
+    @_deprecated(_DEPRECATION_MESSAGE, category=None)
     def choose(cls, *types):
         """Decorator to force `Maybe` values constraining to expecting types.
 
@@ -179,23 +202,27 @@ class Maybe:
             False
 
         """
-        pass
+        _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 class Just(Maybe):
     """A wrapper for valid results."""
 
     __slots__ = ()
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 class Wrong(Maybe):
     """A wrapper for invalid results."""
 
     __slots__ = ()
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def take(value):
     """Extract a value."""
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     return value.inner if isinstance(value, Maybe) else value
 
 
@@ -209,3 +236,5 @@ true = Just()
 
 #: A `Wrong`:class: special singleton encapsulating the `None` value.
 none = Wrong(None)
+
+_INITIALIZING = False

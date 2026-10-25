@@ -57,14 +57,13 @@
   `reprlib`:mod: for abbreviated object representations.  Existing clipping behavior is retained;
   migration requires reviewing output differences and reprlib features added in Python 3.11+.
 
-- Deprecate the entire `xotl.tools.cpystack`:mod: module without an announced removal version.
+- Deprecate the entire `xotl.tools.cpystack`:mod: module.
   Prefer `traceback`:mod: and `inspect`:mod: for exception reporting and frame inspection, and
   explicit argument passing instead of searching callers' arguments.  This deprecation preserves
   existing signatures and behavior; on-use warnings do not add frames to the inspected stack.
 
-.. rubric:: Retained deprecated APIs
-
-- The ``xotl.tools.cli`` package remains available in 3.6.0.
-
-- ``xotl.tools.params.ParamManager``, ``ParamSchemeRow``, and ``ParamScheme`` remain available until
-  their announced removal in 4.0.0.
+- Deprecate the entire `xotl.tools.fp.option`:mod: module, including ``Maybe``, ``Just``, ``Wrong``,
+  their helpers, ``take``, and the singleton values.
+  Prefer ordinary values, ``None`` or `xotl.tools.symbols.Unset`:obj: for absence, and exceptions
+  for failures.  Compare ``Unset`` by identity rather than truthiness or equality.
+  Existing wrapping behavior and singleton identities are retained for compatibility.
