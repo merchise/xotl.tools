@@ -9,6 +9,9 @@
 - Removed ``xotl.tools.params.check_default``, deprecated since 3.0.0.  Use an explicit optional
   parameter with a sentinel default, and positional-only syntax where appropriate.
 
+- Removed ``xotl.tools.records`` and its field readers.  Use dataclasses or explicit parsing and
+  validation of input records instead.
+
 .. rubric:: Changes
 
 - `~xotl.tools.string.slugify`:func: remains supported and no longer depends on the deprecated
