@@ -26,8 +26,8 @@
 
 .. rubric:: Removals and deprecations
 
-- Deprecate `xotl.tools.names.namelist`:class:, and
-  `xotl.tools.names.strlist`:class:.
+- Deprecate ``xotl.tools.names.namelist``, and
+  ``xotl.tools.names.strlist``.
 
 - Deprecate the module `xotl.tools.deprecation`:mod:, and removed deprecated
   ``xotl.tools.deprecation.deprecated_alias``.  Instead you should use the
@@ -50,7 +50,7 @@
 - Deprecate param-related utitilies for which there are now better syntactical
   approaches:
 
-  - `xotl.tools.params.check_default`:func:
+  - ``xotl.tools.params.check_default``
   - `xotl.tools.params.single`:func:
   - `xotl.tools.params.ParamManager`:class:
   - `xotl.tools.params.ParamSchemeRow`:class:

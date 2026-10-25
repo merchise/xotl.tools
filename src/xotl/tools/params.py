@@ -114,35 +114,6 @@ def check_count(args, low, high=MAX_ARG_COUNT, caller=None):
         raise TypeError("{} takes {} ({} given)".format(name, aux, count))
 
 
-def check_default(absent=Undefined):
-    """Get a default value passed as a last excess positional argument.
-
-    :param absent: The value to be used by default if no one is given.
-           Defaults to `~xotl.tools.symbols.Undefined`:obj:.
-
-    For example::
-
-        def get(self, name, *default):
-            from xotl.tools.params import check_default, Undefined
-            if name in self.inner_data:
-                return self.inner_data[name]
-            elif check_default()(*default) is not Undefined:
-                return default[0]
-            else:
-                raise KeyError(name)
-
-    .. versionadded:: 1.8.0
-
-    .. deprecated:: 3.0.0 Use the positional-only '/' syntax introduced in `PEP 570<570>`:pep:.
-
-    """
-
-    def default(res=absent):
-        return res
-
-    return default
-
-
 def single(args, kwds):
     """Return a true value only when a unique argument is given.
 

@@ -90,8 +90,6 @@ Module Members
 
 .. autofunction:: check_count
 
-.. autofunction:: check_default
-
 .. autofunction:: single
 
 .. autofunction:: pop_keyword_arg
