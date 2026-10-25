@@ -36,7 +36,7 @@
 
   This library no longer uses this module for deprecation.
 
-- Deprecate function `xotl.tools.modules.copy_members`:func:, this was mainly
+- Deprecate function ``xotl.tools.modules.copy_members``, this was mainly
   an internal function to provide the drop-in replacement of standard library
   modules.
 

@@ -15,6 +15,8 @@
 - Removed the ``xotl.tools.future.collections.defaultdict`` alias.  Use ``DefaultDict`` for the
   extended default factory protocol, or ``collections.defaultdict`` for the standard behavior.
 
+- Removed ``xotl.tools.modules.copy_members``.  Use explicit imports and re-exports instead.
+
 .. rubric:: Changes
 
 - `~xotl.tools.string.slugify`:func: remains supported and no longer depends on the deprecated

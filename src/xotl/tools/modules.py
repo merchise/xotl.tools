@@ -54,47 +54,6 @@ def force_module(ref=None):
         return import_module(ref)
 
 
-@deprecated("It will be removed")
-def copy_members(source=None, target=None):
-    """Copy module members from `source` to `target`.
-
-    It's common in `xotl.tools` package to extend Python modules with the same
-    name, for example `xotl.tools.datetime` has all public members of Python's
-    `datetime`.  `copy_members`:func: can be used to copy all members from the
-    original module to the extended one.
-
-    :param source: string with source module name or module itself.
-
-        If not given, is assumed as the last module part name of `target`.
-
-    :param target: string with target module name or module itself.
-
-        If not given, target name is looked in the stack of caller module.
-
-    :returns: Source module.
-    :rtype: `ModuleType`
-
-    .. warning:: Implementation detail
-
-       Function used to inspect the stack is not guaranteed to exist in all
-       implementations of Python.
-
-    .. deprecated:: 3.0.0
-
-    """
-    target = force_module(target or 2)
-    if source is None:
-        source = target.__name__.rsplit(".")[-1]
-        if source == target.__name__:
-            msg = '"source" and "target" modules must be different.'
-            raise ValueError(msg)
-    source = force_module(source)
-    for attr in dir(source):
-        if not attr.startswith("__"):
-            setattr(target, attr, getattr(source, attr))
-    return source
-
-
 class _CustomModuleBase(ModuleType):
     pass
 
