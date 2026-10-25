@@ -258,8 +258,6 @@ class ParamManager:
     def __call__(self, *ids, **options):
         """Get a parameter value."""
         from xotl.tools.fp.option import Just, Wrong, none
-
-        # TODO: Change this ``from xotl.tools.values import coercer``
         from xotl.tools.fp.prove.semantic import predicate as coercer
 
         args, kwds = self.args, self.kwds
@@ -327,9 +325,8 @@ class ParamSchemeRow:
 
     :param default: keyword argument, value used if the parameter is absent;
 
-    :param coerce: check if a value is valid or not and convert to its
-           definitive value; see `xotl.tools.values`:mod: module for more
-           information.
+    The `coerce` option accepts a type or tuple of types for instance checks, a callable for
+    validation or conversion, or a two-item list containing a check and a conversion function.
 
     .. versionadded:: 1.8.0
 
@@ -345,7 +342,6 @@ class ParamSchemeRow:
         from xotl.tools.fp.option import none
 
         iskey = lambda s: isinstance(s, str) and s.isidentifier()
-        # TODO: Change this ``from xotl.tools.values import coercer``
         from xotl.tools.fp.prove.semantic import predicate as coercer
 
         aux = {k: c for k, c in Counter(ids).items() if c > 1}

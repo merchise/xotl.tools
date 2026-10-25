@@ -10,7 +10,6 @@ import unittest
 
 
 def test_iscollection():
-    # TODO: move this test to equivalent for `xotl.tools.values.simple.logic_collection_coerce`
     from collections import UserDict, UserList
 
     def is_collection(arg):

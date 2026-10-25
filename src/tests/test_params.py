@@ -8,21 +8,25 @@
 #
 
 import sys
+from io import IOBase
 
-# old params
 from xotl.tools.params import ParamScheme as scheme
 from xotl.tools.params import ParamSchemeRow as row
-from xotl.tools.values import file_coerce
-from xotl.tools.values import positive_int_coerce as positive_int
+
+
+def positive_int(value):
+    value = int(value)
+    return value if value >= 0 else False
+
 
 sample_scheme = scheme(
-    row("stream", 0, -1, "output", default=sys.stdout, coerce=file_coerce),
+    row("stream", 0, -1, "output", default=sys.stdout, coerce=(IOBase,)),
     row("indent", 0, 1, default=1, coerce=positive_int),
     row("width", 0, 1, 2, "max_width", default=79, coerce=positive_int),
     row("newline", default="\n", coerce=(str,)),
 )
 
-del file_coerce, positive_int
+del positive_int
 
 
 def test_basic_params():

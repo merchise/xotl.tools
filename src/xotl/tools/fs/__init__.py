@@ -458,33 +458,24 @@ def ensure_filename(filename, yields=False):
             raise OSError("Expected a file but another thing is found '%s'" % filename)
 
 
-def concatfiles(*files):
-    """Concat several files to a single one.
+def concatfiles(source, /, *sources, target):
+    """Concatenate binary sources into the keyword-only `target`.
 
-    Each positional argument must be either:
+    Each source and `target` may be a path string or an open file-like object.  Files opened
+    by this function are closed on completion; caller-supplied streams remain open.
+    A single iterable `source`, other than a string, supplies the collection of inputs.
+    At least one positional argument is required, but an empty collection is allowed.
 
-    - a file-like object (ready to be passed to `shutil.copyfileobj`:func:)
-
-    - a string, the file path.
-
-    The last positional argument is the target.  If it's file-like object it
-    must be open for writing, and the caller is the responsible for closing
-    it.
-
-    Alternatively if there are only two positional arguments and the first is
-    a collection, the sources will be the members of the first argument.
-
+    .. versionchanged:: 3.6.0
+       The destination must be passed as the keyword-only `target` argument.
     """
     import shutil
+    from collections.abc import Iterable
 
-    from xotl.tools.params import check_count
-    from xotl.tools.values.simple import force_iterable_coerce
-
-    check_count(files, 2, caller="concatfiles")
-    if len(files) == 2:
-        files, target = force_iterable_coerce(files[0]), files[1]
+    if not sources and isinstance(source, Iterable) and not isinstance(source, str):
+        files = source
     else:
-        files, target = files[:-1], files[-1]
+        files = (source, *sources)
     if isinstance(target, str):
         target, opened = open(target, "wb"), True
     else:

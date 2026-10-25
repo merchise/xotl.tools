@@ -43,14 +43,8 @@ def getargvalues(frame):
         -10
 
     """
-    from xotl.tools.future.itertools import flatten
-    from xotl.tools.values.simple import force_sequence_coerce as array
-
     pos, args, kwds, values = inspect.getargvalues(frame)
-    res = {}
-    for keys in pos:
-        if keys:
-            res.update({key: values[key] for key in flatten(array(keys))})
+    res = {name: values[name] for name in pos}
     if args:
         i = 0
         for item in values[args]:

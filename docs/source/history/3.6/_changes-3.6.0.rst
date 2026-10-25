@@ -23,7 +23,15 @@
 - Removed ``xotl.tools.decorator``, including ``decorator.meta.decorator``.  Implement decorators
   as ordinary Python functions with explicit signatures and use ``functools.wraps`` as needed.
 
+- Removed ``xotl.tools.values`` and its ``simple`` and ``ids`` submodules, including
+  ``str_coerce`` and ``str_uuid``.  Use explicit validation and conversions, collection ABCs,
+  and the standard ``uuid`` module instead.
+
 .. rubric:: Changes
+
+- ``xotl.tools.fs.concatfiles`` now takes its destination as keyword-only ``target``.
+  Pass ``concatfiles(source, target=destination)`` or additional positional sources before
+  ``target=destination``.  A single iterable of sources remains supported.
 
 - ``xotl.tools.bound.boundary`` now implements its decorator forms directly.  Use ``@boundary``
   or ``@boundary(name=..., base=..., errors=...)``; configuration options are keyword-only.

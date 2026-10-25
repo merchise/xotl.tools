@@ -5,7 +5,7 @@
    :members: ensure_filename, imap, iter_dirs, iter_files,
 	     listdir, rmdirs, stat, walk_up
 
-.. autofunction:: concatfiles(*files, target)
+.. autofunction:: concatfiles
 
 .. function:: makedirs(path, mode=0o777, exist_ok=False)
 
