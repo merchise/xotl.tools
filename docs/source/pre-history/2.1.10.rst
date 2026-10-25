@@ -6,7 +6,7 @@
 
   The list of modules we deem are complete:
 
-  - `xotl.tools.dim`:mod:
+  - ``xotl.tools.dim``
   - `xotl.tools.future.itertools`:mod:
   - `xotl.tools.fp.tools`:mod:
   - `xotl.tools.string`:mod:

@@ -1,3 +1,7 @@
+.. rubric:: Deprecations and removals
+
+- Removed deprecated package ``xotl.tools.dim``.
+
 .. rubric:: Changes
 
 - Reimplemented ``xotl.tools.context`` over ``contextvars``, replacing the ``threading.local``

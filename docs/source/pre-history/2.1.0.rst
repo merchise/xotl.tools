@@ -16,8 +16,8 @@
 
 - Add `xotl.tools.deprecation.deprecated_alias`:func:.
 
-- Allow to customize Quantity in `xotl.tools.dim.meta.Dimension`:class: and,
-  by argument, in `~xotl.tools.dim.meta.Dimension.new`:meth:.
+- Allow to customize Quantity in ``xotl.tools.dim.meta.Dimension`` and,
+  by argument, in ``Dimension.new``.
 
 - Deprecate ``xoutil.future.itertools.zip()``, and
   ``xoutil.future.itertools.map()``.
