@@ -102,9 +102,9 @@ doctest: sync
 	@$(MAKE) SPHINXBUILD="$(RUN) sphinx-build" -C docs doctest
 
 
-.PHONY: mypy
-mypy: sync
-	@$(RUN) mypy --config-file mypy.ini -p xotl.tools
+.PHONY: typecheck
+typecheck: sync
+	@$(RUN) zuban mypy --config-file mypy.ini src/xotl/tools
 
 
 .PHONY: docs/build

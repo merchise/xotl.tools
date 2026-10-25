@@ -34,7 +34,7 @@ dependencies = [
 
 [dependency-groups]
 typing = [
-    "mypy~=1.11.0",
+    "zuban~=0.10.1",
     "types-python-dateutil",
 ]
 test = [

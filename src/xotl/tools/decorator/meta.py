@@ -110,10 +110,10 @@ def decorator(caller):
     @wraps(caller)
     def outer_decorator(*args, **kwargs):
         try:
-            from zope.interface import Interface
+            from zope.interface import Interface  # type: ignore
         except ImportError:
             Interface = None
-            # from xotl.tools.symbols import Unset as Interface
+
         if (
             len(args) == 1
             and not kwargs

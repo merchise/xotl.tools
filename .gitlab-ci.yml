@@ -59,12 +59,8 @@ lint:
 .run_staticcheck: &run_staticcheck
   image: python:$PYTHON
   stage: test
-  cache:
-    key: $CI_JOB_NAME-$PYTHON
-    paths:
-      - .mypy_cache/
   script:
-    - make install mypy
+    - make install typecheck
 
 .run_tests: &run_tests
   image: python:$PYTHON
