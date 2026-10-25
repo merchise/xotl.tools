@@ -9,7 +9,8 @@
 
 """Helpers for bounded execution of co-routines."""
 
-from types import GeneratorType
+from functools import wraps
+from types import FunctionType, GeneratorType
 
 
 class BoundedType(type):
@@ -194,11 +195,11 @@ class BoundaryCondition:
             return self.apply((), {})
 
 
-def boundary(definition=None, *, name=None, base=BoundaryCondition, errors=None):
+def _make_boundary(definition, name=None, base=BoundaryCondition, errors=None):
     """Helper to define a boundary condition.
 
-    Use as ``@boundary`` or ``@boundary(name=..., base=..., errors=...)``.  The options are
-    keyword-only; `definition`, when supplied, must be a function returning a generator.
+    Use as ``@boundary``, ``@boundary()``, or with positional or keyword configuration
+    for `name`, `base`, and `errors`.  The decorated `definition` must return a generator.
 
     The following rules **must be** followed.  Collectively these rules are called
     the `boundary protocol`.
@@ -247,11 +248,26 @@ def boundary(definition=None, *, name=None, base=BoundaryCondition, errors=None)
     """
     from functools import update_wrapper
 
-    def decorate(function):
-        result = base(function, name=name, errors=errors)
-        return update_wrapper(result, function)
+    result = base(definition, name=name, errors=errors)
+    return update_wrapper(result, definition)
 
-    return decorate if definition is None else decorate(definition)
+
+@wraps(_make_boundary)
+def boundary(*args, **kwargs):
+    # The first argument can be the definition or a positional decorator option.
+    if len(args) == 1 and not kwargs and isinstance(args[0], (FunctionType, type, type(None))):
+        return _make_boundary(args[0])
+    elif args or kwargs:
+
+        def decorate(definition):
+            return _make_boundary(definition, *args, **kwargs)
+
+        return decorate
+    else:
+        return _make_boundary
+
+
+boundary.__name__ = boundary.__qualname__ = "boundary"
 
 
 @boundary

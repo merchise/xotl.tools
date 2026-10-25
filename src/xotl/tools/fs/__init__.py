@@ -458,24 +458,29 @@ def ensure_filename(filename, yields=False):
             raise OSError("Expected a file but another thing is found '%s'" % filename)
 
 
-def concatfiles(source, /, *sources, target):
-    """Concatenate binary sources into the keyword-only `target`.
+def concatfiles(*files):
+    """Concatenate binary sources into the last positional argument, the destination.
 
-    Each source and `target` may be a path string or an open file-like object.  Files opened
-    by this function are closed on completion; caller-supplied streams remain open.
-    A single iterable `source`, other than a string, supplies the collection of inputs.
-    At least one positional argument is required, but an empty collection is allowed.
+    Each argument may be a path string or an open file-like object.  Files opened by this
+    function are closed on completion; caller-supplied streams remain open.  At least two
+    positional arguments are required, and keyword arguments are not accepted.
 
-    .. versionchanged:: 3.6.0
-       The destination must be passed as the keyword-only `target` argument.
+    With exactly two arguments, a first argument that is an iterable other than a string
+    supplies the collection of inputs.  An empty collection is allowed.
     """
     import shutil
     from collections.abc import Iterable
 
-    if not sources and isinstance(source, Iterable) and not isinstance(source, str):
-        files = source
+    from xotl.tools.params import check_count
+
+    check_count(files, 2, caller="concatfiles")
+    if len(files) == 2:
+        source, target = files
+        files = (
+            source if isinstance(source, Iterable) and not isinstance(source, str) else (source,)
+        )
     else:
-        files = (source, *sources)
+        files, target = files[:-1], files[-1]
     if isinstance(target, str):
         target, opened = open(target, "wb"), True
     else:

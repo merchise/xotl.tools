@@ -29,12 +29,8 @@
 
 .. rubric:: Changes
 
-- ``xotl.tools.fs.concatfiles`` now takes its destination as keyword-only ``target``.
-  Pass ``concatfiles(source, target=destination)`` or additional positional sources before
-  ``target=destination``.  A single iterable of sources remains supported.
-
-- ``xotl.tools.bound.boundary`` now implements its decorator forms directly.  Use ``@boundary``
-  or ``@boundary(name=..., base=..., errors=...)``; configuration options are keyword-only.
+- ``xotl.tools.bound.boundary`` no longer depends on the removed decorator factory.  Its bare,
+  empty-parentheses, and positional or keyword configuration forms remain supported.
 
 - `~xotl.tools.string.slugify`:func: remains supported and no longer depends on the deprecated
   parameter-schema and coercion helpers.  Its implementation now declares the documented parameters
