@@ -7,9 +7,18 @@
 # This is free software; you can do what the LICENCE file allows you to.
 #
 
-"""Utilities to inspect the CPython's stack."""
+"""Utilities to inspect the CPython's stack.
+
+.. deprecated:: 3.6.0
+   This entire module, including all public functions and constants, is deprecated.
+   Use the standard-library `traceback`:mod: and `inspect`:mod: modules instead.
+   No removal version is promised.  This deprecation preserves existing signatures and behavior.
+"""
 
 import inspect
+from warnings import warn as _warn
+
+from typing_extensions import deprecated as _deprecated
 
 __all__ = (
     "MAX_DEEP",
@@ -23,7 +32,12 @@ __all__ = (
 
 MAX_DEEP = 25
 
+_DEPRECATION_MESSAGE = "xotl.tools.cpystack is deprecated; use traceback and inspect instead."
 
+# Static-only decorators and inline warnings avoid adding frames to the inspected stack.
+
+
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def getargvalues(frame):
     """Inspects the given frame for arguments and returns a dictionary that
     maps parameters names to arguments values. If an `*` argument was passed
@@ -43,6 +57,7 @@ def getargvalues(frame):
         -10
 
     """
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     pos, args, kwds, values = inspect.getargvalues(frame)
     res = {name: values[name] for name in pos}
     if args:
@@ -100,6 +115,7 @@ def __error_info(tb, *args, **kwargs):
     return res
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def error_info(*args, **kwargs):
     """Get error information in current trace-back.
 
@@ -145,10 +161,12 @@ def error_info(*args, **kwargs):
     """
     import sys
 
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     _error_type, _error, tb = sys.exc_info()
     return __error_info(tb, *args, **kwargs)
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def printable_error_info(base, *args, **kwargs):
     """Get error information in current trace-back.
 
@@ -172,6 +190,7 @@ def printable_error_info(base, *args, **kwargs):
     """
     import sys
 
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     _error_type, error, tb = sys.exc_info()
     if tb:
         res = "%s\n\tERROR: %s\n\t" % (base, error)
@@ -181,6 +200,7 @@ def printable_error_info(base, *args, **kwargs):
         return ""
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
     """Find an object of the given type through all arguments in stack frames.
 
@@ -196,6 +216,7 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
         max_deep: the max deep to enter in the stack frames.
 
     """
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     frame = inspect.currentframe()
     try:
         deep = 0
@@ -214,6 +235,7 @@ def object_info_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
         del frame  # As recommended in the Python's doc to avoid memory leaks
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def object_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
     """Find an object of the given type through all arguments in stack frames.
 
@@ -221,17 +243,20 @@ def object_finder(obj_type, arg_name=None, max_deep=MAX_DEEP):
     returns the object directly, not a tuple.
 
     """
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     finder = object_info_finder(obj_type, arg_name, max_deep)
     info = finder()
     return info[0] if info else None
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def track_value(value, max_deep=MAX_DEEP):
     """Find a value through all arguments in stack frames.
 
     Returns a dictionary with the full-context in the same level as "value".
 
     """
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     frame = inspect.currentframe().f_back.f_back
     deep = 0
     res = None
@@ -246,6 +271,7 @@ def track_value(value, max_deep=MAX_DEEP):
     return res
 
 
+@_deprecated(_DEPRECATION_MESSAGE, category=None)
 def iter_stack(max_deep=MAX_DEEP):
     """Iterates through stack frames until exhausted or `max_deep` is reached.
 
@@ -256,9 +282,7 @@ def iter_stack(max_deep=MAX_DEEP):
     .. versionadded:: 1.6.8
 
     """
-    # Using the previous pattern, functions `object_info_finder`,
-    # `object_finder` and `track_value` can be reprogrammed or deprecated.
-
+    _warn(_DEPRECATION_MESSAGE, DeprecationWarning, stacklevel=2)
     frame = inspect.currentframe()
     try:
         deep = 0

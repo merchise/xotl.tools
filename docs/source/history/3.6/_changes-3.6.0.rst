@@ -57,6 +57,11 @@
   `reprlib`:mod: for abbreviated object representations.  Existing clipping behavior is retained;
   migration requires reviewing output differences and reprlib features added in Python 3.11+.
 
+- Deprecate the entire `xotl.tools.cpystack`:mod: module without an announced removal version.
+  Prefer `traceback`:mod: and `inspect`:mod: for exception reporting and frame inspection, and
+  explicit argument passing instead of searching callers' arguments.  This deprecation preserves
+  existing signatures and behavior; on-use warnings do not add frames to the inspected stack.
+
 .. rubric:: Retained deprecated APIs
 
 - The ``xotl.tools.cli`` package remains available in 3.6.0.
