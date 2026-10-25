@@ -40,7 +40,7 @@
   an internal function to provide the drop-in replacement of standard library
   modules.
 
-- Deprecate function `xotl.tools.modules.force_module`:func:, this was mainly
+- Deprecate function ``xotl.tools.modules.force_module``, this was mainly
   an internal function for the (now deprecated) module
   ``xotl.tools.deprecation``.
 

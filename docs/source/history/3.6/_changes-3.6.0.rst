@@ -17,6 +17,9 @@
 
 - Removed ``xotl.tools.modules.copy_members``.  Use explicit imports and re-exports instead.
 
+- Removed ``xotl.tools.modules.force_module``.  Pass module objects explicitly or use
+  ``importlib.import_module`` for module names instead of inspecting the caller's stack.
+
 .. rubric:: Changes
 
 - `~xotl.tools.string.slugify`:func: remains supported and no longer depends on the deprecated

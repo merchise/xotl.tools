@@ -10,49 +10,6 @@
 
 from types import ModuleType
 
-from typing_extensions import deprecated
-
-
-@deprecated("It will be removed")
-def force_module(ref=None):
-    """Load a module from a string or return module if already created.
-
-    If `ref` is not specified (or integer) calling module is assumed looking
-    in the stack.
-
-    .. note:: Implementation detail
-
-       Function used to inspect the stack is not guaranteed to exist in all
-       implementations of Python.
-
-    """
-    from importlib import import_module
-
-    if isinstance(ref, ModuleType):
-        return ref
-    else:
-        if ref is None:
-            ref = 1
-        if isinstance(ref, int):
-            import sys
-
-            frame = sys._getframe(ref)
-            try:
-                ref = frame.f_globals["__name__"]
-            finally:
-                # As recommended to avoid memory leaks
-                del frame
-        if not isinstance(ref, str):
-            if isinstance(ref, bytes):
-                ref = ref.decode()  # Python 3.x
-            else:
-                try:
-                    ref = ref.encode()  # Python 2.x
-                except Exception:  # TODO: @med which exceptions expected?
-                    msg = "invalid type '{}' for module name '{}'"
-                    raise TypeError(msg.format(type(ref).__name__, ref))
-        return import_module(ref)
-
 
 class _CustomModuleBase(ModuleType):
     pass
