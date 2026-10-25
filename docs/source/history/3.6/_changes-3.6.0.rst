@@ -12,6 +12,9 @@
 - Removed ``xotl.tools.records`` and its field readers.  Use dataclasses or explicit parsing and
   validation of input records instead.
 
+- Removed the ``xotl.tools.future.collections.defaultdict`` alias.  Use ``DefaultDict`` for the
+  extended default factory protocol, or ``collections.defaultdict`` for the standard behavior.
+
 .. rubric:: Changes
 
 - `~xotl.tools.string.slugify`:func: remains supported and no longer depends on the deprecated

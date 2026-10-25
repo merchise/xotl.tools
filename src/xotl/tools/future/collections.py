@@ -18,15 +18,12 @@ import collections as _stdlib
 from collections.abc import Container, Iterable, Mapping, MutableMapping, MutableSet, Set, Sized
 from reprlib import recursive_repr
 
-from typing_extensions import deprecated
-
 from xotl.tools.objects import SafeDataItem as safe
 from xotl.tools.symbols import Unset
 
 __all__ = (
     "safe_dict_iter",
     "opendict",
-    "defaultdict",
     "DefaultDict",
     "OpenDictMixin",
     "SmartDictMixin",
@@ -116,15 +113,15 @@ class DefaultDict(_stdlib.defaultdict):
 
     Examples::
 
-        >>> from xotl.tools.future.collections import defaultdict
-        >>> d = defaultdict(lambda key, d: 'a')
+        >>> from xotl.tools.future.collections import DefaultDict
+        >>> d = DefaultDict(lambda key, d: 'a')
         >>> d['abc']
         'a'
 
     Since the second parameter is actually a dict-copy, you may (naively) do
     the following::
 
-        >>> d = defaultdict(lambda k, d: d[k])
+        >>> d = DefaultDict(lambda k, d: d[k])
         >>> d['abc']
         Traceback (most recent call last):
             ...
@@ -134,7 +131,7 @@ class DefaultDict(_stdlib.defaultdict):
     You may use this class as a drop-in replacement for
     ``collections.defaultdict``::
 
-        >>> d = defaultdict(lambda: 1)
+        >>> d = DefaultDict(lambda: 1)
         >>> d['abc']
         1
 
@@ -149,9 +146,6 @@ class DefaultDict(_stdlib.defaultdict):
                 return super().__missing__(key)
         else:
             raise KeyError(key)
-
-
-defaultdict = deprecated("Use DefaultDict")(DefaultDict)
 
 
 class OpenDictMixin:

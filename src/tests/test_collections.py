@@ -14,7 +14,7 @@ import unittest
 from collections.abc import MutableMapping
 from random import shuffle
 
-from xotl.tools.future.collections import DefaultDict, RankedDict, defaultdict
+from xotl.tools.future.collections import DefaultDict, RankedDict
 
 
 class TestDefaultDict(unittest.TestCase):
@@ -29,22 +29,6 @@ class TestDefaultDict(unittest.TestCase):
         self.assertEqual("default", d["abc"])
 
         d = DefaultDict(lambda key, d: d[key])
-        with self.assertRaises(KeyError):
-            d["abc"]
-
-
-class TestDefaultDictAlias(unittest.TestCase):
-    def test_defaultdict(self):
-        d = defaultdict(lambda key, _: "a")
-        self.assertEqual("a", d["abc"])
-        d["abc"] = 1
-        self.assertEqual(1, d["abc"])
-
-    def test_defaultdict_clone(self):
-        d = defaultdict(lambda key, d: d["a"], {"a": "default"})
-        self.assertEqual("default", d["abc"])
-
-        d = defaultdict(lambda key, d: d[key])
         with self.assertRaises(KeyError):
             d["abc"]
 
