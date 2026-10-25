@@ -50,6 +50,13 @@
   ``invalid`` and ``valid``.  Unknown keywords, excess positional arguments, and duplicate arguments
   now raise ``TypeError`` instead of being silently accepted.
 
+.. rubric:: Deprecations
+
+- Deprecate the entire `xotl.tools.clipping`:mod: module for removal in 4.0.0, including ``crop``,
+  ``small``, ``short``, ``crop_iterator``, its constants, and the ``__crop__`` protocol.  Prefer
+  `reprlib`:mod: for abbreviated object representations.  Existing clipping behavior is retained;
+  migration requires reviewing output differences and reprlib features added in Python 3.11+.
+
 .. rubric:: Retained deprecated APIs
 
 - The ``xotl.tools.cli`` package remains available in 3.6.0.

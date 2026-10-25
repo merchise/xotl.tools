@@ -19,9 +19,17 @@ representation functions (``__str__``, ``__repr__``) by defining a new one
 with name ``__crop__``.  This operator will receive some extra parameters with
 default values, see `crop`:func: function for details.
 
+.. deprecated:: 3.6.0
+   This entire module, including its aliases, constants, and ``__crop__`` protocol, is
+   deprecated and will be removed in 4.0.0.  Prefer the standard-library `reprlib`:mod:.
+   Existing behavior is retained during the deprecation period; reprlib is not a drop-in
+   replacement and some of its configuration features require Python 3.11 or newer.
+
 """
 
 from functools import partial
+
+from typing_extensions import deprecated
 
 __all__ = ("crop", "small", "ELLIPSIS", "DEFAULT_MAX_WIDTH")
 
@@ -60,6 +68,7 @@ def _check_max_width(max_width, caller=None):
     return max_width
 
 
+@deprecated("xotl.tools.clipping will be removed in 4.0.0; use reprlib instead.")
 def crop(obj, max_width=None, canonical=False):
     """Return a reduced string representation of `obj`.
 
@@ -80,6 +89,9 @@ def crop(obj, max_width=None, canonical=False):
            `str`:func: (the default).
 
     .. versionadded:: 1.8.0
+
+    .. deprecated:: 3.6.0
+       Use `reprlib`:mod: instead.  This function and its aliases will be removed in 4.0.0.
 
     """
     max_width = _check_max_width(max_width, caller="crop")
@@ -127,6 +139,7 @@ def _crop(obj, max_width=None, canonical=False):
     return res
 
 
+@deprecated("xotl.tools.clipping will be removed in 4.0.0; use reprlib instead.")
 def crop_iterator(obj, max_width=None, canonical=False):
     """Return a reduced string representation of the iterator `obj`.
 
@@ -135,6 +148,9 @@ def crop_iterator(obj, max_width=None, canonical=False):
     If `max_width` is not given, defaults to ``DEFAULT_MAX_WIDTH``.
 
     .. versionadded:: 1.8.0
+
+    .. deprecated:: 3.6.0
+       Use `reprlib`:mod: instead.  This function will be removed in 4.0.0.
 
     """
     from collections.abc import Mapping, Set
