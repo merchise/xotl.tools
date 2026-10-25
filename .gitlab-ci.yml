@@ -37,7 +37,7 @@ workflow:
 
 .x-uv-image: &with-uv-image
   image:
-    name: ghcr.io/astral-sh/uv:0.13.5@sha256:32a7bb39b496babbd997b0a39a4d66c126bdaf5661b302bf6f06abda8deca6ff
+    name: ghcr.io/astral-sh/uv:0.13.5-python3.12-trixie-slim@sha256:9b8477a5f2e2f96fa99eaecb7680c1c4c9f527926430f3b630bfb2c3641f8f20
     pull_policy: if-not-present
 
 
@@ -133,7 +133,6 @@ build:
   <<: *with-uv-image
   stage: build
   script:
-    - pip install uv
     - uv build
   artifacts:
     paths:
