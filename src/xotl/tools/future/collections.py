@@ -519,8 +519,8 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):  # type: ignor
     def level(self):
         """Return the current level number.
 
-        The first level is 0.  Calling `push`:meth: increases the current
-        level (and returns it), while calling `pop`:meth: decreases the
+        The first level is 0.  Calling `push_level`:meth: increases the current
+        level (and returns it), while calling `pop_level`:meth: decreases the
         current level (if possible).
 
         """
