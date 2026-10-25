@@ -24,6 +24,7 @@ means several possibilities.
 """
 
 from typing_extensions import deprecated
+
 from xotl.tools.symbols import Undefined  # used implicitly for absent default
 
 #: The maximum number of positional arguments allowed when calling a function.
@@ -488,7 +489,7 @@ class ParamScheme:
     __slots__ = ("rows", "cache")
 
     def __init__(self, *rows):
-        from xotl.tools.params import check_count
+        from xotl.tools.params import check_count  # type: ignore
 
         check_count(len(rows) + 1, 2, caller=type(self).__name__)
         used = set()

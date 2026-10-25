@@ -9,6 +9,7 @@
 import sys
 
 import pytest
+
 from xotl.tools.future.collections import OrderedSmartDict
 
 PYPY = sys.version.find("PyPy") >= 0

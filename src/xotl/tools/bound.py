@@ -115,7 +115,7 @@ class BoundaryCondition:
     def receive_args(self):
         return self.args or self.defaults or self.varargs or self.varkwargs
 
-    def apply(self, args, kwargs):
+    def apply(self, args, kwargs) -> type[Bounded]:
         def execute(boundary, unbounded, initial):
             """Executes the unbounded generator guarded by a boundary condition.
 
@@ -488,11 +488,11 @@ class HighLevelBoundary(BoundaryCondition):
 
     """
 
-    def apply(self, boundaries, kwargs):
+    def apply(self, boundaries, kwargs) -> type[Bounded]:
         assert boundaries and not kwargs
         base = super().apply(boundaries, kwargs)
 
-        class rebounded(base):
+        class rebounded(base):  # type: ignore
             @classmethod
             def build_pred(cls):
                 from types import FunctionType, GeneratorType

@@ -130,7 +130,7 @@ def customize(module, custom_attrs=None, meta=None):
 
         meta_base = meta if meta else type
 
-        class CustomModuleType(meta_base):
+        class CustomModuleType(meta_base):  # type: ignore
             def __new__(cls, name, bases, attrs):
                 if custom_attrs:
                     attrs.update(custom_attrs)

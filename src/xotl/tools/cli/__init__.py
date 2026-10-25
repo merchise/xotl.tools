@@ -35,6 +35,7 @@ import typing as t
 from abc import ABC, ABCMeta, abstractmethod
 
 from typing_extensions import deprecated
+
 from xotl.tools.cli.tools import command_name, program_name
 from xotl.tools.objects import classproperty
 

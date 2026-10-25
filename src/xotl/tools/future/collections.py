@@ -19,6 +19,7 @@ from collections.abc import Container, Iterable, Mapping, MutableMapping, Mutabl
 from reprlib import recursive_repr
 
 from typing_extensions import deprecated
+
 from xotl.tools.objects import SafeDataItem as safe
 from xotl.tools.symbols import Unset
 

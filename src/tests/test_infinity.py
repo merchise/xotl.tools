@@ -11,6 +11,7 @@ from functools import total_ordering
 
 from hypothesis import given
 from hypothesis import strategies as s
+
 from xotl.tools.infinity import Infinity, InfinityType
 
 

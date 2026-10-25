@@ -23,6 +23,7 @@ from functools import lru_cache
 from types import FunctionType
 
 from typing_extensions import deprecated
+
 from xotl.tools.symbols import Unset
 
 __all__ = (

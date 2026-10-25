@@ -38,6 +38,7 @@ import re
 from abc import ABCMeta
 
 from typing_extensions import deprecated
+
 from xotl.tools.fp.prove import vouch
 from xotl.tools.future.functools import lwraps
 from xotl.tools.symbols import Unset, boolean

@@ -1,4 +1,4 @@
-PYTHON_VERSION ?= 3.8
+PYTHON_VERSION ?= 3.10
 
 CARGO_HOME ?= $(HOME)/.cargo
 PATH := $(HOME)/.rye/shims:$(HOME)/.local/bin:$(CARGO_HOME)/bin:$(PATH)
@@ -53,7 +53,6 @@ build: sync
 
 .PHONY: format-python
 format-python: sync
-	@$(RUN) isort src test
 	@$(RUN) ruff check --fix src
 	@$(RUN) ruff format src
 
@@ -66,7 +65,6 @@ format: format-python
 lint: sync
 	@$(RUN) ruff check src
 	@$(RUN) ruff format --check src
-	@$(RUN) isort --check src
 
 
 .PHONY: shell
@@ -104,9 +102,9 @@ doctest: sync
 	@$(MAKE) SPHINXBUILD="$(RUN) sphinx-build" -C docs doctest
 
 
-.PHONY: mypy
-mypy: sync
-	@$(RUN) mypy --config-file mypy.ini -p xotl.tools
+.PHONY: typecheck
+typecheck: sync
+	@$(RUN) zuban mypy --config-file mypy.ini src/xotl/tools
 
 
 .PHONY: docs/build

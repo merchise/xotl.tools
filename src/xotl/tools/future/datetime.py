@@ -30,6 +30,7 @@ from time import strftime as _time_strftime
 from typing import Iterator, Optional, cast
 
 from typing_extensions import deprecated
+
 from xotl.tools.symbols import Unset  # noqa
 
 

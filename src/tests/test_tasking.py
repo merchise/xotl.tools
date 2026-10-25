@@ -8,6 +8,7 @@
 #
 
 import pytest
+
 from xotl.tools.tasking import retry
 
 

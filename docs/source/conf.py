@@ -59,18 +59,14 @@ del datetime
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-try:
-    from xotl.tools._version import version_tuple
-    version = ".".join(str(p) for p in version_tuple[:3])
-except ImportError:
-    from importlib import metadata
-    from importlib.metadata import PackageNotFoundError
+from importlib import metadata
+from importlib.metadata import PackageNotFoundError
 
-    try:
-        dist = metadata.distribution("xotl-tools")
-        version = release = dist.version
-    except PackageNotFoundError:
-        version = "dev"
+try:
+    dist = metadata.distribution("xotl-tools")
+    version = release = dist.version
+except PackageNotFoundError:
+    version = "dev"
 release = version
 
 
@@ -197,12 +193,12 @@ htmlhelp_basename = 'xotl-tools-doc'
 
 # Configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'py3': ('https://docs.python.org/3.12/', None),
-    'py38': ('https://docs.python.org/3.8/', None),
-    'py39': ('https://docs.python.org/3.9/', None),
-    'py310': ('https://docs.python.org/3.10/', None),
+    'py3': ('https://docs.python.org/3.10/', None),
     'py311': ('https://docs.python.org/3.11/', None),
+    'py312': ('https://docs.python.org/3.12/', None),
     'py313': ('https://docs.python.org/3.13/', None),
+    'py314': ('https://docs.python.org/3.14/', None),
+    'py315': ('https://docs.python.org/3.15/', None),
     'gevent': ('http://www.gevent.org', None),
     'greenlet': ('https://greenlet.readthedocs.org/en/latest/', None),
     'hypothesis': ('https://hypothesis.readthedocs.io/en/latest/', None),
