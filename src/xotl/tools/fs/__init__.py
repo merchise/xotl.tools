@@ -25,16 +25,10 @@ has_magic = lambda s: re_magic.search(s) is not None
 
 def _get_regex(pattern=None, regex_pattern=None, shell_pattern=None):
     import fnmatch
-    from functools import reduce
 
-    from xotl.tools.params import check_count
-
-    arg_count = reduce(
-        lambda count, p: count + (1 if p is not None else 0),
-        (pattern, regex_pattern, shell_pattern),
-        0,
-    )
-    check_count(arg_count, 0, 1, caller="_get_regex")  # XXX: WTF?!
+    arg_count = sum(p is not None for p in (pattern, regex_pattern, shell_pattern))
+    if arg_count > 1:
+        raise TypeError(f"_get_regex() takes at most one argument ({arg_count} given)")
     if arg_count == 1:
         if pattern is not None:
             if pattern.startswith("(?") or pattern.startswith("^(?"):
@@ -458,7 +452,7 @@ def ensure_filename(filename, yields=False):
             raise OSError("Expected a file but another thing is found '%s'" % filename)
 
 
-def concatfiles(*files):
+def concatfiles(source, target_or_source, /, *additional):
     """Concatenate binary sources into the last positional argument, the destination.
 
     Each argument may be a path string or an open file-like object.  Files opened by this
@@ -471,16 +465,13 @@ def concatfiles(*files):
     import shutil
     from collections.abc import Iterable
 
-    from xotl.tools.params import check_count
-
-    check_count(files, 2, caller="concatfiles")
-    if len(files) == 2:
-        source, target = files
+    if additional:
+        files, target = (source, target_or_source, *additional[:-1]), additional[-1]
+    else:
+        target = target_or_source
         files = (
             source if isinstance(source, Iterable) and not isinstance(source, str) else (source,)
         )
-    else:
-        files, target = files[:-1], files[-1]
     if isinstance(target, str):
         target, opened = open(target, "wb"), True
     else:

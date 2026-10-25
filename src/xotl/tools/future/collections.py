@@ -336,9 +336,7 @@ class SmartDictMixin:
         - an iterable of (key, value) pairs.
 
         """
-        from xotl.tools.params import issue_9137
-
-        self, args = issue_9137(args)
+        self, args = args[0], args[1:]
         for key, value in smart_iter_items(*args, **kwds):
             self[key] = value
 
@@ -380,9 +378,7 @@ class SmartDict(SmartDictMixin, dict):  # type: ignore
     """
 
     def __init__(*args, **kwargs):
-        from xotl.tools.params import issue_9137
-
-        self, args = issue_9137(args)
+        self, args = args[0], args[1:]
         super().__init__()
         self.update(*args, **kwargs)
 
@@ -516,9 +512,7 @@ class StackedDict(OpenDictMixin, SmartDictMixin, MutableMapping):  # type: ignor
 
     def __init__(*args, **kwargs):
         # Each data item is stored as {key: {level: value, ...}}
-        from xotl.tools.params import issue_9137
-
-        self, args = issue_9137(args)
+        self, args = args[0], args[1:]
         self.update(*args, **kwargs)
 
     @property
@@ -628,9 +622,7 @@ class RankedDict(SmartDictMixin, dict):  # type: ignore
         Use `rank`:meth: to change the precedence order in any moment.
 
         """
-        from xotl.tools.params import issue_9137
-
-        self, args = issue_9137(args)
+        self, args = args[0], args[1:]
         # Ensure direct calls to ``__init__`` don't clear previous contents
         try:
             self._ranks
@@ -669,9 +661,11 @@ class RankedDict(SmartDictMixin, dict):  # type: ignore
                (name, value).
 
         """
-        from xotl.tools.params import check_count
-
-        check_count(len(args) + len(kwds) + 1, 2, caller="swap_ranks")
+        count = len(args) + len(kwds) + 1
+        if count < 2:
+            raise TypeError(f"swap_ranks() takes at least 2 arguments ({count} given)")
+        if count > 1024 * 1024:
+            raise TypeError(f"swap_ranks() takes at most 1048576 arguments ({count} given)")
         for key1, key2 in args:
             self._swap_ranks(key1, key2)
         for key1 in kwds:
@@ -817,10 +811,9 @@ class RankedDict(SmartDictMixin, dict):  # type: ignore
         raised.
 
         """
-        from xotl.tools.params import check_count
-
         count = len(args)
-        check_count(count + 1, 1, 2, caller="pop")
+        if count > 1:
+            raise TypeError(f"pop() takes at most 2 arguments ({count + 1} given)")
         res = super().pop(key, Unset)
         if res is Unset:
             if count == 1:
@@ -886,9 +879,7 @@ class OrderedSmartDict(SmartDictMixin, _stdlib.OrderedDict):  # type: ignore
         arbitrary.
 
         """
-        from xotl.tools.params import issue_9137
-
-        self, args = issue_9137(args)
+        self, args = args[0], args[1:]
         super().__init__()
         self.update(*args, **kwds)
 

@@ -1593,7 +1593,7 @@ def dict_merge(*dicts, **others):
 
 
 @contextmanager
-def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
+def save_attributes(obj, attr, /, *attrs, getter=smart_getter, setter=smart_setter):
     r"""A context manager that restores `obj` attributes at exit.
 
     We deal with `obj`\ 's attributes with `smart_getter`:func: and
@@ -1650,9 +1650,7 @@ def save_attributes(obj, *attrs, getter=smart_getter, setter=smart_setter):
     .. versionadded:: 1.8.2
 
     """
-    from xotl.tools.params import check_count
-
-    check_count(attrs, 1)
+    attrs = (attr, *attrs)
     get_ = getter(obj)
     set_ = setter(obj)
     props = {attr: get_(attr) for attr in attrs}

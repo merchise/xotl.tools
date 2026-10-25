@@ -36,6 +36,10 @@
 
 .. rubric:: Changes
 
+- Retained helpers no longer import ``xotl.tools.params``.  Their existing argument ordering
+  and supported calling forms are preserved; required positional arguments are declared
+  directly where possible, and genuine variadic constraints are validated locally.
+
 - ``xotl.tools.bound.boundary`` no longer depends on the removed decorator factory.  Its bare,
   empty-parentheses, and positional or keyword configuration forms remain supported.
 

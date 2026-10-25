@@ -494,8 +494,6 @@ class ParamScheme:
     __slots__ = ("rows", "cache")
 
     def __init__(self, *rows):
-        from xotl.tools.params import check_count  # type: ignore
-
         check_count(len(rows) + 1, 2, caller=type(self).__name__)
         used = set()
         for idx, row in enumerate(rows):
