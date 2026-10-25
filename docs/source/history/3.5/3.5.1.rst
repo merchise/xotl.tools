@@ -1,4 +1,4 @@
-Release 3.5.1 (Unreleased)
+Release 3.5.1 (2026-10-25)
 ==========================
 
 .. include:: _changes-3.5.1.rst
